@@ -4,10 +4,31 @@
 
 #include <expected>
 #include <memory>
+#include <variant>
 #include <utility>
 
 namespace cgpui {
 namespace {
+
+Result<Win32SurfaceHandle> require_win32_surface(
+    const NativeSurfaceHandle& native_surface) {
+  const auto* surface = std::get_if<Win32SurfaceHandle>(&native_surface);
+  if (surface == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Vulkan renderer requires a Win32 native surface",
+    });
+  }
+
+  if (surface->hinstance == nullptr || surface->hwnd == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Vulkan renderer requires non-null Win32 handles",
+    });
+  }
+
+  return *surface;
+}
 
 class VulkanFrame final : public RenderFrame {
  public:
@@ -57,6 +78,11 @@ Result<std::unique_ptr<Renderer>> create_renderer(
         .code = ErrorCode::renderer_initialization_failed,
         .message = "Vulkan renderer requires a non-empty framebuffer",
     });
+  }
+
+  if (auto surface = require_win32_surface(descriptor.native_surface);
+      !surface) {
+    return std::unexpected(surface.error());
   }
 
   return std::make_unique<VulkanRenderer>(descriptor);
