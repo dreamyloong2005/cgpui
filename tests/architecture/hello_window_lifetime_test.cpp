@@ -52,6 +52,34 @@ int main() {
   if (text.find("window->request_redraw();") == std::string::npos) {
     return 11;
   }
+  if (text.find("CGPUI_CLOSE_AFTER_FIRST_FRAME") == std::string::npos) {
+    return 12;
+  }
+  if (text.find("close_after_first_frame") == std::string::npos) {
+    return 13;
+  }
+  if (text.find("close_requested_after_first_frame") == std::string::npos) {
+    return 14;
+  }
+  if (text.find("window->request_close();") == std::string::npos) {
+    return 15;
+  }
+
+  std::ifstream platform_source("include/cgpui/platform/platform.hpp");
+  if (!platform_source) {
+    platform_source.open("../../../../include/cgpui/platform/platform.hpp");
+  }
+  if (!platform_source) {
+    return 16;
+  }
+
+  const std::string platform_text{
+      std::istreambuf_iterator<char>(platform_source),
+      std::istreambuf_iterator<char>()};
+  if (platform_text.find("virtual void request_close() = 0;") ==
+      std::string::npos) {
+    return 17;
+  }
 
   return 0;
 }

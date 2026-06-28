@@ -46,3 +46,9 @@ smoke check:
 ```bash
 CGPUI_RESIZE_AFTER_FIRST_FRAME=1 xmake run hello_window
 ```
+
+To exercise the close-request callback after the first presented frame, run:
+
+```bash
+CGPUI_CLOSE_AFTER_FIRST_FRAME=1 xmake run hello_window
+```

@@ -55,6 +55,12 @@ class Win32Window final : public PlatformWindow {
 
   void request_redraw() override { InvalidateRect(hwnd_, nullptr, FALSE); }
 
+  void request_close() override {
+    if (hwnd_ != nullptr) {
+      PostMessageW(hwnd_, WM_CLOSE, 0, 0);
+    }
+  }
+
   void set_title(std::string_view title) override {
     const auto wide_title = widen(title);
     SetWindowTextW(hwnd_, wide_title.c_str());

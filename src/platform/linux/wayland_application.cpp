@@ -282,6 +282,8 @@ class WaylandWindow final : public PlatformWindow {
     callback_(WindowRedrawRequested{});
   }
 
+  void request_close() override { close_requested(); }
+
   void set_title(std::string_view title) override {
     const std::string title_string(title);
     xdg_toplevel_set_title(toplevel_, title_string.c_str());
@@ -372,8 +374,12 @@ class WaylandWindow final : public PlatformWindow {
   static void handle_toplevel_close(void* data, xdg_toplevel* toplevel) {
     (void)toplevel;
     auto* window = static_cast<WaylandWindow*>(data);
-    window->state_.close_requested = true;
-    window->callback_(WindowCloseRequested{});
+    window->close_requested();
+  }
+
+  void close_requested() {
+    state_.close_requested = true;
+    callback_(WindowCloseRequested{});
   }
 
   wl_display* display_ = nullptr;

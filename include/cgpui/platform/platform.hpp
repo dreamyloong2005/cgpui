@@ -18,6 +18,7 @@ class PlatformWindow {
   [[nodiscard]] virtual NativeSurfaceHandle native_surface() const = 0;
   [[nodiscard]] virtual WindowState state() const = 0;
   virtual void request_redraw() = 0;
+  virtual void request_close() = 0;
   virtual void set_title(std::string_view title) = 0;
 };
 

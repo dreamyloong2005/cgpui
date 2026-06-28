@@ -76,6 +76,8 @@ class MacOSWindow final : public PlatformWindow {
 
   void request_redraw() override { redraw_requested(); }
 
+  void request_close() override { close_requested(); }
+
   void set_title(std::string_view title) override {
     NSString* ns_title = make_ns_string(title);
     [window_ setTitle:ns_title];
