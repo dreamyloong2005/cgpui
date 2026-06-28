@@ -6,7 +6,7 @@ add_rules("mode.debug", "mode.release")
 
 local public_includedirs = "include"
 
-if is_plat("windows", "linux") then
+if is_plat("windows") then
     add_requires("vulkansdk")
 end
 
@@ -77,7 +77,11 @@ if is_plat("windows", "linux") then
         set_kind("static")
         add_files("src/renderer/vulkan/*.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
-        add_packages("vulkansdk")
+        if is_plat("windows") then
+            add_packages("vulkansdk")
+        elseif is_plat("linux") then
+            add_syslinks("vulkan")
+        end
         add_includedirs(public_includedirs, {public = true})
 end
 
