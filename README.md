@@ -32,3 +32,10 @@ xmake f -c -m debug
 xmake build hello_window
 xmake run hello_window
 ```
+
+For a deterministic first-frame smoke check, ask the demo to exit after the
+first successful present:
+
+```bash
+CGPUI_EXIT_AFTER_FIRST_FRAME=1 xmake run hello_window
+```

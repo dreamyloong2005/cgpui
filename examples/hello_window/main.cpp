@@ -2,8 +2,10 @@
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/ui.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <string_view>
 #include <variant>
 
 class HelloView final : public cgpui::View {
@@ -21,6 +23,12 @@ class HelloView final : public cgpui::View {
 };
 
 int main() {
+  const char* exit_after_first_frame_env =
+      std::getenv("CGPUI_EXIT_AFTER_FIRST_FRAME");
+  const bool exit_after_first_frame =
+      exit_after_first_frame_env != nullptr &&
+      std::string_view(exit_after_first_frame_env) != "0";
+
   auto app = cgpui::create_platform_application();
   if (!app) {
     std::cerr << app.error().message << '\n';
@@ -30,6 +38,8 @@ int main() {
   HelloView view;
   cgpui::Size viewport_size{960.0F, 640.0F};
   bool should_quit = false;
+  bool render_failed = false;
+  bool first_frame_presented = false;
   std::unique_ptr<cgpui::PlatformWindow> window;
   std::unique_ptr<cgpui::Renderer> renderer;
 
@@ -61,6 +71,15 @@ int main() {
             auto render_result = cgpui::render_view(*renderer, view, viewport_size);
             if (!render_result) {
               std::cerr << render_result.error().message << '\n';
+              render_failed = true;
+              should_quit = true;
+              (*app)->quit();
+              return;
+            }
+            first_frame_presented = true;
+            if (exit_after_first_frame) {
+              should_quit = true;
+              (*app)->quit();
             }
           }
           return;
@@ -86,5 +105,13 @@ int main() {
 
   renderer = std::move(*renderer_result);
   window->request_redraw();
-  return (*app)->run();
+  const int run_result = (*app)->run();
+  if (render_failed) {
+    return 1;
+  }
+  if (exit_after_first_frame && !first_frame_presented) {
+    std::cerr << "first frame was not presented\n";
+    return 1;
+  }
+  return run_result;
 }

@@ -24,5 +24,22 @@ int main() {
     return 3;
   }
 
-  return window_position < renderer_position ? 0 : 1;
+  if (window_position > renderer_position) {
+    return 1;
+  }
+
+  if (text.find("CGPUI_EXIT_AFTER_FIRST_FRAME") == std::string::npos) {
+    return 4;
+  }
+  if (text.find("exit_after_first_frame") == std::string::npos) {
+    return 5;
+  }
+  if (text.find("first_frame_presented") == std::string::npos) {
+    return 6;
+  }
+  if (text.find("(*app)->quit();") == std::string::npos) {
+    return 7;
+  }
+
+  return 0;
 }
