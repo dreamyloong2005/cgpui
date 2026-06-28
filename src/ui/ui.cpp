@@ -21,6 +21,12 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   if (!frame) {
     return std::unexpected(frame.error());
   }
+  if (!*frame) {
+    return std::unexpected(Error{
+        .code = ErrorCode::frame_acquisition_failed,
+        .message = "Renderer returned an empty frame",
+    });
+  }
 
   (*frame)->clear(Color{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F});
 
