@@ -128,6 +128,7 @@ bool is_blue_dominant(COLORREF color) {
 } // namespace
 
 int main() {
+  SetProcessDPIAware();
   VisibleWindow window;
   if (!window.valid()) {
     return 4;
@@ -155,13 +156,13 @@ int main() {
           cgpui::Rect{
               .origin =
                   cgpui::Point{
-                      .x = framebuffer_size.width * 0.25F,
-                      .y = framebuffer_size.height * 0.25F,
+                      .x = framebuffer_size.width * 0.10F,
+                      .y = framebuffer_size.height * 0.10F,
                   },
               .size =
                   cgpui::Size{
-                      .width = framebuffer_size.width * 0.50F,
-                      .height = framebuffer_size.height * 0.50F,
+                      .width = framebuffer_size.width * 0.80F,
+                      .height = framebuffer_size.height * 0.80F,
                   },
           },
       .color = cgpui::Color{.r = 0.23F, .g = 0.55F, .b = 0.86F, .a = 1.0F},

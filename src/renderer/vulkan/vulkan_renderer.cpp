@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <cstring>
 #include <expected>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <span>
@@ -70,13 +71,13 @@ class VulkanFrame final : public RenderFrame {
   explicit VulkanFrame(std::shared_ptr<VulkanRendererState> state)
       : state_(std::move(state)) {}
   void clear(Color color) override { clear_color_ = color; }
-  void draw_rect(const SolidRect& rect) override { rect_ = rect; }
+  void draw_rect(const SolidRect& rect) override { rects_.push_back(rect); }
   Result<void> present() override;
 
  private:
   std::shared_ptr<VulkanRendererState> state_;
   Color clear_color_{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F};
-  SolidRect rect_{};
+  std::vector<SolidRect> rects_;
 };
 
 struct QueueFamilies {
@@ -171,7 +172,7 @@ class VulkanRendererState final {
     return {};
   }
 
-  Result<void> present_clear(Color color) {
+  Result<void> present_frame(Color color, std::span<const SolidRect> rects) {
     if (presentation_blocked_) {
       return std::unexpected(vulkan_error(
           ErrorCode::renderer_initialization_failed,
@@ -188,7 +189,7 @@ class VulkanRendererState final {
     for (std::uint32_t image_index = 0;
          image_index < command_buffers_.size();
          ++image_index) {
-      if (auto result = record_clear_command_buffer(image_index, color);
+      if (auto result = record_frame_command_buffer(image_index, color, rects);
           !result) {
         return result;
       }
@@ -224,7 +225,8 @@ class VulkanRendererState final {
 
     VkCommandBuffer command_buffer = command_buffers_[image_index];
 
-    const VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    const VkPipelineStageFlags wait_stage =
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     const VkSubmitInfo submit_info{
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .waitSemaphoreCount = 1,
@@ -284,6 +286,8 @@ class VulkanRendererState final {
     VkExtent2D extent{};
     std::vector<VkImage> images;
     std::vector<VkImageView> image_views;
+    VkRenderPass render_pass = VK_NULL_HANDLE;
+    std::vector<VkFramebuffer> framebuffers;
     std::vector<VkCommandBuffer> command_buffers;
   };
 
@@ -297,6 +301,16 @@ class VulkanRendererState final {
           resources.command_buffers.data());
     }
     resources.command_buffers.clear();
+
+    for (auto framebuffer : resources.framebuffers) {
+      vkDestroyFramebuffer(device_, framebuffer, nullptr);
+    }
+    resources.framebuffers.clear();
+
+    if (resources.render_pass != VK_NULL_HANDLE) {
+      vkDestroyRenderPass(device_, resources.render_pass, nullptr);
+      resources.render_pass = VK_NULL_HANDLE;
+    }
 
     for (auto image_view : resources.image_views) {
       vkDestroyImageView(device_, image_view, nullptr);
@@ -334,11 +348,14 @@ class VulkanRendererState final {
         .extent = swapchain_extent_,
         .images = std::move(swapchain_images_),
         .image_views = std::move(swapchain_image_views_),
+        .render_pass = render_pass_,
+        .framebuffers = std::move(framebuffers_),
         .command_buffers = std::move(command_buffers_),
     };
     swapchain_ = VK_NULL_HANDLE;
     swapchain_format_ = VK_FORMAT_UNDEFINED;
     swapchain_extent_ = VkExtent2D{};
+    render_pass_ = VK_NULL_HANDLE;
     destroy_swapchain_resources(resources);
   }
 
@@ -348,8 +365,11 @@ class VulkanRendererState final {
     swapchain_extent_ = resources.extent;
     swapchain_images_ = std::move(resources.images);
     swapchain_image_views_ = std::move(resources.image_views);
+    render_pass_ = resources.render_pass;
+    framebuffers_ = std::move(resources.framebuffers);
     command_buffers_ = std::move(resources.command_buffers);
     resources.swapchain = VK_NULL_HANDLE;
+    resources.render_pass = VK_NULL_HANDLE;
     resources.format = VK_FORMAT_UNDEFINED;
     resources.extent = VkExtent2D{};
   }
@@ -487,9 +507,69 @@ class VulkanRendererState final {
         ErrorCode::renderer_initialization_failed, std::move(message)));
   }
 
-  Result<void> record_clear_command_buffer(
+  [[nodiscard]] bool make_clear_rect(
+      const SolidRect& solid_rect,
+      VkClearRect& clear_rect) const {
+    if (solid_rect.rect.size.width <= 0.0F ||
+        solid_rect.rect.size.height <= 0.0F) {
+      return false;
+    }
+
+    const float framebuffer_width =
+        static_cast<float>(swapchain_extent_.width);
+    const float framebuffer_height =
+        static_cast<float>(swapchain_extent_.height);
+    const float left =
+        std::clamp(solid_rect.rect.origin.x, 0.0F, framebuffer_width);
+    const float top =
+        std::clamp(solid_rect.rect.origin.y, 0.0F, framebuffer_height);
+    const float right = std::clamp(
+        solid_rect.rect.origin.x + solid_rect.rect.size.width,
+        0.0F,
+        framebuffer_width);
+    const float bottom = std::clamp(
+        solid_rect.rect.origin.y + solid_rect.rect.size.height,
+        0.0F,
+        framebuffer_height);
+
+    if (right <= left || bottom <= top) {
+      return false;
+    }
+
+    const auto pixel_left = static_cast<std::int32_t>(std::floor(left));
+    const auto pixel_top = static_cast<std::int32_t>(std::floor(top));
+    const auto pixel_right = static_cast<std::int32_t>(std::ceil(right));
+    const auto pixel_bottom = static_cast<std::int32_t>(std::ceil(bottom));
+    if (pixel_right <= pixel_left || pixel_bottom <= pixel_top) {
+      return false;
+    }
+
+    clear_rect = VkClearRect{
+        .rect =
+            VkRect2D{
+                .offset =
+                    VkOffset2D{
+                        .x = pixel_left,
+                        .y = pixel_top,
+                    },
+                .extent =
+                    VkExtent2D{
+                        .width = static_cast<std::uint32_t>(
+                            pixel_right - pixel_left),
+                        .height = static_cast<std::uint32_t>(
+                            pixel_bottom - pixel_top),
+                    },
+            },
+        .baseArrayLayer = 0,
+        .layerCount = 1,
+    };
+    return true;
+  }
+
+  Result<void> record_frame_command_buffer(
       std::uint32_t image_index,
-      Color color) {
+      Color color,
+      std::span<const SolidRect> rects) {
     VkCommandBuffer command_buffer = command_buffers_[image_index];
     if (auto result = require_vk_success(
             vkResetCommandBuffer(command_buffer, 0),
@@ -509,46 +589,45 @@ class VulkanRendererState final {
       return result;
     }
 
-    transition_image(
-        command_buffer,
-        swapchain_images_[image_index],
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        0,
-        VK_ACCESS_TRANSFER_WRITE_BIT,
-        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-        VK_PIPELINE_STAGE_TRANSFER_BIT);
-
-    const VkClearColorValue clear_color{{
-        color.r,
-        color.g,
-        color.b,
-        color.a,
-    }};
-    const VkImageSubresourceRange range{
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1,
+    VkClearValue clear_value{};
+    clear_value.color = VkClearColorValue{{color.r, color.g, color.b, color.a}};
+    const VkRenderPassBeginInfo render_pass_info{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = render_pass_,
+        .framebuffer = framebuffers_[image_index],
+        .renderArea =
+            VkRect2D{
+                .offset = VkOffset2D{.x = 0, .y = 0},
+                .extent = swapchain_extent_,
+            },
+        .clearValueCount = 1,
+        .pClearValues = &clear_value,
     };
-    vkCmdClearColorImage(
+    vkCmdBeginRenderPass(
         command_buffer,
-        swapchain_images_[image_index],
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        &clear_color,
-        1,
-        &range);
+        &render_pass_info,
+        VK_SUBPASS_CONTENTS_INLINE);
 
-    transition_image(
-        command_buffer,
-        swapchain_images_[image_index],
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-        VK_ACCESS_TRANSFER_WRITE_BIT,
-        0,
-        VK_PIPELINE_STAGE_TRANSFER_BIT,
-        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
+    for (const SolidRect& rect : rects) {
+      VkClearRect clear_rect{};
+      if (!make_clear_rect(rect, clear_rect)) {
+        continue;
+      }
+
+      VkClearAttachment attachment{};
+      attachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      attachment.colorAttachment = 0;
+      attachment.clearValue.color = VkClearColorValue{{
+          rect.color.r,
+          rect.color.g,
+          rect.color.b,
+          rect.color.a,
+      }};
+      vkCmdClearAttachments(
+          command_buffer, 1, &attachment, 1, &clear_rect);
+    }
+
+    vkCmdEndRenderPass(command_buffer);
 
     return require_vk_success(
         vkEndCommandBuffer(command_buffer), "vkEndCommandBuffer failed");
@@ -580,11 +659,11 @@ class VulkanRendererState final {
       return std::unexpected(result.error());
     }
 
-    if ((capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) ==
-        0) {
+    if ((capabilities.supportedUsageFlags &
+         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) == 0) {
       return std::unexpected(vulkan_error(
           ErrorCode::renderer_initialization_failed,
-          "Vulkan surface does not support transfer-destination swapchain images"));
+          "Vulkan surface does not support color-attachment swapchain images"));
     }
 
     std::uint32_t format_count = 0;
@@ -661,7 +740,7 @@ class VulkanRendererState final {
         .imageColorSpace = surface_format.colorSpace,
         .imageExtent = extent,
         .imageArrayLayers = 1,
-        .imageUsage = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
         .imageSharingMode = separate_queue_families
             ? VK_SHARING_MODE_CONCURRENT
             : VK_SHARING_MODE_EXCLUSIVE,
@@ -748,6 +827,74 @@ class VulkanRendererState final {
       resources.image_views.push_back(image_view);
     }
 
+    const VkAttachmentDescription color_attachment{
+        .format = resources.format,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+    };
+    const VkAttachmentReference color_attachment_reference{
+        .attachment = 0,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    };
+    const VkSubpassDescription subpass{
+        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &color_attachment_reference,
+    };
+    const VkSubpassDependency dependency{
+        .srcSubpass = VK_SUBPASS_EXTERNAL,
+        .dstSubpass = 0,
+        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .srcAccessMask = 0,
+        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+    };
+    const VkRenderPassCreateInfo render_pass_info{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = 1,
+        .pAttachments = &color_attachment,
+        .subpassCount = 1,
+        .pSubpasses = &subpass,
+        .dependencyCount = 1,
+        .pDependencies = &dependency,
+    };
+    if (auto result = require_vk_success(
+            vkCreateRenderPass(
+                device_, &render_pass_info, nullptr, &resources.render_pass),
+            "vkCreateRenderPass failed");
+        !result) {
+      destroy_swapchain_resources(resources);
+      return std::unexpected(result.error());
+    }
+
+    resources.framebuffers.reserve(resources.image_views.size());
+    for (VkImageView image_view : resources.image_views) {
+      VkFramebuffer framebuffer = VK_NULL_HANDLE;
+      const VkFramebufferCreateInfo framebuffer_info{
+          .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+          .renderPass = resources.render_pass,
+          .attachmentCount = 1,
+          .pAttachments = &image_view,
+          .width = resources.extent.width,
+          .height = resources.extent.height,
+          .layers = 1,
+      };
+      if (auto result = require_vk_success(
+              vkCreateFramebuffer(
+                  device_, &framebuffer_info, nullptr, &framebuffer),
+              "vkCreateFramebuffer failed");
+          !result) {
+        destroy_swapchain_resources(resources);
+        return std::unexpected(result.error());
+      }
+      resources.framebuffers.push_back(framebuffer);
+    }
+
     resources.command_buffers.resize(resources.images.size());
     const VkCommandBufferAllocateInfo allocate_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -767,46 +914,6 @@ class VulkanRendererState final {
     }
 
     return resources;
-  }
-
-  void transition_image(
-      VkCommandBuffer command_buffer,
-      VkImage image,
-      VkImageLayout old_layout,
-      VkImageLayout new_layout,
-      VkAccessFlags src_access,
-      VkAccessFlags dst_access,
-      VkPipelineStageFlags src_stage,
-      VkPipelineStageFlags dst_stage) {
-    const VkImageMemoryBarrier barrier{
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .srcAccessMask = src_access,
-        .dstAccessMask = dst_access,
-        .oldLayout = old_layout,
-        .newLayout = new_layout,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = image,
-        .subresourceRange =
-            VkImageSubresourceRange{
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            },
-    };
-    vkCmdPipelineBarrier(
-        command_buffer,
-        src_stage,
-        dst_stage,
-        0,
-        0,
-        nullptr,
-        0,
-        nullptr,
-        1,
-        &barrier);
   }
 
   Result<void> create_instance() {
@@ -1048,6 +1155,8 @@ class VulkanRendererState final {
   VkExtent2D swapchain_extent_{};
   std::vector<VkImage> swapchain_images_;
   std::vector<VkImageView> swapchain_image_views_;
+  VkRenderPass render_pass_ = VK_NULL_HANDLE;
+  std::vector<VkFramebuffer> framebuffers_;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   std::vector<VkCommandBuffer> command_buffers_;
   VkSemaphore image_available_ = VK_NULL_HANDLE;
@@ -1076,7 +1185,7 @@ class VulkanRenderer final : public Renderer {
 } // namespace
 
 Result<void> VulkanFrame::present() {
-  return state_->present_clear(clear_color_);
+  return state_->present_frame(clear_color_, rects_);
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(
