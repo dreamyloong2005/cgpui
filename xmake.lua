@@ -6,6 +6,10 @@ add_rules("mode.debug", "mode.release")
 
 local public_includedirs = "include"
 
+if is_plat("windows", "linux") then
+    add_requires("vulkansdk")
+end
+
 target("cgpui_core")
     set_kind("static")
     add_files("src/core/*.cpp")
@@ -46,6 +50,15 @@ target("cgpui_renderer_fallback")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
     add_includedirs(public_includedirs, {public = true})
 
+if is_plat("windows", "linux") then
+    target("cgpui_renderer_vulkan")
+        set_kind("static")
+        add_files("src/renderer/vulkan/*.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
+        add_packages("vulkansdk")
+        add_includedirs(public_includedirs, {public = true})
+end
+
 target("core_header_cleanliness")
     set_kind("binary")
     add_files("tests/header_cleanliness/core_header_cleanliness.cpp")
@@ -76,10 +89,15 @@ target("render_view_test")
 target("hello_window")
     set_kind("binary")
     add_files("examples/hello_window/main.cpp")
-    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_fallback", "cgpui_ui")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32")
-    else
+    elseif is_plat("linux") then
         add_deps("cgpui_platform_fallback")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    if is_plat("windows", "linux") then
+        add_deps("cgpui_renderer_vulkan")
     end
     add_includedirs(public_includedirs)
