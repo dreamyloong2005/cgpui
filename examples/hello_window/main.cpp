@@ -27,10 +27,11 @@ int main() {
     return 1;
   }
 
-  std::unique_ptr<cgpui::Renderer> renderer;
   HelloView view;
   cgpui::Size viewport_size{960.0F, 640.0F};
   bool should_quit = false;
+  std::unique_ptr<cgpui::PlatformWindow> window;
+  std::unique_ptr<cgpui::Renderer> renderer;
 
   auto window_result = (*app)->create_window(
       cgpui::WindowDescriptor{.title = "CGPUI Hello Window",
@@ -71,7 +72,7 @@ int main() {
     return 1;
   }
 
-  auto window = std::move(*window_result);
+  window = std::move(*window_result);
   viewport_size = window->state().framebuffer_size;
 
   auto renderer_result = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{

@@ -117,6 +117,21 @@ target("render_view_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("hello_window_lifetime_test")
+    set_kind("binary")
+    add_files("tests/architecture/hello_window_lifetime_test.cpp")
+    add_tests("default")
+
+if is_plat("windows", "linux") then
+    target("vulkan_resize_test")
+        set_kind("binary")
+        add_files("tests/renderer/vulkan_resize_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_packages("vulkansdk")
+        add_includedirs(public_includedirs)
+        add_tests("default")
+end
+
 target("hello_window")
     set_kind("binary")
     add_files("examples/hello_window/main.cpp")

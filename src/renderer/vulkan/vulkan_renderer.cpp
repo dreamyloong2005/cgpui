@@ -26,6 +26,13 @@ class VulkanRenderer final : public Renderer {
       : descriptor_(std::move(descriptor)) {}
 
   Result<void> resize(Size framebuffer_size, DpiScale scale) override {
+    if (framebuffer_size.width <= 0.0F || framebuffer_size.height <= 0.0F) {
+      return std::unexpected(Error{
+          .code = ErrorCode::renderer_initialization_failed,
+          .message = "Vulkan renderer requires a non-empty framebuffer",
+      });
+    }
+
     descriptor_.framebuffer_size = framebuffer_size;
     descriptor_.scale = scale;
     return {};
