@@ -23,6 +23,4 @@ xmake run hello_window
 
 ## Current Foundation
 
-The current foundation defines architecture boundaries and compiles backend targets with Xmake. Windows now presents a Vulkan-cleared frame through the Win32 demo path. Linux and macOS still use renderer skeletons in this milestone, and Linux Wayland surface completion is planned for a later pass.
-
-Solid rectangle GPU drawing is planned separately; this milestone keeps draw commands behind backend interfaces while proving the Windows Vulkan present path.
+The current foundation defines architecture boundaries and compiles backend targets with Xmake. Windows now presents Vulkan frames through the Win32 demo path, including clear color and solid rectangle draw commands. Linux and macOS still use renderer skeletons in this milestone, and Linux Wayland surface completion is planned for a later pass.
