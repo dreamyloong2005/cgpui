@@ -75,6 +75,11 @@ struct QueueFamilies {
   bool has_present = false;
 };
 
+struct QueueFamilySearch {
+  QueueFamilies families;
+  bool suitable = false;
+};
+
 class VulkanRenderer final : public Renderer {
  public:
   ~VulkanRenderer() override {
@@ -184,14 +189,12 @@ class VulkanRenderer final : public Renderer {
 #endif
   }
 
-  Result<QueueFamilies> find_queue_families(VkPhysicalDevice device) const {
+  Result<QueueFamilySearch> find_queue_families(VkPhysicalDevice device) const {
     std::uint32_t queue_family_count = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(
         device, &queue_family_count, nullptr);
     if (queue_family_count == 0) {
-      return std::unexpected(vulkan_error(
-          ErrorCode::renderer_initialization_failed,
-          "Vulkan physical device has no queue families"));
+      return QueueFamilySearch{};
     }
 
     std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
@@ -223,13 +226,11 @@ class VulkanRenderer final : public Renderer {
       }
 
       if (selected.has_graphics && selected.has_present) {
-        return selected;
+        return QueueFamilySearch{.families = selected, .suitable = true};
       }
     }
 
-    return std::unexpected(vulkan_error(
-        ErrorCode::renderer_initialization_failed,
-        "No Vulkan queue family supports graphics and present"));
+    return QueueFamilySearch{.families = selected, .suitable = false};
   }
 
   Result<bool> has_device_extension(
@@ -288,6 +289,9 @@ class VulkanRenderer final : public Renderer {
     for (VkPhysicalDevice device : devices) {
       auto queue_families = find_queue_families(device);
       if (!queue_families) {
+        return std::unexpected(queue_families.error());
+      }
+      if (!queue_families->suitable) {
         continue;
       }
 
@@ -301,8 +305,8 @@ class VulkanRenderer final : public Renderer {
       }
 
       physical_device_ = device;
-      graphics_queue_family_ = queue_families->graphics;
-      present_queue_family_ = queue_families->present;
+      graphics_queue_family_ = queue_families->families.graphics;
+      present_queue_family_ = queue_families->families.present;
       return {};
     }
 
