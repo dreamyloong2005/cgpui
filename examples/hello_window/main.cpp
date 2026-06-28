@@ -52,13 +52,17 @@ int main() {
               std::cerr << resized_result.error().message << '\n';
             }
           }
+          return;
         }
 
-        if (renderer && !should_quit) {
-          auto render_result = cgpui::render_view(*renderer, view, viewport_size);
-          if (!render_result) {
-            std::cerr << render_result.error().message << '\n';
+        if (std::holds_alternative<cgpui::WindowRedrawRequested>(event)) {
+          if (renderer && !should_quit) {
+            auto render_result = cgpui::render_view(*renderer, view, viewport_size);
+            if (!render_result) {
+              std::cerr << render_result.error().message << '\n';
+            }
           }
+          return;
         }
       });
 

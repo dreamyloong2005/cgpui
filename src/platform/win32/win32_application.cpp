@@ -35,7 +35,17 @@ class Win32Window final : public PlatformWindow {
   Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state)
       : instance_(instance), callback_(std::move(callback)), state_(state) {}
 
+  ~Win32Window() override {
+    if (hwnd_ != nullptr) {
+      SetWindowLongPtrW(hwnd_, GWLP_USERDATA, 0);
+      DestroyWindow(hwnd_);
+      hwnd_ = nullptr;
+    }
+  }
+
   void attach(HWND hwnd) { hwnd_ = hwnd; }
+
+  void detach() { hwnd_ = nullptr; }
 
   [[nodiscard]] NativeSurfaceHandle native_surface() const override {
     return Win32SurfaceHandle{.hinstance = instance_, .hwnd = hwnd_};
@@ -65,6 +75,8 @@ class Win32Window final : public PlatformWindow {
     state_.close_requested = true;
     callback_(WindowCloseRequested{});
   }
+
+  void redraw_requested() { callback_(WindowRedrawRequested{}); }
 
   void pointer_moved(LPARAM lparam) {
     callback_(PointerMoved{.position = Point{
@@ -113,6 +125,21 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
         window->close_requested();
       }
       return 0;
+    case WM_PAINT: {
+      PAINTSTRUCT paint{};
+      BeginPaint(hwnd, &paint);
+      EndPaint(hwnd, &paint);
+      if (window != nullptr) {
+        window->redraw_requested();
+      }
+      return 0;
+    }
+    case WM_NCDESTROY:
+      if (window != nullptr) {
+        SetWindowLongPtrW(hwnd, GWLP_USERDATA, 0);
+        window->detach();
+      }
+      return DefWindowProcW(hwnd, message, wparam, lparam);
     case WM_MOUSEMOVE:
       if (window != nullptr) {
         window->pointer_moved(lparam);

@@ -10,6 +10,8 @@ int main() {
   cgpui::WindowDescriptor descriptor;
   cgpui::WindowState state;
   state.framebuffer_size = descriptor.size;
+  cgpui::PlatformEvent event = cgpui::WindowRedrawRequested{};
+  (void)event;
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;

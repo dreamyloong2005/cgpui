@@ -21,6 +21,8 @@ enum class KeyAction {
 
 struct WindowCloseRequested {};
 
+struct WindowRedrawRequested {};
+
 struct WindowResized {
   Size size;
   DpiScale scale;
@@ -43,6 +45,7 @@ struct KeyboardKey {
 
 using PlatformEvent = std::variant<
     WindowCloseRequested,
+    WindowRedrawRequested,
     WindowResized,
     PointerMoved,
     PointerButton,
