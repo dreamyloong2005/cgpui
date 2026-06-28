@@ -10,6 +10,10 @@
 #include <windows.h>
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_win32.h>
+#elif defined(__linux__)
+#include <wayland-client.h>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_wayland.h>
 #else
 #include <vulkan/vulkan.h>
 #endif
@@ -58,6 +62,26 @@ Result<Win32SurfaceHandle> require_win32_surface(
     return std::unexpected(Error{
         .code = ErrorCode::renderer_initialization_failed,
         .message = "Vulkan renderer requires non-null Win32 handles",
+    });
+  }
+
+  return *surface;
+}
+
+Result<WaylandSurfaceHandle> require_wayland_surface(
+    const NativeSurfaceHandle& native_surface) {
+  const auto* surface = std::get_if<WaylandSurfaceHandle>(&native_surface);
+  if (surface == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Vulkan renderer requires a Wayland native surface",
+    });
+  }
+
+  if (surface->display == nullptr || surface->surface == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Vulkan renderer requires non-null Wayland handles",
     });
   }
 
@@ -113,14 +137,13 @@ class VulkanRendererState final {
   }
 
   static Result<std::shared_ptr<VulkanRendererState>> create(
-      RenderSurfaceDescriptor descriptor,
-      Win32SurfaceHandle native_surface) {
+      RenderSurfaceDescriptor descriptor) {
     auto renderer = std::shared_ptr<VulkanRendererState>(
         new VulkanRendererState(std::move(descriptor)));
     if (auto result = renderer->create_instance(); !result) {
       return std::unexpected(result.error());
     }
-    if (auto result = renderer->create_surface(native_surface); !result) {
+    if (auto result = renderer->create_surface(); !result) {
       return std::unexpected(result.error());
     }
     if (auto result = renderer->select_physical_device(); !result) {
@@ -917,11 +940,18 @@ class VulkanRendererState final {
   }
 
   Result<void> create_instance() {
+#if defined(_WIN32) || defined(__linux__)
 #if defined(_WIN32)
     const std::array<const char*, 2> extensions{
         VK_KHR_SURFACE_EXTENSION_NAME,
         VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
     };
+#else
+    const std::array<const char*, 2> extensions{
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+    };
+#endif
 
     const VkApplicationInfo app_info{
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -949,22 +979,39 @@ class VulkanRendererState final {
 #endif
   }
 
-  Result<void> create_surface(Win32SurfaceHandle surface) {
+  Result<void> create_surface() {
 #if defined(_WIN32)
+    auto surface = require_win32_surface(descriptor_.native_surface);
+    if (!surface) {
+      return std::unexpected(surface.error());
+    }
     const VkWin32SurfaceCreateInfoKHR create_info{
         .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-        .hinstance = static_cast<HINSTANCE>(surface.hinstance),
-        .hwnd = static_cast<HWND>(surface.hwnd),
+        .hinstance = static_cast<HINSTANCE>(surface->hinstance),
+        .hwnd = static_cast<HWND>(surface->hwnd),
     };
 
     return require_vk_success(
         vkCreateWin32SurfaceKHR(instance_, &create_info, nullptr, &surface_),
         "vkCreateWin32SurfaceKHR failed");
+#elif defined(__linux__)
+    auto surface = require_wayland_surface(descriptor_.native_surface);
+    if (!surface) {
+      return std::unexpected(surface.error());
+    }
+    const VkWaylandSurfaceCreateInfoKHR create_info{
+        .sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+        .display = static_cast<wl_display*>(surface->display),
+        .surface = static_cast<wl_surface*>(surface->surface),
+    };
+
+    return require_vk_success(
+        vkCreateWaylandSurfaceKHR(instance_, &create_info, nullptr, &surface_),
+        "vkCreateWaylandSurfaceKHR failed");
 #else
-    (void)surface;
     return std::unexpected(vulkan_error(
         ErrorCode::unsupported_platform,
-        "Vulkan renderer Win32 surface initialization requires Windows"));
+        "Vulkan renderer surface initialization requires Windows or Linux"));
 #endif
   }
 
@@ -1198,17 +1245,12 @@ Result<std::unique_ptr<Renderer>> create_renderer(
     });
   }
 
-  if (auto surface = require_win32_surface(descriptor.native_surface);
-      !surface) {
-    return std::unexpected(surface.error());
-  } else {
-    auto state = VulkanRendererState::create(descriptor, *surface);
-    if (!state) {
-      return std::unexpected(state.error());
-    }
-
-    return std::make_unique<VulkanRenderer>(std::move(*state));
+  auto state = VulkanRendererState::create(descriptor);
+  if (!state) {
+    return std::unexpected(state.error());
   }
+
+  return std::make_unique<VulkanRenderer>(std::move(*state));
 }
 
 } // namespace cgpui
