@@ -308,12 +308,21 @@ class VulkanRenderer final : public Renderer {
       : descriptor_(std::move(descriptor)) {}
 
   void destroy_swapchain() {
+    if (device_ != VK_NULL_HANDLE && command_pool_ != VK_NULL_HANDLE &&
+        !command_buffers_.empty()) {
+      vkFreeCommandBuffers(
+          device_,
+          command_pool_,
+          static_cast<std::uint32_t>(command_buffers_.size()),
+          command_buffers_.data());
+    }
+    command_buffers_.clear();
+
     for (auto image_view : swapchain_image_views_) {
       vkDestroyImageView(device_, image_view, nullptr);
     }
     swapchain_image_views_.clear();
     swapchain_images_.clear();
-    command_buffers_.clear();
     if (swapchain_ != VK_NULL_HANDLE) {
       vkDestroySwapchainKHR(device_, swapchain_, nullptr);
       swapchain_ = VK_NULL_HANDLE;
