@@ -139,6 +139,15 @@ if is_plat("windows") then
         add_packages("vulkansdk")
         add_includedirs(public_includedirs)
         add_tests("default")
+
+    target("vulkan_frame_lifetime_test")
+        set_kind("binary")
+        add_files("tests/renderer/vulkan_frame_lifetime_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_packages("vulkansdk")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
 end
 
 target("hello_window")
