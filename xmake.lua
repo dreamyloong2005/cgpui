@@ -10,6 +10,10 @@ if is_plat("windows", "linux") then
     add_requires("vulkansdk")
 end
 
+if is_plat("linux") then
+    add_requires("wayland")
+end
+
 target("cgpui_core")
     set_kind("static")
     add_files("src/core/*.cpp")
@@ -35,6 +39,15 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform")
         add_includedirs(public_includedirs, {public = true})
         add_syslinks("user32", "gdi32", "shell32")
+end
+
+if is_plat("linux") then
+    target("cgpui_platform_linux_wayland")
+        set_kind("static")
+        add_files("src/platform/linux/*.cpp")
+        add_deps("cgpui_core", "cgpui_platform")
+        add_packages("wayland")
+        add_includedirs(public_includedirs, {public = true})
 end
 
 target("cgpui_renderer")
@@ -93,7 +106,7 @@ target("hello_window")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32")
     elseif is_plat("linux") then
-        add_deps("cgpui_platform_fallback")
+        add_deps("cgpui_platform_linux_wayland")
     else
         add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
     end
