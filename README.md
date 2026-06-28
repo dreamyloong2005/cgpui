@@ -39,3 +39,10 @@ first successful present:
 ```bash
 CGPUI_EXIT_AFTER_FIRST_FRAME=1 xmake run hello_window
 ```
+
+To exercise swapchain resize and a second presented frame, run the lifecycle
+smoke check:
+
+```bash
+CGPUI_RESIZE_AFTER_FIRST_FRAME=1 xmake run hello_window
+```

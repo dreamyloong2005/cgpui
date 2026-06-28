@@ -40,6 +40,18 @@ int main() {
   if (text.find("(*app)->quit();") == std::string::npos) {
     return 7;
   }
+  if (text.find("CGPUI_RESIZE_AFTER_FIRST_FRAME") == std::string::npos) {
+    return 8;
+  }
+  if (text.find("resize_after_first_frame") == std::string::npos) {
+    return 9;
+  }
+  if (text.find("second_frame_presented") == std::string::npos) {
+    return 10;
+  }
+  if (text.find("window->request_redraw();") == std::string::npos) {
+    return 11;
+  }
 
   return 0;
 }

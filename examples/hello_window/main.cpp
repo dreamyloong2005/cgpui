@@ -28,6 +28,11 @@ int main() {
   const bool exit_after_first_frame =
       exit_after_first_frame_env != nullptr &&
       std::string_view(exit_after_first_frame_env) != "0";
+  const char* resize_after_first_frame_env =
+      std::getenv("CGPUI_RESIZE_AFTER_FIRST_FRAME");
+  const bool resize_after_first_frame =
+      resize_after_first_frame_env != nullptr &&
+      std::string_view(resize_after_first_frame_env) != "0";
 
   auto app = cgpui::create_platform_application();
   if (!app) {
@@ -40,6 +45,8 @@ int main() {
   bool should_quit = false;
   bool render_failed = false;
   bool first_frame_presented = false;
+  bool resize_requested_after_first_frame = false;
+  bool second_frame_presented = false;
   std::unique_ptr<cgpui::PlatformWindow> window;
   std::unique_ptr<cgpui::Renderer> renderer;
 
@@ -76,8 +83,30 @@ int main() {
               (*app)->quit();
               return;
             }
-            first_frame_presented = true;
-            if (exit_after_first_frame) {
+            if (!first_frame_presented) {
+              first_frame_presented = true;
+              if (resize_after_first_frame) {
+                viewport_size =
+                    cgpui::Size{viewport_size.width * 0.75F,
+                                viewport_size.height * 0.75F};
+                auto resized_result =
+                    renderer->resize(viewport_size, cgpui::DpiScale{1.0F});
+                if (!resized_result) {
+                  std::cerr << resized_result.error().message << '\n';
+                  render_failed = true;
+                  should_quit = true;
+                  (*app)->quit();
+                  return;
+                }
+                resize_requested_after_first_frame = true;
+                window->request_redraw();
+                return;
+              }
+            } else {
+              second_frame_presented = true;
+            }
+            if (exit_after_first_frame ||
+                (resize_after_first_frame && second_frame_presented)) {
               should_quit = true;
               (*app)->quit();
             }
@@ -111,6 +140,11 @@ int main() {
   }
   if (exit_after_first_frame && !first_frame_presented) {
     std::cerr << "first frame was not presented\n";
+    return 1;
+  }
+  if (resize_after_first_frame &&
+      (!resize_requested_after_first_frame || !second_frame_presented)) {
+    std::cerr << "resize smoke did not present a second frame\n";
     return 1;
   }
   return run_result;
