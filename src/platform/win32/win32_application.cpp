@@ -1,0 +1,233 @@
+#include "cgpui/platform/platform.hpp"
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <windowsx.h>
+
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+
+namespace cgpui {
+namespace {
+
+std::wstring widen(std::string_view value) {
+  if (value.empty()) {
+    return {};
+  }
+
+  const auto required = MultiByteToWideChar(
+      CP_UTF8, 0, value.data(), static_cast<int>(value.size()), nullptr, 0);
+  if (required <= 0) {
+    return {};
+  }
+
+  std::wstring result(static_cast<std::size_t>(required), L'\0');
+  MultiByteToWideChar(
+      CP_UTF8, 0, value.data(), static_cast<int>(value.size()), result.data(), required);
+  return result;
+}
+
+class Win32Window final : public PlatformWindow {
+ public:
+  Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state)
+      : instance_(instance), callback_(std::move(callback)), state_(state) {}
+
+  void attach(HWND hwnd) { hwnd_ = hwnd; }
+
+  [[nodiscard]] NativeSurfaceHandle native_surface() const override {
+    return Win32SurfaceHandle{.hinstance = instance_, .hwnd = hwnd_};
+  }
+
+  [[nodiscard]] WindowState state() const override { return state_; }
+
+  void request_redraw() override { InvalidateRect(hwnd_, nullptr, FALSE); }
+
+  void set_title(std::string_view title) override {
+    const auto wide_title = widen(title);
+    SetWindowTextW(hwnd_, wide_title.c_str());
+  }
+
+  void update_size() {
+    RECT rect{};
+    GetClientRect(hwnd_, &rect);
+    const auto width = static_cast<float>(rect.right - rect.left);
+    const auto height = static_cast<float>(rect.bottom - rect.top);
+    const auto dpi = static_cast<float>(GetDpiForWindow(hwnd_));
+    state_.framebuffer_size = Size{width, height};
+    state_.scale = DpiScale{dpi / 96.0F};
+    callback_(WindowResized{.size = state_.framebuffer_size, .scale = state_.scale});
+  }
+
+  void close_requested() {
+    state_.close_requested = true;
+    callback_(WindowCloseRequested{});
+  }
+
+  void pointer_moved(LPARAM lparam) {
+    callback_(PointerMoved{.position = Point{
+        static_cast<float>(GET_X_LPARAM(lparam)),
+        static_cast<float>(GET_Y_LPARAM(lparam))}});
+  }
+
+  void pointer_button(MouseButton button, bool pressed, LPARAM lparam) {
+    callback_(PointerButton{
+        .button = button,
+        .pressed = pressed,
+        .position = Point{
+            static_cast<float>(GET_X_LPARAM(lparam)),
+            static_cast<float>(GET_Y_LPARAM(lparam))}});
+  }
+
+  void key_event(WPARAM wparam, KeyAction action) {
+    callback_(KeyboardKey{.key_code = static_cast<std::uint32_t>(wparam), .action = action});
+  }
+
+ private:
+  HINSTANCE instance_ = nullptr;
+  HWND hwnd_ = nullptr;
+  PlatformEventCallback callback_;
+  WindowState state_;
+};
+
+LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+  auto* window = reinterpret_cast<Win32Window*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+
+  switch (message) {
+    case WM_NCCREATE: {
+      const auto* create = reinterpret_cast<CREATESTRUCTW*>(lparam);
+      auto* created_window = static_cast<Win32Window*>(create->lpCreateParams);
+      created_window->attach(hwnd);
+      SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(created_window));
+      return TRUE;
+    }
+    case WM_SIZE:
+      if (window != nullptr) {
+        window->update_size();
+      }
+      return 0;
+    case WM_CLOSE:
+      if (window != nullptr) {
+        window->close_requested();
+      }
+      return 0;
+    case WM_MOUSEMOVE:
+      if (window != nullptr) {
+        window->pointer_moved(lparam);
+      }
+      return 0;
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+      if (window != nullptr) {
+        window->pointer_button(MouseButton::left, message == WM_LBUTTONDOWN, lparam);
+      }
+      return 0;
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+      if (window != nullptr) {
+        window->pointer_button(MouseButton::right, message == WM_RBUTTONDOWN, lparam);
+      }
+      return 0;
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+      if (window != nullptr) {
+        window->pointer_button(MouseButton::middle, message == WM_MBUTTONDOWN, lparam);
+      }
+      return 0;
+    case WM_KEYDOWN:
+      if (window != nullptr) {
+        window->key_event(wparam, KeyAction::pressed);
+      }
+      return 0;
+    case WM_KEYUP:
+      if (window != nullptr) {
+        window->key_event(wparam, KeyAction::released);
+      }
+      return 0;
+    default:
+      return DefWindowProcW(hwnd, message, wparam, lparam);
+  }
+}
+
+class Win32Application final : public PlatformApplication {
+ public:
+  Win32Application() : instance_(GetModuleHandleW(nullptr)) {}
+
+  Result<std::unique_ptr<PlatformWindow>> create_window(
+      const WindowDescriptor& descriptor,
+      PlatformEventCallback callback) override {
+    const wchar_t* class_name = L"CGPUIWindow";
+
+    WNDCLASSEXW window_class{};
+    window_class.cbSize = sizeof(WNDCLASSEXW);
+    window_class.style = CS_HREDRAW | CS_VREDRAW;
+    window_class.lpfnWndProc = window_proc;
+    window_class.hInstance = instance_;
+    window_class.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
+    window_class.lpszClassName = class_name;
+
+    if (RegisterClassExW(&window_class) == 0 && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
+      return std::unexpected(Error{
+          .code = ErrorCode::platform_initialization_failed,
+          .message = "RegisterClassExW failed"});
+    }
+
+    auto state = WindowState{
+        .framebuffer_size = descriptor.size,
+        .scale = DpiScale{1.0F},
+        .close_requested = false};
+    auto window = std::make_unique<Win32Window>(instance_, std::move(callback), state);
+
+    const auto title = widen(descriptor.title);
+    HWND hwnd = CreateWindowExW(
+        0,
+        class_name,
+        title.c_str(),
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        static_cast<int>(descriptor.size.width),
+        static_cast<int>(descriptor.size.height),
+        nullptr,
+        nullptr,
+        instance_,
+        window.get());
+    if (hwnd == nullptr) {
+      return std::unexpected(Error{
+          .code = ErrorCode::window_creation_failed,
+          .message = "CreateWindowExW failed"});
+    }
+
+    ShowWindow(hwnd, SW_SHOW);
+    window->update_size();
+    return window;
+  }
+
+  int run() override {
+    MSG message{};
+    while (running_ && GetMessageW(&message, nullptr, 0, 0) > 0) {
+      TranslateMessage(&message);
+      DispatchMessageW(&message);
+    }
+    return 0;
+  }
+
+  void quit() override {
+    running_ = false;
+    PostQuitMessage(0);
+  }
+
+ private:
+  HINSTANCE instance_ = nullptr;
+  bool running_ = true;
+};
+
+} // namespace
+
+Result<std::unique_ptr<PlatformApplication>> create_platform_application() {
+  return std::make_unique<Win32Application>();
+}
+
+} // namespace cgpui

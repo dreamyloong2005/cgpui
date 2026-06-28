@@ -24,6 +24,15 @@ target("cgpui_platform_fallback")
     add_deps("cgpui_core", "cgpui_platform")
     add_includedirs(public_includedirs, {public = true})
 
+if is_plat("windows") then
+    target("cgpui_platform_win32")
+        set_kind("static")
+        add_files("src/platform/win32/*.cpp")
+        add_deps("cgpui_core", "cgpui_platform")
+        add_includedirs(public_includedirs, {public = true})
+        add_syslinks("user32", "gdi32", "shell32")
+end
+
 target("cgpui_renderer")
     set_kind("static")
     add_files("src/renderer/*.cpp")
@@ -67,5 +76,10 @@ target("render_view_test")
 target("hello_window")
     set_kind("binary")
     add_files("examples/hello_window/main.cpp")
-    add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_fallback", "cgpui_renderer", "cgpui_renderer_fallback", "cgpui_ui")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_fallback", "cgpui_ui")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32")
+    else
+        add_deps("cgpui_platform_fallback")
+    end
     add_includedirs(public_includedirs)
