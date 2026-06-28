@@ -4,32 +4,9 @@
 
 #include <expected>
 #include <memory>
-#include <string_view>
-#include <utility>
 
 namespace cgpui {
 namespace {
-
-class WaylandWindow final : public PlatformWindow {
- public:
-  WaylandWindow(wl_display* display, PlatformEventCallback callback, WindowState state)
-      : display_(display), callback_(std::move(callback)), state_(state) {}
-
-  [[nodiscard]] NativeSurfaceHandle native_surface() const override {
-    return WaylandSurfaceHandle{.display = display_, .surface = nullptr};
-  }
-
-  [[nodiscard]] WindowState state() const override { return state_; }
-
-  void request_redraw() override { callback_(WindowRedrawRequested{}); }
-
-  void set_title(std::string_view) override {}
-
- private:
-  wl_display* display_ = nullptr;
-  PlatformEventCallback callback_;
-  WindowState state_;
-};
 
 class WaylandApplication final : public PlatformApplication {
  public:
@@ -50,18 +27,16 @@ class WaylandApplication final : public PlatformApplication {
           .message = "wl_display_connect failed"});
     }
 
-    auto state = WindowState{
-        .framebuffer_size = descriptor.size,
-        .scale = DpiScale{1.0F},
-        .close_requested = false};
-    return std::make_unique<WaylandWindow>(display_, std::move(callback), state);
+    return std::unexpected(Error{
+        .code = ErrorCode::window_creation_failed,
+        .message = "Wayland surface creation is not implemented yet"});
   }
 
   int run() override {
     while (running_ && display_ != nullptr) {
-      wl_display_dispatch_pending(display_);
-      wl_display_flush(display_);
-      running_ = false;
+      if (wl_display_dispatch(display_) == -1) {
+        return 1;
+      }
     }
     return 0;
   }
