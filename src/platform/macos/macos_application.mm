@@ -7,7 +7,6 @@
 #include <memory>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 namespace cgpui {
 class MacOSWindow;
@@ -56,7 +55,7 @@ class MacOSWindow final : public PlatformWindow {
               WindowState state)
       : window_([window retain]),
         layer_([layer retain]),
-        delegate_(delegate),
+        delegate_([delegate retain]),
         callback_(std::move(callback)),
         state_(state) {}
 
@@ -64,6 +63,7 @@ class MacOSWindow final : public PlatformWindow {
     [delegate_ detachWindow];
     [window_ setDelegate:nil];
     [window_ close];
+    [delegate_ release];
     [layer_ release];
     [window_ release];
   }
@@ -208,7 +208,7 @@ class MacOSApplication final : public PlatformApplication {
         window, metal_layer, delegate, std::move(callback), state);
     [delegate attachWindow:platform_window.get()];
     [window setDelegate:delegate];
-    delegates_.emplace_back(delegate);
+    [delegate release];
 
     [window center];
     [window makeKeyAndOrderFront:nil];
@@ -219,38 +219,20 @@ class MacOSApplication final : public PlatformApplication {
   }
 
   int run() override {
-    running_ = true;
-    while (running_) {
-      @autoreleasepool {
-        NSEvent* event =
-            [NSApp nextEventMatchingMask:NSEventMaskAny
-                               untilDate:[NSDate distantFuture]
-                                  inMode:NSDefaultRunLoopMode
-                                 dequeue:YES];
-        if (event != nil) {
-          [NSApp sendEvent:event];
-          [NSApp updateWindows];
-        }
-      }
+    if (!launched_) {
+      [NSApp finishLaunching];
+      launched_ = true;
     }
+    [NSApp run];
     return 0;
   }
 
   void quit() override {
-    running_ = false;
-    [NSApp stop:nil];
+    [NSApp terminate:nil];
   }
 
  private:
-  struct DelegateReleaser {
-    void operator()(CGPUIMacOSWindowDelegate* delegate) const {
-      [delegate detachWindow];
-      [delegate release];
-    }
-  };
-
-  std::vector<std::unique_ptr<CGPUIMacOSWindowDelegate, DelegateReleaser>> delegates_;
-  bool running_ = true;
+  bool launched_ = false;
 };
 
 } // namespace

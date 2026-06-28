@@ -76,6 +76,21 @@ Result<std::unique_ptr<Renderer>> create_renderer(
     });
   }
 
+  const auto* surface = std::get_if<MetalSurfaceHandle>(&descriptor.native_surface);
+  if (surface == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Metal renderer requires a Metal native surface",
+    });
+  }
+
+  if (surface->layer == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Metal renderer requires a non-null CAMetalLayer",
+    });
+  }
+
   id<MTLDevice> device = MTLCreateSystemDefaultDevice();
   if (device == nil) {
     return std::unexpected(Error{
@@ -83,6 +98,11 @@ Result<std::unique_ptr<Renderer>> create_renderer(
         .message = "MTLCreateSystemDefaultDevice failed",
     });
   }
+
+  auto* layer = static_cast<CAMetalLayer*>(surface->layer);
+  [layer setDevice:device];
+  [layer setDrawableSize:CGSizeMake(descriptor.framebuffer_size.width,
+                                    descriptor.framebuffer_size.height)];
 
   auto renderer = std::make_unique<MetalRenderer>(descriptor, device);
   [device release];
