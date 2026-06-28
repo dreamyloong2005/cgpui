@@ -50,6 +50,15 @@ if is_plat("linux") then
         add_includedirs(public_includedirs, {public = true})
 end
 
+if is_plat("macosx") then
+    target("cgpui_platform_macos")
+        set_kind("static")
+        add_files("src/platform/macos/*.mm")
+        add_deps("cgpui_core", "cgpui_platform")
+        add_frameworks("AppKit", "QuartzCore")
+        add_includedirs(public_includedirs, {public = true})
+end
+
 target("cgpui_renderer")
     set_kind("static")
     add_files("src/renderer/*.cpp")
@@ -69,6 +78,15 @@ if is_plat("windows", "linux") then
         add_files("src/renderer/vulkan/*.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
         add_packages("vulkansdk")
+        add_includedirs(public_includedirs, {public = true})
+end
+
+if is_plat("macosx") then
+    target("cgpui_renderer_metal")
+        set_kind("static")
+        add_files("src/renderer/metal/*.mm")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
+        add_frameworks("Metal", "QuartzCore")
         add_includedirs(public_includedirs, {public = true})
 end
 
@@ -104,13 +122,13 @@ target("hello_window")
     add_files("examples/hello_window/main.cpp")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
     if is_plat("windows") then
-        add_deps("cgpui_platform_win32")
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
     elseif is_plat("linux") then
-        add_deps("cgpui_platform_linux_wayland")
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
     else
         add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
-    end
-    if is_plat("windows", "linux") then
-        add_deps("cgpui_renderer_vulkan")
     end
     add_includedirs(public_includedirs)
