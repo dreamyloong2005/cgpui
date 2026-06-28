@@ -9,6 +9,12 @@
 
 namespace {
 
+constexpr cgpui::Size requested_size{640.0F, 480.0F};
+
+bool size_equals(cgpui::Size lhs, cgpui::Size rhs) {
+  return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
 bool wait_for_run_finished(const std::atomic_bool& run_finished) {
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
   while (!run_finished.load() && std::chrono::steady_clock::now() < deadline) {
@@ -20,8 +26,7 @@ bool wait_for_run_finished(const std::atomic_bool& run_finished) {
 } // namespace
 
 int main() {
-  cgpui::test::WaylandTestCompositor compositor("close");
-  compositor.set_close_on_initial_configure_ack(true);
+  cgpui::test::WaylandTestCompositor compositor("resize");
   if (!compositor.start()) {
     return 2;
   }
@@ -33,14 +38,19 @@ int main() {
     return 3;
   }
 
-  bool close_requested = false;
+  bool resized = false;
+  cgpui::Size observed_size{};
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
-          .title = "CGPUI Wayland Close Test",
+          .title = "CGPUI Wayland Resize Test",
           .size = cgpui::Size{320.0F, 240.0F}},
       [&](const cgpui::PlatformEvent& event) {
-        if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
-          close_requested = true;
+        if (const auto* resize = std::get_if<cgpui::WindowResized>(&event);
+            resize != nullptr && size_equals(resize->size, requested_size)) {
+          resized = true;
+          observed_size = resize->size;
+          (*app)->quit();
+        } else if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
       });
@@ -55,8 +65,13 @@ int main() {
     run_finished.store(true);
   });
 
+  compositor.request_resize_configure(
+      static_cast<std::int32_t>(requested_size.width),
+      static_cast<std::int32_t>(requested_size.height));
+
   if (!wait_for_run_finished(run_finished)) {
-    (*app)->quit();
+    compositor.request_close();
+    wait_for_run_finished(run_finished);
     compositor.stop();
     if (client_thread.joinable()) {
       client_thread.join();
@@ -72,14 +87,17 @@ int main() {
   if (run_result != 0) {
     return 5;
   }
-  if (!compositor.wait_for_close_sent()) {
+  if (!compositor.wait_for_resize_configure_sent()) {
     return 6;
   }
-  if (!close_requested) {
+  if (!compositor.wait_for_resize_configure_acked()) {
     return 7;
   }
-  if (!(*window)->state().close_requested) {
+  if (!resized || !size_equals(observed_size, requested_size)) {
     return 8;
+  }
+  if (!size_equals((*window)->state().framebuffer_size, requested_size)) {
+    return 10;
   }
 
   return 0;

@@ -52,10 +52,23 @@ if is_plat("linux") then
     target("wayland_compositor_close_test")
         set_kind("binary")
         add_files("tests/platform/wayland_compositor_close_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
         add_packages("wayland")
         add_syslinks("wayland-server")
         add_includedirs(public_includedirs)
+        add_includedirs("tests/platform")
+        add_tests("default")
+
+    target("wayland_compositor_resize_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_compositor_resize_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs(public_includedirs)
+        add_includedirs("tests/platform")
         add_tests("default")
 end
 

@@ -352,8 +352,16 @@ class WaylandWindow final : public PlatformWindow {
       xdg_surface* surface,
       std::uint32_t serial) {
     auto* window = static_cast<WaylandWindow*>(data);
+    const bool was_configured = window->configured_;
     xdg_surface_ack_configure(surface, serial);
+    (void)wl_display_flush(window->display_);
     window->configured_ = true;
+    if (was_configured && window->resize_pending_surface_configure_) {
+      window->resize_pending_surface_configure_ = false;
+      window->callback_(WindowResized{
+          .size = window->state_.framebuffer_size,
+          .scale = window->state_.scale});
+    }
   }
 
   static void handle_toplevel_configure(
@@ -368,6 +376,9 @@ class WaylandWindow final : public PlatformWindow {
     if (width > 0 && height > 0) {
       window->state_.framebuffer_size =
           Size{static_cast<float>(width), static_cast<float>(height)};
+      if (window->configured_) {
+        window->resize_pending_surface_configure_ = true;
+      }
     }
   }
 
@@ -389,6 +400,7 @@ class WaylandWindow final : public PlatformWindow {
   PlatformEventCallback callback_;
   WindowState state_;
   bool configured_ = false;
+  bool resize_pending_surface_configure_ = false;
 };
 
 class WaylandApplication final : public PlatformApplication {

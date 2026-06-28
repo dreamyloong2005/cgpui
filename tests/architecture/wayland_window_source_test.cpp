@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iterator>
+#include <algorithm>
 #include <string>
 
 namespace {
@@ -36,6 +37,34 @@ bool contains(const std::string& text, const char* value) {
   return text.find(value) != std::string::npos;
 }
 
+std::string linux_target_block(const std::string& xmake_text, const char* target_name) {
+  const std::string target_marker =
+      std::string("target(\"") + target_name + "\")";
+  const auto target_position = xmake_text.find(target_marker);
+  if (target_position == std::string::npos) {
+    return {};
+  }
+
+  const auto next_target_position = xmake_text.find("\ntarget(\"", target_position + 1);
+  const auto next_platform_position =
+      xmake_text.find("\nif is_plat(\"macosx\")", target_position + 1);
+  auto end_position = std::string::npos;
+  if (next_target_position != std::string::npos &&
+      next_platform_position != std::string::npos) {
+    end_position = std::min(next_target_position, next_platform_position);
+  } else if (next_target_position != std::string::npos) {
+    end_position = next_target_position;
+  } else {
+    end_position = next_platform_position;
+  }
+
+  return xmake_text.substr(
+      target_position,
+      end_position == std::string::npos
+          ? std::string::npos
+          : end_position - target_position);
+}
+
 } // namespace
 
 int main() {
@@ -64,27 +93,40 @@ int main() {
     return 5;
   }
 
-  const auto target_position =
-      xmake_text.find("target(\"wayland_compositor_close_test\")");
-  if (target_position == std::string::npos) {
+  const std::string close_target_text =
+      linux_target_block(xmake_text, "wayland_compositor_close_test");
+  if (close_target_text.empty()) {
     return 6;
   }
-
-  const auto next_platform_position =
-      xmake_text.find("if is_plat(\"macosx\")", target_position);
-  const std::string target_text = xmake_text.substr(
-      target_position,
-      next_platform_position == std::string::npos
-          ? std::string::npos
-          : next_platform_position - target_position);
-  if (!contains(target_text, "tests/platform/wayland_compositor_close_test.cpp")) {
+  if (!contains(close_target_text, "tests/platform/wayland_compositor_close_test.cpp")) {
     return 7;
   }
-  if (!contains(target_text, "wayland-server")) {
+  if (!contains(close_target_text, "wayland-server")) {
     return 8;
   }
-  if (!contains(target_text, "add_tests(\"default\")")) {
+  if (!contains(close_target_text, "add_tests(\"default\")")) {
     return 9;
+  }
+  if (!contains(close_target_text, "tests/platform/wayland_test_compositor.cpp")) {
+    return 10;
+  }
+
+  const std::string resize_target_text =
+      linux_target_block(xmake_text, "wayland_compositor_resize_test");
+  if (resize_target_text.empty()) {
+    return 11;
+  }
+  if (!contains(resize_target_text, "tests/platform/wayland_compositor_resize_test.cpp")) {
+    return 12;
+  }
+  if (!contains(resize_target_text, "tests/platform/wayland_test_compositor.cpp")) {
+    return 13;
+  }
+  if (!contains(resize_target_text, "wayland-server")) {
+    return 14;
+  }
+  if (!contains(resize_target_text, "add_tests(\"default\")")) {
+    return 15;
   }
 
   return 0;
