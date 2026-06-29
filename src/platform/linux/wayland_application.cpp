@@ -331,6 +331,10 @@ class WaylandWindow final : public PlatformWindow {
     });
   }
 
+  void keyboard_key(std::uint32_t key, KeyAction action) {
+    callback_(KeyboardKey{.key_code = key, .action = action});
+  }
+
  private:
   WaylandWindow(
       wl_display* display,
@@ -484,6 +488,9 @@ class WaylandApplication final : public PlatformApplication {
   }
 
   ~WaylandApplication() override {
+    if (keyboard_ != nullptr) {
+      wl_keyboard_destroy(keyboard_);
+    }
     if (pointer_ != nullptr) {
       wl_pointer_destroy(pointer_);
     }
@@ -606,7 +613,10 @@ class WaylandApplication final : public PlatformApplication {
       wl_seat* seat,
       std::uint32_t capabilities) {
     auto* app = static_cast<WaylandApplication*>(data);
-    if ((capabilities & WL_SEAT_CAPABILITY_POINTER) != 0U) {
+    const bool has_pointer = (capabilities & WL_SEAT_CAPABILITY_POINTER) != 0U;
+    const bool has_keyboard = (capabilities & WL_SEAT_CAPABILITY_KEYBOARD) != 0U;
+
+    if (has_pointer) {
       if (app->pointer_ == nullptr) {
         app->pointer_ = wl_seat_get_pointer(seat);
         static const wl_pointer_listener pointer_listener{
@@ -625,13 +635,29 @@ class WaylandApplication final : public PlatformApplication {
         };
         wl_pointer_add_listener(app->pointer_, &pointer_listener, app);
       }
-      return;
-    }
-
-    if (app->pointer_ != nullptr) {
+    } else if (app->pointer_ != nullptr) {
       wl_pointer_destroy(app->pointer_);
       app->pointer_ = nullptr;
       app->pointer_window_ = nullptr;
+    }
+
+    if (has_keyboard) {
+      if (app->keyboard_ == nullptr) {
+        app->keyboard_ = wl_seat_get_keyboard(seat);
+        static const wl_keyboard_listener keyboard_listener{
+            .keymap = &WaylandApplication::handle_keyboard_keymap,
+            .enter = &WaylandApplication::handle_keyboard_enter,
+            .leave = &WaylandApplication::handle_keyboard_leave,
+            .key = &WaylandApplication::handle_keyboard_key,
+            .modifiers = &WaylandApplication::handle_keyboard_modifiers,
+            .repeat_info = &WaylandApplication::handle_keyboard_repeat_info,
+        };
+        wl_keyboard_add_listener(app->keyboard_, &keyboard_listener, app);
+      }
+    } else if (app->keyboard_ != nullptr) {
+      wl_keyboard_destroy(app->keyboard_);
+      app->keyboard_ = nullptr;
+      app->keyboard_window_ = nullptr;
     }
   }
 
@@ -639,6 +665,94 @@ class WaylandApplication final : public PlatformApplication {
     (void)data;
     (void)seat;
     (void)name;
+  }
+
+  static void handle_keyboard_keymap(
+      void* data,
+      wl_keyboard* keyboard,
+      std::uint32_t format,
+      std::int32_t fd,
+      std::uint32_t size) {
+    (void)data;
+    (void)keyboard;
+    (void)format;
+    (void)fd;
+    (void)size;
+  }
+
+  static void handle_keyboard_enter(
+      void* data,
+      wl_keyboard* keyboard,
+      std::uint32_t serial,
+      wl_surface* surface,
+      wl_array* keys) {
+    (void)keyboard;
+    (void)serial;
+    (void)keys;
+    auto* app = static_cast<WaylandApplication*>(data);
+    app->keyboard_window_ = app->find_window(surface);
+  }
+
+  static void handle_keyboard_leave(
+      void* data,
+      wl_keyboard* keyboard,
+      std::uint32_t serial,
+      wl_surface* surface) {
+    (void)keyboard;
+    (void)serial;
+    auto* app = static_cast<WaylandApplication*>(data);
+    if (app->keyboard_window_ != nullptr &&
+        app->keyboard_window_->surface() == surface) {
+      app->keyboard_window_ = nullptr;
+    }
+  }
+
+  static void handle_keyboard_key(
+      void* data,
+      wl_keyboard* keyboard,
+      std::uint32_t serial,
+      std::uint32_t time,
+      std::uint32_t key,
+      std::uint32_t state) {
+    (void)keyboard;
+    (void)serial;
+    (void)time;
+    auto* app = static_cast<WaylandApplication*>(data);
+    if (app->keyboard_window_ != nullptr) {
+      app->keyboard_window_->keyboard_key(
+          key,
+          state == WL_KEYBOARD_KEY_STATE_RELEASED
+              ? KeyAction::released
+              : KeyAction::pressed);
+    }
+  }
+
+  static void handle_keyboard_modifiers(
+      void* data,
+      wl_keyboard* keyboard,
+      std::uint32_t serial,
+      std::uint32_t mods_depressed,
+      std::uint32_t mods_latched,
+      std::uint32_t mods_locked,
+      std::uint32_t group) {
+    (void)data;
+    (void)keyboard;
+    (void)serial;
+    (void)mods_depressed;
+    (void)mods_latched;
+    (void)mods_locked;
+    (void)group;
+  }
+
+  static void handle_keyboard_repeat_info(
+      void* data,
+      wl_keyboard* keyboard,
+      std::int32_t rate,
+      std::int32_t delay) {
+    (void)data;
+    (void)keyboard;
+    (void)rate;
+    (void)delay;
   }
 
   static void handle_pointer_enter(
@@ -783,6 +897,9 @@ class WaylandApplication final : public PlatformApplication {
     if (pointer_window_ == window) {
       pointer_window_ = nullptr;
     }
+    if (keyboard_window_ == window) {
+      keyboard_window_ = nullptr;
+    }
   }
 
   [[nodiscard]] WaylandWindow* find_window(wl_surface* surface) const {
@@ -830,8 +947,10 @@ class WaylandApplication final : public PlatformApplication {
   xdg_wm_base* shell_ = nullptr;
   wl_seat* seat_ = nullptr;
   wl_pointer* pointer_ = nullptr;
+  wl_keyboard* keyboard_ = nullptr;
   std::vector<WaylandWindow*> windows_;
   WaylandWindow* pointer_window_ = nullptr;
+  WaylandWindow* keyboard_window_ = nullptr;
   Point pointer_position_{};
   std::string initialization_error_;
   bool running_ = true;

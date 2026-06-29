@@ -204,6 +204,11 @@ struct WaylandTestCompositor::State {
     bool pressed = false;
   };
 
+  struct KeyboardKeyRequest {
+    std::uint32_t key = 0;
+    bool pressed = false;
+  };
+
   explicit State(std::string test_name) {
     runtime_dir = std::filesystem::temp_directory_path() /
         ("cgpui-wayland-" + std::move(test_name) + "-" + std::to_string(::getpid()));
@@ -317,6 +322,17 @@ struct WaylandTestCompositor::State {
     pointer_button_pending.store(true);
   }
 
+  void request_keyboard_key(std::uint32_t key, bool pressed) {
+    {
+      std::lock_guard lock(keyboard_key_mutex);
+      keyboard_keys.push_back(KeyboardKeyRequest{
+          .key = key,
+          .pressed = pressed,
+      });
+    }
+    keyboard_key_pending.store(true);
+  }
+
   void request_close() {
     close_pending.store(true);
   }
@@ -374,7 +390,9 @@ struct WaylandTestCompositor::State {
         &seat_implementation,
         compositor,
         &State::handle_seat_destroyed);
-    wl_seat_send_capabilities(resource, WL_SEAT_CAPABILITY_POINTER);
+    wl_seat_send_capabilities(
+        resource,
+        WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD);
     if (wl_resource_get_version(resource) >= WL_SEAT_NAME_SINCE_VERSION) {
       wl_seat_send_name(resource, "test-seat");
     }
@@ -420,6 +438,10 @@ struct WaylandTestCompositor::State {
       wl_client* client,
       wl_resource* resource,
       std::uint32_t id);
+  static void seat_get_keyboard(
+      wl_client* client,
+      wl_resource* resource,
+      std::uint32_t id);
   static void handle_seat_destroyed(wl_resource* resource);
   static void pointer_set_cursor(
       wl_client*,
@@ -429,14 +451,17 @@ struct WaylandTestCompositor::State {
       std::int32_t,
       std::int32_t) {}
   static void handle_pointer_destroyed(wl_resource* resource);
+  static void handle_keyboard_destroyed(wl_resource* resource);
 
   [[nodiscard]] SurfaceState* find_surface(wl_resource* resource) const;
   [[nodiscard]] SurfaceState* first_pointer_surface() const;
+  [[nodiscard]] SurfaceState* first_keyboard_surface() const;
 
   void dispatch_pending_close();
   void dispatch_pending_resize_configure();
   void dispatch_pending_pointer_move();
   void dispatch_pending_pointer_button();
+  void dispatch_pending_keyboard_key();
 
   void run() {
     while (running.load()) {
@@ -444,6 +469,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_resize_configure();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
+      dispatch_pending_keyboard_key();
       const int result = wl_event_loop_dispatch(wl_display_get_event_loop(display), 10);
       if (result < 0) {
         running.store(false);
@@ -453,6 +479,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_resize_configure();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
+      dispatch_pending_keyboard_key();
       wl_display_flush_clients(display);
     }
   }
@@ -461,6 +488,7 @@ struct WaylandTestCompositor::State {
   static const struct wl_surface_interface surface_implementation;
   static const struct wl_seat_interface seat_implementation;
   static const struct wl_pointer_interface pointer_implementation;
+  static const struct wl_keyboard_interface keyboard_implementation;
   static const XdgWmBaseImplementation shell_implementation;
   static const XdgSurfaceImplementation xdg_surface_implementation;
   static const XdgToplevelImplementation toplevel_implementation;
@@ -471,6 +499,7 @@ struct WaylandTestCompositor::State {
   wl_global* seat_global = nullptr;
   wl_resource* seat_resource = nullptr;
   wl_resource* pointer_resource = nullptr;
+  wl_resource* keyboard_resource = nullptr;
   std::filesystem::path runtime_dir;
   std::string socket_name;
   std::vector<std::unique_ptr<SurfaceState>> surfaces;
@@ -487,10 +516,14 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_move_sent{false};
   std::atomic_bool pointer_button_pending{false};
   std::atomic_bool pointer_button_sent{false};
+  std::atomic_bool keyboard_key_pending{false};
+  std::atomic_bool keyboard_key_sent{false};
   std::atomic_int resize_width{0};
   std::atomic_int resize_height{0};
   std::atomic_int pointer_x{0};
   std::atomic_int pointer_y{0};
+  std::mutex keyboard_key_mutex;
+  std::deque<KeyboardKeyRequest> keyboard_keys;
   std::mutex pointer_button_mutex;
   std::deque<PointerButtonRequest> pointer_buttons;
   std::uint32_t next_configure_serial = 1;
@@ -498,6 +531,9 @@ struct WaylandTestCompositor::State {
   std::uint32_t next_pointer_serial = 1;
   std::uint32_t pointer_time = 1;
   bool pointer_entered = false;
+  std::uint32_t next_keyboard_serial = 1;
+  std::uint32_t keyboard_time = 1;
+  bool keyboard_entered = false;
 };
 
 struct WaylandTestCompositor::State::SurfaceState {
@@ -639,6 +675,11 @@ WaylandTestCompositor::State::first_pointer_surface() const {
   return nullptr;
 }
 
+WaylandTestCompositor::State::SurfaceState*
+WaylandTestCompositor::State::first_keyboard_surface() const {
+  return first_pointer_surface();
+}
+
 void WaylandTestCompositor::State::seat_get_pointer(
     wl_client* client,
     wl_resource* resource,
@@ -658,6 +699,25 @@ void WaylandTestCompositor::State::seat_get_pointer(
       &WaylandTestCompositor::State::handle_pointer_destroyed);
 }
 
+void WaylandTestCompositor::State::seat_get_keyboard(
+    wl_client* client,
+    wl_resource* resource,
+    std::uint32_t id) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  auto* keyboard = wl_resource_create(
+      client,
+      &wl_keyboard_interface,
+      std::min<std::uint32_t>(wl_resource_get_version(resource), 5),
+      id);
+  compositor->keyboard_resource = keyboard;
+  wl_resource_set_implementation(
+      keyboard,
+      &keyboard_implementation,
+      compositor,
+      &WaylandTestCompositor::State::handle_keyboard_destroyed);
+}
+
 void WaylandTestCompositor::State::handle_seat_destroyed(wl_resource* resource) {
   auto* compositor =
       static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
@@ -672,6 +732,15 @@ void WaylandTestCompositor::State::handle_pointer_destroyed(wl_resource* resourc
   if (compositor != nullptr && compositor->pointer_resource == resource) {
     compositor->pointer_resource = nullptr;
     compositor->pointer_entered = false;
+  }
+}
+
+void WaylandTestCompositor::State::handle_keyboard_destroyed(wl_resource* resource) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor != nullptr && compositor->keyboard_resource == resource) {
+    compositor->keyboard_resource = nullptr;
+    compositor->keyboard_entered = false;
   }
 }
 
@@ -800,6 +869,65 @@ void WaylandTestCompositor::State::dispatch_pending_pointer_button() {
   pointer_button_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_keyboard_key() {
+  if (!keyboard_key_pending.exchange(false)) {
+    return;
+  }
+
+  KeyboardKeyRequest request{};
+  {
+    std::lock_guard lock(keyboard_key_mutex);
+    if (keyboard_keys.empty()) {
+      return;
+    }
+    request = keyboard_keys.front();
+    keyboard_keys.pop_front();
+    if (!keyboard_keys.empty()) {
+      keyboard_key_pending.store(true);
+    }
+  }
+
+  if (keyboard_resource == nullptr) {
+    {
+      std::lock_guard lock(keyboard_key_mutex);
+      keyboard_keys.push_front(request);
+    }
+    keyboard_key_pending.store(true);
+    return;
+  }
+
+  const SurfaceState* surface = first_keyboard_surface();
+  if (surface == nullptr) {
+    {
+      std::lock_guard lock(keyboard_key_mutex);
+      keyboard_keys.push_front(request);
+    }
+    keyboard_key_pending.store(true);
+    return;
+  }
+
+  if (!keyboard_entered) {
+    wl_array keys{};
+    wl_array_init(&keys);
+    wl_keyboard_send_enter(
+        keyboard_resource,
+        next_keyboard_serial++,
+        surface->surface,
+        &keys);
+    wl_array_release(&keys);
+    keyboard_entered = true;
+  }
+  wl_keyboard_send_key(
+      keyboard_resource,
+      next_keyboard_serial++,
+      keyboard_time++,
+      request.key,
+      request.pressed ? WL_KEYBOARD_KEY_STATE_PRESSED
+                      : WL_KEYBOARD_KEY_STATE_RELEASED);
+  wl_display_flush_clients(display);
+  keyboard_key_sent.store(true);
+}
+
 const struct wl_compositor_interface WaylandTestCompositor::State::compositor_implementation{
     .create_surface = &WaylandTestCompositor::State::create_surface,
     .create_region = &WaylandTestCompositor::State::create_region,
@@ -823,13 +951,17 @@ const struct wl_surface_interface WaylandTestCompositor::State::surface_implemen
 
 const struct wl_seat_interface WaylandTestCompositor::State::seat_implementation{
     .get_pointer = &WaylandTestCompositor::State::seat_get_pointer,
-    .get_keyboard = [](wl_client*, wl_resource*, std::uint32_t) {},
+    .get_keyboard = &WaylandTestCompositor::State::seat_get_keyboard,
     .get_touch = [](wl_client*, wl_resource*, std::uint32_t) {},
     .release = noop_resource,
 };
 
 const struct wl_pointer_interface WaylandTestCompositor::State::pointer_implementation{
     .set_cursor = &WaylandTestCompositor::State::pointer_set_cursor,
+    .release = noop_resource,
+};
+
+const struct wl_keyboard_interface WaylandTestCompositor::State::keyboard_implementation{
     .release = noop_resource,
 };
 
@@ -909,6 +1041,12 @@ void WaylandTestCompositor::request_pointer_button(
   state_->request_pointer_button(button, pressed);
 }
 
+void WaylandTestCompositor::request_keyboard_key(
+    std::uint32_t key,
+    bool pressed) {
+  state_->request_keyboard_key(key, pressed);
+}
+
 bool WaylandTestCompositor::wait_for_close_sent() const {
   return state_->wait_for_flag(state_->close_sent);
 }
@@ -927,6 +1065,10 @@ bool WaylandTestCompositor::wait_for_pointer_move_sent() const {
 
 bool WaylandTestCompositor::wait_for_pointer_button_sent() const {
   return state_->wait_for_flag(state_->pointer_button_sent);
+}
+
+bool WaylandTestCompositor::wait_for_keyboard_key_sent() const {
+  return state_->wait_for_flag(state_->keyboard_key_sent);
 }
 
 } // namespace cgpui::test

@@ -180,6 +180,24 @@ int main() {
     return 41;
   }
 
+  const std::string keyboard_target_text =
+      linux_target_block(xmake_text, "wayland_keyboard_test");
+  if (keyboard_target_text.empty()) {
+    return 42;
+  }
+  if (!contains(keyboard_target_text, "tests/platform/wayland_keyboard_test.cpp")) {
+    return 43;
+  }
+  if (!contains(keyboard_target_text, "tests/platform/wayland_test_compositor.cpp")) {
+    return 44;
+  }
+  if (!contains(keyboard_target_text, "wayland-server")) {
+    return 45;
+  }
+  if (!contains(keyboard_target_text, "add_tests(\"default\")")) {
+    return 46;
+  }
+
   const std::string vulkan_target_text =
       linux_target_block(xmake_text, "wayland_vulkan_surface_test");
   if (vulkan_target_text.empty()) {
