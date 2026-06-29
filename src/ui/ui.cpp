@@ -949,6 +949,12 @@ void WindowRuntimeContext::release_keyboard_focus(ElementId element_id) const {
   runtime.release_keyboard_focus(element_id);
 }
 
+void WindowRuntimeContext::bind_text_model(
+    ElementId element_id,
+    TextModel* model) const {
+  runtime.bind_text_model(element_id, model);
+}
+
 bool WindowRuntimeContext::paste_clipboard_text() const {
   return runtime.paste_clipboard_text();
 }
