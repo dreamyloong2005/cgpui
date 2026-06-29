@@ -170,6 +170,7 @@ int WindowRuntime::run(
   last_action_dispatch_.reset();
   current_event_route_.reset();
   invalidation_state_ = {};
+  subscription_query_buffer_.clear();
   dispatching_view_event_ = false;
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
@@ -525,6 +526,17 @@ InvalidationState WindowRuntime::invalidation_state() const {
   return invalidation_state_;
 }
 
+std::span<const EntitySubscription> WindowRuntime::subscriptions_for_view(
+    ViewId view_id) const {
+  subscription_query_buffer_.clear();
+  for (const EntitySubscription& subscription : entity_subscriptions_) {
+    if (subscription.view_id == view_id) {
+      subscription_query_buffer_.push_back(subscription);
+    }
+  }
+  return subscription_query_buffer_;
+}
+
 void WindowRuntime::schedule_redraw() {
   if (window_ == nullptr || redraw_scheduled_ || should_quit_) {
     return;
@@ -553,6 +565,22 @@ ViewId WindowRuntime::allocate_view_id() {
 
 bool WindowRuntime::is_view_id_allocated(ViewId view_id) const {
   return view_id.value != 0 && view_id.value < next_view_id_;
+}
+
+bool WindowRuntime::notify_entity_changed(
+    std::type_index entity_type,
+    std::uint64_t entity_id_value) {
+  bool notified = false;
+  for (const EntitySubscription& subscription : entity_subscriptions_) {
+    if (subscription.entity_type == entity_type &&
+        subscription.entity_id_value == entity_id_value) {
+      notified = true;
+    }
+  }
+  if (notified) {
+    request_layout();
+  }
+  return notified;
 }
 
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {

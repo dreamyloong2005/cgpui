@@ -342,6 +342,18 @@
 - Verified targeted tests: `xmake test -P . scroll_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 35: View/model subscription relation skeleton.
+- Added RED `window_runtime_test` coverage for typed view-to-entity
+  subscriptions, subscription lookup by view, entity-change notification,
+  missing notification misses, and subscription-triggered layout invalidation;
+  the test failed because subscription APIs did not exist.
+- Implemented Step 35 in `codex/view-model-subscription`: added
+  `EntitySubscription`, typed `subscribe_view_to_entity`,
+  `subscriptions_for_view`, and `notify_entity_changed`, with notification
+  requesting layout through the existing invalidation/scheduling path.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
 - Started Step 34: Update scheduling that requests redraw after model/view
   changes.
 - Added RED `window_runtime_test` coverage for invalidation-triggered redraw

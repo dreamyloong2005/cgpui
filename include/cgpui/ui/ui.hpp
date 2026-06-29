@@ -166,6 +166,12 @@ struct InvalidationState {
   bool paint = false;
 };
 
+struct EntitySubscription {
+  ViewId view_id;
+  std::type_index entity_type{typeid(void)};
+  std::uint64_t entity_id_value = 0;
+};
+
 enum class CursorShape {
   default_arrow,
   pointing_hand,
@@ -218,6 +224,9 @@ struct WindowRuntimeContext {
 
   template <typename T>
   bool remove_entity(EntityId<T> id) const;
+
+  template <typename T>
+  void subscribe_view_to_entity(ViewId view_id, EntityId<T> entity_id) const;
 };
 
 using RendererFactory =
@@ -265,6 +274,8 @@ class WindowRuntime {
   void request_paint();
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
+  [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
+      ViewId view_id) const;
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -284,6 +295,12 @@ class WindowRuntime {
   template <typename T>
   bool remove_entity(EntityId<T> id);
 
+  template <typename T>
+  void subscribe_view_to_entity(ViewId view_id, EntityId<T> entity_id);
+
+  template <typename T>
+  bool notify_entity_changed(EntityId<T> entity_id);
+
  private:
   void handle_event(const PlatformEvent& event);
   void handle_resize(const WindowResized& event);
@@ -298,6 +315,9 @@ class WindowRuntime {
   [[nodiscard]] const EntityStore<T>* find_entity_store() const;
   template <typename T>
   [[nodiscard]] EntityStore<T>* find_entity_store();
+  [[nodiscard]] bool notify_entity_changed(
+      std::type_index entity_type,
+      std::uint64_t entity_id_value);
 
   PlatformApplication& application_;
   View& view_;
@@ -329,6 +349,8 @@ class WindowRuntime {
   std::vector<KeyBinding> key_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
+  std::vector<EntitySubscription> entity_subscriptions_;
+  mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;
   bool redraw_scheduled_ = false;
@@ -365,6 +387,13 @@ bool WindowRuntimeContext::remove_entity(EntityId<T> id) const {
 }
 
 template <typename T>
+void WindowRuntimeContext::subscribe_view_to_entity(
+    ViewId view_id,
+    EntityId<T> entity_id) const {
+  runtime.subscribe_view_to_entity(view_id, entity_id);
+}
+
+template <typename T>
 EntityId<T> WindowRuntime::insert_entity(T entity) {
   return entity_store<T>().insert(std::move(entity));
 }
@@ -398,7 +427,40 @@ bool WindowRuntime::remove_entity(EntityId<T> id) {
   if (store == nullptr) {
     return false;
   }
-  return store->remove(id);
+  const bool removed = store->remove(id);
+  if (removed) {
+    (void)notify_entity_changed(id);
+  }
+  return removed;
+}
+
+template <typename T>
+void WindowRuntime::subscribe_view_to_entity(
+    ViewId view_id,
+    EntityId<T> entity_id) {
+  if (view_id.value == 0 || entity_id.value == 0) {
+    return;
+  }
+
+  const std::type_index entity_type(typeid(T));
+  for (const EntitySubscription& subscription : entity_subscriptions_) {
+    if (subscription.view_id == view_id &&
+        subscription.entity_type == entity_type &&
+        subscription.entity_id_value == entity_id.value) {
+      return;
+    }
+  }
+
+  entity_subscriptions_.push_back(EntitySubscription{
+      .view_id = view_id,
+      .entity_type = entity_type,
+      .entity_id_value = entity_id.value,
+  });
+}
+
+template <typename T>
+bool WindowRuntime::notify_entity_changed(EntityId<T> entity_id) {
+  return notify_entity_changed(std::type_index(typeid(T)), entity_id.value);
 }
 
 template <typename T>

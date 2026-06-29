@@ -331,3 +331,14 @@
   requests made during the same event into one platform redraw request.
 - Successful redraw should clear both invalidation and scheduling state so
   later model/view changes can schedule the next frame cleanly.
+
+## 2026-06-30 View Model Subscriptions
+
+- A first subscription skeleton can be type-erased with `std::type_index` plus
+  the typed `EntityId<T>::value`; this keeps the API typed while avoiding a
+  full dependency graph.
+- Querying subscriptions by `ViewId` is enough for tests and future debugging;
+  notification can scan the small vector until a richer storage model is
+  needed.
+- Entity-change notification should request layout rather than paint only,
+  because model changes may affect both layout and paint output.

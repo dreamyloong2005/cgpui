@@ -266,6 +266,23 @@ class RecordingView final : public cgpui::View {
         emplaced_entity_read_value =
             emplaced == nullptr ? -1 : emplaced->value;
       }
+      if (exercise_view_model_subscriptions && keyboard_key_count == 1) {
+        entity_id = context.insert_entity(RuntimeEntity{.value = 30});
+        context.subscribe_view_to_entity(context.view_id, entity_id);
+        subscriptions_after_subscribe =
+            context.runtime.subscriptions_for_view(context.view_id).size();
+        first_subscription_matches_entity =
+            subscriptions_after_subscribe == 1 &&
+            context.runtime.subscriptions_for_view(context.view_id)[0]
+                    .entity_id_value == entity_id.value;
+        notified_subscribed_entity =
+            context.runtime.notify_entity_changed(entity_id);
+        invalidation_after_subscribed_notify =
+            context.runtime.invalidation_state();
+        notified_missing_entity =
+            context.runtime.notify_entity_changed(
+                cgpui::EntityId<RuntimeEntity>{entity_id.value + 100});
+      }
       if (exercise_view_identity_allocation && keyboard_key_count == 1) {
         root_view_id_was_allocated =
             context.is_view_id_allocated(context.view_id);
@@ -413,6 +430,7 @@ class RecordingView final : public cgpui::View {
   bool consume_next_event = false;
   bool cancel_next_event = false;
   bool exercise_entity_context_access = false;
+  bool exercise_view_model_subscriptions = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
   bool exercise_invalidation_requests = false;
@@ -473,9 +491,13 @@ class RecordingView final : public cgpui::View {
   bool removed_entity = false;
   bool removed_entity_again = true;
   bool missing_entity_after_remove = false;
+  bool first_subscription_matches_entity = false;
+  bool notified_subscribed_entity = false;
+  bool notified_missing_entity = true;
   int first_entity_read_value = -1;
   int second_entity_read_value = -1;
   int emplaced_entity_read_value = -1;
+  std::size_t subscriptions_after_subscribe = 0;
   cgpui::EntityId<RuntimeEntity> entity_id{};
   cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
   cgpui::EntityId<RuntimeEntity> emplaced_entity_id{};
@@ -496,6 +518,7 @@ class RecordingView final : public cgpui::View {
   cgpui::InvalidationState after_layout_request_invalidation{};
   cgpui::InvalidationState after_paint_request_invalidation{};
   cgpui::InvalidationState after_clear_invalidation{};
+  cgpui::InvalidationState invalidation_after_subscribed_notify{};
   cgpui::ViewId first_allocated_view_id{};
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
@@ -1928,6 +1951,56 @@ int test_context_can_access_runtime_entities() {
   return 0;
 }
 
+RuntimeFixture* view_model_subscription_fixture = nullptr;
+
+void dispatch_view_model_subscription_sequence() {
+  auto& callback = view_model_subscription_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 77,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_tracks_view_model_subscriptions() {
+  RuntimeFixture fixture;
+  view_model_subscription_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_model_subscription_sequence;
+  fixture.view.exercise_view_model_subscriptions = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  view_model_subscription_fixture = nullptr;
+
+  if (result != 0) {
+    return 188;
+  }
+  if (fixture.view.subscriptions_after_subscribe != 1 ||
+      !fixture.view.first_subscription_matches_entity) {
+    return 189;
+  }
+  if (!fixture.view.notified_subscribed_entity ||
+      fixture.view.notified_missing_entity) {
+    return 190;
+  }
+  if (!fixture.view.invalidation_after_subscribed_notify.layout ||
+      !fixture.view.invalidation_after_subscribed_notify.paint) {
+    return 191;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1) {
+    return 192;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* view_identity_fixture = nullptr;
 
 void dispatch_view_identity_sequence() {
@@ -2367,6 +2440,10 @@ int main() {
     return result;
   }
   if (const int result = test_context_can_access_runtime_entities();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_tracks_view_model_subscriptions();
       result != 0) {
     return result;
   }
