@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/layout.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -56,6 +57,35 @@ class FixedSizeElement : public Element {
 
  private:
   Size preferred_size_;
+};
+
+class VerticalStackElement : public Element {
+ public:
+  void append_child(std::unique_ptr<Element> child) {
+    if (child) {
+      children_.push_back(std::move(child));
+    }
+  }
+
+  [[nodiscard]] std::span<const std::unique_ptr<Element>> children() const {
+    return children_;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    Size content_size;
+    for (const auto& child : children_) {
+      const LayoutOutput child_output = child->layout(LayoutInput{});
+      content_size.width = std::max(content_size.width, child_output.size.width);
+      content_size.height += child_output.size.height;
+    }
+
+    return LayoutOutput{
+        .size = constrain_size(content_size, input.constraints),
+    };
+  }
+
+ private:
+  std::vector<std::unique_ptr<Element>> children_;
 };
 
 class ElementTree {

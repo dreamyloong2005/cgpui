@@ -97,3 +97,16 @@
 - Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 12: Layout pass for simple vertical stack.
+- Added design and implementation plan docs for a simple owned-child vertical
+  stack element.
+- Added a RED UI test for `VerticalStackElement`, child ownership, empty-stack
+  constrained size, max-child-width layout, summed-child-height layout, and
+  stack-level constraint clamping; the test failed because
+  `VerticalStackElement` did not exist.
+- Implemented Step 12 in `codex/vertical-stack-layout`: `VerticalStackElement`
+  owns child elements, ignores null appends, exposes read-only children, and
+  computes layout as max child width plus summed child heights.
+- Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.

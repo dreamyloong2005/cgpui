@@ -100,3 +100,14 @@
 - `FixedSizeElement` is deliberately leaf-only: it stores a preferred size and
   delegates all min/max behavior to `constrain_size`; bounds persistence and
   child layout remain future slices.
+
+## 2026-06-30 Vertical Stack Layout
+
+- A self-contained `VerticalStackElement` is enough for Step 12; it avoids
+  coupling layout traversal to `ElementTree` before bounds and hit testing
+  exist.
+- The first stack pass can lay out children with default unconstrained
+  `LayoutInput` and only clamp the final stack size; constraint propagation can
+  become a later refinement when richer layout rules exist.
+- The stack intentionally does not persist child origins or bounds yet, because
+  Step 13 is the first slice that needs retained layout geometry.

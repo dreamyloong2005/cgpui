@@ -89,6 +89,63 @@ int test_fixed_size_element_layout_applies_constraints() {
   return output.size.width == 80.0F && output.size.height == 10.0F ? 0 : 31;
 }
 
+int test_vertical_stack_defaults_to_empty_constrained_zero_size() {
+  cgpui::VerticalStackElement stack;
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 3.0F, .height = 4.0F},
+              .max_size = {.width = 100.0F, .height = 100.0F},
+          },
+  });
+
+  if (stack.children().size() != 0 || output.origin.x != 0.0F ||
+      output.origin.y != 0.0F) {
+    return 32;
+  }
+  return output.size.width == 3.0F && output.size.height == 4.0F ? 0 : 33;
+}
+
+int test_vertical_stack_lays_out_children_top_to_bottom() {
+  cgpui::VerticalStackElement stack;
+  stack.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 40.0F,
+                                                            .height = 10.0F}));
+  stack.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 20.0F,
+                                                            .height = 30.0F}));
+
+  if (stack.children().size() != 2) {
+    return 34;
+  }
+
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.origin.x != 0.0F || output.origin.y != 0.0F) {
+    return 35;
+  }
+  return output.size.width == 40.0F && output.size.height == 40.0F ? 0 : 36;
+}
+
+int test_vertical_stack_layout_applies_stack_constraints() {
+  cgpui::VerticalStackElement stack;
+  stack.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 120.0F,
+                                                            .height = 15.0F}));
+  stack.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 30.0F,
+                                                            .height = 90.0F}));
+
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 20.0F, .height = 10.0F},
+              .max_size = {.width = 80.0F, .height = 60.0F},
+          },
+  });
+
+  return output.size.width == 80.0F && output.size.height == 60.0F ? 0 : 37;
+}
+
 int test_element_tree_stores_root_and_children() {
   cgpui::ElementTree tree;
 
@@ -284,6 +341,19 @@ int main() {
     return result;
   }
   if (const int result = test_fixed_size_element_layout_applies_constraints();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_vertical_stack_defaults_to_empty_constrained_zero_size();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_vertical_stack_lays_out_children_top_to_bottom();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_vertical_stack_layout_applies_stack_constraints();
       result != 0) {
     return result;
   }
