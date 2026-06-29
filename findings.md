@@ -487,3 +487,12 @@
 - The existing builder `style(...)` hook is enough to author container gap for
   `row`, `column`, and `v_stack` without wrapping those multi-child containers
   inside an extra `StyledElement`.
+
+## 2026-06-30 Margin Style Layout
+
+- Reusing `EdgeSizes` for `Style::margin` keeps the box-model vocabulary aligned
+  with padding and border width without adding another edge type.
+- Margin is modeled as outer size in `StyledElement::layout`; existing no-margin
+  tests preserve prior behavior because the default edge values are zero.
+- Child layout bounds should include the margin offset before padding so later
+  hit testing and paint commands see content positioned inside the outer box.

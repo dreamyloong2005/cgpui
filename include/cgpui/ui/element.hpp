@@ -313,15 +313,21 @@ class StyledElement : public Element {
       const LayoutOutput child_output = child_->layout(input);
       content_size = child_output.size;
       child_->set_layout_bounds(Rect{
-          .origin = {.x = style_.padding.left, .y = style_.padding.top},
+          .origin =
+              {
+                  .x = style_.margin.left + style_.padding.left,
+                  .y = style_.margin.top + style_.padding.top,
+              },
           .size = child_output.size,
       });
     }
     const Size preferred{
         .width = content_size.width + style_.padding.left +
-                 style_.padding.right,
+                 style_.padding.right + style_.margin.left +
+                 style_.margin.right,
         .height = content_size.height + style_.padding.top +
-                  style_.padding.bottom,
+                  style_.padding.bottom + style_.margin.top +
+                  style_.margin.bottom,
     };
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),

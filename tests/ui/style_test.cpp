@@ -93,6 +93,9 @@ int test_style_defaults_are_empty() {
       !same(style.border_width.left, 0.0F)) {
     return 7;
   }
+  if (!same(style.margin.top, 0.0F) || !same(style.margin.left, 0.0F)) {
+    return 29;
+  }
   if (!same(style.border_radius.top_left, 0.0F) ||
       !same(style.border_radius.bottom_right, 0.0F)) {
     return 17;
@@ -115,6 +118,7 @@ int test_style_builder_methods_store_values() {
               cgpui::Color{.r = 0.5F, .g = 0.6F, .b = 0.7F, .a = 0.8F})
           .with_preferred_size(cgpui::Size{.width = 20.0F, .height = 30.0F})
           .with_padding(cgpui::EdgeSizes::axes(3.0F, 4.0F))
+          .with_margin(cgpui::EdgeSizes::trbl(5.0F, 6.0F, 7.0F, 8.0F))
           .with_border_width(cgpui::EdgeSizes::all(2.0F))
           .with_border_color(
               cgpui::Color{.r = 0.9F, .g = 0.8F, .b = 0.7F, .a = 0.6F})
@@ -148,6 +152,12 @@ int test_style_builder_methods_store_values() {
   if (!same(style.padding.left, 3.0F) ||
       !same(style.padding.top, 4.0F)) {
     return 11;
+  }
+  if (!same(style.margin.top, 5.0F) ||
+      !same(style.margin.right, 6.0F) ||
+      !same(style.margin.bottom, 7.0F) ||
+      !same(style.margin.left, 8.0F)) {
+    return 30;
   }
   if (!same(style.border_width.right, 2.0F) ||
       !same(style.border_width.bottom, 2.0F)) {
@@ -191,6 +201,7 @@ static_assert(std::same_as<decltype(cgpui::BorderRadii{}.top_left), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.overflow), cgpui::Overflow>);
 static_assert(std::same_as<decltype(cgpui::Style{}.z_index), int>);
 static_assert(std::same_as<decltype(cgpui::Style{}.gap), float>);
+static_assert(std::same_as<decltype(cgpui::Style{}.margin), cgpui::EdgeSizes>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {

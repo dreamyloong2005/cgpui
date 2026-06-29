@@ -86,7 +86,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 48. [x] Element builder vertical stack helper.
 49. [x] Element builder fixed-size helper.
 50. [x] Gap style primitive for stack and flex layout.
-51. [ ] Margin style primitive and outer layout sizing.
+51. [x] Margin style primitive and outer layout sizing.
 52. [ ] Border paint emission from styled elements.
 53. [ ] Hidden overflow clip metadata in paint commands.
 54. [ ] Text element skeleton bound to TextModel.
@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 51: Margin style primitive and outer layout sizing.
+Step 52: Border paint emission from styled elements.
 
 ## Risks
 

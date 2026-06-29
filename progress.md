@@ -585,3 +585,19 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
+
+- Started Step 51: Margin style primitive and outer layout sizing.
+- Added RED `style_test` and `element_test` coverage for default
+  `Style::margin`, fluent `with_margin(EdgeSizes)`, styled element outer sizing
+  with margin plus padding, and child layout origins offset by margin outside
+  padding; the test failed because margin APIs did not exist.
+- Implemented Step 51 in `codex/margin-style-layout`: added `Style::margin`,
+  `Style::with_margin`, included margin in `StyledElement` outer layout size,
+  and offset child layout bounds by `margin + padding`.
+- Verified targeted tests: `xmake test -P . style_test/default
+  element_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.

@@ -884,6 +884,62 @@ int test_styled_element_layout_offsets_child_by_padding() {
              : 72;
 }
 
+int test_styled_element_layout_includes_margin_in_outer_size() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F})
+                     .with_padding(
+                         cgpui::EdgeSizes::trbl(1.0F, 2.0F, 3.0F, 4.0F))
+                     .with_margin(
+                         cgpui::EdgeSizes::trbl(5.0F, 6.0F, 7.0F, 8.0F)))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 26.0F) {
+    return 114;
+  }
+
+  const std::optional<cgpui::Rect> bounds = element->layout_bounds();
+  return bounds.has_value() && bounds->size.width == 40.0F &&
+                 bounds->size.height == 26.0F
+             ? 0
+             : 115;
+}
+
+int test_styled_element_margin_offsets_child_outside_padding() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_padding(
+                         cgpui::EdgeSizes::trbl(2.0F, 3.0F, 4.0F, 5.0F))
+                     .with_margin(
+                         cgpui::EdgeSizes::trbl(7.0F, 11.0F, 13.0F, 17.0F)))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 15.0F}))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 66.0F || output.size.height != 41.0F) {
+    return 116;
+  }
+
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || styled->child() == nullptr) {
+    return 117;
+  }
+
+  const std::optional<cgpui::Rect> child_bounds =
+      styled->child()->layout_bounds();
+  return child_bounds.has_value() && child_bounds->origin.x == 22.0F &&
+                 child_bounds->origin.y == 9.0F &&
+                 child_bounds->size.width == 30.0F &&
+                 child_bounds->size.height == 15.0F
+             ? 0
+             : 118;
+}
+
 int test_element_tree_paints_root_and_children_in_tree_order() {
   cgpui::ElementTree tree;
   const cgpui::Color root_color{
@@ -1313,6 +1369,16 @@ int main() {
     return result;
   }
   if (const int result = test_styled_element_layout_offsets_child_by_padding();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_layout_includes_margin_in_outer_size();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_margin_offsets_child_outside_padding();
       result != 0) {
     return result;
   }

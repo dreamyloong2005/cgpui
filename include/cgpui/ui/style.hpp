@@ -87,6 +87,7 @@ struct Style {
   std::optional<Rect> clip_rect;
   Size preferred_size;
   EdgeSizes padding;
+  EdgeSizes margin;
   EdgeSizes border_width;
   BorderRadii border_radius;
   Overflow overflow = Overflow::visible;
@@ -114,6 +115,12 @@ struct Style {
   [[nodiscard]] constexpr Style with_padding(EdgeSizes edges) const {
     Style style = *this;
     style.padding = edges;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_margin(EdgeSizes edges) const {
+    Style style = *this;
+    style.margin = edges;
     return style;
   }
 
