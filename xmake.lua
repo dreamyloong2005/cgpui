@@ -274,6 +274,13 @@ target("window_runtime_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("app_runner_test")
+    set_kind("binary")
+    add_files("tests/ui/app_runner_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("hello_window_lifetime_test")
     set_kind("binary")
     add_files("tests/architecture/hello_window_lifetime_test.cpp")

@@ -581,3 +581,14 @@
 - Invalidation convenience tests should observe state during view event
   handling, not after-event callbacks, because deferred redraw can flush and
   clear invalidation before `after_event` returns.
+
+## 2026-06-30 App Runner Skeleton
+
+- The first public runner can sit above `WindowRuntime` rather than replacing
+  it: the runner owns the renderer, while `WindowRuntime` still owns event
+  dispatch and redraw behavior.
+- A setup callback is enough for this slice to let callers bind elements,
+  models, actions, cursors, and callbacks before the platform event loop starts.
+- Accepting an injected `PlatformApplication&` and renderer factory keeps the
+  runner deterministic in tests and leaves default platform/renderer creation
+  for a later convenience overload.

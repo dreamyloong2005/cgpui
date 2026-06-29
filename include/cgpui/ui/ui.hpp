@@ -244,6 +244,8 @@ using ViewContext = WindowRuntimeContext;
 
 using RendererFactory =
     std::function<Result<Renderer*>(const RenderSurfaceDescriptor&)>;
+using AppRendererFactory = std::function<Result<std::unique_ptr<Renderer>>(
+    const RenderSurfaceDescriptor&)>;
 using WindowRuntimeFrameCallback =
     std::function<void(const WindowRuntimeContext&)>;
 using WindowRuntimeEventCallback =
@@ -252,6 +254,13 @@ using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
 using WindowRuntimeErrorCallback =
     std::function<void(const Error&)>;
+using AppSetupCallback = std::function<void(WindowRuntime&)>;
+
+struct AppRunnerOptions {
+  WindowDescriptor window;
+  WindowRuntimeOptions runtime;
+  AppSetupCallback setup;
+};
 
 class WindowRuntime {
  public:
@@ -386,6 +395,11 @@ class WindowRuntime {
 };
 
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size);
+[[nodiscard]] int run_app(
+    PlatformApplication& application,
+    View& view,
+    AppRendererFactory renderer_factory,
+    AppRunnerOptions options = {});
 
 template <typename T>
 EntityId<T> WindowRuntimeContext::insert_entity(T entity) const {

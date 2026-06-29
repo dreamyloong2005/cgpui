@@ -690,6 +690,27 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 60: Public app runner skeleton for GPUI-like startup.
+- Added RED `app_runner_test` coverage for `AppRunnerOptions` and `run_app`
+  wiring a platform application, view, renderer factory, setup callback, and
+  `WindowRuntime` run options; the test failed because the runner APIs did not
+  exist.
+- Implemented Step 60 in `codex/app-runner-skeleton`: added
+  `AppRendererFactory`, `AppRunnerOptions`, and a public `run_app` skeleton
+  that owns the renderer and exposes a setup callback before entering
+  `WindowRuntime::run`.
+- Verified targeted tests: `xmake test -P . app_runner_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Windows full debug initially failed `app_runner_test/default` with return code
+  6/7 because the test read a raw renderer pointer after `run_app` had destroyed
+  its owned renderer; fixed the test to record begin-frame count through an
+  external counter instead of observing freed state.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 59: ViewContext convenience wrapper for common runtime APIs.
 - Added RED `window_runtime_test` coverage for a public `ViewContext` alias and
   common context-level runtime forwarding helpers; the test failed because

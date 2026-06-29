@@ -95,7 +95,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 57. [x] Runtime clipboard copy from focused text selections.
 58. [x] Runtime clipboard cut from focused text selections.
 59. [x] ViewContext convenience wrapper for common runtime APIs.
-60. [ ] Public app runner skeleton for GPUI-like startup.
+60. [x] Public app runner skeleton for GPUI-like startup.
 61. [ ] Text element builder helper.
 62. [ ] Focusable element activation hook.
 63. [ ] Runtime clicks request focus for focusable elements.
@@ -108,7 +108,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 60: Public app runner skeleton for GPUI-like startup.
+Step 61: Text element builder helper.
 
 ## Risks
 

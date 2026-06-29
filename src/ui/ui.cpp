@@ -227,6 +227,40 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   return (*frame)->present();
 }
 
+int run_app(
+    PlatformApplication& application,
+    View& view,
+    AppRendererFactory renderer_factory,
+    AppRunnerOptions options) {
+  std::unique_ptr<Renderer> renderer;
+  WindowRuntime runtime(
+      application,
+      view,
+      [&](const RenderSurfaceDescriptor& descriptor) -> Result<Renderer*> {
+        if (!renderer_factory) {
+          return std::unexpected(Error{
+              .code = ErrorCode::renderer_initialization_failed,
+              .message = "App runner requires a renderer factory"});
+        }
+        auto result = renderer_factory(descriptor);
+        if (!result) {
+          return std::unexpected(result.error());
+        }
+        if (*result == nullptr) {
+          return std::unexpected(Error{
+              .code = ErrorCode::renderer_initialization_failed,
+              .message = "App renderer factory returned an empty renderer"});
+        }
+        renderer = std::move(*result);
+        return renderer.get();
+      });
+
+  if (options.setup) {
+    options.setup(runtime);
+  }
+  return runtime.run(options.window, options.runtime);
+}
+
 EventResult View::handle_event(
     const PlatformEvent& event,
     const WindowRuntimeContext& context) {
