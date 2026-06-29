@@ -954,6 +954,22 @@ void WindowRuntimeContext::set_element_tree(
   runtime.set_element_tree(std::move(tree));
 }
 
+void WindowRuntimeContext::register_action(
+    std::string name,
+    ActionHandler handler) const {
+  runtime.register_action(std::move(name), std::move(handler));
+}
+
+ActionDispatchResult WindowRuntimeContext::dispatch_action(
+    std::string name) const {
+  return runtime.dispatch_action(std::move(name));
+}
+
+std::optional<ActionDispatchResult> WindowRuntimeContext::last_action_dispatch()
+    const {
+  return runtime.last_action_dispatch();
+}
+
 void WindowRuntimeContext::bind_text_model(
     ElementId element_id,
     TextModel* model) const {

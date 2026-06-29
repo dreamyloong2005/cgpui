@@ -673,3 +673,12 @@
   not a second tree store.
 - Installing a tree during an event composes with `request_layout()`: the
   deferred redraw lays out the owned tree before later pointer routing uses it.
+
+## 2026-06-30 ViewContext Action Helpers
+
+- Action registration and dispatch can live on `ViewContext` as thin forwards
+  over the runtime action table, preserving the existing handler storage and
+  last-dispatch observability.
+- `ActionHandler` can be declared before `WindowRuntimeContext` is defined
+  because it only needs the context by reference; this lets context methods use
+  the public handler alias without adding another callback type.

@@ -321,6 +321,22 @@ class RecordingView final : public cgpui::View {
         last_action_result_from_context =
             context.runtime.last_action_dispatch();
       }
+      if (exercise_view_context_action_helper && keyboard_key_count == 1) {
+        context.register_action(
+            "view.open",
+            [this](const cgpui::ViewContext& action_context) {
+              view_context_action_count += 1;
+              view_context_action_saw_context_view_id =
+                  action_context.view_id;
+              return cgpui::EventResult::consumed_event();
+            });
+        view_context_first_action_result =
+            context.dispatch_action("view.open");
+        view_context_second_action_result =
+            context.dispatch_action("view.missing");
+        view_context_last_action_result =
+            context.last_action_dispatch();
+      }
       if (exercise_invalidation_requests && keyboard_key_count == 1) {
         initial_invalidation = context.runtime.invalidation_state();
         context.runtime.request_layout();
@@ -478,6 +494,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_model_subscriptions = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
+  bool exercise_view_context_action_helper = false;
   bool exercise_invalidation_requests = false;
   bool exercise_scheduled_invalidation_redraw = false;
   bool exercise_view_context_convenience = false;
@@ -564,6 +581,11 @@ class RecordingView final : public cgpui::View {
   cgpui::ActionDispatchResult first_action_result{};
   cgpui::ActionDispatchResult second_action_result{};
   std::optional<cgpui::ActionDispatchResult> last_action_result_from_context;
+  int view_context_action_count = 0;
+  cgpui::ViewId view_context_action_saw_context_view_id{};
+  cgpui::ActionDispatchResult view_context_first_action_result{};
+  cgpui::ActionDispatchResult view_context_second_action_result{};
+  std::optional<cgpui::ActionDispatchResult> view_context_last_action_result;
   cgpui::InvalidationState initial_invalidation{};
   cgpui::InvalidationState after_layout_request_invalidation{};
   cgpui::InvalidationState after_paint_request_invalidation{};
@@ -2578,6 +2600,54 @@ int test_runtime_dispatches_named_actions() {
   return 0;
 }
 
+int test_view_context_registers_and_dispatches_actions() {
+  RuntimeFixture fixture;
+  action_dispatch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_action_dispatch_sequence;
+  fixture.view.exercise_view_context_action_helper = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  action_dispatch_fixture = nullptr;
+
+  if (result != 0) {
+    return 232;
+  }
+  if (fixture.view.keyboard_key_count != 1 ||
+      fixture.view.view_context_action_count != 1) {
+    return 233;
+  }
+  if (fixture.view.view_context_action_saw_context_view_id !=
+      fixture.view.first_view_id) {
+    return 234;
+  }
+  if (fixture.view.view_context_first_action_result.name != "view.open" ||
+      !fixture.view.view_context_first_action_result.handled ||
+      !fixture.view.view_context_first_action_result.result.consumed ||
+      fixture.view.view_context_first_action_result.result.cancelled) {
+    return 235;
+  }
+  if (fixture.view.view_context_second_action_result.name != "view.missing" ||
+      fixture.view.view_context_second_action_result.handled ||
+      fixture.view.view_context_second_action_result.result.consumed ||
+      fixture.view.view_context_second_action_result.result.cancelled) {
+    return 236;
+  }
+  if (!fixture.view.view_context_last_action_result.has_value() ||
+      fixture.view.view_context_last_action_result->name != "view.missing" ||
+      fixture.view.view_context_last_action_result->handled) {
+    return 237;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* invalidation_fixture = nullptr;
 
 void dispatch_invalidation_sequence() {
@@ -3435,6 +3505,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_dispatches_named_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_registers_and_dispatches_actions();
       result != 0) {
     return result;
   }

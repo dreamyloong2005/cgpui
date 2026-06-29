@@ -25,6 +25,9 @@ namespace cgpui {
 
 struct WindowRuntimeContext;
 
+using ActionHandler =
+    std::function<EventResult(const WindowRuntimeContext&)>;
+
 struct PaintCommand {
   SolidRect solid_rect;
   std::optional<Rect> clip_rect;
@@ -214,6 +217,9 @@ struct WindowRuntimeContext {
   void release_keyboard_focus(ViewId view_id) const;
   void release_keyboard_focus(ElementId element_id) const;
   void set_element_tree(std::unique_ptr<ElementTree> tree) const;
+  void register_action(std::string name, ActionHandler handler) const;
+  [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
+  [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_text_model(ElementId element_id, TextModel* model) const;
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;
@@ -252,8 +258,6 @@ using WindowRuntimeFrameCallback =
     std::function<void(const WindowRuntimeContext&)>;
 using WindowRuntimeEventCallback =
     std::function<void(const WindowRuntimeContext&, const EventDispatchRecord&)>;
-using ActionHandler =
-    std::function<EventResult(const WindowRuntimeContext&)>;
 using WindowRuntimeErrorCallback =
     std::function<void(const Error&)>;
 using AppSetupCallback = std::function<void(WindowRuntime&)>;

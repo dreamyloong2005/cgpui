@@ -706,6 +706,21 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 70: ViewContext action registration helper.
+- Added RED `window_runtime_test` coverage for registering, dispatching, and
+  observing named actions through `ViewContext`; the test failed to compile
+  because the action helpers did not exist on `WindowRuntimeContext`.
+- Implemented Step 70 in `codex/view-context-action-helper`: added
+  `register_action`, `dispatch_action`, and `last_action_dispatch` context
+  forwarding helpers over the existing runtime action APIs.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element
