@@ -609,6 +609,44 @@ int test_element_builder_wraps_child() {
   return 0;
 }
 
+int test_element_builder_builds_flex_row_with_children() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::row()
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 12.0F, .height = 20.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 8.0F}))
+          .build();
+
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->direction() != cgpui::FlexDirection::row ||
+      flex->children().size() != 2) {
+    return 97;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{});
+  return output.size.width == 42.0F && output.size.height == 20.0F ? 0 : 98;
+}
+
+int test_element_builder_builds_flex_column_with_children() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::column()
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 12.0F, .height = 20.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 8.0F}))
+          .build();
+
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->direction() != cgpui::FlexDirection::column ||
+      flex->children().size() != 2) {
+    return 99;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{});
+  return output.size.width == 30.0F && output.size.height == 28.0F ? 0 : 100;
+}
+
 int test_styled_element_paints_background_rect_from_layout_bounds() {
   const cgpui::Color color{
       .r = 0.1F,
@@ -1096,6 +1134,15 @@ int main() {
     return result;
   }
   if (const int result = test_element_builder_wraps_child(); result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_builds_flex_row_with_children();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_builds_flex_column_with_children();
+      result != 0) {
     return result;
   }
   if (const int result =

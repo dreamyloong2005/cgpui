@@ -456,6 +456,21 @@
   actual dispatch result.
 - Verified targeted tests: `xmake test -P . window_runtime_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests on `master` after merging Step 46:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
+- Verified WSL Arch Linux full debug tests on `master` after merging Step 46:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+- Started Step 47: Element builder flex row/column helpers.
+- Added RED `element_test` coverage for `ElementBuilder::row()` and
+  `ElementBuilder::column()` constructing `FlexElement` containers with
+  multiple chained children; the test failed because those builder helpers did
+  not exist.
+- Implemented Step 47 in `codex/element-builder-flex-helpers`: `ElementBuilder`
+  now distinguishes box/row/column kinds, keeps box as a styled single-child
+  wrapper, and builds row/column helpers as `FlexElement` containers.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 44: Runtime lays out installed element trees on redraw.
 - Added RED `window_runtime_test` coverage for an owned element tree that is not
   pre-laid-out before runtime redraw; the test expected redraw to lay out the

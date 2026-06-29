@@ -320,7 +320,15 @@ class StyledElement : public Element {
 class ElementBuilder {
  public:
   [[nodiscard]] static ElementBuilder box() {
-    return {};
+    return ElementBuilder(Kind::box);
+  }
+
+  [[nodiscard]] static ElementBuilder row() {
+    return ElementBuilder(Kind::row);
+  }
+
+  [[nodiscard]] static ElementBuilder column() {
+    return ElementBuilder(Kind::column);
   }
 
   [[nodiscard]] ElementBuilder style(Style style) && {
@@ -329,17 +337,40 @@ class ElementBuilder {
   }
 
   [[nodiscard]] ElementBuilder child(std::unique_ptr<Element> child) && {
-    child_ = std::move(child);
+    if (child) {
+      children_.push_back(std::move(child));
+    }
     return std::move(*this);
   }
 
   [[nodiscard]] std::unique_ptr<Element> build() && {
-    return std::make_unique<StyledElement>(style_, std::move(child_));
+    if (kind_ == Kind::row || kind_ == Kind::column) {
+      auto element = std::make_unique<FlexElement>(
+          kind_ == Kind::row ? FlexDirection::row : FlexDirection::column);
+      for (auto& child : children_) {
+        element->append_child(std::move(child));
+      }
+      return element;
+    }
+    std::unique_ptr<Element> child;
+    if (!children_.empty()) {
+      child = std::move(children_.front());
+    }
+    return std::make_unique<StyledElement>(style_, std::move(child));
   }
 
  private:
+  enum class Kind {
+    box,
+    row,
+    column,
+  };
+
+  explicit ElementBuilder(Kind kind) : kind_(kind) {}
+
+  Kind kind_ = Kind::box;
   Style style_;
-  std::unique_ptr<Element> child_;
+  std::vector<std::unique_ptr<Element>> children_;
 };
 
 class ElementTree {

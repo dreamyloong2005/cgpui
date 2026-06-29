@@ -450,3 +450,12 @@
   the legacy non-owning root can only safely dispatch to the root id itself.
 - `EventDispatchRecord::result` should represent the final handler result,
   whether that result came from an element or from the fallback view.
+
+## 2026-06-30 Element Builder Flex Helpers
+
+- `ElementBuilder` can grow a small kind discriminator without changing the
+  existing `box()` call sites; `box()` still builds a `StyledElement`.
+- Row and column helpers should build concrete `FlexElement` containers so
+  existing flex layout, hit testing, and future gap support remain centralized.
+- Keeping box as a single-child wrapper preserves the earlier styled-box API
+  while allowing row/column helpers to accept multiple chained children.
