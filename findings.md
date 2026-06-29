@@ -62,3 +62,13 @@
   assign ids through `assign_id()` and preserve them across rebuilds.
 - Keeping the base class free of layout/event methods avoids coupling Step 7 to
   the later layout and routing slices.
+
+## 2026-06-30 Element Tree Container
+
+- `ElementTree` can remain header-only for now because it stores generic
+  `Element` ownership and simple relationship vectors.
+- Replacing the root clears existing node relationships but keeps monotonic id
+  allocation moving forward, which avoids stale-id aliasing.
+- The container intentionally rejects unknown parents softly with
+  `ElementId{0}`; richer diagnostics can wait until tree construction APIs are
+  more expressive.

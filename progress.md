@@ -57,3 +57,10 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 21/21.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 18/18.
+- Started Step 8: Element tree container.
+- Added design and implementation plan docs for an owning `ElementTree` with root, children, and parent links.
+- Added RED tests for root storage, child order, parent lookup, unknown-parent append rejection, and root replacement; the test failed because `ElementTree` did not exist.
+- Implemented Step 8 in `codex/element-tree-container`: `ElementTree` owns elements, assigns monotonic `ElementId` values, stores child lists in append order, and exposes parent/get/children/root lookup helpers.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 21/21.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 18/18.

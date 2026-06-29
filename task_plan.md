@@ -27,7 +27,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 5. [x] Context entity access: expose safe entity mutation/read helpers through a context object.
 6. [x] View identity allocation: allocate stable ids beyond the root view.
 7. [x] ElementId and Element base API: minimal polymorphic element contract.
-8. [ ] Element tree container: store children, parent links, and root element id.
+8. [x] Element tree container: store children, parent links, and root element id.
 9. [ ] Element reconcile pass: preserve ids across simple rebuilds.
 10. [ ] LayoutInput/LayoutOutput primitives: constraints, size, origin.
 11. [ ] Layout pass for fixed-size leaf elements.
@@ -43,7 +43,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 8: Element tree container.
+Step 9: Element reconcile pass.
 
 ## Risks
 
