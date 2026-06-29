@@ -39,6 +39,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform")
         add_includedirs(public_includedirs, {public = true})
         add_syslinks("user32", "gdi32", "shell32")
+
+    target("win32_input_event_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_input_event_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
 end
 
 if is_plat("linux") then
