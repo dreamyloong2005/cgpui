@@ -42,6 +42,13 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   return (*frame)->present();
 }
 
+void View::handle_event(
+    const PlatformEvent& event,
+    const WindowRuntimeContext& context) {
+  (void)event;
+  (void)context;
+}
+
 WindowRuntime::WindowRuntime(
     PlatformApplication& application,
     View& view,
@@ -126,6 +133,11 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
 
   if (std::holds_alternative<WindowRedrawRequested>(event)) {
     handle_redraw();
+    return;
+  }
+
+  if (window_ != nullptr && renderer_ != nullptr) {
+    view_.handle_event(event, context());
   }
 }
 

@@ -5,6 +5,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 namespace {
 
@@ -98,8 +99,46 @@ class RecordingView final : public cgpui::View {
         cgpui::Color{.r = 0.2F, .g = 0.4F, .b = 0.6F, .a = 1.0F});
   }
 
+  void handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    event_count += 1;
+    last_event_viewport_size = context.viewport_size;
+    last_event_frame_index = context.frame_index;
+
+    if (std::holds_alternative<cgpui::WindowFocused>(event)) {
+      focus_count += 1;
+    } else if (std::holds_alternative<cgpui::PointerMoved>(event)) {
+      pointer_move_count += 1;
+    } else if (std::holds_alternative<cgpui::PointerButton>(event)) {
+      pointer_button_count += 1;
+    } else if (std::holds_alternative<cgpui::PointerScrolled>(event)) {
+      pointer_scroll_count += 1;
+    } else if (std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      keyboard_key_count += 1;
+    } else if (std::holds_alternative<cgpui::TextInput>(event)) {
+      text_input_count += 1;
+    }
+
+    if (request_redraw_on_event && event_redraw_requests == 0) {
+      event_redraw_requests += 1;
+      context.window.request_redraw();
+    }
+  }
+
   int paint_count = 0;
+  int event_count = 0;
+  int focus_count = 0;
+  int pointer_move_count = 0;
+  int pointer_button_count = 0;
+  int pointer_scroll_count = 0;
+  int keyboard_key_count = 0;
+  int text_input_count = 0;
+  int event_redraw_requests = 0;
+  bool request_redraw_on_event = false;
   cgpui::Size last_viewport_size{};
+  cgpui::Size last_event_viewport_size{};
+  int last_event_frame_index = -1;
 };
 
 class FakeWindow final : public cgpui::PlatformWindow {
@@ -361,6 +400,111 @@ int test_render_failure_quits_and_returns_failure() {
   return 0;
 }
 
+RuntimeFixture* event_dispatch_fixture = nullptr;
+
+void dispatch_view_events() {
+  auto& callback = event_dispatch_fixture->window.callback;
+  callback(cgpui::WindowFocused{.focused = true});
+  callback(cgpui::PointerMoved{.position = {12.0F, 24.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {12.0F, 24.0F}});
+  callback(cgpui::PointerScrolled{
+      .delta = {0.0F, -4.0F},
+      .position = {12.0F, 24.0F}});
+  callback(cgpui::KeyboardKey{
+      .key_code = 65,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.shift = true}});
+  callback(cgpui::TextInput{
+      .text = "A",
+      .modifiers = {.shift = true}});
+}
+
+int test_runtime_dispatches_input_events_to_view() {
+  RuntimeFixture fixture;
+  event_dispatch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_events;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  event_dispatch_fixture = nullptr;
+
+  if (result != 0) {
+    return 40;
+  }
+  if (fixture.view.event_count != 6) {
+    return 41;
+  }
+  if (fixture.view.focus_count != 1 ||
+      fixture.view.pointer_move_count != 1 ||
+      fixture.view.pointer_button_count != 1 ||
+      fixture.view.pointer_scroll_count != 1 ||
+      fixture.view.keyboard_key_count != 1 ||
+      fixture.view.text_input_count != 1) {
+    return 42;
+  }
+  if (!equal(
+          fixture.view.last_event_viewport_size,
+          cgpui::Size{640.0F, 480.0F})) {
+    return 43;
+  }
+  if (fixture.view.last_event_frame_index != 1) {
+    return 44;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* event_redraw_fixture = nullptr;
+
+void dispatch_event_driven_redraw() {
+  event_redraw_fixture->window.callback(
+      cgpui::PointerMoved{.position = {5.0F, 6.0F}});
+}
+
+int test_view_event_can_request_redraw() {
+  RuntimeFixture fixture;
+  event_redraw_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_driven_redraw;
+  fixture.view.request_redraw_on_event = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  event_redraw_fixture = nullptr;
+
+  if (result != 0) {
+    return 50;
+  }
+  if (fixture.view.event_count != 1 ||
+      fixture.view.event_redraw_requests != 1) {
+    return 51;
+  }
+  if (fixture.window.request_redraw_count != 2) {
+    return 52;
+  }
+  if (fixture.renderer.begin_frame_count != 2 ||
+      fixture.view.paint_count != 2 ||
+      fixture.frame.present_count != 2) {
+    return 53;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -376,6 +520,13 @@ int main() {
   }
   if (const int result = test_render_failure_quits_and_returns_failure();
       result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_dispatches_input_events_to_view();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_event_can_request_redraw(); result != 0) {
     return result;
   }
   return 0;

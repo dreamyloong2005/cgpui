@@ -10,6 +10,8 @@
 
 namespace cgpui {
 
+struct WindowRuntimeContext;
+
 struct PaintCommand {
   SolidRect solid_rect;
 };
@@ -28,6 +30,9 @@ class View {
  public:
   virtual ~View() = default;
   virtual void paint(PaintList& paint_list, Size viewport_size) = 0;
+  virtual void handle_event(
+      const PlatformEvent& event,
+      const WindowRuntimeContext& context);
 };
 
 struct WindowRuntimeOptions {
