@@ -550,3 +550,12 @@
   `MemoryClipboard` directly.
 - Paste should target the focused element's bound `TextModel`, so it composes
   with the same keyboard-focus route used by text input, IME, and edit actions.
+
+## 2026-06-30 Runtime Clipboard Copy
+
+- Copying selection text should live on top of `TextModel` selection state
+  rather than duplicating byte-range normalization in the runtime.
+- The runtime clipboard copy path can share the same non-owning `Clipboard*`
+  and focused-element text-model lookup introduced for paste.
+- Collapsed selections should not overwrite clipboard contents; returning
+  `false` gives callers a simple observable no-op.

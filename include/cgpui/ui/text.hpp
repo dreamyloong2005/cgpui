@@ -66,6 +66,14 @@ class TextModel {
     };
   }
 
+  [[nodiscard]] std::string selected_text() const {
+    const TextSelectionRange range = selection();
+    if (range.collapsed) {
+      return {};
+    }
+    return text_.substr(range.start, range.end - range.start);
+  }
+
   void set_selection(std::size_t anchor, std::size_t head) {
     selection_anchor_ = clamp_offset(anchor);
     selection_head_ = clamp_offset(head);

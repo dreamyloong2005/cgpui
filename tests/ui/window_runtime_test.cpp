@@ -2747,6 +2747,62 @@ int test_runtime_pastes_clipboard_text_into_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* clipboard_copy_fixture = nullptr;
+
+void dispatch_clipboard_copy_sequence() {
+  auto& callback = clipboard_copy_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_copies_focused_text_selection_to_clipboard() {
+  RuntimeFixture fixture;
+  clipboard_copy_fixture = &fixture;
+  fixture.app.on_run = &dispatch_clipboard_copy_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model("abcd");
+  model.set_selection(1, 3);
+  cgpui::MemoryClipboard clipboard;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.set_clipboard(&clipboard);
+
+  bool copied = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        copied = context.runtime.copy_selection_to_clipboard();
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  clipboard_copy_fixture = nullptr;
+
+  if (result != 0) {
+    return 207;
+  }
+  if (!copied) {
+    return 208;
+  }
+  const std::optional<std::string> copied_text = clipboard.read_text();
+  if (!copied_text.has_value() || *copied_text != "bc") {
+    return 209;
+  }
+  if (model.text() != "abcd" || model.selection().start != 1 ||
+      model.selection().end != 3) {
+    return 210;
+  }
+  return 0;
+}
+
 RuntimeFixture* ime_composition_fixture = nullptr;
 
 void dispatch_ime_composition_sequence() {
@@ -2979,6 +3035,11 @@ int main() {
   }
   if (const int result =
           test_runtime_pastes_clipboard_text_into_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_copies_focused_text_selection_to_clipboard();
       result != 0) {
     return result;
   }

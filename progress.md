@@ -586,6 +586,23 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 57: Runtime clipboard copy from focused text selections.
+- Added RED `window_runtime_test` coverage for
+  `WindowRuntime::copy_selection_to_clipboard` writing the focused text model's
+  selected range into a `MemoryClipboard`; the test failed because the runtime
+  API did not exist.
+- Implemented Step 57 in `codex/runtime-clipboard-copy`: added
+  `TextModel::selected_text` and runtime clipboard copy from the focused text
+  model's non-collapsed selection.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  clipboard_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+
 - Started Step 56: Runtime clipboard paste into focused text models.
 - Added RED `window_runtime_test` coverage for `WindowRuntime::set_clipboard`
   and `paste_clipboard_text` inserting `MemoryClipboard` text into the focused

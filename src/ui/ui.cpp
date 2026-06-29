@@ -729,6 +729,23 @@ bool WindowRuntime::paste_clipboard_text() {
   return true;
 }
 
+bool WindowRuntime::copy_selection_to_clipboard() {
+  if (clipboard_ == nullptr || !keyboard_focus_element_owner_.has_value()) {
+    return false;
+  }
+
+  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
+  if (model == text_models_.end() || model->second == nullptr) {
+    return false;
+  }
+
+  const std::string selected_text = model->second->selected_text();
+  if (selected_text.empty()) {
+    return false;
+  }
+  return clipboard_->write_text(selected_text);
+}
+
 void WindowRuntime::set_element_cursor(
     ElementId element_id,
     CursorShape cursor_shape) {

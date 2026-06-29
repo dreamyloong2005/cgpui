@@ -95,7 +95,8 @@ int test_text_model_tracks_selection_range() {
   model.set_selection(3, 1);
   if (model.cursor() != 1 || model.selection_anchor() != 3 ||
       model.selection_head() != 1 || model.selection().start != 1 ||
-      model.selection().end != 3 || model.selection().collapsed) {
+      model.selection().end != 3 || model.selection().collapsed ||
+      model.selected_text() != std::string_view{"bc"}) {
     return 18;
   }
 
@@ -108,7 +109,7 @@ int test_text_model_tracks_selection_range() {
 
   model.clear_selection();
   if (!model.selection().collapsed || model.selection().start != model.cursor() ||
-      model.selection().end != model.cursor()) {
+      model.selection().end != model.cursor() || !model.selected_text().empty()) {
     return 20;
   }
 
