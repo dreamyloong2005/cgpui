@@ -80,6 +80,16 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 25: Border width/color and border radius primitives.
+- Added RED `style_test` coverage for `BorderRadii`, border color storage, and
+  fluent border radius/color setters; the test failed because those style APIs
+  did not exist.
+- Implemented Step 25 in `codex/border-style-primitives`: added `BorderRadii`,
+  optional `Style::border_color`, `Style::border_radius`, and matching builder
+  methods while keeping rendering/layout behavior unchanged.
+- Verified targeted tests: `xmake test -P . style_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 
 - Started Step 5: Context entity access.
 - Added design and implementation plan docs for context-forwarded runtime entity helpers.

@@ -52,7 +52,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 22. [x] Element builder API skeleton for composing styled elements.
 23. [x] Styled element paints a solid background rect.
 24. [x] Padding participates in styled element layout.
-25. [ ] Border width/color and border radius primitives.
+25. [x] Border width/color and border radius primitives.
 26. [ ] Paint tree generation from element hierarchy.
 27. [ ] Clip rect and overflow primitives.
 28. [ ] Z-order and deterministic child paint order.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 25: Border width/color and border radius primitives.
+Step 26: Paint tree generation from element hierarchy.
 
 ## Risks
 

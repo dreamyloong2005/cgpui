@@ -46,12 +46,43 @@ struct EdgeSizes {
   }
 };
 
+struct BorderRadii {
+  float top_left = 0.0F;
+  float top_right = 0.0F;
+  float bottom_right = 0.0F;
+  float bottom_left = 0.0F;
+
+  [[nodiscard]] static constexpr BorderRadii all(float value) {
+    return BorderRadii{
+        .top_left = value,
+        .top_right = value,
+        .bottom_right = value,
+        .bottom_left = value,
+    };
+  }
+
+  [[nodiscard]] static constexpr BorderRadii corners(
+      float top_left,
+      float top_right,
+      float bottom_right,
+      float bottom_left) {
+    return BorderRadii{
+        .top_left = top_left,
+        .top_right = top_right,
+        .bottom_right = bottom_right,
+        .bottom_left = bottom_left,
+    };
+  }
+};
+
 struct Style {
   std::optional<Color> background_color;
   std::optional<Color> foreground_color;
+  std::optional<Color> border_color;
   Size preferred_size;
   EdgeSizes padding;
   EdgeSizes border_width;
+  BorderRadii border_radius;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -80,6 +111,18 @@ struct Style {
   [[nodiscard]] constexpr Style with_border_width(EdgeSizes edges) const {
     Style style = *this;
     style.border_width = edges;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_border_color(Color color) const {
+    Style style = *this;
+    style.border_color = color;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_border_radius(BorderRadii radius) const {
+    Style style = *this;
+    style.border_radius = radius;
     return style;
   }
 };

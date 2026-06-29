@@ -230,3 +230,13 @@
   and later paint traversal observe the padded child origin.
 - Existing layout constraints in this codebase clamp container output after
   child measurement, so this slice keeps the same simple constraint behavior.
+
+## 2026-06-30 Border Style Primitives
+
+- Border color and radii can be introduced as inert `Style` data without
+  touching layout or paint yet; Step 26/27 can decide how much of the box model
+  to materialize in paint commands.
+- `BorderRadii` mirrors `EdgeSizes` as a compact POD helper, keeping top-left,
+  top-right, bottom-right, and bottom-left explicit for later rounded-rect work.
+- `Style::border_width` already existed from Step 21, so this slice only needed
+  color and radius fields plus fluent setters.

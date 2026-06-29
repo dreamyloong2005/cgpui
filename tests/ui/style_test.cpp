@@ -43,10 +43,37 @@ int test_edge_sizes_helpers_expand_values() {
   return 0;
 }
 
+int test_border_radii_helpers_expand_values() {
+  const cgpui::BorderRadii radii;
+  if (!same(radii.top_left, 0.0F) || !same(radii.top_right, 0.0F) ||
+      !same(radii.bottom_right, 0.0F) ||
+      !same(radii.bottom_left, 0.0F)) {
+    return 13;
+  }
+
+  const cgpui::BorderRadii all = cgpui::BorderRadii::all(6.0F);
+  if (!same(all.top_left, 6.0F) || !same(all.top_right, 6.0F) ||
+      !same(all.bottom_right, 6.0F) || !same(all.bottom_left, 6.0F)) {
+    return 14;
+  }
+
+  const cgpui::BorderRadii corners =
+      cgpui::BorderRadii::corners(1.0F, 2.0F, 3.0F, 4.0F);
+  return same(corners.top_left, 1.0F) &&
+                 same(corners.top_right, 2.0F) &&
+                 same(corners.bottom_right, 3.0F) &&
+                 same(corners.bottom_left, 4.0F)
+             ? 0
+             : 15;
+}
+
 int test_style_defaults_are_empty() {
   const cgpui::Style style;
   if (style.background_color.has_value() || style.foreground_color.has_value()) {
     return 5;
+  }
+  if (style.border_color.has_value()) {
+    return 16;
   }
   if (!same(style.preferred_size.width, 0.0F) ||
       !same(style.preferred_size.height, 0.0F)) {
@@ -55,6 +82,10 @@ int test_style_defaults_are_empty() {
   if (!same(style.padding.top, 0.0F) ||
       !same(style.border_width.left, 0.0F)) {
     return 7;
+  }
+  if (!same(style.border_radius.top_left, 0.0F) ||
+      !same(style.border_radius.bottom_right, 0.0F)) {
+    return 17;
   }
   return 0;
 }
@@ -68,7 +99,14 @@ int test_style_builder_methods_store_values() {
               cgpui::Color{.r = 0.5F, .g = 0.6F, .b = 0.7F, .a = 0.8F})
           .with_preferred_size(cgpui::Size{.width = 20.0F, .height = 30.0F})
           .with_padding(cgpui::EdgeSizes::axes(3.0F, 4.0F))
-          .with_border_width(cgpui::EdgeSizes::all(2.0F));
+          .with_border_width(cgpui::EdgeSizes::all(2.0F))
+          .with_border_color(
+              cgpui::Color{.r = 0.9F, .g = 0.8F, .b = 0.7F, .a = 0.6F})
+          .with_border_radius(cgpui::BorderRadii::corners(
+              1.0F,
+              2.0F,
+              3.0F,
+              4.0F));
 
   if (!style.background_color.has_value() ||
       !same(style.background_color->r, 0.1F) ||
@@ -92,6 +130,17 @@ int test_style_builder_methods_store_values() {
       !same(style.border_width.bottom, 2.0F)) {
     return 12;
   }
+  if (!style.border_color.has_value() ||
+      !same(style.border_color->r, 0.9F) ||
+      !same(style.border_color->a, 0.6F)) {
+    return 18;
+  }
+  if (!same(style.border_radius.top_left, 1.0F) ||
+      !same(style.border_radius.top_right, 2.0F) ||
+      !same(style.border_radius.bottom_right, 3.0F) ||
+      !same(style.border_radius.bottom_left, 4.0F)) {
+    return 19;
+  }
 
   return 0;
 }
@@ -99,12 +148,17 @@ int test_style_builder_methods_store_values() {
 } // namespace
 
 static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
+static_assert(std::same_as<decltype(cgpui::BorderRadii{}.top_left), float>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
     return result;
   }
   if (const int result = test_edge_sizes_helpers_expand_values();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_border_radii_helpers_expand_values();
       result != 0) {
     return result;
   }
