@@ -78,7 +78,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 40. [x] Real interactive demo using the new API surface.
 41. [x] ElementTree root layout helper.
 42. [x] ElementTree root hit-test helper.
-43. [ ] Element tree owned runtime root installation.
+43. [x] Element tree owned runtime root installation.
 44. [ ] Runtime lays out installed element trees on redraw.
 45. [ ] Element event handler hook.
 46. [ ] Runtime dispatches routed element events before view fallback.
@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 43: Element tree owned runtime root installation.
+Step 44: Runtime lays out installed element trees on redraw.
 
 ## Risks
 

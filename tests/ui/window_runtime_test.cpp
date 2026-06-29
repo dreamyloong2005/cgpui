@@ -1280,6 +1280,64 @@ int test_runtime_routes_pointer_events_to_hit_element() {
   return 0;
 }
 
+RuntimeFixture* owned_element_tree_fixture = nullptr;
+
+void dispatch_owned_element_tree_sequence() {
+  auto& callback = owned_element_tree_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_runtime_owns_installed_element_tree() {
+  RuntimeFixture fixture;
+  owned_element_tree_fixture = &fixture;
+  fixture.app.on_run = &dispatch_owned_element_tree_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 40.0F, .height = 20.0F}));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  if (tree != nullptr || runtime.element_tree() == nullptr ||
+      runtime.element_root() == nullptr) {
+    return 200;
+  }
+  if (runtime.element_tree()->root_id() != root_id ||
+      runtime.element_root()->id() != root_id) {
+    return 201;
+  }
+
+  std::optional<cgpui::ElementId> routed_element_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        routed_element_id = record.route.target_element_id;
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  owned_element_tree_fixture = nullptr;
+
+  if (result != 0) {
+    return 202;
+  }
+  if (!routed_element_id.has_value() || *routed_element_id != root_id) {
+    return 203;
+  }
+
+  runtime.set_element_tree(nullptr);
+  return runtime.element_tree() == nullptr && runtime.element_root() == nullptr
+      ? 0
+      : 204;
+}
+
 RuntimeFixture* hover_state_fixture = nullptr;
 
 void dispatch_hover_state_sequence() {
@@ -2500,6 +2558,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_pointer_events_to_hit_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_owns_installed_element_tree();
       result != 0) {
     return result;
   }

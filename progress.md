@@ -416,6 +416,18 @@
   element when present and returns constrained zero size for an empty tree.
 - Verified targeted tests: `xmake test -P . element_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Started Step 43: Element tree owned runtime root installation.
+- Added RED `window_runtime_test` coverage for
+  `WindowRuntime::set_element_tree`, `element_tree`, and `element_root`,
+  including move ownership, pointer routing through the owned tree, and clearing
+  the owned tree; the test failed because the runtime-owned tree APIs did not
+  exist.
+- Implemented Step 43 in `codex/runtime-owned-element-tree`: runtime can now
+  own an `ElementTree`, exposes read-only accessors, clears legacy non-owning
+  roots when an owned tree is installed, clears owned trees when a legacy root
+  is installed, and routes pointer hit testing through the owned tree first.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 42: ElementTree root hit-test helper.
 - Added RED `element_test` coverage for `ElementTree::hit_test_root`, including
   root hit delegation, miss behavior, and empty-tree invalid hits; the test

@@ -84,6 +84,16 @@ void apply_pointer_capture_owner_to_route(
   }
 }
 
+ElementId hit_test_runtime_element_root(
+    const ElementTree* tree,
+    const Element* root,
+    Point point) {
+  if (tree != nullptr) {
+    return tree->hit_test_root(point);
+  }
+  return root == nullptr ? ElementId{} : root->hit_test(point);
+}
+
 } // namespace
 
 void PaintList::clear() {
@@ -267,11 +277,14 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
     std::optional<ElementId> hit_element_id;
-    if (element_root_ != nullptr) {
+    if (element_root() != nullptr) {
       if (const std::optional<Point> pointer_position =
               pointer_position_for(event);
           pointer_position.has_value()) {
-        const ElementId hit = element_root_->hit_test(*pointer_position);
+        const ElementId hit = hit_test_runtime_element_root(
+            owned_element_tree_.get(),
+            element_root_,
+            *pointer_position);
         if (hit.value != 0) {
           hit_element_id = hit;
         }
@@ -433,7 +446,24 @@ void WindowRuntime::set_error_callback(WindowRuntimeErrorCallback callback) {
 }
 
 void WindowRuntime::set_element_root(const Element* element) {
+  owned_element_tree_.reset();
   element_root_ = element;
+}
+
+void WindowRuntime::set_element_tree(std::unique_ptr<ElementTree> tree) {
+  owned_element_tree_ = std::move(tree);
+  element_root_ = nullptr;
+}
+
+const ElementTree* WindowRuntime::element_tree() const {
+  return owned_element_tree_.get();
+}
+
+const Element* WindowRuntime::element_root() const {
+  if (owned_element_tree_ != nullptr) {
+    return owned_element_tree_->get(owned_element_tree_->root_id());
+  }
+  return element_root_;
 }
 
 void WindowRuntime::capture_pointer(PointerCaptureOwner owner) {

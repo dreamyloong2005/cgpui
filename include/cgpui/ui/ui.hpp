@@ -257,6 +257,9 @@ class WindowRuntime {
   void set_close_requested_callback(WindowRuntimeFrameCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
   void set_element_root(const Element* element);
+  void set_element_tree(std::unique_ptr<ElementTree> tree);
+  [[nodiscard]] const ElementTree* element_tree() const;
+  [[nodiscard]] const Element* element_root() const;
   void capture_pointer(PointerCaptureOwner owner);
   void release_pointer(PointerCaptureOwner owner);
   void request_keyboard_focus();
@@ -340,6 +343,7 @@ class WindowRuntime {
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<ActionDispatchResult> last_action_dispatch_;
   std::optional<EventRoute> current_event_route_;
+  std::unique_ptr<ElementTree> owned_element_tree_;
   const Element* element_root_ = nullptr;
   ViewId root_view_id_{1};
   std::uint64_t next_view_id_ = 2;

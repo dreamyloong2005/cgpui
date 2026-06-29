@@ -414,3 +414,11 @@
   traversal and child priority.
 - Empty-tree hit testing should return `ElementId{0}` so runtime routing can
   distinguish "no element root" from a valid target.
+
+## 2026-06-30 Runtime-Owned Element Tree
+
+- Runtime can support both the old non-owning `set_element_root` path and the
+  new owning `set_element_tree` path by making them mutually exclusive; this
+  avoids stale pointers when ownership changes.
+- Pointer routing should use `ElementTree::hit_test_root` when an owned tree is
+  installed, preserving the legacy `Element::hit_test` path for external roots.
