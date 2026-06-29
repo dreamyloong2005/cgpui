@@ -586,6 +586,22 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 55: Runtime text edit action routing for focused text models.
+- Added RED `window_runtime_test` coverage for `TextEditBinding`,
+  `WindowRuntime::bind_text_edit_action`, and focused-text-model application of
+  move/extend/delete edit actions; the test failed because the runtime binding
+  APIs did not exist.
+- Implemented Step 55 in `codex/runtime-text-edit-actions`: added a
+  platform-neutral text edit binding table and dispatches matching keyboard
+  events into the focused element's bound `TextModel`.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default text_model_test/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+
 - Started Step 54: Text element skeleton bound to TextModel.
 - Extended `task_plan.md` with Steps 61-69 so the current "20 steps" request
   can continue past Step 60 toward a closer GPUI core API surface.

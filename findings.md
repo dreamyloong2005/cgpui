@@ -527,3 +527,15 @@
 - Paint can emit a placeholder `SolidRect` through the existing paint path so
   Win32/Vulkan and Wayland/Vulkan remain unchanged until a later text renderer
   command is justified.
+
+## 2026-06-30 Runtime Text Edit Actions
+
+- Runtime text edit routing can mirror key bindings as a platform-neutral
+  binding table from `KeyboardKey` data to `TextEditAction`, avoiding hard-coded
+  Win32 or Wayland key assumptions in the text model.
+- The existing element keyboard-focus owner is the right target selector:
+  keyboard events already route to it, and text input/IME routing already look
+  up text models by that focused `ElementId`.
+- Matching edit bindings before view fallback keeps the model updated before
+  observers inspect the event, while leaving unbound keys and missing text
+  models as no-op cases for compatibility.

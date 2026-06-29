@@ -2622,6 +2622,79 @@ int test_runtime_routes_text_input_to_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* text_edit_action_fixture = nullptr;
+
+void dispatch_text_edit_action_sequence() {
+  auto& callback = text_edit_action_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.shift = true}});
+  callback(cgpui::KeyboardKey{
+      .key_code = 8,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 46,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_routes_text_edit_actions_to_focused_text_model() {
+  RuntimeFixture fixture;
+  text_edit_action_fixture = &fixture;
+  fixture.app.on_run = &dispatch_text_edit_action_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model("abcd");
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.bind_text_edit_action(cgpui::TextEditBinding{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed,
+      .edit_action = cgpui::TextEditAction::move_previous});
+  runtime.bind_text_edit_action(cgpui::TextEditBinding{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.shift = true},
+      .edit_action = cgpui::TextEditAction::extend_previous});
+  runtime.bind_text_edit_action(cgpui::TextEditBinding{
+      .key_code = 8,
+      .action = cgpui::KeyAction::pressed,
+      .edit_action = cgpui::TextEditAction::backspace});
+  runtime.bind_text_edit_action(cgpui::TextEditBinding{
+      .key_code = 46,
+      .action = cgpui::KeyAction::pressed,
+      .edit_action = cgpui::TextEditAction::delete_forward});
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  text_edit_action_fixture = nullptr;
+
+  if (result != 0) {
+    return 200;
+  }
+  if (fixture.view.keyboard_key_count != 5) {
+    return 201;
+  }
+  if (model.text() != "ab") {
+    return 202;
+  }
+  if (model.cursor() != 2 || !model.selection().collapsed) {
+    return 203;
+  }
+  return 0;
+}
+
 RuntimeFixture* ime_composition_fixture = nullptr;
 
 void dispatch_ime_composition_sequence() {
@@ -2844,6 +2917,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_text_input_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_routes_text_edit_actions_to_focused_text_model();
       result != 0) {
     return result;
   }

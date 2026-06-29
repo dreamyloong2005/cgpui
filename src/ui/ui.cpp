@@ -410,6 +410,20 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
           break;
         }
       }
+      if (keyboard_focus_element_owner_.has_value()) {
+        const auto model =
+            text_models_.find(keyboard_focus_element_owner_->value);
+        if (model != text_models_.end() && model->second != nullptr) {
+          for (const TextEditBinding& binding : text_edit_bindings_) {
+            if (binding.key_code == key->key_code &&
+                binding.action == key->action &&
+                modifiers_equal(binding.modifiers, key->modifiers)) {
+              (void)model->second->apply_edit_action(binding.edit_action);
+              break;
+            }
+          }
+        }
+      }
     }
     if (const auto* text = std::get_if<TextInput>(&event);
         text != nullptr && keyboard_focus_element_owner_.has_value()) {
@@ -675,6 +689,10 @@ void WindowRuntime::bind_key(KeyBinding binding) {
   if (!binding.action_name.empty()) {
     key_bindings_.push_back(std::move(binding));
   }
+}
+
+void WindowRuntime::bind_text_edit_action(TextEditBinding binding) {
+  text_edit_bindings_.push_back(binding);
 }
 
 void WindowRuntime::bind_text_model(ElementId element_id, TextModel* model) {

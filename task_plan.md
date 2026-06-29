@@ -90,7 +90,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 52. [x] Border paint emission from styled elements.
 53. [x] Hidden overflow clip metadata in paint commands.
 54. [x] Text element skeleton bound to TextModel.
-55. [ ] Runtime text edit action routing for focused text models.
+55. [x] Runtime text edit action routing for focused text models.
 56. [ ] Runtime clipboard paste into focused text models.
 57. [ ] Runtime clipboard copy from focused text selections.
 58. [ ] Runtime clipboard cut from focused text selections.
@@ -108,7 +108,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 55: Runtime text edit action routing for focused text models.
+Step 56: Runtime clipboard paste into focused text models.
 
 ## Risks
 

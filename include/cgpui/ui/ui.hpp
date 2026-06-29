@@ -149,6 +149,13 @@ struct KeyBinding {
   std::string action_name;
 };
 
+struct TextEditBinding {
+  std::uint32_t key_code = 0;
+  KeyAction action = KeyAction::pressed;
+  KeyboardModifiers modifiers;
+  TextEditAction edit_action = TextEditAction::move_previous;
+};
+
 struct InvalidationState {
   bool layout = false;
   bool paint = false;
@@ -259,6 +266,7 @@ class WindowRuntime {
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_key(KeyBinding binding);
+  void bind_text_edit_action(TextEditBinding binding);
   void bind_text_model(ElementId element_id, TextModel* model);
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
   void request_layout();
@@ -341,6 +349,7 @@ class WindowRuntime {
   std::unordered_map<std::type_index, std::any> entity_stores_;
   std::unordered_map<std::string, ActionHandler> action_handlers_;
   std::vector<KeyBinding> key_bindings_;
+  std::vector<TextEditBinding> text_edit_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::vector<EntitySubscription> entity_subscriptions_;
