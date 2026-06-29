@@ -618,3 +618,12 @@
 - Calling `focus(...)` before normal element event dispatch lets the current
   pointer event and the following keyboard event observe the updated focus
   owner through the existing `WindowRuntimeContext` shape.
+
+## 2026-06-30 Element Enabled State
+
+- Enabled/disabled state fits best on `Element` rather than `Style`: it is an
+  interaction primitive first, and Step 65 can use the same base API to skip
+  dispatch without inventing style-aware event routing.
+- Builder-level `enabled(bool)` should apply to every concrete element kind so
+  disabled state stays orthogonal to layout choice, text leaves, and styled
+  wrappers.

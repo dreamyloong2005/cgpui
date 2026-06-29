@@ -603,6 +603,23 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 64: Element enabled/disabled state primitive.
+- Added RED `element_test` coverage for default-enabled elements that can be
+  toggled and for `ElementBuilder::enabled(...)` applying state to built
+  elements; the test failed because element enabled APIs and the builder helper
+  did not exist.
+- Implemented Step 64 in `codex/element-enabled-state`: added
+  `Element::enabled()`, `Element::set_enabled(bool)`, and builder state
+  propagation across all current element kinds without changing event
+  semantics yet.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

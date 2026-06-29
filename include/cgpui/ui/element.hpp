@@ -81,6 +81,14 @@ class Element {
     (void)paint_list;
   }
 
+  [[nodiscard]] bool enabled() const {
+    return enabled_;
+  }
+
+  void set_enabled(bool enabled) {
+    enabled_ = enabled;
+  }
+
   [[nodiscard]] virtual bool focusable() const {
     return false;
   }
@@ -111,6 +119,7 @@ class Element {
 
  private:
   ElementId id_;
+  bool enabled_ = true;
   mutable std::optional<Rect> layout_bounds_;
 };
 
@@ -442,6 +451,11 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder enabled(bool value) && {
+    enabled_ = value;
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder child(std::unique_ptr<Element> child) && {
     if (child) {
       children_.push_back(std::move(child));
@@ -451,10 +465,10 @@ class ElementBuilder {
 
   [[nodiscard]] std::unique_ptr<Element> build() && {
     if (kind_ == Kind::fixed_size) {
-      return std::make_unique<FixedSizeElement>(size_);
+      return finish(std::make_unique<FixedSizeElement>(size_));
     }
     if (kind_ == Kind::text) {
-      return std::make_unique<TextElement>(text_model_);
+      return finish(std::make_unique<TextElement>(text_model_));
     }
     if (kind_ == Kind::v_stack) {
       auto element = std::make_unique<VerticalStackElement>();
@@ -462,7 +476,7 @@ class ElementBuilder {
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }
-      return element;
+      return finish(std::move(element));
     }
     if (kind_ == Kind::row || kind_ == Kind::column) {
       auto element = std::make_unique<FlexElement>(
@@ -471,13 +485,13 @@ class ElementBuilder {
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }
-      return element;
+      return finish(std::move(element));
     }
     std::unique_ptr<Element> child;
     if (!children_.empty()) {
       child = std::move(children_.front());
     }
-    return std::make_unique<StyledElement>(style_, std::move(child));
+    return finish(std::make_unique<StyledElement>(style_, std::move(child)));
   }
 
  private:
@@ -492,10 +506,17 @@ class ElementBuilder {
 
   explicit ElementBuilder(Kind kind) : kind_(kind) {}
 
+  [[nodiscard]] std::unique_ptr<Element> finish(
+      std::unique_ptr<Element> element) const {
+    element->set_enabled(enabled_);
+    return element;
+  }
+
   Kind kind_ = Kind::box;
   Style style_;
   Size size_;
   TextModel* text_model_ = nullptr;
+  bool enabled_ = true;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

@@ -1491,6 +1491,37 @@ int test_focusable_element_activation_hook_observes_element_id() {
   return 0;
 }
 
+int test_base_element_enabled_state_defaults_to_enabled_and_can_toggle() {
+  TestElement element;
+
+  if (!element.enabled()) {
+    return 148;
+  }
+
+  element.set_enabled(false);
+  if (element.enabled()) {
+    return 149;
+  }
+
+  element.set_enabled(true);
+  return element.enabled() ? 0 : 150;
+}
+
+int test_element_builder_applies_enabled_state_to_built_element() {
+  std::unique_ptr<cgpui::Element> disabled =
+      cgpui::ElementBuilder::box().enabled(false).build();
+  std::unique_ptr<cgpui::Element> enabled =
+      cgpui::ElementBuilder::box().enabled(true).build();
+
+  if (disabled == nullptr || enabled == nullptr) {
+    return 151;
+  }
+  if (disabled->enabled() || !enabled->enabled()) {
+    return 152;
+  }
+  return 0;
+}
+
 int test_styled_element_forwards_events_to_child() {
   auto child = std::make_unique<EventCountingElement>();
   EventCountingElement* child_ptr = child.get();
@@ -1749,6 +1780,16 @@ int main() {
   }
   if (const int result =
           test_focusable_element_activation_hook_observes_element_id();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_base_element_enabled_state_defaults_to_enabled_and_can_toggle();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_applies_enabled_state_to_built_element();
       result != 0) {
     return result;
   }

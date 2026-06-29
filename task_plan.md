@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 61. [x] Text element builder helper.
 62. [x] Focusable element activation hook.
 63. [x] Runtime clicks request focus for focusable elements.
-64. [ ] Element enabled/disabled state primitive.
+64. [x] Element enabled/disabled state primitive.
 65. [ ] Disabled elements skip event handling.
 66. [ ] Element tree preorder traversal helper.
 67. [ ] Element tree find-by-id convenience helper.
@@ -108,7 +108,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 64: Element enabled/disabled state primitive.
+Step 65: Disabled elements skip event handling.
 
 ## Risks
 
