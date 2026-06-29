@@ -53,7 +53,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 23. [x] Styled element paints a solid background rect.
 24. [x] Padding participates in styled element layout.
 25. [x] Border width/color and border radius primitives.
-26. [ ] Paint tree generation from element hierarchy.
+26. [x] Paint tree generation from element hierarchy.
 27. [ ] Clip rect and overflow primitives.
 28. [ ] Z-order and deterministic child paint order.
 29. [ ] Hover state tracking for routed pointer targets.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 26: Paint tree generation from element hierarchy.
+Step 27: Clip rect and overflow primitives.
 
 ## Risks
 

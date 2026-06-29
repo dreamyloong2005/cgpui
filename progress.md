@@ -90,6 +90,16 @@
 - Verified targeted tests: `xmake test -P . style_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 26: Paint tree generation from element hierarchy.
+- Added RED `element_test` coverage for `ElementTree::paint(PaintList&)`,
+  root-first recursive paint traversal, append-order sibling painting, and
+  retained element bounds in generated paint commands; the test failed because
+  `ElementTree::paint` did not exist.
+- Implemented Step 26 in `codex/element-paint-tree`: added a root-recursive
+  `ElementTree::paint` traversal that paints each element before its children.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 
 - Started Step 5: Context entity access.
 - Added design and implementation plan docs for context-forwarded runtime entity helpers.

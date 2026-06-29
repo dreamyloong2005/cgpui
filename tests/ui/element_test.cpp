@@ -598,6 +598,83 @@ int test_styled_element_layout_offsets_child_by_padding() {
              : 72;
 }
 
+int test_element_tree_paints_root_and_children_in_tree_order() {
+  cgpui::ElementTree tree;
+  const cgpui::Color root_color{
+      .r = 0.1F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color first_color{
+      .r = 0.0F,
+      .g = 0.2F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color second_color{
+      .r = 0.0F,
+      .g = 0.0F,
+      .b = 0.3F,
+      .a = 1.0F,
+  };
+
+  const cgpui::ElementId root_id = tree.set_root(
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(root_color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 80.0F, .height = 40.0F}))
+          .build());
+  const cgpui::ElementId first_child_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(first_color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F}))
+          .build());
+  const cgpui::ElementId second_child_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(second_color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 30.0F, .height = 15.0F}))
+          .build());
+
+  tree.get(root_id)->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 80.0F, .height = 40.0F},
+  });
+  tree.get(first_child_id)->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 4.0F, .y = 5.0F},
+      .size = {.width = 20.0F, .height = 10.0F},
+  });
+  tree.get(second_child_id)->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 6.0F, .y = 7.0F},
+      .size = {.width = 30.0F, .height = 15.0F},
+  });
+
+  cgpui::PaintList paint_list;
+  tree.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 3) {
+    return 73;
+  }
+  if (commands[0].solid_rect.color.r != root_color.r ||
+      commands[1].solid_rect.color.g != first_color.g ||
+      commands[2].solid_rect.color.b != second_color.b) {
+    return 74;
+  }
+  if (commands[1].solid_rect.rect.origin.x != 4.0F ||
+      commands[2].solid_rect.rect.origin.y != 7.0F) {
+    return 75;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -701,6 +778,11 @@ int main() {
     return result;
   }
   if (const int result = test_styled_element_layout_offsets_child_by_padding();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_tree_paints_root_and_children_in_tree_order();
       result != 0) {
     return result;
   }

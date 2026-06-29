@@ -332,6 +332,10 @@ class ElementTree {
     return node->children;
   }
 
+  void paint(PaintList& paint_list) const {
+    paint_subtree(root_id_, paint_list);
+  }
+
  private:
   struct Node {
     std::unique_ptr<Element> element;
@@ -362,6 +366,18 @@ class ElementTree {
       }
     }
     return nullptr;
+  }
+
+  void paint_subtree(ElementId id, PaintList& paint_list) const {
+    const Node* node = find_node(id);
+    if (node == nullptr) {
+      return;
+    }
+
+    node->element->paint(paint_list);
+    for (ElementId child_id : node->children) {
+      paint_subtree(child_id, paint_list);
+    }
   }
 
   std::vector<Node> nodes_;

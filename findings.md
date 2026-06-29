@@ -240,3 +240,13 @@
   top-right, bottom-right, and bottom-left explicit for later rounded-rect work.
 - `Style::border_width` already existed from Step 21, so this slice only needed
   color and radius fields plus fluent setters.
+
+## 2026-06-30 Element Paint Tree
+
+- `ElementTree::paint(PaintList&)` can be a thin recursive traversal over the
+  existing parent/child relationship data; no renderer or platform changes are
+  needed for this slice.
+- Painting an element before its children preserves the Step 23 parent
+  background before content ordering.
+- Sibling paint order follows the stored child id vector, matching append and
+  reconcile order until a later z-order primitive changes that policy.
