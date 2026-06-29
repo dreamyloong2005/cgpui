@@ -121,6 +121,18 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 18: Key binding table.
+- Added design and implementation plan docs for mapping key events to named
+  actions.
+- Added a RED runtime test for `KeyBinding`, `bind_key`, exact
+  key/modifier/action matching, and action dispatch from a matched key event;
+  the test failed because the key binding APIs did not exist.
+- Implemented Step 18 in `codex/key-binding-table`: runtime stores key
+  bindings, matches `KeyboardKey` events by key code/action/modifiers, and
+  dispatches the first matching named action.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
 - Started Step 15: Pointer capture routing to owner id.
 - Added design and implementation plan docs for element-level pointer capture
   overriding hit-tested pointer routes.

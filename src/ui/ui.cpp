@@ -51,6 +51,11 @@ bool is_keyboard_routed_event(const PlatformEvent& event) {
          std::holds_alternative<TextInput>(event);
 }
 
+bool modifiers_equal(KeyboardModifiers lhs, KeyboardModifiers rhs) {
+  return lhs.shift == rhs.shift && lhs.control == rhs.control &&
+         lhs.alt == rhs.alt && lhs.super == rhs.super;
+}
+
 } // namespace
 
 void PaintList::clear() {
@@ -232,6 +237,16 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
       }
     }
+    if (const auto* key = std::get_if<KeyboardKey>(&event); key != nullptr) {
+      for (const KeyBinding& binding : key_bindings_) {
+        if (binding.key_code == key->key_code &&
+            binding.action == key->action &&
+            modifiers_equal(binding.modifiers, key->modifiers)) {
+          (void)dispatch_action(binding.action_name);
+          break;
+        }
+      }
+    }
     last_event_result_ = view_.handle_event(event, context());
     last_event_dispatch_ = EventDispatchRecord{
         .sequence = ++event_dispatch_sequence_,
@@ -407,6 +422,12 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
 std::optional<ActionDispatchResult> WindowRuntime::last_action_dispatch()
     const {
   return last_action_dispatch_;
+}
+
+void WindowRuntime::bind_key(KeyBinding binding) {
+  if (!binding.action_name.empty()) {
+    key_bindings_.push_back(std::move(binding));
+  }
 }
 
 ViewId WindowRuntime::allocate_view_id() {

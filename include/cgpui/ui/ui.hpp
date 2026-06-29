@@ -111,6 +111,13 @@ struct ActionDispatchResult {
   EventResult result;
 };
 
+struct KeyBinding {
+  std::uint32_t key_code = 0;
+  KeyAction action = KeyAction::pressed;
+  KeyboardModifiers modifiers;
+  std::string action_name;
+};
+
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
@@ -196,6 +203,7 @@ class WindowRuntime {
   void register_action(std::string name, ActionHandler handler);
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
+  void bind_key(KeyBinding binding);
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -254,6 +262,7 @@ class WindowRuntime {
   int frame_index_ = 0;
   std::unordered_map<std::type_index, std::any> entity_stores_;
   std::unordered_map<std::string, ActionHandler> action_handlers_;
+  std::vector<KeyBinding> key_bindings_;
   bool should_quit_ = false;
   bool failed_ = false;
 };

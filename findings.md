@@ -161,3 +161,13 @@
   aligned with event handling.
 - Recording the last `ActionDispatchResult` gives Step 18 a simple observable
   target when key bindings start dispatching named actions.
+
+## 2026-06-30 Key Binding Table
+
+- A runtime-local vector of bindings is enough for exact key/modifier matching
+  in the first slice; scoped binding tables and priorities can wait.
+- Dispatching the matched action before root view event handling gives action
+  handlers access to the current `EventRoute` while preserving existing view
+  event delivery.
+- Matching only `KeyboardKey` events keeps text input independent until the text
+  model and focused-text routing slices land.

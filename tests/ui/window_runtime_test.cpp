@@ -1764,6 +1764,71 @@ int test_runtime_dispatches_named_actions() {
   return 0;
 }
 
+RuntimeFixture* key_binding_fixture = nullptr;
+
+void dispatch_key_binding_sequence() {
+  auto& callback = key_binding_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 79,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.control = true}});
+  callback(cgpui::KeyboardKey{
+      .key_code = 83,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.control = true}});
+}
+
+int test_runtime_dispatches_key_binding_actions() {
+  RuntimeFixture fixture;
+  key_binding_fixture = &fixture;
+  fixture.app.on_run = &dispatch_key_binding_sequence;
+
+  int action_count = 0;
+  bool action_saw_keyboard_route = false;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.register_action(
+      "app.save",
+      [&](const cgpui::WindowRuntimeContext& context) {
+        action_count += 1;
+        action_saw_keyboard_route =
+            context.event_route.has_value() &&
+            context.event_route->event_kind == cgpui::EventKind::keyboard_key;
+        return cgpui::EventResult::consumed_event();
+      });
+  runtime.bind_key(cgpui::KeyBinding{
+      .key_code = 83,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.control = true},
+      .action_name = "app.save"});
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  key_binding_fixture = nullptr;
+
+  if (result != 0) {
+    return 156;
+  }
+  if (fixture.view.keyboard_key_count != 2 || action_count != 1) {
+    return 157;
+  }
+  if (!action_saw_keyboard_route) {
+    return 158;
+  }
+  const std::optional<cgpui::ActionDispatchResult> dispatch =
+      runtime.last_action_dispatch();
+  if (!dispatch.has_value() || dispatch->name != "app.save" ||
+      !dispatch->handled || !dispatch->result.consumed ||
+      dispatch->result.cancelled) {
+    return 159;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1841,6 +1906,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_dispatches_named_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_dispatches_key_binding_actions();
       result != 0) {
     return result;
   }
