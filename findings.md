@@ -638,3 +638,14 @@
   parent/view-level behavior decide whether to consume the event.
 - `StyledElement` treats a disabled child the same as no interactive child for
   event forwarding, returning unhandled without mutating child event state.
+
+## 2026-06-30 ElementTree Preorder Traversal
+
+- `ElementTree::preorder_ids()` should be structural, root first and then each
+  stored child subtree in child-list order; it intentionally does not reuse
+  paint order, which may sort siblings by z-index.
+- Returning ids rather than element pointers keeps the helper simple,
+  copyable, and compatible with later APIs that can call `get(id)` or filter by
+  id without exposing internal nodes.
+- Empty-tree traversal returns an empty vector, matching the existing soft-fail
+  behavior of root layout, hit testing, and paint traversal.

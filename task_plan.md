@@ -101,14 +101,30 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 63. [x] Runtime clicks request focus for focusable elements.
 64. [x] Element enabled/disabled state primitive.
 65. [x] Disabled elements skip event handling.
-66. [ ] Element tree preorder traversal helper.
+66. [x] Element tree preorder traversal helper.
 67. [ ] Element tree find-by-id convenience helper.
 68. [ ] ViewContext text model binding helper.
 69. [ ] ViewContext element tree installation helper.
+70. [ ] ViewContext action registration helper.
+71. [ ] ViewContext key binding helper.
+72. [ ] ViewContext text edit binding helper.
+73. [ ] ViewContext cursor binding helper.
+74. [ ] ViewContext focus request/release element helpers.
+75. [ ] ViewContext pointer capture element helpers.
+76. [ ] Element builder click handler helper.
+77. [ ] Element builder focusable helper.
+78. [ ] Element builder key handler helper.
+79. [ ] Element builder disabled convenience helper.
+80. [ ] Element tree enabled descendant traversal query.
+81. [ ] Runtime skips disabled elements for focus activation.
+82. [ ] Runtime clears hover cursor when hovered element becomes disabled.
+83. [ ] Runtime text model lookup helper for focused element.
+84. [ ] ViewContext focused text model mutation helper.
+85. [ ] Public prelude header for core authoring APIs.
 
 ## Active Step
 
-Step 66: Element tree preorder traversal helper.
+Step 67: Element tree find-by-id convenience helper.
 
 ## Risks
 

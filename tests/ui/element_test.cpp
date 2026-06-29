@@ -6,6 +6,7 @@
 #include <concepts>
 #include <memory>
 #include <span>
+#include <vector>
 
 namespace {
 
@@ -1452,6 +1453,33 @@ int test_element_tree_hit_test_root_handles_empty_tree() {
       : 96;
 }
 
+int test_element_tree_reports_preorder_ids_in_structure_order() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.set_root(std::make_unique<NamedElement>(1));
+  const cgpui::ElementId first_child_id =
+      tree.append_child(root_id, std::make_unique<NamedElement>(2));
+  const cgpui::ElementId second_child_id =
+      tree.append_child(root_id, std::make_unique<NamedElement>(3));
+  const cgpui::ElementId grandchild_id =
+      tree.append_child(first_child_id, std::make_unique<NamedElement>(4));
+
+  const std::vector<cgpui::ElementId> ids = tree.preorder_ids();
+  const std::vector<cgpui::ElementId> expected{
+      root_id,
+      first_child_id,
+      grandchild_id,
+      second_child_id,
+  };
+
+  return ids == expected ? 0 : 155;
+}
+
+int test_element_tree_preorder_ids_handles_empty_tree() {
+  cgpui::ElementTree tree;
+  return tree.preorder_ids().empty() ? 0 : 156;
+}
+
 int test_base_element_event_handler_defaults_to_unhandled() {
   TestElement element;
   element.assign_id(cgpui::ElementId{30});
@@ -1793,6 +1821,15 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_hit_test_root_handles_empty_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_tree_reports_preorder_ids_in_structure_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_preorder_ids_handles_empty_tree();
       result != 0) {
     return result;
   }

@@ -639,6 +639,25 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 66: Element tree preorder traversal helper.
+- Added RED `element_test` coverage for `ElementTree::preorder_ids()` returning
+  root-first structural order, including a grandchild inserted after a sibling
+  to prove traversal is not raw storage order; the test failed to compile
+  because the helper did not exist.
+- Implemented Step 66 in `codex/element-tree-preorder-traversal`: added a
+  header-only `ElementTree::preorder_ids()` helper backed by recursive child
+  traversal and an empty-tree safe path.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Extended the current 20-step queue through Step 85 with small GPUI-core API
+  slices centered on traversal, ViewContext authoring helpers, builder
+  interaction helpers, and disabled-state routing polish.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element
