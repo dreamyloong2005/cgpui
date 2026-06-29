@@ -14,6 +14,10 @@ int main() {
   state.framebuffer_size = descriptor.size;
   cgpui::PlatformEvent event = cgpui::WindowRedrawRequested{};
   (void)event;
+  cgpui::PlatformEvent ime_event = cgpui::ImeComposition{
+      .phase = cgpui::ImeCompositionPhase::update,
+      .text = "x"};
+  (void)ime_event;
 
   cgpui::EntityStore<int> entities;
   const auto entity_id = entities.insert(1);

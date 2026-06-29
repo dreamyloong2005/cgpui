@@ -174,6 +174,35 @@ int test_text_model_applies_key_edit_actions() {
   return 0;
 }
 
+int test_text_model_tracks_ime_composition() {
+  cgpui::TextModel model("ab");
+
+  model.set_composition_text("preedit");
+  if (!model.has_composition() ||
+      model.composition_text() != std::string_view{"preedit"} ||
+      model.text() != std::string_view{"ab"}) {
+    return 30;
+  }
+
+  model.set_composition_text("\xE4\xB8\xAD");
+  if (model.composition_text() != std::string_view{"\xE4\xB8\xAD"} ||
+      model.text() != std::string_view{"ab"}) {
+    return 31;
+  }
+
+  model.commit_composition();
+  if (model.has_composition() || model.text() != std::string_view{"ab\xE4\xB8\xAD"} ||
+      model.cursor() != model.text().size()) {
+    return 32;
+  }
+
+  model.set_composition_text("draft");
+  model.cancel_composition();
+  return !model.has_composition() && model.text() == std::string_view{"ab\xE4\xB8\xAD"}
+             ? 0
+             : 33;
+}
+
 } // namespace
 
 int main() {
@@ -203,6 +232,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_applies_key_edit_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_tracks_ime_composition();
       result != 0) {
     return result;
   }

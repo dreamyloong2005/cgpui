@@ -389,6 +389,20 @@
 - Verified targeted tests: `xmake test -P . clipboard_test/default core_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 23/23.
+- Started Step 39: IME composition skeleton for Win32 and Wayland.
+- Added RED `text_model_test` coverage for text-model composition update,
+  commit, and cancel; the test failed because composition APIs did not exist.
+- Added RED `window_runtime_test` coverage for `ImeComposition`,
+  `ImeCompositionPhase`, `EventKind::ime_composition`, keyboard-focus routing
+  of composition events, focused text-model preedit update, and commit
+  insertion; the test failed because the event/model APIs did not exist.
+- Implemented Step 39 in `codex/ime-composition-skeleton`: added
+  `ImeComposition` platform events, `ime_composition` routing kind, text-model
+  composition state, and runtime routing from focused IME events into bound text
+  models.
+- Verified targeted tests: `xmake test -P . text_model_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default` passed 4/4.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 23/23.
 - Started Step 34: Update scheduling that requests redraw after model/view
   changes.
 - Added RED `window_runtime_test` coverage for invalidation-triggered redraw

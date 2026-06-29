@@ -125,6 +125,7 @@ enum class EventKind {
   pointer_scrolled,
   keyboard_key,
   text_input,
+  ime_composition,
 };
 
 struct EventRoute {

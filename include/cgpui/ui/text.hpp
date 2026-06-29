@@ -48,6 +48,14 @@ class TextModel {
     return selection_head_;
   }
 
+  [[nodiscard]] bool has_composition() const {
+    return has_composition_;
+  }
+
+  [[nodiscard]] std::string_view composition_text() const {
+    return composition_text_;
+  }
+
   [[nodiscard]] TextSelectionRange selection() const {
     const std::size_t start = std::min(selection_anchor_, selection_head_);
     const std::size_t end = std::max(selection_anchor_, selection_head_);
@@ -66,6 +74,24 @@ class TextModel {
 
   void clear_selection() {
     collapse_selection_to_cursor();
+  }
+
+  void set_composition_text(std::string_view text) {
+    composition_text_ = std::string(text);
+    has_composition_ = true;
+  }
+
+  void commit_composition() {
+    if (!has_composition_) {
+      return;
+    }
+    std::string committed = std::move(composition_text_);
+    clear_composition();
+    insert_text(committed);
+  }
+
+  void cancel_composition() {
+    clear_composition();
   }
 
   void insert_text(std::string_view text) {
@@ -139,6 +165,11 @@ class TextModel {
   }
 
  private:
+  void clear_composition() {
+    composition_text_.clear();
+    has_composition_ = false;
+  }
+
   [[nodiscard]] std::size_t clamp_offset(std::size_t offset) const {
     return std::min(offset, text_.size());
   }
@@ -205,9 +236,11 @@ class TextModel {
   }
 
   std::string text_;
+  std::string composition_text_;
   std::size_t cursor_ = 0;
   std::size_t selection_anchor_ = 0;
   std::size_t selection_head_ = 0;
+  bool has_composition_ = false;
 };
 
 } // namespace cgpui

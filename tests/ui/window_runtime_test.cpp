@@ -399,6 +399,12 @@ class RecordingView final : public cgpui::View {
       text_input_saw_keyboard_focus_element_owner =
           context.input.keyboard_focus_element_owner ==
           focused_keyboard_element_id;
+    } else if (std::holds_alternative<cgpui::ImeComposition>(event)) {
+      ime_composition_count += 1;
+      ime_composition_saw_keyboard_focus = context.input.keyboard_focused;
+      ime_composition_saw_keyboard_focus_element_owner =
+          context.input.keyboard_focus_element_owner ==
+          focused_keyboard_element_id;
     }
 
     if (request_redraw_on_event && event_redraw_requests == 0) {
@@ -425,6 +431,7 @@ class RecordingView final : public cgpui::View {
   int pointer_scroll_count = 0;
   int keyboard_key_count = 0;
   int text_input_count = 0;
+  int ime_composition_count = 0;
   int event_redraw_requests = 0;
   bool request_redraw_on_event = false;
   bool consume_next_event = false;
@@ -482,6 +489,8 @@ class RecordingView final : public cgpui::View {
   bool text_input_saw_keyboard_focus = false;
   bool text_input_saw_keyboard_focus_owner = false;
   bool text_input_saw_keyboard_focus_element_owner = false;
+  bool ime_composition_saw_keyboard_focus = false;
+  bool ime_composition_saw_keyboard_focus_element_owner = false;
   bool last_event_result_consumed = false;
   bool last_event_result_cancelled = false;
   bool saw_event_route = false;
@@ -2358,6 +2367,98 @@ int test_runtime_routes_text_input_to_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* ime_composition_fixture = nullptr;
+
+void dispatch_ime_composition_sequence() {
+  auto& callback = ime_composition_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::ImeComposition{
+      .phase = cgpui::ImeCompositionPhase::update,
+      .text = "draft"});
+  callback(cgpui::ImeComposition{
+      .phase = cgpui::ImeCompositionPhase::commit,
+      .text = "\xE4\xB8\xAD"});
+}
+
+int test_runtime_routes_ime_composition_to_focused_text_model() {
+  RuntimeFixture fixture;
+  ime_composition_fixture = &fixture;
+  fixture.app.on_run = &dispatch_ime_composition_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model;
+  std::optional<cgpui::EventDispatchRecord> update_record;
+  std::optional<cgpui::EventDispatchRecord> commit_record;
+  bool update_saw_composition = false;
+  bool update_changed_text = false;
+  bool commit_cleared_composition = false;
+  bool commit_inserted_text = false;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::ime_composition) {
+          return;
+        }
+        if (!update_record.has_value()) {
+          update_record = record;
+          update_saw_composition =
+              model.has_composition() &&
+              model.composition_text() == std::string_view{"draft"};
+          update_changed_text = !model.text().empty();
+        } else {
+          commit_record = record;
+          commit_cleared_composition = !model.has_composition();
+          commit_inserted_text =
+              model.text() == std::string_view{"\xE4\xB8\xAD"};
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  ime_composition_fixture = nullptr;
+
+  if (result != 0) {
+    return 193;
+  }
+  if (fixture.view.keyboard_key_count != 1 ||
+      fixture.view.ime_composition_count != 2) {
+    return 194;
+  }
+  if (!update_record.has_value() || !commit_record.has_value()) {
+    return 195;
+  }
+  if (update_record->route.event_kind != cgpui::EventKind::ime_composition ||
+      commit_record->event_kind != cgpui::EventKind::ime_composition) {
+    return 196;
+  }
+  if (!update_record->route.target_element_id.has_value() ||
+      *update_record->route.target_element_id != cgpui::ElementId{21} ||
+      !commit_record->route.target_element_id.has_value() ||
+      *commit_record->route.target_element_id != cgpui::ElementId{21}) {
+    return 197;
+  }
+  if (!fixture.view.ime_composition_saw_keyboard_focus ||
+      !fixture.view.ime_composition_saw_keyboard_focus_element_owner) {
+    return 198;
+  }
+  if (!update_saw_composition || update_changed_text ||
+      !commit_cleared_composition || !commit_inserted_text) {
+    return 199;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -2470,6 +2571,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_text_input_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_routes_ime_composition_to_focused_text_model();
       result != 0) {
     return result;
   }

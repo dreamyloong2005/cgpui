@@ -66,12 +66,12 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 36. [x] Text selection range model.
 37. [x] Text key editing actions for delete, movement, and selection.
 38. [x] Clipboard abstraction for Win32 and Wayland.
-39. [ ] IME composition skeleton for Win32 and Wayland.
+39. [x] IME composition skeleton for Win32 and Wayland.
 40. [ ] Real interactive demo using the new API surface.
 
 ## Active Step
 
-Step 39: IME composition skeleton for Win32 and Wayland.
+Step 40: Real interactive demo using the new API surface.
 
 ## Risks
 

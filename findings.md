@@ -377,3 +377,14 @@
 - Keeping the factory in `cgpui_platform` instead of the Win32/Wayland leaf
   targets avoids duplicate definitions when examples link both shared platform
   code and a platform-specific implementation.
+
+## 2026-06-30 IME Composition Skeleton
+
+- IME composition should be a separate platform event from `TextInput` because
+  update/preedit text is transient while commit text mutates the text buffer.
+- Composition events should use the same keyboard-focus element route as key
+  and text-input events; this lets Win32 and Wayland feed future IME messages
+  into the focused text model without inventing a parallel routing path.
+- The first text-model composition state can stay as one optional UTF-8 string:
+  update replaces the preedit text, commit inserts it through normal text
+  insertion, and cancel clears it without changing the underlying buffer.

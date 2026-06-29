@@ -27,6 +27,9 @@ EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<TextInput>(event)) {
     return EventKind::text_input;
   }
+  if (std::holds_alternative<ImeComposition>(event)) {
+    return EventKind::ime_composition;
+  }
   return EventKind::unknown;
 }
 
@@ -48,7 +51,8 @@ std::optional<Point> pointer_position_for(const PlatformEvent& event) {
 
 bool is_keyboard_routed_event(const PlatformEvent& event) {
   return std::holds_alternative<KeyboardKey>(event) ||
-         std::holds_alternative<TextInput>(event);
+         std::holds_alternative<TextInput>(event) ||
+         std::holds_alternative<ImeComposition>(event);
 }
 
 bool modifiers_equal(KeyboardModifiers lhs, KeyboardModifiers rhs) {
@@ -314,6 +318,25 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
           text_models_.find(keyboard_focus_element_owner_->value);
       if (model != text_models_.end() && model->second != nullptr) {
         model->second->insert_text(text->text);
+      }
+    }
+    if (const auto* composition = std::get_if<ImeComposition>(&event);
+        composition != nullptr && keyboard_focus_element_owner_.has_value()) {
+      const auto model =
+          text_models_.find(keyboard_focus_element_owner_->value);
+      if (model != text_models_.end() && model->second != nullptr) {
+        switch (composition->phase) {
+          case ImeCompositionPhase::update:
+            model->second->set_composition_text(composition->text);
+            break;
+          case ImeCompositionPhase::commit:
+            model->second->set_composition_text(composition->text);
+            model->second->commit_composition();
+            break;
+          case ImeCompositionPhase::cancel:
+            model->second->cancel_composition();
+            break;
+        }
       }
     }
     dispatching_view_event_ = true;

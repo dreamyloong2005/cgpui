@@ -66,6 +66,18 @@ struct TextInput {
   KeyboardModifiers modifiers;
 };
 
+enum class ImeCompositionPhase {
+  update,
+  commit,
+  cancel,
+};
+
+struct ImeComposition {
+  ImeCompositionPhase phase = ImeCompositionPhase::update;
+  std::string text;
+  KeyboardModifiers modifiers;
+};
+
 using PlatformEvent = std::variant<
     WindowCloseRequested,
     WindowRedrawRequested,
@@ -75,6 +87,7 @@ using PlatformEvent = std::variant<
     PointerButton,
     PointerScrolled,
     KeyboardKey,
-    TextInput>;
+    TextInput,
+    ImeComposition>;
 
 } // namespace cgpui
