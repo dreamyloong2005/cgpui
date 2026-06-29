@@ -206,9 +206,11 @@ target("hello_window")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
         add_tests("windows_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})
+        add_tests("windows_resize_after_first_frame", {runenvs = {CGPUI_RESIZE_AFTER_FIRST_FRAME = "1"}})
     elseif is_plat("linux") then
         add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
         add_tests("linux_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})
+        add_tests("linux_resize_after_first_frame", {runenvs = {CGPUI_RESIZE_AFTER_FIRST_FRAME = "1"}})
     elseif is_plat("macosx") then
         add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
         add_frameworks("AppKit", "QuartzCore", "Metal")

@@ -201,23 +201,43 @@ int main() {
     return 26;
   }
 
+  const std::string linux_hello_window_branch =
+      platform_branch(hello_window_target_text, "linux");
+  if (linux_hello_window_branch.empty()) {
+    return 27;
+  }
+  if (!contains(linux_hello_window_branch, "CGPUI_RESIZE_AFTER_FIRST_FRAME")) {
+    return 28;
+  }
+  if (!contains(linux_hello_window_branch,
+                "add_tests(\"linux_resize_after_first_frame\"")) {
+    return 29;
+  }
+
   const std::string windows_hello_window_branch =
       platform_branch(hello_window_target_text, "windows");
   if (windows_hello_window_branch.empty()) {
-    return 27;
+    return 30;
   }
   if (!contains(windows_hello_window_branch, "cgpui_platform_win32")) {
-    return 28;
+    return 31;
   }
   if (!contains(windows_hello_window_branch, "cgpui_renderer_vulkan")) {
-    return 29;
+    return 32;
   }
   if (!contains(windows_hello_window_branch, "CGPUI_EXIT_AFTER_FIRST_FRAME")) {
-    return 30;
+    return 33;
   }
   if (!contains(windows_hello_window_branch,
                 "add_tests(\"windows_first_frame\"")) {
-    return 31;
+    return 34;
+  }
+  if (!contains(windows_hello_window_branch, "CGPUI_RESIZE_AFTER_FIRST_FRAME")) {
+    return 35;
+  }
+  if (!contains(windows_hello_window_branch,
+                "add_tests(\"windows_resize_after_first_frame\"")) {
+    return 36;
   }
 
   return 0;
