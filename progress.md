@@ -110,6 +110,19 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default element_test/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 15: Pointer capture routing to owner id.
+- Added design and implementation plan docs for element-level pointer capture
+  overriding hit-tested pointer routes.
+- Added a RED runtime test for `ViewInputState::pointer_capture_element_owner`,
+  `capture_pointer(ElementId)`, owner-matched release, wrong-owner release, and
+  capture overriding hit-tested `EventRoute::target_element_id`; the test failed
+  because the element capture APIs did not exist.
+- Implemented Step 15 in `codex/pointer-capture-routing`: runtime stores an
+  optional captured `ElementId`, exposes it through input state, routes pointer
+  events to it before hit testing, and releases it only when the owner matches.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default element_test/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
 - Started Step 12: Layout pass for simple vertical stack.
 - Added design and implementation plan docs for a simple owned-child vertical
   stack element.

@@ -117,6 +117,7 @@ int WindowRuntime::run(
   viewport_size_ = descriptor.size;
   input_ = {};
   pointer_capture_owner_.reset();
+  pointer_capture_element_owner_.reset();
   keyboard_focus_owner_.reset();
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_.reset();
@@ -208,7 +209,10 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       input_.pointer_position = scrolled->position;
     }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
-    if (element_root_ != nullptr) {
+    if (pointer_capture_element_owner_.has_value() &&
+        pointer_position_for(event).has_value()) {
+      current_event_route_->target_element_id = pointer_capture_element_owner_;
+    } else if (element_root_ != nullptr) {
       if (const std::optional<Point> pointer_position =
               pointer_position_for(event);
           pointer_position.has_value()) {
@@ -264,7 +268,9 @@ void WindowRuntime::fail_and_quit(Error error) {
 WindowRuntimeContext WindowRuntime::context() {
   ViewInputState input = input_;
   input.pointer_capture_owner = pointer_capture_owner_;
-  input.pointer_captured = pointer_capture_owner_ == root_view_id_;
+  input.pointer_capture_element_owner = pointer_capture_element_owner_;
+  input.pointer_captured = pointer_capture_owner_ == root_view_id_ ||
+                           pointer_capture_element_owner_.has_value();
   input.keyboard_focus_owner = keyboard_focus_owner_;
   input.keyboard_focused = keyboard_focus_owner_ == root_view_id_;
 
@@ -313,6 +319,12 @@ void WindowRuntime::capture_pointer(ViewId view_id) {
   pointer_capture_owner_ = view_id;
 }
 
+void WindowRuntime::capture_pointer(ElementId element_id) {
+  if (element_id.value != 0) {
+    pointer_capture_element_owner_ = element_id;
+  }
+}
+
 void WindowRuntime::release_pointer() {
   release_pointer(root_view_id_);
 }
@@ -320,6 +332,12 @@ void WindowRuntime::release_pointer() {
 void WindowRuntime::release_pointer(ViewId view_id) {
   if (pointer_capture_owner_ == view_id) {
     pointer_capture_owner_.reset();
+  }
+}
+
+void WindowRuntime::release_pointer(ElementId element_id) {
+  if (pointer_capture_element_owner_ == element_id) {
+    pointer_capture_element_owner_.reset();
   }
 }
 

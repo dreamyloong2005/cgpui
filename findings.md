@@ -131,3 +131,12 @@
   reconcile, and layout scheduling are still outside the runtime.
 - Pointer capture should not be folded into hit routing yet; Step 15 can decide
   when capture should override a fresh hit-test result.
+
+## 2026-06-30 Pointer Capture Routing
+
+- Element-level capture can coexist with the older root-view capture state by
+  storing a separate optional `ElementId` owner.
+- Capture should override fresh hit testing only for pointer events, preserving
+  non-pointer routes.
+- Owner-matched release keeps the API soft-fail and mirrors the existing
+  view-owner release behavior.
