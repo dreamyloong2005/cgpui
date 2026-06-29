@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -67,6 +68,52 @@ class ElementTree {
     parent_node = find_node(parent);
     parent_node->children.push_back(id);
     return id;
+  }
+
+  [[nodiscard]] ElementId reconcile_root(std::unique_ptr<Element> element) {
+    if (!element) {
+      return {};
+    }
+    if (root_id_.value == 0) {
+      return set_root(std::move(element));
+    }
+
+    Node* root_node = find_node(root_id_);
+    if (root_node == nullptr) {
+      return set_root(std::move(element));
+    }
+
+    element->assign_id(root_id_);
+    root_node->element = std::move(element);
+    return root_id_;
+  }
+
+  [[nodiscard]] ElementId reconcile_child(
+      ElementId parent,
+      std::size_t index,
+      std::unique_ptr<Element> element) {
+    Node* parent_node = find_node(parent);
+    if (parent_node == nullptr || !element) {
+      return {};
+    }
+
+    if (index == parent_node->children.size()) {
+      return append_child(parent, std::move(element));
+    }
+    if (index > parent_node->children.size()) {
+      return {};
+    }
+
+    const ElementId child_id = parent_node->children[index];
+    Node* child_node = find_node(child_id);
+    if (child_node == nullptr) {
+      return {};
+    }
+
+    element->assign_id(child_id);
+    child_node->element = std::move(element);
+    child_node->parent = parent;
+    return child_id;
   }
 
   [[nodiscard]] ElementId root_id() const {

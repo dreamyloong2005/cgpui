@@ -72,3 +72,12 @@
 - The container intentionally rejects unknown parents softly with
   `ElementId{0}`; richer diagnostics can wait until tree construction APIs are
   more expressive.
+
+## 2026-06-30 Element Reconcile Pass
+
+- A parent-local index reconcile is enough for the first pass because Step 8
+  already records ordered children.
+- Reconcile should replace element instances while preserving their assigned
+  ids; this gives later layout/routing steps stable ids across simple rebuilds.
+- Keyed diffing, pruning, and type-aware compatibility checks are intentionally
+  outside this slice.

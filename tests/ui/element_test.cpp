@@ -134,6 +134,96 @@ int test_element_tree_replaces_root_with_fresh_tree() {
   return root != nullptr && root->value() == 3 ? 0 : 17;
 }
 
+int test_element_tree_reconciles_root_in_place() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.set_root(std::make_unique<NamedElement>(1));
+  const cgpui::ElementId reconciled_root_id =
+      tree.reconcile_root(std::make_unique<NamedElement>(10));
+
+  if (reconciled_root_id != root_id || tree.root_id() != root_id) {
+    return 18;
+  }
+
+  const auto* root = dynamic_cast<const NamedElement*>(tree.get(root_id));
+  return root != nullptr && root->value() == 10 && root->id() == root_id
+      ? 0
+      : 19;
+}
+
+int test_element_tree_reconciles_children_by_index() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.reconcile_root(std::make_unique<NamedElement>(1));
+  const cgpui::ElementId first_child_id =
+      tree.reconcile_child(root_id, 0, std::make_unique<NamedElement>(2));
+  const cgpui::ElementId second_child_id =
+      tree.reconcile_child(root_id, 1, std::make_unique<NamedElement>(3));
+
+  const cgpui::ElementId reconciled_first_child_id =
+      tree.reconcile_child(root_id, 0, std::make_unique<NamedElement>(20));
+  const cgpui::ElementId reconciled_second_child_id =
+      tree.reconcile_child(root_id, 1, std::make_unique<NamedElement>(30));
+  if (reconciled_first_child_id != first_child_id ||
+      reconciled_second_child_id != second_child_id) {
+    return 20;
+  }
+
+  const std::span<const cgpui::ElementId> children = tree.children(root_id);
+  if (children.size() != 2 || children[0] != first_child_id ||
+      children[1] != second_child_id) {
+    return 21;
+  }
+
+  const auto* first_child =
+      dynamic_cast<const NamedElement*>(tree.get(first_child_id));
+  const auto* second_child =
+      dynamic_cast<const NamedElement*>(tree.get(second_child_id));
+  if (first_child == nullptr || first_child->value() != 20 ||
+      first_child->id() != first_child_id || second_child == nullptr ||
+      second_child->value() != 30 || second_child->id() != second_child_id) {
+    return 22;
+  }
+
+  if (!tree.parent(first_child_id).has_value() ||
+      *tree.parent(first_child_id) != root_id ||
+      !tree.parent(second_child_id).has_value() ||
+      *tree.parent(second_child_id) != root_id) {
+    return 23;
+  }
+
+  return 0;
+}
+
+int test_element_tree_reconcile_appends_new_child_index() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.reconcile_root(std::make_unique<NamedElement>(1));
+  const cgpui::ElementId first_child_id =
+      tree.reconcile_child(root_id, 0, std::make_unique<NamedElement>(2));
+  const cgpui::ElementId second_child_id =
+      tree.reconcile_child(root_id, 1, std::make_unique<NamedElement>(3));
+
+  if (second_child_id.value <= first_child_id.value) {
+    return 24;
+  }
+  const std::span<const cgpui::ElementId> children = tree.children(root_id);
+  return children.size() == 2 && children[0] == first_child_id &&
+          children[1] == second_child_id
+      ? 0
+      : 25;
+}
+
+int test_element_tree_reconcile_rejects_unknown_parent() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId missing = tree.reconcile_child(
+      cgpui::ElementId{123},
+      0,
+      std::make_unique<NamedElement>(1));
+  return missing.value == 0 && tree.get(cgpui::ElementId{123}) == nullptr ? 0
+                                                                          : 26;
+}
+
 } // namespace
 
 int main() {
@@ -155,6 +245,22 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_replaces_root_with_fresh_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_reconciles_root_in_place();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_reconciles_children_by_index();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_reconcile_appends_new_child_index();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_reconcile_rejects_unknown_parent();
       result != 0) {
     return result;
   }

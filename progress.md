@@ -64,3 +64,10 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 21/21.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 18/18.
+- Started Step 9: Element reconcile pass.
+- Added design and implementation plan docs for a simple rebuild pass that preserves element ids.
+- Added RED tests for `ElementTree::reconcile_root`, `ElementTree::reconcile_child`, root id preservation, child id preservation by parent-local index, append-on-new-index behavior, and unknown-parent rejection; the test failed because the reconcile APIs did not exist.
+- Implemented Step 9 in `codex/element-reconcile-pass`: root reconcile replaces the root element while preserving id, and child reconcile replaces or appends children by parent/index while preserving existing child ids.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 21/21.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 18/18.
