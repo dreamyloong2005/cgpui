@@ -152,3 +152,12 @@
 - Keeping view-level and element-level focus owners as separate optional fields
   preserves old root-view focus tests while exposing the element owner needed
   for later key binding and text-input slices.
+
+## 2026-06-30 Action Command Primitive
+
+- A runtime-local action handler table is enough for the first primitive and
+  avoids a global registry before key binding or view trees exist.
+- Reusing `EventResult` for action handlers keeps consumed/cancelled semantics
+  aligned with event handling.
+- Recording the last `ActionDispatchResult` gives Step 18 a simple observable
+  target when key bindings start dispatching named actions.

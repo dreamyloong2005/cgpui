@@ -127,6 +127,7 @@ int WindowRuntime::run(
   keyboard_focus_element_owner_.reset();
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_.reset();
+  last_action_dispatch_.reset();
   current_event_route_.reset();
   event_dispatch_sequence_ = 0;
   frame_index_ = 0;
@@ -380,6 +381,32 @@ void WindowRuntime::release_keyboard_focus(ElementId element_id) {
   if (keyboard_focus_element_owner_ == element_id) {
     keyboard_focus_element_owner_.reset();
   }
+}
+
+void WindowRuntime::register_action(std::string name, ActionHandler handler) {
+  if (!name.empty() && handler) {
+    action_handlers_[std::move(name)] = std::move(handler);
+  }
+}
+
+ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
+  ActionDispatchResult dispatch{
+      .name = std::move(name),
+      .result = EventResult::unhandled()};
+
+  const auto handler = action_handlers_.find(dispatch.name);
+  if (handler != action_handlers_.end()) {
+    dispatch.handled = true;
+    dispatch.result = handler->second(context());
+  }
+
+  last_action_dispatch_ = dispatch;
+  return dispatch;
+}
+
+std::optional<ActionDispatchResult> WindowRuntime::last_action_dispatch()
+    const {
+  return last_action_dispatch_;
 }
 
 ViewId WindowRuntime::allocate_view_id() {

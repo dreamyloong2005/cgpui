@@ -11,6 +11,7 @@
 #include <functional>
 #include <optional>
 #include <span>
+#include <string>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
@@ -104,6 +105,12 @@ struct EventDispatchRecord {
   EventResult result;
 };
 
+struct ActionDispatchResult {
+  std::string name;
+  bool handled = false;
+  EventResult result;
+};
+
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
@@ -153,6 +160,8 @@ using WindowRuntimeFrameCallback =
     std::function<void(const WindowRuntimeContext&)>;
 using WindowRuntimeEventCallback =
     std::function<void(const WindowRuntimeContext&, const EventDispatchRecord&)>;
+using ActionHandler =
+    std::function<EventResult(const WindowRuntimeContext&)>;
 using WindowRuntimeErrorCallback =
     std::function<void(const Error&)>;
 
@@ -184,6 +193,9 @@ class WindowRuntime {
   void release_keyboard_focus();
   void release_keyboard_focus(ViewId view_id);
   void release_keyboard_focus(ElementId element_id);
+  void register_action(std::string name, ActionHandler handler);
+  [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
+  [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -233,6 +245,7 @@ class WindowRuntime {
   std::optional<ElementId> keyboard_focus_element_owner_;
   EventResult last_event_result_{};
   std::optional<EventDispatchRecord> last_event_dispatch_;
+  std::optional<ActionDispatchResult> last_action_dispatch_;
   std::optional<EventRoute> current_event_route_;
   const Element* element_root_ = nullptr;
   ViewId root_view_id_{1};
@@ -240,6 +253,7 @@ class WindowRuntime {
   int event_dispatch_sequence_ = 0;
   int frame_index_ = 0;
   std::unordered_map<std::type_index, std::any> entity_stores_;
+  std::unordered_map<std::string, ActionHandler> action_handlers_;
   bool should_quit_ = false;
   bool failed_ = false;
 };

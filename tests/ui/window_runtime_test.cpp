@@ -5,6 +5,7 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
@@ -267,6 +268,19 @@ class RecordingView final : public cgpui::View {
         third_allocated_view_id_was_allocated =
             context.is_view_id_allocated(third_allocated_view_id);
       }
+      if (exercise_action_dispatch && keyboard_key_count == 1) {
+        context.runtime.register_action(
+            "app.save",
+            [this](const cgpui::WindowRuntimeContext& action_context) {
+              dispatched_action_count += 1;
+              action_saw_context_view_id = action_context.view_id;
+              return cgpui::EventResult::consumed_event();
+            });
+        first_action_result = context.runtime.dispatch_action("app.save");
+        second_action_result = context.runtime.dispatch_action("app.missing");
+        last_action_result_from_context =
+            context.runtime.last_action_dispatch();
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -361,6 +375,7 @@ class RecordingView final : public cgpui::View {
   bool cancel_next_event = false;
   bool exercise_entity_context_access = false;
   bool exercise_view_identity_allocation = false;
+  bool exercise_action_dispatch = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -431,6 +446,11 @@ class RecordingView final : public cgpui::View {
   bool second_allocated_view_id_stayed_allocated = false;
   bool third_allocated_view_id_was_allocated = false;
   bool next_unallocated_view_id_was_missing = false;
+  int dispatched_action_count = 0;
+  cgpui::ViewId action_saw_context_view_id{};
+  cgpui::ActionDispatchResult first_action_result{};
+  cgpui::ActionDispatchResult second_action_result{};
+  std::optional<cgpui::ActionDispatchResult> last_action_result_from_context;
   cgpui::ViewId first_allocated_view_id{};
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
@@ -1687,6 +1707,63 @@ int test_context_allocates_stable_view_ids() {
   return 0;
 }
 
+RuntimeFixture* action_dispatch_fixture = nullptr;
+
+void dispatch_action_dispatch_sequence() {
+  auto& callback = action_dispatch_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 83,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.control = true}});
+}
+
+int test_runtime_dispatches_named_actions() {
+  RuntimeFixture fixture;
+  action_dispatch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_action_dispatch_sequence;
+  fixture.view.exercise_action_dispatch = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  action_dispatch_fixture = nullptr;
+
+  if (result != 0) {
+    return 150;
+  }
+  if (fixture.view.keyboard_key_count != 1 ||
+      fixture.view.dispatched_action_count != 1) {
+    return 151;
+  }
+  if (fixture.view.action_saw_context_view_id != fixture.view.first_view_id) {
+    return 152;
+  }
+  if (fixture.view.first_action_result.name != "app.save" ||
+      !fixture.view.first_action_result.handled ||
+      !fixture.view.first_action_result.result.consumed ||
+      fixture.view.first_action_result.result.cancelled) {
+    return 153;
+  }
+  if (fixture.view.second_action_result.name != "app.missing" ||
+      fixture.view.second_action_result.handled ||
+      fixture.view.second_action_result.result.consumed ||
+      fixture.view.second_action_result.result.cancelled) {
+    return 154;
+  }
+  if (!fixture.view.last_action_result_from_context.has_value() ||
+      fixture.view.last_action_result_from_context->name != "app.missing" ||
+      fixture.view.last_action_result_from_context->handled) {
+    return 155;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1760,6 +1837,10 @@ int main() {
     return result;
   }
   if (const int result = test_context_allocates_stable_view_ids();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_dispatches_named_actions();
       result != 0) {
     return result;
   }
