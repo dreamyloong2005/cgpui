@@ -1,4 +1,4 @@
-# CGPUI GPUI-Core 40-Step Plan
+# CGPUI GPUI-Core 60-Step Plan
 
 ## Goal
 
@@ -22,6 +22,14 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 - Steps 1-20 remain implemented and verified on `master`.
 - Steps 21-40 below are implemented, committed, merged to `master`, and verified.
+- Windows full debug test suite passes after each merge.
+- Linux/WSL full debug test suite passes for slices that touch shared UI, platform, renderer, or build surfaces.
+- `git status --short --branch` on `master` has no tracked/staged changes from the work, aside from the pre-existing untracked `.vscode/`.
+
+## Definition Of Done For The 60-Step Goal
+
+- Steps 1-40 remain implemented and verified on `master`.
+- Steps 41-60 below are implemented, committed, merged to `master`, and verified.
 - Windows full debug test suite passes after each merge.
 - Linux/WSL full debug test suite passes for slices that touch shared UI, platform, renderer, or build surfaces.
 - `git status --short --branch` on `master` has no tracked/staged changes from the work, aside from the pre-existing untracked `.vscode/`.
@@ -67,11 +75,31 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 37. [x] Text key editing actions for delete, movement, and selection.
 38. [x] Clipboard abstraction for Win32 and Wayland.
 39. [x] IME composition skeleton for Win32 and Wayland.
-40. [ ] Real interactive demo using the new API surface.
+40. [x] Real interactive demo using the new API surface.
+41. [ ] ElementTree root layout helper.
+42. [ ] ElementTree root hit-test helper.
+43. [ ] Element tree owned runtime root installation.
+44. [ ] Runtime lays out installed element trees on redraw.
+45. [ ] Element event handler hook.
+46. [ ] Runtime dispatches routed element events before view fallback.
+47. [ ] Element builder flex row/column helpers.
+48. [ ] Element builder vertical stack helper.
+49. [ ] Element builder fixed-size helper.
+50. [ ] Gap style primitive for stack and flex layout.
+51. [ ] Margin style primitive and outer layout sizing.
+52. [ ] Border paint emission from styled elements.
+53. [ ] Hidden overflow clip metadata in paint commands.
+54. [ ] Text element skeleton bound to TextModel.
+55. [ ] Runtime text edit action routing for focused text models.
+56. [ ] Runtime clipboard paste into focused text models.
+57. [ ] Runtime clipboard copy from focused text selections.
+58. [ ] Runtime clipboard cut from focused text selections.
+59. [ ] ViewContext convenience wrapper for common runtime APIs.
+60. [ ] Public app runner skeleton for GPUI-like startup.
 
 ## Active Step
 
-Step 40: Real interactive demo using the new API surface.
+Step 41: ElementTree root layout helper.
 
 ## Risks
 

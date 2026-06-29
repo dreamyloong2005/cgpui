@@ -388,3 +388,14 @@
 - The first text-model composition state can stay as one optional UTF-8 string:
   update replaces the preedit text, commit inserts it through normal text
   insertion, and cancel clears it without changing the underlying buffer.
+
+## 2026-06-30 New API Demo
+
+- The demo can exercise the new API surface without waiting for text shaping:
+  it paints element rects, a cursor rect derived from `TextModel::cursor`, and a
+  composition underline derived from the IME composition state.
+- Runtime installation can stay non-owning for Step 40 by passing the demo's
+  owned root element to `WindowRuntime::set_element_root`; later runtime-owned
+  element-tree steps can replace that with a safer ownership model.
+- `CGPUI_DEMO_INJECT_TEXT` gives the demo a scripted state-change path for
+  smoke tests while keeping real interactive behavior available in normal runs.

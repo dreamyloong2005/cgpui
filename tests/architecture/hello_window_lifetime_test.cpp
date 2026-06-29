@@ -57,6 +57,48 @@ int main() {
   if (text.find("context.window.request_close();") == std::string::npos) {
     return 15;
   }
+  if (text.find("cgpui::ElementTree") == std::string::npos) {
+    return 18;
+  }
+  if (text.find("cgpui::ElementBuilder::box()") == std::string::npos) {
+    return 19;
+  }
+  if (text.find("cgpui::TextModel") == std::string::npos) {
+    return 20;
+  }
+  if (text.find("runtime.set_element_root(") == std::string::npos) {
+    return 21;
+  }
+  if (text.find("runtime.bind_text_model(") == std::string::npos) {
+    return 22;
+  }
+  if (text.find("runtime.set_element_cursor(") == std::string::npos) {
+    return 23;
+  }
+  if (text.find("runtime.register_action(") == std::string::npos) {
+    return 24;
+  }
+  if (text.find("runtime.bind_key(") == std::string::npos) {
+    return 25;
+  }
+  if (text.find("context.runtime.request_keyboard_focus(") ==
+      std::string::npos) {
+    return 26;
+  }
+  if (text.find("context.runtime.subscribe_view_to_entity(") ==
+      std::string::npos) {
+    return 27;
+  }
+  if (text.find("context.runtime.notify_entity_changed(") ==
+      std::string::npos) {
+    return 28;
+  }
+  if (text.find("context.runtime.request_layout();") == std::string::npos) {
+    return 29;
+  }
+  if (text.find("CGPUI_DEMO_INJECT_TEXT") == std::string::npos) {
+    return 30;
+  }
 
   std::ifstream platform_source("include/cgpui/platform/platform.hpp");
   if (!platform_source) {

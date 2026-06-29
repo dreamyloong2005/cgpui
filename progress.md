@@ -389,6 +389,24 @@
 - Verified targeted tests: `xmake test -P . clipboard_test/default core_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 23/23.
+- Started the next 20-step continuation from Step 40 and extended
+  `task_plan.md` with Steps 41-60 toward a closer GPUI core API surface.
+- Started Step 40: Real interactive demo using the new API surface.
+- Added RED `hello_window_lifetime_test` coverage requiring the demo source to
+  use `ElementTree`, `ElementBuilder`, `TextModel`, runtime element root
+  installation, text-model binding, cursor binding, actions, key bindings,
+  keyboard focus, view-model subscriptions, entity-change notification,
+  layout invalidation, and scripted text injection; the test failed because
+  the demo still painted a hard-coded rect.
+- Implemented Step 40 in `codex/new-api-demo`: `HelloView` now owns an element
+  tree and text model, paints through the element tree, binds runtime text and
+  cursor state, registers a clear-text action/key binding, requests element
+  keyboard focus, subscribes to a demo entity, notifies model changes, and
+  supports `CGPUI_DEMO_INJECT_TEXT` for smokeable state changes.
+- Verified targeted tests: `xmake test -P . hello_window_lifetime_test/default
+  hello_window/windows_first_frame hello_window/windows_resize_after_first_frame
+  hello_window/windows_close_after_first_frame ui_header_cleanliness/default`
+  passed 5/5.
 - Started Step 39: IME composition skeleton for Win32 and Wayland.
 - Added RED `text_model_test` coverage for text-model composition update,
   commit, and cancel; the test failed because composition APIs did not exist.
