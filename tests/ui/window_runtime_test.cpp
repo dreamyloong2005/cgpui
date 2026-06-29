@@ -213,6 +213,30 @@ class RecordingView final : public cgpui::View {
         emplaced_entity_read_value =
             emplaced == nullptr ? -1 : emplaced->value;
       }
+      if (exercise_view_identity_allocation && keyboard_key_count == 1) {
+        root_view_id_was_allocated =
+            context.is_view_id_allocated(context.view_id);
+        zero_view_id_was_allocated =
+            context.is_view_id_allocated(cgpui::ViewId{});
+        first_allocated_view_id = context.allocate_view_id();
+        second_allocated_view_id = context.allocate_view_id();
+        first_allocated_view_id_was_allocated =
+            context.is_view_id_allocated(first_allocated_view_id);
+        second_allocated_view_id_was_allocated =
+            context.is_view_id_allocated(second_allocated_view_id);
+        next_unallocated_view_id_was_missing =
+            !context.is_view_id_allocated(
+                cgpui::ViewId{second_allocated_view_id.value + 1});
+      }
+      if (exercise_view_identity_allocation && keyboard_key_count == 2) {
+        first_allocated_view_id_stayed_allocated =
+            context.is_view_id_allocated(first_allocated_view_id);
+        second_allocated_view_id_stayed_allocated =
+            context.is_view_id_allocated(second_allocated_view_id);
+        third_allocated_view_id = context.allocate_view_id();
+        third_allocated_view_id_was_allocated =
+            context.is_view_id_allocated(third_allocated_view_id);
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -281,6 +305,7 @@ class RecordingView final : public cgpui::View {
   bool consume_next_event = false;
   bool cancel_next_event = false;
   bool exercise_entity_context_access = false;
+  bool exercise_view_identity_allocation = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -328,6 +353,17 @@ class RecordingView final : public cgpui::View {
   cgpui::EntityId<RuntimeEntity> entity_id{};
   cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
   cgpui::EntityId<RuntimeEntity> emplaced_entity_id{};
+  bool root_view_id_was_allocated = false;
+  bool zero_view_id_was_allocated = true;
+  bool first_allocated_view_id_was_allocated = false;
+  bool second_allocated_view_id_was_allocated = false;
+  bool first_allocated_view_id_stayed_allocated = false;
+  bool second_allocated_view_id_stayed_allocated = false;
+  bool third_allocated_view_id_was_allocated = false;
+  bool next_unallocated_view_id_was_missing = false;
+  cgpui::ViewId first_allocated_view_id{};
+  cgpui::ViewId second_allocated_view_id{};
+  cgpui::ViewId third_allocated_view_id{};
   cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   cgpui::ViewId first_view_id{};
@@ -1213,6 +1249,68 @@ int test_context_can_access_runtime_entities() {
   return 0;
 }
 
+RuntimeFixture* view_identity_fixture = nullptr;
+
+void dispatch_view_identity_sequence() {
+  auto& callback = view_identity_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 80,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 81,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_context_allocates_stable_view_ids() {
+  RuntimeFixture fixture;
+  view_identity_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_identity_sequence;
+  fixture.view.exercise_view_identity_allocation = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  view_identity_fixture = nullptr;
+
+  if (result != 0) {
+    return 117;
+  }
+  if (fixture.view.keyboard_key_count != 2) {
+    return 118;
+  }
+  if (!fixture.view.root_view_id_was_allocated ||
+      fixture.view.zero_view_id_was_allocated) {
+    return 119;
+  }
+  if (fixture.view.first_allocated_view_id.value <=
+          fixture.view.first_view_id.value ||
+      fixture.view.second_allocated_view_id.value <=
+          fixture.view.first_allocated_view_id.value ||
+      fixture.view.third_allocated_view_id.value <=
+          fixture.view.second_allocated_view_id.value) {
+    return 120;
+  }
+  if (!fixture.view.first_allocated_view_id_was_allocated ||
+      !fixture.view.second_allocated_view_id_was_allocated ||
+      !fixture.view.first_allocated_view_id_stayed_allocated ||
+      !fixture.view.second_allocated_view_id_stayed_allocated ||
+      !fixture.view.third_allocated_view_id_was_allocated) {
+    return 121;
+  }
+  if (!fixture.view.next_unallocated_view_id_was_missing ||
+      fixture.view.third_allocated_view_id.value !=
+          fixture.view.second_allocated_view_id.value + 1) {
+    return 122;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1270,6 +1368,10 @@ int main() {
     return result;
   }
   if (const int result = test_context_can_access_runtime_entities();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_context_allocates_stable_view_ids();
       result != 0) {
     return result;
   }

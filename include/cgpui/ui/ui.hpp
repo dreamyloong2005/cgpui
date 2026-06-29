@@ -124,6 +124,9 @@ struct WindowRuntimeContext {
   std::optional<EventDispatchRecord> last_event_dispatch;
   int frame_index = 0;
 
+  [[nodiscard]] ViewId allocate_view_id() const;
+  [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
+
   template <typename T>
   EntityId<T> insert_entity(T entity) const;
 
@@ -172,6 +175,8 @@ class WindowRuntime {
   void request_keyboard_focus(ViewId view_id);
   void release_keyboard_focus();
   void release_keyboard_focus(ViewId view_id);
+  [[nodiscard]] ViewId allocate_view_id();
+  [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
 
   template <typename T>
@@ -219,6 +224,7 @@ class WindowRuntime {
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<EventRoute> current_event_route_;
   ViewId root_view_id_{1};
+  std::uint64_t next_view_id_ = 2;
   int event_dispatch_sequence_ = 0;
   int frame_index_ = 0;
   std::unordered_map<std::type_index, std::any> entity_stores_;

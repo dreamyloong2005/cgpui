@@ -25,7 +25,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 3. [x] Event routing shell: add a root-level dispatch function that can later route to element/view ids.
 4. [x] EntityId and EntityStore skeleton: typed ids, insert/get/remove lifecycle.
 5. [x] Context entity access: expose safe entity mutation/read helpers through a context object.
-6. [ ] View identity allocation: allocate stable ids beyond the root view.
+6. [x] View identity allocation: allocate stable ids beyond the root view.
 7. [ ] ElementId and Element base API: minimal polymorphic element contract.
 8. [ ] Element tree container: store children, parent links, and root element id.
 9. [ ] Element reconcile pass: preserve ids across simple rebuilds.
@@ -43,7 +43,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 6: View identity allocation.
+Step 7: ElementId and Element base API.
 
 ## Risks
 

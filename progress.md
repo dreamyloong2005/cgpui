@@ -42,3 +42,10 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default entity_store_test/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 20/20.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 17/17.
+- Started Step 6: View identity allocation.
+- Added design and implementation plan docs for runtime-owned `ViewId` allocation.
+- Added a RED runtime test for `WindowRuntimeContext::allocate_view_id`, `WindowRuntimeContext::is_view_id_allocated`, monotonic allocation after the root view, and cross-event allocation stability; the test failed because those context APIs did not exist.
+- Implemented Step 6 in `codex/view-identity-allocation`: `WindowRuntime` allocates monotonic view ids starting after the root view and recognizes root/allocated ids for the runtime lifetime.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 20/20.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 17/17.

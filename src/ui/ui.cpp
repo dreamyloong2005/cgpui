@@ -311,6 +311,16 @@ void WindowRuntime::release_keyboard_focus(ViewId view_id) {
   }
 }
 
+ViewId WindowRuntime::allocate_view_id() {
+  const ViewId view_id{next_view_id_};
+  next_view_id_ += 1;
+  return view_id;
+}
+
+bool WindowRuntime::is_view_id_allocated(ViewId view_id) const {
+  return view_id.value != 0 && view_id.value < next_view_id_;
+}
+
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
   viewport_size_ = size;
   if (renderer_ == nullptr) {
@@ -322,6 +332,14 @@ Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
     fail_and_quit(result.error());
   }
   return result;
+}
+
+ViewId WindowRuntimeContext::allocate_view_id() const {
+  return runtime.allocate_view_id();
+}
+
+bool WindowRuntimeContext::is_view_id_allocated(ViewId view_id) const {
+  return runtime.is_view_id_allocated(view_id);
 }
 
 } // namespace cgpui

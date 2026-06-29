@@ -45,3 +45,11 @@
   files or platform-specific code.
 - Missing or removed entities should stay soft-fail APIs for now:
   read/mutate return `nullptr`, and remove returns `false`.
+
+## 2026-06-30 View Identity Allocation
+
+- Step 6 only needs identity allocation, not a view tree or reconcile pass.
+- Keeping `ViewId{0}` invalid, root at `ViewId{1}`, and runtime allocation
+  from `ViewId{2}` gives later element/view storage a simple stable id source.
+- A runtime-local monotonic counter is enough until later steps add removal,
+  reconciliation, or generation/index semantics.
