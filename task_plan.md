@@ -81,7 +81,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 43. [x] Element tree owned runtime root installation.
 44. [x] Runtime lays out installed element trees on redraw.
 45. [x] Element event handler hook.
-46. [ ] Runtime dispatches routed element events before view fallback.
+46. [x] Runtime dispatches routed element events before view fallback.
 47. [ ] Element builder flex row/column helpers.
 48. [ ] Element builder vertical stack helper.
 49. [ ] Element builder fixed-size helper.
@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 46: Runtime dispatches routed element events before view fallback.
+Step 47: Element builder flex row/column helpers.
 
 ## Risks
 

@@ -438,6 +438,24 @@
   `StyledElement` forward events to its child.
 - Verified targeted tests: `xmake test -P . element_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests on `master` after merging Step 45:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
+- Verified WSL Arch Linux full debug tests on `master` after merging Step 45:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+- Started Step 46: Runtime dispatches routed element events before view
+  fallback.
+- Added RED `window_runtime_test` coverage for routed owned-tree element event
+  handlers: consumed element events skip view fallback, unhandled element
+  events fall back to the view, and dispatch records preserve the routed
+  element id plus final result; the test failed because runtime did not call
+  element handlers.
+- Implemented Step 46 in `codex/runtime-element-event-dispatch`: runtime now
+  resolves the routed element id, calls the element handler before view
+  fallback, skips the view when the element consumes/cancels, and records the
+  actual dispatch result.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 44: Runtime lays out installed element trees on redraw.
 - Added RED `window_runtime_test` coverage for an owned element tree that is not
   pre-laid-out before runtime redraw; the test expected redraw to lay out the

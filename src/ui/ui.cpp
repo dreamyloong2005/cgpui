@@ -352,8 +352,25 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
       }
     }
-    dispatching_view_event_ = true;
-    last_event_result_ = view_.handle_event(event, context());
+    EventResult result = EventResult::unhandled();
+    if (current_event_route_->target_element_id.has_value()) {
+      if (Element* element =
+              routed_element(*current_event_route_->target_element_id);
+          element != nullptr) {
+        result = element->handle_event(
+            event,
+            ElementEventContext{
+                .target_element_id =
+                    *current_event_route_->target_element_id,
+            });
+      }
+    }
+    if (!result.consumed && !result.cancelled) {
+      dispatching_view_event_ = true;
+      result = view_.handle_event(event, context());
+      dispatching_view_event_ = false;
+    }
+    last_event_result_ = result;
     last_event_dispatch_ = EventDispatchRecord{
         .sequence = ++event_dispatch_sequence_,
         .view_id = current_event_route_->target_view_id,
@@ -363,7 +380,6 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     if (after_event_callback_) {
       after_event_callback_(context(), *last_event_dispatch_);
     }
-    dispatching_view_event_ = false;
     flush_deferred_redraw_request();
   }
 }
@@ -408,6 +424,32 @@ void WindowRuntime::fail_and_quit(Error error) {
     error_callback_(error);
   }
   application_.quit();
+}
+
+Element* WindowRuntime::routed_element(ElementId element_id) {
+  if (element_id.value == 0) {
+    return nullptr;
+  }
+  if (owned_element_tree_ != nullptr) {
+    return owned_element_tree_->get(element_id);
+  }
+  if (element_root_ != nullptr && element_root_->id() == element_id) {
+    return const_cast<Element*>(element_root_);
+  }
+  return nullptr;
+}
+
+const Element* WindowRuntime::routed_element(ElementId element_id) const {
+  if (element_id.value == 0) {
+    return nullptr;
+  }
+  if (owned_element_tree_ != nullptr) {
+    return owned_element_tree_->get(element_id);
+  }
+  if (element_root_ != nullptr && element_root_->id() == element_id) {
+    return element_root_;
+  }
+  return nullptr;
 }
 
 WindowRuntimeContext WindowRuntime::context() {

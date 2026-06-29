@@ -440,3 +440,13 @@
   runtime/application access can be layered later through a richer context.
 - `StyledElement` forwarding to its child preserves wrapper composition until
   styled boxes grow their own interaction behavior.
+
+## 2026-06-30 Runtime Element Event Dispatch
+
+- Runtime event dispatch can treat element handling as the first phase and the
+  existing root view as fallback, preserving old view behavior for unhandled
+  element events.
+- Owned `ElementTree` can resolve arbitrary routed ids with `get(id)`, while
+  the legacy non-owning root can only safely dispatch to the root id itself.
+- `EventDispatchRecord::result` should represent the final handler result,
+  whether that result came from an element or from the fallback view.

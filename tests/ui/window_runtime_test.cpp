@@ -557,6 +557,27 @@ class RecordingView final : public cgpui::View {
   int last_event_frame_index = -1;
 };
 
+class RuntimeEventElement final : public cgpui::FixedSizeElement {
+ public:
+  explicit RuntimeEventElement(cgpui::Size preferred_size)
+      : cgpui::FixedSizeElement(preferred_size) {}
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::ElementEventContext& context) override {
+    event_count += 1;
+    last_target_element_id = context.target_element_id;
+    saw_pointer_event =
+        saw_pointer_event || std::holds_alternative<cgpui::PointerMoved>(event);
+    return result;
+  }
+
+  int event_count = 0;
+  bool saw_pointer_event = false;
+  cgpui::ElementId last_target_element_id;
+  cgpui::EventResult result = cgpui::EventResult::unhandled();
+};
+
 class FakeWindow final : public cgpui::PlatformWindow {
  public:
   explicit FakeWindow(cgpui::WindowState state) : state_(state) {}
@@ -1390,6 +1411,125 @@ int test_runtime_lays_out_owned_element_tree_on_redraw() {
   }
   if (!routed_element_id.has_value() || *routed_element_id != root_id) {
     return 208;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* element_event_dispatch_fixture = nullptr;
+
+void dispatch_element_event_dispatch_sequence() {
+  auto& callback = element_event_dispatch_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_runtime_dispatches_consumed_element_event_before_view_fallback() {
+  RuntimeFixture fixture;
+  element_event_dispatch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_element_event_dispatch_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  RuntimeEventElement* root_ptr = root.get();
+  root_ptr->result = cgpui::EventResult::consumed_event();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  int callback_count = 0;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        callback_count += 1;
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  element_event_dispatch_fixture = nullptr;
+
+  if (result != 0) {
+    return 209;
+  }
+  if (root_ptr->event_count != 1 || !root_ptr->saw_pointer_event ||
+      root_ptr->last_target_element_id != root_id) {
+    return 210;
+  }
+  if (fixture.view.event_count != 0) {
+    return 211;
+  }
+  if (callback_count != 1 || !dispatch_record.result.consumed ||
+      dispatch_record.result.cancelled) {
+    return 212;
+  }
+  if (!dispatch_record.route.target_element_id.has_value() ||
+      *dispatch_record.route.target_element_id != root_id) {
+    return 213;
+  }
+
+  return 0;
+}
+
+int test_runtime_falls_back_to_view_after_unhandled_element_event() {
+  RuntimeFixture fixture;
+  element_event_dispatch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_element_event_dispatch_sequence;
+  fixture.view.consume_next_event = true;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  RuntimeEventElement* root_ptr = root.get();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  int callback_count = 0;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        callback_count += 1;
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  element_event_dispatch_fixture = nullptr;
+
+  if (result != 0) {
+    return 214;
+  }
+  if (root_ptr->event_count != 1 || fixture.view.event_count != 1) {
+    return 215;
+  }
+  if (fixture.view.last_route_element_id != root_id ||
+      !fixture.view.saw_event_route) {
+    return 216;
+  }
+  if (callback_count != 1 || !dispatch_record.result.consumed ||
+      dispatch_record.result.cancelled) {
+    return 217;
+  }
+  if (!dispatch_record.route.target_element_id.has_value() ||
+      *dispatch_record.route.target_element_id != root_id) {
+    return 218;
   }
 
   return 0;
@@ -2623,6 +2763,16 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_lays_out_owned_element_tree_on_redraw();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_dispatches_consumed_element_event_before_view_fallback();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_falls_back_to_view_after_unhandled_element_event();
       result != 0) {
     return result;
   }

@@ -295,6 +295,8 @@ class WindowRuntime {
   void schedule_redraw();
   void flush_deferred_redraw_request();
   void fail_and_quit(Error error);
+  [[nodiscard]] Element* routed_element(ElementId element_id);
+  [[nodiscard]] const Element* routed_element(ElementId element_id) const;
   [[nodiscard]] WindowRuntimeContext context();
   template <typename T>
   [[nodiscard]] EntityStore<T>& entity_store();
