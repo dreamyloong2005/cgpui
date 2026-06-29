@@ -682,3 +682,12 @@
 - `ActionHandler` can be declared before `WindowRuntimeContext` is defined
   because it only needs the context by reference; this lets context methods use
   the public handler alias without adding another callback type.
+
+## 2026-06-30 ViewContext Key Binding Helper
+
+- Key binding through `ViewContext` can reuse the runtime binding table without
+  changing keyboard dispatch order; a binding registered during one event is
+  available to subsequent keyboard events.
+- Keeping action registration and key binding as separate context helpers
+  mirrors the runtime API and lets later authoring helpers compose them without
+  adding a combined shortcut abstraction too early.

@@ -721,6 +721,22 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 71: ViewContext key binding helper.
+- Added RED `window_runtime_test` coverage for binding a key action through
+  `ViewContext::bind_key` during one view event and dispatching the action on a
+  later matching key event; the test failed to compile because the context
+  helper did not exist.
+- Implemented Step 71 in `codex/view-context-key-binding-helper`: added a
+  `WindowRuntimeContext::bind_key(KeyBinding)` forwarding helper over the
+  existing runtime key binding table.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

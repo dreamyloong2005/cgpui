@@ -337,6 +337,24 @@ class RecordingView final : public cgpui::View {
         view_context_last_action_result =
             context.last_action_dispatch();
       }
+      if (exercise_view_context_key_binding_helper &&
+          keyboard_key_count == 1) {
+        context.register_action(
+            "view.save",
+            [this](const cgpui::ViewContext& action_context) {
+              view_context_key_binding_action_count += 1;
+              view_context_key_binding_action_saw_keyboard_route =
+                  action_context.event_route.has_value() &&
+                  action_context.event_route->event_kind ==
+                      cgpui::EventKind::keyboard_key;
+              return cgpui::EventResult::consumed_event();
+            });
+        context.bind_key(cgpui::KeyBinding{
+            .key_code = 83,
+            .action = cgpui::KeyAction::pressed,
+            .modifiers = {.control = true},
+            .action_name = "view.save"});
+      }
       if (exercise_invalidation_requests && keyboard_key_count == 1) {
         initial_invalidation = context.runtime.invalidation_state();
         context.runtime.request_layout();
@@ -495,6 +513,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
   bool exercise_view_context_action_helper = false;
+  bool exercise_view_context_key_binding_helper = false;
   bool exercise_invalidation_requests = false;
   bool exercise_scheduled_invalidation_redraw = false;
   bool exercise_view_context_convenience = false;
@@ -586,6 +605,8 @@ class RecordingView final : public cgpui::View {
   cgpui::ActionDispatchResult view_context_first_action_result{};
   cgpui::ActionDispatchResult view_context_second_action_result{};
   std::optional<cgpui::ActionDispatchResult> view_context_last_action_result;
+  int view_context_key_binding_action_count = 0;
+  bool view_context_key_binding_action_saw_keyboard_route = false;
   cgpui::InvalidationState initial_invalidation{};
   cgpui::InvalidationState after_layout_request_invalidation{};
   cgpui::InvalidationState after_paint_request_invalidation{};
@@ -2777,6 +2798,17 @@ void dispatch_key_binding_sequence() {
       .modifiers = {.control = true}});
 }
 
+void dispatch_view_context_key_binding_sequence() {
+  auto& callback = key_binding_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 70,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 83,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.control = true}});
+}
+
 int test_runtime_dispatches_key_binding_actions() {
   RuntimeFixture fixture;
   key_binding_fixture = &fixture;
@@ -2823,6 +2855,43 @@ int test_runtime_dispatches_key_binding_actions() {
       !dispatch->handled || !dispatch->result.consumed ||
       dispatch->result.cancelled) {
     return 159;
+  }
+
+  return 0;
+}
+
+int test_view_context_binds_key_actions() {
+  RuntimeFixture fixture;
+  key_binding_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_key_binding_sequence;
+  fixture.view.exercise_view_context_key_binding_helper = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  key_binding_fixture = nullptr;
+
+  if (result != 0) {
+    return 238;
+  }
+  if (fixture.view.keyboard_key_count != 2 ||
+      fixture.view.view_context_key_binding_action_count != 1) {
+    return 239;
+  }
+  if (!fixture.view.view_context_key_binding_action_saw_keyboard_route) {
+    return 240;
+  }
+  const std::optional<cgpui::ActionDispatchResult> dispatch =
+      runtime.last_action_dispatch();
+  if (!dispatch.has_value() || dispatch->name != "view.save" ||
+      !dispatch->handled || !dispatch->result.consumed ||
+      dispatch->result.cancelled) {
+    return 241;
   }
 
   return 0;
@@ -3524,6 +3593,9 @@ int main() {
   }
   if (const int result = test_runtime_dispatches_key_binding_actions();
       result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_binds_key_actions(); result != 0) {
     return result;
   }
   if (const int result = test_runtime_routes_text_input_to_focused_text_model();

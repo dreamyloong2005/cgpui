@@ -970,6 +970,10 @@ std::optional<ActionDispatchResult> WindowRuntimeContext::last_action_dispatch()
   return runtime.last_action_dispatch();
 }
 
+void WindowRuntimeContext::bind_key(KeyBinding binding) const {
+  runtime.bind_key(std::move(binding));
+}
+
 void WindowRuntimeContext::bind_text_model(
     ElementId element_id,
     TextModel* model) const {
