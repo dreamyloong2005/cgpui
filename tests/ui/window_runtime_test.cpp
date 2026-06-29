@@ -107,12 +107,24 @@ class RecordingView final : public cgpui::View {
       const cgpui::PlatformEvent& event,
       const cgpui::WindowRuntimeContext& context) override {
     event_count += 1;
+    if (!saw_first_view_id) {
+      saw_first_view_id = true;
+      first_view_id = context.view_id;
+    } else if (context.view_id != first_view_id) {
+      view_id_stayed_stable = false;
+    }
+    last_view_id = context.view_id;
     last_event_viewport_size = context.viewport_size;
     last_event_frame_index = context.frame_index;
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
     last_pointer_captured = context.input.pointer_captured;
     last_keyboard_focused = context.input.keyboard_focused;
+    last_keyboard_focus_owner_present =
+        context.input.keyboard_focus_owner.has_value();
+    last_keyboard_focus_owner_matches_view =
+        context.input.keyboard_focus_owner.has_value() &&
+        *context.input.keyboard_focus_owner == context.view_id;
 
     if (std::holds_alternative<cgpui::WindowFocused>(event)) {
       focus_count += 1;
@@ -142,17 +154,40 @@ class RecordingView final : public cgpui::View {
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
+      if (request_keyboard_focus_owner_on_first_key &&
+          keyboard_key_count == 1) {
+        context.runtime.request_keyboard_focus(context.view_id);
+      }
+      if (release_keyboard_focus_with_wrong_owner_on_second_key &&
+          keyboard_key_count == 2) {
+        context.runtime.release_keyboard_focus(
+            cgpui::ViewId{context.view_id.value + 1});
+      }
       if (release_keyboard_focus_on_third_key && keyboard_key_count == 3) {
         context.runtime.release_keyboard_focus();
       }
+      if (release_keyboard_focus_owner_on_third_key &&
+          keyboard_key_count == 3) {
+        context.runtime.release_keyboard_focus(context.view_id);
+      }
       if (keyboard_key_count == 2) {
         second_key_saw_keyboard_focus = context.input.keyboard_focused;
+        second_key_saw_keyboard_focus_owner =
+            last_keyboard_focus_owner_matches_view;
+      } else if (keyboard_key_count == 3) {
+        third_key_saw_keyboard_focus = context.input.keyboard_focused;
+        third_key_saw_keyboard_focus_owner =
+            last_keyboard_focus_owner_matches_view;
       } else if (keyboard_key_count == 4) {
         fourth_key_saw_keyboard_focus = context.input.keyboard_focused;
+        fourth_key_saw_keyboard_focus_owner =
+            last_keyboard_focus_owner_matches_view;
       }
     } else if (std::holds_alternative<cgpui::TextInput>(event)) {
       text_input_count += 1;
       text_input_saw_keyboard_focus = context.input.keyboard_focused;
+      text_input_saw_keyboard_focus_owner =
+          last_keyboard_focus_owner_matches_view;
     }
 
     if (request_redraw_on_event && event_redraw_requests == 0) {
@@ -175,15 +210,29 @@ class RecordingView final : public cgpui::View {
   bool release_on_third_pointer_move = false;
   bool request_keyboard_focus_on_first_key = false;
   bool release_keyboard_focus_on_third_key = false;
+  bool request_keyboard_focus_owner_on_first_key = false;
+  bool release_keyboard_focus_with_wrong_owner_on_second_key = false;
+  bool release_keyboard_focus_owner_on_third_key = false;
   bool last_input_focused = false;
   bool focus_event_saw_focused = false;
   bool last_pointer_captured = false;
   bool second_pointer_move_saw_capture = false;
   bool fourth_pointer_move_saw_capture = true;
   bool last_keyboard_focused = false;
+  bool last_keyboard_focus_owner_present = false;
+  bool last_keyboard_focus_owner_matches_view = false;
   bool second_key_saw_keyboard_focus = false;
+  bool second_key_saw_keyboard_focus_owner = false;
+  bool third_key_saw_keyboard_focus = false;
+  bool third_key_saw_keyboard_focus_owner = false;
   bool fourth_key_saw_keyboard_focus = true;
+  bool fourth_key_saw_keyboard_focus_owner = true;
   bool text_input_saw_keyboard_focus = false;
+  bool text_input_saw_keyboard_focus_owner = false;
+  bool saw_first_view_id = false;
+  bool view_id_stayed_stable = true;
+  cgpui::ViewId first_view_id{};
+  cgpui::ViewId last_view_id{};
   cgpui::Size last_viewport_size{};
   cgpui::Size last_event_viewport_size{};
   cgpui::Point last_input_pointer_position{};
@@ -685,6 +734,53 @@ int test_view_can_request_and_release_keyboard_focus() {
   return 0;
 }
 
+int test_keyboard_focus_tracks_owner_view_id() {
+  RuntimeFixture fixture;
+  keyboard_focus_fixture = &fixture;
+  fixture.app.on_run = &dispatch_keyboard_focus_sequence;
+  fixture.view.request_keyboard_focus_owner_on_first_key = true;
+  fixture.view.release_keyboard_focus_with_wrong_owner_on_second_key = true;
+  fixture.view.release_keyboard_focus_owner_on_third_key = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  keyboard_focus_fixture = nullptr;
+
+  if (result != 0) {
+    return 80;
+  }
+  if (!fixture.view.saw_first_view_id ||
+      fixture.view.first_view_id.value == 0 ||
+      !fixture.view.view_id_stayed_stable) {
+    return 81;
+  }
+  if (!fixture.view.second_key_saw_keyboard_focus ||
+      !fixture.view.second_key_saw_keyboard_focus_owner) {
+    return 82;
+  }
+  if (!fixture.view.text_input_saw_keyboard_focus ||
+      !fixture.view.text_input_saw_keyboard_focus_owner) {
+    return 83;
+  }
+  if (!fixture.view.third_key_saw_keyboard_focus ||
+      !fixture.view.third_key_saw_keyboard_focus_owner) {
+    return 84;
+  }
+  if (fixture.view.fourth_key_saw_keyboard_focus ||
+      fixture.view.fourth_key_saw_keyboard_focus_owner ||
+      fixture.view.last_keyboard_focus_owner_present) {
+    return 85;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -714,6 +810,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_can_request_and_release_keyboard_focus();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_keyboard_focus_tracks_owner_view_id();
       result != 0) {
     return result;
   }

@@ -66,6 +66,7 @@ int WindowRuntime::run(
   renderer_ = nullptr;
   viewport_size_ = descriptor.size;
   input_ = {};
+  keyboard_focus_owner_.reset();
   frame_index_ = 0;
 
   auto window_result = application_.create_window(
@@ -186,13 +187,18 @@ void WindowRuntime::fail_and_quit(Error error) {
 }
 
 WindowRuntimeContext WindowRuntime::context() {
+  ViewInputState input = input_;
+  input.keyboard_focus_owner = keyboard_focus_owner_;
+  input.keyboard_focused = keyboard_focus_owner_ == root_view_id_;
+
   return WindowRuntimeContext{
       .runtime = *this,
       .application = application_,
       .window = *window_,
       .renderer = *renderer_,
+      .view_id = root_view_id_,
       .viewport_size = viewport_size_,
-      .input = input_,
+      .input = input,
       .frame_index = frame_index_};
 }
 
@@ -219,11 +225,21 @@ void WindowRuntime::release_pointer() {
 }
 
 void WindowRuntime::request_keyboard_focus() {
-  input_.keyboard_focused = true;
+  request_keyboard_focus(root_view_id_);
+}
+
+void WindowRuntime::request_keyboard_focus(ViewId view_id) {
+  keyboard_focus_owner_ = view_id;
 }
 
 void WindowRuntime::release_keyboard_focus() {
-  input_.keyboard_focused = false;
+  release_keyboard_focus(root_view_id_);
+}
+
+void WindowRuntime::release_keyboard_focus(ViewId view_id) {
+  if (keyboard_focus_owner_ == view_id) {
+    keyboard_focus_owner_.reset();
+  }
 }
 
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {

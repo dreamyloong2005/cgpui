@@ -4,7 +4,9 @@
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
 
+#include <cstdint>
 #include <functional>
+#include <optional>
 #include <span>
 #include <vector>
 
@@ -41,10 +43,17 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
+struct ViewId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(ViewId, ViewId) = default;
+};
+
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
   bool keyboard_focused = false;
+  std::optional<ViewId> keyboard_focus_owner;
   Point pointer_position{};
 };
 
@@ -53,6 +62,7 @@ struct WindowRuntimeContext {
   PlatformApplication& application;
   PlatformWindow& window;
   Renderer& renderer;
+  ViewId view_id;
   Size viewport_size;
   ViewInputState input;
   int frame_index = 0;
@@ -82,7 +92,9 @@ class WindowRuntime {
   void capture_pointer();
   void release_pointer();
   void request_keyboard_focus();
+  void request_keyboard_focus(ViewId view_id);
   void release_keyboard_focus();
+  void release_keyboard_focus(ViewId view_id);
   Result<void> resize_surface(Size size, DpiScale scale);
 
  private:
@@ -102,6 +114,8 @@ class WindowRuntime {
   Renderer* renderer_ = nullptr;
   Size viewport_size_{};
   ViewInputState input_{};
+  std::optional<ViewId> keyboard_focus_owner_;
+  ViewId root_view_id_{1};
   int frame_index_ = 0;
   bool should_quit_ = false;
   bool failed_ = false;
