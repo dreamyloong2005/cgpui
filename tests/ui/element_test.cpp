@@ -647,6 +647,24 @@ int test_element_builder_builds_flex_column_with_children() {
   return output.size.width == 30.0F && output.size.height == 28.0F ? 0 : 100;
 }
 
+int test_element_builder_builds_vertical_stack_with_children() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::v_stack()
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 12.0F, .height = 20.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 8.0F}))
+          .build();
+
+  auto* stack = dynamic_cast<cgpui::VerticalStackElement*>(element.get());
+  if (stack == nullptr || stack->children().size() != 2) {
+    return 101;
+  }
+
+  const cgpui::LayoutOutput output = stack->layout(cgpui::LayoutInput{});
+  return output.size.width == 30.0F && output.size.height == 28.0F ? 0 : 102;
+}
+
 int test_styled_element_paints_background_rect_from_layout_bounds() {
   const cgpui::Color color{
       .r = 0.1F,
@@ -1142,6 +1160,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_builds_flex_column_with_children();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_builds_vertical_stack_with_children();
       result != 0) {
     return result;
   }

@@ -331,6 +331,10 @@ class ElementBuilder {
     return ElementBuilder(Kind::column);
   }
 
+  [[nodiscard]] static ElementBuilder v_stack() {
+    return ElementBuilder(Kind::v_stack);
+  }
+
   [[nodiscard]] ElementBuilder style(Style style) && {
     style_ = style;
     return std::move(*this);
@@ -344,6 +348,13 @@ class ElementBuilder {
   }
 
   [[nodiscard]] std::unique_ptr<Element> build() && {
+    if (kind_ == Kind::v_stack) {
+      auto element = std::make_unique<VerticalStackElement>();
+      for (auto& child : children_) {
+        element->append_child(std::move(child));
+      }
+      return element;
+    }
     if (kind_ == Kind::row || kind_ == Kind::column) {
       auto element = std::make_unique<FlexElement>(
           kind_ == Kind::row ? FlexDirection::row : FlexDirection::column);
@@ -364,6 +375,7 @@ class ElementBuilder {
     box,
     row,
     column,
+    v_stack,
   };
 
   explicit ElementBuilder(Kind kind) : kind_(kind) {}

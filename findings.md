@@ -459,3 +459,12 @@
   existing flex layout, hit testing, and future gap support remain centralized.
 - Keeping box as a single-child wrapper preserves the earlier styled-box API
   while allowing row/column helpers to accept multiple chained children.
+
+## 2026-06-30 Element Builder Stack Helper
+
+- The same builder kind discriminator used for flex helpers can cover
+  `v_stack()` without changing `VerticalStackElement` itself.
+- Building a concrete `VerticalStackElement` keeps older stack-specific tests
+  and future stack-only gap behavior independent from generic flex containers.
+- The builder's accumulated child vector is now the shared path for multi-child
+  container helpers.
