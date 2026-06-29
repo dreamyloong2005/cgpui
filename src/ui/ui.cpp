@@ -377,6 +377,15 @@ void WindowRuntime::handle_redraw() {
     return;
   }
 
+  if (owned_element_tree_ != nullptr) {
+    (void)owned_element_tree_->layout_root(LayoutInput{
+        .constraints =
+            {
+                .max_size = viewport_size_,
+            },
+    });
+  }
+
   auto result = render_view(*renderer_, view_, viewport_size_);
   if (!result) {
     fail_and_quit(result.error());

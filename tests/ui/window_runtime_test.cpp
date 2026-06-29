@@ -1338,6 +1338,63 @@ int test_runtime_owns_installed_element_tree() {
       : 204;
 }
 
+RuntimeFixture* runtime_layout_owned_tree_fixture = nullptr;
+
+void dispatch_runtime_layout_owned_tree_sequence() {
+  runtime_layout_owned_tree_fixture->window.request_redraw();
+  auto& callback = runtime_layout_owned_tree_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_runtime_lays_out_owned_element_tree_on_redraw() {
+  RuntimeFixture fixture;
+  runtime_layout_owned_tree_fixture = &fixture;
+  fixture.app.on_run = &dispatch_runtime_layout_owned_tree_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 700.0F, .height = 600.0F}));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> routed_element_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        routed_element_id = record.route.target_element_id;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  runtime_layout_owned_tree_fixture = nullptr;
+
+  if (result != 0) {
+    return 205;
+  }
+  if (fixture.renderer.begin_frame_count != 1 ||
+      runtime.element_root() == nullptr ||
+      !runtime.element_root()->layout_bounds().has_value()) {
+    return 206;
+  }
+  const cgpui::Rect bounds = *runtime.element_root()->layout_bounds();
+  if (bounds.size.width != 640.0F || bounds.size.height != 480.0F) {
+    return 207;
+  }
+  if (!routed_element_id.has_value() || *routed_element_id != root_id) {
+    return 208;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* hover_state_fixture = nullptr;
 
 void dispatch_hover_state_sequence() {
@@ -2562,6 +2619,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_owns_installed_element_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_lays_out_owned_element_tree_on_redraw();
       result != 0) {
     return result;
   }

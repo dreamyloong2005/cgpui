@@ -428,6 +428,16 @@
   is installed, and routes pointer hit testing through the owned tree first.
 - Verified targeted tests: `xmake test -P . window_runtime_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Started Step 44: Runtime lays out installed element trees on redraw.
+- Added RED `window_runtime_test` coverage for an owned element tree that is not
+  pre-laid-out before runtime redraw; the test expected redraw to lay out the
+  root with viewport constraints and later pointer routing to hit the root, and
+  failed because runtime redraw did not lay out owned trees.
+- Implemented Step 44 in `codex/runtime-layout-owned-tree`: `handle_redraw`
+  now lays out the owned element tree root with the current viewport as the max
+  layout constraint before rendering the view.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 42: ElementTree root hit-test helper.
 - Added RED `element_test` coverage for `ElementTree::hit_test_root`, including
   root hit delegation, miss behavior, and empty-tree invalid hits; the test

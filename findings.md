@@ -422,3 +422,12 @@
   avoids stale pointers when ownership changes.
 - Pointer routing should use `ElementTree::hit_test_root` when an owned tree is
   installed, preserving the legacy `Element::hit_test` path for external roots.
+
+## 2026-06-30 Runtime-Owned Tree Layout
+
+- Redraw is the first safe place to auto-layout an owned element tree because
+  the runtime has current framebuffer/viewport size and can update retained
+  bounds before later pointer events rely on hit testing.
+- Using viewport size as the max layout constraint preserves existing element
+  min defaults while preventing oversized preferred roots from exceeding the
+  drawable area.
