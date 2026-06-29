@@ -203,6 +203,11 @@ target("wayland_window_source_test")
     add_files("tests/architecture/wayland_window_source_test.cpp")
     add_tests("default")
 
+target("win32_window_source_test")
+    set_kind("binary")
+    add_files("tests/architecture/win32_window_source_test.cpp")
+    add_tests("default")
+
 if is_plat("windows") then
     target("vulkan_resize_test")
         set_kind("binary")
@@ -257,6 +262,7 @@ target("hello_window")
         add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
         add_tests("windows_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})
         add_tests("windows_resize_after_first_frame", {runenvs = {CGPUI_RESIZE_AFTER_FIRST_FRAME = "1"}})
+        add_tests("windows_close_after_first_frame", {runenvs = {CGPUI_CLOSE_AFTER_FIRST_FRAME = "1"}})
     elseif is_plat("linux") then
         add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
         add_tests("linux_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})
