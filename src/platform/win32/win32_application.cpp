@@ -67,14 +67,33 @@ class Win32Window final : public PlatformWindow {
   }
 
   void update_size() {
+    const auto dpi = static_cast<float>(GetDpiForWindow(hwnd_));
+    update_size_for_dpi(dpi);
+  }
+
+  void update_size_for_dpi(float dpi) {
     RECT rect{};
     GetClientRect(hwnd_, &rect);
     const auto width = static_cast<float>(rect.right - rect.left);
     const auto height = static_cast<float>(rect.bottom - rect.top);
-    const auto dpi = static_cast<float>(GetDpiForWindow(hwnd_));
     state_.framebuffer_size = Size{width, height};
     state_.scale = DpiScale{dpi / 96.0F};
     callback_(WindowResized{.size = state_.framebuffer_size, .scale = state_.scale});
+  }
+
+  void dpi_changed(WPARAM wparam, LPARAM lparam) {
+    if (lparam != 0) {
+      const auto* rect = reinterpret_cast<const RECT*>(lparam);
+      SetWindowPos(
+          hwnd_,
+          nullptr,
+          rect->left,
+          rect->top,
+          rect->right - rect->left,
+          rect->bottom - rect->top,
+          SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    update_size_for_dpi(static_cast<float>(HIWORD(wparam)));
   }
 
   void close_requested() {
@@ -140,6 +159,11 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
     case WM_SIZE:
       if (window != nullptr) {
         window->update_size();
+      }
+      return 0;
+    case WM_DPICHANGED:
+      if (window != nullptr) {
+        window->dpi_changed(wparam, lparam);
       }
       return 0;
     case WM_CLOSE:

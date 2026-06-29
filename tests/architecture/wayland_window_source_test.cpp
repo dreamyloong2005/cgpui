@@ -120,6 +120,9 @@ int main() {
   if (!contains(text, "WaylandSurfaceHandle{.display = display_")) {
     return 4;
   }
+  if (!contains(text, ".scale = window->state_.scale")) {
+    return 54;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

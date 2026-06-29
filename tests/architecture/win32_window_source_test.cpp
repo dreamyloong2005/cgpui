@@ -111,6 +111,12 @@ int main() {
       !contains(win32_text, "WM_KEYUP")) {
     return 8;
   }
+  if (!contains(win32_text, "WM_DPICHANGED")) {
+    return 31;
+  }
+  if (!contains(win32_text, "HIWORD(wparam)")) {
+    return 32;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {
@@ -148,6 +154,21 @@ int main() {
   }
   if (!contains(input_target, "add_tests(\"default\")")) {
     return 17;
+  }
+
+  const std::string dpi_target =
+      target_block(xmake_text, "win32_dpi_scale_test");
+  if (dpi_target.empty()) {
+    return 33;
+  }
+  if (!contains(dpi_target, "tests/platform/win32_dpi_scale_test.cpp")) {
+    return 34;
+  }
+  if (!contains(dpi_target, "cgpui_platform_win32")) {
+    return 35;
+  }
+  if (!contains(dpi_target, "add_tests(\"default\")")) {
+    return 36;
   }
 
   const std::string surface_target =

@@ -15,6 +15,10 @@ bool size_equals(cgpui::Size lhs, cgpui::Size rhs) {
   return lhs.width == rhs.width && lhs.height == rhs.height;
 }
 
+bool scale_equals(cgpui::DpiScale lhs, cgpui::DpiScale rhs) {
+  return lhs.value == rhs.value;
+}
+
 bool wait_for_run_finished(const std::atomic_bool& run_finished) {
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
   while (!run_finished.load() && std::chrono::steady_clock::now() < deadline) {
@@ -40,6 +44,7 @@ int main() {
 
   bool resized = false;
   cgpui::Size observed_size{};
+  cgpui::DpiScale observed_scale{};
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Resize Test",
@@ -49,6 +54,7 @@ int main() {
             resize != nullptr && size_equals(resize->size, requested_size)) {
           resized = true;
           observed_size = resize->size;
+          observed_scale = resize->scale;
           (*app)->quit();
         } else if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
@@ -98,6 +104,12 @@ int main() {
   }
   if (!size_equals((*window)->state().framebuffer_size, requested_size)) {
     return 10;
+  }
+  if (!scale_equals(observed_scale, (*window)->state().scale)) {
+    return 11;
+  }
+  if (!scale_equals(observed_scale, cgpui::DpiScale{1.0F})) {
+    return 12;
   }
 
   return 0;
