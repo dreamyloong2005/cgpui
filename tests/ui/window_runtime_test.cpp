@@ -110,6 +110,10 @@ class RecordingView final : public cgpui::View {
     event_count += 1;
     last_event_result_consumed = context.last_event_result.consumed;
     last_event_result_cancelled = context.last_event_result.cancelled;
+    saw_event_route = context.event_route.has_value();
+    if (context.event_route) {
+      last_event_route = *context.event_route;
+    }
     saw_last_event_dispatch = context.last_event_dispatch.has_value();
     if (context.last_event_dispatch) {
       last_event_dispatch = *context.last_event_dispatch;
@@ -285,9 +289,11 @@ class RecordingView final : public cgpui::View {
   bool text_input_saw_keyboard_focus_owner = false;
   bool last_event_result_consumed = false;
   bool last_event_result_cancelled = false;
+  bool saw_event_route = false;
   bool saw_last_event_dispatch = false;
   bool saw_first_view_id = false;
   bool view_id_stayed_stable = true;
+  cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   cgpui::ViewId first_view_id{};
   cgpui::ViewId last_view_id{};
@@ -837,6 +843,89 @@ int test_runtime_reports_each_view_event_dispatch() {
   return 0;
 }
 
+int test_event_router_routes_events_to_root_view() {
+  const cgpui::ViewId root_view_id{42};
+
+  const auto pointer_route = cgpui::EventRouter::route_to_root(
+      cgpui::PointerMoved{.position = {1.0F, 2.0F}},
+      root_view_id);
+  const auto key_route = cgpui::EventRouter::route_to_root(
+      cgpui::KeyboardKey{
+          .key_code = 13,
+          .action = cgpui::KeyAction::pressed},
+      root_view_id);
+
+  if (pointer_route.target_view_id != root_view_id ||
+      pointer_route.event_kind != cgpui::EventKind::pointer_moved) {
+    return 106;
+  }
+  if (key_route.target_view_id != root_view_id ||
+      key_route.event_kind != cgpui::EventKind::keyboard_key) {
+    return 107;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* event_route_fixture = nullptr;
+
+void dispatch_event_route_sequence() {
+  event_route_fixture->window.callback(cgpui::PointerMoved{
+      .position = {21.0F, 22.0F}});
+}
+
+int test_runtime_exposes_current_event_route() {
+  RuntimeFixture fixture;
+  event_route_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_route_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  cgpui::EventDispatchRecord callback_record{};
+  cgpui::EventRoute callback_route{};
+  bool callback_saw_route = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        callback_record = record;
+        callback_saw_route = context.event_route.has_value();
+        if (context.event_route) {
+          callback_route = *context.event_route;
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  event_route_fixture = nullptr;
+
+  if (result != 0) {
+    return 108;
+  }
+  if (!fixture.view.saw_event_route ||
+      fixture.view.last_event_route.target_view_id != fixture.view.last_view_id ||
+      fixture.view.last_event_route.event_kind !=
+          cgpui::EventKind::pointer_moved) {
+    return 109;
+  }
+  if (!callback_saw_route ||
+      callback_route.target_view_id != fixture.view.last_view_id ||
+      callback_route.event_kind != cgpui::EventKind::pointer_moved) {
+    return 110;
+  }
+  if (callback_record.route.target_view_id != fixture.view.last_view_id ||
+      callback_record.route.event_kind != cgpui::EventKind::pointer_moved ||
+      callback_record.view_id != callback_record.route.target_view_id ||
+      callback_record.event_kind != callback_record.route.event_kind) {
+    return 111;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* pointer_capture_fixture = nullptr;
 
 void dispatch_pointer_capture_sequence() {
@@ -1065,6 +1154,14 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_reports_each_view_event_dispatch();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_event_router_routes_events_to_root_view();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_exposes_current_event_route();
       result != 0) {
     return result;
   }

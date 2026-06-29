@@ -76,10 +76,23 @@ enum class EventKind {
   text_input,
 };
 
+struct EventRoute {
+  ViewId target_view_id;
+  EventKind event_kind = EventKind::unknown;
+};
+
+class EventRouter {
+ public:
+  [[nodiscard]] static EventRoute route_to_root(
+      const PlatformEvent& event,
+      ViewId root_view_id);
+};
+
 struct EventDispatchRecord {
   int sequence = 0;
   ViewId view_id;
   EventKind event_kind = EventKind::unknown;
+  EventRoute route;
   EventResult result;
 };
 
@@ -100,6 +113,7 @@ struct WindowRuntimeContext {
   ViewId view_id;
   Size viewport_size;
   ViewInputState input;
+  std::optional<EventRoute> event_route;
   EventResult last_event_result;
   std::optional<EventDispatchRecord> last_event_dispatch;
   int frame_index = 0;
@@ -161,6 +175,7 @@ class WindowRuntime {
   std::optional<ViewId> keyboard_focus_owner_;
   EventResult last_event_result_{};
   std::optional<EventDispatchRecord> last_event_dispatch_;
+  std::optional<EventRoute> current_event_route_;
   ViewId root_view_id_{1};
   int event_dispatch_sequence_ = 0;
   int frame_index_ = 0;

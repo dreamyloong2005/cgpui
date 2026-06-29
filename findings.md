@@ -16,3 +16,13 @@
 - `WindowRuntimeContext::last_event_dispatch` intentionally reports the
   previous view-dispatched event while a view is handling the next event; the
   after-event callback sees the current record after it has been stored.
+
+## 2026-06-29 Event Routing Shell
+
+- A root-only router is enough for the current single-view runtime while
+  establishing the API shape that later element/view routing can replace.
+- `WindowRuntimeContext::event_route` is current during `View::handle_event`,
+  while `last_event_dispatch` remains the previous completed dispatch until the
+  view returns.
+- `EventDispatchRecord` now duplicates `view_id`/`event_kind` as compatibility
+  fields and stores the full `EventRoute` for future routing expansion.

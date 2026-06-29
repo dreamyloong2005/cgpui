@@ -75,6 +75,14 @@ EventResult View::handle_event(
   return EventResult::unhandled();
 }
 
+EventRoute EventRouter::route_to_root(
+    const PlatformEvent& event,
+    ViewId root_view_id) {
+  return EventRoute{
+      .target_view_id = root_view_id,
+      .event_kind = event_kind_for(event)};
+}
+
 WindowRuntime::WindowRuntime(
     PlatformApplication& application,
     View& view,
@@ -96,6 +104,7 @@ int WindowRuntime::run(
   keyboard_focus_owner_.reset();
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_.reset();
+  current_event_route_.reset();
   event_dispatch_sequence_ = 0;
   frame_index_ = 0;
 
@@ -182,11 +191,13 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
                scrolled != nullptr) {
       input_.pointer_position = scrolled->position;
     }
+    current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
     last_event_result_ = view_.handle_event(event, context());
     last_event_dispatch_ = EventDispatchRecord{
         .sequence = ++event_dispatch_sequence_,
-        .view_id = root_view_id_,
-        .event_kind = event_kind_for(event),
+        .view_id = current_event_route_->target_view_id,
+        .event_kind = current_event_route_->event_kind,
+        .route = *current_event_route_,
         .result = last_event_result_};
     if (after_event_callback_) {
       after_event_callback_(context(), *last_event_dispatch_);
@@ -239,6 +250,7 @@ WindowRuntimeContext WindowRuntime::context() {
       .view_id = root_view_id_,
       .viewport_size = viewport_size_,
       .input = input,
+      .event_route = current_event_route_,
       .last_event_result = last_event_result_,
       .last_event_dispatch = last_event_dispatch_,
       .frame_index = frame_index_};
