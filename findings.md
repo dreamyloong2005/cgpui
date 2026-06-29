@@ -299,3 +299,15 @@
 - Axis scrollability is derived from positive max offset, not from the current
   offset, which keeps `can_scroll_x`/`can_scroll_y` useful at both ends of a
   scroll range.
+
+## 2026-06-30 Flex Layout Basics
+
+- `FlexElement` can start as a sibling to `VerticalStackElement` rather than a
+  replacement: it keeps row/column semantics explicit without disturbing the
+  existing vertical-stack tests.
+- The first flex slice should only measure natural child sizes and clamp the
+  container output; grow, shrink, gap, align, and justify behavior can remain
+  future work.
+- Reusing the same child-first hit testing pattern as `VerticalStackElement`
+  keeps routed pointer behavior consistent once flex elements are installed as
+  runtime element roots.

@@ -264,6 +264,105 @@ int test_vertical_stack_hit_tests_children_before_self() {
   return 0;
 }
 
+int test_flex_row_lays_out_children_left_to_right() {
+  cgpui::FlexElement flex(cgpui::FlexDirection::row);
+  flex.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 12.0F,
+                                                            .height = 20.0F}));
+  flex.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 30.0F,
+                                                            .height = 8.0F}));
+
+  const cgpui::LayoutOutput output = flex.layout(cgpui::LayoutInput{});
+  if (flex.direction() != cgpui::FlexDirection::row ||
+      flex.children().size() != 2 || output.size.width != 42.0F ||
+      output.size.height != 20.0F) {
+    return 79;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      flex.children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      flex.children()[1]->layout_bounds();
+  if (!first_bounds.has_value() || !second_bounds.has_value()) {
+    return 80;
+  }
+  if (first_bounds->origin.x != 0.0F || first_bounds->origin.y != 0.0F ||
+      first_bounds->size.width != 12.0F ||
+      first_bounds->size.height != 20.0F) {
+    return 81;
+  }
+  return second_bounds->origin.x == 12.0F &&
+                 second_bounds->origin.y == 0.0F &&
+                 second_bounds->size.width == 30.0F &&
+                 second_bounds->size.height == 8.0F
+             ? 0
+             : 82;
+}
+
+int test_flex_column_lays_out_children_top_to_bottom() {
+  cgpui::FlexElement flex(cgpui::FlexDirection::column);
+  flex.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 12.0F,
+                                                            .height = 20.0F}));
+  flex.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 30.0F,
+                                                            .height = 8.0F}));
+
+  const cgpui::LayoutOutput output = flex.layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 10.0F, .height = 10.0F},
+              .max_size = {.width = 24.0F, .height = 100.0F},
+          },
+  });
+  if (flex.direction() != cgpui::FlexDirection::column ||
+      output.size.width != 24.0F || output.size.height != 28.0F) {
+    return 83;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      flex.children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 0.0F &&
+                 second_bounds->origin.y == 20.0F &&
+                 second_bounds->size.width == 30.0F &&
+                 second_bounds->size.height == 8.0F
+             ? 0
+             : 84;
+}
+
+int test_flex_hit_tests_children_before_self() {
+  cgpui::FlexElement flex(cgpui::FlexDirection::row);
+  flex.assign_id(cgpui::ElementId{20});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 10.0F, .height = 20.0F});
+  first->assign_id(cgpui::ElementId{21});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 20.0F, .height = 10.0F});
+  second->assign_id(cgpui::ElementId{22});
+  flex.append_child(std::move(first));
+  flex.append_child(std::move(second));
+
+  const cgpui::LayoutOutput output = flex.layout(cgpui::LayoutInput{});
+  if (output.size.width != 30.0F || output.size.height != 20.0F) {
+    return 85;
+  }
+  if (flex.hit_test(cgpui::Point{.x = 5.0F, .y = 5.0F}) !=
+      cgpui::ElementId{21}) {
+    return 86;
+  }
+  if (flex.hit_test(cgpui::Point{.x = 15.0F, .y = 5.0F}) !=
+      cgpui::ElementId{22}) {
+    return 87;
+  }
+  if (flex.hit_test(cgpui::Point{.x = 15.0F, .y = 15.0F}) !=
+      cgpui::ElementId{20}) {
+    return 88;
+  }
+  return flex.hit_test(cgpui::Point{.x = 31.0F, .y = 5.0F}).value == 0 ? 0
+                                                                       : 89;
+}
+
 int test_element_tree_stores_root_and_children() {
   cgpui::ElementTree tree;
 
@@ -829,6 +928,18 @@ int main() {
     return result;
   }
   if (const int result = test_vertical_stack_hit_tests_children_before_self();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_flex_row_lays_out_children_left_to_right();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_flex_column_lays_out_children_top_to_bottom();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_flex_hit_tests_children_before_self();
       result != 0) {
     return result;
   }

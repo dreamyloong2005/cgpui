@@ -148,6 +148,83 @@ class VerticalStackElement : public Element {
   std::vector<std::unique_ptr<Element>> children_;
 };
 
+enum class FlexDirection {
+  row,
+  column,
+};
+
+class FlexElement : public Element {
+ public:
+  explicit FlexElement(FlexDirection direction) : direction_(direction) {}
+
+  [[nodiscard]] FlexDirection direction() const {
+    return direction_;
+  }
+
+  void append_child(std::unique_ptr<Element> child) {
+    if (child) {
+      children_.push_back(std::move(child));
+    }
+  }
+
+  [[nodiscard]] std::span<const std::unique_ptr<Element>> children() const {
+    return children_;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    Size content_size;
+    Point child_origin;
+    for (const auto& child : children_) {
+      const LayoutOutput child_output = child->layout(LayoutInput{});
+      child->set_layout_bounds(Rect{
+          .origin = child_origin,
+          .size = child_output.size,
+      });
+
+      if (direction_ == FlexDirection::row) {
+        child_origin.x += child_output.size.width;
+        content_size.width += child_output.size.width;
+        content_size.height =
+            std::max(content_size.height, child_output.size.height);
+      } else {
+        child_origin.y += child_output.size.height;
+        content_size.width =
+            std::max(content_size.width, child_output.size.width);
+        content_size.height += child_output.size.height;
+      }
+    }
+
+    const LayoutOutput output{
+        .size = constrain_size(content_size, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const std::optional<Rect> bounds = layout_bounds();
+    if (!bounds.has_value() || !contains(*bounds, point)) {
+      return {};
+    }
+
+    for (auto iterator = children_.rbegin(); iterator != children_.rend();
+         ++iterator) {
+      const ElementId hit = (*iterator)->hit_test(point);
+      if (hit.value != 0) {
+        return hit;
+      }
+    }
+    return id();
+  }
+
+ private:
+  FlexDirection direction_;
+  std::vector<std::unique_ptr<Element>> children_;
+};
+
 class StyledElement : public Element {
  public:
   explicit StyledElement(Style style, std::unique_ptr<Element> child = {})

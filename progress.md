@@ -342,3 +342,14 @@
 - Verified targeted tests: `xmake test -P . scroll_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 32: Flex row/column layout basics.
+- Added RED `element_test` coverage for `FlexDirection`, `FlexElement`, row
+  left-to-right layout, column top-to-bottom layout, child bounds, constraints,
+  and child-first hit testing; the test failed because the flex APIs did not
+  exist.
+- Implemented Step 32 in `codex/flex-layout-basics`: added a minimal
+  `FlexElement` with owned children, row/column measurement, retained child
+  bounds, and child-first hit testing.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
