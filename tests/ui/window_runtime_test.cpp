@@ -303,6 +303,18 @@ class RecordingView final : public cgpui::View {
         last_action_result_from_context =
             context.runtime.last_action_dispatch();
       }
+      if (exercise_invalidation_requests && keyboard_key_count == 1) {
+        initial_invalidation = context.runtime.invalidation_state();
+        context.runtime.request_layout();
+        after_layout_request_invalidation =
+            context.runtime.invalidation_state();
+        context.runtime.request_paint();
+        after_paint_request_invalidation =
+            context.runtime.invalidation_state();
+        context.runtime.clear_invalidation();
+        after_clear_invalidation = context.runtime.invalidation_state();
+        context.runtime.request_paint();
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -398,6 +410,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_entity_context_access = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
+  bool exercise_invalidation_requests = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -473,6 +486,10 @@ class RecordingView final : public cgpui::View {
   cgpui::ActionDispatchResult first_action_result{};
   cgpui::ActionDispatchResult second_action_result{};
   std::optional<cgpui::ActionDispatchResult> last_action_result_from_context;
+  cgpui::InvalidationState initial_invalidation{};
+  cgpui::InvalidationState after_layout_request_invalidation{};
+  cgpui::InvalidationState after_paint_request_invalidation{};
+  cgpui::InvalidationState after_clear_invalidation{};
   cgpui::ViewId first_allocated_view_id{};
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
@@ -2024,6 +2041,66 @@ int test_runtime_dispatches_named_actions() {
   return 0;
 }
 
+RuntimeFixture* invalidation_fixture = nullptr;
+
+void dispatch_invalidation_sequence() {
+  auto& callback = invalidation_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 73,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_tracks_layout_and_paint_invalidation_requests() {
+  RuntimeFixture fixture;
+  invalidation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_invalidation_sequence;
+  fixture.view.exercise_invalidation_requests = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  cgpui::InvalidationState callback_invalidation{};
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        callback_invalidation = context.runtime.invalidation_state();
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  invalidation_fixture = nullptr;
+
+  if (result != 0) {
+    return 178;
+  }
+  if (fixture.view.initial_invalidation.layout ||
+      fixture.view.initial_invalidation.paint) {
+    return 179;
+  }
+  if (!fixture.view.after_layout_request_invalidation.layout ||
+      !fixture.view.after_layout_request_invalidation.paint) {
+    return 180;
+  }
+  if (!fixture.view.after_paint_request_invalidation.layout ||
+      !fixture.view.after_paint_request_invalidation.paint) {
+    return 181;
+  }
+  if (fixture.view.after_clear_invalidation.layout ||
+      fixture.view.after_clear_invalidation.paint) {
+    return 182;
+  }
+  if (runtime.invalidation_state().layout ||
+      !runtime.invalidation_state().paint || callback_invalidation.layout ||
+      !callback_invalidation.paint) {
+    return 183;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* key_binding_fixture = nullptr;
 
 void dispatch_key_binding_sequence() {
@@ -2237,6 +2314,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_dispatches_named_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_tracks_layout_and_paint_invalidation_requests();
       result != 0) {
     return result;
   }

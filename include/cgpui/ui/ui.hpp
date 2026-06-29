@@ -161,6 +161,11 @@ struct KeyBinding {
   std::string action_name;
 };
 
+struct InvalidationState {
+  bool layout = false;
+  bool paint = false;
+};
+
 enum class CursorShape {
   default_arrow,
   pointing_hand,
@@ -256,6 +261,10 @@ class WindowRuntime {
   void bind_key(KeyBinding binding);
   void bind_text_model(ElementId element_id, TextModel* model);
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
+  void request_layout();
+  void request_paint();
+  void clear_invalidation();
+  [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -318,6 +327,7 @@ class WindowRuntime {
   std::vector<KeyBinding> key_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
+  InvalidationState invalidation_state_;
   bool should_quit_ = false;
   bool failed_ = false;
 };

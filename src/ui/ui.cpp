@@ -169,6 +169,7 @@ int WindowRuntime::run(
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
   current_event_route_.reset();
+  invalidation_state_ = {};
   event_dispatch_sequence_ = 0;
   frame_index_ = 0;
 
@@ -493,6 +494,23 @@ void WindowRuntime::set_element_cursor(
     return;
   }
   element_cursors_[element_id.value] = cursor_shape;
+}
+
+void WindowRuntime::request_layout() {
+  invalidation_state_.layout = true;
+  invalidation_state_.paint = true;
+}
+
+void WindowRuntime::request_paint() {
+  invalidation_state_.paint = true;
+}
+
+void WindowRuntime::clear_invalidation() {
+  invalidation_state_ = {};
+}
+
+InvalidationState WindowRuntime::invalidation_state() const {
+  return invalidation_state_;
 }
 
 ViewId WindowRuntime::allocate_view_id() {

@@ -311,3 +311,13 @@
 - Reusing the same child-first hit testing pattern as `VerticalStackElement`
   keeps routed pointer behavior consistent once flex elements are installed as
   runtime element roots.
+
+## 2026-06-30 Runtime Invalidation
+
+- Runtime invalidation can start as observable dirty state without scheduling
+  redraws yet; Step 34 can connect dirty state to platform redraw requests.
+- A layout invalidation should imply paint invalidation because a layout pass
+  changes paint bounds, while a paint invalidation alone should not imply
+  layout work.
+- Clearing invalidation explicitly keeps tests and future frame processing able
+  to model "dirty work consumed" separately from "new work requested".

@@ -342,6 +342,17 @@
 - Verified targeted tests: `xmake test -P . scroll_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 33: Runtime invalidation requests for layout and paint.
+- Added RED `window_runtime_test` coverage for runtime layout/paint
+  invalidation state, layout requests implying paint invalidation, explicit
+  paint requests, clear behavior, and after-event observability; the test
+  failed because `InvalidationState` and invalidation APIs did not exist.
+- Implemented Step 33 in `codex/runtime-invalidation`: added
+  `InvalidationState`, `request_layout`, `request_paint`,
+  `clear_invalidation`, and `invalidation_state` on `WindowRuntime`.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
 - Started Step 32: Flex row/column layout basics.
 - Added RED `element_test` coverage for `FlexDirection`, `FlexElement`, row
   left-to-right layout, column top-to-bottom layout, child bounds, constraints,
