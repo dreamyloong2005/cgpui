@@ -171,3 +171,13 @@
   event delivery.
 - Matching only `KeyboardKey` events keeps text input independent until the text
   model and focused-text routing slices land.
+
+## 2026-06-30 Text Model
+
+- A byte-offset cursor keeps the first text model small while still allowing
+  UTF-8-safe codepoint navigation by skipping continuation bytes.
+- The source test should stay ASCII on Windows; UTF-8 examples can be expressed
+  with byte escapes to avoid MSVC code-page warnings.
+- `backspace()` deletes the codepoint before the cursor; the test originally
+  moved the cursor to offset 0 before expecting a successful second backspace,
+  which was a test expectation bug rather than an implementation bug.

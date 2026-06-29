@@ -1,6 +1,7 @@
 #include "cgpui/ui/ui.hpp"
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/text.hpp"
 
 class TestView final : public cgpui::View {
  public:
@@ -14,6 +15,8 @@ class TestView final : public cgpui::View {
 int main() {
   cgpui::PaintList paint_list;
   TestView view;
+  cgpui::TextModel text_model;
+  text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});
-  return paint_list.commands().size() == 1 ? 0 : 1;
+  return paint_list.commands().size() == 1 && text_model.text() == "x" ? 0 : 1;
 }

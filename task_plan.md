@@ -38,12 +38,12 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 16. [x] Keyboard routing to focus owner id.
 17. [x] Action/Command primitive: named actions and dispatch result.
 18. [x] Key binding table: map key events to actions.
-19. [ ] Basic text model: editable UTF-8 buffer with cursor.
+19. [x] Basic text model: editable UTF-8 buffer with cursor.
 20. [ ] Text input routing into focused text model.
 
 ## Active Step
 
-Step 19: Basic text model: editable UTF-8 buffer with cursor.
+Step 20: Text input routing into focused text model.
 
 ## Risks
 

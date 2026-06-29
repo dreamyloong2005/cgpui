@@ -239,6 +239,13 @@ target("layout_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("text_model_test")
+    set_kind("binary")
+    add_files("tests/ui/text_model_test.cpp")
+    add_deps("cgpui_core", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("window_runtime_test")
     set_kind("binary")
     add_files("tests/ui/window_runtime_test.cpp")

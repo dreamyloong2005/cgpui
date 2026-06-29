@@ -121,6 +121,21 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 19: Basic text model.
+- Added design and implementation plan docs for a minimal editable UTF-8 text
+  buffer.
+- Added a RED text-model test target for empty defaults, UTF-8 insertion,
+  cursor movement, backspace, and forward delete; the test failed because
+  `cgpui/ui/text.hpp` did not exist.
+- Implemented Step 19 in `codex/text-model`: `TextModel` stores a UTF-8 string
+  and byte-offset cursor, inserts at the cursor, moves over codepoint
+  boundaries, and supports backspace/forward delete.
+- Debugged one test expectation issue: the backspace test moved the cursor to
+  offset 0 before expecting another successful backspace, which contradicted
+  the intended "delete previous codepoint" behavior.
+- Verified targeted tests: `xmake test -P . text_model_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 23/23.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 20/20.
 - Started Step 18: Key binding table.
 - Added design and implementation plan docs for mapping key events to named
   actions.
