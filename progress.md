@@ -485,6 +485,21 @@
   accumulated children into it.
 - Verified targeted tests: `xmake test -P . element_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests on `master` after merging Step 48:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
+- Verified WSL Arch Linux full debug tests on `master` after merging Step 48:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+- Started Step 49: Element builder fixed-size helper.
+- Added RED `element_test` coverage for
+  `ElementBuilder::fixed_size(Size).build()` producing a `FixedSizeElement`
+  with the requested preferred size and normal constraint behavior; the test
+  failed because the builder helper did not exist.
+- Implemented Step 49 in `codex/element-builder-fixed-size-helper`: added a
+  fixed-size builder kind that stores the requested size and builds a
+  `FixedSizeElement` leaf.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 44: Runtime lays out installed element trees on redraw.
 - Added RED `window_runtime_test` coverage for an owned element tree that is not
   pre-laid-out before runtime redraw; the test expected redraw to lay out the

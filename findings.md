@@ -468,3 +468,12 @@
   and future stack-only gap behavior independent from generic flex containers.
 - The builder's accumulated child vector is now the shared path for multi-child
   container helpers.
+
+## 2026-06-30 Element Builder Fixed-Size Helper
+
+- `fixed_size(Size)` fits the existing builder kind model as a leaf builder,
+  not a styled box variant.
+- Building a concrete `FixedSizeElement` preserves the existing constraint and
+  retained-bounds behavior without adding a second preferred-size path.
+- The helper intentionally ignores accumulated children because fixed-size
+  elements are leaf nodes in the current element model.

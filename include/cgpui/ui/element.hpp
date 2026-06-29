@@ -335,6 +335,12 @@ class ElementBuilder {
     return ElementBuilder(Kind::v_stack);
   }
 
+  [[nodiscard]] static ElementBuilder fixed_size(Size size) {
+    ElementBuilder builder(Kind::fixed_size);
+    builder.size_ = size;
+    return builder;
+  }
+
   [[nodiscard]] ElementBuilder style(Style style) && {
     style_ = style;
     return std::move(*this);
@@ -348,6 +354,9 @@ class ElementBuilder {
   }
 
   [[nodiscard]] std::unique_ptr<Element> build() && {
+    if (kind_ == Kind::fixed_size) {
+      return std::make_unique<FixedSizeElement>(size_);
+    }
     if (kind_ == Kind::v_stack) {
       auto element = std::make_unique<VerticalStackElement>();
       for (auto& child : children_) {
@@ -376,12 +385,14 @@ class ElementBuilder {
     row,
     column,
     v_stack,
+    fixed_size,
   };
 
   explicit ElementBuilder(Kind kind) : kind_(kind) {}
 
   Kind kind_ = Kind::box;
   Style style_;
+  Size size_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

@@ -665,6 +665,27 @@ int test_element_builder_builds_vertical_stack_with_children() {
   return output.size.width == 30.0F && output.size.height == 28.0F ? 0 : 102;
 }
 
+int test_element_builder_builds_fixed_size_leaf() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::fixed_size(
+          cgpui::Size{.width = 44.0F, .height = 18.0F})
+          .build();
+
+  auto* fixed = dynamic_cast<cgpui::FixedSizeElement*>(element.get());
+  if (fixed == nullptr || fixed->preferred_size().width != 44.0F ||
+      fixed->preferred_size().height != 18.0F) {
+    return 103;
+  }
+
+  const cgpui::LayoutOutput output = fixed->layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .max_size = {.width = 20.0F, .height = 30.0F},
+          },
+  });
+  return output.size.width == 20.0F && output.size.height == 18.0F ? 0 : 104;
+}
+
 int test_styled_element_paints_background_rect_from_layout_bounds() {
   const cgpui::Color color{
       .r = 0.1F,
@@ -1165,6 +1186,10 @@ int main() {
   }
   if (const int result =
           test_element_builder_builds_vertical_stack_with_children();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_builds_fixed_size_leaf();
       result != 0) {
     return result;
   }

@@ -84,7 +84,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 46. [x] Runtime dispatches routed element events before view fallback.
 47. [x] Element builder flex row/column helpers.
 48. [x] Element builder vertical stack helper.
-49. [ ] Element builder fixed-size helper.
+49. [x] Element builder fixed-size helper.
 50. [ ] Gap style primitive for stack and flex layout.
 51. [ ] Margin style primitive and outer layout sizing.
 52. [ ] Border paint emission from styled elements.
@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 49: Element builder fixed-size helper.
+Step 50: Gap style primitive for stack and flex layout.
 
 ## Risks
 
