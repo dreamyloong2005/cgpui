@@ -90,3 +90,13 @@
   layout callers a simple default while preserving explicit min/max tests.
 - `constrain_size` is intentionally only a per-axis clamp helper; element layout
   methods, bounds storage, and traversal remain later slices.
+
+## 2026-06-30 Fixed Size Layout
+
+- Adding layout as a virtual method on `Element` gives later stack and routing
+  steps a common leaf/container contract without adding tree traversal yet.
+- The base element layout returns constrained zero size, which keeps existing
+  test-only elements usable while giving constraints a visible effect.
+- `FixedSizeElement` is deliberately leaf-only: it stores a preferred size and
+  delegates all min/max behavior to `constrain_size`; bounds persistence and
+  child layout remain future slices.

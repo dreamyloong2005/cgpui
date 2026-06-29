@@ -49,6 +49,46 @@ int test_element_is_polymorphic() {
   return element->id() == cgpui::ElementId{7} ? 0 : 5;
 }
 
+int test_base_element_lays_out_zero_size() {
+  TestElement element;
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 10.0F, .height = 20.0F},
+              .max_size = {.width = 100.0F, .height = 200.0F},
+          },
+  });
+
+  if (output.origin.x != 0.0F || output.origin.y != 0.0F) {
+    return 27;
+  }
+  return output.size.width == 10.0F && output.size.height == 20.0F ? 0 : 28;
+}
+
+int test_fixed_size_element_lays_out_preferred_size() {
+  cgpui::FixedSizeElement element(cgpui::Size{.width = 42.0F, .height = 24.0F});
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{});
+
+  if (output.origin.x != 0.0F || output.origin.y != 0.0F) {
+    return 29;
+  }
+  return output.size.width == 42.0F && output.size.height == 24.0F ? 0 : 30;
+}
+
+int test_fixed_size_element_layout_applies_constraints() {
+  cgpui::FixedSizeElement element(
+      cgpui::Size{.width = 120.0F, .height = 5.0F});
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 20.0F, .height = 10.0F},
+              .max_size = {.width = 80.0F, .height = 60.0F},
+          },
+  });
+
+  return output.size.width == 80.0F && output.size.height == 10.0F ? 0 : 31;
+}
+
 int test_element_tree_stores_root_and_children() {
   cgpui::ElementTree tree;
 
@@ -234,6 +274,17 @@ int main() {
     return result;
   }
   if (const int result = test_element_is_polymorphic(); result != 0) {
+    return result;
+  }
+  if (const int result = test_base_element_lays_out_zero_size(); result != 0) {
+    return result;
+  }
+  if (const int result = test_fixed_size_element_lays_out_preferred_size();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_fixed_size_element_layout_applies_constraints();
+      result != 0) {
     return result;
   }
   if (const int result = test_element_tree_stores_root_and_children();

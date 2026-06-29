@@ -85,3 +85,15 @@
 - Verified targeted tests: `xmake test -P . layout_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 11: Layout pass for fixed-size leaf elements.
+- Added design and implementation plan docs for a leaf-only element layout
+  pass.
+- Added a RED UI test for `Element::layout`,
+  `FixedSizeElement::layout`, preferred-size output, zero-origin output, and
+  constraint clamping; the test failed because those APIs did not exist.
+- Implemented Step 11 in `codex/fixed-size-layout`: `Element` now has a
+  minimal virtual `layout(LayoutInput)` returning constrained zero size, and
+  `FixedSizeElement` returns its constrained preferred size.
+- Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.

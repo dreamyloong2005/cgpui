@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cgpui/ui/layout.hpp"
+
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -23,12 +25,37 @@ class Element {
     return id_;
   }
 
+  [[nodiscard]] virtual LayoutOutput layout(LayoutInput input) const {
+    return LayoutOutput{
+        .size = constrain_size({}, input.constraints),
+    };
+  }
+
   void assign_id(ElementId id) {
     id_ = id;
   }
 
  private:
   ElementId id_;
+};
+
+class FixedSizeElement : public Element {
+ public:
+  explicit FixedSizeElement(Size preferred_size)
+      : preferred_size_(preferred_size) {}
+
+  [[nodiscard]] Size preferred_size() const {
+    return preferred_size_;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    return LayoutOutput{
+        .size = constrain_size(preferred_size_, input.constraints),
+    };
+  }
+
+ private:
+  Size preferred_size_;
 };
 
 class ElementTree {
