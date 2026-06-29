@@ -919,6 +919,28 @@ int test_element_tree_layout_root_handles_empty_tree() {
   return output.size.width == 12.0F && output.size.height == 8.0F ? 0 : 93;
 }
 
+int test_element_tree_hit_tests_from_root() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 50.0F, .height = 30.0F}));
+  (void)tree.layout_root(cgpui::LayoutInput{});
+
+  if (tree.hit_test_root(cgpui::Point{.x = 10.0F, .y = 10.0F}) != root_id) {
+    return 94;
+  }
+  return tree.hit_test_root(cgpui::Point{.x = 60.0F, .y = 10.0F}).value == 0
+      ? 0
+      : 95;
+}
+
+int test_element_tree_hit_test_root_handles_empty_tree() {
+  cgpui::ElementTree tree;
+  return tree.hit_test_root(cgpui::Point{.x = 1.0F, .y = 1.0F}).value == 0
+      ? 0
+      : 96;
+}
+
 } // namespace
 
 int main() {
@@ -1052,6 +1074,14 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_layout_root_handles_empty_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_hit_tests_from_root();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_hit_test_root_handles_empty_tree();
       result != 0) {
     return result;
   }

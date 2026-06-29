@@ -406,3 +406,11 @@
   traversal: existing container elements still own their child layout behavior.
 - Empty-tree layout should return constrained zero size, matching base element
   layout semantics and giving callers a safe no-root path.
+
+## 2026-06-30 ElementTree Root Hit Testing
+
+- `ElementTree::hit_test_root` mirrors `layout_root`: it is a safe root-level
+  convenience, while element/container implementations still define hit-test
+  traversal and child priority.
+- Empty-tree hit testing should return `ElementId{0}` so runtime routing can
+  distinguish "no element root" from a valid target.

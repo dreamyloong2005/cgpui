@@ -416,6 +416,15 @@
   element when present and returns constrained zero size for an empty tree.
 - Verified targeted tests: `xmake test -P . element_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Started Step 42: ElementTree root hit-test helper.
+- Added RED `element_test` coverage for `ElementTree::hit_test_root`, including
+  root hit delegation, miss behavior, and empty-tree invalid hits; the test
+  failed because `hit_test_root` did not exist.
+- Implemented Step 42 in `codex/element-tree-hit-test-root`: added a
+  header-only `ElementTree::hit_test_root(Point)` helper that delegates to the
+  root element and returns invalid when the tree is empty.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 39: IME composition skeleton for Win32 and Wayland.
 - Added RED `text_model_test` coverage for text-model composition update,
   commit, and cancel; the test failed because composition APIs did not exist.

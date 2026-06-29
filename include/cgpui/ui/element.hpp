@@ -427,6 +427,11 @@ class ElementTree {
     return root->layout(input);
   }
 
+  [[nodiscard]] ElementId hit_test_root(Point point) const {
+    const Element* root = get(root_id_);
+    return root == nullptr ? ElementId{} : root->hit_test(point);
+  }
+
   void paint(PaintList& paint_list) const {
     paint_subtree(root_id_, paint_list);
   }
