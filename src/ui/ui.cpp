@@ -210,6 +210,14 @@ void WindowRuntime::set_error_callback(WindowRuntimeErrorCallback callback) {
   error_callback_ = std::move(callback);
 }
 
+void WindowRuntime::capture_pointer() {
+  input_.pointer_captured = true;
+}
+
+void WindowRuntime::release_pointer() {
+  input_.pointer_captured = false;
+}
+
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
   viewport_size_ = size;
   if (renderer_ == nullptr) {

@@ -111,6 +111,7 @@ class RecordingView final : public cgpui::View {
     last_event_frame_index = context.frame_index;
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
+    last_pointer_captured = context.input.pointer_captured;
 
     if (std::holds_alternative<cgpui::WindowFocused>(event)) {
       focus_count += 1;
@@ -118,6 +119,17 @@ class RecordingView final : public cgpui::View {
     } else if (std::holds_alternative<cgpui::PointerMoved>(event)) {
       pointer_move_count += 1;
       pointer_move_event_position = context.input.pointer_position;
+      if (capture_on_first_pointer_move && pointer_move_count == 1) {
+        context.runtime.capture_pointer();
+      }
+      if (release_on_third_pointer_move && pointer_move_count == 3) {
+        context.runtime.release_pointer();
+      }
+      if (pointer_move_count == 2) {
+        second_pointer_move_saw_capture = context.input.pointer_captured;
+      } else if (pointer_move_count == 4) {
+        fourth_pointer_move_saw_capture = context.input.pointer_captured;
+      }
     } else if (std::holds_alternative<cgpui::PointerButton>(event)) {
       pointer_button_count += 1;
       pointer_button_event_position = context.input.pointer_position;
@@ -146,8 +158,13 @@ class RecordingView final : public cgpui::View {
   int text_input_count = 0;
   int event_redraw_requests = 0;
   bool request_redraw_on_event = false;
+  bool capture_on_first_pointer_move = false;
+  bool release_on_third_pointer_move = false;
   bool last_input_focused = false;
   bool focus_event_saw_focused = false;
+  bool last_pointer_captured = false;
+  bool second_pointer_move_saw_capture = false;
+  bool fourth_pointer_move_saw_capture = true;
   cgpui::Size last_viewport_size{};
   cgpui::Size last_event_viewport_size{};
   cgpui::Point last_input_pointer_position{};
@@ -545,6 +562,55 @@ int test_view_event_can_request_redraw() {
   return 0;
 }
 
+RuntimeFixture* pointer_capture_fixture = nullptr;
+
+void dispatch_pointer_capture_sequence() {
+  auto& callback = pointer_capture_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {1.0F, 1.0F}});
+  callback(cgpui::PointerMoved{.position = {2.0F, 2.0F}});
+  callback(cgpui::PointerMoved{.position = {3.0F, 3.0F}});
+  callback(cgpui::PointerMoved{.position = {4.0F, 4.0F}});
+}
+
+int test_view_can_capture_and_release_pointer() {
+  RuntimeFixture fixture;
+  pointer_capture_fixture = &fixture;
+  fixture.app.on_run = &dispatch_pointer_capture_sequence;
+  fixture.view.capture_on_first_pointer_move = true;
+  fixture.view.release_on_third_pointer_move = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  pointer_capture_fixture = nullptr;
+
+  if (result != 0) {
+    return 60;
+  }
+  if (fixture.view.pointer_move_count != 4) {
+    return 61;
+  }
+  if (!fixture.view.second_pointer_move_saw_capture) {
+    return 62;
+  }
+  if (fixture.view.fourth_pointer_move_saw_capture ||
+      fixture.view.last_pointer_captured) {
+    return 63;
+  }
+  if (!equal(
+          fixture.view.last_input_pointer_position,
+          cgpui::Point{4.0F, 4.0F})) {
+    return 64;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -567,6 +633,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_event_can_request_redraw(); result != 0) {
+    return result;
+  }
+  if (const int result = test_view_can_capture_and_release_pointer();
+      result != 0) {
     return result;
   }
   return 0;

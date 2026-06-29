@@ -43,6 +43,7 @@ class WindowRuntime;
 
 struct ViewInputState {
   bool focused = false;
+  bool pointer_captured = false;
   Point pointer_position{};
 };
 
@@ -77,6 +78,8 @@ class WindowRuntime {
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
   void set_close_requested_callback(WindowRuntimeFrameCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
+  void capture_pointer();
+  void release_pointer();
   Result<void> resize_surface(Size size, DpiScale scale);
 
  private:
