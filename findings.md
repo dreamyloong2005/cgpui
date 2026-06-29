@@ -181,3 +181,13 @@
 - `backspace()` deletes the codepoint before the cursor; the test originally
   moved the cursor to offset 0 before expecting a successful second backspace,
   which was a test expectation bug rather than an implementation bug.
+
+## 2026-06-30 Text Input Routing
+
+- Binding text models by `ElementId` lets the Step 16 keyboard-focus route
+  become actionable without introducing element event handlers yet.
+- Runtime-owned text model pointers should remain non-owning in this slice; the
+  owning element/view layer does not exist yet.
+- The text-input routing test must fire the third key event before expecting
+  the existing helper to release element keyboard focus; otherwise the second
+  text input correctly still targets the model.

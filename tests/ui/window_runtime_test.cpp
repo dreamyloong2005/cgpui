@@ -1,5 +1,6 @@
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/ui/element.hpp"
+#include "cgpui/ui/text.hpp"
 #include "cgpui/ui/ui.hpp"
 
 #include <expected>
@@ -1829,6 +1830,64 @@ int test_runtime_dispatches_key_binding_actions() {
   return 0;
 }
 
+RuntimeFixture* text_input_routing_fixture = nullptr;
+
+void dispatch_text_input_routing_sequence() {
+  auto& callback = text_input_routing_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::TextInput{.text = "hi"});
+  callback(cgpui::KeyboardKey{
+      .key_code = 85,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 86,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::TextInput{.text = "!"});
+}
+
+int test_runtime_routes_text_input_to_focused_text_model() {
+  RuntimeFixture fixture;
+  text_input_routing_fixture = &fixture;
+  fixture.app.on_run = &dispatch_text_input_routing_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+  fixture.view.release_keyboard_focus_element_owner_on_third_key = true;
+
+  cgpui::TextModel model;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  text_input_routing_fixture = nullptr;
+
+  if (result != 0) {
+    return 160;
+  }
+  if (fixture.view.keyboard_key_count != 3 ||
+      fixture.view.text_input_count != 2) {
+    return 161;
+  }
+  if (model.text() != "hi") {
+    return 162;
+  }
+  if (model.cursor() != 2) {
+    return 164;
+  }
+  if (fixture.view.last_keyboard_focus_element_owner_present ||
+      fixture.view.last_route_element_id.has_value()) {
+    return 163;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1910,6 +1969,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_dispatches_key_binding_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_routes_text_input_to_focused_text_model();
       result != 0) {
     return result;
   }

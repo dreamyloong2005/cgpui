@@ -247,6 +247,14 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
       }
     }
+    if (const auto* text = std::get_if<TextInput>(&event);
+        text != nullptr && keyboard_focus_element_owner_.has_value()) {
+      const auto model =
+          text_models_.find(keyboard_focus_element_owner_->value);
+      if (model != text_models_.end() && model->second != nullptr) {
+        model->second->insert_text(text->text);
+      }
+    }
     last_event_result_ = view_.handle_event(event, context());
     last_event_dispatch_ = EventDispatchRecord{
         .sequence = ++event_dispatch_sequence_,
@@ -428,6 +436,17 @@ void WindowRuntime::bind_key(KeyBinding binding) {
   if (!binding.action_name.empty()) {
     key_bindings_.push_back(std::move(binding));
   }
+}
+
+void WindowRuntime::bind_text_model(ElementId element_id, TextModel* model) {
+  if (element_id.value == 0) {
+    return;
+  }
+  if (model == nullptr) {
+    text_models_.erase(element_id.value);
+    return;
+  }
+  text_models_[element_id.value] = model;
 }
 
 ViewId WindowRuntime::allocate_view_id() {

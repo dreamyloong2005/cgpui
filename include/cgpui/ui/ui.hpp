@@ -5,6 +5,7 @@
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/element.hpp"
+#include "cgpui/ui/text.hpp"
 
 #include <any>
 #include <cstdint>
@@ -204,6 +205,7 @@ class WindowRuntime {
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_key(KeyBinding binding);
+  void bind_text_model(ElementId element_id, TextModel* model);
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -263,6 +265,7 @@ class WindowRuntime {
   std::unordered_map<std::type_index, std::any> entity_stores_;
   std::unordered_map<std::string, ActionHandler> action_handlers_;
   std::vector<KeyBinding> key_bindings_;
+  std::unordered_map<std::uint64_t, TextModel*> text_models_;
   bool should_quit_ = false;
   bool failed_ = false;
 };

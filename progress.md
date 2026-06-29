@@ -136,6 +136,22 @@
 - Verified targeted tests: `xmake test -P . text_model_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 23/23.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 20/20.
+- Started Step 20: Text input routing into focused text model.
+- Added design and implementation plan docs for routing `TextInput` into the
+  `TextModel` bound to the focused element.
+- Added a RED runtime test for `bind_text_model(ElementId, TextModel*)`,
+  element keyboard focus, text insertion into the focused model, and ignoring
+  text input after focus release; the test failed because `bind_text_model`
+  did not exist.
+- Implemented Step 20 in `codex/text-input-routing`: runtime stores non-owning
+  text model bindings by `ElementId` and inserts `TextInput::text` into the
+  model bound to the active element keyboard-focus owner.
+- Debugged one test sequencing issue: the release helper triggers on the third
+  key event, so the test must send three key events before expecting later text
+  input to be ignored.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 23/23.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 20/20.
 - Started Step 18: Key binding table.
 - Added design and implementation plan docs for mapping key events to named
   actions.
