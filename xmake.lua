@@ -205,6 +205,13 @@ target("entity_store_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("clipboard_test")
+    set_kind("binary")
+    add_files("tests/platform/clipboard_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("cgpui_ui")
     set_kind("static")
     add_files("src/ui/*.cpp")

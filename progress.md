@@ -379,6 +379,16 @@
 - Verified targeted tests: `xmake test -P . text_model_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 38: Clipboard abstraction for Win32 and Wayland.
+- Added RED `clipboard_test` coverage for a text clipboard contract,
+  `MemoryClipboard`, UTF-8 round trips, and `create_platform_clipboard`; the
+  test failed because `cgpui/platform/clipboard.hpp` did not exist.
+- Implemented Step 38 in `codex/clipboard-abstraction`: added the platform
+  `Clipboard` interface, `MemoryClipboard`, a platform clipboard factory, a
+  `clipboard_test` target, and header-cleanliness coverage.
+- Verified targeted tests: `xmake test -P . clipboard_test/default core_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 26/26.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 23/23.
 - Started Step 34: Update scheduling that requests redraw after model/view
   changes.
 - Added RED `window_runtime_test` coverage for invalidation-triggered redraw

@@ -365,3 +365,15 @@
 - `backspace()` and `delete_forward()` should erase a non-collapsed selection
   before falling back to adjacent-codepoint deletion, so direct text-model calls
   and edit-action dispatch behave consistently.
+
+## 2026-06-30 Clipboard Abstraction
+
+- The first clipboard slice can be a platform-layer text contract, independent
+  from `PlatformApplication`, so the API is usable in tests and can later be
+  backed by Win32 or Wayland system clipboard protocols.
+- A shared `MemoryClipboard` implementation is enough for the Step 38 skeleton;
+  platform-specific system integration can replace the factory implementation
+  without changing callers.
+- Keeping the factory in `cgpui_platform` instead of the Win32/Wayland leaf
+  targets avoids duplicate definitions when examples link both shared platform
+  code and a platform-specific implementation.
