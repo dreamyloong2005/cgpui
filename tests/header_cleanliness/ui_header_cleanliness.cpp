@@ -1,4 +1,5 @@
 #include "cgpui/ui/ui.hpp"
+#include "cgpui/ui/element.hpp"
 
 class TestView final : public cgpui::View {
  public:

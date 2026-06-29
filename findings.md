@@ -53,3 +53,12 @@
   from `ViewId{2}` gives later element/view storage a simple stable id source.
 - A runtime-local monotonic counter is enough until later steps add removal,
   reconciliation, or generation/index semantics.
+
+## 2026-06-30 Element Base API
+
+- `ElementId` should stay separate from `ViewId`; element tree ids and view
+  routing ids are related later, but they are not the same type at this layer.
+- `Element` should not allocate its own ids. The next tree/reconcile steps can
+  assign ids through `assign_id()` and preserve them across rebuilds.
+- Keeping the base class free of layout/event methods avoids coupling Step 7 to
+  the later layout and routing slices.

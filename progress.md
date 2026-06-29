@@ -49,3 +49,11 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 20/20.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 17/17.
+- Started Step 7: ElementId and Element base API.
+- Added design and implementation plan docs for the minimal element identity contract.
+- Added a RED UI test for `ElementId`, polymorphic `Element`, default invalid ids, and stable assigned ids; the test failed because `cgpui/ui/element.hpp` did not exist.
+- Implemented Step 7 in `codex/element-base-api`: `ElementId` is a typed numeric id wrapper and `Element` stores a runtime/tree-assigned id through `id()` and `assign_id()`.
+- Added the `element_test` xmake target and included the new header in `ui_header_cleanliness`.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 21/21.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 18/18.
