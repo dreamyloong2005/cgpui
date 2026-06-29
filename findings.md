@@ -250,3 +250,13 @@
   background before content ordering.
 - Sibling paint order follows the stored child id vector, matching append and
   reconcile order until a later z-order primitive changes that policy.
+
+## 2026-06-30 Clip Overflow Primitives
+
+- Clip and overflow can start as inert `Style` data; applying clip stacks to
+  paint traversal is a later renderer/painter concern.
+- `Overflow::visible` as the default preserves all existing layout, hit-test,
+  and paint behavior until explicit hidden overflow is requested.
+- Keeping `clip_rect` optional distinguishes "no authored clip" from an
+  authored zero-size clip rectangle, which will matter when paint traversal
+  starts honoring clipping.

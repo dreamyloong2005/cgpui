@@ -6,6 +6,11 @@
 
 namespace cgpui {
 
+enum class Overflow {
+  visible,
+  hidden,
+};
+
 struct EdgeSizes {
   float top = 0.0F;
   float right = 0.0F;
@@ -79,10 +84,12 @@ struct Style {
   std::optional<Color> background_color;
   std::optional<Color> foreground_color;
   std::optional<Color> border_color;
+  std::optional<Rect> clip_rect;
   Size preferred_size;
   EdgeSizes padding;
   EdgeSizes border_width;
   BorderRadii border_radius;
+  Overflow overflow = Overflow::visible;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -123,6 +130,18 @@ struct Style {
   [[nodiscard]] constexpr Style with_border_radius(BorderRadii radius) const {
     Style style = *this;
     style.border_radius = radius;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_overflow(Overflow value) const {
+    Style style = *this;
+    style.overflow = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_clip_rect(Rect rect) const {
+    Style style = *this;
+    style.clip_rect = rect;
     return style;
   }
 };

@@ -67,6 +67,10 @@ int test_border_radii_helpers_expand_values() {
              : 15;
 }
 
+int test_overflow_defaults_to_visible() {
+  return cgpui::Style{}.overflow == cgpui::Overflow::visible ? 0 : 20;
+}
+
 int test_style_defaults_are_empty() {
   const cgpui::Style style;
   if (style.background_color.has_value() || style.foreground_color.has_value()) {
@@ -74,6 +78,12 @@ int test_style_defaults_are_empty() {
   }
   if (style.border_color.has_value()) {
     return 16;
+  }
+  if (style.clip_rect.has_value()) {
+    return 21;
+  }
+  if (style.overflow != cgpui::Overflow::visible) {
+    return 22;
   }
   if (!same(style.preferred_size.width, 0.0F) ||
       !same(style.preferred_size.height, 0.0F)) {
@@ -106,7 +116,12 @@ int test_style_builder_methods_store_values() {
               1.0F,
               2.0F,
               3.0F,
-              4.0F));
+              4.0F))
+          .with_overflow(cgpui::Overflow::hidden)
+          .with_clip_rect(cgpui::Rect{
+              .origin = {.x = 3.0F, .y = 4.0F},
+              .size = {.width = 50.0F, .height = 60.0F},
+          });
 
   if (!style.background_color.has_value() ||
       !same(style.background_color->r, 0.1F) ||
@@ -141,6 +156,16 @@ int test_style_builder_methods_store_values() {
       !same(style.border_radius.bottom_left, 4.0F)) {
     return 19;
   }
+  if (style.overflow != cgpui::Overflow::hidden) {
+    return 23;
+  }
+  if (!style.clip_rect.has_value() ||
+      !same(style.clip_rect->origin.x, 3.0F) ||
+      !same(style.clip_rect->origin.y, 4.0F) ||
+      !same(style.clip_rect->size.width, 50.0F) ||
+      !same(style.clip_rect->size.height, 60.0F)) {
+    return 24;
+  }
 
   return 0;
 }
@@ -149,6 +174,7 @@ int test_style_builder_methods_store_values() {
 
 static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
 static_assert(std::same_as<decltype(cgpui::BorderRadii{}.top_left), float>);
+static_assert(std::same_as<decltype(cgpui::Style{}.overflow), cgpui::Overflow>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
@@ -160,6 +186,9 @@ int main() {
   }
   if (const int result = test_border_radii_helpers_expand_values();
       result != 0) {
+    return result;
+  }
+  if (const int result = test_overflow_defaults_to_visible(); result != 0) {
     return result;
   }
   if (const int result = test_style_defaults_are_empty(); result != 0) {

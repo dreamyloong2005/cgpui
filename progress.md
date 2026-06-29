@@ -59,6 +59,17 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 27: Clip rect and overflow primitives.
+- Added RED `style_test` coverage for default visible overflow, absent default
+  clip rect, fluent `with_overflow(Overflow::hidden)`,
+  `with_clip_rect(Rect)`, and the concrete `Style::overflow` type; the test
+  failed because those APIs did not exist.
+- Implemented Step 27 in `codex/clip-overflow-primitives`: added an inert
+  `Overflow` enum, default `Style::overflow = Overflow::visible`, optional
+  `Style::clip_rect`, and matching fluent setters.
+- Verified targeted tests: `xmake test -P . style_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 - Started Step 23: Styled element paints a solid background rect.
 - Added RED `element_test` coverage for `StyledElement::paint(PaintList&)`,
   background-color fill rect emission from retained layout bounds, and no-op
