@@ -331,6 +331,10 @@ class WaylandWindow final : public PlatformWindow {
     });
   }
 
+  void pointer_scrolled(Point delta, Point position) {
+    callback_(PointerScrolled{.delta = delta, .position = position});
+  }
+
   void keyboard_key(std::uint32_t key, KeyAction action) {
     callback_(KeyboardKey{.key_code = key, .action = action});
   }
@@ -639,6 +643,8 @@ class WaylandApplication final : public PlatformApplication {
       wl_pointer_destroy(app->pointer_);
       app->pointer_ = nullptr;
       app->pointer_window_ = nullptr;
+      app->pending_scroll_delta_ = {};
+      app->pointer_scroll_pending_ = false;
     }
 
     if (has_keyboard) {
@@ -780,6 +786,8 @@ class WaylandApplication final : public PlatformApplication {
     if (app->pointer_window_ != nullptr &&
         app->pointer_window_->surface() == surface) {
       app->pointer_window_ = nullptr;
+      app->pending_scroll_delta_ = {};
+      app->pointer_scroll_pending_ = false;
     }
   }
 
@@ -823,16 +831,29 @@ class WaylandApplication final : public PlatformApplication {
       std::uint32_t time,
       std::uint32_t axis,
       wl_fixed_t value) {
-    (void)data;
-    (void)pointer;
+    auto* app = static_cast<WaylandApplication*>(data);
     (void)time;
-    (void)axis;
-    (void)value;
+    const auto delta = static_cast<float>(wl_fixed_to_double(value));
+    if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
+      app->pending_scroll_delta_.y += delta;
+    } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
+      app->pending_scroll_delta_.x += delta;
+    } else {
+      return;
+    }
+
+    app->pointer_scroll_pending_ = true;
+    const auto pointer_version =
+        wl_proxy_get_version(reinterpret_cast<wl_proxy*>(pointer));
+    if (pointer_version < WL_POINTER_FRAME_SINCE_VERSION) {
+      app->dispatch_pointer_scroll();
+    }
   }
 
   static void handle_pointer_frame(void* data, wl_pointer* pointer) {
-    (void)data;
     (void)pointer;
+    auto* app = static_cast<WaylandApplication*>(data);
+    app->dispatch_pointer_scroll();
   }
 
   static void handle_pointer_axis_source(
@@ -896,9 +917,24 @@ class WaylandApplication final : public PlatformApplication {
     std::erase(windows_, window);
     if (pointer_window_ == window) {
       pointer_window_ = nullptr;
+      pending_scroll_delta_ = {};
+      pointer_scroll_pending_ = false;
     }
     if (keyboard_window_ == window) {
       keyboard_window_ = nullptr;
+    }
+  }
+
+  void dispatch_pointer_scroll() {
+    if (!pointer_scroll_pending_) {
+      return;
+    }
+
+    const Point delta = pending_scroll_delta_;
+    pending_scroll_delta_ = {};
+    pointer_scroll_pending_ = false;
+    if (pointer_window_ != nullptr) {
+      pointer_window_->pointer_scrolled(delta, pointer_position_);
     }
   }
 
@@ -952,7 +988,9 @@ class WaylandApplication final : public PlatformApplication {
   WaylandWindow* pointer_window_ = nullptr;
   WaylandWindow* keyboard_window_ = nullptr;
   Point pointer_position_{};
+  Point pending_scroll_delta_{};
   std::string initialization_error_;
+  bool pointer_scroll_pending_ = false;
   bool running_ = true;
 };
 

@@ -38,6 +38,11 @@ struct PointerButton {
   Point position;
 };
 
+struct PointerScrolled {
+  Point delta;
+  Point position;
+};
+
 struct KeyboardKey {
   std::uint32_t key_code = 0;
   KeyAction action = KeyAction::pressed;
@@ -49,6 +54,7 @@ using PlatformEvent = std::variant<
     WindowResized,
     PointerMoved,
     PointerButton,
+    PointerScrolled,
     KeyboardKey>;
 
 } // namespace cgpui

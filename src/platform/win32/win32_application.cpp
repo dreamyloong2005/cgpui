@@ -99,6 +99,22 @@ class Win32Window final : public PlatformWindow {
             static_cast<float>(GET_Y_LPARAM(lparam))}});
   }
 
+  void pointer_scrolled(WPARAM wparam, LPARAM lparam) {
+    POINT point{
+        .x = GET_X_LPARAM(lparam),
+        .y = GET_Y_LPARAM(lparam),
+    };
+    ScreenToClient(hwnd_, &point);
+    callback_(PointerScrolled{
+        .delta = Point{
+            0.0F,
+            static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) /
+                static_cast<float>(WHEEL_DELTA)},
+        .position = Point{
+            static_cast<float>(point.x),
+            static_cast<float>(point.y)}});
+  }
+
   void key_event(WPARAM wparam, KeyAction action) {
     callback_(KeyboardKey{.key_code = static_cast<std::uint32_t>(wparam), .action = action});
   }
@@ -167,6 +183,11 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
     case WM_MBUTTONUP:
       if (window != nullptr) {
         window->pointer_button(MouseButton::middle, message == WM_MBUTTONDOWN, lparam);
+      }
+      return 0;
+    case WM_MOUSEWHEEL:
+      if (window != nullptr) {
+        window->pointer_scrolled(wparam, lparam);
       }
       return 0;
     case WM_KEYDOWN:

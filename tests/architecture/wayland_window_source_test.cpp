@@ -180,6 +180,24 @@ int main() {
     return 41;
   }
 
+  const std::string scroll_target_text =
+      linux_target_block(xmake_text, "wayland_pointer_scroll_test");
+  if (scroll_target_text.empty()) {
+    return 47;
+  }
+  if (!contains(scroll_target_text, "tests/platform/wayland_pointer_scroll_test.cpp")) {
+    return 48;
+  }
+  if (!contains(scroll_target_text, "tests/platform/wayland_test_compositor.cpp")) {
+    return 49;
+  }
+  if (!contains(scroll_target_text, "wayland-server")) {
+    return 50;
+  }
+  if (!contains(scroll_target_text, "add_tests(\"default\")")) {
+    return 51;
+  }
+
   const std::string keyboard_target_text =
       linux_target_block(xmake_text, "wayland_keyboard_test");
   if (keyboard_target_text.empty()) {

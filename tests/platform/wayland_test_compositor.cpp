@@ -204,6 +204,11 @@ struct WaylandTestCompositor::State {
     bool pressed = false;
   };
 
+  struct PointerScrollRequest {
+    float delta_x = 0.0F;
+    float delta_y = 0.0F;
+  };
+
   struct KeyboardKeyRequest {
     std::uint32_t key = 0;
     bool pressed = false;
@@ -320,6 +325,17 @@ struct WaylandTestCompositor::State {
       });
     }
     pointer_button_pending.store(true);
+  }
+
+  void request_pointer_scroll(float delta_x, float delta_y) {
+    {
+      std::lock_guard lock(pointer_scroll_mutex);
+      pointer_scrolls.push_back(PointerScrollRequest{
+          .delta_x = delta_x,
+          .delta_y = delta_y,
+      });
+    }
+    pointer_scroll_pending.store(true);
   }
 
   void request_keyboard_key(std::uint32_t key, bool pressed) {
@@ -461,6 +477,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_resize_configure();
   void dispatch_pending_pointer_move();
   void dispatch_pending_pointer_button();
+  void dispatch_pending_pointer_scroll();
   void dispatch_pending_keyboard_key();
 
   void run() {
@@ -469,6 +486,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_resize_configure();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
+      dispatch_pending_pointer_scroll();
       dispatch_pending_keyboard_key();
       const int result = wl_event_loop_dispatch(wl_display_get_event_loop(display), 10);
       if (result < 0) {
@@ -479,6 +497,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_resize_configure();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
+      dispatch_pending_pointer_scroll();
       dispatch_pending_keyboard_key();
       wl_display_flush_clients(display);
     }
@@ -516,6 +535,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_move_sent{false};
   std::atomic_bool pointer_button_pending{false};
   std::atomic_bool pointer_button_sent{false};
+  std::atomic_bool pointer_scroll_pending{false};
+  std::atomic_bool pointer_scroll_sent{false};
   std::atomic_bool keyboard_key_pending{false};
   std::atomic_bool keyboard_key_sent{false};
   std::atomic_int resize_width{0};
@@ -526,6 +547,8 @@ struct WaylandTestCompositor::State {
   std::deque<KeyboardKeyRequest> keyboard_keys;
   std::mutex pointer_button_mutex;
   std::deque<PointerButtonRequest> pointer_buttons;
+  std::mutex pointer_scroll_mutex;
+  std::deque<PointerScrollRequest> pointer_scrolls;
   std::uint32_t next_configure_serial = 1;
   std::uint32_t resize_configure_serial = 0;
   std::uint32_t next_pointer_serial = 1;
@@ -869,6 +892,65 @@ void WaylandTestCompositor::State::dispatch_pending_pointer_button() {
   pointer_button_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_pointer_scroll() {
+  if (!pointer_scroll_pending.exchange(false)) {
+    return;
+  }
+
+  PointerScrollRequest request{};
+  {
+    std::lock_guard lock(pointer_scroll_mutex);
+    if (pointer_scrolls.empty()) {
+      return;
+    }
+    request = pointer_scrolls.front();
+    pointer_scrolls.pop_front();
+    if (!pointer_scrolls.empty()) {
+      pointer_scroll_pending.store(true);
+    }
+  }
+
+  const SurfaceState* surface = first_pointer_surface();
+  if (pointer_resource == nullptr || surface == nullptr) {
+    {
+      std::lock_guard lock(pointer_scroll_mutex);
+      pointer_scrolls.push_front(request);
+    }
+    pointer_scroll_pending.store(true);
+    return;
+  }
+
+  if (!pointer_entered) {
+    wl_pointer_send_enter(
+        pointer_resource,
+        next_pointer_serial++,
+        surface->surface,
+        wl_fixed_from_int(pointer_x.load()),
+        wl_fixed_from_int(pointer_y.load()));
+    pointer_entered = true;
+  }
+  if (request.delta_y != 0.0F) {
+    wl_pointer_send_axis(
+        pointer_resource,
+        pointer_time,
+        WL_POINTER_AXIS_VERTICAL_SCROLL,
+        wl_fixed_from_double(static_cast<double>(request.delta_y)));
+  }
+  if (request.delta_x != 0.0F) {
+    wl_pointer_send_axis(
+        pointer_resource,
+        pointer_time,
+        WL_POINTER_AXIS_HORIZONTAL_SCROLL,
+        wl_fixed_from_double(static_cast<double>(request.delta_x)));
+  }
+  if (wl_resource_get_version(pointer_resource) >= WL_POINTER_FRAME_SINCE_VERSION) {
+    wl_pointer_send_frame(pointer_resource);
+  }
+  ++pointer_time;
+  wl_display_flush_clients(display);
+  pointer_scroll_sent.store(true);
+}
+
 void WaylandTestCompositor::State::dispatch_pending_keyboard_key() {
   if (!keyboard_key_pending.exchange(false)) {
     return;
@@ -1041,6 +1123,10 @@ void WaylandTestCompositor::request_pointer_button(
   state_->request_pointer_button(button, pressed);
 }
 
+void WaylandTestCompositor::request_pointer_scroll(float delta_x, float delta_y) {
+  state_->request_pointer_scroll(delta_x, delta_y);
+}
+
 void WaylandTestCompositor::request_keyboard_key(
     std::uint32_t key,
     bool pressed) {
@@ -1065,6 +1151,10 @@ bool WaylandTestCompositor::wait_for_pointer_move_sent() const {
 
 bool WaylandTestCompositor::wait_for_pointer_button_sent() const {
   return state_->wait_for_flag(state_->pointer_button_sent);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_scroll_sent() const {
+  return state_->wait_for_flag(state_->pointer_scroll_sent);
 }
 
 bool WaylandTestCompositor::wait_for_keyboard_key_sent() const {
