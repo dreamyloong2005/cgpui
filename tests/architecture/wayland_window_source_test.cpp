@@ -267,6 +267,13 @@ int main() {
                 "add_tests(\"linux_resize_after_first_frame\"")) {
     return 29;
   }
+  if (!contains(linux_hello_window_branch, "CGPUI_CLOSE_AFTER_FIRST_FRAME")) {
+    return 52;
+  }
+  if (!contains(linux_hello_window_branch,
+                "add_tests(\"linux_close_after_first_frame\"")) {
+    return 53;
+  }
 
   const std::string windows_hello_window_branch =
       platform_branch(hello_window_target_text, "windows");
