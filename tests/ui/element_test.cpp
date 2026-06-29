@@ -544,6 +544,60 @@ int test_styled_element_without_background_paints_nothing() {
   return paint_list.commands().empty() ? 0 : 66;
 }
 
+int test_styled_element_layout_includes_padding_without_child() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F})
+                     .with_padding(
+                         cgpui::EdgeSizes::trbl(1.0F, 2.0F, 3.0F, 4.0F)))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 26.0F || output.size.height != 14.0F) {
+    return 67;
+  }
+
+  const std::optional<cgpui::Rect> bounds = element->layout_bounds();
+  return bounds.has_value() && bounds->size.width == 26.0F &&
+                 bounds->size.height == 14.0F
+             ? 0
+             : 68;
+}
+
+int test_styled_element_layout_offsets_child_by_padding() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}.with_padding(
+              cgpui::EdgeSizes::trbl(2.0F, 3.0F, 4.0F, 5.0F)))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 15.0F}))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 38.0F || output.size.height != 21.0F) {
+    return 69;
+  }
+
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || styled->child() == nullptr) {
+    return 70;
+  }
+
+  const std::optional<cgpui::Rect> child_bounds =
+      styled->child()->layout_bounds();
+  if (!child_bounds.has_value()) {
+    return 71;
+  }
+
+  return child_bounds->origin.x == 5.0F && child_bounds->origin.y == 2.0F &&
+                 child_bounds->size.width == 30.0F &&
+                 child_bounds->size.height == 15.0F
+             ? 0
+             : 72;
+}
+
 } // namespace
 
 int main() {
@@ -638,6 +692,15 @@ int main() {
     return result;
   }
   if (const int result = test_styled_element_without_background_paints_nothing();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_layout_includes_padding_without_child();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_styled_element_layout_offsets_child_by_padding();
       result != 0) {
     return result;
   }

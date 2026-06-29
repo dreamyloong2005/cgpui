@@ -220,3 +220,13 @@
 - `StyledElement` should emit its background before painting its child, matching
   normal parent-background-then-content ordering and setting up Step 26 paint
   tree traversal.
+
+## 2026-06-30 Styled Padding Layout
+
+- Padding can be handled inside `StyledElement::layout` before a separate box
+  model abstraction exists: content size comes from the child or preferred size,
+  then top/right/bottom/left padding expands the outer size.
+- Child bounds should be rewritten after the child layout pass so hit testing
+  and later paint traversal observe the padded child origin.
+- Existing layout constraints in this codebase clamp container output after
+  child measurement, so this slice keeps the same simple constraint behavior.

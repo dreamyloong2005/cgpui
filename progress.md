@@ -70,6 +70,16 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 24: Padding participates in styled element layout.
+- Added RED `element_test` coverage for styled preferred-size padding,
+  child-derived padded size, and child layout bounds offset by top/left padding;
+  the test failed because padding was not included in `StyledElement::layout`.
+- Implemented Step 24 in `codex/padding-styled-layout`: `StyledElement` now
+  adds padding to content size and positions its optional child inside the
+  padding inset.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 
 - Started Step 5: Context entity access.
 - Added design and implementation plan docs for context-forwarded runtime entity helpers.

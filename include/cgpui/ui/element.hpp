@@ -163,8 +163,21 @@ class StyledElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const Size preferred =
-        child_ ? child_->layout(input).size : style_.preferred_size;
+    Size content_size = style_.preferred_size;
+    if (child_) {
+      const LayoutOutput child_output = child_->layout(input);
+      content_size = child_output.size;
+      child_->set_layout_bounds(Rect{
+          .origin = {.x = style_.padding.left, .y = style_.padding.top},
+          .size = child_output.size,
+      });
+    }
+    const Size preferred{
+        .width = content_size.width + style_.padding.left +
+                 style_.padding.right,
+        .height = content_size.height + style_.padding.top +
+                  style_.padding.bottom,
+    };
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),
     };
