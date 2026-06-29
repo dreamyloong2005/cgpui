@@ -419,6 +419,12 @@ class ElementBuilder {
     return builder;
   }
 
+  [[nodiscard]] static ElementBuilder text(TextModel& model) {
+    ElementBuilder builder(Kind::text);
+    builder.text_model_ = &model;
+    return builder;
+  }
+
   [[nodiscard]] ElementBuilder style(Style style) && {
     style_ = style;
     return std::move(*this);
@@ -434,6 +440,9 @@ class ElementBuilder {
   [[nodiscard]] std::unique_ptr<Element> build() && {
     if (kind_ == Kind::fixed_size) {
       return std::make_unique<FixedSizeElement>(size_);
+    }
+    if (kind_ == Kind::text) {
+      return std::make_unique<TextElement>(text_model_);
     }
     if (kind_ == Kind::v_stack) {
       auto element = std::make_unique<VerticalStackElement>();
@@ -466,6 +475,7 @@ class ElementBuilder {
     column,
     v_stack,
     fixed_size,
+    text,
   };
 
   explicit ElementBuilder(Kind kind) : kind_(kind) {}
@@ -473,6 +483,7 @@ class ElementBuilder {
   Kind kind_ = Kind::box;
   Style style_;
   Size size_;
+  TextModel* text_model_ = nullptr;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

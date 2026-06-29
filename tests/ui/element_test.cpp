@@ -1068,6 +1068,21 @@ int test_text_element_paints_text_placeholder_from_layout_bounds() {
   return commands[0].solid_rect.color.a > 0.0F ? 0 : 142;
 }
 
+int test_element_builder_builds_text_leaf() {
+  cgpui::TextModel model("builder");
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::text(model).build();
+
+  auto* text = dynamic_cast<cgpui::TextElement*>(element.get());
+  if (text == nullptr || text->model() != &model ||
+      text->text() != model.text()) {
+    return 143;
+  }
+
+  const cgpui::LayoutOutput output = text->layout(cgpui::LayoutInput{});
+  return output.size.width == 56.0F && output.size.height == 16.0F ? 0 : 144;
+}
+
 int test_styled_element_layout_includes_padding_without_child() {
   std::unique_ptr<cgpui::Element> element =
       cgpui::ElementBuilder::box()
@@ -1631,6 +1646,10 @@ int main() {
   }
   if (const int result =
           test_text_element_paints_text_placeholder_from_layout_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_builds_text_leaf();
       result != 0) {
     return result;
   }

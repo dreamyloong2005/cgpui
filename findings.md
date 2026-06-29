@@ -592,3 +592,12 @@
 - Accepting an injected `PlatformApplication&` and renderer factory keeps the
   runner deterministic in tests and leaves default platform/renderer creation
   for a later convenience overload.
+
+## 2026-06-30 Text Element Builder
+
+- `ElementBuilder::text(TextModel&)` should mirror `TextElement`'s non-owning
+  binding instead of copying text, so runtime text-model bindings and builder
+  authored text share the same lifetime convention.
+- Building text as a direct leaf keeps the initial API small; styling can stay
+  in wrapper elements until text-specific font, color, and shaping primitives
+  exist.

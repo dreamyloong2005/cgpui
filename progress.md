@@ -586,6 +586,23 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 61: Text element builder helper.
+- Added RED `element_test` coverage for
+  `ElementBuilder::text(TextModel&).build()` producing a `TextElement` that
+  keeps the same non-owning model pointer, exposes the model text, and reports
+  the existing fixed skeleton text layout; the test failed because
+  `ElementBuilder::text` did not exist.
+- Implemented Step 61 in `codex/text-element-builder`: added a text builder
+  kind, stores a non-owning `TextModel*`, and builds a `TextElement` leaf
+  directly.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 58: Runtime clipboard cut from focused text selections.
 - Added RED `window_runtime_test` coverage for
   `WindowRuntime::cut_selection_to_clipboard` writing selected text to
