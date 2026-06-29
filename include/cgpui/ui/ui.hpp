@@ -44,6 +44,7 @@ class WindowRuntime;
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
+  bool keyboard_focused = false;
   Point pointer_position{};
 };
 
@@ -80,6 +81,8 @@ class WindowRuntime {
   void set_error_callback(WindowRuntimeErrorCallback callback);
   void capture_pointer();
   void release_pointer();
+  void request_keyboard_focus();
+  void release_keyboard_focus();
   Result<void> resize_surface(Size size, DpiScale scale);
 
  private:

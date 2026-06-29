@@ -218,6 +218,14 @@ void WindowRuntime::release_pointer() {
   input_.pointer_captured = false;
 }
 
+void WindowRuntime::request_keyboard_focus() {
+  input_.keyboard_focused = true;
+}
+
+void WindowRuntime::release_keyboard_focus() {
+  input_.keyboard_focused = false;
+}
+
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
   viewport_size_ = size;
   if (renderer_ == nullptr) {

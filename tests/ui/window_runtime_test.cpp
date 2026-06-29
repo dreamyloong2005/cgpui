@@ -112,6 +112,7 @@ class RecordingView final : public cgpui::View {
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
     last_pointer_captured = context.input.pointer_captured;
+    last_keyboard_focused = context.input.keyboard_focused;
 
     if (std::holds_alternative<cgpui::WindowFocused>(event)) {
       focus_count += 1;
@@ -138,8 +139,20 @@ class RecordingView final : public cgpui::View {
       pointer_scroll_event_position = context.input.pointer_position;
     } else if (std::holds_alternative<cgpui::KeyboardKey>(event)) {
       keyboard_key_count += 1;
+      if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
+        context.runtime.request_keyboard_focus();
+      }
+      if (release_keyboard_focus_on_third_key && keyboard_key_count == 3) {
+        context.runtime.release_keyboard_focus();
+      }
+      if (keyboard_key_count == 2) {
+        second_key_saw_keyboard_focus = context.input.keyboard_focused;
+      } else if (keyboard_key_count == 4) {
+        fourth_key_saw_keyboard_focus = context.input.keyboard_focused;
+      }
     } else if (std::holds_alternative<cgpui::TextInput>(event)) {
       text_input_count += 1;
+      text_input_saw_keyboard_focus = context.input.keyboard_focused;
     }
 
     if (request_redraw_on_event && event_redraw_requests == 0) {
@@ -160,11 +173,17 @@ class RecordingView final : public cgpui::View {
   bool request_redraw_on_event = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
+  bool request_keyboard_focus_on_first_key = false;
+  bool release_keyboard_focus_on_third_key = false;
   bool last_input_focused = false;
   bool focus_event_saw_focused = false;
   bool last_pointer_captured = false;
   bool second_pointer_move_saw_capture = false;
   bool fourth_pointer_move_saw_capture = true;
+  bool last_keyboard_focused = false;
+  bool second_key_saw_keyboard_focus = false;
+  bool fourth_key_saw_keyboard_focus = true;
+  bool text_input_saw_keyboard_focus = false;
   cgpui::Size last_viewport_size{};
   cgpui::Size last_event_viewport_size{};
   cgpui::Point last_input_pointer_position{};
@@ -611,6 +630,61 @@ int test_view_can_capture_and_release_pointer() {
   return 0;
 }
 
+RuntimeFixture* keyboard_focus_fixture = nullptr;
+
+void dispatch_keyboard_focus_sequence() {
+  auto& callback = keyboard_focus_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 65,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 66,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::TextInput{.text = "b"});
+  callback(cgpui::KeyboardKey{
+      .key_code = 67,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 68,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_view_can_request_and_release_keyboard_focus() {
+  RuntimeFixture fixture;
+  keyboard_focus_fixture = &fixture;
+  fixture.app.on_run = &dispatch_keyboard_focus_sequence;
+  fixture.view.request_keyboard_focus_on_first_key = true;
+  fixture.view.release_keyboard_focus_on_third_key = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  keyboard_focus_fixture = nullptr;
+
+  if (result != 0) {
+    return 70;
+  }
+  if (fixture.view.keyboard_key_count != 4 ||
+      fixture.view.text_input_count != 1) {
+    return 71;
+  }
+  if (!fixture.view.second_key_saw_keyboard_focus ||
+      !fixture.view.text_input_saw_keyboard_focus) {
+    return 72;
+  }
+  if (fixture.view.fourth_key_saw_keyboard_focus ||
+      fixture.view.last_keyboard_focused) {
+    return 73;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -636,6 +710,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_can_capture_and_release_pointer();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_can_request_and_release_keyboard_focus();
       result != 0) {
     return result;
   }
