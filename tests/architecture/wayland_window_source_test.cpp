@@ -162,6 +162,24 @@ int main() {
     return 15;
   }
 
+  const std::string pointer_target_text =
+      linux_target_block(xmake_text, "wayland_pointer_button_test");
+  if (pointer_target_text.empty()) {
+    return 37;
+  }
+  if (!contains(pointer_target_text, "tests/platform/wayland_pointer_button_test.cpp")) {
+    return 38;
+  }
+  if (!contains(pointer_target_text, "tests/platform/wayland_test_compositor.cpp")) {
+    return 39;
+  }
+  if (!contains(pointer_target_text, "wayland-server")) {
+    return 40;
+  }
+  if (!contains(pointer_target_text, "add_tests(\"default\")")) {
+    return 41;
+  }
+
   const std::string vulkan_target_text =
       linux_target_block(xmake_text, "wayland_vulkan_surface_test");
   if (vulkan_target_text.empty()) {

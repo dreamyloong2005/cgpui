@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 struct xdg_positioner;
 struct xdg_wm_base;
@@ -236,6 +237,30 @@ Error wayland_error(ErrorCode code, std::string message) {
   return Error{.code = code, .message = std::move(message)};
 }
 
+constexpr std::uint32_t linux_button_left = 0x110;
+constexpr std::uint32_t linux_button_right = 0x111;
+constexpr std::uint32_t linux_button_middle = 0x112;
+
+MouseButton mouse_button_from_wayland(std::uint32_t button) {
+  switch (button) {
+    case linux_button_left:
+      return MouseButton::left;
+    case linux_button_right:
+      return MouseButton::right;
+    case linux_button_middle:
+      return MouseButton::middle;
+    default:
+      return MouseButton::other;
+  }
+}
+
+Point point_from_fixed(wl_fixed_t x, wl_fixed_t y) {
+  return Point{
+      static_cast<float>(wl_fixed_to_double(x)),
+      static_cast<float>(wl_fixed_to_double(y)),
+  };
+}
+
 class WaylandWindow final : public PlatformWindow {
  public:
   static Result<std::unique_ptr<WaylandWindow>> create(
@@ -275,6 +300,8 @@ class WaylandWindow final : public PlatformWindow {
     return WaylandSurfaceHandle{.display = display_, .surface = surface_};
   }
 
+  [[nodiscard]] wl_surface* surface() const { return surface_; }
+
   [[nodiscard]] WindowState state() const override { return state_; }
 
   void request_redraw() override {
@@ -291,6 +318,18 @@ class WaylandWindow final : public PlatformWindow {
   }
 
   [[nodiscard]] bool configured() const { return configured_; }
+
+  void pointer_moved(Point position) {
+    callback_(PointerMoved{.position = position});
+  }
+
+  void pointer_button(MouseButton button, bool pressed, Point position) {
+    callback_(PointerButton{
+        .button = button,
+        .pressed = pressed,
+        .position = position,
+    });
+  }
 
  private:
   WaylandWindow(
@@ -432,9 +471,25 @@ class WaylandApplication final : public PlatformApplication {
       };
       xdg_wm_base_add_listener(shell_, &shell_listener, this);
     }
+    if (seat_ != nullptr) {
+      static const wl_seat_listener seat_listener{
+          .capabilities = &WaylandApplication::handle_seat_capabilities,
+          .name = &WaylandApplication::handle_seat_name,
+      };
+      wl_seat_add_listener(seat_, &seat_listener, this);
+      if (wl_display_roundtrip(display_) == -1) {
+        initialization_error_ = "wl_display_roundtrip failed while waiting for seat";
+      }
+    }
   }
 
   ~WaylandApplication() override {
+    if (pointer_ != nullptr) {
+      wl_pointer_destroy(pointer_);
+    }
+    if (seat_ != nullptr) {
+      wl_seat_destroy(seat_);
+    }
     if (shell_ != nullptr) {
       xdg_wm_base_destroy(shell_);
     }
@@ -479,7 +534,9 @@ class WaylandApplication final : public PlatformApplication {
       return std::unexpected(window.error());
     }
 
-    return std::unique_ptr<PlatformWindow>(std::move(*window));
+    register_window(window->get());
+    return std::unique_ptr<PlatformWindow>(
+        new RegisteredWaylandWindow(std::move(*window), *this));
   }
 
   int run() override {
@@ -516,6 +573,14 @@ class WaylandApplication final : public PlatformApplication {
           name,
           &xdg_wm_base_interface,
           1));
+      return;
+    }
+    if (interface_name == wl_seat_interface.name) {
+      app->seat_ = static_cast<wl_seat*>(wl_registry_bind(
+          registry,
+          name,
+          &wl_seat_interface,
+          std::min<std::uint32_t>(version, 5)));
     }
   }
 
@@ -536,10 +601,238 @@ class WaylandApplication final : public PlatformApplication {
     xdg_wm_base_pong(shell, serial);
   }
 
+  static void handle_seat_capabilities(
+      void* data,
+      wl_seat* seat,
+      std::uint32_t capabilities) {
+    auto* app = static_cast<WaylandApplication*>(data);
+    if ((capabilities & WL_SEAT_CAPABILITY_POINTER) != 0U) {
+      if (app->pointer_ == nullptr) {
+        app->pointer_ = wl_seat_get_pointer(seat);
+        static const wl_pointer_listener pointer_listener{
+            .enter = &WaylandApplication::handle_pointer_enter,
+            .leave = &WaylandApplication::handle_pointer_leave,
+            .motion = &WaylandApplication::handle_pointer_motion,
+            .button = &WaylandApplication::handle_pointer_button,
+            .axis = &WaylandApplication::handle_pointer_axis,
+            .frame = &WaylandApplication::handle_pointer_frame,
+            .axis_source = &WaylandApplication::handle_pointer_axis_source,
+            .axis_stop = &WaylandApplication::handle_pointer_axis_stop,
+            .axis_discrete = &WaylandApplication::handle_pointer_axis_discrete,
+            .axis_value120 = &WaylandApplication::handle_pointer_axis_value120,
+            .axis_relative_direction =
+                &WaylandApplication::handle_pointer_axis_relative_direction,
+        };
+        wl_pointer_add_listener(app->pointer_, &pointer_listener, app);
+      }
+      return;
+    }
+
+    if (app->pointer_ != nullptr) {
+      wl_pointer_destroy(app->pointer_);
+      app->pointer_ = nullptr;
+      app->pointer_window_ = nullptr;
+    }
+  }
+
+  static void handle_seat_name(void* data, wl_seat* seat, const char* name) {
+    (void)data;
+    (void)seat;
+    (void)name;
+  }
+
+  static void handle_pointer_enter(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t serial,
+      wl_surface* surface,
+      wl_fixed_t surface_x,
+      wl_fixed_t surface_y) {
+    (void)pointer;
+    (void)serial;
+    auto* app = static_cast<WaylandApplication*>(data);
+    app->pointer_window_ = app->find_window(surface);
+    app->pointer_position_ = point_from_fixed(surface_x, surface_y);
+  }
+
+  static void handle_pointer_leave(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t serial,
+      wl_surface* surface) {
+    (void)pointer;
+    (void)serial;
+    auto* app = static_cast<WaylandApplication*>(data);
+    if (app->pointer_window_ != nullptr &&
+        app->pointer_window_->surface() == surface) {
+      app->pointer_window_ = nullptr;
+    }
+  }
+
+  static void handle_pointer_motion(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t time,
+      wl_fixed_t surface_x,
+      wl_fixed_t surface_y) {
+    (void)pointer;
+    (void)time;
+    auto* app = static_cast<WaylandApplication*>(data);
+    app->pointer_position_ = point_from_fixed(surface_x, surface_y);
+    if (app->pointer_window_ != nullptr) {
+      app->pointer_window_->pointer_moved(app->pointer_position_);
+    }
+  }
+
+  static void handle_pointer_button(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t serial,
+      std::uint32_t time,
+      std::uint32_t button,
+      std::uint32_t state) {
+    (void)pointer;
+    (void)serial;
+    (void)time;
+    auto* app = static_cast<WaylandApplication*>(data);
+    if (app->pointer_window_ != nullptr) {
+      app->pointer_window_->pointer_button(
+          mouse_button_from_wayland(button),
+          state == WL_POINTER_BUTTON_STATE_PRESSED,
+          app->pointer_position_);
+    }
+  }
+
+  static void handle_pointer_axis(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t time,
+      std::uint32_t axis,
+      wl_fixed_t value) {
+    (void)data;
+    (void)pointer;
+    (void)time;
+    (void)axis;
+    (void)value;
+  }
+
+  static void handle_pointer_frame(void* data, wl_pointer* pointer) {
+    (void)data;
+    (void)pointer;
+  }
+
+  static void handle_pointer_axis_source(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t axis_source) {
+    (void)data;
+    (void)pointer;
+    (void)axis_source;
+  }
+
+  static void handle_pointer_axis_stop(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t time,
+      std::uint32_t axis) {
+    (void)data;
+    (void)pointer;
+    (void)time;
+    (void)axis;
+  }
+
+  static void handle_pointer_axis_discrete(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t axis,
+      std::int32_t discrete) {
+    (void)data;
+    (void)pointer;
+    (void)axis;
+    (void)discrete;
+  }
+
+  static void handle_pointer_axis_value120(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t axis,
+      std::int32_t value120) {
+    (void)data;
+    (void)pointer;
+    (void)axis;
+    (void)value120;
+  }
+
+  static void handle_pointer_axis_relative_direction(
+      void* data,
+      wl_pointer* pointer,
+      std::uint32_t axis,
+      std::uint32_t direction) {
+    (void)data;
+    (void)pointer;
+    (void)axis;
+    (void)direction;
+  }
+
+  void register_window(WaylandWindow* window) {
+    windows_.push_back(window);
+  }
+
+  void unregister_window(WaylandWindow* window) {
+    std::erase(windows_, window);
+    if (pointer_window_ == window) {
+      pointer_window_ = nullptr;
+    }
+  }
+
+  [[nodiscard]] WaylandWindow* find_window(wl_surface* surface) const {
+    for (WaylandWindow* window : windows_) {
+      if (window->surface() == surface) {
+        return window;
+      }
+    }
+    return nullptr;
+  }
+
+  class RegisteredWaylandWindow final : public PlatformWindow {
+   public:
+    RegisteredWaylandWindow(
+        std::unique_ptr<WaylandWindow> window,
+        WaylandApplication& app)
+        : window_(std::move(window)), app_(app) {}
+
+    ~RegisteredWaylandWindow() override { app_.unregister_window(window_.get()); }
+
+    [[nodiscard]] NativeSurfaceHandle native_surface() const override {
+      return window_->native_surface();
+    }
+
+    [[nodiscard]] WindowState state() const override {
+      return window_->state();
+    }
+
+    void request_redraw() override { window_->request_redraw(); }
+
+    void request_close() override { window_->request_close(); }
+
+    void set_title(std::string_view title) override {
+      window_->set_title(title);
+    }
+
+   private:
+    std::unique_ptr<WaylandWindow> window_;
+    WaylandApplication& app_;
+  };
+
   wl_display* display_ = nullptr;
   wl_registry* registry_ = nullptr;
   wl_compositor* compositor_ = nullptr;
   xdg_wm_base* shell_ = nullptr;
+  wl_seat* seat_ = nullptr;
+  wl_pointer* pointer_ = nullptr;
+  std::vector<WaylandWindow*> windows_;
+  WaylandWindow* pointer_window_ = nullptr;
+  Point pointer_position_{};
   std::string initialization_error_;
   bool running_ = true;
 };

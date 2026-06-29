@@ -22,10 +22,14 @@ class WaylandTestCompositor {
   void set_close_on_initial_configure_ack(bool enabled);
   void request_close();
   void request_resize_configure(std::int32_t width, std::int32_t height);
+  void request_pointer_move(std::int32_t x, std::int32_t y);
+  void request_pointer_button(std::uint32_t button, bool pressed);
 
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_acked() const;
+  [[nodiscard]] bool wait_for_pointer_move_sent() const;
+  [[nodiscard]] bool wait_for_pointer_button_sent() const;
 
  private:
   struct State;

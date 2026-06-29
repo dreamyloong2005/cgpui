@@ -8,8 +8,10 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
+#include <deque>
 #include <filesystem>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <utility>
@@ -197,6 +199,11 @@ struct WaylandTestCompositor::State {
     void (*set_title)(wl_client*, wl_resource*, const char*);
   };
 
+  struct PointerButtonRequest {
+    std::uint32_t button = 0;
+    bool pressed = false;
+  };
+
   explicit State(std::string test_name) {
     runtime_dir = std::filesystem::temp_directory_path() /
         ("cgpui-wayland-" + std::move(test_name) + "-" + std::to_string(::getpid()));
@@ -214,6 +221,9 @@ struct WaylandTestCompositor::State {
     }
     if (shell_global != nullptr) {
       wl_global_destroy(shell_global);
+    }
+    if (seat_global != nullptr) {
+      wl_global_destroy(seat_global);
     }
     if (display != nullptr) {
       wl_display_destroy(display);
@@ -248,7 +258,14 @@ struct WaylandTestCompositor::State {
         1,
         this,
         &State::bind_shell);
-    if (compositor_global == nullptr || shell_global == nullptr) {
+    seat_global = wl_global_create(
+        display,
+        &wl_seat_interface,
+        5,
+        this,
+        &State::bind_seat);
+    if (compositor_global == nullptr || shell_global == nullptr ||
+        seat_global == nullptr) {
       return false;
     }
 
@@ -281,6 +298,23 @@ struct WaylandTestCompositor::State {
     resize_width.store(width);
     resize_height.store(height);
     resize_configure_pending.store(true);
+  }
+
+  void request_pointer_move(std::int32_t x, std::int32_t y) {
+    pointer_x.store(x);
+    pointer_y.store(y);
+    pointer_move_pending.store(true);
+  }
+
+  void request_pointer_button(std::uint32_t button, bool pressed) {
+    {
+      std::lock_guard lock(pointer_button_mutex);
+      pointer_buttons.push_back(PointerButtonRequest{
+          .button = button,
+          .pressed = pressed,
+      });
+    }
+    pointer_button_pending.store(true);
   }
 
   void request_close() {
@@ -323,6 +357,29 @@ struct WaylandTestCompositor::State {
         nullptr);
   }
 
+  static void bind_seat(
+      wl_client* client,
+      void* data,
+      std::uint32_t version,
+      std::uint32_t id) {
+    auto* compositor = static_cast<State*>(data);
+    auto* resource = wl_resource_create(
+        client,
+        &wl_seat_interface,
+        std::min<std::uint32_t>(version, 5),
+        id);
+    compositor->seat_resource = resource;
+    wl_resource_set_implementation(
+        resource,
+        &seat_implementation,
+        compositor,
+        &State::handle_seat_destroyed);
+    wl_seat_send_capabilities(resource, WL_SEAT_CAPABILITY_POINTER);
+    if (wl_resource_get_version(resource) >= WL_SEAT_NAME_SINCE_VERSION) {
+      wl_seat_send_name(resource, "test-seat");
+    }
+  }
+
   static void create_surface(
       wl_client* client,
       wl_resource* resource,
@@ -359,16 +416,34 @@ struct WaylandTestCompositor::State {
     auto* resource = wl_resource_create(client, &xdg_positioner_interface, 1, id);
     wl_resource_set_implementation(resource, nullptr, nullptr, nullptr);
   }
+  static void seat_get_pointer(
+      wl_client* client,
+      wl_resource* resource,
+      std::uint32_t id);
+  static void handle_seat_destroyed(wl_resource* resource);
+  static void pointer_set_cursor(
+      wl_client*,
+      wl_resource*,
+      std::uint32_t,
+      wl_resource*,
+      std::int32_t,
+      std::int32_t) {}
+  static void handle_pointer_destroyed(wl_resource* resource);
 
   [[nodiscard]] SurfaceState* find_surface(wl_resource* resource) const;
+  [[nodiscard]] SurfaceState* first_pointer_surface() const;
 
   void dispatch_pending_close();
   void dispatch_pending_resize_configure();
+  void dispatch_pending_pointer_move();
+  void dispatch_pending_pointer_button();
 
   void run() {
     while (running.load()) {
       dispatch_pending_close();
       dispatch_pending_resize_configure();
+      dispatch_pending_pointer_move();
+      dispatch_pending_pointer_button();
       const int result = wl_event_loop_dispatch(wl_display_get_event_loop(display), 10);
       if (result < 0) {
         running.store(false);
@@ -376,12 +451,16 @@ struct WaylandTestCompositor::State {
       }
       dispatch_pending_close();
       dispatch_pending_resize_configure();
+      dispatch_pending_pointer_move();
+      dispatch_pending_pointer_button();
       wl_display_flush_clients(display);
     }
   }
 
   static const struct wl_compositor_interface compositor_implementation;
   static const struct wl_surface_interface surface_implementation;
+  static const struct wl_seat_interface seat_implementation;
+  static const struct wl_pointer_interface pointer_implementation;
   static const XdgWmBaseImplementation shell_implementation;
   static const XdgSurfaceImplementation xdg_surface_implementation;
   static const XdgToplevelImplementation toplevel_implementation;
@@ -389,6 +468,9 @@ struct WaylandTestCompositor::State {
   wl_display* display = nullptr;
   wl_global* compositor_global = nullptr;
   wl_global* shell_global = nullptr;
+  wl_global* seat_global = nullptr;
+  wl_resource* seat_resource = nullptr;
+  wl_resource* pointer_resource = nullptr;
   std::filesystem::path runtime_dir;
   std::string socket_name;
   std::vector<std::unique_ptr<SurfaceState>> surfaces;
@@ -401,10 +483,21 @@ struct WaylandTestCompositor::State {
   std::atomic_bool resize_configure_pending{false};
   std::atomic_bool resize_configure_sent{false};
   std::atomic_bool resize_configure_acked{false};
+  std::atomic_bool pointer_move_pending{false};
+  std::atomic_bool pointer_move_sent{false};
+  std::atomic_bool pointer_button_pending{false};
+  std::atomic_bool pointer_button_sent{false};
   std::atomic_int resize_width{0};
   std::atomic_int resize_height{0};
+  std::atomic_int pointer_x{0};
+  std::atomic_int pointer_y{0};
+  std::mutex pointer_button_mutex;
+  std::deque<PointerButtonRequest> pointer_buttons;
   std::uint32_t next_configure_serial = 1;
   std::uint32_t resize_configure_serial = 0;
+  std::uint32_t next_pointer_serial = 1;
+  std::uint32_t pointer_time = 1;
+  bool pointer_entered = false;
 };
 
 struct WaylandTestCompositor::State::SurfaceState {
@@ -535,6 +628,53 @@ WaylandTestCompositor::State::SurfaceState* WaylandTestCompositor::State::find_s
   return nullptr;
 }
 
+WaylandTestCompositor::State::SurfaceState*
+WaylandTestCompositor::State::first_pointer_surface() const {
+  for (const auto& surface : surfaces) {
+    if (surface->surface != nullptr && surface->xdg_surface != nullptr &&
+        surface->toplevel != nullptr) {
+      return surface.get();
+    }
+  }
+  return nullptr;
+}
+
+void WaylandTestCompositor::State::seat_get_pointer(
+    wl_client* client,
+    wl_resource* resource,
+    std::uint32_t id) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  auto* pointer = wl_resource_create(
+      client,
+      &wl_pointer_interface,
+      std::min<std::uint32_t>(wl_resource_get_version(resource), 5),
+      id);
+  compositor->pointer_resource = pointer;
+  wl_resource_set_implementation(
+      pointer,
+      &pointer_implementation,
+      compositor,
+      &WaylandTestCompositor::State::handle_pointer_destroyed);
+}
+
+void WaylandTestCompositor::State::handle_seat_destroyed(wl_resource* resource) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor != nullptr && compositor->seat_resource == resource) {
+    compositor->seat_resource = nullptr;
+  }
+}
+
+void WaylandTestCompositor::State::handle_pointer_destroyed(wl_resource* resource) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor != nullptr && compositor->pointer_resource == resource) {
+    compositor->pointer_resource = nullptr;
+    compositor->pointer_entered = false;
+  }
+}
+
 void WaylandTestCompositor::State::dispatch_pending_close() {
   if (!close_pending.exchange(false)) {
     return;
@@ -586,6 +726,80 @@ void WaylandTestCompositor::State::dispatch_pending_resize_configure() {
   resize_configure_pending.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_pointer_move() {
+  if (!pointer_move_pending.exchange(false)) {
+    return;
+  }
+
+  if (pointer_resource == nullptr) {
+    pointer_move_pending.store(true);
+    return;
+  }
+
+  const SurfaceState* surface = first_pointer_surface();
+  if (surface == nullptr) {
+    pointer_move_pending.store(true);
+    return;
+  }
+
+  const std::int32_t x = pointer_x.load();
+  const std::int32_t y = pointer_y.load();
+  if (!pointer_entered) {
+    wl_pointer_send_enter(
+        pointer_resource,
+        next_pointer_serial++,
+        surface->surface,
+        wl_fixed_from_int(x),
+        wl_fixed_from_int(y));
+    pointer_entered = true;
+  }
+  wl_pointer_send_motion(
+      pointer_resource,
+      pointer_time++,
+      wl_fixed_from_int(x),
+      wl_fixed_from_int(y));
+  wl_display_flush_clients(display);
+  pointer_move_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_pointer_button() {
+  if (!pointer_button_pending.exchange(false)) {
+    return;
+  }
+
+  PointerButtonRequest request{};
+  {
+    std::lock_guard lock(pointer_button_mutex);
+    if (pointer_buttons.empty()) {
+      return;
+    }
+    request = pointer_buttons.front();
+    pointer_buttons.pop_front();
+    if (!pointer_buttons.empty()) {
+      pointer_button_pending.store(true);
+    }
+  }
+
+  if (pointer_resource == nullptr || first_pointer_surface() == nullptr) {
+    {
+      std::lock_guard lock(pointer_button_mutex);
+      pointer_buttons.push_front(request);
+    }
+    pointer_button_pending.store(true);
+    return;
+  }
+
+  wl_pointer_send_button(
+      pointer_resource,
+      next_pointer_serial++,
+      pointer_time++,
+      request.button,
+      request.pressed ? WL_POINTER_BUTTON_STATE_PRESSED
+                      : WL_POINTER_BUTTON_STATE_RELEASED);
+  wl_display_flush_clients(display);
+  pointer_button_sent.store(true);
+}
+
 const struct wl_compositor_interface WaylandTestCompositor::State::compositor_implementation{
     .create_surface = &WaylandTestCompositor::State::create_surface,
     .create_region = &WaylandTestCompositor::State::create_region,
@@ -605,6 +819,18 @@ const struct wl_surface_interface WaylandTestCompositor::State::surface_implemen
     .damage_buffer = noop_surface_damage,
     .offset = noop_surface_offset,
     .get_release = noop_surface_release,
+};
+
+const struct wl_seat_interface WaylandTestCompositor::State::seat_implementation{
+    .get_pointer = &WaylandTestCompositor::State::seat_get_pointer,
+    .get_keyboard = [](wl_client*, wl_resource*, std::uint32_t) {},
+    .get_touch = [](wl_client*, wl_resource*, std::uint32_t) {},
+    .release = noop_resource,
+};
+
+const struct wl_pointer_interface WaylandTestCompositor::State::pointer_implementation{
+    .set_cursor = &WaylandTestCompositor::State::pointer_set_cursor,
+    .release = noop_resource,
 };
 
 const WaylandTestCompositor::State::XdgWmBaseImplementation
@@ -673,6 +899,16 @@ void WaylandTestCompositor::request_resize_configure(
   state_->request_resize_configure(width, height);
 }
 
+void WaylandTestCompositor::request_pointer_move(std::int32_t x, std::int32_t y) {
+  state_->request_pointer_move(x, y);
+}
+
+void WaylandTestCompositor::request_pointer_button(
+    std::uint32_t button,
+    bool pressed) {
+  state_->request_pointer_button(button, pressed);
+}
+
 bool WaylandTestCompositor::wait_for_close_sent() const {
   return state_->wait_for_flag(state_->close_sent);
 }
@@ -683,6 +919,14 @@ bool WaylandTestCompositor::wait_for_resize_configure_sent() const {
 
 bool WaylandTestCompositor::wait_for_resize_configure_acked() const {
   return state_->wait_for_flag(state_->resize_configure_acked);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_move_sent() const {
+  return state_->wait_for_flag(state_->pointer_move_sent);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_button_sent() const {
+  return state_->wait_for_flag(state_->pointer_button_sent);
 }
 
 } // namespace cgpui::test
