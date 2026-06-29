@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/style.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -135,6 +136,67 @@ class VerticalStackElement : public Element {
 
  private:
   std::vector<std::unique_ptr<Element>> children_;
+};
+
+class StyledElement : public Element {
+ public:
+  explicit StyledElement(Style style, std::unique_ptr<Element> child = {})
+      : style_(style),
+        child_(std::move(child)) {}
+
+  [[nodiscard]] const Style& style() const {
+    return style_;
+  }
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const Size preferred =
+        child_ ? child_->layout(input).size : style_.preferred_size;
+    const LayoutOutput output{
+        .size = constrain_size(preferred, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+ private:
+  Style style_;
+  std::unique_ptr<Element> child_;
+};
+
+class ElementBuilder {
+ public:
+  [[nodiscard]] static ElementBuilder box() {
+    return {};
+  }
+
+  [[nodiscard]] ElementBuilder style(Style style) && {
+    style_ = style;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder child(std::unique_ptr<Element> child) && {
+    child_ = std::move(child);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] std::unique_ptr<Element> build() && {
+    return std::make_unique<StyledElement>(style_, std::move(child_));
+  }
+
+ private:
+  Style style_;
+  std::unique_ptr<Element> child_;
 };
 
 class ElementTree {

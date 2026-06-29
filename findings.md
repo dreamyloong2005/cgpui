@@ -201,3 +201,12 @@
   reuse `Color` from `core/geometry.hpp` to avoid duplicating color types.
 - A single `EdgeSizes` structure is enough for padding/border-width symmetry
   and keeps Step 24 padding layout and Step 25 border primitives aligned.
+
+## 2026-06-30 Element Builder API
+
+- `StyledElement` can be introduced as an inert wrapper first: it owns style
+  data and an optional child, but does not paint backgrounds or apply padding
+  until the dedicated Step 23 and Step 24 slices.
+- Keeping `ElementBuilder::build()` returning `std::unique_ptr<Element>` matches
+  the existing tree/container APIs and avoids introducing reference-counted
+  element ownership prematurely.

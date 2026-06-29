@@ -49,7 +49,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 19. [x] Basic text model: editable UTF-8 buffer with cursor.
 20. [x] Text input routing into focused text model.
 21. [x] Style primitives: colors, size, padding, and border fields.
-22. [ ] Element builder API skeleton for composing styled elements.
+22. [x] Element builder API skeleton for composing styled elements.
 23. [ ] Styled element paints a solid background rect.
 24. [ ] Padding participates in styled element layout.
 25. [ ] Border width/color and border radius primitives.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 22: Element builder API skeleton for composing styled elements.
+Step 23: Styled element paints a solid background rect.
 
 ## Risks
 

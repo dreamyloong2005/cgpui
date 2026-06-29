@@ -48,6 +48,17 @@
 - Verified targeted tests: `xmake test -P . style_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 22: Element builder API skeleton for composing styled elements.
+- Added RED `element_test` coverage for `ElementBuilder::box()`, fluent
+  `style(...)` and `child(...)`, `StyledElement`, retained style data, and
+  child ownership; the test failed because the builder/styled element APIs did
+  not exist.
+- Implemented Step 22 in `codex/element-builder-api`: added `StyledElement`
+  and `ElementBuilder` to `element.hpp`, with style storage and optional child
+  ownership while leaving paint and padding layout for later steps.
+- Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 
 - Started Step 5: Context entity access.
 - Added design and implementation plan docs for context-forwarded runtime entity helpers.

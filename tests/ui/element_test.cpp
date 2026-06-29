@@ -1,4 +1,5 @@
 #include "cgpui/ui/element.hpp"
+#include "cgpui/ui/style.hpp"
 
 #include <concepts>
 #include <memory>
@@ -437,6 +438,59 @@ int test_element_tree_reconcile_rejects_unknown_parent() {
                                                                           : 26;
 }
 
+int test_element_builder_creates_styled_box() {
+  const cgpui::Style style =
+      cgpui::Style{}
+          .with_background_color(
+              cgpui::Color{.r = 0.2F, .g = 0.3F, .b = 0.4F, .a = 1.0F})
+          .with_preferred_size(cgpui::Size{.width = 64.0F, .height = 32.0F});
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box().style(style).build();
+
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 56;
+  }
+  if (!styled->style().background_color.has_value() ||
+      styled->style().background_color->r != 0.2F ||
+      styled->style().preferred_size.width != 64.0F ||
+      styled->style().preferred_size.height != 32.0F) {
+    return 57;
+  }
+  if (styled->child() != nullptr) {
+    return 58;
+  }
+
+  return 0;
+}
+
+int test_element_builder_wraps_child() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}.with_padding(cgpui::EdgeSizes::all(3.0F)))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 11.0F, .height = 12.0F}))
+          .build();
+
+  auto* styled = dynamic_cast<cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || styled->child() == nullptr) {
+    return 59;
+  }
+  if (styled->style().padding.left != 3.0F ||
+      styled->style().padding.top != 3.0F) {
+    return 60;
+  }
+
+  const auto* fixed =
+      dynamic_cast<const cgpui::FixedSizeElement*>(styled->child());
+  if (fixed == nullptr || fixed->preferred_size().width != 11.0F ||
+      fixed->preferred_size().height != 12.0F) {
+    return 61;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -516,6 +570,13 @@ int main() {
   }
   if (const int result = test_element_tree_reconcile_rejects_unknown_parent();
       result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_creates_styled_box();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_wraps_child(); result != 0) {
     return result;
   }
   return 0;
