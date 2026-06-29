@@ -3,6 +3,7 @@
 
 #include <expected>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <variant>
@@ -109,6 +110,10 @@ class RecordingView final : public cgpui::View {
     event_count += 1;
     last_event_result_consumed = context.last_event_result.consumed;
     last_event_result_cancelled = context.last_event_result.cancelled;
+    saw_last_event_dispatch = context.last_event_dispatch.has_value();
+    if (context.last_event_dispatch) {
+      last_event_dispatch = *context.last_event_dispatch;
+    }
     if (!saw_first_view_id) {
       saw_first_view_id = true;
       first_view_id = context.view_id;
@@ -280,8 +285,10 @@ class RecordingView final : public cgpui::View {
   bool text_input_saw_keyboard_focus_owner = false;
   bool last_event_result_consumed = false;
   bool last_event_result_cancelled = false;
+  bool saw_last_event_dispatch = false;
   bool saw_first_view_id = false;
   bool view_id_stayed_stable = true;
+  cgpui::EventDispatchRecord last_event_dispatch{};
   cgpui::ViewId first_view_id{};
   cgpui::ViewId last_view_id{};
   cgpui::Size last_viewport_size{};
@@ -726,6 +733,110 @@ int test_runtime_exposes_last_view_event_result() {
   return 0;
 }
 
+RuntimeFixture* event_observability_fixture = nullptr;
+
+void dispatch_event_observability_sequence() {
+  auto& callback = event_observability_fixture->window.callback;
+  event_observability_fixture->view.consume_next_event = true;
+  callback(cgpui::PointerMoved{.position = {11.0F, 12.0F}});
+  event_observability_fixture->view.cancel_next_event = true;
+  callback(cgpui::KeyboardKey{
+      .key_code = 66,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::TextInput{.text = "b"});
+}
+
+int test_runtime_reports_each_view_event_dispatch() {
+  RuntimeFixture fixture;
+  event_observability_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_observability_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  int callback_count = 0;
+  cgpui::EventDispatchRecord first_record{};
+  cgpui::EventDispatchRecord second_record{};
+  cgpui::EventDispatchRecord third_record{};
+  bool callback_context_saw_current_record = true;
+  bool callback_view_id_matched_context = true;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        callback_count += 1;
+        if (callback_count == 1) {
+          first_record = record;
+        } else if (callback_count == 2) {
+          second_record = record;
+        } else if (callback_count == 3) {
+          third_record = record;
+        }
+        callback_context_saw_current_record =
+            callback_context_saw_current_record &&
+            context.last_event_dispatch.has_value() &&
+            context.last_event_dispatch->sequence == record.sequence &&
+            context.last_event_dispatch->event_kind == record.event_kind &&
+            context.last_event_dispatch->view_id == record.view_id &&
+            context.last_event_dispatch->result.consumed ==
+                record.result.consumed &&
+            context.last_event_dispatch->result.cancelled ==
+                record.result.cancelled;
+        callback_view_id_matched_context =
+            callback_view_id_matched_context &&
+            record.view_id == context.view_id;
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  event_observability_fixture = nullptr;
+
+  if (result != 0) {
+    return 58;
+  }
+  if (callback_count != 3) {
+    return 59;
+  }
+  if (first_record.sequence != 1 ||
+      first_record.event_kind != cgpui::EventKind::pointer_moved ||
+      !first_record.result.consumed ||
+      first_record.result.cancelled) {
+    return 100;
+  }
+  if (second_record.sequence != 2 ||
+      second_record.event_kind != cgpui::EventKind::keyboard_key ||
+      !second_record.result.consumed ||
+      !second_record.result.cancelled) {
+    return 101;
+  }
+  if (third_record.sequence != 3 ||
+      third_record.event_kind != cgpui::EventKind::text_input ||
+      third_record.result.consumed ||
+      third_record.result.cancelled) {
+    return 102;
+  }
+  if (first_record.view_id.value == 0 ||
+      first_record.view_id != second_record.view_id ||
+      second_record.view_id != third_record.view_id) {
+    return 103;
+  }
+  if (!callback_context_saw_current_record ||
+      !callback_view_id_matched_context) {
+    return 104;
+  }
+  if (!fixture.view.saw_last_event_dispatch ||
+      fixture.view.last_event_dispatch.sequence != 2 ||
+      fixture.view.last_event_dispatch.event_kind !=
+          cgpui::EventKind::keyboard_key ||
+      !fixture.view.last_event_dispatch.result.cancelled) {
+    return 105;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* pointer_capture_fixture = nullptr;
 
 void dispatch_pointer_capture_sequence() {
@@ -950,6 +1061,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_exposes_last_view_event_result();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_reports_each_view_event_dispatch();
       result != 0) {
     return result;
   }

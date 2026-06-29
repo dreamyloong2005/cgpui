@@ -6,6 +6,31 @@
 #include <variant>
 
 namespace cgpui {
+namespace {
+
+EventKind event_kind_for(const PlatformEvent& event) {
+  if (std::holds_alternative<WindowFocused>(event)) {
+    return EventKind::window_focused;
+  }
+  if (std::holds_alternative<PointerMoved>(event)) {
+    return EventKind::pointer_moved;
+  }
+  if (std::holds_alternative<PointerButton>(event)) {
+    return EventKind::pointer_button;
+  }
+  if (std::holds_alternative<PointerScrolled>(event)) {
+    return EventKind::pointer_scrolled;
+  }
+  if (std::holds_alternative<KeyboardKey>(event)) {
+    return EventKind::keyboard_key;
+  }
+  if (std::holds_alternative<TextInput>(event)) {
+    return EventKind::text_input;
+  }
+  return EventKind::unknown;
+}
+
+} // namespace
 
 void PaintList::clear() {
   commands_.clear();
@@ -70,6 +95,8 @@ int WindowRuntime::run(
   pointer_capture_owner_.reset();
   keyboard_focus_owner_.reset();
   last_event_result_ = EventResult::unhandled();
+  last_event_dispatch_.reset();
+  event_dispatch_sequence_ = 0;
   frame_index_ = 0;
 
   auto window_result = application_.create_window(
@@ -156,6 +183,14 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       input_.pointer_position = scrolled->position;
     }
     last_event_result_ = view_.handle_event(event, context());
+    last_event_dispatch_ = EventDispatchRecord{
+        .sequence = ++event_dispatch_sequence_,
+        .view_id = root_view_id_,
+        .event_kind = event_kind_for(event),
+        .result = last_event_result_};
+    if (after_event_callback_) {
+      after_event_callback_(context(), *last_event_dispatch_);
+    }
   }
 }
 
@@ -205,12 +240,18 @@ WindowRuntimeContext WindowRuntime::context() {
       .viewport_size = viewport_size_,
       .input = input,
       .last_event_result = last_event_result_,
+      .last_event_dispatch = last_event_dispatch_,
       .frame_index = frame_index_};
 }
 
 void WindowRuntime::set_after_frame_callback(
     WindowRuntimeFrameCallback callback) {
   after_frame_callback_ = std::move(callback);
+}
+
+void WindowRuntime::set_after_event_callback(
+    WindowRuntimeEventCallback callback) {
+  after_event_callback_ = std::move(callback);
 }
 
 void WindowRuntime::set_close_requested_callback(

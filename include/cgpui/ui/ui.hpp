@@ -66,6 +66,23 @@ struct ViewId {
   friend bool operator==(ViewId, ViewId) = default;
 };
 
+enum class EventKind {
+  unknown,
+  window_focused,
+  pointer_moved,
+  pointer_button,
+  pointer_scrolled,
+  keyboard_key,
+  text_input,
+};
+
+struct EventDispatchRecord {
+  int sequence = 0;
+  ViewId view_id;
+  EventKind event_kind = EventKind::unknown;
+  EventResult result;
+};
+
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
@@ -84,6 +101,7 @@ struct WindowRuntimeContext {
   Size viewport_size;
   ViewInputState input;
   EventResult last_event_result;
+  std::optional<EventDispatchRecord> last_event_dispatch;
   int frame_index = 0;
 };
 
@@ -91,6 +109,8 @@ using RendererFactory =
     std::function<Result<Renderer*>(const RenderSurfaceDescriptor&)>;
 using WindowRuntimeFrameCallback =
     std::function<void(const WindowRuntimeContext&)>;
+using WindowRuntimeEventCallback =
+    std::function<void(const WindowRuntimeContext&, const EventDispatchRecord&)>;
 using WindowRuntimeErrorCallback =
     std::function<void(const Error&)>;
 
@@ -106,6 +126,7 @@ class WindowRuntime {
       WindowRuntimeOptions options = {});
 
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
+  void set_after_event_callback(WindowRuntimeEventCallback callback);
   void set_close_requested_callback(WindowRuntimeFrameCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
   void capture_pointer();
@@ -129,6 +150,7 @@ class WindowRuntime {
   View& view_;
   RendererFactory renderer_factory_;
   WindowRuntimeFrameCallback after_frame_callback_;
+  WindowRuntimeEventCallback after_event_callback_;
   WindowRuntimeFrameCallback close_requested_callback_;
   WindowRuntimeErrorCallback error_callback_;
   PlatformWindow* window_ = nullptr;
@@ -138,7 +160,9 @@ class WindowRuntime {
   std::optional<ViewId> pointer_capture_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
   EventResult last_event_result_{};
+  std::optional<EventDispatchRecord> last_event_dispatch_;
   ViewId root_view_id_{1};
+  int event_dispatch_sequence_ = 0;
   int frame_index_ = 0;
   bool should_quit_ = false;
   bool failed_ = false;
