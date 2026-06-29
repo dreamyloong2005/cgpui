@@ -15,19 +15,12 @@ int main() {
       std::istreambuf_iterator<char>(source),
       std::istreambuf_iterator<char>()};
 
-  const auto window_position =
-      text.find("std::unique_ptr<cgpui::PlatformWindow> window;");
-  const auto renderer_position =
-      text.find("std::unique_ptr<cgpui::Renderer> renderer;");
-  if (window_position == std::string::npos ||
-      renderer_position == std::string::npos) {
+  if (text.find("cgpui::WindowRuntime runtime(") == std::string::npos) {
     return 3;
   }
-
-  if (window_position > renderer_position) {
+  if (text.find("set_after_frame_callback") == std::string::npos) {
     return 1;
   }
-
   if (text.find("CGPUI_EXIT_AFTER_FIRST_FRAME") == std::string::npos) {
     return 4;
   }
@@ -37,7 +30,7 @@ int main() {
   if (text.find("first_frame_presented") == std::string::npos) {
     return 6;
   }
-  if (text.find("(*app)->quit();") == std::string::npos) {
+  if (text.find("context.application.quit();") == std::string::npos) {
     return 7;
   }
   if (text.find("CGPUI_RESIZE_AFTER_FIRST_FRAME") == std::string::npos) {
@@ -49,7 +42,7 @@ int main() {
   if (text.find("second_frame_presented") == std::string::npos) {
     return 10;
   }
-  if (text.find("window->request_redraw();") == std::string::npos) {
+  if (text.find("context.window.request_redraw();") == std::string::npos) {
     return 11;
   }
   if (text.find("CGPUI_CLOSE_AFTER_FIRST_FRAME") == std::string::npos) {
@@ -61,7 +54,7 @@ int main() {
   if (text.find("close_requested_after_first_frame") == std::string::npos) {
     return 14;
   }
-  if (text.find("window->request_close();") == std::string::npos) {
+  if (text.find("context.window.request_close();") == std::string::npos) {
     return 15;
   }
 

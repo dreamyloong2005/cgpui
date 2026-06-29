@@ -1,12 +1,11 @@
 #include "cgpui/platform/platform.hpp"
-#include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/ui.hpp"
 
 #include <cstdlib>
+#include <expected>
 #include <iostream>
 #include <memory>
 #include <string_view>
-#include <variant>
 
 class HelloView final : public cgpui::View {
  public:
@@ -47,107 +46,72 @@ int main() {
 
   HelloView view;
   cgpui::Size viewport_size{960.0F, 640.0F};
-  bool should_quit = false;
   bool render_failed = false;
   bool first_frame_presented = false;
   bool resize_requested_after_first_frame = false;
   bool second_frame_presented = false;
   bool close_requested_after_first_frame = false;
-  std::unique_ptr<cgpui::PlatformWindow> window;
   std::unique_ptr<cgpui::Renderer> renderer;
 
-  auto window_result = (*app)->create_window(
-      cgpui::WindowDescriptor{.title = "CGPUI Hello Window",
-                              .size = viewport_size},
-      [&](const cgpui::PlatformEvent& event) {
-        if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
-          if (close_after_first_frame && first_frame_presented) {
-            close_requested_after_first_frame = true;
-          }
-          should_quit = true;
-          (*app)->quit();
-          return;
+  cgpui::WindowRuntime runtime(
+      **app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor& descriptor) {
+        auto renderer_result = cgpui::create_renderer(descriptor);
+        if (!renderer_result) {
+          return cgpui::Result<cgpui::Renderer*>{
+              std::unexpected(renderer_result.error())};
         }
-
-        if (const auto* resized = std::get_if<cgpui::WindowResized>(&event);
-            resized != nullptr) {
-          viewport_size = resized->size;
-          if (renderer) {
-            auto resized_result = renderer->resize(resized->size,
-                                                   resized->scale);
+        renderer = std::move(*renderer_result);
+        return cgpui::Result<cgpui::Renderer*>{renderer.get()};
+      });
+  runtime.set_error_callback([](const cgpui::Error& error) {
+    std::cerr << error.message << '\n';
+  });
+  runtime.set_close_requested_callback(
+      [&](const cgpui::WindowRuntimeContext&) {
+        if (close_after_first_frame && first_frame_presented) {
+          close_requested_after_first_frame = true;
+        }
+      });
+  runtime.set_after_frame_callback(
+      [&](const cgpui::WindowRuntimeContext& context) {
+        viewport_size = context.viewport_size;
+        if (!first_frame_presented) {
+          first_frame_presented = true;
+          if (close_after_first_frame) {
+            context.window.request_close();
+            return;
+          }
+          if (resize_after_first_frame) {
+            viewport_size =
+                cgpui::Size{viewport_size.width * 0.75F,
+                            viewport_size.height * 0.75F};
+            auto resized_result = context.runtime.resize_surface(
+                viewport_size,
+                cgpui::DpiScale{1.0F});
             if (!resized_result) {
               std::cerr << resized_result.error().message << '\n';
-            }
-          }
-          return;
-        }
-
-        if (std::holds_alternative<cgpui::WindowRedrawRequested>(event)) {
-          if (renderer && !should_quit) {
-            auto render_result = cgpui::render_view(*renderer, view, viewport_size);
-            if (!render_result) {
-              std::cerr << render_result.error().message << '\n';
               render_failed = true;
-              should_quit = true;
-              (*app)->quit();
+              context.application.quit();
               return;
             }
-            if (!first_frame_presented) {
-              first_frame_presented = true;
-              if (close_after_first_frame) {
-                window->request_close();
-                return;
-              }
-              if (resize_after_first_frame) {
-                viewport_size =
-                    cgpui::Size{viewport_size.width * 0.75F,
-                                viewport_size.height * 0.75F};
-                auto resized_result =
-                    renderer->resize(viewport_size, cgpui::DpiScale{1.0F});
-                if (!resized_result) {
-                  std::cerr << resized_result.error().message << '\n';
-                  render_failed = true;
-                  should_quit = true;
-                  (*app)->quit();
-                  return;
-                }
-                resize_requested_after_first_frame = true;
-                window->request_redraw();
-                return;
-              }
-            } else {
-              second_frame_presented = true;
-            }
-            if (exit_after_first_frame ||
-                (resize_after_first_frame && second_frame_presented)) {
-              should_quit = true;
-              (*app)->quit();
-            }
+            resize_requested_after_first_frame = true;
+            context.window.request_redraw();
+            return;
           }
-          return;
+        } else {
+          second_frame_presented = true;
+        }
+        if (exit_after_first_frame ||
+            (resize_after_first_frame && second_frame_presented)) {
+          context.application.quit();
         }
       });
 
-  if (!window_result) {
-    std::cerr << window_result.error().message << '\n';
-    return 1;
-  }
-
-  window = std::move(*window_result);
-  viewport_size = window->state().framebuffer_size;
-
-  auto renderer_result = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
-      .native_surface = window->native_surface(),
-      .framebuffer_size = window->state().framebuffer_size,
-      .scale = window->state().scale});
-  if (!renderer_result) {
-    std::cerr << renderer_result.error().message << '\n';
-    return 1;
-  }
-
-  renderer = std::move(*renderer_result);
-  window->request_redraw();
-  const int run_result = (*app)->run();
+  const int run_result = runtime.run(cgpui::WindowDescriptor{
+      .title = "CGPUI Hello Window",
+      .size = viewport_size});
   if (render_failed) {
     return 1;
   }
