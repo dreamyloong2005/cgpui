@@ -66,6 +66,7 @@ int WindowRuntime::run(
   renderer_ = nullptr;
   viewport_size_ = descriptor.size;
   input_ = {};
+  pointer_capture_owner_.reset();
   keyboard_focus_owner_.reset();
   frame_index_ = 0;
 
@@ -188,6 +189,8 @@ void WindowRuntime::fail_and_quit(Error error) {
 
 WindowRuntimeContext WindowRuntime::context() {
   ViewInputState input = input_;
+  input.pointer_capture_owner = pointer_capture_owner_;
+  input.pointer_captured = pointer_capture_owner_ == root_view_id_;
   input.keyboard_focus_owner = keyboard_focus_owner_;
   input.keyboard_focused = keyboard_focus_owner_ == root_view_id_;
 
@@ -217,11 +220,21 @@ void WindowRuntime::set_error_callback(WindowRuntimeErrorCallback callback) {
 }
 
 void WindowRuntime::capture_pointer() {
-  input_.pointer_captured = true;
+  capture_pointer(root_view_id_);
+}
+
+void WindowRuntime::capture_pointer(ViewId view_id) {
+  pointer_capture_owner_ = view_id;
 }
 
 void WindowRuntime::release_pointer() {
-  input_.pointer_captured = false;
+  release_pointer(root_view_id_);
+}
+
+void WindowRuntime::release_pointer(ViewId view_id) {
+  if (pointer_capture_owner_ == view_id) {
+    pointer_capture_owner_.reset();
+  }
 }
 
 void WindowRuntime::request_keyboard_focus() {

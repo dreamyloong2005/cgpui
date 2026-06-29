@@ -119,6 +119,11 @@ class RecordingView final : public cgpui::View {
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
     last_pointer_captured = context.input.pointer_captured;
+    last_pointer_capture_owner_present =
+        context.input.pointer_capture_owner.has_value();
+    last_pointer_capture_owner_matches_view =
+        context.input.pointer_capture_owner.has_value() &&
+        *context.input.pointer_capture_owner == context.view_id;
     last_keyboard_focused = context.input.keyboard_focused;
     last_keyboard_focus_owner_present =
         context.input.keyboard_focus_owner.has_value();
@@ -135,13 +140,34 @@ class RecordingView final : public cgpui::View {
       if (capture_on_first_pointer_move && pointer_move_count == 1) {
         context.runtime.capture_pointer();
       }
+      if (capture_pointer_owner_on_first_pointer_move &&
+          pointer_move_count == 1) {
+        context.runtime.capture_pointer(context.view_id);
+      }
+      if (release_pointer_with_wrong_owner_on_second_pointer_move &&
+          pointer_move_count == 2) {
+        context.runtime.release_pointer(
+            cgpui::ViewId{context.view_id.value + 1});
+      }
       if (release_on_third_pointer_move && pointer_move_count == 3) {
         context.runtime.release_pointer();
       }
+      if (release_pointer_owner_on_third_pointer_move &&
+          pointer_move_count == 3) {
+        context.runtime.release_pointer(context.view_id);
+      }
       if (pointer_move_count == 2) {
         second_pointer_move_saw_capture = context.input.pointer_captured;
+        second_pointer_move_saw_capture_owner =
+            last_pointer_capture_owner_matches_view;
+      } else if (pointer_move_count == 3) {
+        third_pointer_move_saw_capture = context.input.pointer_captured;
+        third_pointer_move_saw_capture_owner =
+            last_pointer_capture_owner_matches_view;
       } else if (pointer_move_count == 4) {
         fourth_pointer_move_saw_capture = context.input.pointer_captured;
+        fourth_pointer_move_saw_capture_owner =
+            last_pointer_capture_owner_matches_view;
       }
     } else if (std::holds_alternative<cgpui::PointerButton>(event)) {
       pointer_button_count += 1;
@@ -208,6 +234,9 @@ class RecordingView final : public cgpui::View {
   bool request_redraw_on_event = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
+  bool capture_pointer_owner_on_first_pointer_move = false;
+  bool release_pointer_with_wrong_owner_on_second_pointer_move = false;
+  bool release_pointer_owner_on_third_pointer_move = false;
   bool request_keyboard_focus_on_first_key = false;
   bool release_keyboard_focus_on_third_key = false;
   bool request_keyboard_focus_owner_on_first_key = false;
@@ -216,8 +245,14 @@ class RecordingView final : public cgpui::View {
   bool last_input_focused = false;
   bool focus_event_saw_focused = false;
   bool last_pointer_captured = false;
+  bool last_pointer_capture_owner_present = false;
+  bool last_pointer_capture_owner_matches_view = false;
   bool second_pointer_move_saw_capture = false;
+  bool second_pointer_move_saw_capture_owner = false;
+  bool third_pointer_move_saw_capture = false;
+  bool third_pointer_move_saw_capture_owner = false;
   bool fourth_pointer_move_saw_capture = true;
+  bool fourth_pointer_move_saw_capture_owner = true;
   bool last_keyboard_focused = false;
   bool last_keyboard_focus_owner_present = false;
   bool last_keyboard_focus_owner_matches_view = false;
@@ -679,6 +714,54 @@ int test_view_can_capture_and_release_pointer() {
   return 0;
 }
 
+int test_pointer_capture_tracks_owner_view_id() {
+  RuntimeFixture fixture;
+  pointer_capture_fixture = &fixture;
+  fixture.app.on_run = &dispatch_pointer_capture_sequence;
+  fixture.view.capture_pointer_owner_on_first_pointer_move = true;
+  fixture.view.release_pointer_with_wrong_owner_on_second_pointer_move = true;
+  fixture.view.release_pointer_owner_on_third_pointer_move = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  pointer_capture_fixture = nullptr;
+
+  if (result != 0) {
+    return 90;
+  }
+  if (!fixture.view.saw_first_view_id ||
+      fixture.view.first_view_id.value == 0 ||
+      !fixture.view.view_id_stayed_stable) {
+    return 91;
+  }
+  if (!fixture.view.second_pointer_move_saw_capture ||
+      !fixture.view.second_pointer_move_saw_capture_owner) {
+    return 92;
+  }
+  if (!fixture.view.third_pointer_move_saw_capture ||
+      !fixture.view.third_pointer_move_saw_capture_owner) {
+    return 93;
+  }
+  if (fixture.view.fourth_pointer_move_saw_capture ||
+      fixture.view.fourth_pointer_move_saw_capture_owner ||
+      fixture.view.last_pointer_capture_owner_present) {
+    return 94;
+  }
+  if (!equal(
+          fixture.view.last_input_pointer_position,
+          cgpui::Point{4.0F, 4.0F})) {
+    return 95;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* keyboard_focus_fixture = nullptr;
 
 void dispatch_keyboard_focus_sequence() {
@@ -806,6 +889,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_can_capture_and_release_pointer();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_pointer_capture_tracks_owner_view_id();
       result != 0) {
     return result;
   }
