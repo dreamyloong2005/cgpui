@@ -76,7 +76,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 38. [x] Clipboard abstraction for Win32 and Wayland.
 39. [x] IME composition skeleton for Win32 and Wayland.
 40. [x] Real interactive demo using the new API surface.
-41. [ ] ElementTree root layout helper.
+41. [x] ElementTree root layout helper.
 42. [ ] ElementTree root hit-test helper.
 43. [ ] Element tree owned runtime root installation.
 44. [ ] Runtime lays out installed element trees on redraw.
@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 41: ElementTree root layout helper.
+Step 42: ElementTree root hit-test helper.
 
 ## Risks
 

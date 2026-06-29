@@ -407,6 +407,15 @@
   hello_window/windows_first_frame hello_window/windows_resize_after_first_frame
   hello_window/windows_close_after_first_frame ui_header_cleanliness/default`
   passed 5/5.
+- Started Step 41: ElementTree root layout helper.
+- Added RED `element_test` coverage for `ElementTree::layout_root`, including
+  root layout delegation, retained root bounds, and empty-tree constrained zero
+  output; the test failed because `layout_root` did not exist.
+- Implemented Step 41 in `codex/element-tree-layout-root`: added a header-only
+  `ElementTree::layout_root(LayoutInput)` helper that delegates to the root
+  element when present and returns constrained zero size for an empty tree.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 39: IME composition skeleton for Win32 and Wayland.
 - Added RED `text_model_test` coverage for text-model composition update,
   commit, and cancel; the test failed because composition APIs did not exist.

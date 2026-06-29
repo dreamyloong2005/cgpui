@@ -878,6 +878,47 @@ int test_element_tree_paints_siblings_by_stable_z_order() {
   return 0;
 }
 
+int test_element_tree_lays_out_root_element() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id = tree.set_root(
+      std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 120.0F, .height = 30.0F}));
+
+  const cgpui::LayoutOutput output = tree.layout_root(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 20.0F, .height = 10.0F},
+              .max_size = {.width = 80.0F, .height = 60.0F},
+          },
+  });
+
+  if (output.size.width != 80.0F || output.size.height != 30.0F) {
+    return 90;
+  }
+
+  const cgpui::Element* root = tree.get(root_id);
+  if (root == nullptr || !root->layout_bounds().has_value()) {
+    return 91;
+  }
+  return root->layout_bounds()->size.width == 80.0F &&
+                 root->layout_bounds()->size.height == 30.0F
+             ? 0
+             : 92;
+}
+
+int test_element_tree_layout_root_handles_empty_tree() {
+  cgpui::ElementTree tree;
+  const cgpui::LayoutOutput output = tree.layout_root(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 12.0F, .height = 8.0F},
+              .max_size = {.width = 80.0F, .height = 60.0F},
+          },
+  });
+
+  return output.size.width == 12.0F && output.size.height == 8.0F ? 0 : 93;
+}
+
 } // namespace
 
 int main() {
@@ -1003,6 +1044,14 @@ int main() {
   }
   if (const int result =
           test_element_tree_paints_siblings_by_stable_z_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_lays_out_root_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_layout_root_handles_empty_tree();
       result != 0) {
     return result;
   }

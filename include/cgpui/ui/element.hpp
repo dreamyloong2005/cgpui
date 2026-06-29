@@ -417,6 +417,16 @@ class ElementTree {
     return node->children;
   }
 
+  [[nodiscard]] LayoutOutput layout_root(LayoutInput input) const {
+    const Element* root = get(root_id_);
+    if (root == nullptr) {
+      return LayoutOutput{
+          .size = constrain_size({}, input.constraints),
+      };
+    }
+    return root->layout(input);
+  }
+
   void paint(PaintList& paint_list) const {
     paint_subtree(root_id_, paint_list);
   }

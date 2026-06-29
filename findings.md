@@ -399,3 +399,10 @@
   element-tree steps can replace that with a safer ownership model.
 - `CGPUI_DEMO_INJECT_TEXT` gives the demo a scripted state-change path for
   smoke tests while keeping real interactive behavior available in normal runs.
+
+## 2026-06-30 ElementTree Root Layout
+
+- `ElementTree::layout_root` is intentionally a root helper, not a full tree
+  traversal: existing container elements still own their child layout behavior.
+- Empty-tree layout should return constrained zero size, matching base element
+  layout semantics and giving callers a safe no-root path.
