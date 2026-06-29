@@ -41,12 +41,18 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
+struct ViewInputState {
+  bool focused = false;
+  Point pointer_position{};
+};
+
 struct WindowRuntimeContext {
   WindowRuntime& runtime;
   PlatformApplication& application;
   PlatformWindow& window;
   Renderer& renderer;
   Size viewport_size;
+  ViewInputState input;
   int frame_index = 0;
 };
 
@@ -89,6 +95,7 @@ class WindowRuntime {
   PlatformWindow* window_ = nullptr;
   Renderer* renderer_ = nullptr;
   Size viewport_size_{};
+  ViewInputState input_{};
   int frame_index_ = 0;
   bool should_quit_ = false;
   bool failed_ = false;

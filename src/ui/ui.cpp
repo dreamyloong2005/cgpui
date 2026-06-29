@@ -65,6 +65,7 @@ int WindowRuntime::run(
   window_ = nullptr;
   renderer_ = nullptr;
   viewport_size_ = descriptor.size;
+  input_ = {};
   frame_index_ = 0;
 
   auto window_result = application_.create_window(
@@ -137,6 +138,19 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
   }
 
   if (window_ != nullptr && renderer_ != nullptr) {
+    if (const auto* focused = std::get_if<WindowFocused>(&event);
+        focused != nullptr) {
+      input_.focused = focused->focused;
+    } else if (const auto* moved = std::get_if<PointerMoved>(&event);
+               moved != nullptr) {
+      input_.pointer_position = moved->position;
+    } else if (const auto* button = std::get_if<PointerButton>(&event);
+               button != nullptr) {
+      input_.pointer_position = button->position;
+    } else if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
+               scrolled != nullptr) {
+      input_.pointer_position = scrolled->position;
+    }
     view_.handle_event(event, context());
   }
 }
@@ -178,6 +192,7 @@ WindowRuntimeContext WindowRuntime::context() {
       .window = *window_,
       .renderer = *renderer_,
       .viewport_size = viewport_size_,
+      .input = input_,
       .frame_index = frame_index_};
 }
 

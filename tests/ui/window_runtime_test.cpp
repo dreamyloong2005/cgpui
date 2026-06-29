@@ -17,6 +17,10 @@ bool equal(cgpui::DpiScale lhs, cgpui::DpiScale rhs) {
   return lhs.value == rhs.value;
 }
 
+bool equal(cgpui::Point lhs, cgpui::Point rhs) {
+  return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
 class RecordingFrame final : public cgpui::RenderFrame {
  public:
   void clear(cgpui::Color color) override {
@@ -105,15 +109,21 @@ class RecordingView final : public cgpui::View {
     event_count += 1;
     last_event_viewport_size = context.viewport_size;
     last_event_frame_index = context.frame_index;
+    last_input_focused = context.input.focused;
+    last_input_pointer_position = context.input.pointer_position;
 
     if (std::holds_alternative<cgpui::WindowFocused>(event)) {
       focus_count += 1;
+      focus_event_saw_focused = context.input.focused;
     } else if (std::holds_alternative<cgpui::PointerMoved>(event)) {
       pointer_move_count += 1;
+      pointer_move_event_position = context.input.pointer_position;
     } else if (std::holds_alternative<cgpui::PointerButton>(event)) {
       pointer_button_count += 1;
+      pointer_button_event_position = context.input.pointer_position;
     } else if (std::holds_alternative<cgpui::PointerScrolled>(event)) {
       pointer_scroll_count += 1;
+      pointer_scroll_event_position = context.input.pointer_position;
     } else if (std::holds_alternative<cgpui::KeyboardKey>(event)) {
       keyboard_key_count += 1;
     } else if (std::holds_alternative<cgpui::TextInput>(event)) {
@@ -136,8 +146,14 @@ class RecordingView final : public cgpui::View {
   int text_input_count = 0;
   int event_redraw_requests = 0;
   bool request_redraw_on_event = false;
+  bool last_input_focused = false;
+  bool focus_event_saw_focused = false;
   cgpui::Size last_viewport_size{};
   cgpui::Size last_event_viewport_size{};
+  cgpui::Point last_input_pointer_position{};
+  cgpui::Point pointer_move_event_position{};
+  cgpui::Point pointer_button_event_position{};
+  cgpui::Point pointer_scroll_event_position{};
   int last_event_frame_index = -1;
 };
 
@@ -458,6 +474,30 @@ int test_runtime_dispatches_input_events_to_view() {
   }
   if (fixture.view.last_event_frame_index != 1) {
     return 44;
+  }
+  if (!fixture.view.focus_event_saw_focused ||
+      !fixture.view.last_input_focused) {
+    return 45;
+  }
+  if (!equal(
+          fixture.view.pointer_move_event_position,
+          cgpui::Point{12.0F, 24.0F})) {
+    return 46;
+  }
+  if (!equal(
+          fixture.view.pointer_button_event_position,
+          cgpui::Point{12.0F, 24.0F})) {
+    return 47;
+  }
+  if (!equal(
+          fixture.view.pointer_scroll_event_position,
+          cgpui::Point{12.0F, 24.0F})) {
+    return 48;
+  }
+  if (!equal(
+          fixture.view.last_input_pointer_position,
+          cgpui::Point{12.0F, 24.0F})) {
+    return 49;
   }
 
   return 0;
