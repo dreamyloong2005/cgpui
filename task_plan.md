@@ -1,8 +1,8 @@
-# CGPUI GPUI-Core 20-Step Plan
+# CGPUI GPUI-Core 40-Step Plan
 
 ## Goal
 
-Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like API. Each step must be implemented as a small, verified slice that keeps `master` buildable.
+Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like API. Each step must be implemented as a small, verified slice that keeps `master` buildable.
 
 ## Current Baseline
 
@@ -14,6 +14,14 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 ## Definition Of Done For This 20-Step Goal
 
 - All 20 steps below are implemented, committed, merged to `master`, and verified.
+- Windows full debug test suite passes after each merge.
+- Linux/WSL full debug test suite passes for slices that touch shared UI, platform, renderer, or build surfaces.
+- `git status --short --branch` on `master` has no tracked/staged changes from the work, aside from the pre-existing untracked `.vscode/`.
+
+## Definition Of Done For The 40-Step Goal
+
+- Steps 1-20 remain implemented and verified on `master`.
+- Steps 21-40 below are implemented, committed, merged to `master`, and verified.
 - Windows full debug test suite passes after each merge.
 - Linux/WSL full debug test suite passes for slices that touch shared UI, platform, renderer, or build surfaces.
 - `git status --short --branch` on `master` has no tracked/staged changes from the work, aside from the pre-existing untracked `.vscode/`.
@@ -40,10 +48,30 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 18. [x] Key binding table: map key events to actions.
 19. [x] Basic text model: editable UTF-8 buffer with cursor.
 20. [x] Text input routing into focused text model.
+21. [x] Style primitives: colors, size, padding, and border fields.
+22. [ ] Element builder API skeleton for composing styled elements.
+23. [ ] Styled element paints a solid background rect.
+24. [ ] Padding participates in styled element layout.
+25. [ ] Border width/color and border radius primitives.
+26. [ ] Paint tree generation from element hierarchy.
+27. [ ] Clip rect and overflow primitives.
+28. [ ] Z-order and deterministic child paint order.
+29. [ ] Hover state tracking for routed pointer targets.
+30. [ ] Cursor shape API and routed cursor state.
+31. [ ] Scroll state/model primitive.
+32. [ ] Flex row/column layout basics.
+33. [ ] Runtime invalidation requests for layout and paint.
+34. [ ] Update scheduling that requests redraw after model/view changes.
+35. [ ] View/model subscription relation skeleton.
+36. [ ] Text selection range model.
+37. [ ] Text key editing actions for delete, movement, and selection.
+38. [ ] Clipboard abstraction for Win32 and Wayland.
+39. [ ] IME composition skeleton for Win32 and Wayland.
+40. [ ] Real interactive demo using the new API surface.
 
 ## Active Step
 
-All 20 planned Windows/Linux GPUI-core milestone steps are implemented.
+Step 22: Element builder API skeleton for composing styled elements.
 
 ## Risks
 

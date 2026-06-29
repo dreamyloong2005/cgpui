@@ -34,6 +34,21 @@
 
 ## 2026-06-30
 
+- Started the second GPUI-core milestone: extend the completed 20-step
+  Windows/Linux base to Step 40.
+- Updated `task_plan.md` with Steps 21-40 and set the active step to Step 21:
+  Style primitives.
+- Started Step 21: Style primitives.
+- Added a RED `style_test` and `style_test` xmake target for `EdgeSizes`,
+  inert `Style` fields, fluent style setters, and UI header cleanliness; the
+  test failed because `cgpui/ui/style.hpp` did not exist.
+- Implemented Step 21 in `codex/style-primitives`: added header-only
+  `EdgeSizes` and `Style` primitives with optional background/foreground color,
+  preferred size, padding, and border width.
+- Verified targeted tests: `xmake test -P . style_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+
 - Started Step 5: Context entity access.
 - Added design and implementation plan docs for context-forwarded runtime entity helpers.
 - Added a RED runtime test that inserts, reads, mutates, removes, and emplaces an entity from `WindowRuntimeContext`; the test failed because `EntityId` and context entity helpers were not available through the UI runtime API.

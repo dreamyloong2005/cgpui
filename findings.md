@@ -191,3 +191,13 @@
 - The text-input routing test must fire the third key event before expecting
   the existing helper to release element keyboard focus; otherwise the second
   text input correctly still targets the model.
+
+## 2026-06-30 40-Step Milestone
+
+- Step 21 should introduce style as inert data first, not layout or painting
+  behavior, so later builder, layout, and paint-tree steps have a stable shared
+  vocabulary.
+- Style primitives can stay header-only in `include/cgpui/ui/style.hpp` and
+  reuse `Color` from `core/geometry.hpp` to avoid duplicating color types.
+- A single `EdgeSizes` structure is enough for padding/border-width symmetry
+  and keeps Step 24 padding layout and Step 25 border primitives aligned.
