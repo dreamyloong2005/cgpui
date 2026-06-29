@@ -690,6 +690,22 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 69: ViewContext element tree installation helper.
+- Added RED `window_runtime_test` coverage for installing an `ElementTree`
+  through `ViewContext::set_element_tree` during a view event, requesting layout,
+  and routing a later pointer move to the installed tree root; the test failed
+  to compile because the context helper did not exist.
+- Implemented Step 69 in `codex/view-context-element-tree-helper`: added a
+  `WindowRuntimeContext::set_element_tree(std::unique_ptr<ElementTree>)`
+  forwarding helper over the existing runtime tree ownership API.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

@@ -104,7 +104,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 66. [x] Element tree preorder traversal helper.
 67. [x] Element tree find-by-id convenience helper.
 68. [x] ViewContext text model binding helper.
-69. [ ] ViewContext element tree installation helper.
+69. [x] ViewContext element tree installation helper.
 70. [ ] ViewContext action registration helper.
 71. [ ] ViewContext key binding helper.
 72. [ ] ViewContext text edit binding helper.
@@ -124,7 +124,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 69: ViewContext element tree installation helper.
+Step 70: ViewContext action registration helper.
 
 ## Risks
 

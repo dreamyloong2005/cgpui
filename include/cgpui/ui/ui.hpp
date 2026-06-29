@@ -213,6 +213,7 @@ struct WindowRuntimeContext {
   void release_keyboard_focus() const;
   void release_keyboard_focus(ViewId view_id) const;
   void release_keyboard_focus(ElementId element_id) const;
+  void set_element_tree(std::unique_ptr<ElementTree> tree) const;
   void bind_text_model(ElementId element_id, TextModel* model) const;
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;

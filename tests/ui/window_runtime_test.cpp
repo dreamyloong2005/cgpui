@@ -345,6 +345,11 @@ class RecordingView final : public cgpui::View {
             view_context_bound_text_model);
         context.request_keyboard_focus(focused_keyboard_element_id);
       }
+      if (exercise_view_context_element_tree_installation &&
+          keyboard_key_count == 1) {
+        context.set_element_tree(std::move(view_context_element_tree));
+        context.request_layout();
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -477,6 +482,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_scheduled_invalidation_redraw = false;
   bool exercise_view_context_convenience = false;
   bool exercise_view_context_text_model_binding = false;
+  bool exercise_view_context_element_tree_installation = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -598,6 +604,7 @@ class RecordingView final : public cgpui::View {
   cgpui::Point pointer_button_event_position{};
   cgpui::Point pointer_scroll_event_position{};
   cgpui::TextModel* view_context_bound_text_model = nullptr;
+  std::unique_ptr<cgpui::ElementTree> view_context_element_tree;
   int last_event_frame_index = -1;
 };
 
@@ -2847,6 +2854,69 @@ int test_view_context_binds_text_model_to_element() {
   return 0;
 }
 
+RuntimeFixture* view_context_element_tree_fixture = nullptr;
+
+void dispatch_view_context_element_tree_sequence() {
+  auto& callback = view_context_element_tree_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_view_context_installs_element_tree() {
+  RuntimeFixture fixture;
+  view_context_element_tree_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_element_tree_sequence;
+  fixture.view.exercise_view_context_element_tree_installation = true;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 700.0F, .height = 600.0F}));
+  fixture.view.view_context_element_tree = std::move(tree);
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  std::optional<cgpui::ElementId> routed_element_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_moved) {
+          routed_element_id = record.route.target_element_id;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  view_context_element_tree_fixture = nullptr;
+
+  if (result != 0) {
+    return 228;
+  }
+  if (fixture.view.view_context_element_tree != nullptr ||
+      runtime.element_tree() == nullptr || runtime.element_root() == nullptr) {
+    return 229;
+  }
+  const std::optional<cgpui::Rect> bounds =
+      runtime.element_root()->layout_bounds();
+  if (!bounds.has_value() || bounds->size.width != 640.0F ||
+      bounds->size.height != 480.0F) {
+    return 230;
+  }
+  if (!routed_element_id.has_value() || *routed_element_id != root_id) {
+    return 231;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* text_edit_action_fixture = nullptr;
 
 void dispatch_text_edit_action_sequence() {
@@ -3387,6 +3457,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_context_binds_text_model_to_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_installs_element_tree();
       result != 0) {
     return result;
   }

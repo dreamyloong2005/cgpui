@@ -665,3 +665,11 @@
   text-model binding; it should not introduce a second ownership or lookup path.
 - Binding during an event should be immediately visible to subsequent text input
   routed to the focused element, matching the existing runtime text input path.
+
+## 2026-06-30 ViewContext Element Tree Installation
+
+- ViewContext element tree installation should forward ownership directly into
+  `WindowRuntime::set_element_tree`; the context remains a capability wrapper,
+  not a second tree store.
+- Installing a tree during an event composes with `request_layout()`: the
+  deferred redraw lays out the owned tree before later pointer routing uses it.

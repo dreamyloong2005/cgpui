@@ -949,6 +949,11 @@ void WindowRuntimeContext::release_keyboard_focus(ElementId element_id) const {
   runtime.release_keyboard_focus(element_id);
 }
 
+void WindowRuntimeContext::set_element_tree(
+    std::unique_ptr<ElementTree> tree) const {
+  runtime.set_element_tree(std::move(tree));
+}
+
 void WindowRuntimeContext::bind_text_model(
     ElementId element_id,
     TextModel* model) const {
