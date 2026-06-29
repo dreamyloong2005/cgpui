@@ -53,6 +53,10 @@ class Element {
     (void)paint_list;
   }
 
+  [[nodiscard]] virtual int z_index() const {
+    return 0;
+  }
+
   void set_layout_bounds(Rect bounds) const {
     layout_bounds_ = bounds;
   }
@@ -189,6 +193,10 @@ class StyledElement : public Element {
   }
 
   void paint(PaintList& paint_list) const override;
+
+  [[nodiscard]] int z_index() const override {
+    return style_.z_index;
+  }
 
  private:
   Style style_;
@@ -375,7 +383,21 @@ class ElementTree {
     }
 
     node->element->paint(paint_list);
-    for (ElementId child_id : node->children) {
+    std::vector<ElementId> ordered_children(node->children.begin(),
+                                            node->children.end());
+    std::stable_sort(
+        ordered_children.begin(),
+        ordered_children.end(),
+        [this](ElementId lhs, ElementId rhs) {
+          const Node* lhs_node = find_node(lhs);
+          const Node* rhs_node = find_node(rhs);
+          const int lhs_z =
+              lhs_node == nullptr ? 0 : lhs_node->element->z_index();
+          const int rhs_z =
+              rhs_node == nullptr ? 0 : rhs_node->element->z_index();
+          return lhs_z < rhs_z;
+        });
+    for (ElementId child_id : ordered_children) {
       paint_subtree(child_id, paint_list);
     }
   }

@@ -675,6 +675,110 @@ int test_element_tree_paints_root_and_children_in_tree_order() {
   return 0;
 }
 
+int test_element_tree_paints_siblings_by_stable_z_order() {
+  cgpui::ElementTree tree;
+  const cgpui::Color root_color{
+      .r = 0.1F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color low_color{
+      .r = 0.2F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color middle_first_color{
+      .r = 0.3F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color middle_second_color{
+      .r = 0.4F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color high_color{
+      .r = 0.5F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+
+  const cgpui::ElementId root_id = tree.set_root(
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(root_color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 80.0F, .height = 40.0F}))
+          .build());
+  const cgpui::ElementId high_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(high_color)
+                     .with_z_index(10)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F}))
+          .build());
+  const cgpui::ElementId middle_first_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(middle_first_color)
+                     .with_z_index(5)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F}))
+          .build());
+  const cgpui::ElementId low_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(low_color)
+                     .with_z_index(-1)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F}))
+          .build());
+  const cgpui::ElementId middle_second_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(middle_second_color)
+                     .with_z_index(5)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F}))
+          .build());
+
+  for (const cgpui::ElementId id :
+       {root_id, high_id, middle_first_id, low_id, middle_second_id}) {
+    tree.get(id)->set_layout_bounds(cgpui::Rect{
+        .origin = {.x = 0.0F, .y = 0.0F},
+        .size = {.width = 20.0F, .height = 10.0F},
+    });
+  }
+
+  cgpui::PaintList paint_list;
+  tree.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 5) {
+    return 76;
+  }
+  if (commands[0].solid_rect.color.r != root_color.r) {
+    return 77;
+  }
+  if (commands[1].solid_rect.color.r != low_color.r ||
+      commands[2].solid_rect.color.r != middle_first_color.r ||
+      commands[3].solid_rect.color.r != middle_second_color.r ||
+      commands[4].solid_rect.color.r != high_color.r) {
+    return 78;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -783,6 +887,11 @@ int main() {
   }
   if (const int result =
           test_element_tree_paints_root_and_children_in_tree_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_tree_paints_siblings_by_stable_z_order();
       result != 0) {
     return result;
   }

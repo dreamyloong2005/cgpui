@@ -55,7 +55,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 25. [x] Border width/color and border radius primitives.
 26. [x] Paint tree generation from element hierarchy.
 27. [x] Clip rect and overflow primitives.
-28. [ ] Z-order and deterministic child paint order.
+28. [x] Z-order and deterministic child paint order.
 29. [ ] Hover state tracking for routed pointer targets.
 30. [ ] Cursor shape API and routed cursor state.
 31. [ ] Scroll state/model primitive.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 28: Z-order and deterministic child paint order.
+Step 29: Hover state tracking for routed pointer targets.
 
 ## Risks
 

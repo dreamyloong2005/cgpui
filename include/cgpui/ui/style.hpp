@@ -90,6 +90,7 @@ struct Style {
   EdgeSizes border_width;
   BorderRadii border_radius;
   Overflow overflow = Overflow::visible;
+  int z_index = 0;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -136,6 +137,12 @@ struct Style {
   [[nodiscard]] constexpr Style with_overflow(Overflow value) const {
     Style style = *this;
     style.overflow = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_z_index(int value) const {
+    Style style = *this;
+    style.z_index = value;
     return style;
   }
 

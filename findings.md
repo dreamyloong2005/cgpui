@@ -260,3 +260,13 @@
 - Keeping `clip_rect` optional distinguishes "no authored clip" from an
   authored zero-size clip rectangle, which will matter when paint traversal
   starts honoring clipping.
+
+## 2026-06-30 Z Order Paint Order
+
+- `Style::z_index` is the smallest API surface for authored paint ordering
+  because `StyledElement` already owns style data and `ElementTree::paint`
+  already controls sibling traversal.
+- Sorting only same-parent children keeps the existing parent-before-children
+  invariant from Step 26 while making sibling paint order deterministic.
+- `std::stable_sort` preserves insertion/reconcile order for equal z-index
+  siblings, so existing append-order paint tests remain meaningful.

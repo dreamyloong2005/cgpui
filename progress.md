@@ -48,6 +48,18 @@
 - Verified targeted tests: `xmake test -P . style_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 28: Z-order and deterministic child paint order.
+- Added RED `style_test` and `element_test` coverage for default integer
+  `Style::z_index`, fluent `with_z_index(int)`, and stable sibling paint order
+  sorted by z-index while preserving insertion order for equal z-index values;
+  the test failed because `z_index` APIs did not exist.
+- Implemented Step 28 in `codex/z-order-paint-order`: added inert z-index
+  style data, exposed `Element::z_index()`, made `StyledElement` return its
+  style z-index, and made `ElementTree::paint` stable-sort same-parent
+  children before recursive painting.
+- Verified targeted tests: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 - Started Step 22: Element builder API skeleton for composing styled elements.
 - Added RED `element_test` coverage for `ElementBuilder::box()`, fluent
   `style(...)` and `child(...)`, `StyledElement`, retained style data, and
