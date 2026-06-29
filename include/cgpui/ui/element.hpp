@@ -126,6 +126,14 @@ class FixedSizeElement : public Element {
 
 class VerticalStackElement : public Element {
  public:
+  [[nodiscard]] float gap() const {
+    return gap_;
+  }
+
+  void set_gap(float gap) {
+    gap_ = gap;
+  }
+
   void append_child(std::unique_ptr<Element> child) {
     if (child) {
       children_.push_back(std::move(child));
@@ -138,7 +146,11 @@ class VerticalStackElement : public Element {
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
     Size content_size;
+    std::size_t child_index = 0;
     for (const auto& child : children_) {
+      if (child_index > 0) {
+        content_size.height += gap_;
+      }
       const LayoutOutput child_output = child->layout(LayoutInput{});
       child->set_layout_bounds(Rect{
           .origin = {.x = 0.0F, .y = content_size.height},
@@ -146,6 +158,7 @@ class VerticalStackElement : public Element {
       });
       content_size.width = std::max(content_size.width, child_output.size.width);
       content_size.height += child_output.size.height;
+      child_index += 1;
     }
 
     const LayoutOutput output{
@@ -175,6 +188,7 @@ class VerticalStackElement : public Element {
   }
 
  private:
+  float gap_ = 0.0F;
   std::vector<std::unique_ptr<Element>> children_;
 };
 
@@ -191,6 +205,14 @@ class FlexElement : public Element {
     return direction_;
   }
 
+  [[nodiscard]] float gap() const {
+    return gap_;
+  }
+
+  void set_gap(float gap) {
+    gap_ = gap;
+  }
+
   void append_child(std::unique_ptr<Element> child) {
     if (child) {
       children_.push_back(std::move(child));
@@ -204,7 +226,17 @@ class FlexElement : public Element {
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
     Size content_size;
     Point child_origin;
+    std::size_t child_index = 0;
     for (const auto& child : children_) {
+      if (child_index > 0) {
+        if (direction_ == FlexDirection::row) {
+          child_origin.x += gap_;
+          content_size.width += gap_;
+        } else {
+          child_origin.y += gap_;
+          content_size.height += gap_;
+        }
+      }
       const LayoutOutput child_output = child->layout(LayoutInput{});
       child->set_layout_bounds(Rect{
           .origin = child_origin,
@@ -222,6 +254,7 @@ class FlexElement : public Element {
             std::max(content_size.width, child_output.size.width);
         content_size.height += child_output.size.height;
       }
+      child_index += 1;
     }
 
     const LayoutOutput output{
@@ -252,6 +285,7 @@ class FlexElement : public Element {
 
  private:
   FlexDirection direction_;
+  float gap_ = 0.0F;
   std::vector<std::unique_ptr<Element>> children_;
 };
 
@@ -359,6 +393,7 @@ class ElementBuilder {
     }
     if (kind_ == Kind::v_stack) {
       auto element = std::make_unique<VerticalStackElement>();
+      element->set_gap(style_.gap);
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }
@@ -367,6 +402,7 @@ class ElementBuilder {
     if (kind_ == Kind::row || kind_ == Kind::column) {
       auto element = std::make_unique<FlexElement>(
           kind_ == Kind::row ? FlexDirection::row : FlexDirection::column);
+      element->set_gap(style_.gap);
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }

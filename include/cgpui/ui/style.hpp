@@ -91,6 +91,7 @@ struct Style {
   BorderRadii border_radius;
   Overflow overflow = Overflow::visible;
   int z_index = 0;
+  float gap = 0.0F;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -143,6 +144,12 @@ struct Style {
   [[nodiscard]] constexpr Style with_z_index(int value) const {
     Style style = *this;
     style.z_index = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_gap(float value) const {
+    Style style = *this;
+    style.gap = value;
     return style;
   }
 

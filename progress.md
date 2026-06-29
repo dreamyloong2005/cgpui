@@ -568,3 +568,20 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+
+- Started Step 50: Gap style primitive for stack and flex layout.
+- Added RED `style_test` and `element_test` coverage for default
+  `Style::gap`, fluent `with_gap(float)`, and builder-authored gap spacing for
+  vertical stacks plus flex row/column containers; the test failed because the
+  gap style/container APIs did not exist.
+- Implemented Step 50 in `codex/gap-style-layout`: added `Style::gap`,
+  `Style::with_gap`, container `gap()`/`set_gap` accessors, gap-aware
+  stack/flex layout, and builder propagation from `style(...with_gap(...))`
+  into row/column/v_stack containers.
+- Verified targeted tests: `xmake test -P . style_test/default
+  element_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.

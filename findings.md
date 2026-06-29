@@ -477,3 +477,13 @@
   retained-bounds behavior without adding a second preferred-size path.
 - The helper intentionally ignores accumulated children because fixed-size
   elements are leaf nodes in the current element model.
+
+## 2026-06-30 Gap Style Layout
+
+- `Style::gap` can stay as a single main-axis spacing primitive for now:
+  vertical stack and flex column apply it on Y, while flex row applies it on X.
+- Applying gap only when `child_index > 0` preserves existing zero-gap layout
+  and avoids adding trailing space after the final child.
+- The existing builder `style(...)` hook is enough to author container gap for
+  `row`, `column`, and `v_stack` without wrapping those multi-child containers
+  inside an extra `StyledElement`.

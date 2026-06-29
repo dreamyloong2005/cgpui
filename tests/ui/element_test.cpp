@@ -248,6 +248,36 @@ int test_vertical_stack_records_child_bounds_top_to_bottom() {
              : 48;
 }
 
+int test_vertical_stack_gap_spaces_children_only_between_items() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::v_stack()
+          .style(cgpui::Style{}.with_gap(4.0F))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 40.0F, .height = 10.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 20.0F, .height = 30.0F}))
+          .build();
+
+  auto* stack = dynamic_cast<cgpui::VerticalStackElement*>(element.get());
+  if (stack == nullptr || stack->gap() != 4.0F) {
+    return 105;
+  }
+
+  const cgpui::LayoutOutput output = stack->layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 44.0F) {
+    return 106;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      stack->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 0.0F &&
+                 second_bounds->origin.y == 14.0F &&
+                 second_bounds->size.width == 20.0F &&
+                 second_bounds->size.height == 30.0F
+             ? 0
+             : 107;
+}
+
 int test_vertical_stack_hit_tests_children_before_self() {
   cgpui::VerticalStackElement stack;
   stack.assign_id(cgpui::ElementId{10});
@@ -318,6 +348,37 @@ int test_flex_row_lays_out_children_left_to_right() {
              : 82;
 }
 
+int test_flex_row_gap_spaces_children_on_main_axis() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::row()
+          .style(cgpui::Style{}.with_gap(4.0F))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 12.0F, .height = 20.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 8.0F}))
+          .build();
+
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->direction() != cgpui::FlexDirection::row ||
+      flex->gap() != 4.0F) {
+    return 108;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{});
+  if (output.size.width != 46.0F || output.size.height != 20.0F) {
+    return 109;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 16.0F &&
+                 second_bounds->origin.y == 0.0F &&
+                 second_bounds->size.width == 30.0F &&
+                 second_bounds->size.height == 8.0F
+             ? 0
+             : 110;
+}
+
 int test_flex_column_lays_out_children_top_to_bottom() {
   cgpui::FlexElement flex(cgpui::FlexDirection::column);
   flex.append_child(
@@ -347,6 +408,37 @@ int test_flex_column_lays_out_children_top_to_bottom() {
                  second_bounds->size.height == 8.0F
              ? 0
              : 84;
+}
+
+int test_flex_column_gap_spaces_children_on_main_axis() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::column()
+          .style(cgpui::Style{}.with_gap(6.0F))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 12.0F, .height = 20.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 30.0F, .height = 8.0F}))
+          .build();
+
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->direction() != cgpui::FlexDirection::column ||
+      flex->gap() != 6.0F) {
+    return 111;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{});
+  if (output.size.width != 30.0F || output.size.height != 34.0F) {
+    return 112;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 0.0F &&
+                 second_bounds->origin.y == 26.0F &&
+                 second_bounds->size.width == 30.0F &&
+                 second_bounds->size.height == 8.0F
+             ? 0
+             : 113;
 }
 
 int test_flex_hit_tests_children_before_self() {
@@ -1124,6 +1216,11 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result =
+          test_vertical_stack_gap_spaces_children_only_between_items();
+      result != 0) {
+    return result;
+  }
   if (const int result = test_vertical_stack_hit_tests_children_before_self();
       result != 0) {
     return result;
@@ -1132,7 +1229,15 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_flex_row_gap_spaces_children_on_main_axis();
+      result != 0) {
+    return result;
+  }
   if (const int result = test_flex_column_lays_out_children_top_to_bottom();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_flex_column_gap_spaces_children_on_main_axis();
       result != 0) {
     return result;
   }

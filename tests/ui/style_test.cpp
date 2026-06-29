@@ -100,6 +100,9 @@ int test_style_defaults_are_empty() {
   if (style.z_index != 0) {
     return 25;
   }
+  if (!same(style.gap, 0.0F)) {
+    return 27;
+  }
   return 0;
 }
 
@@ -122,6 +125,7 @@ int test_style_builder_methods_store_values() {
               4.0F))
           .with_overflow(cgpui::Overflow::hidden)
           .with_z_index(7)
+          .with_gap(5.0F)
           .with_clip_rect(cgpui::Rect{
               .origin = {.x = 3.0F, .y = 4.0F},
               .size = {.width = 50.0F, .height = 60.0F},
@@ -166,6 +170,9 @@ int test_style_builder_methods_store_values() {
   if (style.z_index != 7) {
     return 26;
   }
+  if (!same(style.gap, 5.0F)) {
+    return 28;
+  }
   if (!style.clip_rect.has_value() ||
       !same(style.clip_rect->origin.x, 3.0F) ||
       !same(style.clip_rect->origin.y, 4.0F) ||
@@ -183,6 +190,7 @@ static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
 static_assert(std::same_as<decltype(cgpui::BorderRadii{}.top_left), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.overflow), cgpui::Overflow>);
 static_assert(std::same_as<decltype(cgpui::Style{}.z_index), int>);
+static_assert(std::same_as<decltype(cgpui::Style{}.gap), float>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
