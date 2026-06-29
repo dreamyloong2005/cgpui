@@ -985,6 +985,12 @@ void WindowRuntimeContext::bind_text_model(
   runtime.bind_text_model(element_id, model);
 }
 
+void WindowRuntimeContext::set_element_cursor(
+    ElementId element_id,
+    CursorShape cursor_shape) const {
+  runtime.set_element_cursor(element_id, cursor_shape);
+}
+
 bool WindowRuntimeContext::paste_clipboard_text() const {
   return runtime.paste_clipboard_text();
 }

@@ -108,7 +108,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 70. [x] ViewContext action registration helper.
 71. [x] ViewContext key binding helper.
 72. [x] ViewContext text edit binding helper.
-73. [ ] ViewContext cursor binding helper.
+73. [x] ViewContext cursor binding helper.
 74. [ ] ViewContext focus request/release element helpers.
 75. [ ] ViewContext pointer capture element helpers.
 76. [ ] Element builder click handler helper.
@@ -121,10 +121,12 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 83. [ ] Runtime text model lookup helper for focused element.
 84. [ ] ViewContext focused text model mutation helper.
 85. [ ] Public prelude header for core authoring APIs.
+86. [ ] ViewContext event route access helper.
+87. [ ] ViewContext input state access helper.
 
 ## Active Step
 
-Step 73: ViewContext cursor binding helper.
+Step 74: ViewContext focus request/release element helpers.
 
 ## Risks
 

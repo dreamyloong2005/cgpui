@@ -755,6 +755,30 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Completed Step 72 post-merge WSL verification on `master`:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24, then removed the
+  `.worktrees/view-context-text-edit-binding-helper` worktree and deleted
+  `codex/view-context-text-edit-binding-helper`.
+
+- Started Step 73: ViewContext cursor binding helper.
+- Added RED `window_runtime_test` coverage for binding an element cursor through
+  `ViewContext::set_element_cursor` during a keyboard event and observing the
+  cursor shape on a later hovered element; the test failed to compile because
+  `WindowRuntimeContext::set_element_cursor` did not exist.
+- Implemented Step 73 in `codex/view-context-cursor-helper`: added a
+  `WindowRuntimeContext::set_element_cursor(ElementId, CursorShape)` forwarding
+  helper over the existing runtime cursor binding API.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+- Extended the active queue with Steps 86-87 so the requested 20-step run covers
+  Steps 68-87 inclusive.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

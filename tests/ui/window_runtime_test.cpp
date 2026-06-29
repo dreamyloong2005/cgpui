@@ -395,6 +395,11 @@ class RecordingView final : public cgpui::View {
         context.set_element_tree(std::move(view_context_element_tree));
         context.request_layout();
       }
+      if (exercise_view_context_cursor_binding && keyboard_key_count == 1) {
+        context.set_element_cursor(
+            view_context_cursor_element_id,
+            cgpui::CursorShape::text);
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -531,6 +536,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_context_text_model_binding = false;
   bool exercise_view_context_text_edit_binding = false;
   bool exercise_view_context_element_tree_installation = false;
+  bool exercise_view_context_cursor_binding = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -637,6 +643,7 @@ class RecordingView final : public cgpui::View {
   cgpui::ViewId third_allocated_view_id{};
   cgpui::ElementId captured_pointer_element_id{};
   cgpui::ElementId focused_keyboard_element_id{21};
+  cgpui::ElementId view_context_cursor_element_id{};
   cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   std::optional<cgpui::ElementId> last_route_element_id;
@@ -1879,6 +1886,62 @@ int test_runtime_routes_cursor_shape_from_hovered_element() {
   if (fixture.view.last_cursor_shape != cgpui::CursorShape::default_arrow ||
       third_cursor != cgpui::CursorShape::default_arrow) {
     return 183;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* view_context_cursor_fixture = nullptr;
+
+void dispatch_view_context_cursor_binding_sequence() {
+  auto& callback = view_context_cursor_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_view_context_binds_cursor_shape_to_element() {
+  RuntimeFixture fixture;
+  view_context_cursor_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_cursor_binding_sequence;
+  fixture.view.exercise_view_context_cursor_binding = true;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{30});
+  auto target = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  target->assign_id(cgpui::ElementId{31});
+  stack.append_child(std::move(target));
+  (void)stack.layout(cgpui::LayoutInput{});
+  fixture.view.view_context_cursor_element_id = cgpui::ElementId{31};
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  view_context_cursor_fixture = nullptr;
+
+  if (result != 0) {
+    return 246;
+  }
+  if (fixture.view.keyboard_key_count != 1 ||
+      fixture.view.pointer_move_count != 1) {
+    return 247;
+  }
+  if (!fixture.view.last_hovered_element_id.has_value() ||
+      *fixture.view.last_hovered_element_id != cgpui::ElementId{31}) {
+    return 248;
+  }
+  if (fixture.view.last_cursor_shape != cgpui::CursorShape::text) {
+    return 249;
   }
 
   return 0;
@@ -3584,6 +3647,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_cursor_shape_from_hovered_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_binds_cursor_shape_to_element();
       result != 0) {
     return result;
   }

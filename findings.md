@@ -699,3 +699,12 @@
   view handler, so tests should assert effects on later key events.
 - `TextModel(std::string)` already places the cursor at the end, which is enough
   for text-edit binding tests without adding a cursor-positioning helper.
+
+## 2026-06-30 ViewContext Cursor Binding Helper
+
+- Cursor binding through `ViewContext` should stay a thin capability forwarder
+  over `WindowRuntime::set_element_cursor`; the runtime remains the single
+  storage owner for element-to-cursor mappings.
+- A cursor binding registered during one event is visible to later pointer
+  hover routing, matching the existing runtime cursor state path and preserving
+  platform-neutral behavior for Windows and Wayland.
