@@ -41,6 +41,21 @@ class EventCountingElement final : public cgpui::Element {
   cgpui::EventResult result = cgpui::EventResult::unhandled();
 };
 
+class FocusableCountingElement final : public cgpui::Element {
+ public:
+  [[nodiscard]] bool focusable() const override {
+    return true;
+  }
+
+  void focus(const cgpui::ElementFocusContext& context) override {
+    focus_count += 1;
+    last_focused_element_id = context.element_id;
+  }
+
+  int focus_count = 0;
+  cgpui::ElementId last_focused_element_id;
+};
+
 static_assert(std::same_as<decltype(cgpui::ElementId{}.value), std::uint64_t>);
 static_assert(std::equality_comparable<cgpui::ElementId>);
 
@@ -1450,6 +1465,32 @@ int test_base_element_event_handler_defaults_to_unhandled() {
   return !result.consumed && !result.cancelled ? 0 : 97;
 }
 
+int test_base_element_is_not_focusable_by_default() {
+  TestElement element;
+  element.assign_id(cgpui::ElementId{33});
+
+  element.focus(cgpui::ElementFocusContext{.element_id = element.id()});
+
+  return !element.focusable() ? 0 : 145;
+}
+
+int test_focusable_element_activation_hook_observes_element_id() {
+  FocusableCountingElement element;
+  element.assign_id(cgpui::ElementId{34});
+
+  if (!element.focusable()) {
+    return 146;
+  }
+
+  element.focus(cgpui::ElementFocusContext{.element_id = element.id()});
+
+  if (element.focus_count != 1 ||
+      element.last_focused_element_id != cgpui::ElementId{34}) {
+    return 147;
+  }
+  return 0;
+}
+
 int test_styled_element_forwards_events_to_child() {
   auto child = std::make_unique<EventCountingElement>();
   EventCountingElement* child_ptr = child.get();
@@ -1699,6 +1740,15 @@ int main() {
     return result;
   }
   if (const int result = test_base_element_event_handler_defaults_to_unhandled();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_base_element_is_not_focusable_by_default();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_focusable_element_activation_hook_observes_element_id();
       result != 0) {
     return result;
   }

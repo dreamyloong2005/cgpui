@@ -601,3 +601,11 @@
 - Building text as a direct leaf keeps the initial API small; styling can stay
   in wrapper elements until text-specific font, color, and shaping primitives
   exist.
+
+## 2026-06-30 Focusable Element Hook
+
+- Focus activation belongs first at the element boundary: runtime click routing
+  can query `Element::focusable()` and call `Element::focus(...)` without
+  baking widget-specific behavior into `WindowRuntime`.
+- Keeping the default element non-focusable preserves existing hit-test and
+  event-routing behavior for passive layout and paint elements.

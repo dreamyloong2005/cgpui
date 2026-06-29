@@ -97,7 +97,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 59. [x] ViewContext convenience wrapper for common runtime APIs.
 60. [x] Public app runner skeleton for GPUI-like startup.
 61. [x] Text element builder helper.
-62. [ ] Focusable element activation hook.
+62. [x] Focusable element activation hook.
 63. [ ] Runtime clicks request focus for focusable elements.
 64. [ ] Element enabled/disabled state primitive.
 65. [ ] Disabled elements skip event handling.
@@ -108,7 +108,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 62: Focusable element activation hook.
+Step 63: Runtime clicks request focus for focusable elements.
 
 ## Risks
 

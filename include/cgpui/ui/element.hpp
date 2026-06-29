@@ -45,6 +45,10 @@ struct ElementEventContext {
   ElementId target_element_id;
 };
 
+struct ElementFocusContext {
+  ElementId element_id;
+};
+
 class Element {
  public:
   virtual ~Element() = default;
@@ -75,6 +79,14 @@ class Element {
 
   virtual void paint(PaintList& paint_list) const {
     (void)paint_list;
+  }
+
+  [[nodiscard]] virtual bool focusable() const {
+    return false;
+  }
+
+  virtual void focus(const ElementFocusContext& context) {
+    (void)context;
   }
 
   [[nodiscard]] virtual EventResult handle_event(
