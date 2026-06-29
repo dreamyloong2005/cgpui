@@ -138,6 +138,7 @@ class RecordingView final : public cgpui::View {
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
     last_hovered_element_id = context.input.hovered_element_id;
+    last_cursor_shape = context.input.cursor_shape;
     last_pointer_captured = context.input.pointer_captured;
     last_pointer_capture_owner_present =
         context.input.pointer_capture_owner.has_value();
@@ -209,6 +210,7 @@ class RecordingView final : public cgpui::View {
       if (pointer_move_count == 2) {
         second_pointer_move_hovered_element_id =
             context.input.hovered_element_id;
+        second_pointer_move_cursor_shape = context.input.cursor_shape;
         second_pointer_move_saw_capture = context.input.pointer_captured;
         second_pointer_move_saw_capture_owner =
             last_pointer_capture_owner_matches_view;
@@ -218,6 +220,7 @@ class RecordingView final : public cgpui::View {
       } else if (pointer_move_count == 3) {
         third_pointer_move_hovered_element_id =
             context.input.hovered_element_id;
+        third_pointer_move_cursor_shape = context.input.cursor_shape;
         third_pointer_move_saw_capture = context.input.pointer_captured;
         third_pointer_move_saw_capture_owner =
             last_pointer_capture_owner_matches_view;
@@ -483,6 +486,11 @@ class RecordingView final : public cgpui::View {
   std::optional<cgpui::ElementId> third_pointer_move_hovered_element_id;
   std::optional<cgpui::ElementId> fourth_pointer_move_hovered_element_id;
   std::optional<cgpui::ElementId> last_keyboard_focus_element_owner;
+  cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
+  cgpui::CursorShape second_pointer_move_cursor_shape =
+      cgpui::CursorShape::default_arrow;
+  cgpui::CursorShape third_pointer_move_cursor_shape =
+      cgpui::CursorShape::default_arrow;
   cgpui::ViewId first_view_id{};
   cgpui::ViewId last_view_id{};
   cgpui::Size last_viewport_size{};
@@ -1301,6 +1309,89 @@ int test_runtime_tracks_hovered_pointer_element() {
   return 0;
 }
 
+RuntimeFixture* cursor_shape_fixture = nullptr;
+
+void dispatch_cursor_shape_sequence() {
+  auto& callback = cursor_shape_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {5.0F, 15.0F}});
+  callback(cgpui::PointerMoved{.position = {100.0F, 100.0F}});
+}
+
+int test_runtime_routes_cursor_shape_from_hovered_element() {
+  RuntimeFixture fixture;
+  cursor_shape_fixture = &fixture;
+  fixture.app.on_run = &dispatch_cursor_shape_sequence;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{10});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{11});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 20.0F, .height = 30.0F});
+  second->assign_id(cgpui::ElementId{12});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 40.0F) {
+    return 178;
+  }
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+  runtime.set_element_cursor(
+      cgpui::ElementId{11},
+      cgpui::CursorShape::pointing_hand);
+  runtime.set_element_cursor(cgpui::ElementId{12}, cgpui::CursorShape::text);
+
+  int callback_count = 0;
+  cgpui::CursorShape first_cursor = cgpui::CursorShape::default_arrow;
+  cgpui::CursorShape second_cursor = cgpui::CursorShape::default_arrow;
+  cgpui::CursorShape third_cursor = cgpui::CursorShape::pointing_hand;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        callback_count += 1;
+        if (callback_count == 1) {
+          first_cursor = context.input.cursor_shape;
+        } else if (callback_count == 2) {
+          second_cursor = context.input.cursor_shape;
+        } else if (callback_count == 3) {
+          third_cursor = context.input.cursor_shape;
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  cursor_shape_fixture = nullptr;
+
+  if (result != 0) {
+    return 179;
+  }
+  if (callback_count != 3 || fixture.view.pointer_move_count != 3) {
+    return 180;
+  }
+  if (first_cursor != cgpui::CursorShape::pointing_hand) {
+    return 181;
+  }
+  if (fixture.view.second_pointer_move_cursor_shape !=
+          cgpui::CursorShape::text ||
+      second_cursor != cgpui::CursorShape::text) {
+    return 182;
+  }
+  if (fixture.view.last_cursor_shape != cgpui::CursorShape::default_arrow ||
+      third_cursor != cgpui::CursorShape::default_arrow) {
+    return 183;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* pointer_capture_fixture = nullptr;
 
 void dispatch_pointer_capture_sequence() {
@@ -2101,6 +2192,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_tracks_hovered_pointer_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_routes_cursor_shape_from_hovered_element();
       result != 0) {
     return result;
   }

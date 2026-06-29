@@ -57,7 +57,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 27. [x] Clip rect and overflow primitives.
 28. [x] Z-order and deterministic child paint order.
 29. [x] Hover state tracking for routed pointer targets.
-30. [ ] Cursor shape API and routed cursor state.
+30. [x] Cursor shape API and routed cursor state.
 31. [ ] Scroll state/model primitive.
 32. [ ] Flex row/column layout basics.
 33. [ ] Runtime invalidation requests for layout and paint.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 30: Cursor shape API and routed cursor state.
+Step 31: Scroll state/model primitive.
 
 ## Risks
 

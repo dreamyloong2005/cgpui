@@ -161,6 +161,16 @@ struct KeyBinding {
   std::string action_name;
 };
 
+enum class CursorShape {
+  default_arrow,
+  pointing_hand,
+  text,
+  crosshair,
+  resize_left_right,
+  resize_up_down,
+  not_allowed,
+};
+
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
@@ -169,6 +179,7 @@ struct ViewInputState {
   std::optional<ViewId> keyboard_focus_owner;
   std::optional<ElementId> keyboard_focus_element_owner;
   std::optional<ElementId> hovered_element_id;
+  CursorShape cursor_shape = CursorShape::default_arrow;
   Point pointer_position{};
 };
 
@@ -244,6 +255,7 @@ class WindowRuntime {
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_key(KeyBinding binding);
   void bind_text_model(ElementId element_id, TextModel* model);
+  void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -291,6 +303,7 @@ class WindowRuntime {
   std::optional<ViewId> keyboard_focus_owner_;
   std::optional<ElementId> keyboard_focus_element_owner_;
   std::optional<ElementId> hovered_element_id_;
+  CursorShape cursor_shape_ = CursorShape::default_arrow;
   EventResult last_event_result_{};
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<ActionDispatchResult> last_action_dispatch_;
@@ -304,6 +317,7 @@ class WindowRuntime {
   std::unordered_map<std::string, ActionHandler> action_handlers_;
   std::vector<KeyBinding> key_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
+  std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   bool should_quit_ = false;
   bool failed_ = false;
 };

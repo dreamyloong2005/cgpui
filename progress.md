@@ -73,6 +73,18 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 30: Cursor shape API and routed cursor state.
+- Added RED `window_runtime_test` coverage for `CursorShape`,
+  `ViewInputState::cursor_shape`, `WindowRuntime::set_element_cursor`, and
+  hover-driven cursor changes that restore the default arrow when no element is
+  hovered; the test failed because those APIs did not exist.
+- Implemented Step 30 in `codex/cursor-shape-state`: added the runtime cursor
+  shape enum, exposed current cursor shape through input state, stored
+  element-to-cursor bindings by `ElementId`, and updated cursor state alongside
+  pointer-move hover hit testing.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 - Started Step 22: Element builder API skeleton for composing styled elements.
 - Added RED `element_test` coverage for `ElementBuilder::box()`, fluent
   `style(...)` and `child(...)`, `StyledElement`, retained style data, and

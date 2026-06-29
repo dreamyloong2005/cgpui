@@ -280,3 +280,12 @@
   applying capture to `EventRoute`.
 - Clearing hover on pointer-move misses keeps stale element ids from surviving
   after the pointer leaves the current element root.
+
+## 2026-06-30 Cursor Shape State
+
+- Cursor shape can start as runtime-visible input state before platform cursor
+  handles are wired into Win32 and Wayland.
+- Binding cursor shapes by `ElementId` composes directly with the Step 29 hover
+  state and avoids inventing element event handlers in this slice.
+- Restoring `CursorShape::default_arrow` on hover misses prevents stale cursor
+  state from outliving the hovered element.

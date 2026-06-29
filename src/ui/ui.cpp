@@ -164,6 +164,7 @@ int WindowRuntime::run(
   keyboard_focus_owner_.reset();
   keyboard_focus_element_owner_.reset();
   hovered_element_id_.reset();
+  cursor_shape_ = CursorShape::default_arrow;
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
@@ -266,10 +267,19 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
         if (std::holds_alternative<PointerMoved>(event)) {
           hovered_element_id_ = hit_element_id;
+          cursor_shape_ = CursorShape::default_arrow;
+          if (hit_element_id.has_value()) {
+            if (const auto cursor =
+                    element_cursors_.find(hit_element_id->value);
+                cursor != element_cursors_.end()) {
+              cursor_shape_ = cursor->second;
+            }
+          }
         }
       }
     } else if (std::holds_alternative<PointerMoved>(event)) {
       hovered_element_id_.reset();
+      cursor_shape_ = CursorShape::default_arrow;
     }
     if (keyboard_focus_element_owner_.has_value() &&
         is_keyboard_routed_event(event)) {
@@ -350,6 +360,7 @@ WindowRuntimeContext WindowRuntime::context() {
   input.keyboard_focus_owner = keyboard_focus_owner_;
   input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
   input.hovered_element_id = hovered_element_id_;
+  input.cursor_shape = cursor_shape_;
   input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
                            keyboard_focus_element_owner_.has_value();
 
@@ -473,6 +484,15 @@ void WindowRuntime::bind_text_model(ElementId element_id, TextModel* model) {
     return;
   }
   text_models_[element_id.value] = model;
+}
+
+void WindowRuntime::set_element_cursor(
+    ElementId element_id,
+    CursorShape cursor_shape) {
+  if (element_id.value == 0) {
+    return;
+  }
+  element_cursors_[element_id.value] = cursor_shape;
 }
 
 ViewId WindowRuntime::allocate_view_id() {
