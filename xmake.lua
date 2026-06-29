@@ -205,6 +205,7 @@ target("hello_window")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+        add_tests("windows_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})
     elseif is_plat("linux") then
         add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
         add_tests("linux_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})

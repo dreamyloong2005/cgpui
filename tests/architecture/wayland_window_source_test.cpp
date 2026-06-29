@@ -65,6 +65,39 @@ std::string linux_target_block(const std::string& xmake_text, const char* target
           : end_position - target_position);
 }
 
+std::string platform_branch(const std::string& target_text, const char* platform_name) {
+  const std::string if_marker =
+      std::string("if is_plat(\"") + platform_name + "\") then";
+  const std::string elseif_marker =
+      std::string("elseif is_plat(\"") + platform_name + "\") then";
+
+  auto branch_position = target_text.find(if_marker);
+  if (branch_position == std::string::npos) {
+    branch_position = target_text.find(elseif_marker);
+  }
+  if (branch_position == std::string::npos) {
+    return {};
+  }
+
+  auto end_position = target_text.find("\n    elseif is_plat(", branch_position + 1);
+  const auto else_position = target_text.find("\n    else", branch_position + 1);
+  const auto end_marker_position = target_text.find("\n    end", branch_position + 1);
+  if (end_position == std::string::npos ||
+      (else_position != std::string::npos && else_position < end_position)) {
+    end_position = else_position;
+  }
+  if (end_position == std::string::npos ||
+      (end_marker_position != std::string::npos && end_marker_position < end_position)) {
+    end_position = end_marker_position;
+  }
+
+  return target_text.substr(
+      branch_position,
+      end_position == std::string::npos
+          ? std::string::npos
+          : end_position - branch_position);
+}
+
 } // namespace
 
 int main() {
@@ -166,6 +199,25 @@ int main() {
   }
   if (!contains(hello_window_target_text, "add_tests(\"linux_first_frame\"")) {
     return 26;
+  }
+
+  const std::string windows_hello_window_branch =
+      platform_branch(hello_window_target_text, "windows");
+  if (windows_hello_window_branch.empty()) {
+    return 27;
+  }
+  if (!contains(windows_hello_window_branch, "cgpui_platform_win32")) {
+    return 28;
+  }
+  if (!contains(windows_hello_window_branch, "cgpui_renderer_vulkan")) {
+    return 29;
+  }
+  if (!contains(windows_hello_window_branch, "CGPUI_EXIT_AFTER_FIRST_FRAME")) {
+    return 30;
+  }
+  if (!contains(windows_hello_window_branch,
+                "add_tests(\"windows_first_frame\"")) {
+    return 31;
   }
 
   return 0;
