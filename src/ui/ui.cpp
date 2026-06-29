@@ -56,6 +56,12 @@ bool is_keyboard_routed_event(const PlatformEvent& event) {
          std::holds_alternative<ImeComposition>(event);
 }
 
+bool is_focus_activation_event(const PlatformEvent& event) {
+  const auto* button = std::get_if<PointerButton>(&event);
+  return button != nullptr && button->button == MouseButton::left &&
+         button->pressed;
+}
+
 bool modifiers_equal(KeyboardModifiers lhs, KeyboardModifiers rhs) {
   return lhs.shift == rhs.shift && lhs.control == rhs.control &&
          lhs.alt == rhs.alt && lhs.super == rhs.super;
@@ -434,6 +440,17 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
           *current_event_route_);
     } else if (hit_element_id.has_value()) {
       current_event_route_->target_element_id = hit_element_id;
+    }
+    if (is_focus_activation_event(event) &&
+        current_event_route_->target_element_id.has_value()) {
+      if (Element* element =
+              routed_element(*current_event_route_->target_element_id);
+          element != nullptr && element->focusable()) {
+        request_keyboard_focus(*current_event_route_->target_element_id);
+        element->focus(ElementFocusContext{
+            .element_id = *current_event_route_->target_element_id,
+        });
+      }
     }
     if (const auto* key = std::get_if<KeyboardKey>(&event); key != nullptr) {
       for (const KeyBinding& binding : key_bindings_) {

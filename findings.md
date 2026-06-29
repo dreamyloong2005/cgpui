@@ -609,3 +609,12 @@
   baking widget-specific behavior into `WindowRuntime`.
 - Keeping the default element non-focusable preserves existing hit-test and
   event-routing behavior for passive layout and paint elements.
+
+## 2026-06-30 Runtime Click Focus
+
+- Runtime focus activation can reuse the already-computed event route: after
+  pointer capture/hit-test routing chooses a target element, a left-button press
+  is enough to request element keyboard focus and call its focus hook.
+- Calling `focus(...)` before normal element event dispatch lets the current
+  pointer event and the following keyboard event observe the updated focus
+  owner through the existing `WindowRuntimeContext` shape.

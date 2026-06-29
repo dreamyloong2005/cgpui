@@ -603,6 +603,24 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 63: Runtime clicks request focus for focusable elements.
+- Added RED `window_runtime_test` coverage for a left pointer-button press on a
+  hit-tested focusable element requesting keyboard focus, invoking the element
+  focus hook once, and routing the following keyboard event to that element;
+  the test failed because runtime pointer-button handling did not activate
+  focusable elements.
+- Implemented Step 63 in `codex/runtime-click-focusable-elements`: left-button
+  pointer presses now query the routed element, request element keyboard focus
+  when it is focusable, and call `Element::focus(...)` before normal event
+  dispatch continues.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 62: Focusable element activation hook.
 - Added RED `element_test` coverage for default non-focusable elements and a
   focusable test element receiving an `ElementFocusContext` with its own id; the
