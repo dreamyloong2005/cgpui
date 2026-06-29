@@ -379,6 +379,17 @@ class RecordingView final : public cgpui::View {
             view_context_bound_text_model);
         context.request_keyboard_focus(focused_keyboard_element_id);
       }
+      if (exercise_view_context_text_edit_binding &&
+          keyboard_key_count == 1) {
+        context.bind_text_model(
+            focused_keyboard_element_id,
+            view_context_bound_text_model);
+        context.request_keyboard_focus(focused_keyboard_element_id);
+        context.bind_text_edit_action(cgpui::TextEditBinding{
+            .key_code = 37,
+            .action = cgpui::KeyAction::pressed,
+            .edit_action = cgpui::TextEditAction::move_previous});
+      }
       if (exercise_view_context_element_tree_installation &&
           keyboard_key_count == 1) {
         context.set_element_tree(std::move(view_context_element_tree));
@@ -518,6 +529,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_scheduled_invalidation_redraw = false;
   bool exercise_view_context_convenience = false;
   bool exercise_view_context_text_model_binding = false;
+  bool exercise_view_context_text_edit_binding = false;
   bool exercise_view_context_element_tree_installation = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
@@ -3078,6 +3090,16 @@ void dispatch_text_edit_action_sequence() {
       .action = cgpui::KeyAction::pressed});
 }
 
+void dispatch_view_context_text_edit_binding_sequence() {
+  auto& callback = text_edit_action_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed});
+}
+
 int test_runtime_routes_text_edit_actions_to_focused_text_model() {
   RuntimeFixture fixture;
   text_edit_action_fixture = &fixture;
@@ -3126,6 +3148,44 @@ int test_runtime_routes_text_edit_actions_to_focused_text_model() {
   if (model.cursor() != 2 || !model.selection().collapsed) {
     return 203;
   }
+  return 0;
+}
+
+int test_view_context_binds_text_edit_actions() {
+  RuntimeFixture fixture;
+  text_edit_action_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_text_edit_binding_sequence;
+  fixture.view.exercise_view_context_text_edit_binding = true;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+
+  cgpui::TextModel model("abcd");
+  fixture.view.view_context_bound_text_model = &model;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  text_edit_action_fixture = nullptr;
+
+  if (result != 0) {
+    return 242;
+  }
+  if (fixture.view.keyboard_key_count != 2) {
+    return 243;
+  }
+  if (model.text() != "abcd" || model.cursor() != 3 ||
+      !model.selection().collapsed) {
+    return 244;
+  }
+  if (!fixture.view.second_key_saw_keyboard_focus ||
+      !fixture.view.second_key_saw_keyboard_focus_element_owner) {
+    return 245;
+  }
+
   return 0;
 }
 
@@ -3612,6 +3672,10 @@ int main() {
   }
   if (const int result =
           test_runtime_routes_text_edit_actions_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_binds_text_edit_actions();
       result != 0) {
     return result;
   }

@@ -737,6 +737,24 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 72: ViewContext text edit binding helper.
+- Added RED `window_runtime_test` coverage for binding a text-edit action
+  through `ViewContext::bind_text_edit_action` during one key event and applying
+  it to the focused text model on a later key event; the first RED attempt also
+  used a nonexistent `TextModel::move_to_end()` helper, so the test was corrected
+  to rely on the existing constructor cursor behavior before confirming the
+  expected missing-context-helper failure.
+- Implemented Step 72 in `codex/view-context-text-edit-binding-helper`: added a
+  `WindowRuntimeContext::bind_text_edit_action(TextEditBinding)` forwarding
+  helper over the existing runtime text edit binding table.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

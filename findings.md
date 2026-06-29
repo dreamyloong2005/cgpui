@@ -691,3 +691,11 @@
 - Keeping action registration and key binding as separate context helpers
   mirrors the runtime API and lets later authoring helpers compose them without
   adding a combined shortcut abstraction too early.
+
+## 2026-06-30 ViewContext Text Edit Binding Helper
+
+- Text-edit bindings registered from `ViewContext` can stay as direct forwards
+  to the runtime binding table; current-key dispatch still happens before the
+  view handler, so tests should assert effects on later key events.
+- `TextModel(std::string)` already places the cursor at the end, which is enough
+  for text-edit binding tests without adding a cursor-positioning helper.

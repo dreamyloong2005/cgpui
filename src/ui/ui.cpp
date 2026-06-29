@@ -974,6 +974,11 @@ void WindowRuntimeContext::bind_key(KeyBinding binding) const {
   runtime.bind_key(std::move(binding));
 }
 
+void WindowRuntimeContext::bind_text_edit_action(
+    TextEditBinding binding) const {
+  runtime.bind_text_edit_action(std::move(binding));
+}
+
 void WindowRuntimeContext::bind_text_model(
     ElementId element_id,
     TextModel* model) const {

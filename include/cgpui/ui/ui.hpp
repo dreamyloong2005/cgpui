@@ -221,6 +221,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_key(KeyBinding binding) const;
+  void bind_text_edit_action(TextEditBinding binding) const;
   void bind_text_model(ElementId element_id, TextModel* model) const;
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;
