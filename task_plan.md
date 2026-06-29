@@ -64,14 +64,14 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 34. [x] Update scheduling that requests redraw after model/view changes.
 35. [x] View/model subscription relation skeleton.
 36. [x] Text selection range model.
-37. [ ] Text key editing actions for delete, movement, and selection.
+37. [x] Text key editing actions for delete, movement, and selection.
 38. [ ] Clipboard abstraction for Win32 and Wayland.
 39. [ ] IME composition skeleton for Win32 and Wayland.
 40. [ ] Real interactive demo using the new API surface.
 
 ## Active Step
 
-Step 37: Text key editing actions for delete, movement, and selection.
+Step 38: Clipboard abstraction for Win32 and Wayland.
 
 ## Risks
 

@@ -354,3 +354,14 @@
 - Plain insertion should replace a non-collapsed selection and then collapse to
   the inserted text end, matching typical text editing behavior without adding
   platform clipboard or IME coupling yet.
+
+## 2026-06-30 Text Edit Actions
+
+- A small `TextEditAction` enum keeps keyboard editing semantics in the
+  platform-neutral text model before binding them to Win32 or Wayland key
+  events.
+- Selection extension should preserve the original anchor and move only the
+  head/cursor, which gives later Shift+Arrow routing the right primitive.
+- `backspace()` and `delete_forward()` should erase a non-collapsed selection
+  before falling back to adjacent-codepoint deletion, so direct text-model calls
+  and edit-action dispatch behave consistently.

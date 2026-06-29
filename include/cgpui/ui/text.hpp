@@ -14,6 +14,15 @@ struct TextSelectionRange {
   bool collapsed = true;
 };
 
+enum class TextEditAction {
+  move_previous,
+  move_next,
+  extend_previous,
+  extend_next,
+  backspace,
+  delete_forward,
+};
+
 class TextModel {
  public:
   TextModel() = default;
@@ -85,6 +94,9 @@ class TextModel {
   }
 
   [[nodiscard]] bool backspace() {
+    if (erase_selection_if_needed()) {
+      return true;
+    }
     if (cursor_ == 0) {
       return false;
     }
@@ -96,6 +108,9 @@ class TextModel {
   }
 
   [[nodiscard]] bool delete_forward() {
+    if (erase_selection_if_needed()) {
+      return true;
+    }
     if (cursor_ >= text_.size()) {
       return false;
     }
@@ -103,6 +118,24 @@ class TextModel {
     text_.erase(cursor_, next - cursor_);
     collapse_selection_to_cursor();
     return true;
+  }
+
+  [[nodiscard]] bool apply_edit_action(TextEditAction action) {
+    switch (action) {
+      case TextEditAction::move_previous:
+        return move_cursor_previous();
+      case TextEditAction::move_next:
+        return move_cursor_next();
+      case TextEditAction::extend_previous:
+        return extend_selection_previous();
+      case TextEditAction::extend_next:
+        return extend_selection_next();
+      case TextEditAction::backspace:
+        return backspace();
+      case TextEditAction::delete_forward:
+        return delete_forward();
+    }
+    return false;
   }
 
  private:
@@ -123,6 +156,30 @@ class TextModel {
     text_.erase(range.start, range.end - range.start);
     cursor_ = range.start;
     collapse_selection_to_cursor();
+    return true;
+  }
+
+  [[nodiscard]] bool extend_selection_previous() {
+    if (selection().collapsed) {
+      selection_anchor_ = cursor_;
+    }
+    if (cursor_ == 0) {
+      return false;
+    }
+    cursor_ = previous_codepoint_boundary(cursor_);
+    selection_head_ = cursor_;
+    return true;
+  }
+
+  [[nodiscard]] bool extend_selection_next() {
+    if (selection().collapsed) {
+      selection_anchor_ = cursor_;
+    }
+    if (cursor_ >= text_.size()) {
+      return false;
+    }
+    cursor_ = next_codepoint_boundary(cursor_);
+    selection_head_ = cursor_;
     return true;
   }
 

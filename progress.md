@@ -367,6 +367,18 @@
 - Verified targeted tests: `xmake test -P . text_model_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 37: Text key editing actions for delete, movement, and
+  selection.
+- Added RED `text_model_test` coverage for `TextEditAction`,
+  `apply_edit_action`, previous/next movement, selection extension,
+  selection-aware delete/backspace, and boundary misses; the test failed
+  because edit-action APIs did not exist.
+- Implemented Step 37 in `codex/text-edit-actions`: added a small
+  `TextEditAction` enum, an `apply_edit_action` dispatcher, selection-extending
+  movement helpers, and selection-aware delete/backspace behavior.
+- Verified targeted tests: `xmake test -P . text_model_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
 - Started Step 34: Update scheduling that requests redraw after model/view
   changes.
 - Added RED `window_runtime_test` coverage for invalidation-triggered redraw

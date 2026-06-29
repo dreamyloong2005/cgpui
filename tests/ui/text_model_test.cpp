@@ -128,6 +128,52 @@ int test_text_model_tracks_selection_range() {
   return 0;
 }
 
+int test_text_model_applies_key_edit_actions() {
+  cgpui::TextModel model("a" "\xE4\xB8\xAD" "b");
+
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous) ||
+      model.cursor() != std::string_view{"a" "\xE4\xB8\xAD"}.size()) {
+    return 23;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::extend_previous) ||
+      model.selection_anchor() != std::string_view{"a" "\xE4\xB8\xAD"}.size() ||
+      model.selection_head() != std::string_view{"a"}.size() ||
+      model.selection().start != std::string_view{"a"}.size() ||
+      model.selection().end != std::string_view{"a" "\xE4\xB8\xAD"}.size()) {
+    return 24;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::extend_next) ||
+      model.selection_head() != std::string_view{"a" "\xE4\xB8\xAD"}.size() ||
+      !model.selection().collapsed) {
+    return 25;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::extend_next) ||
+      model.selection_anchor() != std::string_view{"a" "\xE4\xB8\xAD"}.size() ||
+      model.selection_head() != model.text().size() ||
+      model.selection().start != std::string_view{"a" "\xE4\xB8\xAD"}.size() ||
+      model.selection().end != model.text().size()) {
+    return 26;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::delete_forward) ||
+      model.text() != std::string_view{"a" "\xE4\xB8\xAD"} ||
+      model.cursor() != std::string_view{"a" "\xE4\xB8\xAD"}.size() ||
+      !model.selection().collapsed) {
+    return 27;
+  }
+
+  model.set_selection(1, model.text().size());
+  if (!model.apply_edit_action(cgpui::TextEditAction::backspace) ||
+      model.text() != std::string_view{"a"} || model.cursor() != 1 ||
+      !model.selection().collapsed) {
+    return 28;
+  }
+  if (model.apply_edit_action(cgpui::TextEditAction::move_next)) {
+    return 29;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -153,6 +199,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_tracks_selection_range();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_applies_key_edit_actions();
       result != 0) {
     return result;
   }
