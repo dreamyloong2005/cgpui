@@ -17,6 +17,7 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace cgpui {
@@ -75,6 +76,47 @@ struct ViewId {
   friend bool operator==(ViewId, ViewId) = default;
 };
 
+class PointerCaptureOwner {
+ public:
+  [[nodiscard]] static constexpr PointerCaptureOwner view(ViewId view_id) {
+    return PointerCaptureOwner(view_id);
+  }
+
+  [[nodiscard]] static constexpr PointerCaptureOwner element(
+      ElementId element_id) {
+    return PointerCaptureOwner(element_id);
+  }
+
+  [[nodiscard]] constexpr bool is_view() const {
+    return std::holds_alternative<ViewId>(owner_);
+  }
+
+  [[nodiscard]] constexpr bool is_element() const {
+    return std::holds_alternative<ElementId>(owner_);
+  }
+
+  [[nodiscard]] constexpr const ViewId* view_id() const {
+    return std::get_if<ViewId>(&owner_);
+  }
+
+  [[nodiscard]] constexpr const ElementId* element_id() const {
+    return std::get_if<ElementId>(&owner_);
+  }
+
+  friend bool operator==(
+      const PointerCaptureOwner&,
+      const PointerCaptureOwner&) = default;
+
+ private:
+  using Owner = std::variant<ViewId, ElementId>;
+
+  constexpr explicit PointerCaptureOwner(ViewId view_id) : owner_(view_id) {}
+  constexpr explicit PointerCaptureOwner(ElementId element_id)
+      : owner_(element_id) {}
+
+  Owner owner_;
+};
+
 enum class EventKind {
   unknown,
   window_focused,
@@ -122,8 +164,7 @@ struct KeyBinding {
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
-  std::optional<ViewId> pointer_capture_owner;
-  std::optional<ElementId> pointer_capture_element_owner;
+  std::optional<PointerCaptureOwner> pointer_capture_owner;
   bool keyboard_focused = false;
   std::optional<ViewId> keyboard_focus_owner;
   std::optional<ElementId> keyboard_focus_element_owner;
@@ -189,12 +230,8 @@ class WindowRuntime {
   void set_close_requested_callback(WindowRuntimeFrameCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
   void set_element_root(const Element* element);
-  void capture_pointer();
-  void capture_pointer(ViewId view_id);
-  void capture_pointer(ElementId element_id);
-  void release_pointer();
-  void release_pointer(ViewId view_id);
-  void release_pointer(ElementId element_id);
+  void capture_pointer(PointerCaptureOwner owner);
+  void release_pointer(PointerCaptureOwner owner);
   void request_keyboard_focus();
   void request_keyboard_focus(ViewId view_id);
   void request_keyboard_focus(ElementId element_id);
@@ -249,8 +286,7 @@ class WindowRuntime {
   Renderer* renderer_ = nullptr;
   Size viewport_size_{};
   ViewInputState input_{};
-  std::optional<ViewId> pointer_capture_owner_;
-  std::optional<ElementId> pointer_capture_element_owner_;
+  std::optional<PointerCaptureOwner> pointer_capture_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
   std::optional<ElementId> keyboard_focus_element_owner_;
   EventResult last_event_result_{};

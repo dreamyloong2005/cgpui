@@ -56,6 +56,30 @@ bool modifiers_equal(KeyboardModifiers lhs, KeyboardModifiers rhs) {
          lhs.alt == rhs.alt && lhs.super == rhs.super;
 }
 
+bool is_valid_pointer_capture_owner(const PointerCaptureOwner& owner) {
+  if (const ViewId* view_id = owner.view_id(); view_id != nullptr) {
+    return view_id->value != 0;
+  }
+  if (const ElementId* element_id = owner.element_id();
+      element_id != nullptr) {
+    return element_id->value != 0;
+  }
+  return false;
+}
+
+void apply_pointer_capture_owner_to_route(
+    const PointerCaptureOwner& owner,
+    EventRoute& route) {
+  if (const ViewId* view_id = owner.view_id(); view_id != nullptr) {
+    route.target_view_id = *view_id;
+    return;
+  }
+  if (const ElementId* element_id = owner.element_id();
+      element_id != nullptr) {
+    route.target_element_id = *element_id;
+  }
+}
+
 } // namespace
 
 void PaintList::clear() {
@@ -127,7 +151,6 @@ int WindowRuntime::run(
   viewport_size_ = descriptor.size;
   input_ = {};
   pointer_capture_owner_.reset();
-  pointer_capture_element_owner_.reset();
   keyboard_focus_owner_.reset();
   keyboard_focus_element_owner_.reset();
   last_event_result_ = EventResult::unhandled();
@@ -224,9 +247,11 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     if (keyboard_focus_element_owner_.has_value() &&
         is_keyboard_routed_event(event)) {
       current_event_route_->target_element_id = keyboard_focus_element_owner_;
-    } else if (pointer_capture_element_owner_.has_value() &&
+    } else if (pointer_capture_owner_.has_value() &&
         pointer_position_for(event).has_value()) {
-      current_event_route_->target_element_id = pointer_capture_element_owner_;
+      apply_pointer_capture_owner_to_route(
+          *pointer_capture_owner_,
+          *current_event_route_);
     } else if (element_root_ != nullptr) {
       if (const std::optional<Point> pointer_position =
               pointer_position_for(event);
@@ -301,9 +326,7 @@ void WindowRuntime::fail_and_quit(Error error) {
 WindowRuntimeContext WindowRuntime::context() {
   ViewInputState input = input_;
   input.pointer_capture_owner = pointer_capture_owner_;
-  input.pointer_capture_element_owner = pointer_capture_element_owner_;
-  input.pointer_captured = pointer_capture_owner_ == root_view_id_ ||
-                           pointer_capture_element_owner_.has_value();
+  input.pointer_captured = pointer_capture_owner_.has_value();
   input.keyboard_focus_owner = keyboard_focus_owner_;
   input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
   input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
@@ -346,33 +369,15 @@ void WindowRuntime::set_element_root(const Element* element) {
   element_root_ = element;
 }
 
-void WindowRuntime::capture_pointer() {
-  capture_pointer(root_view_id_);
-}
-
-void WindowRuntime::capture_pointer(ViewId view_id) {
-  pointer_capture_owner_ = view_id;
-}
-
-void WindowRuntime::capture_pointer(ElementId element_id) {
-  if (element_id.value != 0) {
-    pointer_capture_element_owner_ = element_id;
+void WindowRuntime::capture_pointer(PointerCaptureOwner owner) {
+  if (is_valid_pointer_capture_owner(owner)) {
+    pointer_capture_owner_ = owner;
   }
 }
 
-void WindowRuntime::release_pointer() {
-  release_pointer(root_view_id_);
-}
-
-void WindowRuntime::release_pointer(ViewId view_id) {
-  if (pointer_capture_owner_ == view_id) {
+void WindowRuntime::release_pointer(PointerCaptureOwner owner) {
+  if (pointer_capture_owner_ == owner) {
     pointer_capture_owner_.reset();
-  }
-}
-
-void WindowRuntime::release_pointer(ElementId element_id) {
-  if (pointer_capture_element_owner_ == element_id) {
-    pointer_capture_element_owner_.reset();
   }
 }
 
