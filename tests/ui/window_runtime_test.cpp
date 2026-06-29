@@ -2803,6 +2803,62 @@ int test_runtime_copies_focused_text_selection_to_clipboard() {
   return 0;
 }
 
+RuntimeFixture* clipboard_cut_fixture = nullptr;
+
+void dispatch_clipboard_cut_sequence() {
+  auto& callback = clipboard_cut_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_cuts_focused_text_selection_to_clipboard() {
+  RuntimeFixture fixture;
+  clipboard_cut_fixture = &fixture;
+  fixture.app.on_run = &dispatch_clipboard_cut_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model("abcd");
+  model.set_selection(1, 3);
+  cgpui::MemoryClipboard clipboard;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.set_clipboard(&clipboard);
+
+  bool cut = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        cut = context.runtime.cut_selection_to_clipboard();
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  clipboard_cut_fixture = nullptr;
+
+  if (result != 0) {
+    return 211;
+  }
+  if (!cut) {
+    return 212;
+  }
+  const std::optional<std::string> cut_text = clipboard.read_text();
+  if (!cut_text.has_value() || *cut_text != "bc") {
+    return 213;
+  }
+  if (model.text() != "ad" || model.cursor() != 1 ||
+      !model.selection().collapsed) {
+    return 214;
+  }
+  return 0;
+}
+
 RuntimeFixture* ime_composition_fixture = nullptr;
 
 void dispatch_ime_composition_sequence() {
@@ -3040,6 +3096,11 @@ int main() {
   }
   if (const int result =
           test_runtime_copies_focused_text_selection_to_clipboard();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_cuts_focused_text_selection_to_clipboard();
       result != 0) {
     return result;
   }

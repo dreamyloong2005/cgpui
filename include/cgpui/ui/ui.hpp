@@ -272,6 +272,7 @@ class WindowRuntime {
   void set_clipboard(Clipboard* clipboard);
   [[nodiscard]] bool paste_clipboard_text();
   [[nodiscard]] bool copy_selection_to_clipboard();
+  [[nodiscard]] bool cut_selection_to_clipboard();
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
   void request_layout();
   void request_paint();

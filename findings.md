@@ -559,3 +559,13 @@
   and focused-element text-model lookup introduced for paste.
 - Collapsed selections should not overwrite clipboard contents; returning
   `false` gives callers a simple observable no-op.
+
+## 2026-06-30 Runtime Clipboard Cut
+
+- Cut can compose copy plus the existing selection-aware
+  `TextModel::delete_forward`, which avoids adding a second selected-range
+  deletion primitive in the runtime.
+- The operation should only mutate text after clipboard write succeeds, so
+  failed copy/no selection/no focused model leaves the buffer untouched.
+- After deletion, existing `TextModel` behavior collapses the cursor to the
+  removed selection start, matching the text-edit action path.

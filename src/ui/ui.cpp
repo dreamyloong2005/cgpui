@@ -746,6 +746,20 @@ bool WindowRuntime::copy_selection_to_clipboard() {
   return clipboard_->write_text(selected_text);
 }
 
+bool WindowRuntime::cut_selection_to_clipboard() {
+  if (!copy_selection_to_clipboard() ||
+      !keyboard_focus_element_owner_.has_value()) {
+    return false;
+  }
+
+  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
+  if (model == text_models_.end() || model->second == nullptr) {
+    return false;
+  }
+
+  return model->second->delete_forward();
+}
+
 void WindowRuntime::set_element_cursor(
     ElementId element_id,
     CursorShape cursor_shape) {

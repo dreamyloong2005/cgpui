@@ -586,6 +586,23 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 58: Runtime clipboard cut from focused text selections.
+- Added RED `window_runtime_test` coverage for
+  `WindowRuntime::cut_selection_to_clipboard` writing selected text to
+  clipboard and deleting it from the focused `TextModel`; the test failed
+  because the runtime API did not exist.
+- Implemented Step 58 in `codex/runtime-clipboard-cut`: cut composes runtime
+  selection copy with `TextModel::delete_forward` to remove the selected range
+  only after clipboard write succeeds.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  clipboard_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+
 - Started Step 57: Runtime clipboard copy from focused text selections.
 - Added RED `window_runtime_test` coverage for
   `WindowRuntime::copy_selection_to_clipboard` writing the focused text model's
