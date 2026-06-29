@@ -102,7 +102,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 64. [x] Element enabled/disabled state primitive.
 65. [x] Disabled elements skip event handling.
 66. [x] Element tree preorder traversal helper.
-67. [ ] Element tree find-by-id convenience helper.
+67. [x] Element tree find-by-id convenience helper.
 68. [ ] ViewContext text model binding helper.
 69. [ ] ViewContext element tree installation helper.
 70. [ ] ViewContext action registration helper.
@@ -124,7 +124,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 67: Element tree find-by-id convenience helper.
+Step 68: ViewContext text model binding helper.
 
 ## Risks
 

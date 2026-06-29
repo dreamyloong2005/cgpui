@@ -649,3 +649,12 @@
   id without exposing internal nodes.
 - Empty-tree traversal returns an empty vector, matching the existing soft-fail
   behavior of root layout, hit testing, and paint traversal.
+
+## 2026-06-30 ElementTree Typed Lookup
+
+- `ElementTree::find_as<T>(ElementId)` is a convenience over the existing
+  id-based `get` contract, not a new ownership path; it returns null for
+  missing ids and type mismatches.
+- Providing both const and mutable overloads lets tests and future ViewContext
+  helpers preserve const-correctness while avoiding repeated `dynamic_cast`
+  boilerplate at call sites.

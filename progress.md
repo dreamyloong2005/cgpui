@@ -658,6 +658,22 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 67: Element tree find-by-id convenience helper.
+- Added RED `element_test` coverage for mutable and const
+  `ElementTree::find_as<T>(ElementId)` lookups, including type mismatch and
+  unknown-id soft failures; the test failed to compile because the helper did
+  not exist.
+- Implemented Step 67 in `codex/element-tree-find-by-id`: added header-only
+  const and mutable `find_as<T>` helpers that layer typed `dynamic_cast` over
+  existing id lookup.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

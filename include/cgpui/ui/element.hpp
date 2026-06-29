@@ -620,6 +620,16 @@ class ElementTree {
     return node == nullptr ? nullptr : node->element.get();
   }
 
+  template <typename T>
+  [[nodiscard]] T* find_as(ElementId id) {
+    return dynamic_cast<T*>(get(id));
+  }
+
+  template <typename T>
+  [[nodiscard]] const T* find_as(ElementId id) const {
+    return dynamic_cast<const T*>(get(id));
+  }
+
   [[nodiscard]] std::optional<ElementId> parent(ElementId id) const {
     const Node* node = find_node(id);
     return node == nullptr ? std::optional<ElementId>{} : node->parent;
