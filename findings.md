@@ -140,3 +140,15 @@
   non-pointer routes.
 - Owner-matched release keeps the API soft-fail and mirrors the existing
   view-owner release behavior.
+
+## 2026-06-30 Keyboard Focus Routing
+
+- Element-level keyboard focus can reuse `EventRoute::target_element_id`, just
+  like pointer routing, because the route already represents the event's
+  intended element target.
+- Keyboard and text-input events should use the focused element owner before
+  any pointer-specific routing logic; pointer hit testing and pointer capture
+  remain unaffected.
+- Keeping view-level and element-level focus owners as separate optional fields
+  preserves old root-view focus tests while exposing the element owner needed
+  for later key binding and text-input slices.

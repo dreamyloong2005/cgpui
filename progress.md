@@ -123,6 +123,19 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default element_test/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 16: Keyboard routing to focus owner id.
+- Added design and implementation plan docs for element-level keyboard focus
+  routing.
+- Added a RED runtime test for `ViewInputState::keyboard_focus_element_owner`,
+  `request_keyboard_focus(ElementId)`, owner-matched release, wrong-owner
+  release, and keyboard/text `EventRoute::target_element_id`; the test failed
+  because the element keyboard focus APIs did not exist.
+- Implemented Step 16 in `codex/keyboard-focus-routing`: runtime stores an
+  optional focused `ElementId`, exposes it through input state, routes keyboard
+  and text input events to it, and releases it only when the owner matches.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default element_test/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
 - Started Step 12: Layout pass for simple vertical stack.
 - Added design and implementation plan docs for a simple owned-child vertical
   stack element.

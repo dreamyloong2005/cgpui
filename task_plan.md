@@ -35,7 +35,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 13. [x] Hit testing over laid-out element bounds.
 14. [x] Pointer routing to hit-tested element id.
 15. [x] Pointer capture routing to owner id.
-16. [ ] Keyboard routing to focus owner id.
+16. [x] Keyboard routing to focus owner id.
 17. [ ] Action/Command primitive: named actions and dispatch result.
 18. [ ] Key binding table: map key events to actions.
 19. [ ] Basic text model: editable UTF-8 buffer with cursor.
@@ -43,7 +43,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 16: Keyboard routing to focus owner id.
+Step 17: Action/Command primitive: named actions and dispatch result.
 
 ## Risks
 

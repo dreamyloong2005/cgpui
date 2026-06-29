@@ -111,6 +111,7 @@ struct ViewInputState {
   std::optional<ElementId> pointer_capture_element_owner;
   bool keyboard_focused = false;
   std::optional<ViewId> keyboard_focus_owner;
+  std::optional<ElementId> keyboard_focus_element_owner;
   Point pointer_position{};
 };
 
@@ -179,8 +180,10 @@ class WindowRuntime {
   void release_pointer(ElementId element_id);
   void request_keyboard_focus();
   void request_keyboard_focus(ViewId view_id);
+  void request_keyboard_focus(ElementId element_id);
   void release_keyboard_focus();
   void release_keyboard_focus(ViewId view_id);
+  void release_keyboard_focus(ElementId element_id);
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   Result<void> resize_surface(Size size, DpiScale scale);
@@ -227,6 +230,7 @@ class WindowRuntime {
   std::optional<ViewId> pointer_capture_owner_;
   std::optional<ElementId> pointer_capture_element_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
+  std::optional<ElementId> keyboard_focus_element_owner_;
   EventResult last_event_result_{};
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<EventRoute> current_event_route_;

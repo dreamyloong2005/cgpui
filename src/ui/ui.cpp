@@ -46,6 +46,11 @@ std::optional<Point> pointer_position_for(const PlatformEvent& event) {
   return {};
 }
 
+bool is_keyboard_routed_event(const PlatformEvent& event) {
+  return std::holds_alternative<KeyboardKey>(event) ||
+         std::holds_alternative<TextInput>(event);
+}
+
 } // namespace
 
 void PaintList::clear() {
@@ -119,6 +124,7 @@ int WindowRuntime::run(
   pointer_capture_owner_.reset();
   pointer_capture_element_owner_.reset();
   keyboard_focus_owner_.reset();
+  keyboard_focus_element_owner_.reset();
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_.reset();
   current_event_route_.reset();
@@ -209,7 +215,10 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       input_.pointer_position = scrolled->position;
     }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
-    if (pointer_capture_element_owner_.has_value() &&
+    if (keyboard_focus_element_owner_.has_value() &&
+        is_keyboard_routed_event(event)) {
+      current_event_route_->target_element_id = keyboard_focus_element_owner_;
+    } else if (pointer_capture_element_owner_.has_value() &&
         pointer_position_for(event).has_value()) {
       current_event_route_->target_element_id = pointer_capture_element_owner_;
     } else if (element_root_ != nullptr) {
@@ -272,7 +281,9 @@ WindowRuntimeContext WindowRuntime::context() {
   input.pointer_captured = pointer_capture_owner_ == root_view_id_ ||
                            pointer_capture_element_owner_.has_value();
   input.keyboard_focus_owner = keyboard_focus_owner_;
-  input.keyboard_focused = keyboard_focus_owner_ == root_view_id_;
+  input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
+  input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
+                           keyboard_focus_element_owner_.has_value();
 
   return WindowRuntimeContext{
       .runtime = *this,
@@ -349,6 +360,12 @@ void WindowRuntime::request_keyboard_focus(ViewId view_id) {
   keyboard_focus_owner_ = view_id;
 }
 
+void WindowRuntime::request_keyboard_focus(ElementId element_id) {
+  if (element_id.value != 0) {
+    keyboard_focus_element_owner_ = element_id;
+  }
+}
+
 void WindowRuntime::release_keyboard_focus() {
   release_keyboard_focus(root_view_id_);
 }
@@ -356,6 +373,12 @@ void WindowRuntime::release_keyboard_focus() {
 void WindowRuntime::release_keyboard_focus(ViewId view_id) {
   if (keyboard_focus_owner_ == view_id) {
     keyboard_focus_owner_.reset();
+  }
+}
+
+void WindowRuntime::release_keyboard_focus(ElementId element_id) {
+  if (keyboard_focus_element_owner_ == element_id) {
+    keyboard_focus_element_owner_.reset();
   }
 }
 

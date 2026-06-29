@@ -150,6 +150,10 @@ class RecordingView final : public cgpui::View {
     last_keyboard_focus_owner_matches_view =
         context.input.keyboard_focus_owner.has_value() &&
         *context.input.keyboard_focus_owner == context.view_id;
+    last_keyboard_focus_element_owner_present =
+        context.input.keyboard_focus_element_owner.has_value();
+    last_keyboard_focus_element_owner =
+        context.input.keyboard_focus_element_owner;
 
     if (std::holds_alternative<cgpui::WindowFocused>(event)) {
       focus_count += 1;
@@ -270,10 +274,19 @@ class RecordingView final : public cgpui::View {
           keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus(context.view_id);
       }
+      if (request_keyboard_focus_element_on_first_key &&
+          keyboard_key_count == 1) {
+        context.runtime.request_keyboard_focus(focused_keyboard_element_id);
+      }
       if (release_keyboard_focus_with_wrong_owner_on_second_key &&
           keyboard_key_count == 2) {
         context.runtime.release_keyboard_focus(
             cgpui::ViewId{context.view_id.value + 1});
+      }
+      if (release_keyboard_focus_element_with_wrong_owner_on_second_key &&
+          keyboard_key_count == 2) {
+        context.runtime.release_keyboard_focus(
+            cgpui::ElementId{focused_keyboard_element_id.value + 1});
       }
       if (release_keyboard_focus_on_third_key && keyboard_key_count == 3) {
         context.runtime.release_keyboard_focus();
@@ -282,24 +295,40 @@ class RecordingView final : public cgpui::View {
           keyboard_key_count == 3) {
         context.runtime.release_keyboard_focus(context.view_id);
       }
+      if (release_keyboard_focus_element_owner_on_third_key &&
+          keyboard_key_count == 3) {
+        context.runtime.release_keyboard_focus(focused_keyboard_element_id);
+      }
       if (keyboard_key_count == 2) {
         second_key_saw_keyboard_focus = context.input.keyboard_focused;
         second_key_saw_keyboard_focus_owner =
             last_keyboard_focus_owner_matches_view;
+        second_key_saw_keyboard_focus_element_owner =
+            context.input.keyboard_focus_element_owner ==
+            focused_keyboard_element_id;
       } else if (keyboard_key_count == 3) {
         third_key_saw_keyboard_focus = context.input.keyboard_focused;
         third_key_saw_keyboard_focus_owner =
             last_keyboard_focus_owner_matches_view;
+        third_key_saw_keyboard_focus_element_owner =
+            context.input.keyboard_focus_element_owner ==
+            focused_keyboard_element_id;
       } else if (keyboard_key_count == 4) {
         fourth_key_saw_keyboard_focus = context.input.keyboard_focused;
         fourth_key_saw_keyboard_focus_owner =
             last_keyboard_focus_owner_matches_view;
+        fourth_key_saw_keyboard_focus_element_owner =
+            context.input.keyboard_focus_element_owner ==
+            focused_keyboard_element_id;
       }
     } else if (std::holds_alternative<cgpui::TextInput>(event)) {
       text_input_count += 1;
       text_input_saw_keyboard_focus = context.input.keyboard_focused;
       text_input_saw_keyboard_focus_owner =
           last_keyboard_focus_owner_matches_view;
+      text_input_saw_keyboard_focus_element_owner =
+          context.input.keyboard_focus_element_owner ==
+          focused_keyboard_element_id;
     }
 
     if (request_redraw_on_event && event_redraw_requests == 0) {
@@ -345,6 +374,9 @@ class RecordingView final : public cgpui::View {
   bool request_keyboard_focus_owner_on_first_key = false;
   bool release_keyboard_focus_with_wrong_owner_on_second_key = false;
   bool release_keyboard_focus_owner_on_third_key = false;
+  bool request_keyboard_focus_element_on_first_key = false;
+  bool release_keyboard_focus_element_with_wrong_owner_on_second_key = false;
+  bool release_keyboard_focus_element_owner_on_third_key = false;
   bool last_input_focused = false;
   bool focus_event_saw_focused = false;
   bool last_pointer_captured = false;
@@ -363,14 +395,19 @@ class RecordingView final : public cgpui::View {
   bool last_keyboard_focused = false;
   bool last_keyboard_focus_owner_present = false;
   bool last_keyboard_focus_owner_matches_view = false;
+  bool last_keyboard_focus_element_owner_present = false;
   bool second_key_saw_keyboard_focus = false;
   bool second_key_saw_keyboard_focus_owner = false;
+  bool second_key_saw_keyboard_focus_element_owner = false;
   bool third_key_saw_keyboard_focus = false;
   bool third_key_saw_keyboard_focus_owner = false;
+  bool third_key_saw_keyboard_focus_element_owner = false;
   bool fourth_key_saw_keyboard_focus = true;
   bool fourth_key_saw_keyboard_focus_owner = true;
+  bool fourth_key_saw_keyboard_focus_element_owner = true;
   bool text_input_saw_keyboard_focus = false;
   bool text_input_saw_keyboard_focus_owner = false;
+  bool text_input_saw_keyboard_focus_element_owner = false;
   bool last_event_result_consumed = false;
   bool last_event_result_cancelled = false;
   bool saw_event_route = false;
@@ -398,10 +435,12 @@ class RecordingView final : public cgpui::View {
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
   cgpui::ElementId captured_pointer_element_id{};
+  cgpui::ElementId focused_keyboard_element_id{21};
   cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   std::optional<cgpui::ElementId> last_route_element_id;
   std::optional<cgpui::ElementId> last_pointer_capture_element_owner;
+  std::optional<cgpui::ElementId> last_keyboard_focus_element_owner;
   cgpui::ViewId first_view_id{};
   cgpui::ViewId last_view_id{};
   cgpui::Size last_viewport_size{};
@@ -1440,6 +1479,99 @@ int test_keyboard_focus_tracks_owner_view_id() {
   return 0;
 }
 
+int test_keyboard_focus_routes_to_owner_element() {
+  RuntimeFixture fixture;
+  keyboard_focus_fixture = &fixture;
+  fixture.app.on_run = &dispatch_keyboard_focus_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+  fixture.view.release_keyboard_focus_element_with_wrong_owner_on_second_key =
+      true;
+  fixture.view.release_keyboard_focus_element_owner_on_third_key = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  int callback_count = 0;
+  cgpui::EventDispatchRecord first_key_record{};
+  cgpui::EventDispatchRecord second_key_record{};
+  cgpui::EventDispatchRecord text_record{};
+  cgpui::EventDispatchRecord third_key_record{};
+  cgpui::EventDispatchRecord fourth_key_record{};
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        callback_count += 1;
+        if (!context.event_route.has_value() ||
+            context.event_route->target_view_id != record.route.target_view_id ||
+            context.event_route->target_element_id !=
+                record.route.target_element_id ||
+            context.event_route->event_kind != record.route.event_kind) {
+          callback_count = -100;
+          return;
+        }
+        if (callback_count == 1) {
+          first_key_record = record;
+        } else if (callback_count == 2) {
+          second_key_record = record;
+        } else if (callback_count == 3) {
+          text_record = record;
+        } else if (callback_count == 4) {
+          third_key_record = record;
+        } else if (callback_count == 5) {
+          fourth_key_record = record;
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  keyboard_focus_fixture = nullptr;
+
+  if (result != 0) {
+    return 141;
+  }
+  if (callback_count != 5 || fixture.view.keyboard_key_count != 4 ||
+      fixture.view.text_input_count != 1) {
+    return 142;
+  }
+  if (first_key_record.route.target_element_id.has_value()) {
+    return 143;
+  }
+  if (!second_key_record.route.target_element_id.has_value() ||
+      *second_key_record.route.target_element_id != cgpui::ElementId{21}) {
+    return 144;
+  }
+  if (!text_record.route.target_element_id.has_value() ||
+      *text_record.route.target_element_id != cgpui::ElementId{21}) {
+    return 145;
+  }
+  if (!third_key_record.route.target_element_id.has_value() ||
+      *third_key_record.route.target_element_id != cgpui::ElementId{21}) {
+    return 146;
+  }
+  if (fourth_key_record.route.target_element_id.has_value()) {
+    return 147;
+  }
+  if (!fixture.view.second_key_saw_keyboard_focus ||
+      !fixture.view.second_key_saw_keyboard_focus_element_owner ||
+      !fixture.view.text_input_saw_keyboard_focus ||
+      !fixture.view.text_input_saw_keyboard_focus_element_owner ||
+      !fixture.view.third_key_saw_keyboard_focus ||
+      !fixture.view.third_key_saw_keyboard_focus_element_owner) {
+    return 148;
+  }
+  if (fixture.view.fourth_key_saw_keyboard_focus ||
+      fixture.view.fourth_key_saw_keyboard_focus_element_owner ||
+      fixture.view.last_keyboard_focus_element_owner_present) {
+    return 149;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* entity_context_fixture = nullptr;
 
 void dispatch_entity_context_sequence() {
@@ -1616,6 +1748,10 @@ int main() {
     return result;
   }
   if (const int result = test_keyboard_focus_tracks_owner_view_id();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_keyboard_focus_routes_to_owner_element();
       result != 0) {
     return result;
   }
