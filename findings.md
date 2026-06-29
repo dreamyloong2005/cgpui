@@ -35,3 +35,13 @@
   aliasing until a future generation/index scheme is justified.
 - A typed `EntityId<T>` gives compile-time separation between stores while
   preserving a simple numeric `.value` for tests and diagnostics.
+
+## 2026-06-30 Context Entity Access
+
+- `WindowRuntimeContext` is acting as a capability handle: it can stay `const`
+  while still forwarding controlled mutations into runtime-owned state.
+- `WindowRuntime` can hold per-type entity stores behind
+  `std::unordered_map<std::type_index, std::any>` without adding new source
+  files or platform-specific code.
+- Missing or removed entities should stay soft-fail APIs for now:
+  read/mutate return `nullptr`, and remove returns `false`.

@@ -24,7 +24,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 2. [x] Event dispatch observability: expose last event result to runtime tests and callbacks where useful.
 3. [x] Event routing shell: add a root-level dispatch function that can later route to element/view ids.
 4. [x] EntityId and EntityStore skeleton: typed ids, insert/get/remove lifecycle.
-5. [ ] Context entity access: expose safe entity mutation/read helpers through a context object.
+5. [x] Context entity access: expose safe entity mutation/read helpers through a context object.
 6. [ ] View identity allocation: allocate stable ids beyond the root view.
 7. [ ] ElementId and Element base API: minimal polymorphic element contract.
 8. [ ] Element tree container: store children, parent links, and root element id.
@@ -43,7 +43,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 5: Context entity access.
+Step 6: View identity allocation.
 
 ## Risks
 

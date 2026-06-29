@@ -10,6 +10,10 @@
 
 namespace {
 
+struct RuntimeEntity {
+  int value = 0;
+};
+
 bool equal(cgpui::Size lhs, cgpui::Size rhs) {
   return lhs.width == rhs.width && lhs.height == rhs.height;
 }
@@ -188,6 +192,27 @@ class RecordingView final : public cgpui::View {
       pointer_scroll_event_position = context.input.pointer_position;
     } else if (std::holds_alternative<cgpui::KeyboardKey>(event)) {
       keyboard_key_count += 1;
+      if (exercise_entity_context_access && keyboard_key_count == 1) {
+        entity_id = context.insert_entity(RuntimeEntity{.value = 10});
+        inserted_entity_id = entity_id;
+        const RuntimeEntity* inserted = context.read_entity(entity_id);
+        first_entity_read_value = inserted == nullptr ? -1 : inserted->value;
+        if (RuntimeEntity* mutated = context.mutate_entity(entity_id);
+            mutated != nullptr) {
+          mutated->value = 21;
+        }
+      }
+      if (exercise_entity_context_access && keyboard_key_count == 2) {
+        const RuntimeEntity* entity = context.read_entity(entity_id);
+        second_entity_read_value = entity == nullptr ? -1 : entity->value;
+        removed_entity = context.remove_entity(entity_id);
+        removed_entity_again = context.remove_entity(entity_id);
+        missing_entity_after_remove = context.read_entity(entity_id) == nullptr;
+        emplaced_entity_id = context.emplace_entity<RuntimeEntity>(42);
+        const RuntimeEntity* emplaced = context.read_entity(emplaced_entity_id);
+        emplaced_entity_read_value =
+            emplaced == nullptr ? -1 : emplaced->value;
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -255,6 +280,7 @@ class RecordingView final : public cgpui::View {
   bool request_redraw_on_event = false;
   bool consume_next_event = false;
   bool cancel_next_event = false;
+  bool exercise_entity_context_access = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -293,6 +319,15 @@ class RecordingView final : public cgpui::View {
   bool saw_last_event_dispatch = false;
   bool saw_first_view_id = false;
   bool view_id_stayed_stable = true;
+  bool removed_entity = false;
+  bool removed_entity_again = true;
+  bool missing_entity_after_remove = false;
+  int first_entity_read_value = -1;
+  int second_entity_read_value = -1;
+  int emplaced_entity_read_value = -1;
+  cgpui::EntityId<RuntimeEntity> entity_id{};
+  cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
+  cgpui::EntityId<RuntimeEntity> emplaced_entity_id{};
   cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   cgpui::ViewId first_view_id{};
@@ -1125,6 +1160,59 @@ int test_keyboard_focus_tracks_owner_view_id() {
   return 0;
 }
 
+RuntimeFixture* entity_context_fixture = nullptr;
+
+void dispatch_entity_context_sequence() {
+  auto& callback = entity_context_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 70,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 71,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_context_can_access_runtime_entities() {
+  RuntimeFixture fixture;
+  entity_context_fixture = &fixture;
+  fixture.app.on_run = &dispatch_entity_context_sequence;
+  fixture.view.exercise_entity_context_access = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  entity_context_fixture = nullptr;
+
+  if (result != 0) {
+    return 112;
+  }
+  if (fixture.view.keyboard_key_count != 2) {
+    return 113;
+  }
+  if (fixture.view.inserted_entity_id.value == 0 ||
+      fixture.view.first_entity_read_value != 10 ||
+      fixture.view.second_entity_read_value != 21) {
+    return 114;
+  }
+  if (!fixture.view.removed_entity ||
+      fixture.view.removed_entity_again ||
+      !fixture.view.missing_entity_after_remove) {
+    return 115;
+  }
+  if (fixture.view.emplaced_entity_id.value <=
+          fixture.view.inserted_entity_id.value ||
+      fixture.view.emplaced_entity_read_value != 42) {
+    return 116;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1178,6 +1266,10 @@ int main() {
     return result;
   }
   if (const int result = test_keyboard_focus_tracks_owner_view_id();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_context_can_access_runtime_entities();
       result != 0) {
     return result;
   }

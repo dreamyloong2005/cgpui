@@ -16,6 +16,13 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default render_view_test/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 19/19.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 16/16.
+- Started Step 3: Event routing shell.
+- Added design and implementation plan docs for the root event routing shell.
+- Added a RED runtime test for `EventRoute`, `EventRouter::route_to_root`, `WindowRuntimeContext::event_route`, and `EventDispatchRecord::route`; the test failed because those APIs did not exist.
+- Implemented Step 3 in `codex/event-routing-shell`: view-dispatched events route through a root-only `EventRouter`, runtime contexts expose the active route, and dispatch records store the route used for the dispatch.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default render_view_test/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 19/19.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 16/16.
 - Started Step 4: EntityId and EntityStore skeleton.
 - Added design and implementation plan docs for typed entity ids and the minimal entity store lifecycle.
 - Added a RED core test for `EntityId<T>`, `EntityStore<T>::insert`, mutable/const `get`, `remove`, and monotonic id allocation; the test failed because `cgpui/core/entity.hpp` did not exist.
@@ -24,10 +31,14 @@
 - Verified targeted tests: `xmake test -P . entity_store_test/default core_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 20/20.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 17/17.
-- Started Step 3: Event routing shell.
-- Added design and implementation plan docs for the root event routing shell.
-- Added a RED runtime test for `EventRoute`, `EventRouter::route_to_root`, `WindowRuntimeContext::event_route`, and `EventDispatchRecord::route`; the test failed because those APIs did not exist.
-- Implemented Step 3 in `codex/event-routing-shell`: view-dispatched events route through a root-only `EventRouter`, runtime contexts expose the active route, and dispatch records store the route used for the dispatch.
-- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default render_view_test/default` passed 3/3.
-- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 19/19.
-- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 16/16.
+
+## 2026-06-30
+
+- Started Step 5: Context entity access.
+- Added design and implementation plan docs for context-forwarded runtime entity helpers.
+- Added a RED runtime test that inserts, reads, mutates, removes, and emplaces an entity from `WindowRuntimeContext`; the test failed because `EntityId` and context entity helpers were not available through the UI runtime API.
+- Implemented Step 5 in `codex/context-entity-access`: `WindowRuntime` owns type-erased per-type `EntityStore<T>` instances and `WindowRuntimeContext` forwards typed insert/emplace/read/mutate/remove helpers.
+- Fixed the context helper constness so event handlers receiving `const WindowRuntimeContext&` can still mutate runtime-owned entity storage through the controlled capability methods.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default entity_store_test/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 20/20.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 17/17.

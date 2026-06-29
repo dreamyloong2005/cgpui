@@ -1,13 +1,19 @@
 #pragma once
 
+#include "cgpui/core/entity.hpp"
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
 
+#include <any>
 #include <cstdint>
 #include <functional>
 #include <optional>
 #include <span>
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace cgpui {
@@ -117,6 +123,21 @@ struct WindowRuntimeContext {
   EventResult last_event_result;
   std::optional<EventDispatchRecord> last_event_dispatch;
   int frame_index = 0;
+
+  template <typename T>
+  EntityId<T> insert_entity(T entity) const;
+
+  template <typename T, typename... Args>
+  EntityId<T> emplace_entity(Args&&... args) const;
+
+  template <typename T>
+  [[nodiscard]] const T* read_entity(EntityId<T> id) const;
+
+  template <typename T>
+  [[nodiscard]] T* mutate_entity(EntityId<T> id) const;
+
+  template <typename T>
+  bool remove_entity(EntityId<T> id) const;
 };
 
 using RendererFactory =
@@ -153,12 +174,33 @@ class WindowRuntime {
   void release_keyboard_focus(ViewId view_id);
   Result<void> resize_surface(Size size, DpiScale scale);
 
+  template <typename T>
+  EntityId<T> insert_entity(T entity);
+
+  template <typename T, typename... Args>
+  EntityId<T> emplace_entity(Args&&... args);
+
+  template <typename T>
+  [[nodiscard]] const T* read_entity(EntityId<T> id) const;
+
+  template <typename T>
+  [[nodiscard]] T* mutate_entity(EntityId<T> id);
+
+  template <typename T>
+  bool remove_entity(EntityId<T> id);
+
  private:
   void handle_event(const PlatformEvent& event);
   void handle_resize(const WindowResized& event);
   void handle_redraw();
   void fail_and_quit(Error error);
   [[nodiscard]] WindowRuntimeContext context();
+  template <typename T>
+  [[nodiscard]] EntityStore<T>& entity_store();
+  template <typename T>
+  [[nodiscard]] const EntityStore<T>* find_entity_store() const;
+  template <typename T>
+  [[nodiscard]] EntityStore<T>* find_entity_store();
 
   PlatformApplication& application_;
   View& view_;
@@ -179,10 +221,100 @@ class WindowRuntime {
   ViewId root_view_id_{1};
   int event_dispatch_sequence_ = 0;
   int frame_index_ = 0;
+  std::unordered_map<std::type_index, std::any> entity_stores_;
   bool should_quit_ = false;
   bool failed_ = false;
 };
 
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size);
+
+template <typename T>
+EntityId<T> WindowRuntimeContext::insert_entity(T entity) const {
+  return runtime.insert_entity<T>(std::move(entity));
+}
+
+template <typename T, typename... Args>
+EntityId<T> WindowRuntimeContext::emplace_entity(Args&&... args) const {
+  return runtime.emplace_entity<T>(std::forward<Args>(args)...);
+}
+
+template <typename T>
+const T* WindowRuntimeContext::read_entity(EntityId<T> id) const {
+  return runtime.read_entity(id);
+}
+
+template <typename T>
+T* WindowRuntimeContext::mutate_entity(EntityId<T> id) const {
+  return runtime.mutate_entity(id);
+}
+
+template <typename T>
+bool WindowRuntimeContext::remove_entity(EntityId<T> id) const {
+  return runtime.remove_entity(id);
+}
+
+template <typename T>
+EntityId<T> WindowRuntime::insert_entity(T entity) {
+  return entity_store<T>().insert(std::move(entity));
+}
+
+template <typename T, typename... Args>
+EntityId<T> WindowRuntime::emplace_entity(Args&&... args) {
+  return entity_store<T>().emplace(std::forward<Args>(args)...);
+}
+
+template <typename T>
+const T* WindowRuntime::read_entity(EntityId<T> id) const {
+  const EntityStore<T>* store = find_entity_store<T>();
+  if (store == nullptr) {
+    return nullptr;
+  }
+  return store->get(id);
+}
+
+template <typename T>
+T* WindowRuntime::mutate_entity(EntityId<T> id) {
+  EntityStore<T>* store = find_entity_store<T>();
+  if (store == nullptr) {
+    return nullptr;
+  }
+  return store->get(id);
+}
+
+template <typename T>
+bool WindowRuntime::remove_entity(EntityId<T> id) {
+  EntityStore<T>* store = find_entity_store<T>();
+  if (store == nullptr) {
+    return false;
+  }
+  return store->remove(id);
+}
+
+template <typename T>
+EntityStore<T>& WindowRuntime::entity_store() {
+  auto [entry, inserted] = entity_stores_.try_emplace(
+      std::type_index(typeid(T)),
+      EntityStore<T>{});
+  (void)inserted;
+  return std::any_cast<EntityStore<T>&>(entry->second);
+}
+
+template <typename T>
+const EntityStore<T>* WindowRuntime::find_entity_store() const {
+  const auto entry = entity_stores_.find(std::type_index(typeid(T)));
+  if (entry == entity_stores_.end()) {
+    return nullptr;
+  }
+  return &std::any_cast<const EntityStore<T>&>(entry->second);
+}
+
+template <typename T>
+EntityStore<T>* WindowRuntime::find_entity_store() {
+  auto entry = entity_stores_.find(std::type_index(typeid(T)));
+  if (entry == entity_stores_.end()) {
+    return nullptr;
+  }
+  return &std::any_cast<EntityStore<T>&>(entry->second);
+}
 
 } // namespace cgpui
