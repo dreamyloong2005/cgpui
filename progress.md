@@ -428,6 +428,16 @@
   is installed, and routes pointer hit testing through the owned tree first.
 - Verified targeted tests: `xmake test -P . window_runtime_test/default
   ui_header_cleanliness/default` passed 2/2.
+- Started Step 45: Element event handler hook.
+- Added RED `element_test` coverage for `ElementEventContext`, a default
+  unhandled `Element::handle_event`, and `StyledElement` forwarding events to
+  its child; the test failed because element-level event APIs did not exist.
+- Implemented Step 45 in `codex/element-event-handler-hook`: moved
+  `EventResult` into the element-visible API surface, added
+  `ElementEventContext`, added the virtual element event hook, and made
+  `StyledElement` forward events to its child.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
 - Started Step 44: Runtime lays out installed element trees on redraw.
 - Added RED `window_runtime_test` coverage for an owned element tree that is not
   pre-laid-out before runtime redraw; the test expected redraw to lay out the

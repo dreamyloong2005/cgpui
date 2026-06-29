@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/core/events.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/style.hpp"
 
@@ -19,6 +20,27 @@ struct ElementId {
   std::uint64_t value = 0;
 
   friend bool operator==(ElementId, ElementId) = default;
+};
+
+struct EventResult {
+  bool consumed = false;
+  bool cancelled = false;
+
+  [[nodiscard]] static constexpr EventResult unhandled() {
+    return {};
+  }
+
+  [[nodiscard]] static constexpr EventResult consumed_event() {
+    return {.consumed = true};
+  }
+
+  [[nodiscard]] static constexpr EventResult cancelled_event() {
+    return {.consumed = true, .cancelled = true};
+  }
+};
+
+struct ElementEventContext {
+  ElementId target_element_id;
 };
 
 class Element {
@@ -51,6 +73,14 @@ class Element {
 
   virtual void paint(PaintList& paint_list) const {
     (void)paint_list;
+  }
+
+  [[nodiscard]] virtual EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) {
+    (void)event;
+    (void)context;
+    return EventResult::unhandled();
   }
 
   [[nodiscard]] virtual int z_index() const {
@@ -270,6 +300,13 @@ class StyledElement : public Element {
   }
 
   void paint(PaintList& paint_list) const override;
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    return child_ == nullptr ? EventResult::unhandled()
+                             : child_->handle_event(event, context);
+  }
 
   [[nodiscard]] int z_index() const override {
     return style_.z_index;

@@ -431,3 +431,12 @@
 - Using viewport size as the max layout constraint preserves existing element
   min defaults while preventing oversized preferred roots from exceeding the
   drawable area.
+
+## 2026-06-30 Element Event Hook
+
+- `EventResult` belongs in the element-visible API once elements can handle
+  events; keeping `ui.hpp` as a consumer avoids duplicating result semantics.
+- The first `ElementEventContext` only needs the routed target element id. View
+  runtime/application access can be layered later through a richer context.
+- `StyledElement` forwarding to its child preserves wrapper composition until
+  styled boxes grow their own interaction behavior.

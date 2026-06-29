@@ -22,6 +22,24 @@ class NamedElement final : public cgpui::Element {
   int value_ = 0;
 };
 
+class EventCountingElement final : public cgpui::Element {
+ public:
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::ElementEventContext& context) override {
+    event_count += 1;
+    last_target = context.target_element_id;
+    saw_pointer =
+        saw_pointer || std::holds_alternative<cgpui::PointerMoved>(event);
+    return result;
+  }
+
+  int event_count = 0;
+  cgpui::ElementId last_target;
+  bool saw_pointer = false;
+  cgpui::EventResult result = cgpui::EventResult::unhandled();
+};
+
 static_assert(std::same_as<decltype(cgpui::ElementId{}.value), std::uint64_t>);
 static_assert(std::equality_comparable<cgpui::ElementId>);
 
@@ -941,6 +959,45 @@ int test_element_tree_hit_test_root_handles_empty_tree() {
       : 96;
 }
 
+int test_base_element_event_handler_defaults_to_unhandled() {
+  TestElement element;
+  element.assign_id(cgpui::ElementId{30});
+
+  const cgpui::EventResult result = element.handle_event(
+      cgpui::PointerMoved{.position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{
+          .target_element_id = element.id(),
+      });
+
+  return !result.consumed && !result.cancelled ? 0 : 97;
+}
+
+int test_styled_element_forwards_events_to_child() {
+  auto child = std::make_unique<EventCountingElement>();
+  EventCountingElement* child_ptr = child.get();
+  child_ptr->assign_id(cgpui::ElementId{32});
+  child_ptr->result = cgpui::EventResult::consumed_event();
+
+  cgpui::StyledElement element(cgpui::Style{}, std::move(child));
+  element.assign_id(cgpui::ElementId{31});
+
+  const cgpui::EventResult result = element.handle_event(
+      cgpui::PointerMoved{.position = {.x = 2.0F, .y = 3.0F}},
+      cgpui::ElementEventContext{
+          .target_element_id = child_ptr->id(),
+      });
+
+  if (!result.consumed || result.cancelled) {
+    return 98;
+  }
+  if (child_ptr->event_count != 1 || !child_ptr->saw_pointer ||
+      child_ptr->last_target != cgpui::ElementId{32}) {
+    return 99;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1082,6 +1139,14 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_hit_test_root_handles_empty_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_base_element_event_handler_defaults_to_unhandled();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_styled_element_forwards_events_to_child();
       result != 0) {
     return result;
   }

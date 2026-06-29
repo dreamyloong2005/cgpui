@@ -24,23 +24,6 @@ namespace cgpui {
 
 struct WindowRuntimeContext;
 
-struct EventResult {
-  bool consumed = false;
-  bool cancelled = false;
-
-  [[nodiscard]] static constexpr EventResult unhandled() {
-    return {};
-  }
-
-  [[nodiscard]] static constexpr EventResult consumed_event() {
-    return {.consumed = true};
-  }
-
-  [[nodiscard]] static constexpr EventResult cancelled_event() {
-    return {.consumed = true, .cancelled = true};
-  }
-};
-
 struct PaintCommand {
   SolidRect solid_rect;
 };
