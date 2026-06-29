@@ -30,6 +30,47 @@ std::wstring widen(std::string_view value) {
   return result;
 }
 
+std::string utf8_from_utf16(std::wstring_view value) {
+  if (value.empty()) {
+    return {};
+  }
+
+  const auto required = WideCharToMultiByte(
+      CP_UTF8,
+      0,
+      value.data(),
+      static_cast<int>(value.size()),
+      nullptr,
+      0,
+      nullptr,
+      nullptr);
+  if (required <= 0) {
+    return {};
+  }
+
+  std::string result(static_cast<std::size_t>(required), '\0');
+  WideCharToMultiByte(
+      CP_UTF8,
+      0,
+      value.data(),
+      static_cast<int>(value.size()),
+      result.data(),
+      required,
+      nullptr,
+      nullptr);
+  return result;
+}
+
+KeyboardModifiers current_modifiers() {
+  return KeyboardModifiers{
+      .shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0,
+      .control = (GetKeyState(VK_CONTROL) & 0x8000) != 0,
+      .alt = (GetKeyState(VK_MENU) & 0x8000) != 0,
+      .super = (GetKeyState(VK_LWIN) & 0x8000) != 0 ||
+          (GetKeyState(VK_RWIN) & 0x8000) != 0,
+  };
+}
+
 class Win32Window final : public PlatformWindow {
  public:
   Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state)
@@ -135,7 +176,20 @@ class Win32Window final : public PlatformWindow {
   }
 
   void key_event(WPARAM wparam, KeyAction action) {
-    callback_(KeyboardKey{.key_code = static_cast<std::uint32_t>(wparam), .action = action});
+    callback_(KeyboardKey{
+        .key_code = static_cast<std::uint32_t>(wparam),
+        .action = action,
+        .modifiers = current_modifiers()});
+  }
+
+  void text_input(WPARAM wparam) {
+    const wchar_t character = static_cast<wchar_t>(wparam);
+    auto text = utf8_from_utf16(std::wstring_view(&character, 1));
+    if (!text.empty()) {
+      callback_(TextInput{
+          .text = std::move(text),
+          .modifiers = current_modifiers()});
+    }
   }
 
   void focus_changed(bool focused) { callback_(WindowFocused{.focused = focused}); }
@@ -234,6 +288,11 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
     case WM_KEYUP:
       if (window != nullptr) {
         window->key_event(wparam, KeyAction::released);
+      }
+      return 0;
+    case WM_CHAR:
+      if (window != nullptr) {
+        window->text_input(wparam);
       }
       return 0;
     default:

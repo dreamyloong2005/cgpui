@@ -134,6 +134,18 @@ int main() {
       !contains(text, "focus_changed(false)")) {
     return 57;
   }
+  if (!contains(text, "#include <xkbcommon/xkbcommon.h>")) {
+    return 58;
+  }
+  if (!contains(text, "xkb_state_update_mask")) {
+    return 59;
+  }
+  if (!contains(text, "xkb_state_key_get_utf8")) {
+    return 60;
+  }
+  if (!contains(text, "TextInput{")) {
+    return 61;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {
@@ -228,6 +240,9 @@ int main() {
   }
   if (!contains(keyboard_target_text, "add_tests(\"default\")")) {
     return 46;
+  }
+  if (!contains(xmake_text, "libxkbcommon")) {
+    return 62;
   }
 
   const std::string vulkan_target_text =

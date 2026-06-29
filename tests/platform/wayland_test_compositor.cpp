@@ -10,9 +10,11 @@
 #include <cstdlib>
 #include <deque>
 #include <filesystem>
+#include <fcntl.h>
 #include <memory>
 #include <mutex>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -102,6 +104,41 @@ const wl_interface xdg_wm_base_interface{
 constexpr std::uint32_t xdg_surface_configure = 0;
 constexpr std::uint32_t xdg_toplevel_configure = 0;
 constexpr std::uint32_t xdg_toplevel_close = 1;
+
+constexpr std::string_view test_keymap = R"(xkb_keymap {
+xkb_keycodes "test" {
+    minimum = 8;
+    maximum = 255;
+    <AE01> = 18;
+    <AC01> = 38;
+    <LFSH> = 50;
+};
+xkb_types "test" {
+    virtual_modifiers NumLock,Alt,LevelThree,LAlt,RAlt,RControl,LControl,ScrollLock,LevelFive;
+    type "ONE_LEVEL" {
+        modifiers = none;
+        map[none] = Level1;
+    };
+    type "ALPHABETIC" {
+        modifiers = Shift+Lock;
+        map[Shift] = Level2;
+        map[Lock] = Level2;
+        level_name[Level1] = "Base";
+        level_name[Level2] = "Caps";
+    };
+};
+xkb_compatibility "test" {
+    interpret Shift_L+AnyOfOrNone(all) {
+        action = SetMods(modifiers=Shift);
+    };
+};
+xkb_symbols "test" {
+    key <AE01> { [ 1, exclam ] };
+    key <AC01> { type="ALPHABETIC", [ a, A ] };
+    key <LFSH> { [ Shift_L ] };
+    modifier_map Shift { <LFSH> };
+};
+};)";
 
 void destroy_resource(wl_client*, wl_resource* resource) {
   wl_resource_destroy(resource);
@@ -212,6 +249,13 @@ struct WaylandTestCompositor::State {
   struct KeyboardKeyRequest {
     std::uint32_t key = 0;
     bool pressed = false;
+  };
+
+  struct KeyboardModifiersRequest {
+    bool shift = false;
+    bool control = false;
+    bool alt = false;
+    bool super = false;
   };
 
   explicit State(std::string test_name) {
@@ -349,6 +393,23 @@ struct WaylandTestCompositor::State {
     keyboard_key_pending.store(true);
   }
 
+  void request_keyboard_modifiers(
+      bool shift,
+      bool control,
+      bool alt,
+      bool super) {
+    {
+      std::lock_guard lock(keyboard_modifiers_mutex);
+      keyboard_modifiers = KeyboardModifiersRequest{
+          .shift = shift,
+          .control = control,
+          .alt = alt,
+          .super = super,
+      };
+    }
+    keyboard_modifiers_pending.store(true);
+  }
+
   void request_keyboard_leave() {
     keyboard_leave_pending.store(true);
   }
@@ -462,6 +523,7 @@ struct WaylandTestCompositor::State {
       wl_client* client,
       wl_resource* resource,
       std::uint32_t id);
+  void send_keyboard_keymap();
   static void handle_seat_destroyed(wl_resource* resource);
   static void pointer_set_cursor(
       wl_client*,
@@ -482,6 +544,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_pointer_move();
   void dispatch_pending_pointer_button();
   void dispatch_pending_pointer_scroll();
+  void dispatch_pending_keyboard_modifiers();
   void dispatch_pending_keyboard_key();
   void dispatch_pending_keyboard_leave();
 
@@ -492,6 +555,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
+      dispatch_pending_keyboard_modifiers();
       dispatch_pending_keyboard_key();
       dispatch_pending_keyboard_leave();
       const int result = wl_event_loop_dispatch(wl_display_get_event_loop(display), 10);
@@ -504,6 +568,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
+      dispatch_pending_keyboard_modifiers();
       dispatch_pending_keyboard_key();
       dispatch_pending_keyboard_leave();
       wl_display_flush_clients(display);
@@ -544,6 +609,9 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_button_sent{false};
   std::atomic_bool pointer_scroll_pending{false};
   std::atomic_bool pointer_scroll_sent{false};
+  std::atomic_bool keyboard_keymap_sent{false};
+  std::atomic_bool keyboard_modifiers_pending{false};
+  std::atomic_bool keyboard_modifiers_sent{false};
   std::atomic_bool keyboard_key_pending{false};
   std::atomic_bool keyboard_key_sent{false};
   std::atomic_bool keyboard_leave_pending{false};
@@ -554,6 +622,8 @@ struct WaylandTestCompositor::State {
   std::atomic_int pointer_y{0};
   std::mutex keyboard_key_mutex;
   std::deque<KeyboardKeyRequest> keyboard_keys;
+  std::mutex keyboard_modifiers_mutex;
+  KeyboardModifiersRequest keyboard_modifiers;
   std::mutex pointer_button_mutex;
   std::deque<PointerButtonRequest> pointer_buttons;
   std::mutex pointer_scroll_mutex;
@@ -748,6 +818,45 @@ void WaylandTestCompositor::State::seat_get_keyboard(
       &keyboard_implementation,
       compositor,
       &WaylandTestCompositor::State::handle_keyboard_destroyed);
+  compositor->send_keyboard_keymap();
+}
+
+void WaylandTestCompositor::State::send_keyboard_keymap() {
+  if (keyboard_resource == nullptr) {
+    return;
+  }
+
+  const auto keymap_size = static_cast<std::size_t>(test_keymap.size() + 1);
+  char template_path[] = "/tmp/cgpui-keymap-XXXXXX";
+  const int fd = mkstemp(template_path);
+  if (fd < 0) {
+    return;
+  }
+  unlink(template_path);
+  if (ftruncate(fd, static_cast<off_t>(keymap_size)) != 0) {
+    close(fd);
+    return;
+  }
+  const auto written =
+      write(fd, test_keymap.data(), static_cast<unsigned int>(test_keymap.size()));
+  if (written != static_cast<ssize_t>(test_keymap.size())) {
+    close(fd);
+    return;
+  }
+  const char terminator = '\0';
+  if (write(fd, &terminator, 1) != 1) {
+    close(fd);
+    return;
+  }
+  lseek(fd, 0, SEEK_SET);
+  wl_keyboard_send_keymap(
+      keyboard_resource,
+      WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+      fd,
+      static_cast<std::uint32_t>(keymap_size));
+  close(fd);
+  wl_display_flush_clients(display);
+  keyboard_keymap_sent.store(true);
 }
 
 void WaylandTestCompositor::State::handle_seat_destroyed(wl_resource* resource) {
@@ -960,6 +1069,47 @@ void WaylandTestCompositor::State::dispatch_pending_pointer_scroll() {
   pointer_scroll_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_keyboard_modifiers() {
+  if (!keyboard_modifiers_pending.exchange(false)) {
+    return;
+  }
+
+  if (keyboard_resource == nullptr) {
+    keyboard_modifiers_pending.store(true);
+    return;
+  }
+
+  KeyboardModifiersRequest request{};
+  {
+    std::lock_guard lock(keyboard_modifiers_mutex);
+    request = keyboard_modifiers;
+  }
+
+  std::uint32_t depressed = 0;
+  if (request.shift) {
+    depressed |= 1U;
+  }
+  if (request.control) {
+    depressed |= 4U;
+  }
+  if (request.alt) {
+    depressed |= 8U;
+  }
+  if (request.super) {
+    depressed |= 64U;
+  }
+
+  wl_keyboard_send_modifiers(
+      keyboard_resource,
+      next_keyboard_serial++,
+      depressed,
+      0,
+      0,
+      0);
+  wl_display_flush_clients(display);
+  keyboard_modifiers_sent.store(true);
+}
+
 void WaylandTestCompositor::State::dispatch_pending_keyboard_key() {
   if (!keyboard_key_pending.exchange(false)) {
     return;
@@ -1167,6 +1317,14 @@ void WaylandTestCompositor::request_keyboard_key(
   state_->request_keyboard_key(key, pressed);
 }
 
+void WaylandTestCompositor::request_keyboard_modifiers(
+    bool shift,
+    bool control,
+    bool alt,
+    bool super) {
+  state_->request_keyboard_modifiers(shift, control, alt, super);
+}
+
 void WaylandTestCompositor::request_keyboard_leave() {
   state_->request_keyboard_leave();
 }
@@ -1193,6 +1351,10 @@ bool WaylandTestCompositor::wait_for_pointer_button_sent() const {
 
 bool WaylandTestCompositor::wait_for_pointer_scroll_sent() const {
   return state_->wait_for_flag(state_->pointer_scroll_sent);
+}
+
+bool WaylandTestCompositor::wait_for_keyboard_modifiers_sent() const {
+  return state_->wait_for_flag(state_->keyboard_modifiers_sent);
 }
 
 bool WaylandTestCompositor::wait_for_keyboard_key_sent() const {

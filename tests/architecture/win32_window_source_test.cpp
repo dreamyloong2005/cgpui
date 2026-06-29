@@ -126,6 +126,15 @@ int main() {
   if (!contains(win32_text, "WindowFocused{.focused = focused}")) {
     return 39;
   }
+  if (!contains(win32_text, "WM_CHAR")) {
+    return 44;
+  }
+  if (!contains(win32_text, "TextInput{")) {
+    return 45;
+  }
+  if (!contains(win32_text, "GetKeyState(VK_SHIFT)")) {
+    return 46;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {
@@ -193,6 +202,21 @@ int main() {
   }
   if (!contains(focus_target, "add_tests(\"default\")")) {
     return 43;
+  }
+
+  const std::string text_input_target =
+      target_block(xmake_text, "win32_text_input_test");
+  if (text_input_target.empty()) {
+    return 47;
+  }
+  if (!contains(text_input_target, "tests/platform/win32_text_input_test.cpp")) {
+    return 48;
+  }
+  if (!contains(text_input_target, "cgpui_platform_win32")) {
+    return 49;
+  }
+  if (!contains(text_input_target, "add_tests(\"default\")")) {
+    return 50;
   }
 
   const std::string surface_target =

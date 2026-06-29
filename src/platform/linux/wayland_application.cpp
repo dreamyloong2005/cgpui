@@ -1,15 +1,21 @@
 #include "cgpui/platform/platform.hpp"
 
 #include <wayland-client.h>
+#include <xkbcommon/xkbcommon.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <expected>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
+
+#include <sys/mman.h>
+#include <unistd.h>
 
 struct xdg_positioner;
 struct xdg_wm_base;
@@ -261,6 +267,31 @@ Point point_from_fixed(wl_fixed_t x, wl_fixed_t y) {
   };
 }
 
+KeyboardModifiers modifiers_from_xkb_state(xkb_state* state) {
+  if (state == nullptr) {
+    return {};
+  }
+
+  return KeyboardModifiers{
+      .shift = xkb_state_mod_name_is_active(
+                   state,
+                   XKB_MOD_NAME_SHIFT,
+                   XKB_STATE_MODS_EFFECTIVE) == 1,
+      .control = xkb_state_mod_name_is_active(
+                     state,
+                     XKB_MOD_NAME_CTRL,
+                     XKB_STATE_MODS_EFFECTIVE) == 1,
+      .alt = xkb_state_mod_name_is_active(
+                 state,
+                 XKB_MOD_NAME_ALT,
+                 XKB_STATE_MODS_EFFECTIVE) == 1,
+      .super = xkb_state_mod_name_is_active(
+                   state,
+                   XKB_MOD_NAME_LOGO,
+                   XKB_STATE_MODS_EFFECTIVE) == 1,
+  };
+}
+
 class WaylandWindow final : public PlatformWindow {
  public:
   static Result<std::unique_ptr<WaylandWindow>> create(
@@ -335,8 +366,20 @@ class WaylandWindow final : public PlatformWindow {
     callback_(PointerScrolled{.delta = delta, .position = position});
   }
 
-  void keyboard_key(std::uint32_t key, KeyAction action) {
-    callback_(KeyboardKey{.key_code = key, .action = action});
+  void keyboard_key(
+      std::uint32_t key,
+      KeyAction action,
+      KeyboardModifiers modifiers) {
+    callback_(KeyboardKey{
+        .key_code = key,
+        .action = action,
+        .modifiers = modifiers});
+  }
+
+  void text_input(std::string text, KeyboardModifiers modifiers) {
+    callback_(TextInput{
+        .text = std::move(text),
+        .modifiers = modifiers});
   }
 
   void focus_changed(bool focused) {
@@ -496,6 +539,7 @@ class WaylandApplication final : public PlatformApplication {
   }
 
   ~WaylandApplication() override {
+    reset_keyboard_state();
     if (keyboard_ != nullptr) {
       wl_keyboard_destroy(keyboard_);
     }
@@ -668,6 +712,7 @@ class WaylandApplication final : public PlatformApplication {
       wl_keyboard_destroy(app->keyboard_);
       app->keyboard_ = nullptr;
       app->keyboard_window_ = nullptr;
+      app->reset_keyboard_state();
     }
   }
 
@@ -683,11 +728,9 @@ class WaylandApplication final : public PlatformApplication {
       std::uint32_t format,
       std::int32_t fd,
       std::uint32_t size) {
-    (void)data;
     (void)keyboard;
-    (void)format;
-    (void)fd;
-    (void)size;
+    auto* app = static_cast<WaylandApplication*>(data);
+    app->load_keyboard_keymap(format, fd, size);
   }
 
   static void handle_keyboard_enter(
@@ -733,11 +776,20 @@ class WaylandApplication final : public PlatformApplication {
     (void)time;
     auto* app = static_cast<WaylandApplication*>(data);
     if (app->keyboard_window_ != nullptr) {
+      const auto modifiers = app->keyboard_modifiers();
+      const auto action = state == WL_KEYBOARD_KEY_STATE_RELEASED
+          ? KeyAction::released
+          : KeyAction::pressed;
       app->keyboard_window_->keyboard_key(
           key,
-          state == WL_KEYBOARD_KEY_STATE_RELEASED
-              ? KeyAction::released
-              : KeyAction::pressed);
+          action,
+          modifiers);
+      if (action == KeyAction::pressed) {
+        auto text = app->text_for_key(key);
+        if (!text.empty()) {
+          app->keyboard_window_->text_input(std::move(text), modifiers);
+        }
+      }
     }
   }
 
@@ -749,13 +801,19 @@ class WaylandApplication final : public PlatformApplication {
       std::uint32_t mods_latched,
       std::uint32_t mods_locked,
       std::uint32_t group) {
-    (void)data;
     (void)keyboard;
     (void)serial;
-    (void)mods_depressed;
-    (void)mods_latched;
-    (void)mods_locked;
-    (void)group;
+    auto* app = static_cast<WaylandApplication*>(data);
+    if (app->xkb_state_ != nullptr) {
+      xkb_state_update_mask(
+          app->xkb_state_,
+          mods_depressed,
+          mods_latched,
+          mods_locked,
+          0,
+          0,
+          group);
+    }
   }
 
   static void handle_keyboard_repeat_info(
@@ -946,6 +1004,93 @@ class WaylandApplication final : public PlatformApplication {
     }
   }
 
+  void load_keyboard_keymap(
+      std::uint32_t format,
+      std::int32_t fd,
+      std::uint32_t size) {
+    if (format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1 || size == 0) {
+      close(fd);
+      return;
+    }
+
+    void* mapped = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (mapped == MAP_FAILED) {
+      close(fd);
+      return;
+    }
+
+    auto* context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+    xkb_keymap* keymap = nullptr;
+    xkb_state* state = nullptr;
+    if (context != nullptr) {
+      keymap = xkb_keymap_new_from_string(
+          context,
+          static_cast<const char*>(mapped),
+          XKB_KEYMAP_FORMAT_TEXT_V1,
+          XKB_KEYMAP_COMPILE_NO_FLAGS);
+    }
+    if (keymap != nullptr) {
+      state = xkb_state_new(keymap);
+    }
+
+    munmap(mapped, size);
+    close(fd);
+
+    if (context == nullptr || keymap == nullptr || state == nullptr) {
+      if (state != nullptr) {
+        xkb_state_unref(state);
+      }
+      if (keymap != nullptr) {
+        xkb_keymap_unref(keymap);
+      }
+      if (context != nullptr) {
+        xkb_context_unref(context);
+      }
+      return;
+    }
+
+    reset_keyboard_state();
+    xkb_context_ = context;
+    xkb_keymap_ = keymap;
+    xkb_state_ = state;
+  }
+
+  void reset_keyboard_state() {
+    if (xkb_state_ != nullptr) {
+      xkb_state_unref(xkb_state_);
+      xkb_state_ = nullptr;
+    }
+    if (xkb_keymap_ != nullptr) {
+      xkb_keymap_unref(xkb_keymap_);
+      xkb_keymap_ = nullptr;
+    }
+    if (xkb_context_ != nullptr) {
+      xkb_context_unref(xkb_context_);
+      xkb_context_ = nullptr;
+    }
+  }
+
+  [[nodiscard]] KeyboardModifiers keyboard_modifiers() const {
+    return modifiers_from_xkb_state(xkb_state_);
+  }
+
+  [[nodiscard]] std::string text_for_key(std::uint32_t key) const {
+    if (xkb_state_ == nullptr) {
+      return {};
+    }
+
+    std::array<char, 64> buffer{};
+    const auto length = xkb_state_key_get_utf8(
+        xkb_state_,
+        key + 8,
+        buffer.data(),
+        buffer.size());
+    if (length <= 0 || static_cast<std::size_t>(length) >= buffer.size()) {
+      return {};
+    }
+    return std::string(buffer.data(), static_cast<std::size_t>(length));
+  }
+
   [[nodiscard]] WaylandWindow* find_window(wl_surface* surface) const {
     for (WaylandWindow* window : windows_) {
       if (window->surface() == surface) {
@@ -992,6 +1137,9 @@ class WaylandApplication final : public PlatformApplication {
   wl_seat* seat_ = nullptr;
   wl_pointer* pointer_ = nullptr;
   wl_keyboard* keyboard_ = nullptr;
+  xkb_context* xkb_context_ = nullptr;
+  xkb_keymap* xkb_keymap_ = nullptr;
+  xkb_state* xkb_state_ = nullptr;
   std::vector<WaylandWindow*> windows_;
   WaylandWindow* pointer_window_ = nullptr;
   WaylandWindow* keyboard_window_ = nullptr;

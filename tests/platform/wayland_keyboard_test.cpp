@@ -38,6 +38,8 @@ int main() {
   bool released = false;
   bool focused = false;
   bool blurred = false;
+  bool key_pressed_with_shift = false;
+  bool text_received = false;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Keyboard Test",
@@ -52,11 +54,23 @@ int main() {
             key != nullptr && key->key_code == expected_key) {
           pressed = pressed || key->action == cgpui::KeyAction::pressed;
           released = released || key->action == cgpui::KeyAction::released;
+          if (key->action == cgpui::KeyAction::pressed) {
+            key_pressed_with_shift = key->modifiers.shift &&
+                !key->modifiers.control && !key->modifiers.alt &&
+                !key->modifiers.super;
+          }
+        }
+        if (const auto* text = std::get_if<cgpui::TextInput>(&event);
+            text != nullptr && text->text == "A") {
+          text_received = text->modifiers.shift &&
+              !text->modifiers.control && !text->modifiers.alt &&
+              !text->modifiers.super;
         }
         if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
-        if (focused && pressed && released && blurred) {
+        if (focused && pressed && released && key_pressed_with_shift &&
+            text_received && blurred) {
           (*app)->quit();
         }
       });
@@ -71,6 +85,7 @@ int main() {
     run_finished.store(true);
   });
 
+  compositor.request_keyboard_modifiers(true, false, false, false);
   compositor.request_keyboard_key(expected_key, true);
   compositor.request_keyboard_key(expected_key, false);
   compositor.request_keyboard_leave();
@@ -96,6 +111,9 @@ int main() {
   if (!compositor.wait_for_keyboard_key_sent()) {
     return 6;
   }
+  if (!compositor.wait_for_keyboard_modifiers_sent()) {
+    return 11;
+  }
   if (!pressed || !released) {
     return 7;
   }
@@ -104,6 +122,12 @@ int main() {
   }
   if (!blurred) {
     return 10;
+  }
+  if (!key_pressed_with_shift) {
+    return 12;
+  }
+  if (!text_received) {
+    return 13;
   }
 
   return 0;

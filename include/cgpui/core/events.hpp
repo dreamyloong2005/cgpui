@@ -3,6 +3,7 @@
 #include "cgpui/core/geometry.hpp"
 
 #include <cstdint>
+#include <string>
 #include <variant>
 
 namespace cgpui {
@@ -17,6 +18,13 @@ enum class MouseButton {
 enum class KeyAction {
   pressed,
   released,
+};
+
+struct KeyboardModifiers {
+  bool shift = false;
+  bool control = false;
+  bool alt = false;
+  bool super = false;
 };
 
 struct WindowCloseRequested {};
@@ -50,6 +58,12 @@ struct PointerScrolled {
 struct KeyboardKey {
   std::uint32_t key_code = 0;
   KeyAction action = KeyAction::pressed;
+  KeyboardModifiers modifiers;
+};
+
+struct TextInput {
+  std::string text;
+  KeyboardModifiers modifiers;
 };
 
 using PlatformEvent = std::variant<
@@ -60,6 +74,7 @@ using PlatformEvent = std::variant<
     PointerMoved,
     PointerButton,
     PointerScrolled,
-    KeyboardKey>;
+    KeyboardKey,
+    TextInput>;
 
 } // namespace cgpui

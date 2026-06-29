@@ -12,6 +12,7 @@ end
 
 if is_plat("linux") then
     add_requires("wayland")
+    add_requires("libxkbcommon", {configs = {x11 = false, wayland = false, tools = false}})
 end
 
 target("cgpui_core")
@@ -63,6 +64,14 @@ if is_plat("windows") then
         add_includedirs(public_includedirs)
         add_syslinks("user32")
         add_tests("default")
+
+    target("win32_text_input_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_text_input_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
 end
 
 if is_plat("linux") then
@@ -70,7 +79,7 @@ if is_plat("linux") then
         set_kind("static")
         add_files("src/platform/linux/*.cpp")
         add_deps("cgpui_core", "cgpui_platform")
-        add_packages("wayland")
+        add_packages("wayland", "libxkbcommon")
         add_includedirs(public_includedirs, {public = true})
 
     target("wayland_compositor_close_test")
