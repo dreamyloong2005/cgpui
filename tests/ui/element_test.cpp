@@ -909,6 +909,116 @@ int test_styled_element_skips_border_without_color() {
   return paint_list.commands().empty() ? 0 : 126;
 }
 
+int test_paint_list_attaches_current_clip_to_commands() {
+  cgpui::PaintList paint_list;
+  const cgpui::Rect clip{
+      .origin = {.x = 2.0F, .y = 3.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  };
+
+  paint_list.fill_rect(
+      cgpui::Rect{.size = {.width = 10.0F, .height = 10.0F}},
+      cgpui::Color{.r = 0.1F, .a = 1.0F});
+  paint_list.push_clip(clip);
+  paint_list.fill_rect(
+      cgpui::Rect{.size = {.width = 20.0F, .height = 10.0F}},
+      cgpui::Color{.g = 0.2F, .a = 1.0F});
+  paint_list.pop_clip();
+  paint_list.fill_rect(
+      cgpui::Rect{.size = {.width = 30.0F, .height = 10.0F}},
+      cgpui::Color{.b = 0.3F, .a = 1.0F});
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 3) {
+    return 127;
+  }
+  if (commands[0].clip_rect.has_value() || commands[2].clip_rect.has_value()) {
+    return 128;
+  }
+  return commands[1].clip_rect.has_value() &&
+                 commands[1].clip_rect->origin.x == 2.0F &&
+                 commands[1].clip_rect->origin.y == 3.0F &&
+                 commands[1].clip_rect->size.width == 40.0F &&
+                 commands[1].clip_rect->size.height == 20.0F
+             ? 0
+             : 129;
+}
+
+int test_styled_element_hidden_overflow_attaches_bounds_clip_metadata() {
+  const cgpui::Color background{.r = 0.1F, .a = 1.0F};
+  const cgpui::Color border{.g = 0.2F, .a = 1.0F};
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(background)
+                     .with_border_color(border)
+                     .with_border_width(cgpui::EdgeSizes::all(2.0F))
+                     .with_overflow(cgpui::Overflow::hidden)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 50.0F, .height = 30.0F}))
+          .child(cgpui::ElementBuilder::box()
+                     .style(cgpui::Style{}
+                                .with_background_color(
+                                    cgpui::Color{.b = 0.3F, .a = 1.0F})
+                                .with_preferred_size(
+                                    cgpui::Size{.width = 20.0F,
+                                                .height = 10.0F}))
+                     .build())
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 20.0F || output.size.height != 10.0F) {
+    return 130;
+  }
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 6) {
+    return 131;
+  }
+  for (const cgpui::PaintCommand& command : commands) {
+    if (!command.clip_rect.has_value() ||
+        command.clip_rect->origin.x != 0.0F ||
+        command.clip_rect->origin.y != 0.0F ||
+        command.clip_rect->size.width != 20.0F ||
+        command.clip_rect->size.height != 10.0F) {
+      return 132;
+    }
+  }
+
+  return commands[5].solid_rect.color.b == 0.3F ? 0 : 133;
+}
+
+int test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata() {
+  const cgpui::Rect clip{
+      .origin = {.x = 4.0F, .y = 5.0F},
+      .size = {.width = 12.0F, .height = 8.0F},
+  };
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(cgpui::Color{.r = 0.1F, .a = 1.0F})
+                     .with_overflow(cgpui::Overflow::hidden)
+                     .with_clip_rect(clip)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 30.0F, .height = 20.0F}))
+          .build();
+
+  (void)element->layout(cgpui::LayoutInput{});
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  return commands.size() == 1 && commands[0].clip_rect.has_value() &&
+                 commands[0].clip_rect->origin.x == 4.0F &&
+                 commands[0].clip_rect->origin.y == 5.0F &&
+                 commands[0].clip_rect->size.width == 12.0F &&
+                 commands[0].clip_rect->size.height == 8.0F
+             ? 0
+             : 134;
+}
+
 int test_styled_element_layout_includes_padding_without_child() {
   std::unique_ptr<cgpui::Element> element =
       cgpui::ElementBuilder::box()
@@ -1448,6 +1558,20 @@ int main() {
     return result;
   }
   if (const int result = test_styled_element_skips_border_without_color();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_paint_list_attaches_current_clip_to_commands();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_hidden_overflow_attaches_bounds_clip_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata();
       result != 0) {
     return result;
   }

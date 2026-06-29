@@ -99,10 +99,25 @@ ElementId hit_test_runtime_element_root(
 
 void PaintList::clear() {
   commands_.clear();
+  clip_stack_.clear();
+}
+
+void PaintList::push_clip(Rect rect) {
+  clip_stack_.push_back(rect);
+}
+
+void PaintList::pop_clip() {
+  if (!clip_stack_.empty()) {
+    clip_stack_.pop_back();
+  }
 }
 
 void PaintList::fill_rect(Rect rect, Color color) {
-  commands_.push_back(PaintCommand{.solid_rect = SolidRect{.rect = rect, .color = color}});
+  commands_.push_back(PaintCommand{
+      .solid_rect = SolidRect{.rect = rect, .color = color},
+      .clip_rect = clip_stack_.empty()
+                       ? std::optional<Rect>{}
+                       : std::optional<Rect>{clip_stack_.back()}});
 }
 
 std::span<const PaintCommand> PaintList::commands() const {
@@ -111,6 +126,12 @@ std::span<const PaintCommand> PaintList::commands() const {
 
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
+  const bool uses_hidden_overflow_clip =
+      bounds.has_value() && style_.overflow == Overflow::hidden;
+  if (uses_hidden_overflow_clip) {
+    paint_list.push_clip(
+        style_.clip_rect.has_value() ? *style_.clip_rect : *bounds);
+  }
   if (bounds.has_value() && style_.background_color.has_value()) {
     paint_list.fill_rect(*bounds, *style_.background_color);
   }
@@ -167,6 +188,9 @@ void StyledElement::paint(PaintList& paint_list) const {
   }
   if (child_ != nullptr) {
     child_->paint(paint_list);
+  }
+  if (uses_hidden_overflow_clip) {
+    paint_list.pop_clip();
   }
 }
 

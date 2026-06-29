@@ -26,16 +26,20 @@ struct WindowRuntimeContext;
 
 struct PaintCommand {
   SolidRect solid_rect;
+  std::optional<Rect> clip_rect;
 };
 
 class PaintList {
  public:
   void clear();
+  void push_clip(Rect rect);
+  void pop_clip();
   void fill_rect(Rect rect, Color color);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
  private:
   std::vector<PaintCommand> commands_;
+  std::vector<Rect> clip_stack_;
 };
 
 class View {

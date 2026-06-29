@@ -586,6 +586,27 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 53: Hidden overflow clip metadata in paint commands.
+- Added RED `element_test` coverage for `PaintCommand::clip_rect`,
+  `PaintList::push_clip`/`pop_clip`, hidden-overflow styled elements attaching
+  bounds clip metadata to their background, border, and child paint commands,
+  and explicit `Style::clip_rect` overriding the default bounds clip; the test
+  failed because clip metadata APIs did not exist.
+- Implemented Step 53 in `codex/overflow-clip-metadata`: `PaintCommand` now
+  carries an optional clip rect, `PaintList` records the active clip stack on
+  fill commands, and `StyledElement::paint` scopes hidden-overflow clips around
+  its own paint plus child paint.
+- Corrected the new hidden-overflow test to respect existing child-derived
+  `StyledElement` layout semantics instead of assuming the parent preferred
+  size overrides child size.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+
 - Started Step 52: Border paint emission from styled elements.
 - Added RED `element_test` coverage requiring a styled element with border
   color and per-edge border widths to emit four border `SolidRect` commands

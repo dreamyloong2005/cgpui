@@ -88,7 +88,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 50. [x] Gap style primitive for stack and flex layout.
 51. [x] Margin style primitive and outer layout sizing.
 52. [x] Border paint emission from styled elements.
-53. [ ] Hidden overflow clip metadata in paint commands.
+53. [x] Hidden overflow clip metadata in paint commands.
 54. [ ] Text element skeleton bound to TextModel.
 55. [ ] Runtime text edit action routing for focused text models.
 56. [ ] Runtime clipboard paste into focused text models.
@@ -99,7 +99,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 53: Hidden overflow clip metadata in paint commands.
+Step 54: Text element skeleton bound to TextModel.
 
 ## Risks
 

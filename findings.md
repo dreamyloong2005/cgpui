@@ -505,3 +505,13 @@
   inert behavior for authored widths that do not yet specify a color.
 - Keeping side rects between top and bottom avoids double-painting corners while
   still giving Vulkan/Wayland and Win32 the same command stream shape.
+
+## 2026-06-30 Overflow Clip Metadata
+
+- Clip handling can start as paint-command metadata: renderers can continue
+  drawing `SolidRect` unchanged while future renderer slices learn to honor the
+  optional `PaintCommand::clip_rect`.
+- A simple `PaintList` clip stack is enough for nested styled elements and keeps
+  clip state out of individual element implementations beyond push/pop scope.
+- Hidden overflow should use the element's retained layout bounds by default,
+  while authored `Style::clip_rect` can override the metadata rect when present.
