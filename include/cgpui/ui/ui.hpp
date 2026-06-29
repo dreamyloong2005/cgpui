@@ -4,6 +4,7 @@
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
+#include "cgpui/ui/element.hpp"
 
 #include <any>
 #include <cstdint>
@@ -84,6 +85,7 @@ enum class EventKind {
 
 struct EventRoute {
   ViewId target_view_id;
+  std::optional<ElementId> target_element_id;
   EventKind event_kind = EventKind::unknown;
 };
 
@@ -167,6 +169,7 @@ class WindowRuntime {
   void set_after_event_callback(WindowRuntimeEventCallback callback);
   void set_close_requested_callback(WindowRuntimeFrameCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
+  void set_element_root(const Element* element);
   void capture_pointer();
   void capture_pointer(ViewId view_id);
   void release_pointer();
@@ -223,6 +226,7 @@ class WindowRuntime {
   EventResult last_event_result_{};
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<EventRoute> current_event_route_;
+  const Element* element_root_ = nullptr;
   ViewId root_view_id_{1};
   std::uint64_t next_view_id_ = 2;
   int event_dispatch_sequence_ = 0;

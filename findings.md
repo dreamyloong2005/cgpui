@@ -122,3 +122,12 @@
 - `VerticalStackElement` can record direct child bounds while laying out owned
   children and use child-first hit testing; richer nested coordinate propagation
   can wait until element-tree traversal or more complete layout context exists.
+
+## 2026-06-30 Pointer Hit Routing
+
+- The existing event routing shell can carry an optional `ElementId` without
+  changing root-view delivery yet.
+- A non-owning runtime element root is enough for this slice because ownership,
+  reconcile, and layout scheduling are still outside the runtime.
+- Pointer capture should not be folded into hit routing yet; Step 15 can decide
+  when capture should override a fresh hit-test result.

@@ -97,6 +97,19 @@
 - Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 14: Pointer routing to hit-tested element id.
+- Added design and implementation plan docs for attaching hit-tested
+  `ElementId` values to pointer event routes.
+- Added a RED runtime test for `EventRoute::target_element_id`,
+  `WindowRuntime::set_element_root`, pointer moved/button/scroll hit targets,
+  and non-pointer events without element targets; the test failed because the
+  routing APIs did not exist.
+- Implemented Step 14 in `codex/pointer-hit-routing`: `EventRoute` now carries
+  an optional `ElementId`, and `WindowRuntime` hit-tests an installed element
+  root for pointer events while preserving root-view delivery.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default element_test/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
 - Started Step 12: Layout pass for simple vertical stack.
 - Added design and implementation plan docs for a simple owned-child vertical
   stack element.

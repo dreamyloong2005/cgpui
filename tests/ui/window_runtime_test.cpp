@@ -1,4 +1,5 @@
 #include "cgpui/platform/platform.hpp"
+#include "cgpui/ui/element.hpp"
 #include "cgpui/ui/ui.hpp"
 
 #include <expected>
@@ -117,6 +118,7 @@ class RecordingView final : public cgpui::View {
     saw_event_route = context.event_route.has_value();
     if (context.event_route) {
       last_event_route = *context.event_route;
+      last_route_element_id = context.event_route->target_element_id;
     }
     saw_last_event_dispatch = context.last_event_dispatch.has_value();
     if (context.last_event_dispatch) {
@@ -366,6 +368,7 @@ class RecordingView final : public cgpui::View {
   cgpui::ViewId third_allocated_view_id{};
   cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
+  std::optional<cgpui::ElementId> last_route_element_id;
   cgpui::ViewId first_view_id{};
   cgpui::ViewId last_view_id{};
   cgpui::Size last_viewport_size{};
@@ -997,6 +1000,109 @@ int test_runtime_exposes_current_event_route() {
   return 0;
 }
 
+RuntimeFixture* pointer_hit_route_fixture = nullptr;
+
+void dispatch_pointer_hit_route_sequence() {
+  auto& callback = pointer_hit_route_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {5.0F, 15.0F}});
+  callback(cgpui::PointerScrolled{
+      .delta = {0.0F, -1.0F},
+      .position = {30.0F, 15.0F}});
+  callback(cgpui::KeyboardKey{
+      .key_code = 70,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_routes_pointer_events_to_hit_element() {
+  RuntimeFixture fixture;
+  pointer_hit_route_fixture = &fixture;
+  fixture.app.on_run = &dispatch_pointer_hit_route_sequence;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{10});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{11});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 20.0F, .height = 30.0F});
+  second->assign_id(cgpui::ElementId{12});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 40.0F) {
+    return 130;
+  }
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+
+  int callback_count = 0;
+  cgpui::EventDispatchRecord move_record{};
+  cgpui::EventDispatchRecord button_record{};
+  cgpui::EventDispatchRecord scroll_record{};
+  cgpui::EventDispatchRecord key_record{};
+  bool callback_context_matched_record_route = true;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        callback_count += 1;
+        if (callback_count == 1) {
+          move_record = record;
+        } else if (callback_count == 2) {
+          button_record = record;
+        } else if (callback_count == 3) {
+          scroll_record = record;
+        } else if (callback_count == 4) {
+          key_record = record;
+        }
+        callback_context_matched_record_route =
+            callback_context_matched_record_route &&
+            context.event_route.has_value() &&
+            context.event_route->target_element_id ==
+                record.route.target_element_id;
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  pointer_hit_route_fixture = nullptr;
+
+  if (result != 0) {
+    return 123;
+  }
+  if (callback_count != 4 || fixture.view.event_count != 4) {
+    return 124;
+  }
+  if (!move_record.route.target_element_id.has_value() ||
+      *move_record.route.target_element_id != cgpui::ElementId{11}) {
+    return 125;
+  }
+  if (!button_record.route.target_element_id.has_value() ||
+      *button_record.route.target_element_id != cgpui::ElementId{12}) {
+    return 126;
+  }
+  if (!scroll_record.route.target_element_id.has_value() ||
+      *scroll_record.route.target_element_id != cgpui::ElementId{10}) {
+    return 127;
+  }
+  if (key_record.route.target_element_id.has_value() ||
+      fixture.view.last_route_element_id.has_value()) {
+    return 128;
+  }
+  if (!callback_context_matched_record_route) {
+    return 129;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* pointer_capture_fixture = nullptr;
 
 void dispatch_pointer_capture_sequence() {
@@ -1348,6 +1454,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_exposes_current_event_route();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_routes_pointer_events_to_hit_element();
       result != 0) {
     return result;
   }

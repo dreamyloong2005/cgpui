@@ -33,7 +33,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 11. [x] Layout pass for fixed-size leaf elements.
 12. [x] Layout pass for simple vertical stack.
 13. [x] Hit testing over laid-out element bounds.
-14. [ ] Pointer routing to hit-tested element id.
+14. [x] Pointer routing to hit-tested element id.
 15. [ ] Pointer capture routing to owner id.
 16. [ ] Keyboard routing to focus owner id.
 17. [ ] Action/Command primitive: named actions and dispatch result.
@@ -43,7 +43,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 14: Pointer routing to hit-tested element id.
+Step 15: Pointer capture routing to owner id.
 
 ## Risks
 

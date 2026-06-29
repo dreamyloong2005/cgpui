@@ -30,6 +30,22 @@ EventKind event_kind_for(const PlatformEvent& event) {
   return EventKind::unknown;
 }
 
+std::optional<Point> pointer_position_for(const PlatformEvent& event) {
+  if (const auto* moved = std::get_if<PointerMoved>(&event);
+      moved != nullptr) {
+    return moved->position;
+  }
+  if (const auto* button = std::get_if<PointerButton>(&event);
+      button != nullptr) {
+    return button->position;
+  }
+  if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
+      scrolled != nullptr) {
+    return scrolled->position;
+  }
+  return {};
+}
+
 } // namespace
 
 void PaintList::clear() {
@@ -192,6 +208,16 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       input_.pointer_position = scrolled->position;
     }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
+    if (element_root_ != nullptr) {
+      if (const std::optional<Point> pointer_position =
+              pointer_position_for(event);
+          pointer_position.has_value()) {
+        const ElementId hit = element_root_->hit_test(*pointer_position);
+        if (hit.value != 0) {
+          current_event_route_->target_element_id = hit;
+        }
+      }
+    }
     last_event_result_ = view_.handle_event(event, context());
     last_event_dispatch_ = EventDispatchRecord{
         .sequence = ++event_dispatch_sequence_,
@@ -273,6 +299,10 @@ void WindowRuntime::set_close_requested_callback(
 
 void WindowRuntime::set_error_callback(WindowRuntimeErrorCallback callback) {
   error_callback_ = std::move(callback);
+}
+
+void WindowRuntime::set_element_root(const Element* element) {
+  element_root_ = element;
 }
 
 void WindowRuntime::capture_pointer() {
