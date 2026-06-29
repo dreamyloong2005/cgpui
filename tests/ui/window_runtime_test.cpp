@@ -137,6 +137,7 @@ class RecordingView final : public cgpui::View {
     last_event_frame_index = context.frame_index;
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
+    last_hovered_element_id = context.input.hovered_element_id;
     last_pointer_captured = context.input.pointer_captured;
     last_pointer_capture_owner_present =
         context.input.pointer_capture_owner.has_value();
@@ -206,6 +207,8 @@ class RecordingView final : public cgpui::View {
             cgpui::PointerCaptureOwner::element(captured_pointer_element_id));
       }
       if (pointer_move_count == 2) {
+        second_pointer_move_hovered_element_id =
+            context.input.hovered_element_id;
         second_pointer_move_saw_capture = context.input.pointer_captured;
         second_pointer_move_saw_capture_owner =
             last_pointer_capture_owner_matches_view;
@@ -213,6 +216,8 @@ class RecordingView final : public cgpui::View {
             context.input.pointer_capture_owner ==
             cgpui::PointerCaptureOwner::element(captured_pointer_element_id);
       } else if (pointer_move_count == 3) {
+        third_pointer_move_hovered_element_id =
+            context.input.hovered_element_id;
         third_pointer_move_saw_capture = context.input.pointer_captured;
         third_pointer_move_saw_capture_owner =
             last_pointer_capture_owner_matches_view;
@@ -220,6 +225,8 @@ class RecordingView final : public cgpui::View {
             context.input.pointer_capture_owner ==
             cgpui::PointerCaptureOwner::element(captured_pointer_element_id);
       } else if (pointer_move_count == 4) {
+        fourth_pointer_move_hovered_element_id =
+            context.input.hovered_element_id;
         fourth_pointer_move_saw_capture = context.input.pointer_captured;
         fourth_pointer_move_saw_capture_owner =
             last_pointer_capture_owner_matches_view;
@@ -471,6 +478,10 @@ class RecordingView final : public cgpui::View {
   cgpui::EventRoute last_event_route{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   std::optional<cgpui::ElementId> last_route_element_id;
+  std::optional<cgpui::ElementId> last_hovered_element_id;
+  std::optional<cgpui::ElementId> second_pointer_move_hovered_element_id;
+  std::optional<cgpui::ElementId> third_pointer_move_hovered_element_id;
+  std::optional<cgpui::ElementId> fourth_pointer_move_hovered_element_id;
   std::optional<cgpui::ElementId> last_keyboard_focus_element_owner;
   cgpui::ViewId first_view_id{};
   cgpui::ViewId last_view_id{};
@@ -1206,6 +1217,90 @@ int test_runtime_routes_pointer_events_to_hit_element() {
   return 0;
 }
 
+RuntimeFixture* hover_state_fixture = nullptr;
+
+void dispatch_hover_state_sequence() {
+  auto& callback = hover_state_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {5.0F, 15.0F}});
+  callback(cgpui::PointerMoved{.position = {100.0F, 100.0F}});
+}
+
+int test_runtime_tracks_hovered_pointer_element() {
+  RuntimeFixture fixture;
+  hover_state_fixture = &fixture;
+  fixture.app.on_run = &dispatch_hover_state_sequence;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{10});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{11});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 20.0F, .height = 30.0F});
+  second->assign_id(cgpui::ElementId{12});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 40.0F) {
+    return 165;
+  }
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+
+  int callback_count = 0;
+  std::optional<cgpui::ElementId> first_hover;
+  std::optional<cgpui::ElementId> second_hover;
+  std::optional<cgpui::ElementId> third_hover;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        callback_count += 1;
+        if (callback_count == 1) {
+          first_hover = context.input.hovered_element_id;
+        } else if (callback_count == 2) {
+          second_hover = context.input.hovered_element_id;
+        } else if (callback_count == 3) {
+          third_hover = context.input.hovered_element_id;
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  hover_state_fixture = nullptr;
+
+  if (result != 0) {
+    return 166;
+  }
+  if (callback_count != 3 || fixture.view.pointer_move_count != 3) {
+    return 167;
+  }
+  if (!first_hover.has_value() ||
+      *first_hover != cgpui::ElementId{11}) {
+    return 168;
+  }
+  if (!fixture.view.second_pointer_move_hovered_element_id.has_value() ||
+      *fixture.view.second_pointer_move_hovered_element_id !=
+          cgpui::ElementId{12}) {
+    return 169;
+  }
+  if (!second_hover.has_value() ||
+      *second_hover != cgpui::ElementId{12}) {
+    return 170;
+  }
+  if (third_hover.has_value() ||
+      fixture.view.last_hovered_element_id.has_value()) {
+    return 171;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* pointer_capture_fixture = nullptr;
 
 void dispatch_pointer_capture_sequence() {
@@ -1403,6 +1498,69 @@ int test_pointer_capture_routes_to_owner_element() {
       fixture.view.fourth_pointer_move_saw_element_capture_owner ||
       fixture.view.last_pointer_capture_owner_matches_captured_element) {
     return 139;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* hover_with_capture_fixture = nullptr;
+
+void dispatch_hover_with_capture_sequence() {
+  auto& callback = hover_with_capture_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {5.0F, 15.0F}});
+}
+
+int test_hover_tracks_hit_element_while_pointer_is_captured() {
+  RuntimeFixture fixture;
+  hover_with_capture_fixture = &fixture;
+  fixture.app.on_run = &dispatch_hover_with_capture_sequence;
+  fixture.view.capture_route_element_on_first_pointer_move = true;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{10});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{11});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 20.0F, .height = 30.0F});
+  second->assign_id(cgpui::ElementId{12});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 40.0F) {
+    return 172;
+  }
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  hover_with_capture_fixture = nullptr;
+
+  if (result != 0) {
+    return 173;
+  }
+  if (fixture.view.captured_pointer_element_id != cgpui::ElementId{11}) {
+    return 174;
+  }
+  if (!fixture.view.second_pointer_move_saw_capture ||
+      !fixture.view.second_pointer_move_saw_element_capture_owner) {
+    return 175;
+  }
+  if (fixture.view.last_route_element_id != cgpui::ElementId{11}) {
+    return 176;
+  }
+  if (!fixture.view.second_pointer_move_hovered_element_id.has_value() ||
+      *fixture.view.second_pointer_move_hovered_element_id !=
+          cgpui::ElementId{12} ||
+      fixture.view.last_hovered_element_id != cgpui::ElementId{12}) {
+    return 177;
   }
 
   return 0;
@@ -1942,6 +2100,10 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_runtime_tracks_hovered_pointer_element();
+      result != 0) {
+    return result;
+  }
   if (const int result = test_view_owner_can_capture_and_release_pointer();
       result != 0) {
     return result;
@@ -1951,6 +2113,11 @@ int main() {
     return result;
   }
   if (const int result = test_pointer_capture_routes_to_owner_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_hover_tracks_hit_element_while_pointer_is_captured();
       result != 0) {
     return result;
   }

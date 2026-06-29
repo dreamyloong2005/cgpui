@@ -60,6 +60,19 @@
 - Verified targeted tests: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
+- Started Step 29: Hover state tracking for routed pointer targets.
+- Added RED `window_runtime_test` coverage for `ViewInputState::hovered_element_id`,
+  pointer-move hit tracking, clearing hover when the pointer leaves the element
+  root, and keeping hover tied to the live hit-test target while pointer
+  capture routes events to the captured element; the test failed because the
+  hover input field did not exist.
+- Implemented Step 29 in `codex/hover-state-tracking`: runtime stores the
+  currently hovered `ElementId`, updates it from pointer-move hit testing, clears
+  it when no element is hit, exposes it through `WindowRuntimeContext::input`,
+  and keeps pointer-capture route overrides separate from hover state.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 24/24.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 21/21.
 - Started Step 22: Element builder API skeleton for composing styled elements.
 - Added RED `element_test` coverage for `ElementBuilder::box()`, fluent
   `style(...)` and `child(...)`, `StyledElement`, retained style data, and

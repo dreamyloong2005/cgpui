@@ -163,6 +163,7 @@ int WindowRuntime::run(
   pointer_capture_owner_.reset();
   keyboard_focus_owner_.reset();
   keyboard_focus_element_owner_.reset();
+  hovered_element_id_.reset();
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
@@ -254,6 +255,22 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       input_.pointer_position = scrolled->position;
     }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
+    std::optional<ElementId> hit_element_id;
+    if (element_root_ != nullptr) {
+      if (const std::optional<Point> pointer_position =
+              pointer_position_for(event);
+          pointer_position.has_value()) {
+        const ElementId hit = element_root_->hit_test(*pointer_position);
+        if (hit.value != 0) {
+          hit_element_id = hit;
+        }
+        if (std::holds_alternative<PointerMoved>(event)) {
+          hovered_element_id_ = hit_element_id;
+        }
+      }
+    } else if (std::holds_alternative<PointerMoved>(event)) {
+      hovered_element_id_.reset();
+    }
     if (keyboard_focus_element_owner_.has_value() &&
         is_keyboard_routed_event(event)) {
       current_event_route_->target_element_id = keyboard_focus_element_owner_;
@@ -262,15 +279,8 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       apply_pointer_capture_owner_to_route(
           *pointer_capture_owner_,
           *current_event_route_);
-    } else if (element_root_ != nullptr) {
-      if (const std::optional<Point> pointer_position =
-              pointer_position_for(event);
-          pointer_position.has_value()) {
-        const ElementId hit = element_root_->hit_test(*pointer_position);
-        if (hit.value != 0) {
-          current_event_route_->target_element_id = hit;
-        }
-      }
+    } else if (hit_element_id.has_value()) {
+      current_event_route_->target_element_id = hit_element_id;
     }
     if (const auto* key = std::get_if<KeyboardKey>(&event); key != nullptr) {
       for (const KeyBinding& binding : key_bindings_) {
@@ -339,6 +349,7 @@ WindowRuntimeContext WindowRuntime::context() {
   input.pointer_captured = pointer_capture_owner_.has_value();
   input.keyboard_focus_owner = keyboard_focus_owner_;
   input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
+  input.hovered_element_id = hovered_element_id_;
   input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
                            keyboard_focus_element_owner_.has_value();
 

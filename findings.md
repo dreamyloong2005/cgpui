@@ -270,3 +270,13 @@
   invariant from Step 26 while making sibling paint order deterministic.
 - `std::stable_sort` preserves insertion/reconcile order for equal z-index
   siblings, so existing append-order paint tests remain meaningful.
+
+## 2026-06-30 Hover State Tracking
+
+- Hover can be modeled as input state first: no hover enter/leave event types
+  are needed until element handlers exist.
+- Pointer capture should override event routing, not the physical hover target;
+  the runtime therefore computes hover from the live pointer hit test before
+  applying capture to `EventRoute`.
+- Clearing hover on pointer-move misses keeps stale element ids from surviving
+  after the pointer leaves the current element root.

@@ -168,6 +168,7 @@ struct ViewInputState {
   bool keyboard_focused = false;
   std::optional<ViewId> keyboard_focus_owner;
   std::optional<ElementId> keyboard_focus_element_owner;
+  std::optional<ElementId> hovered_element_id;
   Point pointer_position{};
 };
 
@@ -289,6 +290,7 @@ class WindowRuntime {
   std::optional<PointerCaptureOwner> pointer_capture_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
   std::optional<ElementId> keyboard_focus_element_owner_;
+  std::optional<ElementId> hovered_element_id_;
   EventResult last_event_result_{};
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<ActionDispatchResult> last_action_dispatch_;
