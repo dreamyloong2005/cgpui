@@ -496,3 +496,12 @@
   tests preserve prior behavior because the default edge values are zero.
 - Child layout bounds should include the margin offset before padding so later
   hit testing and paint commands see content positioned inside the outer box.
+
+## 2026-06-30 Border Paint Emission
+
+- Border rendering can reuse the current `SolidRect` paint command vocabulary:
+  styled borders are four filled rects emitted after background paint.
+- Requiring `border_color` before emitting border rects preserves the previous
+  inert behavior for authored widths that do not yet specify a color.
+- Keeping side rects between top and bottom avoids double-painting corners while
+  still giving Vulkan/Wayland and Win32 the same command stream shape.

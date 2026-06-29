@@ -1,5 +1,6 @@
 #include "cgpui/ui/ui.hpp"
 
+#include <algorithm>
 #include <expected>
 #include <memory>
 #include <utility>
@@ -112,6 +113,57 @@ void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   if (bounds.has_value() && style_.background_color.has_value()) {
     paint_list.fill_rect(*bounds, *style_.background_color);
+  }
+  if (bounds.has_value() && style_.border_color.has_value()) {
+    const Rect rect = *bounds;
+    const Color color = *style_.border_color;
+    const float top = style_.border_width.top;
+    const float right = style_.border_width.right;
+    const float bottom = style_.border_width.bottom;
+    const float left = style_.border_width.left;
+    const float vertical_side_height =
+        std::max(0.0F, rect.size.height - top - bottom);
+
+    if (top > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin = rect.origin,
+              .size = {.width = rect.size.width, .height = top},
+          },
+          color);
+    }
+    if (right > 0.0F && vertical_side_height > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin =
+                  {
+                      .x = rect.origin.x + rect.size.width - right,
+                      .y = rect.origin.y + top,
+                  },
+              .size = {.width = right, .height = vertical_side_height},
+          },
+          color);
+    }
+    if (bottom > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin =
+                  {
+                      .x = rect.origin.x,
+                      .y = rect.origin.y + rect.size.height - bottom,
+                  },
+              .size = {.width = rect.size.width, .height = bottom},
+          },
+          color);
+    }
+    if (left > 0.0F && vertical_side_height > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin = {.x = rect.origin.x, .y = rect.origin.y + top},
+              .size = {.width = left, .height = vertical_side_height},
+          },
+          color);
+    }
   }
   if (child_ != nullptr) {
     child_->paint(paint_list);

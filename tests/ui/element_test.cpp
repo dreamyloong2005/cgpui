@@ -830,6 +830,85 @@ int test_styled_element_without_background_paints_nothing() {
   return paint_list.commands().empty() ? 0 : 66;
 }
 
+int test_styled_element_paints_border_rects_after_background() {
+  const cgpui::Color background{
+      .r = 0.1F,
+      .g = 0.2F,
+      .b = 0.3F,
+      .a = 1.0F,
+  };
+  const cgpui::Color border{
+      .r = 0.8F,
+      .g = 0.7F,
+      .b = 0.6F,
+      .a = 1.0F,
+  };
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(background)
+                     .with_border_color(border)
+                     .with_border_width(
+                         cgpui::EdgeSizes::trbl(2.0F, 3.0F, 4.0F, 5.0F))
+                     .with_preferred_size(
+                         cgpui::Size{.width = 80.0F, .height = 40.0F}))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 80.0F || output.size.height != 40.0F) {
+    return 119;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 5) {
+    return 120;
+  }
+  if (commands[0].solid_rect.color.r != background.r ||
+      commands[1].solid_rect.color.r != border.r ||
+      commands[4].solid_rect.color.g != border.g) {
+    return 121;
+  }
+
+  const cgpui::Rect top = commands[1].solid_rect.rect;
+  const cgpui::Rect right = commands[2].solid_rect.rect;
+  const cgpui::Rect bottom = commands[3].solid_rect.rect;
+  const cgpui::Rect left = commands[4].solid_rect.rect;
+  if (top.origin.x != 0.0F || top.origin.y != 0.0F ||
+      top.size.width != 80.0F || top.size.height != 2.0F) {
+    return 122;
+  }
+  if (right.origin.x != 77.0F || right.origin.y != 2.0F ||
+      right.size.width != 3.0F || right.size.height != 34.0F) {
+    return 123;
+  }
+  if (bottom.origin.x != 0.0F || bottom.origin.y != 36.0F ||
+      bottom.size.width != 80.0F || bottom.size.height != 4.0F) {
+    return 124;
+  }
+  return left.origin.x == 0.0F && left.origin.y == 2.0F &&
+                 left.size.width == 5.0F && left.size.height == 34.0F
+             ? 0
+             : 125;
+}
+
+int test_styled_element_skips_border_without_color() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_border_width(cgpui::EdgeSizes::all(4.0F))
+                     .with_preferred_size(
+                         cgpui::Size{.width = 30.0F, .height = 20.0F}))
+          .build();
+  (void)element->layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  return paint_list.commands().empty() ? 0 : 126;
+}
+
 int test_styled_element_layout_includes_padding_without_child() {
   std::unique_ptr<cgpui::Element> element =
       cgpui::ElementBuilder::box()
@@ -1360,6 +1439,15 @@ int main() {
     return result;
   }
   if (const int result = test_styled_element_without_background_paints_nothing();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_paints_border_rects_after_background();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_styled_element_skips_border_without_color();
       result != 0) {
     return result;
   }

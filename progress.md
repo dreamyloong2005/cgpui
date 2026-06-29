@@ -586,6 +586,22 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 52: Border paint emission from styled elements.
+- Added RED `element_test` coverage requiring a styled element with border
+  color and per-edge border widths to emit four border `SolidRect` commands
+  after its background rect, while border widths without a color still paint
+  nothing; the test failed at runtime because border paint was not emitted.
+- Implemented Step 52 in `codex/border-paint-emission`: `StyledElement::paint`
+  now emits top/right/bottom/left border rectangles through the existing
+  `PaintList::fill_rect` path, keeping renderer APIs unchanged.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+
 - Started Step 51: Margin style primitive and outer layout sizing.
 - Added RED `style_test` and `element_test` coverage for default
   `Style::margin`, fluent `with_margin(EdgeSizes)`, styled element outer sizing
