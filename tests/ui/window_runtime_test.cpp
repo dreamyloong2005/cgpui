@@ -1588,6 +1588,64 @@ int test_runtime_falls_back_to_view_after_unhandled_element_event() {
   return 0;
 }
 
+int test_runtime_skips_disabled_element_event_and_falls_back_to_view() {
+  RuntimeFixture fixture;
+  element_event_dispatch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_element_event_dispatch_sequence;
+  fixture.view.consume_next_event = true;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  RuntimeEventElement* root_ptr = root.get();
+  root_ptr->set_enabled(false);
+  root_ptr->result = cgpui::EventResult::consumed_event();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  int callback_count = 0;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        callback_count += 1;
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  element_event_dispatch_fixture = nullptr;
+
+  if (result != 0) {
+    return 219;
+  }
+  if (root_ptr->event_count != 0 || fixture.view.event_count != 1) {
+    return 220;
+  }
+  if (fixture.view.last_route_element_id != root_id ||
+      !fixture.view.saw_event_route) {
+    return 221;
+  }
+  if (callback_count != 1 || !dispatch_record.result.consumed ||
+      dispatch_record.result.cancelled) {
+    return 222;
+  }
+  if (!dispatch_record.route.target_element_id.has_value() ||
+      *dispatch_record.route.target_element_id != root_id) {
+    return 223;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* hover_state_fixture = nullptr;
 
 void dispatch_hover_state_sequence() {
@@ -3197,6 +3255,11 @@ int main() {
   }
   if (const int result =
           test_runtime_falls_back_to_view_after_unhandled_element_event();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_skips_disabled_element_event_and_falls_back_to_view();
       result != 0) {
     return result;
   }

@@ -627,3 +627,14 @@
 - Builder-level `enabled(bool)` should apply to every concrete element kind so
   disabled state stays orthogonal to layout choice, text leaves, and styled
   wrappers.
+
+## 2026-06-30 Disabled Element Event Gate
+
+- Disabled state is now a routing/interaction gate rather than a hit-test gate:
+  route metadata can still identify the hit element, but the disabled element's
+  handler is skipped.
+- View fallback still observes the original event route after a disabled routed
+  element is skipped, which preserves existing dispatch diagnostics and lets
+  parent/view-level behavior decide whether to consume the event.
+- `StyledElement` treats a disabled child the same as no interactive child for
+  event forwarding, returning unhandled without mutating child event state.

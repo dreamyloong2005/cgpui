@@ -367,8 +367,9 @@ class StyledElement : public Element {
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
       const ElementEventContext& context) override {
-    return child_ == nullptr ? EventResult::unhandled()
-                             : child_->handle_event(event, context);
+    return child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
   }
 
   [[nodiscard]] int z_index() const override {

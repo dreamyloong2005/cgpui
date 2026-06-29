@@ -507,7 +507,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     if (current_event_route_->target_element_id.has_value()) {
       if (Element* element =
               routed_element(*current_event_route_->target_element_id);
-          element != nullptr) {
+          element != nullptr && element->enabled()) {
         result = element->handle_event(
             event,
             ElementEventContext{

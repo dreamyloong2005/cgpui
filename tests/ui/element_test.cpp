@@ -1548,6 +1548,32 @@ int test_styled_element_forwards_events_to_child() {
   return 0;
 }
 
+int test_styled_element_skips_disabled_child_event_handling() {
+  auto child = std::make_unique<EventCountingElement>();
+  EventCountingElement* child_ptr = child.get();
+  child_ptr->assign_id(cgpui::ElementId{34});
+  child_ptr->set_enabled(false);
+  child_ptr->result = cgpui::EventResult::consumed_event();
+
+  cgpui::StyledElement element(cgpui::Style{}, std::move(child));
+  element.assign_id(cgpui::ElementId{33});
+
+  const cgpui::EventResult result = element.handle_event(
+      cgpui::PointerMoved{.position = {.x = 4.0F, .y = 5.0F}},
+      cgpui::ElementEventContext{
+          .target_element_id = child_ptr->id(),
+      });
+
+  if (result.consumed || result.cancelled) {
+    return 153;
+  }
+  if (child_ptr->event_count != 0 || child_ptr->saw_pointer) {
+    return 154;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1794,6 +1820,11 @@ int main() {
     return result;
   }
   if (const int result = test_styled_element_forwards_events_to_child();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_skips_disabled_child_event_handling();
       result != 0) {
     return result;
   }

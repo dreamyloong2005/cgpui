@@ -620,6 +620,25 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 65: Disabled elements skip event handling.
+- Added RED `element_test` coverage for `StyledElement` returning unhandled
+  instead of forwarding events to a disabled child; the test failed with
+  return code 153 because the child still consumed the event.
+- Added RED `window_runtime_test` coverage for a routed disabled element being
+  skipped by runtime element dispatch while the route remains visible to view
+  fallback; the test failed with return code 220 because the disabled element
+  handler was still called.
+- Implemented Step 65 in `codex/disabled-elements-skip-events`: styled wrappers
+  now skip disabled children, and runtime element dispatch requires
+  `Element::enabled()` before calling the routed handler.
+- Verified targeted tests: `xmake test -P . element_test/default
+  window_runtime_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element
