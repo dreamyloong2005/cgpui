@@ -71,3 +71,17 @@
 - Verified targeted tests: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 21/21.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 18/18.
+- Started Step 10: LayoutInput/LayoutOutput primitives.
+- Added design and implementation plan docs for layout constraints, inputs,
+  outputs, and clamping.
+- Added a RED UI test for `LayoutInput`, `LayoutConstraints`,
+  `constrain_size`, and `LayoutOutput`; the test failed because
+  `cgpui/ui/layout.hpp` did not exist.
+- Implemented Step 10 in `codex/layout-primitives`: `LayoutConstraints`
+  stores min/max sizes, `LayoutInput` carries constraints, `LayoutOutput`
+  stores origin/size, and `constrain_size` clamps preferred sizes per axis.
+- Added the `layout_test` xmake target and included the new header in
+  `ui_header_cleanliness`.
+- Verified targeted tests: `xmake test -P . layout_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.

@@ -29,7 +29,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 7. [x] ElementId and Element base API: minimal polymorphic element contract.
 8. [x] Element tree container: store children, parent links, and root element id.
 9. [x] Element reconcile pass: preserve ids across simple rebuilds.
-10. [ ] LayoutInput/LayoutOutput primitives: constraints, size, origin.
+10. [x] LayoutInput/LayoutOutput primitives: constraints, size, origin.
 11. [ ] Layout pass for fixed-size leaf elements.
 12. [ ] Layout pass for simple vertical stack.
 13. [ ] Hit testing over laid-out element bounds.
@@ -43,7 +43,7 @@ Reach the first 20 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 10: LayoutInput/LayoutOutput primitives.
+Step 11: Layout pass for fixed-size leaf elements.
 
 ## Risks
 

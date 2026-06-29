@@ -81,3 +81,12 @@
   ids; this gives later layout/routing steps stable ids across simple rebuilds.
 - Keyed diffing, pruning, and type-aware compatibility checks are intentionally
   outside this slice.
+
+## 2026-06-30 Layout Primitives
+
+- Layout primitives can live in a separate `cgpui/ui/layout.hpp` header so the
+  element tree does not grow layout responsibilities before Step 11.
+- Using zero min constraints and infinite max constraints gives unconstrained
+  layout callers a simple default while preserving explicit min/max tests.
+- `constrain_size` is intentionally only a per-axis clamp helper; element layout
+  methods, bounds storage, and traversal remain later slices.
