@@ -63,7 +63,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 33. [x] Runtime invalidation requests for layout and paint.
 34. [x] Update scheduling that requests redraw after model/view changes.
 35. [x] View/model subscription relation skeleton.
-36. [ ] Text selection range model.
+36. [x] Text selection range model.
 37. [ ] Text key editing actions for delete, movement, and selection.
 38. [ ] Clipboard abstraction for Win32 and Wayland.
 39. [ ] IME composition skeleton for Win32 and Wayland.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 36: Text selection range model.
+Step 37: Text key editing actions for delete, movement, and selection.
 
 ## Risks
 

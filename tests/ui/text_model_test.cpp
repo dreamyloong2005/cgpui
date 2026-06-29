@@ -85,6 +85,49 @@ int test_text_model_delete_removes_next_utf8_codepoint() {
   return model.delete_forward() ? 16 : 0;
 }
 
+int test_text_model_tracks_selection_range() {
+  cgpui::TextModel model("abcd");
+  if (!model.selection().collapsed || model.selection().start != model.cursor() ||
+      model.selection().end != model.cursor()) {
+    return 17;
+  }
+
+  model.set_selection(3, 1);
+  if (model.cursor() != 1 || model.selection_anchor() != 3 ||
+      model.selection_head() != 1 || model.selection().start != 1 ||
+      model.selection().end != 3 || model.selection().collapsed) {
+    return 18;
+  }
+
+  model.set_selection(99, 2);
+  if (model.selection_anchor() != model.text().size() ||
+      model.selection_head() != 2 || model.selection().start != 2 ||
+      model.selection().end != model.text().size()) {
+    return 19;
+  }
+
+  model.clear_selection();
+  if (!model.selection().collapsed || model.selection().start != model.cursor() ||
+      model.selection().end != model.cursor()) {
+    return 20;
+  }
+
+  model.set_selection(1, 3);
+  (void)model.move_cursor_previous();
+  if (!model.selection().collapsed || model.selection().start != model.cursor()) {
+    return 21;
+  }
+
+  model.set_selection(1, 3);
+  model.insert_text("Z");
+  if (model.text() != std::string_view{"aZd"} || model.cursor() != 2 ||
+      !model.selection().collapsed) {
+    return 22;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -106,6 +149,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_delete_removes_next_utf8_codepoint();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_tracks_selection_range();
       result != 0) {
     return result;
   }

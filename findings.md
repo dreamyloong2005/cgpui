@@ -342,3 +342,15 @@
   needed.
 - Entity-change notification should request layout rather than paint only,
   because model changes may affect both layout and paint output.
+
+## 2026-06-30 Text Selection Range
+
+- Text selection can live entirely in `TextModel` as byte offsets for this
+  slice, matching the existing byte-offset cursor while preserving UTF-8-safe
+  movement helpers.
+- Storing anchor and head separately gives Step 37 enough state for
+  Shift+movement behavior, while `selection()` exposes a normalized start/end
+  range for edit operations.
+- Plain insertion should replace a non-collapsed selection and then collapse to
+  the inserted text end, matching typical text editing behavior without adding
+  platform clipboard or IME coupling yet.

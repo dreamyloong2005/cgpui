@@ -354,6 +354,19 @@
 - Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 36: Text selection range model.
+- Added RED `text_model_test` coverage for collapsed default selections,
+  anchor/head range storage, normalized ranges, clamped offsets, explicit
+  selection clearing, cursor movement collapsing selection, and insertion
+  replacing the selected range; the test failed because selection APIs did not
+  exist.
+- Implemented Step 36 in `codex/text-selection-range`: added
+  `TextSelectionRange`, selection anchor/head accessors, normalized
+  `selection()`, `set_selection`, `clear_selection`, cursor-collapse behavior,
+  and selected-range replacement on insertion.
+- Verified targeted tests: `xmake test -P . text_model_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
 - Started Step 34: Update scheduling that requests redraw after model/view
   changes.
 - Added RED `window_runtime_test` coverage for invalidation-triggered redraw
