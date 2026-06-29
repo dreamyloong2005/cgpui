@@ -54,7 +54,7 @@ std::string linux_target_block(const std::string& xmake_text, const char* target
     end_position = std::min(next_target_position, next_platform_position);
   } else if (next_target_position != std::string::npos) {
     end_position = next_target_position;
-  } else {
+  } else if (next_platform_position != std::string::npos) {
     end_position = next_platform_position;
   }
 
@@ -148,6 +148,24 @@ int main() {
   }
   if (!contains(vulkan_target_text, "add_tests(\"default\")")) {
     return 21;
+  }
+
+  const std::string hello_window_target_text =
+      linux_target_block(xmake_text, "hello_window");
+  if (hello_window_target_text.empty()) {
+    return 22;
+  }
+  if (!contains(hello_window_target_text, "cgpui_platform_linux_wayland")) {
+    return 23;
+  }
+  if (!contains(hello_window_target_text, "cgpui_renderer_vulkan")) {
+    return 24;
+  }
+  if (!contains(hello_window_target_text, "CGPUI_EXIT_AFTER_FIRST_FRAME")) {
+    return 25;
+  }
+  if (!contains(hello_window_target_text, "add_tests(\"linux_first_frame\"")) {
+    return 26;
   }
 
   return 0;
