@@ -61,7 +61,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 31. [x] Scroll state/model primitive.
 32. [x] Flex row/column layout basics.
 33. [x] Runtime invalidation requests for layout and paint.
-34. [ ] Update scheduling that requests redraw after model/view changes.
+34. [x] Update scheduling that requests redraw after model/view changes.
 35. [ ] View/model subscription relation skeleton.
 36. [ ] Text selection range model.
 37. [ ] Text key editing actions for delete, movement, and selection.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 34: Update scheduling that requests redraw after model/view changes.
+Step 35: View/model subscription relation skeleton.
 
 ## Risks
 

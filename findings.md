@@ -321,3 +321,13 @@
   layout work.
 - Clearing invalidation explicitly keeps tests and future frame processing able
   to model "dirty work consumed" separately from "new work requested".
+
+## 2026-06-30 Update Scheduling
+
+- Invalidation-triggered redraw should be deferred until after view event and
+  after-event callbacks finish; the test fake window synchronously emits redraw
+  events, so immediate requests would reenter the runtime too early.
+- A single `redraw_scheduled_` flag is enough to coalesce layout and paint
+  requests made during the same event into one platform redraw request.
+- Successful redraw should clear both invalidation and scheduling state so
+  later model/view changes can schedule the next frame cleanly.

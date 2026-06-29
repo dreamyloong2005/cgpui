@@ -342,6 +342,19 @@
 - Verified targeted tests: `xmake test -P . scroll_test/default ui_header_cleanliness/default` passed 2/2.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
+- Started Step 34: Update scheduling that requests redraw after model/view
+  changes.
+- Added RED `window_runtime_test` coverage for invalidation-triggered redraw
+  scheduling, duplicate request coalescing during one event, and clearing dirty
+  state after the redraw frame is consumed; the test failed because
+  invalidation did not request platform redraws.
+- Implemented Step 34 in `codex/update-scheduling-redraw`: invalidation
+  requests now schedule a single deferred redraw during view event dispatch,
+  initial redraw marks a frame as scheduled, and successful redraw clears
+  invalidation and scheduling state.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.
 - Started Step 33: Runtime invalidation requests for layout and paint.
 - Added RED `window_runtime_test` coverage for runtime layout/paint
   invalidation state, layout requests implying paint invalidation, explicit

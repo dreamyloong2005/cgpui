@@ -315,6 +315,11 @@ class RecordingView final : public cgpui::View {
         after_clear_invalidation = context.runtime.invalidation_state();
         context.runtime.request_paint();
       }
+      if (exercise_scheduled_invalidation_redraw &&
+          keyboard_key_count == 1) {
+        context.runtime.request_layout();
+        context.runtime.request_paint();
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -411,6 +416,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
   bool exercise_invalidation_requests = false;
+  bool exercise_scheduled_invalidation_redraw = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -2093,9 +2099,64 @@ int test_runtime_tracks_layout_and_paint_invalidation_requests() {
     return 182;
   }
   if (runtime.invalidation_state().layout ||
-      !runtime.invalidation_state().paint || callback_invalidation.layout ||
+      runtime.invalidation_state().paint || callback_invalidation.layout ||
       !callback_invalidation.paint) {
     return 183;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* scheduled_invalidation_fixture = nullptr;
+
+void dispatch_scheduled_invalidation_sequence() {
+  auto& callback = scheduled_invalidation_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 82,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_schedules_redraw_for_invalidation_requests() {
+  RuntimeFixture fixture;
+  scheduled_invalidation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scheduled_invalidation_sequence;
+  fixture.view.exercise_scheduled_invalidation_redraw = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  cgpui::InvalidationState after_frame_invalidation{
+      .layout = true,
+      .paint = true,
+  };
+  runtime.set_after_frame_callback(
+      [&](const cgpui::WindowRuntimeContext& context) {
+        after_frame_invalidation = context.runtime.invalidation_state();
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  scheduled_invalidation_fixture = nullptr;
+
+  if (result != 0) {
+    return 184;
+  }
+  if (fixture.window.request_redraw_count != 1) {
+    return 185;
+  }
+  if (fixture.renderer.begin_frame_count != 1 ||
+      fixture.view.paint_count != 1 || fixture.frame.present_count != 1) {
+    return 186;
+  }
+  if (runtime.invalidation_state().layout ||
+      runtime.invalidation_state().paint || after_frame_invalidation.layout ||
+      after_frame_invalidation.paint) {
+    return 187;
   }
 
   return 0;
@@ -2319,6 +2380,11 @@ int main() {
   }
   if (const int result =
           test_runtime_tracks_layout_and_paint_invalidation_requests();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_schedules_redraw_for_invalidation_requests();
       result != 0) {
     return result;
   }

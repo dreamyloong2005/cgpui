@@ -170,6 +170,9 @@ int WindowRuntime::run(
   last_action_dispatch_.reset();
   current_event_route_.reset();
   invalidation_state_ = {};
+  dispatching_view_event_ = false;
+  redraw_scheduled_ = false;
+  deferred_redraw_request_ = false;
   event_dispatch_sequence_ = 0;
   frame_index_ = 0;
 
@@ -207,6 +210,7 @@ int WindowRuntime::run(
   renderer_ = *renderer_result;
 
   if (options.request_initial_redraw) {
+    redraw_scheduled_ = true;
     window_->request_redraw();
   }
 
@@ -311,6 +315,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         model->second->insert_text(text->text);
       }
     }
+    dispatching_view_event_ = true;
     last_event_result_ = view_.handle_event(event, context());
     last_event_dispatch_ = EventDispatchRecord{
         .sequence = ++event_dispatch_sequence_,
@@ -321,6 +326,8 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     if (after_event_callback_) {
       after_event_callback_(context(), *last_event_dispatch_);
     }
+    dispatching_view_event_ = false;
+    flush_deferred_redraw_request();
   }
 }
 
@@ -339,6 +346,9 @@ void WindowRuntime::handle_redraw() {
     return;
   }
 
+  clear_invalidation();
+  redraw_scheduled_ = false;
+  deferred_redraw_request_ = false;
   frame_index_ += 1;
   if (after_frame_callback_) {
     after_frame_callback_(context());
@@ -499,10 +509,12 @@ void WindowRuntime::set_element_cursor(
 void WindowRuntime::request_layout() {
   invalidation_state_.layout = true;
   invalidation_state_.paint = true;
+  schedule_redraw();
 }
 
 void WindowRuntime::request_paint() {
   invalidation_state_.paint = true;
+  schedule_redraw();
 }
 
 void WindowRuntime::clear_invalidation() {
@@ -511,6 +523,26 @@ void WindowRuntime::clear_invalidation() {
 
 InvalidationState WindowRuntime::invalidation_state() const {
   return invalidation_state_;
+}
+
+void WindowRuntime::schedule_redraw() {
+  if (window_ == nullptr || redraw_scheduled_ || should_quit_) {
+    return;
+  }
+  redraw_scheduled_ = true;
+  if (dispatching_view_event_) {
+    deferred_redraw_request_ = true;
+    return;
+  }
+  window_->request_redraw();
+}
+
+void WindowRuntime::flush_deferred_redraw_request() {
+  if (!deferred_redraw_request_ || window_ == nullptr || should_quit_) {
+    return;
+  }
+  deferred_redraw_request_ = false;
+  window_->request_redraw();
 }
 
 ViewId WindowRuntime::allocate_view_id() {

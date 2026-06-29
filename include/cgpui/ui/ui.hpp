@@ -288,6 +288,8 @@ class WindowRuntime {
   void handle_event(const PlatformEvent& event);
   void handle_resize(const WindowResized& event);
   void handle_redraw();
+  void schedule_redraw();
+  void flush_deferred_redraw_request();
   void fail_and_quit(Error error);
   [[nodiscard]] WindowRuntimeContext context();
   template <typename T>
@@ -328,6 +330,9 @@ class WindowRuntime {
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   InvalidationState invalidation_state_;
+  bool dispatching_view_event_ = false;
+  bool redraw_scheduled_ = false;
+  bool deferred_redraw_request_ = false;
   bool should_quit_ = false;
   bool failed_ = false;
 };
