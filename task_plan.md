@@ -89,17 +89,26 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 51. [x] Margin style primitive and outer layout sizing.
 52. [x] Border paint emission from styled elements.
 53. [x] Hidden overflow clip metadata in paint commands.
-54. [ ] Text element skeleton bound to TextModel.
+54. [x] Text element skeleton bound to TextModel.
 55. [ ] Runtime text edit action routing for focused text models.
 56. [ ] Runtime clipboard paste into focused text models.
 57. [ ] Runtime clipboard copy from focused text selections.
 58. [ ] Runtime clipboard cut from focused text selections.
 59. [ ] ViewContext convenience wrapper for common runtime APIs.
 60. [ ] Public app runner skeleton for GPUI-like startup.
+61. [ ] Text element builder helper.
+62. [ ] Focusable element activation hook.
+63. [ ] Runtime clicks request focus for focusable elements.
+64. [ ] Element enabled/disabled state primitive.
+65. [ ] Disabled elements skip event handling.
+66. [ ] Element tree preorder traversal helper.
+67. [ ] Element tree find-by-id convenience helper.
+68. [ ] ViewContext text model binding helper.
+69. [ ] ViewContext element tree installation helper.
 
 ## Active Step
 
-Step 54: Text element skeleton bound to TextModel.
+Step 55: Runtime text edit action routing for focused text models.
 
 ## Risks
 

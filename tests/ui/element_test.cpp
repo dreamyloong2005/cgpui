@@ -1,5 +1,6 @@
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/style.hpp"
+#include "cgpui/ui/text.hpp"
 #include "cgpui/ui/ui.hpp"
 
 #include <concepts>
@@ -1019,6 +1020,54 @@ int test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata() {
              : 134;
 }
 
+int test_text_element_binds_text_model_and_lays_out_skeleton() {
+  cgpui::TextModel model("hello");
+  cgpui::TextElement element(&model);
+  element.assign_id(cgpui::ElementId{44});
+
+  if (element.model() != &model) {
+    return 135;
+  }
+  if (element.text() != model.text()) {
+    return 136;
+  }
+
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 16.0F) {
+    return 137;
+  }
+
+  const std::optional<cgpui::Rect> bounds = element.layout_bounds();
+  if (!bounds.has_value() || bounds->size.width != 40.0F ||
+      bounds->size.height != 16.0F) {
+    return 138;
+  }
+
+  return element.hit_test(cgpui::Point{.x = 4.0F, .y = 8.0F}) ==
+                 cgpui::ElementId{44}
+             ? 0
+             : 139;
+}
+
+int test_text_element_paints_text_placeholder_from_layout_bounds() {
+  cgpui::TextModel model("hi");
+  cgpui::TextElement element(&model);
+  (void)element.layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1) {
+    return 140;
+  }
+  if (commands[0].solid_rect.rect.size.width != 16.0F ||
+      commands[0].solid_rect.rect.size.height != 16.0F) {
+    return 141;
+  }
+
+  return commands[0].solid_rect.color.a > 0.0F ? 0 : 142;
+}
+
 int test_styled_element_layout_includes_padding_without_child() {
   std::unique_ptr<cgpui::Element> element =
       cgpui::ElementBuilder::box()
@@ -1572,6 +1621,16 @@ int main() {
   }
   if (const int result =
           test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_binds_text_model_and_lays_out_skeleton();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_paints_text_placeholder_from_layout_bounds();
       result != 0) {
     return result;
   }

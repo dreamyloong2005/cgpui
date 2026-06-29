@@ -515,3 +515,15 @@
   clip state out of individual element implementations beyond push/pop scope.
 - Hidden overflow should use the element's retained layout bounds by default,
   while authored `Style::clip_rect` can override the metadata rect when present.
+
+## 2026-06-30 Text Element Skeleton
+
+- The first `TextElement` can stay in the element layer as a non-owning
+  `TextModel*` binding; runtime-owned text-model routing already uses the same
+  lifetime convention.
+- A fixed 8x16 skeleton metric is enough to make layout, hit testing, and paint
+  observable without introducing shaping, fonts, glyph atlases, or renderer text
+  commands in this slice.
+- Paint can emit a placeholder `SolidRect` through the existing paint path so
+  Win32/Vulkan and Wayland/Vulkan remain unchanged until a later text renderer
+  command is justified.

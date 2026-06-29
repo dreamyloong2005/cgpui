@@ -194,6 +194,16 @@ void StyledElement::paint(PaintList& paint_list) const {
   }
 }
 
+void TextElement::paint(PaintList& paint_list) const {
+  const std::optional<Rect> bounds = layout_bounds();
+  if (!bounds.has_value() || text().empty()) {
+    return;
+  }
+  paint_list.fill_rect(
+      *bounds,
+      Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
+}
+
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   auto frame = renderer.begin_frame();
   if (!frame) {

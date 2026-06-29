@@ -3,6 +3,7 @@
 #include "cgpui/core/events.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/style.hpp"
+#include "cgpui/ui/text.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -10,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <span>
+#include <string_view>
 #include <vector>
 
 namespace cgpui {
@@ -355,6 +357,42 @@ class StyledElement : public Element {
  private:
   Style style_;
   std::unique_ptr<Element> child_;
+};
+
+class TextElement : public Element {
+ public:
+  explicit TextElement(TextModel* model) : model_(model) {}
+
+  [[nodiscard]] TextModel* model() const {
+    return model_;
+  }
+
+  [[nodiscard]] std::string_view text() const {
+    return model_ == nullptr ? std::string_view{} : model_->text();
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const Size preferred{
+        .width = static_cast<float>(text().size()) * glyph_width,
+        .height = glyph_height,
+    };
+    const LayoutOutput output{
+        .size = constrain_size(preferred, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+  void paint(PaintList& paint_list) const override;
+
+ private:
+  static constexpr float glyph_width = 8.0F;
+  static constexpr float glyph_height = 16.0F;
+
+  TextModel* model_ = nullptr;
 };
 
 class ElementBuilder {
