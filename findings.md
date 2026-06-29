@@ -26,3 +26,12 @@
   view returns.
 - `EventDispatchRecord` now duplicates `view_id`/`event_kind` as compatibility
   fields and stores the full `EventRoute` for future routing expansion.
+
+## 2026-06-29 Entity Store Skeleton
+
+- The entity store can live in `cgpui/core/entity.hpp` as a header-only
+  template without adding a source file to `cgpui_core`.
+- Monotonic, non-reused ids keep the first skeleton simple and avoid stale-id
+  aliasing until a future generation/index scheme is justified.
+- A typed `EntityId<T>` gives compile-time separation between stores while
+  preserving a simple numeric `.value` for tests and diagnostics.

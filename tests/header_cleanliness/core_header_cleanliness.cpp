@@ -1,5 +1,6 @@
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/events.hpp"
+#include "cgpui/core/entity.hpp"
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/native_surface.hpp"
@@ -12,6 +13,10 @@ int main() {
   state.framebuffer_size = descriptor.size;
   cgpui::PlatformEvent event = cgpui::WindowRedrawRequested{};
   (void)event;
+
+  cgpui::EntityStore<int> entities;
+  const auto entity_id = entities.insert(1);
+  (void)entity_id;
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;

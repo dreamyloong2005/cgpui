@@ -198,6 +198,13 @@ target("core_header_cleanliness")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("entity_store_test")
+    set_kind("binary")
+    add_files("tests/core/entity_store_test.cpp")
+    add_deps("cgpui_core")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("cgpui_ui")
     set_kind("static")
     add_files("src/ui/*.cpp")
