@@ -1,4 +1,5 @@
 #include "cgpui/platform/platform.hpp"
+#include "cgpui/platform/clipboard.hpp"
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/text.hpp"
 #include "cgpui/ui/ui.hpp"
@@ -2695,6 +2696,57 @@ int test_runtime_routes_text_edit_actions_to_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* clipboard_paste_fixture = nullptr;
+
+void dispatch_clipboard_paste_sequence() {
+  auto& callback = clipboard_paste_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_pastes_clipboard_text_into_focused_text_model() {
+  RuntimeFixture fixture;
+  clipboard_paste_fixture = &fixture;
+  fixture.app.on_run = &dispatch_clipboard_paste_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model("a");
+  cgpui::MemoryClipboard clipboard;
+  (void)clipboard.write_text("bc");
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.set_clipboard(&clipboard);
+
+  bool pasted = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        pasted = context.runtime.paste_clipboard_text();
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  clipboard_paste_fixture = nullptr;
+
+  if (result != 0) {
+    return 204;
+  }
+  if (!pasted) {
+    return 205;
+  }
+  if (model.text() != "abc" || model.cursor() != 3) {
+    return 206;
+  }
+  return 0;
+}
+
 RuntimeFixture* ime_composition_fixture = nullptr;
 
 void dispatch_ime_composition_sequence() {
@@ -2922,6 +2974,11 @@ int main() {
   }
   if (const int result =
           test_runtime_routes_text_edit_actions_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_pastes_clipboard_text_into_focused_text_model();
       result != 0) {
     return result;
   }

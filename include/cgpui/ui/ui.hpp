@@ -2,6 +2,7 @@
 
 #include "cgpui/core/entity.hpp"
 #include "cgpui/core/geometry.hpp"
+#include "cgpui/platform/clipboard.hpp"
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/element.hpp"
@@ -268,6 +269,8 @@ class WindowRuntime {
   void bind_key(KeyBinding binding);
   void bind_text_edit_action(TextEditBinding binding);
   void bind_text_model(ElementId element_id, TextModel* model);
+  void set_clipboard(Clipboard* clipboard);
+  [[nodiscard]] bool paste_clipboard_text();
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
   void request_layout();
   void request_paint();
@@ -351,6 +354,7 @@ class WindowRuntime {
   std::vector<KeyBinding> key_bindings_;
   std::vector<TextEditBinding> text_edit_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
+  Clipboard* clipboard_ = nullptr;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::vector<EntitySubscription> entity_subscriptions_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;

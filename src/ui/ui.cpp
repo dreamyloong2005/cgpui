@@ -706,6 +706,29 @@ void WindowRuntime::bind_text_model(ElementId element_id, TextModel* model) {
   text_models_[element_id.value] = model;
 }
 
+void WindowRuntime::set_clipboard(Clipboard* clipboard) {
+  clipboard_ = clipboard;
+}
+
+bool WindowRuntime::paste_clipboard_text() {
+  if (clipboard_ == nullptr || !keyboard_focus_element_owner_.has_value()) {
+    return false;
+  }
+
+  const auto text = clipboard_->read_text();
+  if (!text.has_value()) {
+    return false;
+  }
+
+  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
+  if (model == text_models_.end() || model->second == nullptr) {
+    return false;
+  }
+
+  model->second->insert_text(*text);
+  return true;
+}
+
 void WindowRuntime::set_element_cursor(
     ElementId element_id,
     CursorShape cursor_shape) {

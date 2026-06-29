@@ -539,3 +539,14 @@
 - Matching edit bindings before view fallback keeps the model updated before
   observers inspect the event, while leaving unbound keys and missing text
   models as no-op cases for compatibility.
+
+## 2026-06-30 Runtime Clipboard Paste
+
+- Runtime clipboard paste can use the existing platform-neutral `Clipboard`
+  interface without introducing Win32 or Wayland system clipboard details into
+  the UI layer.
+- Keeping the clipboard pointer non-owning matches the runtime's current
+  non-owning `TextModel*` binding convention and lets tests inject
+  `MemoryClipboard` directly.
+- Paste should target the focused element's bound `TextModel`, so it composes
+  with the same keyboard-focus route used by text input, IME, and edit actions.
