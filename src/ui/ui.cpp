@@ -42,11 +42,12 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   return (*frame)->present();
 }
 
-void View::handle_event(
+EventResult View::handle_event(
     const PlatformEvent& event,
     const WindowRuntimeContext& context) {
   (void)event;
   (void)context;
+  return EventResult::unhandled();
 }
 
 WindowRuntime::WindowRuntime(
@@ -68,6 +69,7 @@ int WindowRuntime::run(
   input_ = {};
   pointer_capture_owner_.reset();
   keyboard_focus_owner_.reset();
+  last_event_result_ = EventResult::unhandled();
   frame_index_ = 0;
 
   auto window_result = application_.create_window(
@@ -153,7 +155,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
                scrolled != nullptr) {
       input_.pointer_position = scrolled->position;
     }
-    view_.handle_event(event, context());
+    last_event_result_ = view_.handle_event(event, context());
   }
 }
 
@@ -202,6 +204,7 @@ WindowRuntimeContext WindowRuntime::context() {
       .view_id = root_view_id_,
       .viewport_size = viewport_size_,
       .input = input,
+      .last_event_result = last_event_result_,
       .frame_index = frame_index_};
 }
 

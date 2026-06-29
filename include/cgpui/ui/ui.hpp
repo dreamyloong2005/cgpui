@@ -14,6 +14,23 @@ namespace cgpui {
 
 struct WindowRuntimeContext;
 
+struct EventResult {
+  bool consumed = false;
+  bool cancelled = false;
+
+  [[nodiscard]] static constexpr EventResult unhandled() {
+    return {};
+  }
+
+  [[nodiscard]] static constexpr EventResult consumed_event() {
+    return {.consumed = true};
+  }
+
+  [[nodiscard]] static constexpr EventResult cancelled_event() {
+    return {.consumed = true, .cancelled = true};
+  }
+};
+
 struct PaintCommand {
   SolidRect solid_rect;
 };
@@ -32,7 +49,7 @@ class View {
  public:
   virtual ~View() = default;
   virtual void paint(PaintList& paint_list, Size viewport_size) = 0;
-  virtual void handle_event(
+  virtual EventResult handle_event(
       const PlatformEvent& event,
       const WindowRuntimeContext& context);
 };
@@ -66,6 +83,7 @@ struct WindowRuntimeContext {
   ViewId view_id;
   Size viewport_size;
   ViewInputState input;
+  EventResult last_event_result;
   int frame_index = 0;
 };
 
@@ -119,6 +137,7 @@ class WindowRuntime {
   ViewInputState input_{};
   std::optional<ViewId> pointer_capture_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
+  EventResult last_event_result_{};
   ViewId root_view_id_{1};
   int frame_index_ = 0;
   bool should_quit_ = false;

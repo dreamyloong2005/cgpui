@@ -103,10 +103,12 @@ class RecordingView final : public cgpui::View {
         cgpui::Color{.r = 0.2F, .g = 0.4F, .b = 0.6F, .a = 1.0F});
   }
 
-  void handle_event(
+  cgpui::EventResult handle_event(
       const cgpui::PlatformEvent& event,
       const cgpui::WindowRuntimeContext& context) override {
     event_count += 1;
+    last_event_result_consumed = context.last_event_result.consumed;
+    last_event_result_cancelled = context.last_event_result.cancelled;
     if (!saw_first_view_id) {
       saw_first_view_id = true;
       first_view_id = context.view_id;
@@ -220,6 +222,16 @@ class RecordingView final : public cgpui::View {
       event_redraw_requests += 1;
       context.window.request_redraw();
     }
+
+    if (consume_next_event) {
+      consume_next_event = false;
+      return cgpui::EventResult::consumed_event();
+    }
+    if (cancel_next_event) {
+      cancel_next_event = false;
+      return cgpui::EventResult::cancelled_event();
+    }
+    return cgpui::EventResult::unhandled();
   }
 
   int paint_count = 0;
@@ -232,6 +244,8 @@ class RecordingView final : public cgpui::View {
   int text_input_count = 0;
   int event_redraw_requests = 0;
   bool request_redraw_on_event = false;
+  bool consume_next_event = false;
+  bool cancel_next_event = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -264,6 +278,8 @@ class RecordingView final : public cgpui::View {
   bool fourth_key_saw_keyboard_focus_owner = true;
   bool text_input_saw_keyboard_focus = false;
   bool text_input_saw_keyboard_focus_owner = false;
+  bool last_event_result_consumed = false;
+  bool last_event_result_cancelled = false;
   bool saw_first_view_id = false;
   bool view_id_stayed_stable = true;
   cgpui::ViewId first_view_id{};
@@ -665,6 +681,51 @@ int test_view_event_can_request_redraw() {
   return 0;
 }
 
+RuntimeFixture* event_result_fixture = nullptr;
+
+void dispatch_event_result_sequence() {
+  auto& callback = event_result_fixture->window.callback;
+  event_result_fixture->view.consume_next_event = true;
+  callback(cgpui::PointerMoved{.position = {7.0F, 8.0F}});
+  callback(cgpui::PointerMoved{.position = {9.0F, 10.0F}});
+  event_result_fixture->view.cancel_next_event = true;
+  callback(cgpui::KeyboardKey{
+      .key_code = 65,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::TextInput{.text = "a"});
+}
+
+int test_runtime_exposes_last_view_event_result() {
+  RuntimeFixture fixture;
+  event_result_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_result_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  event_result_fixture = nullptr;
+
+  if (result != 0) {
+    return 55;
+  }
+  if (fixture.view.pointer_move_count != 2 ||
+      fixture.view.keyboard_key_count != 1 ||
+      fixture.view.text_input_count != 1) {
+    return 56;
+  }
+  if (!fixture.view.last_event_result_consumed ||
+      !fixture.view.last_event_result_cancelled) {
+    return 57;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* pointer_capture_fixture = nullptr;
 
 void dispatch_pointer_capture_sequence() {
@@ -886,6 +947,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_event_can_request_redraw(); result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_exposes_last_view_event_result();
+      result != 0) {
     return result;
   }
   if (const int result = test_view_can_capture_and_release_pointer();
