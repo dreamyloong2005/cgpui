@@ -1,5 +1,6 @@
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/style.hpp"
+#include "cgpui/ui/ui.hpp"
 
 #include <concepts>
 #include <memory>
@@ -491,6 +492,58 @@ int test_element_builder_wraps_child() {
   return 0;
 }
 
+int test_styled_element_paints_background_rect_from_layout_bounds() {
+  const cgpui::Color color{
+      .r = 0.1F,
+      .g = 0.2F,
+      .b = 0.3F,
+      .a = 0.4F,
+  };
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 70.0F, .height = 30.0F}))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 70.0F || output.size.height != 30.0F) {
+    return 62;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1) {
+    return 63;
+  }
+
+  const cgpui::SolidRect& rect = commands[0].solid_rect;
+  if (rect.rect.origin.x != 0.0F || rect.rect.origin.y != 0.0F ||
+      rect.rect.size.width != 70.0F || rect.rect.size.height != 30.0F) {
+    return 64;
+  }
+  return rect.color.r == color.r && rect.color.g == color.g &&
+                 rect.color.b == color.b && rect.color.a == color.a
+             ? 0
+             : 65;
+}
+
+int test_styled_element_without_background_paints_nothing() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}.with_preferred_size(
+              cgpui::Size{.width = 40.0F, .height = 20.0F}))
+          .build();
+  (void)element->layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  return paint_list.commands().empty() ? 0 : 66;
+}
+
 } // namespace
 
 int main() {
@@ -577,6 +630,15 @@ int main() {
     return result;
   }
   if (const int result = test_element_builder_wraps_child(); result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_paints_background_rect_from_layout_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_styled_element_without_background_paints_nothing();
+      result != 0) {
     return result;
   }
   return 0;

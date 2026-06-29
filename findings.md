@@ -210,3 +210,13 @@
 - Keeping `ElementBuilder::build()` returning `std::unique_ptr<Element>` matches
   the existing tree/container APIs and avoids introducing reference-counted
   element ownership prematurely.
+
+## 2026-06-30 Styled Background Paint
+
+- Element-level painting can reuse the existing `PaintList` command vocabulary
+  without changing renderer or platform code.
+- Keeping `Element::paint(PaintList&)` as a no-op default preserves existing
+  test elements while letting styled/container elements opt into paint output.
+- `StyledElement` should emit its background before painting its child, matching
+  normal parent-background-then-content ordering and setting up Step 26 paint
+  tree traversal.

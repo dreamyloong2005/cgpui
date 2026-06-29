@@ -50,7 +50,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 20. [x] Text input routing into focused text model.
 21. [x] Style primitives: colors, size, padding, and border fields.
 22. [x] Element builder API skeleton for composing styled elements.
-23. [ ] Styled element paints a solid background rect.
+23. [x] Styled element paints a solid background rect.
 24. [ ] Padding participates in styled element layout.
 25. [ ] Border width/color and border radius primitives.
 26. [ ] Paint tree generation from element hierarchy.
@@ -71,7 +71,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 23: Styled element paints a solid background rect.
+Step 24: Padding participates in styled element layout.
 
 ## Risks
 

@@ -13,6 +13,8 @@
 
 namespace cgpui {
 
+class PaintList;
+
 struct ElementId {
   std::uint64_t value = 0;
 
@@ -45,6 +47,10 @@ class Element {
   [[nodiscard]] virtual ElementId hit_test(Point point) const {
     return layout_bounds_.has_value() && contains(*layout_bounds_, point) ? id_
                                                                          : ElementId{};
+  }
+
+  virtual void paint(PaintList& paint_list) const {
+    (void)paint_list;
   }
 
   void set_layout_bounds(Rect bounds) const {
@@ -168,6 +174,8 @@ class StyledElement : public Element {
     });
     return output;
   }
+
+  void paint(PaintList& paint_list) const override;
 
  private:
   Style style_;

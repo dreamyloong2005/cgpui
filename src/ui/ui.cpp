@@ -94,6 +94,16 @@ std::span<const PaintCommand> PaintList::commands() const {
   return commands_;
 }
 
+void StyledElement::paint(PaintList& paint_list) const {
+  const std::optional<Rect> bounds = layout_bounds();
+  if (bounds.has_value() && style_.background_color.has_value()) {
+    paint_list.fill_rect(*bounds, *style_.background_color);
+  }
+  if (child_ != nullptr) {
+    child_->paint(paint_list);
+  }
+}
+
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   auto frame = renderer.begin_frame();
   if (!frame) {
