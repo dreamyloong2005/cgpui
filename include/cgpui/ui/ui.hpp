@@ -205,6 +205,21 @@ struct WindowRuntimeContext {
 
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
+  void capture_pointer(PointerCaptureOwner owner) const;
+  void release_pointer(PointerCaptureOwner owner) const;
+  void request_keyboard_focus() const;
+  void request_keyboard_focus(ViewId view_id) const;
+  void request_keyboard_focus(ElementId element_id) const;
+  void release_keyboard_focus() const;
+  void release_keyboard_focus(ViewId view_id) const;
+  void release_keyboard_focus(ElementId element_id) const;
+  [[nodiscard]] bool paste_clipboard_text() const;
+  [[nodiscard]] bool copy_selection_to_clipboard() const;
+  [[nodiscard]] bool cut_selection_to_clipboard() const;
+  void request_layout() const;
+  void request_paint() const;
+  void clear_invalidation() const;
+  [[nodiscard]] InvalidationState invalidation_state() const;
 
   template <typename T>
   EntityId<T> insert_entity(T entity) const;
@@ -224,6 +239,8 @@ struct WindowRuntimeContext {
   template <typename T>
   void subscribe_view_to_entity(ViewId view_id, EntityId<T> entity_id) const;
 };
+
+using ViewContext = WindowRuntimeContext;
 
 using RendererFactory =
     std::function<Result<Renderer*>(const RenderSurfaceDescriptor&)>;

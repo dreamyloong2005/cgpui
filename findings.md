@@ -569,3 +569,15 @@
   failed copy/no selection/no focused model leaves the buffer untouched.
 - After deletion, existing `TextModel` behavior collapses the cursor to the
   removed selection start, matching the text-edit action path.
+
+## 2026-06-30 ViewContext Convenience
+
+- A type alias keeps the public `ViewContext` spelling GPUI-like without
+  duplicating runtime context storage or breaking existing
+  `WindowRuntimeContext` callbacks.
+- Thin context methods are enough for common authoring paths: they forward to
+  the existing runtime APIs and preserve all focus, capture, clipboard, and
+  invalidation behavior.
+- Invalidation convenience tests should observe state during view event
+  handling, not after-event callbacks, because deferred redraw can flush and
+  clear invalidation before `after_event` returns.

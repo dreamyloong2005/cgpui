@@ -370,6 +370,31 @@ class RecordingView final : public cgpui::View {
           keyboard_key_count == 3) {
         context.runtime.release_keyboard_focus(focused_keyboard_element_id);
       }
+      if (exercise_view_context_convenience && keyboard_key_count == 1) {
+        const cgpui::ViewContext& view_context = context;
+        view_context_convenience_same_alias_type =
+            &view_context.runtime == &context.runtime;
+        view_context_initial_invalidation = view_context.invalidation_state();
+        view_context.request_layout();
+        view_context_after_layout_request_invalidation =
+            view_context.invalidation_state();
+        view_context.clear_invalidation();
+        view_context_after_clear_invalidation =
+            view_context.invalidation_state();
+        view_context_copied_selection =
+            view_context.copy_selection_to_clipboard();
+        view_context_cut_selection = view_context.cut_selection_to_clipboard();
+        view_context_pasted_clipboard = view_context.paste_clipboard_text();
+        view_context.capture_pointer(
+            cgpui::PointerCaptureOwner::element(focused_keyboard_element_id));
+        view_context.request_keyboard_focus(focused_keyboard_element_id);
+        view_context.release_pointer(
+            cgpui::PointerCaptureOwner::element(focused_keyboard_element_id));
+        view_context.release_keyboard_focus(focused_keyboard_element_id);
+        view_context.request_paint();
+        view_context_after_paint_request_invalidation =
+            view_context.invalidation_state();
+      }
       if (keyboard_key_count == 2) {
         second_key_saw_keyboard_focus = context.input.keyboard_focused;
         second_key_saw_keyboard_focus_owner =
@@ -443,6 +468,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_action_dispatch = false;
   bool exercise_invalidation_requests = false;
   bool exercise_scheduled_invalidation_redraw = false;
+  bool exercise_view_context_convenience = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -529,6 +555,14 @@ class RecordingView final : public cgpui::View {
   cgpui::InvalidationState after_paint_request_invalidation{};
   cgpui::InvalidationState after_clear_invalidation{};
   cgpui::InvalidationState invalidation_after_subscribed_notify{};
+  cgpui::InvalidationState view_context_initial_invalidation{};
+  cgpui::InvalidationState view_context_after_layout_request_invalidation{};
+  cgpui::InvalidationState view_context_after_clear_invalidation{};
+  cgpui::InvalidationState view_context_after_paint_request_invalidation{};
+  bool view_context_convenience_same_alias_type = false;
+  bool view_context_copied_selection = false;
+  bool view_context_cut_selection = false;
+  bool view_context_pasted_clipboard = false;
   cgpui::ViewId first_allocated_view_id{};
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
@@ -2859,6 +2893,74 @@ int test_runtime_cuts_focused_text_selection_to_clipboard() {
   return 0;
 }
 
+RuntimeFixture* view_context_convenience_fixture = nullptr;
+
+void dispatch_view_context_convenience_sequence() {
+  auto& callback = view_context_convenience_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_view_context_forwards_common_runtime_apis() {
+  RuntimeFixture fixture;
+  view_context_convenience_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_convenience_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+  fixture.view.exercise_view_context_convenience = true;
+
+  cgpui::TextModel model("abcd");
+  model.set_selection(1, 3);
+  cgpui::MemoryClipboard clipboard;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.set_clipboard(&clipboard);
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  view_context_convenience_fixture = nullptr;
+
+  if (result != 0) {
+    return 215;
+  }
+  if (!fixture.view.view_context_convenience_same_alias_type) {
+    return 216;
+  }
+  if (fixture.view.view_context_initial_invalidation.layout ||
+      fixture.view.view_context_initial_invalidation.paint ||
+      !fixture.view.view_context_after_layout_request_invalidation.layout ||
+      !fixture.view.view_context_after_layout_request_invalidation.paint ||
+      fixture.view.view_context_after_clear_invalidation.layout ||
+      fixture.view.view_context_after_clear_invalidation.paint ||
+      fixture.view.view_context_after_paint_request_invalidation.layout ||
+      !fixture.view.view_context_after_paint_request_invalidation.paint) {
+    return 217;
+  }
+  if (!fixture.view.view_context_copied_selection ||
+      !fixture.view.view_context_cut_selection ||
+      !fixture.view.view_context_pasted_clipboard) {
+    return 218;
+  }
+  const std::optional<std::string> clipboard_text = clipboard.read_text();
+  if (!clipboard_text.has_value() || *clipboard_text != "bc") {
+    return 219;
+  }
+  if (model.text() != "abcd" || model.cursor() != 3 ||
+      !model.selection().collapsed) {
+    return 220;
+  }
+  if (runtime.invalidation_state().layout || runtime.invalidation_state().paint) {
+    return 221;
+  }
+  return 0;
+}
+
 RuntimeFixture* ime_composition_fixture = nullptr;
 
 void dispatch_ime_composition_sequence() {
@@ -3101,6 +3203,10 @@ int main() {
   }
   if (const int result =
           test_runtime_cuts_focused_text_selection_to_clipboard();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_forwards_common_runtime_apis();
       result != 0) {
     return result;
   }

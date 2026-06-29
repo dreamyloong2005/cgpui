@@ -866,4 +866,64 @@ bool WindowRuntimeContext::is_view_id_allocated(ViewId view_id) const {
   return runtime.is_view_id_allocated(view_id);
 }
 
+void WindowRuntimeContext::capture_pointer(PointerCaptureOwner owner) const {
+  runtime.capture_pointer(owner);
+}
+
+void WindowRuntimeContext::release_pointer(PointerCaptureOwner owner) const {
+  runtime.release_pointer(owner);
+}
+
+void WindowRuntimeContext::request_keyboard_focus() const {
+  runtime.request_keyboard_focus();
+}
+
+void WindowRuntimeContext::request_keyboard_focus(ViewId view_id) const {
+  runtime.request_keyboard_focus(view_id);
+}
+
+void WindowRuntimeContext::request_keyboard_focus(ElementId element_id) const {
+  runtime.request_keyboard_focus(element_id);
+}
+
+void WindowRuntimeContext::release_keyboard_focus() const {
+  runtime.release_keyboard_focus();
+}
+
+void WindowRuntimeContext::release_keyboard_focus(ViewId view_id) const {
+  runtime.release_keyboard_focus(view_id);
+}
+
+void WindowRuntimeContext::release_keyboard_focus(ElementId element_id) const {
+  runtime.release_keyboard_focus(element_id);
+}
+
+bool WindowRuntimeContext::paste_clipboard_text() const {
+  return runtime.paste_clipboard_text();
+}
+
+bool WindowRuntimeContext::copy_selection_to_clipboard() const {
+  return runtime.copy_selection_to_clipboard();
+}
+
+bool WindowRuntimeContext::cut_selection_to_clipboard() const {
+  return runtime.cut_selection_to_clipboard();
+}
+
+void WindowRuntimeContext::request_layout() const {
+  runtime.request_layout();
+}
+
+void WindowRuntimeContext::request_paint() const {
+  runtime.request_paint();
+}
+
+void WindowRuntimeContext::clear_invalidation() const {
+  runtime.clear_invalidation();
+}
+
+InvalidationState WindowRuntimeContext::invalidation_state() const {
+  return runtime.invalidation_state();
+}
+
 } // namespace cgpui

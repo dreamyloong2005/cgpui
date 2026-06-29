@@ -690,6 +690,25 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
 
+- Started Step 59: ViewContext convenience wrapper for common runtime APIs.
+- Added RED `window_runtime_test` coverage for a public `ViewContext` alias and
+  common context-level runtime forwarding helpers; the test failed because
+  `cgpui::ViewContext` did not exist.
+- Implemented Step 59 in `codex/view-context-convenience`: `ViewContext` now
+  aliases `WindowRuntimeContext`, with thin forwarding helpers for pointer
+  capture, keyboard focus, clipboard text actions, and invalidation state.
+- Initial GREEN attempt failed with `window_runtime_test` return code 217
+  because the test observed invalidation in `after_event`, where fake redraw
+  had already flushed the deferred request; moved the assertions into the view
+  event handler to match the runtime's existing deferred-redraw semantics.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 26/26.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 23/23.
+
 - Started Step 52: Border paint emission from styled elements.
 - Added RED `element_test` coverage requiring a styled element with border
   color and per-edge border widths to emit four border `SolidRect` commands
