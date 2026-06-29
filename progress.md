@@ -331,3 +331,14 @@
 - Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 31: Scroll state/model primitive.
+- Added RED `scroll_test` coverage for `ScrollModel` default state, clamped
+  offsets, reclamping after viewport/content size changes, and
+  `can_scroll_x`/`can_scroll_y`; the test failed because
+  `cgpui/ui/scroll.hpp` did not exist.
+- Implemented Step 31 in `codex/scroll-state-model`: added a header-only
+  `ScrollModel` with viewport/content sizes, clamped offset state, relative
+  scrolling, and axis scrollability checks.
+- Verified targeted tests: `xmake test -P . scroll_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 25/25.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 22/22.

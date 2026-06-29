@@ -289,3 +289,13 @@
   state and avoids inventing element event handlers in this slice.
 - Restoring `CursorShape::default_arrow` on hover misses prevents stale cursor
   state from outliving the hovered element.
+
+## 2026-06-30 Scroll State Model
+
+- The first scroll primitive can remain UI-layer and header-only: it only needs
+  viewport size, content size, and a clamped offset.
+- Offsets should reclamp whenever viewport or content size changes so stale
+  scroll positions cannot survive after content shrinks.
+- Axis scrollability is derived from positive max offset, not from the current
+  offset, which keeps `can_scroll_x`/`can_scroll_y` useful at both ends of a
+  scroll range.

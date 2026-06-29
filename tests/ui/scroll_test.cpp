@@ -1,0 +1,93 @@
+#include "cgpui/ui/scroll.hpp"
+
+namespace {
+
+bool same(float lhs, float rhs) {
+  return lhs == rhs;
+}
+
+int test_scroll_model_defaults_to_zero_offset() {
+  const cgpui::ScrollModel model;
+  if (!same(model.offset().x, 0.0F) || !same(model.offset().y, 0.0F)) {
+    return 1;
+  }
+  if (!same(model.viewport_size().width, 0.0F) ||
+      !same(model.viewport_size().height, 0.0F)) {
+    return 2;
+  }
+  return same(model.content_size().width, 0.0F) &&
+                 same(model.content_size().height, 0.0F)
+             ? 0
+             : 3;
+}
+
+int test_scroll_model_clamps_offset_to_scrollable_extent() {
+  cgpui::ScrollModel model;
+  model.set_viewport_size(cgpui::Size{.width = 100.0F, .height = 50.0F});
+  model.set_content_size(cgpui::Size{.width = 300.0F, .height = 140.0F});
+  model.scroll_by(cgpui::Point{.x = 250.0F, .y = 120.0F});
+
+  if (!same(model.offset().x, 200.0F) ||
+      !same(model.offset().y, 90.0F)) {
+    return 4;
+  }
+
+  model.scroll_by(cgpui::Point{.x = -500.0F, .y = -500.0F});
+  return same(model.offset().x, 0.0F) && same(model.offset().y, 0.0F) ? 0 : 5;
+}
+
+int test_scroll_model_reclamps_when_sizes_change() {
+  cgpui::ScrollModel model;
+  model.set_viewport_size(cgpui::Size{.width = 100.0F, .height = 100.0F});
+  model.set_content_size(cgpui::Size{.width = 180.0F, .height = 220.0F});
+  model.set_offset(cgpui::Point{.x = 70.0F, .y = 110.0F});
+
+  if (!same(model.offset().x, 70.0F) ||
+      !same(model.offset().y, 110.0F)) {
+    return 6;
+  }
+
+  model.set_content_size(cgpui::Size{.width = 120.0F, .height = 150.0F});
+  if (!same(model.offset().x, 20.0F) ||
+      !same(model.offset().y, 50.0F)) {
+    return 7;
+  }
+
+  model.set_viewport_size(cgpui::Size{.width = 200.0F, .height = 200.0F});
+  return same(model.offset().x, 0.0F) && same(model.offset().y, 0.0F) ? 0 : 8;
+}
+
+int test_scroll_model_reports_scrollable_axes() {
+  cgpui::ScrollModel model;
+  model.set_viewport_size(cgpui::Size{.width = 100.0F, .height = 100.0F});
+  model.set_content_size(cgpui::Size{.width = 100.0F, .height = 160.0F});
+
+  if (model.can_scroll_x() || !model.can_scroll_y()) {
+    return 9;
+  }
+
+  model.set_content_size(cgpui::Size{.width = 160.0F, .height = 80.0F});
+  return model.can_scroll_x() && !model.can_scroll_y() ? 0 : 10;
+}
+
+} // namespace
+
+int main() {
+  if (const int result = test_scroll_model_defaults_to_zero_offset();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_scroll_model_clamps_offset_to_scrollable_extent();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_scroll_model_reclamps_when_sizes_change();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_scroll_model_reports_scrollable_axes();
+      result != 0) {
+    return result;
+  }
+  return 0;
+}
