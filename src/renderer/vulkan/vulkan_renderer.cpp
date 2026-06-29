@@ -41,6 +41,9 @@ Error vulkan_error(ErrorCode code, std::string message) {
 
 Result<void> require_vk_success(VkResult result, std::string message) {
   if (result != VK_SUCCESS) {
+    message += " (VkResult ";
+    message += std::to_string(static_cast<int>(result));
+    message += ")";
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed, std::move(message)));
   }

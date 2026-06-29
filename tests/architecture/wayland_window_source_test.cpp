@@ -129,5 +129,26 @@ int main() {
     return 15;
   }
 
+  const std::string vulkan_target_text =
+      linux_target_block(xmake_text, "wayland_vulkan_surface_test");
+  if (vulkan_target_text.empty()) {
+    return 16;
+  }
+  if (!contains(vulkan_target_text, "tests/renderer/wayland_vulkan_surface_test.cpp")) {
+    return 17;
+  }
+  if (!contains(vulkan_target_text, "cgpui_platform_linux_wayland")) {
+    return 18;
+  }
+  if (!contains(vulkan_target_text, "cgpui_renderer_vulkan")) {
+    return 19;
+  }
+  if (!contains(vulkan_target_text, "\"vulkan\"")) {
+    return 20;
+  }
+  if (!contains(vulkan_target_text, "add_tests(\"default\")")) {
+    return 21;
+  }
+
   return 0;
 }

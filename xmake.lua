@@ -70,6 +70,15 @@ if is_plat("linux") then
         add_includedirs(public_includedirs)
         add_includedirs("tests/platform")
         add_tests("default")
+
+    target("wayland_vulkan_surface_test")
+        set_kind("binary")
+        add_files("tests/renderer/wayland_vulkan_surface_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_packages("wayland")
+        add_syslinks("vulkan")
+        add_includedirs(public_includedirs)
+        add_tests("default")
 end
 
 if is_plat("macosx") then
