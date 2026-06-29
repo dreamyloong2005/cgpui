@@ -123,6 +123,17 @@ int main() {
   if (!contains(text, ".scale = window->state_.scale")) {
     return 54;
   }
+  if (!contains(text, "WindowFocused{.focused = focused}")) {
+    return 55;
+  }
+  if (!contains(text, "handle_keyboard_enter") ||
+      !contains(text, "focus_changed(true)")) {
+    return 56;
+  }
+  if (!contains(text, "handle_keyboard_leave") ||
+      !contains(text, "focus_changed(false)")) {
+    return 57;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

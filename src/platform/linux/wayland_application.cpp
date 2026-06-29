@@ -339,6 +339,10 @@ class WaylandWindow final : public PlatformWindow {
     callback_(KeyboardKey{.key_code = key, .action = action});
   }
 
+  void focus_changed(bool focused) {
+    callback_(WindowFocused{.focused = focused});
+  }
+
  private:
   WaylandWindow(
       wl_display* display,
@@ -697,6 +701,9 @@ class WaylandApplication final : public PlatformApplication {
     (void)keys;
     auto* app = static_cast<WaylandApplication*>(data);
     app->keyboard_window_ = app->find_window(surface);
+    if (app->keyboard_window_ != nullptr) {
+      app->keyboard_window_->focus_changed(true);
+    }
   }
 
   static void handle_keyboard_leave(
@@ -709,6 +716,7 @@ class WaylandApplication final : public PlatformApplication {
     auto* app = static_cast<WaylandApplication*>(data);
     if (app->keyboard_window_ != nullptr &&
         app->keyboard_window_->surface() == surface) {
+      app->keyboard_window_->focus_changed(false);
       app->keyboard_window_ = nullptr;
     }
   }

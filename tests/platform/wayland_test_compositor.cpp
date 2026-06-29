@@ -349,6 +349,10 @@ struct WaylandTestCompositor::State {
     keyboard_key_pending.store(true);
   }
 
+  void request_keyboard_leave() {
+    keyboard_leave_pending.store(true);
+  }
+
   void request_close() {
     close_pending.store(true);
   }
@@ -479,6 +483,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_pointer_button();
   void dispatch_pending_pointer_scroll();
   void dispatch_pending_keyboard_key();
+  void dispatch_pending_keyboard_leave();
 
   void run() {
     while (running.load()) {
@@ -488,6 +493,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
       dispatch_pending_keyboard_key();
+      dispatch_pending_keyboard_leave();
       const int result = wl_event_loop_dispatch(wl_display_get_event_loop(display), 10);
       if (result < 0) {
         running.store(false);
@@ -499,6 +505,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
       dispatch_pending_keyboard_key();
+      dispatch_pending_keyboard_leave();
       wl_display_flush_clients(display);
     }
   }
@@ -539,6 +546,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_scroll_sent{false};
   std::atomic_bool keyboard_key_pending{false};
   std::atomic_bool keyboard_key_sent{false};
+  std::atomic_bool keyboard_leave_pending{false};
+  std::atomic_bool keyboard_leave_sent{false};
   std::atomic_int resize_width{0};
   std::atomic_int resize_height{0};
   std::atomic_int pointer_x{0};
@@ -1010,6 +1019,31 @@ void WaylandTestCompositor::State::dispatch_pending_keyboard_key() {
   keyboard_key_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_keyboard_leave() {
+  if (!keyboard_leave_pending.exchange(false)) {
+    return;
+  }
+
+  if (keyboard_resource == nullptr) {
+    keyboard_leave_pending.store(true);
+    return;
+  }
+
+  const SurfaceState* surface = first_keyboard_surface();
+  if (surface == nullptr || !keyboard_entered) {
+    keyboard_leave_pending.store(true);
+    return;
+  }
+
+  wl_keyboard_send_leave(
+      keyboard_resource,
+      next_keyboard_serial++,
+      surface->surface);
+  keyboard_entered = false;
+  wl_display_flush_clients(display);
+  keyboard_leave_sent.store(true);
+}
+
 const struct wl_compositor_interface WaylandTestCompositor::State::compositor_implementation{
     .create_surface = &WaylandTestCompositor::State::create_surface,
     .create_region = &WaylandTestCompositor::State::create_region,
@@ -1133,6 +1167,10 @@ void WaylandTestCompositor::request_keyboard_key(
   state_->request_keyboard_key(key, pressed);
 }
 
+void WaylandTestCompositor::request_keyboard_leave() {
+  state_->request_keyboard_leave();
+}
+
 bool WaylandTestCompositor::wait_for_close_sent() const {
   return state_->wait_for_flag(state_->close_sent);
 }
@@ -1159,6 +1197,10 @@ bool WaylandTestCompositor::wait_for_pointer_scroll_sent() const {
 
 bool WaylandTestCompositor::wait_for_keyboard_key_sent() const {
   return state_->wait_for_flag(state_->keyboard_key_sent);
+}
+
+bool WaylandTestCompositor::wait_for_keyboard_leave_sent() const {
+  return state_->wait_for_flag(state_->keyboard_leave_sent);
 }
 
 } // namespace cgpui::test

@@ -138,6 +138,8 @@ class Win32Window final : public PlatformWindow {
     callback_(KeyboardKey{.key_code = static_cast<std::uint32_t>(wparam), .action = action});
   }
 
+  void focus_changed(bool focused) { callback_(WindowFocused{.focused = focused}); }
+
  private:
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
@@ -164,6 +166,16 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
     case WM_DPICHANGED:
       if (window != nullptr) {
         window->dpi_changed(wparam, lparam);
+      }
+      return 0;
+    case WM_SETFOCUS:
+      if (window != nullptr) {
+        window->focus_changed(true);
+      }
+      return 0;
+    case WM_KILLFOCUS:
+      if (window != nullptr) {
+        window->focus_changed(false);
       }
       return 0;
     case WM_CLOSE:

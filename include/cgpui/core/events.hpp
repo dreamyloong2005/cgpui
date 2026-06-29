@@ -28,6 +28,10 @@ struct WindowResized {
   DpiScale scale;
 };
 
+struct WindowFocused {
+  bool focused = false;
+};
+
 struct PointerMoved {
   Point position;
 };
@@ -52,6 +56,7 @@ using PlatformEvent = std::variant<
     WindowCloseRequested,
     WindowRedrawRequested,
     WindowResized,
+    WindowFocused,
     PointerMoved,
     PointerButton,
     PointerScrolled,

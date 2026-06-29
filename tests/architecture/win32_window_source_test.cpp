@@ -117,6 +117,15 @@ int main() {
   if (!contains(win32_text, "HIWORD(wparam)")) {
     return 32;
   }
+  if (!contains(win32_text, "WM_SETFOCUS")) {
+    return 37;
+  }
+  if (!contains(win32_text, "WM_KILLFOCUS")) {
+    return 38;
+  }
+  if (!contains(win32_text, "WindowFocused{.focused = focused}")) {
+    return 39;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {
@@ -169,6 +178,21 @@ int main() {
   }
   if (!contains(dpi_target, "add_tests(\"default\")")) {
     return 36;
+  }
+
+  const std::string focus_target =
+      target_block(xmake_text, "win32_focus_event_test");
+  if (focus_target.empty()) {
+    return 40;
+  }
+  if (!contains(focus_target, "tests/platform/win32_focus_event_test.cpp")) {
+    return 41;
+  }
+  if (!contains(focus_target, "cgpui_platform_win32")) {
+    return 42;
+  }
+  if (!contains(focus_target, "add_tests(\"default\")")) {
+    return 43;
   }
 
   const std::string surface_target =

@@ -36,11 +36,18 @@ int main() {
 
   bool pressed = false;
   bool released = false;
+  bool focused = false;
+  bool blurred = false;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Keyboard Test",
           .size = cgpui::Size{320.0F, 240.0F}},
       [&](const cgpui::PlatformEvent& event) {
+        if (const auto* focus = std::get_if<cgpui::WindowFocused>(&event);
+            focus != nullptr) {
+          focused = focused || focus->focused;
+          blurred = blurred || !focus->focused;
+        }
         if (const auto* key = std::get_if<cgpui::KeyboardKey>(&event);
             key != nullptr && key->key_code == expected_key) {
           pressed = pressed || key->action == cgpui::KeyAction::pressed;
@@ -49,7 +56,7 @@ int main() {
         if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
-        if (pressed && released) {
+        if (focused && pressed && released && blurred) {
           (*app)->quit();
         }
       });
@@ -66,6 +73,7 @@ int main() {
 
   compositor.request_keyboard_key(expected_key, true);
   compositor.request_keyboard_key(expected_key, false);
+  compositor.request_keyboard_leave();
 
   if (!wait_for_run_finished(run_finished)) {
     compositor.request_close();
@@ -90,6 +98,12 @@ int main() {
   }
   if (!pressed || !released) {
     return 7;
+  }
+  if (!focused) {
+    return 8;
+  }
+  if (!blurred) {
+    return 10;
   }
 
   return 0;
