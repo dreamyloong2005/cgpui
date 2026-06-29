@@ -111,3 +111,14 @@
   become a later refinement when richer layout rules exist.
 - The stack intentionally does not persist child origins or bounds yet, because
   Step 13 is the first slice that needs retained layout geometry.
+
+## 2026-06-30 Hit Testing
+
+- Retained bounds can stay on `Element` as mutable state updated by const
+  `layout()` calls, matching the existing const layout API without adding a
+  renderer or runtime dependency.
+- `hit_test(Point)` should soft-fail with `ElementId{0}` before layout or
+  outside the retained bounds, which keeps Step 14 pointer routing simple.
+- `VerticalStackElement` can record direct child bounds while laying out owned
+  children and use child-first hit testing; richer nested coordinate propagation
+  can wait until element-tree traversal or more complete layout context exists.

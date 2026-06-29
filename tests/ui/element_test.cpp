@@ -89,6 +89,48 @@ int test_fixed_size_element_layout_applies_constraints() {
   return output.size.width == 80.0F && output.size.height == 10.0F ? 0 : 31;
 }
 
+int test_fixed_size_element_records_layout_bounds() {
+  cgpui::FixedSizeElement element(cgpui::Size{.width = 42.0F, .height = 24.0F});
+  if (element.layout_bounds().has_value()) {
+    return 38;
+  }
+
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{});
+  const std::optional<cgpui::Rect> bounds = element.layout_bounds();
+  if (!bounds.has_value()) {
+    return 39;
+  }
+  if (output.size.width != 42.0F || output.size.height != 24.0F ||
+      bounds->origin.x != 0.0F || bounds->origin.y != 0.0F) {
+    return 40;
+  }
+  return bounds->size.width == 42.0F && bounds->size.height == 24.0F ? 0 : 41;
+}
+
+int test_fixed_size_element_hit_tests_layout_bounds() {
+  cgpui::FixedSizeElement element(cgpui::Size{.width = 42.0F, .height = 24.0F});
+  element.assign_id(cgpui::ElementId{77});
+
+  if (element.hit_test(cgpui::Point{.x = 1.0F, .y = 1.0F}).value != 0) {
+    return 42;
+  }
+
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{});
+  if (output.size.width != 42.0F || output.size.height != 24.0F) {
+    return 53;
+  }
+  if (element.hit_test(cgpui::Point{.x = 10.0F, .y = 10.0F}) !=
+      cgpui::ElementId{77}) {
+    return 43;
+  }
+  if (element.hit_test(cgpui::Point{.x = 42.0F, .y = 10.0F}).value != 0 ||
+      element.hit_test(cgpui::Point{.x = 10.0F, .y = 24.0F}).value != 0 ||
+      element.hit_test(cgpui::Point{.x = -1.0F, .y = 10.0F}).value != 0) {
+    return 44;
+  }
+  return 0;
+}
+
 int test_vertical_stack_defaults_to_empty_constrained_zero_size() {
   cgpui::VerticalStackElement stack;
   const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{
@@ -144,6 +186,80 @@ int test_vertical_stack_layout_applies_stack_constraints() {
   });
 
   return output.size.width == 80.0F && output.size.height == 60.0F ? 0 : 37;
+}
+
+int test_vertical_stack_records_child_bounds_top_to_bottom() {
+  cgpui::VerticalStackElement stack;
+  stack.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 40.0F,
+                                                            .height = 10.0F}));
+  stack.append_child(
+      std::make_unique<cgpui::FixedSizeElement>(cgpui::Size{.width = 20.0F,
+                                                            .height = 30.0F}));
+
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 40.0F) {
+    return 54;
+  }
+  const std::optional<cgpui::Rect> stack_bounds = stack.layout_bounds();
+  const std::optional<cgpui::Rect> first_bounds =
+      stack.children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      stack.children()[1]->layout_bounds();
+
+  if (!stack_bounds.has_value() || !first_bounds.has_value() ||
+      !second_bounds.has_value()) {
+    return 45;
+  }
+  if (stack_bounds->origin.x != 0.0F || stack_bounds->origin.y != 0.0F ||
+      stack_bounds->size.width != 40.0F ||
+      stack_bounds->size.height != 40.0F) {
+    return 46;
+  }
+  if (first_bounds->origin.x != 0.0F || first_bounds->origin.y != 0.0F ||
+      first_bounds->size.width != 40.0F ||
+      first_bounds->size.height != 10.0F) {
+    return 47;
+  }
+  return second_bounds->origin.x == 0.0F && second_bounds->origin.y == 10.0F &&
+                 second_bounds->size.width == 20.0F &&
+                 second_bounds->size.height == 30.0F
+             ? 0
+             : 48;
+}
+
+int test_vertical_stack_hit_tests_children_before_self() {
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{10});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{11});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 20.0F, .height = 30.0F});
+  second->assign_id(cgpui::ElementId{12});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+
+  const cgpui::LayoutOutput output = stack.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 40.0F) {
+    return 55;
+  }
+  if (stack.hit_test(cgpui::Point{.x = 5.0F, .y = 5.0F}) !=
+      cgpui::ElementId{11}) {
+    return 49;
+  }
+  if (stack.hit_test(cgpui::Point{.x = 5.0F, .y = 15.0F}) !=
+      cgpui::ElementId{12}) {
+    return 50;
+  }
+  if (stack.hit_test(cgpui::Point{.x = 30.0F, .y = 15.0F}) !=
+      cgpui::ElementId{10}) {
+    return 51;
+  }
+  if (stack.hit_test(cgpui::Point{.x = 41.0F, .y = 5.0F}).value != 0) {
+    return 52;
+  }
+  return 0;
 }
 
 int test_element_tree_stores_root_and_children() {
@@ -344,6 +460,14 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_fixed_size_element_records_layout_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_fixed_size_element_hit_tests_layout_bounds();
+      result != 0) {
+    return result;
+  }
   if (const int result =
           test_vertical_stack_defaults_to_empty_constrained_zero_size();
       result != 0) {
@@ -354,6 +478,15 @@ int main() {
     return result;
   }
   if (const int result = test_vertical_stack_layout_applies_stack_constraints();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_vertical_stack_records_child_bounds_top_to_bottom();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_vertical_stack_hit_tests_children_before_self();
       result != 0) {
     return result;
   }

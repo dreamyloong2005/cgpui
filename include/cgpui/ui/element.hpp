@@ -27,9 +27,27 @@ class Element {
   }
 
   [[nodiscard]] virtual LayoutOutput layout(LayoutInput input) const {
-    return LayoutOutput{
+    const LayoutOutput output{
         .size = constrain_size({}, input.constraints),
     };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+  [[nodiscard]] std::optional<Rect> layout_bounds() const {
+    return layout_bounds_;
+  }
+
+  [[nodiscard]] virtual ElementId hit_test(Point point) const {
+    return layout_bounds_.has_value() && contains(*layout_bounds_, point) ? id_
+                                                                         : ElementId{};
+  }
+
+  void set_layout_bounds(Rect bounds) const {
+    layout_bounds_ = bounds;
   }
 
   void assign_id(ElementId id) {
@@ -38,6 +56,7 @@ class Element {
 
  private:
   ElementId id_;
+  mutable std::optional<Rect> layout_bounds_;
 };
 
 class FixedSizeElement : public Element {
@@ -50,9 +69,14 @@ class FixedSizeElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    return LayoutOutput{
+    const LayoutOutput output{
         .size = constrain_size(preferred_size_, input.constraints),
     };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
   }
 
  private:
@@ -75,13 +99,38 @@ class VerticalStackElement : public Element {
     Size content_size;
     for (const auto& child : children_) {
       const LayoutOutput child_output = child->layout(LayoutInput{});
+      child->set_layout_bounds(Rect{
+          .origin = {.x = 0.0F, .y = content_size.height},
+          .size = child_output.size,
+      });
       content_size.width = std::max(content_size.width, child_output.size.width);
       content_size.height += child_output.size.height;
     }
 
-    return LayoutOutput{
+    const LayoutOutput output{
         .size = constrain_size(content_size, input.constraints),
     };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const std::optional<Rect> bounds = layout_bounds();
+    if (!bounds.has_value() || !contains(*bounds, point)) {
+      return {};
+    }
+
+    for (auto iterator = children_.rbegin(); iterator != children_.rend();
+         ++iterator) {
+      const ElementId hit = (*iterator)->hit_test(point);
+      if (hit.value != 0) {
+        return hit;
+      }
+    }
+    return id();
   }
 
  private:

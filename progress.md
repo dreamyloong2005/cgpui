@@ -110,3 +110,16 @@
 - Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
 - Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
 - Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.
+- Started Step 13: Hit testing over laid-out element bounds.
+- Added design and implementation plan docs for retained element bounds and
+  element-local hit testing.
+- Added RED UI tests for `layout_bounds()`, leaf `hit_test(Point)`, vertical
+  stack child bounds, and child-before-self stack hit testing; the test failed
+  because the hit-testing APIs did not exist.
+- Implemented Step 13 in `codex/hit-testing`: elements retain their latest
+  layout bounds, `FixedSizeElement` and `VerticalStackElement` record bounds
+  during layout, and stack hit testing checks children before falling back to
+  the stack id.
+- Verified targeted tests: `xmake test -P . element_test/default layout_test/default ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .` passed 22/22.
+- Verified WSL Arch Linux full debug tests: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .` passed 19/19.

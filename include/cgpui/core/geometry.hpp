@@ -17,6 +17,13 @@ struct Rect {
   Size size;
 };
 
+[[nodiscard]] inline bool contains(Rect rect, Point point) {
+  return point.x >= rect.origin.x &&
+         point.x < rect.origin.x + rect.size.width &&
+         point.y >= rect.origin.y &&
+         point.y < rect.origin.y + rect.size.height;
+}
+
 struct DpiScale {
   float value = 1.0F;
 };
