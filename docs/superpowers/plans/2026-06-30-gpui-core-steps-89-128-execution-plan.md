@@ -18,9 +18,10 @@
   commit is `210c85d feat: add absolute positioning insets`.
 - Step 117 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 118, layer/elevation style primitive, is the next active implementation
-  slice. Start it from a fresh `.worktrees/layer-elevation-z-order` worktree
-  on branch `codex/layer-elevation-z-order`.
+- Step 118, layer/elevation style primitive, is implemented and
+  feature-worktree verified in `.worktrees/layer-elevation-z-order` on branch
+  `codex/layer-elevation-z-order`. Merge and post-merge verification remain
+  before Step 119 starts.
 
 ## File Map
 
@@ -132,7 +133,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 115: flex alignment and justification primitives.
 - [x] Step 116: flex grow and shrink factors.
 - [x] Step 117: absolute positioning and inset style primitive.
-- [ ] Step 118: layer/elevation style primitive mapped onto deterministic z order.
+- [x] Step 118: layer/elevation style primitive mapped onto deterministic z order.
 
 Acceptance at the end of Band C:
 
@@ -227,7 +228,7 @@ of single-target-only.
 - [x] Step 115: add flex alignment and justification primitives.
 - [x] Step 116: add flex grow and shrink factors.
 - [x] Step 117: add absolute positioning and inset style.
-- [ ] Step 118: add layer/elevation mapped to deterministic z order.
+- [x] Step 118: add layer/elevation mapped to deterministic z order.
 
 Exit check: event records can explain target and ancestor paths, bubbling can
 stop on consumed results, focus/scroll use tree queries, and layout has the
@@ -260,16 +261,23 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 118 from a fresh feature worktree:
+Finish Step 118 by committing the feature branch, fast-forward merging it to
+`master`, and running post-merge targeted, Windows full debug, and WSL Arch
+Linux full debug verification. Then start Step 119 from a fresh feature
+worktree:
 
 ```powershell
-git worktree add .worktrees/layer-elevation-z-order -b codex/layer-elevation-z-order master
-cd .worktrees/layer-elevation-z-order
+git checkout master
+git merge --ff-only codex/layer-elevation-z-order
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+xmake f -c -m debug -P .
+xmake test -P .
+wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
+git worktree add .worktrees/rounded-rect-paint-command -b codex/rounded-rect-paint-command master
 ```
 
-Add RED coverage for layer/elevation style metadata and deterministic paint or
-layout ordering before implementing the smallest GREEN change.
+Step 119 should add RED coverage for rounded-rect paint command metadata before
+teaching backend code to consume it.
 
 ## Step Details
 
@@ -623,15 +631,18 @@ Status: complete on `master` at `2806a4a`.
 
 ### Step 118: Layer/Elevation Style Primitive
 
+Status: implemented and feature-worktree verified in
+`.worktrees/layer-elevation-z-order` on `codex/layer-elevation-z-order`.
+
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for `Style::layer` or `elevation` mapping onto deterministic paint order.
-- [ ] Preserve `z_index` compatibility by defining a clear precedence between explicit z-index and layer/elevation.
-- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for `Style::layer` or `elevation` mapping onto deterministic paint order.
+- [x] Preserve `z_index` compatibility by defining a clear precedence between explicit z-index and layer/elevation.
+- [x] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
 
 ### Step 119: Rounded-Rect Paint Command
 

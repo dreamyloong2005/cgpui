@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Layer/Elevation Z Order
+
+- Step 118 maps layer/elevation onto deterministic paint order by adding
+  `Style::layer`, `StyleOverlay::layer`, builder `.layer(...)`, and
+  `Element::layer()`/`z_order()`.
+- Explicit nonzero `z_index` remains the compatibility override. The effective
+  paint key is `z_index` when it is nonzero; otherwise it is `layer`.
+- Layer and z-index metadata need to live on the final `Element`, not only on
+  `Style`, because parent paint ordering sees the outer wrapper after click,
+  pointer, key, and focusable wrappers are applied.
+- Stable sort remains important: siblings with the same effective `z_order()`
+  continue painting in authored insertion order, preserving the existing
+  deterministic z-index contract.
+
 ## 2026-06-30 Back-40 Planning After Step 117 Docs Closeout
 
 - The后 40 步 remain Steps 129-168 and should not preempt the active Step

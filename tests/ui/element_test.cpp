@@ -957,6 +957,23 @@ int test_flex_row_absolute_children_do_not_affect_main_layout() {
              : 263;
 }
 
+int test_element_builder_layer_shortcut_applies_to_child() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .child(cgpui::div()
+                                         .size(10.0F, 4.0F)
+                                         .layer(3)));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->children().size() != 1) {
+    return 264;
+  }
+
+  return flex->children()[0]->layer() == 3 &&
+                 flex->children()[0]->z_order() == 3
+             ? 0
+             : 265;
+}
+
 int test_flex_column_lays_out_children_top_to_bottom() {
   cgpui::FlexElement flex(cgpui::FlexDirection::column);
   flex.append_child(
@@ -2131,6 +2148,124 @@ int test_element_tree_paints_siblings_by_stable_z_order() {
   return 0;
 }
 
+int test_element_tree_paints_layers_with_explicit_z_index_precedence() {
+  cgpui::ElementTree tree;
+  const cgpui::Color root_color{
+      .r = 0.1F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color low_layer_color{
+      .r = 0.2F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color high_layer_color{
+      .r = 0.3F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color explicit_z_color{
+      .r = 0.4F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color stable_first_color{
+      .r = 0.5F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color stable_second_color{
+      .r = 0.6F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+
+  const cgpui::ElementId root_id = tree.set_root(
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(root_color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 80.0F, .height = 40.0F}))
+          .build());
+  const cgpui::ElementId high_layer_id = tree.append_child(
+      root_id,
+      cgpui::div()
+          .background(high_layer_color)
+          .size(20.0F, 10.0F)
+          .layer(5)
+          .build());
+  const cgpui::ElementId low_layer_id = tree.append_child(
+      root_id,
+      cgpui::div()
+          .background(low_layer_color)
+          .size(20.0F, 10.0F)
+          .layer(-2)
+          .build());
+  const cgpui::ElementId explicit_z_id = tree.append_child(
+      root_id,
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(explicit_z_color)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 20.0F, .height = 10.0F})
+                     .with_layer(-10)
+                     .with_z_index(2))
+          .build());
+  const cgpui::ElementId stable_first_id = tree.append_child(
+      root_id,
+      cgpui::div()
+          .background(stable_first_color)
+          .size(20.0F, 10.0F)
+          .layer(5)
+          .build());
+  const cgpui::ElementId stable_second_id = tree.append_child(
+      root_id,
+      cgpui::div()
+          .background(stable_second_color)
+          .size(20.0F, 10.0F)
+          .layer(5)
+          .build());
+
+  for (const cgpui::ElementId id :
+       {root_id,
+        high_layer_id,
+        low_layer_id,
+        explicit_z_id,
+        stable_first_id,
+        stable_second_id}) {
+    tree.get(id)->set_layout_bounds(cgpui::Rect{
+        .origin = {.x = 0.0F, .y = 0.0F},
+        .size = {.width = 20.0F, .height = 10.0F},
+    });
+  }
+
+  cgpui::PaintList paint_list;
+  tree.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 6) {
+    return 266;
+  }
+  if (commands[0].solid_rect.color.r != root_color.r) {
+    return 267;
+  }
+  if (commands[1].solid_rect.color.r != low_layer_color.r ||
+      commands[2].solid_rect.color.r != explicit_z_color.r ||
+      commands[3].solid_rect.color.r != high_layer_color.r ||
+      commands[4].solid_rect.color.r != stable_first_color.r ||
+      commands[5].solid_rect.color.r != stable_second_color.r) {
+    return 268;
+  }
+
+  return 0;
+}
+
 int test_element_tree_lays_out_root_element() {
   cgpui::ElementTree tree;
   const cgpui::ElementId root_id = tree.set_root(
@@ -2937,6 +3072,10 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_element_builder_layer_shortcut_applies_to_child();
+      result != 0) {
+    return result;
+  }
   if (const int result = test_flex_column_lays_out_children_top_to_bottom();
       result != 0) {
     return result;
@@ -3103,6 +3242,11 @@ int main() {
   }
   if (const int result =
           test_element_tree_paints_siblings_by_stable_z_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_tree_paints_layers_with_explicit_z_index_precedence();
       result != 0) {
     return result;
   }

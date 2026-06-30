@@ -1,5 +1,37 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 118 Layer/Elevation Z Order
+
+- Started Step 118 in `.worktrees/layer-elevation-z-order` on
+  `codex/layer-elevation-z-order` from `master` at
+  `340a2ab docs: refresh back forty plan after step 117`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . style_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Added RED coverage in `style_test`, `element_test`, and
+  `ui_header_cleanliness` for public `Style::layer`,
+  `StyleOverlay::layer`, `with_layer(...)`, builder `.layer(...)`,
+  final-element `layer()`/`z_order()` accessors, overlay resolution, and
+  deterministic paint ordering.
+- Verified the RED build failed as expected on missing `Style::layer`,
+  `StyleOverlay::layer`, and `with_layer(...)` APIs.
+- Implemented Step 118 in `include/cgpui/ui/style.hpp` and
+  `include/cgpui/ui/element.hpp`: styles and overlays now store layer
+  metadata, builders expose `.layer(...)`, final wrapper elements preserve
+  layer and z-index metadata, and `ElementTree` paints siblings by stable
+  `z_order()` where explicit nonzero `z_index` takes precedence over layer.
+- Verified targeted tests:
+  `xmake test -P . style_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md` and the 89-128 execution plan so Step 118 is marked
+  implemented and feature-worktree verified. Step 119 becomes the next
+  implementation slice after Step 118 merge and post-merge verification.
+
 ## 2026-06-30 Back-40 Planning After Step 117 Docs Closeout
 
 - Refreshed the post-Step-128 follow-on plan at

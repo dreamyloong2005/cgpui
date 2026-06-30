@@ -243,7 +243,7 @@ the current Step 118-128 queue unless the plan is explicitly reprioritized.
 115. [x] Flex alignment and justification primitives.
 116. [x] Flex grow and shrink factors for child layout.
 117. [x] Absolute positioning and inset style primitive.
-118. [ ] Layer/elevation style primitive mapped onto deterministic z order.
+118. [x] Layer/elevation style primitive mapped onto deterministic z order.
 119. [ ] Rounded-rect paint command that preserves border radius metadata.
 120. [ ] Vulkan renderer honors clip rect metadata for solid rectangles.
 121. [ ] Text paint command separates text drawing from placeholder rectangles.
@@ -330,9 +330,15 @@ remains gated behind completion plus Windows/WSL verification of Steps
 118-128.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
-is now the active implementation step. Start it from a fresh
-`.worktrees/layer-elevation-z-order` worktree on branch
-`codex/layer-elevation-z-order`.
+is implemented and feature-worktree verified in
+`.worktrees/layer-elevation-z-order` on branch
+`codex/layer-elevation-z-order`. RED failed as expected on missing
+`Style::layer`, `StyleOverlay::layer`, `with_layer(...)`, builder
+`.layer(...)`, and `Element::layer()`/`z_order()` APIs. Targeted tests passed
+3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. After Step 118 is merged and post-merge verified, Step 119 becomes the
+next active implementation step: rounded-rect paint command that preserves
+border radius metadata.
 
 ## Risks
 

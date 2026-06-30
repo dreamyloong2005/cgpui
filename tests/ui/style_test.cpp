@@ -149,6 +149,9 @@ int test_style_defaults_are_empty() {
   if (style.z_index != 0) {
     return 25;
   }
+  if (style.layer != 0) {
+    return 59;
+  }
   if (!same(style.gap, 0.0F)) {
     return 27;
   }
@@ -188,6 +191,7 @@ int test_style_builder_methods_store_values() {
               4.0F))
           .with_overflow(cgpui::Overflow::hidden)
           .with_z_index(7)
+          .with_layer(4)
           .with_gap(5.0F)
           .with_align_items(cgpui::AlignItems::center)
           .with_justify_content(cgpui::JustifyContent::space_between)
@@ -245,6 +249,9 @@ int test_style_builder_methods_store_values() {
   if (style.z_index != 7) {
     return 26;
   }
+  if (style.layer != 4) {
+    return 60;
+  }
   if (!same(style.gap, 5.0F)) {
     return 28;
   }
@@ -281,7 +288,8 @@ int test_style_overlay_defaults_to_no_overrides() {
       overlay.margin.has_value() || overlay.border_width.has_value() ||
       overlay.border_color.has_value() ||
       overlay.border_radius.has_value() || overlay.overflow.has_value() ||
-      overlay.z_index.has_value() || overlay.gap.has_value() ||
+      overlay.z_index.has_value() || overlay.layer.has_value() ||
+      overlay.gap.has_value() ||
       overlay.align_items.has_value() ||
       overlay.justify_content.has_value() ||
       overlay.flex_grow.has_value() || overlay.flex_shrink.has_value() ||
@@ -302,6 +310,7 @@ int test_style_overlay_defaults_to_no_overrides() {
           .with_border_radius(cgpui::BorderRadii::all(4.0F))
           .with_overflow(cgpui::Overflow::hidden)
           .with_z_index(5)
+          .with_layer(8)
           .with_gap(6.0F)
           .with_align_items(cgpui::AlignItems::end)
           .with_justify_content(cgpui::JustifyContent::center)
@@ -340,6 +349,7 @@ int test_style_overlay_defaults_to_no_overrides() {
   if (!authored.overflow.has_value() ||
       *authored.overflow != cgpui::Overflow::hidden ||
       !authored.z_index.has_value() || *authored.z_index != 5 ||
+      !authored.layer.has_value() || *authored.layer != 8 ||
       !authored.gap.has_value() || *authored.gap != 6.0F) {
     return 42;
   }
@@ -378,6 +388,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
                    .with_justify_content(cgpui::JustifyContent::start)
                    .with_flex_grow(1.0F)
                    .with_flex_shrink(1.0F)
+                   .with_layer(1)
                    .with_position(cgpui::Position::relative)
                    .with_inset(cgpui::edges(1.0F));
   state.hover =
@@ -387,6 +398,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_gap(2.0F)
           .with_align_items(cgpui::AlignItems::center)
           .with_flex_grow(2.0F)
+          .with_layer(2)
           .with_position(cgpui::Position::absolute);
   state.focus =
       cgpui::StyleOverlay{}
@@ -394,11 +406,13 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_foreground_color(cgpui::rgb(50, 50, 50))
           .with_justify_content(cgpui::JustifyContent::end)
           .with_flex_shrink(3.0F)
+          .with_layer(3)
           .with_inset(cgpui::edges(4.0F));
   state.disabled =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(60, 60, 60))
           .with_border_width(cgpui::edges(3.0F))
+          .with_layer(4)
           .with_align_items(cgpui::AlignItems::end);
 
   const cgpui::Style hover =
@@ -410,6 +424,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       hover.align_items != cgpui::AlignItems::center ||
       hover.justify_content != cgpui::JustifyContent::start ||
       hover.flex_grow != 2.0F || hover.flex_shrink != 1.0F ||
+      hover.layer != 2 ||
       hover.position != cgpui::Position::absolute ||
       hover.inset.left != 1.0F) {
     return 44;
@@ -426,6 +441,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       focused.align_items != cgpui::AlignItems::center ||
       focused.justify_content != cgpui::JustifyContent::end ||
       focused.flex_grow != 2.0F || focused.flex_shrink != 3.0F ||
+      focused.layer != 3 ||
       focused.position != cgpui::Position::absolute ||
       focused.inset.left != 4.0F) {
     return 45;
@@ -447,6 +463,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       disabled.align_items != cgpui::AlignItems::end ||
       disabled.justify_content != cgpui::JustifyContent::end ||
       disabled.flex_grow != 2.0F || disabled.flex_shrink != 3.0F ||
+      disabled.layer != 4 ||
       disabled.position != cgpui::Position::absolute ||
       disabled.inset.left != 4.0F) {
     return 46;
@@ -464,6 +481,7 @@ static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
 static_assert(std::same_as<decltype(cgpui::BorderRadii{}.top_left), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.overflow), cgpui::Overflow>);
 static_assert(std::same_as<decltype(cgpui::Style{}.z_index), int>);
+static_assert(std::same_as<decltype(cgpui::Style{}.layer), int>);
 static_assert(std::same_as<decltype(cgpui::Style{}.gap), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.flex_grow), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.flex_shrink), float>);

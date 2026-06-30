@@ -67,7 +67,8 @@ int main() {
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)
-                         .with_justify_content(cgpui::JustifyContent::end);
+                         .with_justify_content(cgpui::JustifyContent::end)
+                         .with_layer(2);
   style_state.hover =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(64, 64, 64))
@@ -148,11 +149,12 @@ int main() {
                               .align_items(cgpui::AlignItems::center)
                               .justify_content(cgpui::JustifyContent::end)
                               .child(cgpui::div()
-                                         .size(1.0F, 1.0F)
-                                         .flex_grow(1.0F)
-                                         .flex_shrink(2.0F)
-                                         .absolute()
-                                         .inset(cgpui::edges(3.0F))));
+                                        .size(1.0F, 1.0F)
+                                        .flex_grow(1.0F)
+                                        .flex_shrink(2.0F)
+                                        .layer(4)
+                                        .absolute()
+                                        .inset(cgpui::edges(3.0F))));
   const auto* flex = dynamic_cast<const cgpui::FlexElement*>(flex_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
@@ -193,6 +195,8 @@ int main() {
                   flex->justify_content() == cgpui::JustifyContent::end &&
                   flex->children()[0]->flex_grow() == 1.0F &&
                   flex->children()[0]->flex_shrink() == 2.0F &&
+                  flex->children()[0]->layer() == 4 &&
+                  flex->children()[0]->z_order() == 4 &&
                   flex->children()[0]->position() ==
                       cgpui::Position::absolute &&
                   flex->children()[0]->inset().left == 3.0F &&

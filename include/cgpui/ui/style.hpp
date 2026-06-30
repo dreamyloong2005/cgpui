@@ -152,6 +152,7 @@ struct Style {
   BorderRadii border_radius;
   Overflow overflow = Overflow::visible;
   int z_index = 0;
+  int layer = 0;
   float gap = 0.0F;
   AlignItems align_items = AlignItems::start;
   JustifyContent justify_content = JustifyContent::start;
@@ -220,6 +221,12 @@ struct Style {
     return style;
   }
 
+  [[nodiscard]] constexpr Style with_layer(int value) const {
+    Style style = *this;
+    style.layer = value;
+    return style;
+  }
+
   [[nodiscard]] constexpr Style with_gap(float value) const {
     Style style = *this;
     style.gap = value;
@@ -282,6 +289,7 @@ struct StyleOverlay {
   std::optional<BorderRadii> border_radius;
   std::optional<Overflow> overflow;
   std::optional<int> z_index;
+  std::optional<int> layer;
   std::optional<float> gap;
   std::optional<AlignItems> align_items;
   std::optional<JustifyContent> justify_content;
@@ -351,6 +359,12 @@ struct StyleOverlay {
   [[nodiscard]] constexpr StyleOverlay with_z_index(int value) const {
     StyleOverlay overlay = *this;
     overlay.z_index = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_layer(int value) const {
+    StyleOverlay overlay = *this;
+    overlay.layer = value;
     return overlay;
   }
 
@@ -453,6 +467,9 @@ struct StyleStateFlags {
   }
   if (overlay.z_index.has_value()) {
     style.z_index = *overlay.z_index;
+  }
+  if (overlay.layer.has_value()) {
+    style.layer = *overlay.layer;
   }
   if (overlay.gap.has_value()) {
     style.gap = *overlay.gap;

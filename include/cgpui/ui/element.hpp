@@ -143,6 +143,27 @@ class Element {
     inset_ = value;
   }
 
+  [[nodiscard]] virtual int z_index() const {
+    return z_index_;
+  }
+
+  void set_z_index(int value) {
+    z_index_ = value;
+  }
+
+  [[nodiscard]] virtual int layer() const {
+    return layer_;
+  }
+
+  void set_layer(int value) {
+    layer_ = value;
+  }
+
+  [[nodiscard]] int z_order() const {
+    const int explicit_z_index = z_index();
+    return explicit_z_index != 0 ? explicit_z_index : layer();
+  }
+
   [[nodiscard]] virtual bool focusable() const {
     return false;
   }
@@ -157,10 +178,6 @@ class Element {
     (void)event;
     (void)context;
     return EventResult::unhandled();
-  }
-
-  [[nodiscard]] virtual int z_index() const {
-    return 0;
   }
 
   void set_layout_bounds(Rect bounds) const {
@@ -178,6 +195,8 @@ class Element {
   float flex_shrink_ = 0.0F;
   Position position_ = Position::relative;
   EdgeSizes inset_;
+  int z_index_ = 0;
+  int layer_ = 0;
   mutable std::optional<Rect> layout_bounds_;
 };
 
@@ -588,6 +607,10 @@ class StyledElement : public Element {
 
   [[nodiscard]] int z_index() const override {
     return style().z_index;
+  }
+
+  [[nodiscard]] int layer() const override {
+    return style().layer;
   }
 
  private:
@@ -1125,6 +1148,11 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder layer(int value) && {
+    style_state_.base = style_state_.base.with_layer(value);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder position(Position value) && {
     style_state_.base = style_state_.base.with_position(value);
     return std::move(*this);
@@ -1252,6 +1280,8 @@ class ElementBuilder {
     element->set_flex_shrink(style_state_.base.flex_shrink);
     element->set_position(style_state_.base.position);
     element->set_inset(style_state_.base.inset);
+    element->set_z_index(style_state_.base.z_index);
+    element->set_layer(style_state_.base.layer);
     if (click_handler_) {
       auto click_element =
           std::make_unique<ClickElement>(std::move(element), click_handler_);
@@ -1260,6 +1290,8 @@ class ElementBuilder {
       click_element->set_flex_shrink(style_state_.base.flex_shrink);
       click_element->set_position(style_state_.base.position);
       click_element->set_inset(style_state_.base.inset);
+      click_element->set_z_index(style_state_.base.z_index);
+      click_element->set_layer(style_state_.base.layer);
       element = std::move(click_element);
     }
     if (pointer_down_handler_ || pointer_up_handler_ || pointer_move_handler_) {
@@ -1273,6 +1305,8 @@ class ElementBuilder {
       pointer_element->set_flex_shrink(style_state_.base.flex_shrink);
       pointer_element->set_position(style_state_.base.position);
       pointer_element->set_inset(style_state_.base.inset);
+      pointer_element->set_z_index(style_state_.base.z_index);
+      pointer_element->set_layer(style_state_.base.layer);
       element = std::move(pointer_element);
     }
     if (key_handler_) {
@@ -1283,6 +1317,8 @@ class ElementBuilder {
       key_element->set_flex_shrink(style_state_.base.flex_shrink);
       key_element->set_position(style_state_.base.position);
       key_element->set_inset(style_state_.base.inset);
+      key_element->set_z_index(style_state_.base.z_index);
+      key_element->set_layer(style_state_.base.layer);
       element = std::move(key_element);
     }
     if (focusable_) {
@@ -1293,6 +1329,8 @@ class ElementBuilder {
       focusable_element->set_flex_shrink(style_state_.base.flex_shrink);
       focusable_element->set_position(style_state_.base.position);
       focusable_element->set_inset(style_state_.base.inset);
+      focusable_element->set_z_index(style_state_.base.z_index);
+      focusable_element->set_layer(style_state_.base.layer);
       element = std::move(focusable_element);
     }
     return element;
@@ -1587,9 +1625,9 @@ class ElementTree {
           const Node* lhs_node = find_node(lhs);
           const Node* rhs_node = find_node(rhs);
           const int lhs_z =
-              lhs_node == nullptr ? 0 : lhs_node->element->z_index();
+              lhs_node == nullptr ? 0 : lhs_node->element->z_order();
           const int rhs_z =
-              rhs_node == nullptr ? 0 : rhs_node->element->z_index();
+              rhs_node == nullptr ? 0 : rhs_node->element->z_order();
           return lhs_z < rhs_z;
         });
     for (ElementId child_id : ordered_children) {
