@@ -17,16 +17,13 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-104 are complete on `master` through
-  `153c39e docs: refresh back forty planning after step 104`; the Step 104
-  implementation commit is `8c8dc90 feat: add app context setup wrapper`.
-  Step 104 was post-merge verified on Windows and WSL Arch Linux.
+- Steps 89-105 are complete on `master` through
+  `cbc0dfe feat: add window options open window skeleton`, and were
+  post-merge verified on Windows and WSL Arch Linux.
 - Steps 105-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 105 is implemented and feature-worktree verified in
-  `.worktrees/window-options-open-window` on
-  `codex/window-options-open-window`; it still needs commit, fast-forward merge
-  to `master`, post-merge verification, and cleanup.
+- Step 106 is the current active implementation step:
+  runtime root view lifecycle storage for app-opened windows.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -109,8 +106,7 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-104 are complete on `master`; Step 105 is
-  implemented and feature-worktree verified but not yet merged; Steps 106-108
+  Current partial status: Steps 99-105 are complete on `master`; Steps 106-108
   remain incomplete.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
@@ -151,13 +147,11 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish merging Step 105 instead of starting
-Step 129:
+For the current pre-back-40 state, start Step 106 instead of starting Step 129:
 
 ```powershell
-git -C .worktrees/window-options-open-window status --short --branch
-git merge --ff-only codex/window-options-open-window
-xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/window-root-view-lifecycle -b codex/window-root-view-lifecycle master
+xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

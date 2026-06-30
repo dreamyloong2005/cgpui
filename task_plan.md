@@ -99,9 +99,8 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, and Windows/WSL verification matrix for
 all 40 follow-on steps. It also records the current pre-back-40 handoff state:
-Step 105 is implemented and verified in `.worktrees/window-options-open-window`,
-so the next active action after merge is Step 106 rather than starting Step
-129.
+Step 105 is merged and verified on `master`, so the next active action is Step
+106 rather than starting Step 129.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current active Step 106 unless the plan is explicitly reprioritized.
@@ -293,10 +292,9 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 105 is implemented in `.worktrees/window-options-open-window` on
-`codex/window-options-open-window` and verified on Windows and WSL Arch Linux.
-After Step 105 is committed and merged to `master`, the next implementation
-step is Step 106: runtime root view lifecycle storage for app-opened windows.
+Step 105 is complete, merged to `master`, and post-merge verified on Windows
+and WSL Arch Linux. Next implementation step is Step 106: runtime root view
+lifecycle storage for app-opened windows.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168, but Step 129 remains
 gated behind completion and Windows/WSL verification of Steps 106-128.

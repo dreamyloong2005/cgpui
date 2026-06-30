@@ -1737,6 +1737,21 @@
 - Updated `task_plan.md`, the 89-128 execution plan, and the 129-168 forward
   plan so Step 105 is marked implemented/verified in the feature worktree and
   Step 106 is the next active implementation step after merge.
+- Committed Step 105 as
+  `cbc0dfe feat: add window options open window skeleton`, fast-forward merged
+  it to `master`, and verified post-merge targeted tests:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Removed `.worktrees/window-options-open-window` and deleted
+  `codex/window-options-open-window`.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168 forward
+  plan after merge so the current active implementation step is Step 106:
+  runtime root view lifecycle storage for app-opened windows.
 
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.

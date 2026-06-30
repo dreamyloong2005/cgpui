@@ -12,16 +12,12 @@
 
 ## Current State
 
-- Steps 89-104 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-105 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 105 is implemented and verified in
-  `.worktrees/window-options-open-window` on
-  `codex/window-options-open-window`; it still needs commit, fast-forward merge
-  to `master`, post-merge verification, and cleanup.
-- `master` is at `153c39e docs: refresh back forty planning after step 104`.
+- `master` is at `cbc0dfe feat: add window options open window skeleton`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation slice after the Step 105 merge is Step 106:
+- The next implementation slice is Step 106:
   runtime root view lifecycle storage for app-opened windows.
 
 ## File Map
@@ -262,17 +258,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 105 from the existing isolated worktree, then start Step 106 after
-the post-merge verification and cleanup:
+Start Step 106 in an isolated worktree:
 
 ```powershell
-git -C .worktrees/window-options-open-window status --short --branch
-git merge --ff-only codex/window-options-open-window
-xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/window-root-view-lifecycle -b codex/window-root-view-lifecycle master
+xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
-After Step 105 is merged and verified, start Step 106:
-`runtime root view lifecycle storage for app-opened windows`.
+Add RED tests showing app-opened windows keep root view ownership/lifetime
+stable through `run_app`, then follow the standard per-step
+verification/merge workflow above.
 
 ## Step Details
 
@@ -455,8 +450,7 @@ Status: complete on `master` after the Step 104 merge.
 
 ### Step 105: WindowOptions and `open_window(...)`
 
-Status: implemented and feature-worktree verified; pending commit, merge,
-post-merge verification, and cleanup.
+Status: complete on `master` after the Step 105 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
