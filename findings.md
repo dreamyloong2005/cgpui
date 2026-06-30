@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 105 Merge
+
+- The "后40步" plan is now an execution-ready follow-on queue for Steps
+  129-168, but the active implementation path is still Steps 106-128. Starting
+  Step 129 early would skip root-view lifecycle storage, the view registry,
+  child-view placeholders, route ancestry, propagation, focus/scroll/layout
+  depth, render command hardening, cursor/clipboard/IME surfaces, and the
+  public-prelude demo rewrite.
+- The clean handoff into Step 129 requires 23 remaining implementation steps:
+  Steps 106-128, then post-Step-128 targeted verification, Windows full debug,
+  WSL Arch full debug, and a clean `master` except the known untracked
+  `.vscode/`.
+- The back-40 should be reviewed in four checkpoint bands: Step 138 for
+  context/entity/global/async APIs, Step 148 for keyed widgets and style
+  cascade, Step 158 for text/render diagnostics, and Step 168 for
+  Windows/Wayland platform closure plus the GPUI-core parity audit.
+
 ## 2026-06-30 Render Invalidation Observability
 
 - Render invalidation should be a strict superset of layout and paint

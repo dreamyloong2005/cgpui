@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 105 Merge
+
+- Refreshed
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Corrected the forward plan's current state to the actual `master` head:
+  `4357572 docs: mark step 105 merged`; Step 105's feature commit remains
+  `cbc0dfe feat: add window options open window skeleton`.
+- Recorded that Step 106 is already open in
+  `.worktrees/window-root-view-lifecycle` on
+  `codex/window-root-view-lifecycle`, so Step 129 must not be started yet.
+- Added explicit back-40 planning commitments: one branch per step,
+  sequential execution by default, Windows and WSL full debug before and after
+  each merge, and checkpoint reviews after Steps 138, 148, 158, and 168.
+- Updated `task_plan.md` so the root plan points to the refreshed back-40
+  gate: Steps 129-168 are planned, but Steps 106-128 remain the active entry
+  gate before Step 129.
+
 ## 2026-06-30 Step 98 Render Invalidation Observability
 
 - Started Step 98 in `codex/render-invalidation-observability` from `master`

@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 105-128 remainder intact inside the
+**Architecture:** Keep the active Steps 106-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -18,12 +18,16 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-105 are complete on `master` through
-  `cbc0dfe feat: add window options open window skeleton`, and were
+  `4357572 docs: mark step 105 merged`; the feature commit for Step 105 is
+  `cbc0dfe feat: add window options open window skeleton`, and Step 105 was
   post-merge verified on Windows and WSL Arch Linux.
-- Steps 105-128 remain covered by the detailed execution plan in
+- Steps 106-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - Step 106 is the current active implementation step:
   runtime root view lifecycle storage for app-opened windows.
+- Step 106 already has an active worktree and branch:
+  `.worktrees/window-root-view-lifecycle` on
+  `codex/window-root-view-lifecycle`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -80,6 +84,27 @@ application through the public prelude.
   platform wakeups, accessibility snapshots, demo smoke tests, and the final
   GPUI-core API parity audit.
 
+## Back-40 Planning Commitments
+
+These commitments make the back-40 plan executable without turning it into a
+second active branch while Step 106-128 are still incomplete:
+
+- Step 129 is a gate transition, not today's next branch. It starts only after
+  Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
+  and the main worktree has no tracked or staged changes.
+- Steps 129-168 stay sequential by default. If a step proves too large, split
+  it into a prep step and a behavior step only after updating this plan and
+  `task_plan.md`; do not silently combine neighboring steps.
+- Every step keeps one branch slug, one first RED test intent, one targeted
+  verification command, one Windows full debug run, and one WSL Arch full debug
+  run before and after merge.
+- Every 10-step band has a checkpoint review. At Steps 138, 148, 158, and 168,
+  confirm the band exit check below before opening the next band.
+- Platform-specific work remains isolated under Win32 and Wayland files.
+  Shared headers and runtime contracts must stay platform-neutral so macOS can
+  receive a later Metal/Cocoa parity pass without undoing Windows/Linux API
+  work.
+
 ## Back-40 Entry Contract
 
 Step 129 starts only from a clean `master` after Step 128. The handoff state
@@ -106,11 +131,16 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-105 are complete on `master`; Steps 106-108
-  remain incomplete.
+  Current partial status: Steps 99-105 are complete on `master`; Step 106 is
+  open in `.worktrees/window-root-view-lifecycle`; Steps 106-108 remain
+  incomplete until merged and verified.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
+
+Remaining pre-back-40 gate count from the current state: 23 implementation
+steps, Steps 106-128. Finishing those 23 steps is the only planned route into
+Step 129.
 
 ## File Map
 
@@ -168,6 +198,15 @@ When Step 128 is merged, do this before starting Step 129:
 - [ ] Update `task_plan.md` so Step 128 is complete and Step 129 is the active step.
 - [ ] Start Step 129 from a fresh worktree:
   `git worktree add .worktrees/context-authoring-alias -b codex/context-authoring-alias master`.
+
+## Back-40 Review Checkpoints
+
+Run these checkpoint reviews in addition to the per-step verification matrix:
+
+- After Step 138: confirm context/entity/global/action/subscription/defer/timer/async/batching/diagnostics APIs can be used from public headers without direct `WindowRuntime` plumbing.
+- After Step 148: confirm button, label, text input, and scrollable list are implemented from public element/context/style APIs and survive keyed reconciliation.
+- After Step 158: confirm demo/widget paint command streams include text, glyph metadata, opacity/transform, HiDPI scale, batching diagnostics, and unsupported-command diagnostics.
+- After Step 168: confirm `docs/gpui-core-api-parity.md` separates implemented, partial, missing, and Mac/Metal-deferred areas, and that Windows plus WSL verification passed after the final merge.
 
 Keep these 40 steps sequential by default. A later step may be split if its RED
 test reveals a larger dependency, but do not combine adjacent steps just
