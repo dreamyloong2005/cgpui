@@ -321,6 +321,28 @@ class RecordingView final : public cgpui::View {
             context.runtime.notify_entity_changed(
                 cgpui::EntityId<RuntimeEntity>{entity_id.value + 100});
       }
+      if (exercise_view_context_model_helpers && keyboard_key_count == 1) {
+        model_id = context.new_model<RuntimeEntity>(10);
+        context.subscribe_view_to_entity(context.view_id, model_id);
+        const RuntimeEntity* created = context.read_model(model_id);
+        first_model_read_value = created == nullptr ? -1 : created->value;
+        updated_model = context.update_model(
+            model_id,
+            [](RuntimeEntity& model) {
+              model.value = 24;
+            });
+        invalidation_after_model_update = context.runtime.invalidation_state();
+        const RuntimeEntity* updated = context.read_model(model_id);
+        updated_model_read_value = updated == nullptr ? -1 : updated->value;
+        update_missing_model = context.update_model(
+            cgpui::Model<RuntimeEntity>{model_id.value + 100},
+            [](RuntimeEntity& model) {
+              model.value = 99;
+            });
+        removed_model = context.remove_model(model_id);
+        removed_model_again = context.remove_model(model_id);
+        missing_model_after_remove = context.read_model(model_id) == nullptr;
+      }
       if (exercise_view_identity_allocation && keyboard_key_count == 1) {
         root_view_id_was_allocated =
             context.is_view_id_allocated(context.view_id);
@@ -590,6 +612,7 @@ class RecordingView final : public cgpui::View {
   bool cancel_next_event = false;
   bool exercise_entity_context_access = false;
   bool exercise_view_model_subscriptions = false;
+  bool exercise_view_context_model_helpers = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
   bool exercise_view_context_action_helper = false;
@@ -666,16 +689,24 @@ class RecordingView final : public cgpui::View {
   bool removed_entity = false;
   bool removed_entity_again = true;
   bool missing_entity_after_remove = false;
+  bool updated_model = false;
+  bool update_missing_model = true;
+  bool removed_model = false;
+  bool removed_model_again = true;
+  bool missing_model_after_remove = false;
   bool first_subscription_matches_entity = false;
   bool notified_subscribed_entity = false;
   bool notified_missing_entity = true;
   int first_entity_read_value = -1;
   int second_entity_read_value = -1;
   int emplaced_entity_read_value = -1;
+  int first_model_read_value = -1;
+  int updated_model_read_value = -1;
   std::size_t subscriptions_after_subscribe = 0;
   cgpui::EntityId<RuntimeEntity> entity_id{};
   cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
   cgpui::EntityId<RuntimeEntity> emplaced_entity_id{};
+  cgpui::Model<RuntimeEntity> model_id{};
   bool root_view_id_was_allocated = false;
   bool zero_view_id_was_allocated = true;
   bool first_allocated_view_id_was_allocated = false;
@@ -701,6 +732,7 @@ class RecordingView final : public cgpui::View {
   cgpui::InvalidationState after_paint_request_invalidation{};
   cgpui::InvalidationState after_clear_invalidation{};
   cgpui::InvalidationState invalidation_after_subscribed_notify{};
+  cgpui::InvalidationState invalidation_after_model_update{};
   cgpui::InvalidationState view_context_initial_invalidation{};
   cgpui::InvalidationState view_context_after_layout_request_invalidation{};
   cgpui::InvalidationState view_context_after_clear_invalidation{};
@@ -3295,6 +3327,62 @@ int test_runtime_tracks_view_model_subscriptions() {
   return 0;
 }
 
+RuntimeFixture* view_context_model_helper_fixture = nullptr;
+
+void dispatch_view_context_model_helper_sequence() {
+  auto& callback = view_context_model_helper_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 78,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_view_context_model_helpers_create_read_update_and_remove() {
+  RuntimeFixture fixture;
+  view_context_model_helper_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_model_helper_sequence;
+  fixture.view.exercise_view_context_model_helpers = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  view_context_model_helper_fixture = nullptr;
+
+  if (result != 0) {
+    return 254;
+  }
+  if (fixture.view.model_id.value == 0 ||
+      fixture.view.first_model_read_value != 10) {
+    return 255;
+  }
+  if (!fixture.view.updated_model ||
+      fixture.view.updated_model_read_value != 24 ||
+      fixture.view.update_missing_model) {
+    return 256;
+  }
+  if (!fixture.view.invalidation_after_model_update.layout ||
+      !fixture.view.invalidation_after_model_update.paint) {
+    return 257;
+  }
+  if (!fixture.view.removed_model ||
+      fixture.view.removed_model_again ||
+      !fixture.view.missing_model_after_remove) {
+    return 258;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1) {
+    return 259;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* view_identity_fixture = nullptr;
 
 void dispatch_view_identity_sequence() {
@@ -4568,6 +4656,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_tracks_view_model_subscriptions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_view_context_model_helpers_create_read_update_and_remove();
       result != 0) {
     return result;
   }

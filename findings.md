@@ -1113,3 +1113,15 @@
 - Reusing `EntityId<T>` preserves the existing typed-id separation between
   unrelated model/entity payload types and keeps `EntityStore<T>` monotonic id
   behavior unchanged.
+
+## 2026-06-30 ViewContext Model Helpers
+
+- `new_model`, `read_model`, `update_model`, and `remove_model` fit best as
+  header-only `ViewContext` authoring helpers over the existing entity store;
+  this keeps Step 100 additive and avoids adding a second model storage path.
+- `update_model` should soft-fail when the model id is missing, and should only
+  notify model changes after it finds the model and runs the author callback.
+  That lets subscribed views receive layout/paint invalidation without making
+  failed updates schedule redraws.
+- `remove_model` can delegate to existing entity removal semantics, including
+  notifying subscribed views only when an actual model is removed.

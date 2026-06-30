@@ -1538,6 +1538,26 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 26/26.
 
+- Started Step 100: ViewContext model helpers for create, read, update, and
+  remove.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED `window_runtime_test` and `ui_header_cleanliness` coverage for
+  `ViewContext::new_model`, `read_model`, `update_model`, and `remove_model`;
+  the test failed as expected because those context helpers did not exist.
+- Implemented Step 100 in `codex/view-context-model-helpers`: added header-only
+  model helpers over the existing typed entity store, with `update_model`
+  soft-failing for missing models and notifying model changes after a successful
+  update callback.
+- Verified targeted tests: `xmake test -P .
+  window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 - Planned the post-Step-128 follow-on queue for Steps 129-168 after the user
   asked for the "后40步" plan.
 - Confirmed the existing forward plan at

@@ -7,6 +7,10 @@
 
 #include <memory>
 
+struct TestModel {
+  int value = 0;
+};
+
 class TestView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
@@ -17,6 +21,14 @@ class TestView final : public cgpui::View {
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
     context.request_render();
+    const cgpui::Model<TestModel> model = context.new_model<TestModel>(1);
+    (void)context.read_model(model);
+    (void)context.update_model(
+        model,
+        [](TestModel& state) {
+          state.value = 2;
+        });
+    (void)context.remove_model(model);
     return cgpui::into_element(cgpui::div().size(3.0F, 4.0F));
   }
 };

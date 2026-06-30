@@ -12,15 +12,15 @@
 
 ## Current State
 
-- Steps 89-99 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-100 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at the Step 99 feature merge.
+- `master` is at the Step 100 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  expected to remain active after Step 99 cleanup.
-- The next implementation slice is Step 100:
-  `ViewContext` model helpers for create, read, update, and remove.
+  expected to remain active after Step 100 cleanup.
+- The next implementation slice is Step 101:
+  weak entity/view handle primitives with soft-fail upgrade.
 
 ## File Map
 
@@ -102,7 +102,7 @@ Acceptance at the end of Band A:
 Purpose: introduce the GPUI-style model and app shell needed for real applications.
 
 - [x] Step 99: public `Model<T>`/`Entity<T>` aliases over typed entity ids.
-- [ ] Step 100: `ViewContext` model helpers for create, read, update, and remove.
+- [x] Step 100: `ViewContext` model helpers for create, read, update, and remove.
 - [ ] Step 101: weak entity/view handle primitives with soft-fail upgrade.
 - [ ] Step 102: observe/subscribe callback helper for model changes.
 - [ ] Step 103: model update notification invalidates subscribed views.
@@ -194,7 +194,7 @@ storage before nested view/event work.
 
 - [x] Step 99: add public `Model<T>` and `Entity<T>` aliases over typed entity
   ids.
-- [ ] Step 100: add `ViewContext` helpers for model create/read/update/remove.
+- [x] Step 100: add `ViewContext` helpers for model create/read/update/remove.
 - [ ] Step 101: add weak entity/view handles with soft-fail upgrade.
 - [ ] Step 102: add model observe/subscribe callbacks.
 - [ ] Step 103: make model updates notify observers and invalidate subscribed
@@ -260,17 +260,17 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 100 in an isolated worktree:
+Start Step 101 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/view-context-model-helpers -b codex/view-context-model-helpers master
-xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/weak-entity-view-handles -b codex/weak-entity-view-handles master
+xmake test -P . entity_store_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Then add the RED tests for `ViewContext` model create/read/update/remove
-helpers over the existing runtime entity store. Preserve the current entity
-store behavior, notify changed models only after successful updates, then follow
-the standard per-step verification/merge workflow above.
+Then add the RED tests for `WeakEntity<T>` and `WeakView` storing typed ids and
+upgrading through a context/runtime with soft-fail behavior. Preserve the
+existing model helper and view-id allocation semantics, then follow the standard
+per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -387,13 +387,15 @@ Status: complete on `master` after the Step 99 merge.
 
 ### Step 100: ViewContext Model Helpers
 
+Status: complete on `master` after the Step 100 merge.
+
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for `new_model`, `read_model`, `update_model`, and `remove_model` wrappers.
-- [ ] Implement helpers over the existing runtime entity store and notify changed models after successful updates.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for `new_model`, `read_model`, `update_model`, and `remove_model` wrappers.
+- [x] Implement helpers over the existing runtime entity store and notify changed models after successful updates.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
 
 ### Step 101: Weak Entity and View Handles
 

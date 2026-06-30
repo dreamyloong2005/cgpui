@@ -252,6 +252,18 @@ struct WindowRuntimeContext {
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
 
+  template <typename T, typename... Args>
+  Model<T> new_model(Args&&... args) const;
+
+  template <typename T>
+  [[nodiscard]] const T* read_model(Model<T> model) const;
+
+  template <typename T, typename Update>
+  bool update_model(Model<T> model, Update&& update) const;
+
+  template <typename T>
+  bool remove_model(Model<T> model) const;
+
   template <typename T>
   EntityId<T> insert_entity(T entity) const;
 
@@ -461,6 +473,31 @@ T* WindowRuntimeContext::mutate_entity(EntityId<T> id) const {
 template <typename T>
 bool WindowRuntimeContext::remove_entity(EntityId<T> id) const {
   return runtime.remove_entity(id);
+}
+
+template <typename T, typename... Args>
+Model<T> WindowRuntimeContext::new_model(Args&&... args) const {
+  return runtime.emplace_entity<T>(std::forward<Args>(args)...);
+}
+
+template <typename T>
+const T* WindowRuntimeContext::read_model(Model<T> model) const {
+  return runtime.read_entity(model);
+}
+
+template <typename T, typename Update>
+bool WindowRuntimeContext::update_model(Model<T> model, Update&& update) const {
+  T* stored_model = runtime.mutate_entity(model);
+  if (stored_model == nullptr) {
+    return false;
+  }
+  std::forward<Update>(update)(*stored_model);
+  return runtime.notify_entity_changed(model);
+}
+
+template <typename T>
+bool WindowRuntimeContext::remove_model(Model<T> model) const {
+  return runtime.remove_entity(model);
 }
 
 template <typename T>
