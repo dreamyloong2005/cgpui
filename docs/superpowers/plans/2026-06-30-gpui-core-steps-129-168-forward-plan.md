@@ -18,21 +18,72 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-121 are complete on `master` through
+  `dc010b6 docs: mark step 121 merged`. The Step 121 behavior commit is
   `cf180f4 feat: add text paint command`.
 - Step 120 post-merge verification passed before the docs closeout: targeted
   tests 4/4, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121 post-merge verification passed: targeted tests 3/3, Windows full
-  debug 29/29, and WSL Arch Linux full debug 26/26.
+  debug 29/29, and WSL Arch Linux full debug 26/26. Its docs closeout is also
+  committed on `master`.
 - Steps 122-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+- Step 122 already has a clean handoff worktree:
+  `.worktrees/font-descriptor-font-size` on
+  `codex/font-descriptor-font-size`, based at
+  `dc010b6 docs: mark step 121 merged`. Continue that worktree instead of
+  recreating it.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
 - The main worktree is on `master` with no tracked/staged changes before this
   planning refresh; the known local-only untracked item is `.vscode/`.
 
+## 2026-06-30 Back-40 Planning After Step 121 Docs Closeout
+
+This planning refresh is anchored at `master` HEAD
+`dc010b6 docs: mark step 121 merged`. It is a plan-only closeout: no Step 129
+implementation work starts here, and the active implementation path remains
+Step 122 through Step 128.
+
+- The immediate execution branch is already open:
+  `.worktrees/font-descriptor-font-size` on
+  `codex/font-descriptor-font-size`. The next implementation action is to add
+  the Step 122 RED tests for `FontDescriptor`, `font_size`, text layout metrics,
+  and public header coverage.
+- The gate to Step 129 is now exactly 7 implementation slices: Steps 122-128,
+  followed by the post-Step-128 targeted verification, Windows full debug, WSL
+  Arch full debug, and clean `master` status check.
+- The后 40 步 are Steps 129-168. They are planned as four sequential 10-step
+  bands, each with one product-shaped exit:
+  context/entity/async, keyed widgets/style cascade, text/font/renderer
+  maturity, and Windows/Wayland platform completion plus parity audit.
+- The effective distance through Step 168 is 47 implementation slices: the 7
+  remaining pre-back-40 slices plus the 40 follow-on slices, with four band
+  checkpoint reviews after Steps 138, 148, 158, and 168.
+- Step 168 remains an audit milestone. It should say what is implemented,
+  partial, missing, and Mac/Metal-deferred; it should not claim full upstream
+  GPUI parity.
+
+Planning-level outcome for these 40 steps:
+
+- After Step 138, public app code should be able to use context-shaped APIs for
+  entities, globals, scoped actions, subscriptions, deferred callbacks, timers,
+  async completions, batching, and diagnostics without direct runtime plumbing.
+- After Step 148, common UI should be expressible through keyed elements,
+  lifecycle/state, style classes/themes, cascade resolution, focus handles, and
+  reusable button, label, text input, and scrollable list primitives.
+- After Step 158, text and rendering should have backend-ready command
+  metadata for fonts, shaping runs, glyph caches, Vulkan text handling,
+  opacity, transforms, batching, HiDPI scale, snapshots, and unsupported-command
+  diagnostics.
+- After Step 168, Win32 and Wayland should have the platform hooks needed by
+  the active Windows/Linux core API, and the parity document should become the
+  truth source for the next milestone.
+
 ## 2026-06-30 Back-40 Planning After Step 121 Merge
+
+Historical snapshot, superseded by the Step 121 docs-closeout refresh above.
 
 This refresh is anchored at `master` HEAD
 `cf180f4 feat: add text paint command`. Step 121 is now merged and post-merge
@@ -416,8 +467,8 @@ For every step:
 For the current pre-back-40 state, start Step 122 instead of starting Step 129:
 
 ```powershell
-git worktree add .worktrees/font-descriptor-font-size -b codex/font-descriptor-font-size master
 cd .worktrees/font-descriptor-font-size
+git status --short --branch
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 

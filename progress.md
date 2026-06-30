@@ -2857,3 +2857,18 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
+
+- Planned the post-Step-128后 40 步 queue again after Step 121 docs closeout.
+- Refreshed
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  so its current anchor is `dc010b6 docs: mark step 121 merged`, while keeping
+  `cf180f4 feat: add text paint command` as the Step 121 behavior commit.
+- Clarified that Step 129 remains gated behind Steps 122-128 plus the
+  post-Step-128 targeted, Windows full debug, WSL Arch full debug, and clean
+  `master` verification.
+- Clarified that Step 122 should continue the already-created clean worktree
+  `.worktrees/font-descriptor-font-size` on
+  `codex/font-descriptor-font-size`, instead of recreating the worktree.
+- Updated `task_plan.md` and `findings.md` with the same handoff state and
+  distance estimate: 7 implementation slices to Step 129, and 47 slices
+  through Step 168 including the remaining pre-back-40 gate.

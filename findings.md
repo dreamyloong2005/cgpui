@@ -1883,3 +1883,23 @@
   `codex/flex-grow-shrink` and should first add RED coverage for child flex
   grow/shrink factors affecting main-axis allocation while preserving default
   zero-grow behavior.
+
+## 2026-06-30 Back-40 Planning After Step 121 Docs Closeout
+
+- The后 40 步 plan remains Steps 129-168 and is still gated behind Step 128.
+  Step 121 is now behavior-merged at `cf180f4 feat: add text paint command`
+  and docs-closed at `dc010b6 docs: mark step 121 merged`, with post-merge
+  targeted, Windows full debug, and WSL Arch Linux full debug verification
+  already recorded.
+- The active pre-back-40 route is exactly Steps 122-128 plus the
+  post-Step-128 exit verification. Step 122 should continue the existing clean
+  worktree `.worktrees/font-descriptor-font-size` on
+  `codex/font-descriptor-font-size`; recreating that worktree would be churn.
+- The后 40 步 planning target is four sequential bands: Steps 129-138 for
+  context/entity/global/action/subscription/defer/timer/async/batching/
+  diagnostics, Steps 139-148 for keyed reconciliation/widgets/style cascade,
+  Steps 149-158 for text/font/renderer diagnostics, and Steps 159-168 for
+  Win32/Wayland platform completion plus the parity audit.
+- The effective distance to Step 129 is 7 implementation slices plus the
+  Step 128 exit verification. The effective distance through Step 168 is 47
+  implementation slices plus four band checkpoint reviews.

@@ -99,8 +99,11 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `cf180f4 feat: add text paint command`. Steps
-89-121 are merged and post-merge verified on Windows and WSL Arch Linux.
+pre-back-40 handoff state at `dc010b6 docs: mark step 121 merged`; the Step
+121 behavior commit is `cf180f4 feat: add text paint command`. Steps 89-121 are
+merged, docs-closed, and post-merge verified on Windows and WSL Arch Linux.
+Step 122 already has the clean handoff worktree
+`.worktrees/font-descriptor-font-size` on `codex/font-descriptor-font-size`.
 Step 129 remains gated behind completion and Windows/WSL verification of Steps
 122-128 plus the post-Step-128 exit verification.
 
