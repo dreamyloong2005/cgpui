@@ -606,6 +606,23 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 78: Element builder key handler helper.
+- Added RED `element_test` coverage for `ElementBuilder::on_key(...)` running
+  only on `KeyboardKey`, passing the key and target element id into the handler,
+  consuming the returned result, and respecting disabled state; the test failed
+  because the builder helper did not exist.
+- Implemented `KeyHandler`, `KeyElement`, and
+  `ElementBuilder::on_key(...)` as another opt-in wrapper. Key and click
+  wrappers are applied before focusability so focusable capability remains
+  visible on composed elements.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 77: Element builder focusable helper.
 - Added RED `element_test` coverage for
   `ElementBuilder::focusable().build()` exposing `focusable() == true`; the

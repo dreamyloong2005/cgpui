@@ -746,3 +746,11 @@
   to stay inside capability wrappers like focusability so `focusable()` remains
   visible on the built element while event handling still reaches the click
   handler.
+
+## 2026-06-30 Element Builder Key Handler
+
+- Element-level key handling can use the same opt-in wrapper pattern as click
+  handling, but it should accept the concrete `KeyboardKey` alongside the
+  element event context so author code does not need to inspect the variant.
+- Key and click handlers should remain behavior wrappers inside focusability,
+  preserving `focusable()` visibility when helpers are composed.

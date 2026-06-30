@@ -52,6 +52,8 @@ struct ElementFocusContext {
 };
 
 using ClickHandler = std::function<EventResult(const ElementEventContext&)>;
+using KeyHandler =
+    std::function<EventResult(const KeyboardKey&, const ElementEventContext&)>;
 
 class Element {
  public:
@@ -538,6 +540,67 @@ class FocusableElement : public Element {
   std::unique_ptr<Element> child_;
 };
 
+class KeyElement : public Element {
+ public:
+  KeyElement(std::unique_ptr<Element> child, KeyHandler handler)
+      : child_(std::move(child)),
+        handler_(std::move(handler)) {}
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    if (child_) {
+      const LayoutOutput output = child_->layout(input);
+      child_->set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      return output;
+    }
+    return Element::layout(input);
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override {
+    if (child_) {
+      child_->paint(paint_list);
+    }
+  }
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    if (!enabled()) {
+      return EventResult::unhandled();
+    }
+    if (const auto* key = std::get_if<KeyboardKey>(&event);
+        key != nullptr && handler_) {
+      return handler_(*key, context);
+    }
+    return child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
+  }
+
+ private:
+  std::unique_ptr<Element> child_;
+  KeyHandler handler_;
+};
+
 class ElementBuilder {
  public:
   [[nodiscard]] static ElementBuilder box() {
@@ -585,6 +648,11 @@ class ElementBuilder {
 
   [[nodiscard]] ElementBuilder on_click(ClickHandler handler) && {
     click_handler_ = std::move(handler);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder on_key(KeyHandler handler) && {
+    key_handler_ = std::move(handler);
     return std::move(*this);
   }
 
@@ -647,6 +715,12 @@ class ElementBuilder {
       click_element->set_enabled(enabled_);
       element = std::move(click_element);
     }
+    if (key_handler_) {
+      auto key_element =
+          std::make_unique<KeyElement>(std::move(element), key_handler_);
+      key_element->set_enabled(enabled_);
+      element = std::move(key_element);
+    }
     if (focusable_) {
       auto focusable_element =
           std::make_unique<FocusableElement>(std::move(element));
@@ -663,6 +737,7 @@ class ElementBuilder {
   bool enabled_ = true;
   bool focusable_ = false;
   ClickHandler click_handler_;
+  KeyHandler key_handler_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

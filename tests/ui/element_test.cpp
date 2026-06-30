@@ -1629,6 +1629,70 @@ int test_element_builder_focusable_helper_composes_with_click_handler() {
   return result.consumed && !result.cancelled ? 0 : 172;
 }
 
+int test_element_builder_key_handler_runs_on_keyboard_event() {
+  int key_count = 0;
+  std::uint32_t last_key_code = 0;
+  cgpui::ElementId handled_element_id{};
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .on_key([&](
+                      const cgpui::KeyboardKey& key,
+                      const cgpui::ElementEventContext& context) {
+            key_count += 1;
+            last_key_code = key.key_code;
+            handled_element_id = context.target_element_id;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{39});
+
+  const cgpui::EventResult key_result = element->handle_event(
+      cgpui::KeyboardKey{
+          .key_code = 65,
+          .action = cgpui::KeyAction::pressed,
+          .modifiers = {.control = true}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+  const cgpui::EventResult pointer_result = element->handle_event(
+      cgpui::PointerMoved{.position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+
+  if (key_count != 1 || last_key_code != 65 ||
+      handled_element_id != cgpui::ElementId{39}) {
+    return 173;
+  }
+  if (!key_result.consumed || key_result.cancelled) {
+    return 174;
+  }
+  return !pointer_result.consumed && !pointer_result.cancelled ? 0 : 175;
+}
+
+int test_element_builder_key_handler_respects_disabled_state() {
+  int key_count = 0;
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .enabled(false)
+          .on_key([&](
+                      const cgpui::KeyboardKey&,
+                      const cgpui::ElementEventContext&) {
+            key_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{40});
+
+  const cgpui::EventResult result = element->handle_event(
+      cgpui::KeyboardKey{.key_code = 65, .action = cgpui::KeyAction::pressed},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+
+  if (element->enabled()) {
+    return 176;
+  }
+  if (key_count != 0) {
+    return 177;
+  }
+  return !result.consumed && !result.cancelled ? 0 : 178;
+}
+
 int test_element_builder_click_handler_runs_on_pointer_press() {
   int click_count = 0;
   cgpui::ElementId clicked_element_id{};
@@ -2014,6 +2078,16 @@ int main() {
   }
   if (const int result =
           test_element_builder_focusable_helper_composes_with_click_handler();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_key_handler_runs_on_keyboard_event();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_key_handler_respects_disabled_state();
       result != 0) {
     return result;
   }
