@@ -99,12 +99,12 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, and Windows/WSL verification matrix for
 all 40 follow-on steps. It also records the current pre-back-40 handoff state:
-Step 105 is already open in `.worktrees/window-options-open-window`, with its
-baseline targeted tests passed, so the next active action is continuing that
-worktree rather than starting Step 129.
+Step 105 is implemented and verified in `.worktrees/window-options-open-window`,
+so the next active action after merge is Step 106 rather than starting Step
+129.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 105 unless the plan is explicitly reprioritized.
+the current active Step 106 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -226,7 +226,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 102. [x] ViewContext observe/subscribe callback helper for model changes.
 103. [x] Model update notification automatically invalidates subscribed views.
 104. [x] Public `AppContext` wrapper over the app runner setup phase.
-105. [ ] `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
+105. [x] `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
 106. [ ] Runtime root view lifecycle storage for app-opened windows.
 107. [ ] View registry skeleton for multiple view ids beyond the root.
 108. [ ] Child-view element placeholder that embeds another view's rendered output.
@@ -293,16 +293,13 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 104 is complete, merged to `master`, and post-merge verified on Windows
-and WSL Arch Linux. Step 105 is already open in
-`.worktrees/window-options-open-window` on `codex/window-options-open-window`;
-its baseline targeted tests passed:
-`xmake test -P . app_runner_test/default ui_header_cleanliness/default`
-passed 2/2. Next implementation action is to add the Step 105 RED tests for
-`WindowOptions` and `AppContext::open_window(...)`.
+Step 105 is implemented in `.worktrees/window-options-open-window` on
+`codex/window-options-open-window` and verified on Windows and WSL Arch Linux.
+After Step 105 is committed and merged to `master`, the next implementation
+step is Step 106: runtime root view lifecycle storage for app-opened windows.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168, but Step 129 remains
-gated behind completion and Windows/WSL verification of Steps 105-128.
+gated behind completion and Windows/WSL verification of Steps 106-128.
 
 ## Risks
 

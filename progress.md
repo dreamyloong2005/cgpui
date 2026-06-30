@@ -1707,6 +1707,37 @@
   existing Step 105 worktree instead of recreating it or starting Step 129.
 - No implementation code was changed during this planning refresh.
 
+## 2026-06-30 Step 105 WindowOptions And Open Window Skeleton
+
+- Continued Step 105 in `.worktrees/window-options-open-window` on
+  `codex/window-options-open-window`, after the worktree was fast-forwarded to
+  `153c39e docs: refresh back forty planning after step 104`.
+- Reconfirmed the baseline targeted tests passed:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED `app_runner_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for a fluent `WindowOptions` builder,
+  `WindowOptions::to_descriptor()`, `AppOpenedWindow`,
+  `AppContext::open_window(...)`, and
+  `WindowRuntime::app_opened_windows()`. The RED builds failed as expected
+  because `cgpui::WindowOptions` and the open-window API did not exist.
+- Implemented Step 105 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  `WindowOptions` wraps `WindowDescriptor` with fluent `title(...)` and
+  `size(...)` setters, `AppContext::open_window(...)` forwards to
+  `WindowRuntime::open_window(...)`, and the runtime records
+  `AppOpenedWindow` descriptors without creating additional platform windows.
+- Verified targeted tests after GREEN:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168 forward
+  plan so Step 105 is marked implemented/verified in the feature worktree and
+  Step 106 is the next active implementation step after merge.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

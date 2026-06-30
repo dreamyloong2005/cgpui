@@ -61,7 +61,17 @@ int main() {
   cgpui::AppContextSetupCallback app_setup =
       [](cgpui::AppContext& app_context) {
         (void)app_context.runtime.invalidation_state();
+        const cgpui::AppOpenedWindow opened =
+            app_context.open_window(cgpui::WindowOptions{}
+                                        .title("Header Window")
+                                        .size(9.0F, 7.0F));
+        (void)opened;
       };
+  const cgpui::WindowDescriptor window_descriptor =
+      cgpui::WindowOptions{}
+          .title("Header Window")
+          .size(cgpui::Size{9.0F, 7.0F})
+          .to_descriptor();
   cgpui::AppRunnerOptions app_options;
   app_options.setup_context = app_setup;
   cgpui::AnyElement element =
@@ -111,6 +121,8 @@ int main() {
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  resolved.background_color.has_value() &&
                  static_cast<bool>(app_options.setup_context) &&
+                 window_descriptor.title == "Header Window" &&
+                 window_descriptor.size.width == 9.0F &&
                  resolved.background_color->r == 64.0F / 255.0F &&
                  styled->style_state().hover.background_color.has_value() &&
                  styled->style().preferred_size.width == 1.0F &&

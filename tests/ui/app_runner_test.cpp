@@ -288,6 +288,92 @@ int test_run_app_accepts_app_context_setup_callback() {
   return 0;
 }
 
+int test_window_options_and_app_context_open_window_skeleton() {
+  const cgpui::WindowDescriptor descriptor =
+      cgpui::WindowOptions{}
+          .title("Secondary Window")
+          .size(640.0F, 480.0F)
+          .to_descriptor();
+  if (descriptor.title != "Secondary Window" ||
+      descriptor.size.width != 640.0F ||
+      descriptor.size.height != 480.0F) {
+    return 13;
+  }
+
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  bool setup_called = false;
+  bool after_frame_called = false;
+  cgpui::WindowDescriptor opened_descriptor;
+  cgpui::WindowDescriptor recorded_descriptor;
+  std::size_t recorded_count = 0;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                const cgpui::AppOpenedWindow opened =
+                    context.open_window(cgpui::WindowOptions{}
+                                            .title("Secondary Window")
+                                            .size(cgpui::Size{
+                                                .width = 640.0F,
+                                                .height = 480.0F}));
+                opened_descriptor = opened.descriptor;
+                const auto opened_windows =
+                    context.runtime.app_opened_windows();
+                recorded_count = opened_windows.size();
+                if (!opened_windows.empty()) {
+                  recorded_descriptor = opened_windows.front().descriptor;
+                }
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext&) {
+                      after_frame_called = true;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 14;
+  }
+  if (!setup_called || !after_frame_called) {
+    return 15;
+  }
+  if (recorded_count != 1) {
+    return 16;
+  }
+  if (opened_descriptor.title != "Secondary Window" ||
+      opened_descriptor.size.width != 640.0F ||
+      opened_descriptor.size.height != 480.0F) {
+    return 17;
+  }
+  if (recorded_descriptor.title != opened_descriptor.title ||
+      recorded_descriptor.size.width != opened_descriptor.size.width ||
+      recorded_descriptor.size.height != opened_descriptor.size.height) {
+    return 18;
+  }
+  if (application.create_window_count != 1 ||
+      application.last_descriptor.title != "CGPUI") {
+    return 19;
+  }
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -296,6 +382,11 @@ int main() {
     return result;
   }
   if (const int result = test_run_app_accepts_app_context_setup_callback();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_window_options_and_app_context_open_window_skeleton();
       result != 0) {
     return result;
   }

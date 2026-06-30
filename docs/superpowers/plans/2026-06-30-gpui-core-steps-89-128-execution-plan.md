@@ -14,11 +14,15 @@
 
 - Steps 89-104 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `8c8dc90 feat: add app context setup wrapper`.
+- Step 105 is implemented and verified in
+  `.worktrees/window-options-open-window` on
+  `codex/window-options-open-window`; it still needs commit, fast-forward merge
+  to `master`, post-merge verification, and cleanup.
+- `master` is at `153c39e docs: refresh back forty planning after step 104`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation slice is Step 105:
-  `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
+- The next implementation slice after the Step 105 merge is Step 106:
+  runtime root view lifecycle storage for app-opened windows.
 
 ## File Map
 
@@ -105,7 +109,7 @@ Purpose: introduce the GPUI-style model and app shell needed for real applicatio
 - [x] Step 102: observe/subscribe callback helper for model changes.
 - [x] Step 103: model update notification invalidates subscribed views.
 - [x] Step 104: public `AppContext` wrapper over app setup.
-- [ ] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
+- [x] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 - [ ] Step 106: runtime root view lifecycle storage for app-opened windows.
 - [ ] Step 107: view registry skeleton for multiple view ids.
 - [ ] Step 108: child-view element placeholder that embeds another view's rendered output.
@@ -198,7 +202,7 @@ storage before nested view/event work.
 - [x] Step 103: make model updates notify observers and invalidate subscribed
   views.
 - [x] Step 104: expose an `AppContext` setup wrapper.
-- [ ] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
+- [x] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
   skeleton.
 - [ ] Step 106: store app-opened root view lifetimes explicitly.
 - [ ] Step 107: add the first view registry for multiple `ViewId`s.
@@ -258,16 +262,17 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 105 in an isolated worktree:
+Finish Step 105 from the existing isolated worktree, then start Step 106 after
+the post-merge verification and cleanup:
 
 ```powershell
-git worktree add .worktrees/window-options-open-window -b codex/window-options-open-window master
-xmake test -P . app_runner_test/default ui_header_cleanliness/default
+git -C .worktrees/window-options-open-window status --short --branch
+git merge --ff-only codex/window-options-open-window
+xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
 ```
 
-Add RED tests for a fluent `WindowOptions` builder that maps to
-`WindowDescriptor` and a first `AppContext::open_window(...)` skeleton, then
-follow the standard per-step verification/merge workflow above.
+After Step 105 is merged and verified, start Step 106:
+`runtime root view lifecycle storage for app-opened windows`.
 
 ## Step Details
 
@@ -450,14 +455,17 @@ Status: complete on `master` after the Step 104 merge.
 
 ### Step 105: WindowOptions and `open_window(...)`
 
+Status: implemented and feature-worktree verified; pending commit, merge,
+post-merge verification, and cleanup.
+
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/app_runner_test.cpp`
 
-- [ ] Add RED tests for a fluent `WindowOptions` builder that maps to `WindowDescriptor`.
-- [ ] Add `AppContext::open_window(...)` as a skeleton that records/creates the initial runtime-backed window path without full multi-window platform ownership yet.
-- [ ] Targeted test command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for a fluent `WindowOptions` builder that maps to `WindowDescriptor`.
+- [x] Add `AppContext::open_window(...)` as a skeleton that records/creates the initial runtime-backed window path without full multi-window platform ownership yet.
+- [x] Targeted test command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 106: Runtime Root View Lifecycle Storage
 

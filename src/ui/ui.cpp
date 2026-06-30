@@ -130,6 +130,29 @@ std::span<const PaintCommand> PaintList::commands() const {
   return commands_;
 }
 
+WindowOptions& WindowOptions::title(std::string title_value) {
+  descriptor.title = std::move(title_value);
+  return *this;
+}
+
+WindowOptions& WindowOptions::size(Size size_value) {
+  descriptor.size = size_value;
+  return *this;
+}
+
+WindowOptions& WindowOptions::size(float width, float height) {
+  descriptor.size = Size{.width = width, .height = height};
+  return *this;
+}
+
+WindowDescriptor WindowOptions::to_descriptor() const {
+  return descriptor;
+}
+
+AppOpenedWindow AppContext::open_window(WindowOptions options) const {
+  return runtime.open_window(std::move(options));
+}
+
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
@@ -376,6 +399,16 @@ int WindowRuntime::run(
     return 1;
   }
   return run_result;
+}
+
+AppOpenedWindow WindowRuntime::open_window(WindowOptions options) {
+  AppOpenedWindow opened{.descriptor = options.to_descriptor()};
+  app_opened_windows_.push_back(opened);
+  return opened;
+}
+
+std::span<const AppOpenedWindow> WindowRuntime::app_opened_windows() const {
+  return app_opened_windows_;
 }
 
 void WindowRuntime::handle_event(const PlatformEvent& event) {

@@ -35,7 +35,17 @@ int main() {
   cgpui::AppContextSetupCallback app_setup =
       [](cgpui::AppContext& app_context) {
         (void)app_context.runtime.invalidation_state();
+        const cgpui::AppOpenedWindow opened =
+            app_context.open_window(cgpui::WindowOptions{}
+                                        .title("Prelude Window")
+                                        .size(11.0F, 13.0F));
+        (void)opened;
       };
+  const cgpui::WindowDescriptor window_descriptor =
+      cgpui::WindowOptions{}
+          .title("Prelude Window")
+          .size(cgpui::Size{11.0F, 13.0F})
+          .to_descriptor();
   (void)entity_id;
   (void)weak_model;
   (void)weak_view;
@@ -57,5 +67,9 @@ int main() {
   options.setup_context = app_setup;
   (void)view;
   (void)options;
-  return root_id.value != 0 && tree.root_id() == root_id ? 0 : 1;
+  return root_id.value != 0 && tree.root_id() == root_id &&
+                 window_descriptor.title == "Prelude Window" &&
+                 window_descriptor.size.height == 13.0F
+             ? 0
+             : 1;
 }

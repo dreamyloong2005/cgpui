@@ -68,8 +68,23 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
+struct WindowOptions {
+  WindowDescriptor descriptor;
+
+  WindowOptions& title(std::string title);
+  WindowOptions& size(Size size);
+  WindowOptions& size(float width, float height);
+  [[nodiscard]] WindowDescriptor to_descriptor() const;
+};
+
+struct AppOpenedWindow {
+  WindowDescriptor descriptor;
+};
+
 struct AppContext {
   WindowRuntime& runtime;
+
+  [[nodiscard]] AppOpenedWindow open_window(WindowOptions options) const;
 };
 
 struct ViewId {
@@ -356,6 +371,8 @@ class WindowRuntime {
   [[nodiscard]] int run(
       const WindowDescriptor& descriptor,
       WindowRuntimeOptions options = {});
+  [[nodiscard]] AppOpenedWindow open_window(WindowOptions options);
+  [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
 
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
   void set_after_render_callback(WindowRuntimeRenderCallback callback);
@@ -486,6 +503,7 @@ class WindowRuntime {
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
+  std::vector<AppOpenedWindow> app_opened_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;

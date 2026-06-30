@@ -1234,3 +1234,19 @@
   async, 139-148 keyed elements/widgets, 149-158 text/font/renderer maturity,
   and 159-168 Windows/Wayland closure plus the parity audit. Its entry gate
   stays Step 128 merged and Windows/WSL verified on a clean `master`.
+
+## 2026-06-30 WindowOptions And Open Window Skeleton
+
+- `WindowOptions` can start as a direct wrapper around `WindowDescriptor`.
+  That keeps defaults (`CGPUI`, 1280x720) and platform-neutral descriptor
+  mapping intact while adding the GPUI-like fluent authoring spelling needed by
+  later app/window lifecycle steps.
+- Step 105 should record app-opened window descriptors rather than create real
+  platform windows. `run_app` still owns one `WindowRuntime`, one platform
+  window, and one renderer; Step 106/159 can grow actual root-view and
+  multi-window ownership without pretending this skeleton already owns extra
+  native windows.
+- The setup-time open-window record must remain visible after `run(...)`
+  starts because `setup_context` runs before platform window creation. Clearing
+  records at the start of `WindowRuntime::run(...)` would erase the only Step
+  105 observable state and weaken the handoff to Step 106.
