@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning With Step 121 Active
+
+- Refreshed the post-Step-128 forward plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked for the "后40步" plan.
+- Anchored the plan to the current `master` docs closeout:
+  `45a8dad docs: mark step 120 merged`; the Step 120 behavior commit remains
+  `9aba0e6 feat: honor vulkan solid rect clips`.
+- Confirmed Step 121 is already active in `.worktrees/text-paint-command` on
+  `codex/text-paint-command`, with implementation-file changes present but not
+  staged or merged. The planning refresh did not modify that worktree.
+- Added a Step Exit Contracts table for Steps 129-168, covering each step's
+  expected exit artifact and the scope that must stay out of that step.
+- Updated `task_plan.md` so the root plan records the Step 121 active worktree,
+  the Step 129 gate, and the distance estimates: 8 implementation steps remain
+  to Step 129 now; after Step 121 merges, 7 implementation steps remain.
+- This was a planning-only refresh. No implementation code changed in the main
+  worktree.
+
 ## 2026-06-30 Step 120 Post-Merge And Back-40 Planning
 
 - Fast-forward merged Step 120 to `master` at

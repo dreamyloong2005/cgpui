@@ -99,15 +99,20 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `9aba0e6 feat: honor vulkan solid rect clips`.
-Steps 89-120 are merged and post-merge verified on Windows and WSL Arch Linux.
-Step 129 remains gated behind completion and Windows/WSL verification of Steps
-121-128 plus the post-Step-128 exit verification.
+pre-back-40 handoff state at `45a8dad docs: mark step 120 merged`; the Step
+120 behavior commit is `9aba0e6 feat: honor vulkan solid rect clips`. Steps
+89-120 are merged and post-merge verified on Windows and WSL Arch Linux.
+Step 121 is active in `.worktrees/text-paint-command` on
+`codex/text-paint-command`, and Step 129 remains gated behind completion and
+Windows/WSL verification of Steps 121-128 plus the post-Step-128 exit
+verification.
 
 The effective distance to Step 129 is 8 implementation steps, Steps 121-128,
 plus post-Step-128 targeted, Windows, and WSL verification. The effective
 distance through Step 168 is 48 implementation steps plus those verification
-gates and the four follow-on band checkpoint reviews.
+gates and the four follow-on band checkpoint reviews. After Step 121 merges,
+the distance to Step 129 becomes 7 implementation steps, Steps 122-128, plus
+the same post-Step-128 verification gate.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 121-128 queue unless the plan is explicitly reprioritized.
@@ -321,11 +326,14 @@ Arch Linux full debug passed 26/26. The Step 117 worktree and feature branch
 have been removed.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
-completion targets, non-goals, branch/test/verification matrix, Step 129 start
-packet, band checkpoints after Steps 138, 148, 158, and 168, and an execution
-gate that records Steps 115-120 as merged and post-merge verified. Step 129
-remains gated behind completion plus Windows/WSL verification of Steps 121-128
-and the post-Step-128 exit verification.
+completion targets, non-goals, branch/test/verification matrix, per-step exit
+artifacts, explicit keep-out-of-scope notes, Step 129 start packet, band
+checkpoints after Steps 138, 148, 158, and 168, and an execution gate that
+records Steps 115-120 as merged and post-merge verified. Step 129 remains
+gated behind completion plus Windows/WSL verification of Steps 121-128 and the
+post-Step-128 exit verification. Step 121 is currently active in
+`.worktrees/text-paint-command`; future work should finish and merge that
+branch before opening Step 122 or any back-40 branch.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
 is merged on `master` at `9dfc2e7 feat: add layer elevation z order`. RED

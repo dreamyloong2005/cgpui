@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning With Step 121 Active
+
+- The后 40 步 remain Steps 129-168 and are still gated behind Steps 121-128
+  plus the post-Step-128 Windows/WSL verification on `master`.
+- The current planning anchor is the docs closeout commit
+  `45a8dad docs: mark step 120 merged`; use
+  `9aba0e6 feat: honor vulkan solid rect clips` as the Step 120 behavior
+  commit, not the current `master` HEAD.
+- Step 121 is already active in `.worktrees/text-paint-command` on
+  `codex/text-paint-command`; future execution should finish and merge that
+  branch before opening Step 122. Do not create a Step 129 worktree until the
+  Step 128 exit contract passes.
+- A useful后 40 步 plan needs more than branch names and target tests: each
+  step now has an exit artifact and an explicit keep-out-of-scope note. This
+  should reduce step creep in high-risk areas such as async, widgets, text
+  shaping, Vulkan text drawing, multi-window lifecycle, accessibility, and the
+  final parity audit.
+- The distance estimate remains 8 implementation steps to Step 129 while Step
+  121 is unmerged. After Step 121 merges and is post-merge verified, the
+  distance becomes 7 implementation steps, Steps 122-128, plus the
+  post-Step-128 verification gate.
+
 ## 2026-06-30 Back-40 Planning After Step 120 Merge
 
 - The后 40 步 remain Steps 129-168, and they are now gated behind Steps

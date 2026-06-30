@@ -17,10 +17,14 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-120 are complete on `master` through
+- Steps 89-120 are complete on `master` through the docs closeout commit
+  `45a8dad docs: mark step 120 merged`; the Step 120 behavior commit is
   `9aba0e6 feat: honor vulkan solid rect clips`.
-- Step 120 post-merge verification passed: targeted tests 4/4, Windows full
-  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 120 post-merge verification passed before the docs closeout: targeted
+  tests 4/4, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 121 is active in `.worktrees/text-paint-command` on
+  `codex/text-paint-command`. It is still part of the pre-back-40 gate until
+  committed, merged to `master`, post-merge verified, and closed out in docs.
 - Steps 121-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -30,7 +34,31 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The main worktree is on `master` with no tracked/staged changes before this
   planning refresh; the known local-only untracked item is `.vscode/`.
 
+## 2026-06-30 Back-40 Planning Refresh With Step 121 Active
+
+This refresh is anchored at `master` HEAD
+`45a8dad docs: mark step 120 merged`. The back 40 remain Steps 129-168 and
+must not preempt the active Step 121 worktree or the rest of the Step 121-128
+gate.
+
+- Step 121 is already open in `.worktrees/text-paint-command`; continue that
+  branch through review, docs update, commit, merge, post-merge Windows/WSL
+  verification, and cleanup before opening Step 122.
+- Until Step 121 merges, the effective distance to Step 129 remains 8
+  implementation steps, Steps 121-128, plus the post-Step-128 targeted,
+  Windows full debug, and WSL Arch Linux verification on `master`.
+- After Step 121 merges, the distance becomes 7 implementation steps,
+  Steps 122-128, plus that same post-Step-128 verification gate.
+- The back-40 planning output for this refresh is the execution contract below:
+  branch slugs, first RED tests, targeted commands, step exit artifacts,
+  explicit non-goals, and four band checkpoints after Steps 138, 148, 158, and
+  168.
+- No Step 129 worktree should be created until Step 128 has landed and the
+  Step 129 start packet passes on a clean `master`.
+
 ## 2026-06-30 Back-40 Planning After Step 120 Merge
+
+Historical snapshot, superseded by the Step 121-active refresh above.
 
 This refresh is anchored at `master` HEAD
 `9aba0e6 feat: honor vulkan solid rect clips`. Step 120 is now merged and
@@ -426,6 +454,55 @@ The expected execution rhythm remains one step per feature branch, one focused
 RED test, one minimal GREEN implementation, targeted tests, Windows full debug,
 WSL Arch full debug, docs/progress update, commit, fast-forward merge, and
 post-merge verification.
+
+## Step Exit Contracts
+
+Use this table as the planning-level definition of done for each follow-on
+step. The detailed step notes below still own the file-level scope and test
+targets.
+
+| Step | Exit artifact | Keep out of this step |
+| --- | --- | --- |
+| 129 | `Context<T>` is public and source-compatible with existing `ViewContext` helper usage. | New context storage, model ownership rewrites, or async behavior. |
+| 130 | Entity handles can read/update/downgrade through existing runtime/context APIs. | A second entity store or lifetime model. |
+| 131 | Typed globals can be set, read, and updated with soft-fail missing lookups. | Persistence, serialization, or cross-process global state. |
+| 132 | Actions resolve deterministically by app, window, view, and focused-element scope. | Menu systems, command palettes, or platform accelerator integration. |
+| 133 | Subscription tokens disconnect observers on release/removal. | Full reactive dependency tracking or automatic lifetime inference. |
+| 134 | `cx.defer(...)` queues FIFO post-event callbacks before the next redraw flush. | Threads, timers, or async task spawning. |
+| 135 | One-shot and repeating timers are deterministic under runtime test ticks. | Real OS timer backends beyond the minimal wakeup contract. |
+| 136 | Async task handles deliver completions through the runtime main-thread queue. | A thread pool, coroutine framework, or cancellation semantics beyond skeleton handles. |
+| 137 | Batched model/global changes coalesce redraw scheduling. | Changing model notification order or observer callback semantics. |
+| 138 | Public diagnostics expose entity, subscription, invalidation, and frame state. | Profiling UI, tracing export, or platform-specific diagnostics. |
+| 139 | Keyed children preserve ids across reorder/insert/remove. | Lifecycle hooks or element state storage. |
+| 140 | Mount/update/unmount hooks fire during reconciliation. | Widget state bags or style cascade. |
+| 141 | Typed element state survives keyed reconciliation by element id. | General app globals or persistent storage. |
+| 142 | Style classes and theme tokens are public vocabulary objects. | Cascade application or runtime theme switching. |
+| 143 | Base, class, state, and inline style resolution has a deterministic order. | A CSS parser, selectors, or inherited typography beyond planned fields. |
+| 144 | `FocusHandle` wraps request/release/query behavior over current focus ownership. | Platform focus rings or accessibility focus adapters. |
+| 145 | Button widget composes public element/focus/style/action APIs. | A private widget framework or platform-native controls. |
+| 146 | Label widget emits styled text paint command metadata. | Text shaping, glyph atlas ownership, or Vulkan text drawing. |
+| 147 | Text input widget integrates focus, text editing, selection, clipboard, and IME geometry surfaces. | Full rich text, multi-line layout, or OS text services beyond current hooks. |
+| 148 | Scrollable list uses stable item keys, scroll offset, and viewport clip metadata. | Virtualization, recycling, or async data loading. |
+| 149 | Font database and platform discovery skeletons expose deterministic descriptors. | Full fallback policy or mandatory system font enumeration in tests. |
+| 150 | Shaping runs carry deterministic fallback metrics and glyph advances. | HarfBuzz integration or complex-script correctness claims. |
+| 151 | Glyph cache/atlas interfaces define lookup, miss, and metadata contracts. | Concrete Vulkan atlas allocation. |
+| 152 | Vulkan accepts text draw commands through cached glyph metadata. | Production-quality glyph rasterization or font discovery coupling. |
+| 153 | Opacity and transform metadata reach paint/renderer command streams. | GPU transform pipelines or animation systems. |
+| 154 | Renderer batching diagnostics group by clip, opacity, transform, and primitive kind. | Performance optimization beyond observable grouping. |
+| 155 | Frame diagnostics report layout, paint, render, command counts, and timing fields. | External profilers or timeline visualization. |
+| 156 | HiDPI scale flows through layout, text metrics, and renderer resize data. | Per-monitor migration behavior or fractional-layout redesign. |
+| 157 | Demo and widget paint command streams have stable snapshot coverage. | Golden image rendering or pixel-perfect text assertions. |
+| 158 | Unsupported commands produce explicit diagnostics instead of silent drops. | Implementing every unsupported command. |
+| 159 | Multi-window registry owns independent per-window root and renderer records. | Full platform multi-window event-loop rewrite. |
+| 160 | Window lifecycle events update dispatch records and callbacks. | Native titlebar/menu policy or platform-specific lifecycle quirks. |
+| 161 | Win32 IME placement consumes focused text geometry. | Wayland IME protocol work or rich text composition UI. |
+| 162 | Wayland text-input skeleton consumes focused text geometry with graceful unsupported behavior. | Full compositor protocol coverage or Win32 changes. |
+| 163 | Win32 drag/drop text/file event shapes and deterministic hooks exist. | Real shell integration beyond skeleton test hooks. |
+| 164 | Wayland data-device drag/drop event shapes soft-fail without data. | Full MIME negotiation or file-manager integration. |
+| 165 | Timers, async completions, and deferred callbacks can request platform wakeups. | Replacing the platform event loop. |
+| 166 | Accessibility snapshots expose roles, names, text, and focus state. | OS-specific accessibility adapters. |
+| 167 | Demo smoke tests cover window, input, text, clipboard, redraw, and close flows. | Broad end-to-end automation or Mac coverage. |
+| 168 | `docs/gpui-core-api-parity.md` audits implemented, partial, missing, and Mac-deferred areas. | Claiming full upstream GPUI parity. |
 
 ## Step-by-Step Execution Matrix
 
