@@ -1516,6 +1516,18 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
 
+- Planned the post-Step-128 follow-on queue for Steps 129-168 after the user
+  asked for the "后40步" plan.
+- Confirmed the existing forward plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  already contains the step matrix, branch slugs, first RED test intents,
+  targeted commands, verification rules, file map, and per-step details.
+- Added a planning snapshot to that forward plan to clarify the four 10-step
+  bands: context/entity/global/async, keyed reconciliation/widgets,
+  text/font/renderer diagnostics, and Windows/Wayland platform completion.
+- Confirmed current `master` is clean for tracked files, with only the existing
+  untracked `.vscode/` present.
+
 - Started Step 86: ViewContext event route access helper.
 - Added RED `window_runtime_test` coverage for
   `ViewContext::current_event_route()` mirroring the existing `event_route`

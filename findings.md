@@ -1085,3 +1085,17 @@
   mutable alias into the context object.
 - The helper is intentionally additive: existing direct `context.input` access
   remains available while author code gains a clearer accessor spelling.
+
+## 2026-06-30 Steps 129-168 Follow-On Planning
+
+- Steps 129-168 should remain queued behind completion of Steps 99-128 unless
+  the roadmap is explicitly reprioritized; Step 129 depends on the model,
+  window, route, text, platform, and demo surfaces that Steps 99-128 still need
+  to land.
+- The post-Step-128 queue is best treated as four 10-step product bands:
+  context/entity/global/async ergonomics, keyed reconciliation and reusable
+  widgets, text/font/renderer maturity, then Windows/Wayland platform closure
+  and parity documentation.
+- Step 168 should not claim full GPUI parity. Its exit condition is a practical
+  Windows/Linux GPUI-core foundation plus an explicit audit of implemented,
+  partial, missing, and Mac/Metal-deferred areas.

@@ -17,6 +17,34 @@
 - This document is a forward plan for the next 40 steps after Step 128. Do not execute Step 129 until Step 128 is merged and verified unless the roadmap is explicitly reprioritized.
 - The main worktree is expected to stay on `master` with no tracked/staged changes aside from planning edits and the pre-existing untracked `.vscode/`.
 
+## Planning Snapshot
+
+These 40 steps are the post-Step-128 push from "close to GPUI core API" toward a
+usable Windows/Linux GPUI-core layer. The plan deliberately stays in four
+10-step bands so each band has one coherent product outcome while each
+individual step remains small enough for the current RED/GREEN/merge cadence.
+
+- Steps 129-138 finish the context side: authoring aliases, entity handles,
+  globals, scoped actions, subscription lifetime, deferred work, timers, async
+  completions, update batching, and runtime diagnostics.
+- Steps 139-148 make elements reusable: keyed reconciliation, lifecycle hooks,
+  per-element state, classes/theme tokens, cascade resolution, focus handles,
+  and first-class button, label, text-input, and scroll-list widgets.
+- Steps 149-158 deepen text and rendering: font discovery skeletons,
+  deterministic shaping metadata, glyph cache contracts, Vulkan text command
+  handling, opacity/transform metadata, batching, HiDPI propagation, command
+  snapshots, and unsupported-command diagnostics.
+- Steps 159-168 close the Windows/Linux runtime loop: multi-window ownership,
+  lifecycle events, Win32 and Wayland IME/DnD hooks, event-loop wakeups,
+  accessibility snapshots, demo smoke tests, and a GPUI-core parity audit with
+  Mac/Metal explicitly handed off.
+
+The intended outcome after Step 168 is not full GPUI parity. It is a practical
+Windows/Linux foundation where application code can be written against a
+GPUI-like public prelude, common widgets are reusable, text/render command
+streams are backend-ready, platform hooks exist for the active targets, and the
+remaining GPUI gaps are visible enough to plan the next milestone honestly.
+
 ## Execution Gate From The Current State
 
 Do not begin Step 129 until all of these are true:
