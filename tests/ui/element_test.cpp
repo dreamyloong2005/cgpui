@@ -2405,7 +2405,7 @@ int test_scroll_element_binds_state_and_preserves_child_layout() {
     return 227;
   }
   return scroll->hit_test(cgpui::Point{.x = 10.0F, .y = 10.0F}) ==
-                 cgpui::ElementId{51}
+                 cgpui::ElementId{50}
              ? 0
              : 228;
 }

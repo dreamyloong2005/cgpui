@@ -474,6 +474,7 @@ class WindowRuntime {
   [[nodiscard]] std::optional<ViewId> child_view_target_for(
       ElementId element_id) const;
   [[nodiscard]] bool focus_next_element(bool reverse);
+  [[nodiscard]] ScrollState* scroll_state_for_route(const EventRoute& route);
   [[nodiscard]] EventResult dispatch_routed_element_event(
       const PlatformEvent& event,
       const EventRoute& route);

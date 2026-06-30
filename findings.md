@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Scroll Routing
+
+- `PointerScrolled` routing belongs after route target selection and ancestry
+  refresh but before generic element dispatch/view fallback. That lets scroll
+  state consume wheel/trackpad deltas without invoking the view when a bound
+  `ScrollElement` owns the viewport under the pointer.
+- `ScrollElement` should hit-test as the scroll viewport wrapper for now. Its
+  child is owned internally rather than indexed in `ElementTree`, so returning
+  the child id can leave `WindowRuntime::routed_element(...)` unable to find
+  the element that actually owns the `ScrollState`.
+- The scroll delta should be applied through `ScrollState::scroll_by(...)`
+  instead of setting offsets directly so existing viewport/content-size clamp
+  semantics remain the single source of truth.
+- A no-scroll route remains a soft-fail path: if no routed `ScrollElement` is
+  found, the runtime continues to normal element dispatch and view fallback.
+
+
 ## 2026-06-30 Back-40 Planning After Step 112 Closeout
 
 - The后 40 步 are Steps 129-168 and remain a post-Step-128 follow-on queue, not

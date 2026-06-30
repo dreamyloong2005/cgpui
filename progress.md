@@ -1,5 +1,37 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 113 Scroll Routing
+
+- Continued Step 113 in `.worktrees/scroll-routing` on
+  `codex/scroll-routing`, fast-forwarded it to
+  `1e9ebda docs: refresh back forty planning after step 112`.
+- Added RED `window_runtime_test` coverage requiring `PointerScrolled` events
+  over a `ScrollElement` to mutate the bound `ScrollState`, consume the event
+  before view fallback, and route hits to the scroll viewport even when the
+  wrapped child has its own id. The first RED run failed as expected with
+  `window_runtime_test.exe` exit code 369 because the scroll offset stayed at
+  zero; after tightening the child-hit case, the RED run failed with exit code
+  374 because routing targeted the child instead of the scroll wrapper.
+- Implemented Step 113 in `src/ui/ui.cpp`, `include/cgpui/ui/ui.hpp`, and
+  `include/cgpui/ui/element.hpp`: `PointerScrolled` now looks up the routed
+  scroll state from route ancestry, applies the delta through
+  `ScrollState::scroll_by(...)`, consumes the event on success, and
+  `ScrollElement::hit_test(...)` now targets the scroll viewport wrapper so the
+  runtime can find the bound state reliably.
+- Updated `element_test` to reflect scroll viewport hit-testing semantics.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default scroll_test/default
+  element_test/default ui_header_cleanliness/default` passed 4/4.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 113 is marked implemented and feature-worktree
+  verified, with Step 114 as the next implementation slice after merge.
+
+
 ## 2026-06-30 Back-40 Planning After Step 112 Closeout
 
 - Refreshed `task_plan.md` and

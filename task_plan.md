@@ -100,17 +100,20 @@ That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
 pre-back-40 handoff state at `ed948a7 docs: mark step 112 merged`: Steps
-89-112 are merged and post-merge verified on Windows and WSL Arch Linux, Step
-113 is already open in `.worktrees/scroll-routing`, and Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 113-128.
+89-112 are merged and post-merge verified on Windows and WSL Arch Linux, and
+Step 113 is implemented and verified in `.worktrees/scroll-routing`. Step 129
+remains gated behind completion and Windows/WSL verification of Steps 114-128
+after Step 113 merges.
 
-From the current `master` state, the effective distance to Step 129 is 16
-implementation steps, Steps 113-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 is 56 implementation
-steps, Steps 113-168, plus the four follow-on band checkpoint reviews.
+From the current feature-worktree state, the effective distance to Step 129 is
+15 implementation steps after Step 113 merges, Steps 114-128, plus
+post-Step-128 targeted, Windows, and WSL verification. The effective distance
+through Step 168 is 55 implementation steps after Step 113 merges, Steps
+114-168, plus the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 113-128 queue unless the plan is explicitly reprioritized.
+the current Step 114-128 queue after Step 113 merges unless the plan is
+explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -236,7 +239,7 @@ the current Step 113-128 queue unless the plan is explicitly reprioritized.
 110. [x] Event propagation phases: target handling then ancestor bubbling before view fallback.
 111. [x] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
 112. [x] Scroll element binding helper backed by `ScrollState`.
-113. [ ] Wheel and trackpad scroll routing into bound scroll state.
+113. [x] Wheel and trackpad scroll routing into bound scroll state.
 114. [ ] Hidden overflow participates in hit testing, not only paint clip metadata.
 115. [ ] Flex alignment and justification primitives.
 116. [ ] Flex grow and shrink factors for child layout.
@@ -295,16 +298,17 @@ the current Step 113-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 112, scroll element binding helper backed by `ScrollState`, is merged to
-`master` through `7b5f564 feat: add scroll element binding`, post-merge
-verified on Windows and WSL Arch Linux, cleaned up, and closed out by
-`ed948a7 docs: mark step 112 merged`. Step 113 is the active implementation
-step: wheel and trackpad scroll routing into bound scroll state. Its worktree
-already exists at `.worktrees/scroll-routing` on `codex/scroll-routing`.
+Step 113, wheel and trackpad scroll routing into bound scroll state, is
+implemented and feature-worktree verified in `.worktrees/scroll-routing` on
+`codex/scroll-routing`. It still needs commit, fast-forward merge to `master`,
+post-merge targeted verification, Windows full debug, WSL Arch full debug, and
+cleanup. After Step 113 merges, the next implementation step is Step 114:
+hidden overflow participates in hit testing, not only paint clip metadata.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 113-128.
+behind completion and Windows/WSL verification of Steps 114-128 after Step 113
+merges.
 
 ## Risks
 

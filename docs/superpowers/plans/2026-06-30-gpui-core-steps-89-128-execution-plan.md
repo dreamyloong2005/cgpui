@@ -14,11 +14,12 @@
 
 - Steps 89-112 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `7b5f564 feat: add scroll element binding`.
-- The Step 112 worktree `.worktrees/scroll-element-binding` and branch
-  `codex/scroll-element-binding` have been cleaned up.
-- The next implementation slice is Step 113: wheel and trackpad scroll routing
-  into bound scroll state.
+- `master` is at `1e9ebda docs: refresh back forty planning after step 112`.
+- Step 113 is implemented and feature-worktree verified in
+  `.worktrees/scroll-routing` on `codex/scroll-routing`.
+- The next merge action is to commit Step 113, fast-forward merge it to
+  `master`, then run post-merge targeted, Windows full debug, and WSL Arch full
+  debug verification. After that, Step 114 is the next implementation slice.
 
 ## File Map
 
@@ -125,7 +126,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 110: target handling and ancestor bubbling before view fallback.
 - [x] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
 - [x] Step 112: scroll element binding helper backed by `ScrollState`.
-- [ ] Step 113: wheel and trackpad scroll routing into bound scroll state.
+- [x] Step 113: wheel and trackpad scroll routing into bound scroll state.
 - [ ] Step 114: hidden overflow participates in hit testing.
 - [ ] Step 115: flex alignment and justification primitives.
 - [ ] Step 116: flex grow and shrink factors.
@@ -220,7 +221,7 @@ of single-target-only.
 - [x] Step 111: add Tab and Shift+Tab focus traversal over enabled focusable
   elements.
 - [x] Step 112: add a scroll-element binding helper backed by `ScrollState`.
-- [ ] Step 113: route wheel/trackpad scroll events into bound scroll state.
+- [x] Step 113: route wheel/trackpad scroll events into bound scroll state.
 - [ ] Step 114: make hidden overflow constrain hit testing.
 - [ ] Step 115: add flex alignment and justification primitives.
 - [ ] Step 116: add flex grow and shrink factors.
@@ -258,16 +259,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 113 in an isolated worktree:
+Finish Step 113 merge from the existing isolated worktree:
 
 ```powershell
-git worktree add .worktrees/scroll-routing -b codex/scroll-routing master
-xmake test -P . window_runtime_test/default scroll_test/default ui_header_cleanliness/default
+git -C .worktrees/scroll-routing status --short --branch
+git -C .worktrees/scroll-routing commit -am "feat: route scroll events to scroll state"
+git merge --ff-only codex/scroll-routing
 ```
 
-Add RED tests for `PointerScrolled` events mutating the `ScrollState` bound to
-the routed element, then follow the standard per-step verification/merge
-workflow above.
+Then run post-merge targeted, Windows full debug, and WSL Arch full debug
+verification before cleaning up the worktree and branch.
 
 ## Step Details
 
@@ -559,9 +560,9 @@ Status: complete on `master` after the Step 109 merge.
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `tests/ui/scroll_test.cpp`
 
-- [ ] Add RED tests for `PointerScrolled` events mutating the bound `ScrollState` at the routed element.
-- [ ] Implement soft-fail routing when no scroll state is bound.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default scroll_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for `PointerScrolled` events mutating the bound `ScrollState` at the routed element.
+- [x] Implement soft-fail routing when no scroll state is bound.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default scroll_test/default element_test/default ui_header_cleanliness/default`.
 
 ### Step 114: Hidden Overflow Hit Testing
 

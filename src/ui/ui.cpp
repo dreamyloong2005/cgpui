@@ -652,8 +652,18 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
       }
     }
-    EventResult result =
-        dispatch_routed_element_event(event, *current_event_route_);
+    EventResult result = EventResult::unhandled();
+    if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
+        scrolled != nullptr) {
+      if (ScrollState* state = scroll_state_for_route(*current_event_route_);
+          state != nullptr) {
+        state->scroll_by(scrolled->delta);
+        result = EventResult::consumed_event();
+      }
+    }
+    if (!result.consumed && !result.cancelled) {
+      result = dispatch_routed_element_event(event, *current_event_route_);
+    }
     if (!result.consumed && !result.cancelled) {
       dispatching_view_event_ = true;
       result = view_.handle_event(event, context());
@@ -839,6 +849,26 @@ bool WindowRuntime::focus_next_element(bool reverse) {
     element->focus(ElementFocusContext{.element_id = focusable_ids[next_index]});
   }
   return true;
+}
+
+ScrollState* WindowRuntime::scroll_state_for_route(const EventRoute& route) {
+  if (!route.target_element_id.has_value()) {
+    return nullptr;
+  }
+
+  const std::span<const ElementId> ancestry(route.element_ancestry);
+  const auto route_ids =
+      ancestry.empty()
+          ? std::span<const ElementId>(&*route.target_element_id, 1)
+          : ancestry;
+  for (ElementId element_id : route_ids) {
+    auto* scroll = dynamic_cast<ScrollElement*>(routed_element(element_id));
+    if (scroll != nullptr && scroll->enabled()) {
+      return scroll->state();
+    }
+  }
+
+  return nullptr;
 }
 
 EventResult WindowRuntime::dispatch_routed_element_event(

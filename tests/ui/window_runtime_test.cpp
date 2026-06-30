@@ -3215,6 +3215,7 @@ int test_hover_tracks_hit_element_while_pointer_is_captured() {
 
 RuntimeFixture* click_focus_fixture = nullptr;
 RuntimeFixture* focus_traversal_fixture = nullptr;
+RuntimeFixture* scroll_routing_fixture = nullptr;
 
 void dispatch_click_focus_sequence() {
   auto& callback = click_focus_fixture->window.callback;
@@ -3243,6 +3244,13 @@ void dispatch_reverse_focus_traversal_sequence() {
       .key_code = 9,
       .action = cgpui::KeyAction::pressed,
       .modifiers = {.shift = true}});
+}
+
+void dispatch_scroll_routing_sequence() {
+  auto& callback = scroll_routing_fixture->window.callback;
+  callback(cgpui::PointerScrolled{
+      .delta = {0.0F, 26.0F},
+      .position = {5.0F, 5.0F}});
 }
 
 int test_runtime_clicks_request_focus_for_focusable_elements() {
@@ -3481,6 +3489,118 @@ int test_runtime_does_not_focus_disabled_focusable_elements() {
     return 284;
   }
   return 0;
+}
+
+int test_runtime_scrolls_bound_scroll_state_at_hit_element() {
+  RuntimeFixture fixture;
+  scroll_routing_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scroll_routing_sequence;
+
+  cgpui::ScrollState scroll_state;
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId scroll_id = tree->set_root(cgpui::scroll(
+      scroll_state,
+      std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 800.0F, .height = 900.0F})));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> routed_element_id;
+  cgpui::EventResult scroll_result{};
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_scrolled) {
+          routed_element_id = record.route.target_element_id;
+          scroll_result = record.result;
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{
+      .size = {.width = 40.0F, .height = 40.0F}});
+  scroll_routing_fixture = nullptr;
+
+  if (result != 0) {
+    return 367;
+  }
+  if (scroll_id.value == 0 || !routed_element_id.has_value() ||
+      *routed_element_id != scroll_id) {
+    return 368;
+  }
+  if (scroll_state.offset().x != 0.0F || scroll_state.offset().y != 26.0F) {
+    return 369;
+  }
+  if (!scroll_result.consumed || scroll_result.cancelled) {
+    return 370;
+  }
+  if (fixture.view.pointer_scroll_count != 0) {
+    return 371;
+  }
+  return 0;
+}
+
+int test_runtime_scrolls_nearest_scroll_ancestor_for_child_hit() {
+  RuntimeFixture fixture;
+  scroll_routing_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scroll_routing_sequence;
+
+  cgpui::ScrollState scroll_state;
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto child = cgpui::div().size(800.0F, 900.0F).build();
+  child->assign_id(cgpui::ElementId{999});
+  const cgpui::ElementId scroll_id =
+      tree->set_root(cgpui::scroll(scroll_state, std::move(child)));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> routed_element_id;
+  std::vector<cgpui::ElementId> route_ancestry;
+  cgpui::EventResult scroll_result{};
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_scrolled) {
+          routed_element_id = record.route.target_element_id;
+          route_ancestry = record.route.element_ancestry;
+          scroll_result = record.result;
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{
+      .size = {.width = 40.0F, .height = 40.0F}});
+  scroll_routing_fixture = nullptr;
+
+  if (result != 0) {
+    return 372;
+  }
+  if (scroll_id.value == 0 || !routed_element_id.has_value()) {
+    return 373;
+  }
+  if (*routed_element_id != scroll_id) {
+    return 374;
+  }
+  if (scroll_state.offset().x != 0.0F || scroll_state.offset().y != 26.0F) {
+    return 375;
+  }
+  if (route_ancestry.size() != 1 || route_ancestry[0] != scroll_id) {
+    return 376;
+  }
+  return scroll_result.consumed && !scroll_result.cancelled &&
+                 fixture.view.pointer_scroll_count == 0
+             ? 0
+             : 377;
 }
 
 RuntimeFixture* keyboard_focus_fixture = nullptr;
@@ -5539,6 +5659,16 @@ int main() {
   }
   if (const int result =
           test_runtime_does_not_focus_disabled_focusable_elements();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_scrolls_bound_scroll_state_at_hit_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_scrolls_nearest_scroll_ancestor_for_child_hit();
       result != 0) {
     return result;
   }

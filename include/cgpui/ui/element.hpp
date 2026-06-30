@@ -794,8 +794,7 @@ class ScrollElement : public Element {
   }
 
   [[nodiscard]] ElementId hit_test(Point point) const override {
-    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
-    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+    return Element::hit_test(point);
   }
 
   void paint(PaintList& paint_list) const override {
