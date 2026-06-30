@@ -243,10 +243,59 @@ int test_run_app_builds_runtime_and_runs_window() {
   return 0;
 }
 
+int test_run_app_accepts_app_context_setup_callback() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  bool setup_called = false;
+  bool after_frame_called = false;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext&) {
+                      after_frame_called = true;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 10;
+  }
+  if (!setup_called || !after_frame_called) {
+    return 11;
+  }
+  if (renderer_begin_frame_count != 1 || frame.present_count != 1) {
+    return 12;
+  }
+  return 0;
+}
+
 } // namespace
 
 int main() {
   if (const int result = test_run_app_builds_runtime_and_runs_window();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_run_app_accepts_app_context_setup_callback();
       result != 0) {
     return result;
   }

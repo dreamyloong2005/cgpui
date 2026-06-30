@@ -32,6 +32,10 @@ int main() {
   const cgpui::WeakView weak_view(cgpui::ViewId{1});
   cgpui::ModelObserver<cgpui::TextModel> observer =
       [](const cgpui::ViewContext&, cgpui::Model<cgpui::TextModel>) {};
+  cgpui::AppContextSetupCallback app_setup =
+      [](cgpui::AppContext& app_context) {
+        (void)app_context.runtime.invalidation_state();
+      };
   (void)entity_id;
   (void)weak_model;
   (void)weak_view;
@@ -50,6 +54,7 @@ int main() {
                         .build());
   PreludeView view;
   cgpui::AppRunnerOptions options;
+  options.setup_context = app_setup;
   (void)view;
   (void)options;
   return root_id.value != 0 && tree.root_id() == root_id ? 0 : 1;

@@ -58,6 +58,12 @@ int main() {
   const cgpui::Style resolved = cgpui::resolved_style(
       style_state,
       cgpui::StyleStateFlags{.hovered = true});
+  cgpui::AppContextSetupCallback app_setup =
+      [](cgpui::AppContext& app_context) {
+        (void)app_context.runtime.invalidation_state();
+      };
+  cgpui::AppRunnerOptions app_options;
+  app_options.setup_context = app_setup;
   cgpui::AnyElement element =
       cgpui::into_element(cgpui::div()
                               .size(cgpui::px(1.0F), cgpui::px(2.0F))
@@ -104,6 +110,7 @@ int main() {
                  render_record.root_element_id.has_value() &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  resolved.background_color.has_value() &&
+                 static_cast<bool>(app_options.setup_context) &&
                  resolved.background_color->r == 64.0F / 255.0F &&
                  styled->style_state().hover.background_color.has_value() &&
                  styled->style().preferred_size.width == 1.0F &&

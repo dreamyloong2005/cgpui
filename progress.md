@@ -1654,6 +1654,32 @@
 - Updated `task_plan.md` so the active step is Step 104 and the back-40 queue
   remains gated behind Step 128 plus Windows/WSL verification.
 
+## 2026-06-30 Step 104 AppContext Wrapper
+
+- Started Step 104 in `codex/app-context-wrapper` from `master` at `5949c84`,
+  then fast-forwarded the worktree to include the docs refresh commit
+  `4c27127`.
+- Baseline targeted tests passed:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Added RED `app_runner_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for `AppContext`,
+  `AppContextSetupCallback`, and `AppRunnerOptions::setup_context`; the RED
+  builds failed as expected because those public APIs did not exist.
+- Implemented Step 104 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  added `AppContext { WindowRuntime& runtime; }`, a public
+  `AppContextSetupCallback`, and an additive `setup_context` runner option
+  invoked before `WindowRuntime::run(...)` while preserving the existing
+  `AppSetupCallback(WindowRuntime&)` path.
+- Verified targeted tests after GREEN:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

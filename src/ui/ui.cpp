@@ -266,6 +266,10 @@ int run_app(
   if (options.setup) {
     options.setup(runtime);
   }
+  if (options.setup_context) {
+    AppContext context{.runtime = runtime};
+    options.setup_context(context);
+  }
   return runtime.run(options.window, options.runtime);
 }
 

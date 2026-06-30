@@ -222,7 +222,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 101. [x] Weak entity/view handle primitives with soft-fail upgrade.
 102. [x] ViewContext observe/subscribe callback helper for model changes.
 103. [x] Model update notification automatically invalidates subscribed views.
-104. [ ] Public `AppContext` wrapper over the app runner setup phase.
+104. [x] Public `AppContext` wrapper over the app runner setup phase.
 105. [ ] `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
 106. [ ] Runtime root view lifecycle storage for app-opened windows.
 107. [ ] View registry skeleton for multiple view ids beyond the root.
@@ -290,12 +290,12 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 104 is active in `.worktrees/app-context-wrapper` on branch
-`codex/app-context-wrapper`:
-Public `AppContext` wrapper over the app runner setup phase.
+Step 104 is complete in the active feature worktree. Next implementation step
+after merging Step 104 is Step 105:
+`WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168, but Step 129 remains
-gated behind completion and Windows/WSL verification of Steps 104-128.
+gated behind completion and Windows/WSL verification of Steps 105-128.
 
 ## Risks
 

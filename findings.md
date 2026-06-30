@@ -1206,3 +1206,15 @@
 - The current state for planning is Step 103 complete on `master` at
   `5949c84`, with Step 104 already opened in `.worktrees/app-context-wrapper`
   and baseline targeted tests passing.
+
+## 2026-06-30 AppContext Setup Wrapper
+
+- `AppContext` can start as a deliberately thin public setup wrapper containing
+  `WindowRuntime& runtime`; this matches the current context-as-capability
+  pattern without duplicating app/window ownership before Step 105.
+- Keeping the existing `AppSetupCallback(WindowRuntime&)` field and adding an
+  `AppContextSetupCallback` field preserves source compatibility for existing
+  runner callers while exposing the GPUI-like setup spelling.
+- Running the legacy runtime setup first and the new app-context setup second
+  keeps existing behavior stable and gives callers a deterministic order when
+  both callbacks are supplied.

@@ -14,15 +14,14 @@
 
 - Steps 89-103 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 104 is active in `codex/app-context-wrapper` at
-  `.worktrees/app-context-wrapper`. Baseline targeted verification has passed:
-  `xmake test -P . app_runner_test/default ui_header_cleanliness/default
-  prelude_header_cleanliness/default`.
-- `master` is at `5949c84 feat: render-invalidate subscribed model changes`.
+- Step 104 is implemented and verified in `codex/app-context-wrapper` at
+  `.worktrees/app-context-wrapper`; it still needs commit, fast-forward merge
+  to `master`, post-merge verification, and worktree/branch cleanup.
+- `master` is at `4c27127 docs: refresh post-128 planning after step 103`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation action is the Step 104 RED test for a public
-  `AppContext` wrapper over the app runner setup phase.
+- The next implementation slice after merging Step 104 is Step 105:
+  `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 
 ## File Map
 
@@ -108,7 +107,7 @@ Purpose: introduce the GPUI-style model and app shell needed for real applicatio
 - [x] Step 101: weak entity/view handle primitives with soft-fail upgrade.
 - [x] Step 102: observe/subscribe callback helper for model changes.
 - [x] Step 103: model update notification invalidates subscribed views.
-- [ ] Step 104: public `AppContext` wrapper over app setup.
+- [x] Step 104: public `AppContext` wrapper over app setup.
 - [ ] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 - [ ] Step 106: runtime root view lifecycle storage for app-opened windows.
 - [ ] Step 107: view registry skeleton for multiple view ids.
@@ -201,7 +200,7 @@ storage before nested view/event work.
 - [x] Step 102: add model observe/subscribe callbacks.
 - [x] Step 103: make model updates notify observers and invalidate subscribed
   views.
-- [ ] Step 104: expose an `AppContext` setup wrapper.
+- [x] Step 104: expose an `AppContext` setup wrapper.
 - [ ] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
   skeleton.
 - [ ] Step 106: store app-opened root view lifetimes explicitly.
@@ -262,15 +261,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Continue Step 104 in the existing isolated worktree:
+Finish Step 104's current feature worktree first: commit, fast-forward merge
+to `master`, rerun targeted/Windows/WSL verification on `master`, then clean
+up `.worktrees/app-context-wrapper` and `codex/app-context-wrapper`.
+
+Then start Step 105 in an isolated worktree:
 
 ```powershell
-cd .worktrees/app-context-wrapper
-xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/window-options-open-window -b codex/window-options-open-window master
+xmake test -P . app_runner_test/default ui_header_cleanliness/default
 ```
 
-Add RED tests for setup callbacks receiving `AppContext` while preserving the
-existing app runner setup path or adding a source-compatible overload, then
+Add RED tests for a fluent `WindowOptions` builder that maps to
+`WindowDescriptor` and a first `AppContext::open_window(...)` skeleton, then
 follow the standard per-step verification/merge workflow above.
 
 ## Step Details
@@ -440,8 +443,8 @@ Status: complete on `master` after the Step 103 merge.
 
 ### Step 104: AppContext Wrapper
 
-Status: active in `.worktrees/app-context-wrapper` on
-`codex/app-context-wrapper`; baseline targeted verification passed.
+Status: implemented and feature-worktree verified in
+`codex/app-context-wrapper`; not yet merged to `master`.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -449,9 +452,9 @@ Status: active in `.worktrees/app-context-wrapper` on
 - Modify: `tests/ui/app_runner_test.cpp`
 - Modify: `tests/header_cleanliness/prelude_header_cleanliness.cpp`
 
-- [ ] Add RED tests for setup callbacks receiving an `AppContext`.
-- [ ] Keep the existing `AppSetupCallback(WindowRuntime&)` path source-compatible or provide an additive overload.
-- [ ] Targeted test command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
+- [x] Add RED tests for setup callbacks receiving an `AppContext`.
+- [x] Keep the existing `AppSetupCallback(WindowRuntime&)` path source-compatible or provide an additive overload.
+- [x] Targeted test command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 105: WindowOptions and `open_window(...)`
 

@@ -68,6 +68,10 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
+struct AppContext {
+  WindowRuntime& runtime;
+};
+
 struct ViewId {
   std::uint64_t value = 0;
 
@@ -333,11 +337,13 @@ using WindowRuntimeEventCallback =
 using WindowRuntimeErrorCallback =
     std::function<void(const Error&)>;
 using AppSetupCallback = std::function<void(WindowRuntime&)>;
+using AppContextSetupCallback = std::function<void(AppContext&)>;
 
 struct AppRunnerOptions {
   WindowDescriptor window;
   WindowRuntimeOptions runtime;
   AppSetupCallback setup;
+  AppContextSetupCallback setup_context;
 };
 
 class WindowRuntime {
