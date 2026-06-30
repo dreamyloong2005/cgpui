@@ -17,26 +17,31 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-116 are complete on `master` through
+- Steps 89-116 are complete on `master` through the Step 116 docs closeout
+  `1e542bd docs: mark step 116 merged`; the Step 116 feature commit is
   `2806a4a feat: add flex grow shrink layout`.
 - Step 116 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 117 is already active in `.worktrees/absolute-position-insets` on
+  branch `codex/absolute-position-insets`. Continue that worktree; do not
+  recreate Step 117 or start Step 129 early.
 - Steps 117-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
-- The main worktree is on `master` with no tracked/staged changes; the known
-  local-only untracked item is `.vscode/`.
+- The main worktree is on `master` with no tracked/staged changes before this
+  planning refresh; the known local-only untracked item is `.vscode/`.
 
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`2806a4a feat: add flex grow shrink layout`. It is the execution plan for
-Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is Step 117, absolute positioning and inset style
-primitive, unless the roadmap is explicitly reprioritized.
+`1e542bd docs: mark step 116 merged`. It is the execution plan for Steps
+129-168 after the Step 128 gate, not a new active branch queue. The next
+implementation action is to finish, verify, commit, merge, and post-merge
+verify the existing Step 117 worktree, unless the roadmap is explicitly
+reprioritized.
 
 - Finish the current gate first: Steps 117-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -56,6 +61,23 @@ primitive, unless the roadmap is explicitly reprioritized.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
+
+## Back-40 Delivery Shape
+
+The后 40 步 should be treated as a product hardening queue, not merely an API
+inventory. Each 10-step band should leave the Windows/Linux core more usable
+than it was at entry:
+
+- Steps 129-138 make application state and asynchronous work authorable through
+  context-shaped APIs instead of direct runtime plumbing.
+- Steps 139-148 make reusable UI realistic by pairing keyed reconciliation,
+  element lifecycle/state, style cascade, focus handles, and first widgets.
+- Steps 149-158 make rendering contracts backend-ready by turning text, glyph,
+  opacity, transform, HiDPI, batching, and fallback diagnostics into stable
+  command metadata.
+- Steps 159-168 connect those shared contracts to Win32 and Wayland behavior,
+  then close with a written parity audit that separates implemented, partial,
+  missing, and Mac/Metal-deferred areas.
 
 ## Planning Snapshot
 

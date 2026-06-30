@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 116 Docs Closeout
+
+- The后 40 步 are still Steps 129-168, and the current planning anchor should
+  be the docs closeout commit `1e542bd docs: mark step 116 merged`, not only
+  the Step 116 feature commit `2806a4a feat: add flex grow shrink layout`.
+- Step 117 already has an active worktree at
+  `.worktrees/absolute-position-insets` on `codex/absolute-position-insets`.
+  Future execution should continue that branch through verification and merge
+  instead of creating a new Step 117 branch or starting Step 129.
+- The useful post-Step-128 delivery target is four staged outcomes:
+  context/entity/async ergonomics, keyed reusable widgets and style cascade,
+  backend-ready text/render metadata, and Win32/Wayland platform closure plus a
+  parity audit. Step 168 should remain the audit/handoff milestone, not a claim
+  of full upstream GPUI parity.
+- From current `master`, the back-40 entry is still gated by 12 implementation
+  steps, Steps 117-128, plus post-Step-128 targeted, Windows full debug, and
+  WSL Arch full debug verification.
+
 ## 2026-06-30 Flex Grow And Shrink Merged
 
 - After Step 116 merged, the remaining pre-back-40 gate is Steps 117-128 plus

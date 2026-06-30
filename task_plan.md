@@ -99,10 +99,11 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `2806a4a feat: add flex grow shrink layout`:
-Steps 89-116 are merged and post-merge verified on Windows and WSL Arch
-Linux, and Step 129 remains gated behind completion and Windows/WSL
-verification of Steps 117-128.
+pre-back-40 handoff state at `1e542bd docs: mark step 116 merged`: Steps
+89-116 are merged and post-merge verified on Windows and WSL Arch Linux, Step
+117 is active in `.worktrees/absolute-position-insets` on
+`codex/absolute-position-insets`, and Step 129 remains gated behind completion
+and Windows/WSL verification of Steps 117-128.
 
 From the current `master` state, the effective distance to Step 129 is 12
 implementation steps, Steps 117-128, plus post-Step-128 targeted, Windows,
@@ -319,8 +320,9 @@ implementation step. Start it from a fresh
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, Step 129 start
-packet, and band checkpoints after Steps 138, 148, 158, and 168. Step 129
-remains gated behind completion and Windows/WSL verification of Steps 117-128.
+packet, and band checkpoints after Steps 138, 148, 158, and 168. It also
+records the current Step 117 worktree as the next action, so Step 129 remains
+gated behind completion and Windows/WSL verification of Steps 117-128.
 
 ## Risks
 

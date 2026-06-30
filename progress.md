@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 116 Docs Closeout
+
+- Refreshed the post-Step-128 follow-on plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the plan to the actual current `master` head:
+  `1e542bd docs: mark step 116 merged`; the Step 116 feature commit remains
+  `2806a4a feat: add flex grow shrink layout`.
+- Recorded that Step 117 is already active in
+  `.worktrees/absolute-position-insets` on
+  `codex/absolute-position-insets`, so the next implementation action is to
+  finish, verify, commit, merge, and post-merge verify that worktree rather
+  than recreate Step 117 or start Step 129.
+- Clarified the后 40 步 delivery shape: Steps 129-138 context/entity/async,
+  Steps 139-148 keyed widgets/style cascade, Steps 149-158 text/font/renderer
+  diagnostics, and Steps 159-168 Windows/Wayland platform closure plus parity
+  audit.
+- Updated `task_plan.md` so the root plan references the Step 116 docs
+  closeout commit, the active Step 117 worktree, and the unchanged gate:
+  Step 129 starts only after Steps 117-128 are merged and Windows/WSL verified.
+
 ## 2026-06-30 Step 116 Post-Merge
 
 - Committed Step 116 as `2806a4a feat: add flex grow shrink layout` from
