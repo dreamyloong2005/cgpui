@@ -97,14 +97,15 @@ Detailed execution plan:
 Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
 That plan now includes the post-Step-128 entry contract, branch slugs, first
-RED test intent, targeted commands, and Windows/WSL verification matrix for
-all 40 follow-on steps. It also records the current pre-back-40 handoff state:
-Step 106 is implemented and feature-worktree verified, Step 107 is the next
-active implementation step after merge, and Step 129 remains gated behind
-completion and Windows/WSL verification of Steps 107-128.
+RED test intent, targeted commands, checkpoint exits, and Windows/WSL
+verification matrix for all 40 follow-on steps. It also records the current
+pre-back-40 handoff state: Step 107 is implemented and feature-worktree
+verified, Step 108 is the next active implementation step after merge, and
+Step 129 remains gated behind completion and Windows/WSL verification of Steps
+108-128.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 107 unless the plan is explicitly reprioritized.
+the current active Step 108 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -115,10 +116,6 @@ the current active Step 107 unless the plan is explicitly reprioritized.
 - Band H, Steps 159-168: Windows/Wayland platform completion, multi-window
   lifecycle, accessibility/debug surfaces, packaging checks, and API parity
   documentation.
-
-Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
-`master`, then remove `.worktrees/element-child-overloads` and delete
-`codex/element-child-overloads`.
 
 ## Steps
 
@@ -228,7 +225,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 104. [x] Public `AppContext` wrapper over the app runner setup phase.
 105. [x] `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
 106. [x] Runtime root view lifecycle storage for app-opened windows.
-107. [ ] View registry skeleton for multiple view ids beyond the root.
+107. [x] View registry skeleton for multiple view ids beyond the root.
 108. [ ] Child-view element placeholder that embeds another view's rendered output.
 109. [ ] Event route carries element and view ancestry metadata.
 110. [ ] Event propagation phases: target handling then ancestor bubbling before view fallback.
@@ -293,14 +290,14 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 106 is implemented in `.worktrees/window-root-view-lifecycle` and
+Step 107 is implemented in `.worktrees/view-registry-skeleton` and
 feature-worktree verified on Windows and WSL Arch Linux. After merging Step
-106 to `master`, the next implementation step is Step 107: view registry
-skeleton for multiple view ids beyond the root.
+107 to `master`, the next implementation step is Step 108: child-view element
+placeholder that embeds another view's rendered output.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 107-128.
+behind completion and Windows/WSL verification of Steps 108-128.
 
 ## Risks
 

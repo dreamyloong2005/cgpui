@@ -1,5 +1,60 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 107 View Registry Skeleton
+
+- Continued Step 107 in `.worktrees/view-registry-skeleton` on
+  `codex/view-registry-skeleton` from `master` at
+  `a9b1b96 feat: store app opened window root views`.
+- Baseline targeted tests passed before the RED coverage:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Added RED `window_runtime_test` and `ui_header_cleanliness` coverage for
+  `WindowRuntime::root_view()`, `register_view(View&)`,
+  `register_view(std::unique_ptr<View>)`, `find_view(ViewId)`, and
+  `remove_view(ViewId)`; the RED build failed as expected because those APIs
+  did not exist yet.
+- Implemented Step 107 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  `WindowRuntime` now keeps a `ViewId` registry containing the borrowed root
+  view, borrowed registered views, and owned registered views; app-opened root
+  views now use the same registry path instead of a separate root-view storage
+  map.
+- Preserved compatibility with monotonic view ids: removed registered views
+  soft-fail `find_view(...)`, `WeakView` upgrade, and
+  `is_view_id_allocated(...)`, while ids allocated through the legacy
+  `allocate_view_id()` path remain compatible until fuller lifecycle semantics
+  arrive.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 107 is marked implemented and feature-worktree
+  verified, with Step 108 as the next implementation slice after merge.
+
+## 2026-06-30 Back-40 Planning After Step 107 Feature Verification
+
+- Refreshed the post-Step-128 follow-on plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  while Step 107 is implemented and feature-worktree verified in
+  `.worktrees/view-registry-skeleton`.
+- Corrected the back-40 current state: Steps 89-106 are complete on `master`
+  through `a9b1b96 feat: store app opened window root views`; Step 107 is
+  implemented and feature-worktree verified but still needs final docs
+  verification, commit, merge, post-merge verification, and cleanup.
+- Recorded that Step 108 is the next active implementation slice after Step
+  107 merges, and that Step 129 remains gated behind Steps 108-128 plus
+  Windows and WSL Arch Linux post-Step-128 verification.
+- Added a concise back-40 execution strategy: Steps 129-138 context/entity/
+  async, Steps 139-148 keyed widgets/style cascade, Steps 149-158 text/font/
+  renderer diagnostics, and Steps 159-168 Windows/Wayland closure plus parity
+  audit.
+- Removed the stale root-plan note about Step 91 cleanup, which no longer
+  applies to the current Step 107/108 handoff.
+
 ## 2026-06-30 Step 106 App-Opened Root View Lifecycle
 
 - Continued Step 106 in `.worktrees/window-root-view-lifecycle` on

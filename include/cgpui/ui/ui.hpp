@@ -18,6 +18,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -383,6 +384,13 @@ class WindowRuntime {
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
   [[nodiscard]] const View* app_opened_window_root_view(
       ViewId root_view_id) const;
+  [[nodiscard]] View* root_view();
+  [[nodiscard]] const View* root_view() const;
+  [[nodiscard]] ViewId register_view(View& view);
+  [[nodiscard]] ViewId register_view(std::unique_ptr<View> view);
+  [[nodiscard]] View* find_view(ViewId view_id);
+  [[nodiscard]] const View* find_view(ViewId view_id) const;
+  [[nodiscard]] bool remove_view(ViewId view_id);
 
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
   void set_after_render_callback(WindowRuntimeRenderCallback callback);
@@ -475,6 +483,11 @@ class WindowRuntime {
       std::type_index entity_type,
       std::uint64_t entity_id_value);
 
+  struct RegisteredView {
+    View* view = nullptr;
+    std::unique_ptr<View> owned_view;
+  };
+
   PlatformApplication& application_;
   View& view_;
   RendererFactory renderer_factory_;
@@ -501,6 +514,8 @@ class WindowRuntime {
   const Element* element_root_ = nullptr;
   ViewId root_view_id_{1};
   std::uint64_t next_view_id_ = 2;
+  std::unordered_map<std::uint64_t, RegisteredView> view_registry_;
+  std::unordered_set<std::uint64_t> removed_view_ids_;
   int event_dispatch_sequence_ = 0;
   int render_sequence_ = 0;
   int frame_index_ = 0;
@@ -514,8 +529,6 @@ class WindowRuntime {
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
   std::vector<AppOpenedWindow> app_opened_windows_;
-  std::unordered_map<std::uint64_t, std::unique_ptr<View>>
-      app_opened_window_root_views_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;

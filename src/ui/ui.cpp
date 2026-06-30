@@ -329,7 +329,11 @@ WindowRuntime::WindowRuntime(
     RendererFactory renderer_factory)
     : application_(application),
       view_(view),
-      renderer_factory_(std::move(renderer_factory)) {}
+      renderer_factory_(std::move(renderer_factory)) {
+  view_registry_.insert_or_assign(
+      root_view_id_.value,
+      RegisteredView{.view = &view_});
+}
 
 int WindowRuntime::run(
     const WindowDescriptor& descriptor,
@@ -418,14 +422,10 @@ AppOpenedWindow WindowRuntime::open_window(WindowOptions options) {
 AppOpenedWindow WindowRuntime::open_window(
     WindowOptions options,
     std::unique_ptr<View> root_view) {
+  const ViewId root_view_id = register_view(std::move(root_view));
   AppOpenedWindow opened{
       .descriptor = options.to_descriptor(),
-      .root_view_id = allocate_view_id()};
-  if (root_view != nullptr) {
-    app_opened_window_root_views_.insert_or_assign(
-        opened.root_view_id.value,
-        std::move(root_view));
-  }
+      .root_view_id = root_view_id};
   app_opened_windows_.push_back(opened);
   return opened;
 }
@@ -436,11 +436,65 @@ std::span<const AppOpenedWindow> WindowRuntime::app_opened_windows() const {
 
 const View* WindowRuntime::app_opened_window_root_view(
     ViewId root_view_id) const {
-  const auto entry = app_opened_window_root_views_.find(root_view_id.value);
-  if (entry == app_opened_window_root_views_.end()) {
+  return find_view(root_view_id);
+}
+
+View* WindowRuntime::root_view() {
+  return find_view(root_view_id_);
+}
+
+const View* WindowRuntime::root_view() const {
+  return find_view(root_view_id_);
+}
+
+ViewId WindowRuntime::register_view(View& view) {
+  const ViewId view_id = allocate_view_id();
+  removed_view_ids_.erase(view_id.value);
+  view_registry_.insert_or_assign(
+      view_id.value,
+      RegisteredView{.view = &view});
+  return view_id;
+}
+
+ViewId WindowRuntime::register_view(std::unique_ptr<View> view) {
+  const ViewId view_id = allocate_view_id();
+  removed_view_ids_.erase(view_id.value);
+  if (view != nullptr) {
+    View* view_ptr = view.get();
+    view_registry_.insert_or_assign(
+        view_id.value,
+        RegisteredView{.view = view_ptr, .owned_view = std::move(view)});
+  }
+  return view_id;
+}
+
+View* WindowRuntime::find_view(ViewId view_id) {
+  const auto entry = view_registry_.find(view_id.value);
+  if (entry == view_registry_.end()) {
     return nullptr;
   }
-  return entry->second.get();
+  return entry->second.view;
+}
+
+const View* WindowRuntime::find_view(ViewId view_id) const {
+  const auto entry = view_registry_.find(view_id.value);
+  if (entry == view_registry_.end()) {
+    return nullptr;
+  }
+  return entry->second.view;
+}
+
+bool WindowRuntime::remove_view(ViewId view_id) {
+  if (view_id.value == 0 || view_id == root_view_id_) {
+    return false;
+  }
+  const auto entry = view_registry_.find(view_id.value);
+  if (entry == view_registry_.end()) {
+    return false;
+  }
+  view_registry_.erase(entry);
+  removed_view_ids_.insert(view_id.value);
+  return true;
 }
 
 void WindowRuntime::handle_event(const PlatformEvent& event) {
@@ -1016,7 +1070,8 @@ ViewId WindowRuntime::allocate_view_id() {
 }
 
 bool WindowRuntime::is_view_id_allocated(ViewId view_id) const {
-  return view_id.value != 0 && view_id.value < next_view_id_;
+  return view_id.value != 0 && view_id.value < next_view_id_ &&
+         !removed_view_ids_.contains(view_id.value);
 }
 
 std::optional<ViewId> WindowRuntime::upgrade_view(WeakView view) const {

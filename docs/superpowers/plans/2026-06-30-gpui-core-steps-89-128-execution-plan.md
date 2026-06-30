@@ -12,15 +12,15 @@
 
 ## Current State
 
-- Steps 89-105 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-106 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `58c5b8a docs: refresh back forty planning after step 105`.
+- `master` is at `a9b1b96 feat: store app opened window root views`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- Step 106 is implemented in `.worktrees/window-root-view-lifecycle` and
+- Step 107 is implemented in `.worktrees/view-registry-skeleton` and
   feature-worktree verified on Windows and WSL Arch Linux.
-- The next implementation slice after merging Step 106 is Step 107:
-  view registry skeleton for multiple view ids.
+- The next implementation slice after merging Step 107 is Step 108:
+  child-view element placeholder that embeds another view's rendered output.
 
 ## File Map
 
@@ -109,7 +109,7 @@ Purpose: introduce the GPUI-style model and app shell needed for real applicatio
 - [x] Step 104: public `AppContext` wrapper over app setup.
 - [x] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 - [x] Step 106: runtime root view lifecycle storage for app-opened windows.
-- [ ] Step 107: view registry skeleton for multiple view ids.
+- [x] Step 107: view registry skeleton for multiple view ids.
 - [ ] Step 108: child-view element placeholder that embeds another view's rendered output.
 
 Acceptance at the end of Band B:
@@ -203,7 +203,7 @@ storage before nested view/event work.
 - [x] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
   skeleton.
 - [x] Step 106: store app-opened root view lifetimes explicitly.
-- [ ] Step 107: add the first view registry for multiple `ViewId`s.
+- [x] Step 107: add the first view registry for multiple `ViewId`s.
 - [ ] Step 108: add a child-view element placeholder that references a
   registered view.
 
@@ -260,17 +260,17 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-After Step 106 is committed, merged, and post-merge verified, start Step 107
+After Step 107 is committed, merged, and post-merge verified, start Step 108
 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/view-registry-skeleton -b codex/view-registry-skeleton master
-xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/child-view-placeholder -b codex/child-view-placeholder master
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Add RED tests showing views can be registered, found, and removed by `ViewId`
-while preserving the existing root view id, then follow the standard per-step
-verification/merge workflow above.
+Add RED tests for an element that references a registered child `ViewId` and
+exposes placeholder layout/hit-test/render metadata, then follow the standard
+per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -466,8 +466,7 @@ Status: complete on `master` after the Step 105 merge.
 
 ### Step 106: Runtime Root View Lifecycle Storage
 
-Status: implemented and feature-worktree verified; commit, merge, and
-post-merge verification still need to finish before Step 107 starts.
+Status: complete on `master` after the Step 106 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -481,14 +480,17 @@ post-merge verification still need to finish before Step 107 starts.
 
 ### Step 107: View Registry Skeleton
 
+Status: implemented and feature-worktree verified; commit, merge, and
+post-merge verification still need to finish before Step 108 starts.
+
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for registering, finding, and removing views by `ViewId`.
-- [ ] Implement a minimal registry that coexists with the existing root view id.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for registering, finding, and removing views by `ViewId`.
+- [x] Implement a minimal registry that coexists with the existing root view id.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 108: Child-View Element Placeholder
 

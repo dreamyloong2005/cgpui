@@ -1,5 +1,43 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 View Registry Skeleton
+
+- Step 107 is intentionally a registry/lifetime skeleton, not child-view
+  rendering. It gives later child-view placeholders, ancestry routing, and
+  multi-window work a single view lookup path before those behaviors exist.
+- The root view is registered as borrowed and non-removable at `ViewId{1}`.
+  Additional borrowed views can be registered by reference, and owned views can
+  be registered through `std::unique_ptr<View>`.
+- App-opened root views should use the general view registry instead of a
+  separate root-view ownership map. This keeps `AppContext::open_window(...)`,
+  `app_opened_window_root_view(...)`, `WeakView` upgrade, and future child-view
+  lookup on the same storage contract.
+- Removing a registered non-root view should make `find_view(...)`,
+  `is_view_id_allocated(...)`, and `WeakView` upgrade soft-fail for that id.
+  Plain ids from `allocate_view_id()` remain compatible with the older
+  monotonic allocation contract until a later view lifecycle step replaces it
+  with full generation/removal semantics.
+
+## 2026-06-30 Back-40 Planning After Step 107
+
+- The "后40步" plan is now best understood as a post-Step-128 execution plan,
+  not an immediate branch queue. With Step 107 feature-worktree verified, the
+  remaining gate into Step 129 is Steps 108-128 plus final Windows and WSL Arch
+  Linux verification on `master`.
+- Step 129 should start only after the child-view, ancestry, propagation,
+  focus, scroll, layout-depth, render-command, cursor, clipboard, IME, and
+  public-demo slices have landed. Starting it earlier would make the context
+  and widget APIs depend on unstable or placeholder runtime surfaces.
+- The four 10-step bands should remain ordered: context/entity/async first,
+  keyed widgets and style cascade second, text/font/renderer diagnostics third,
+  and Windows/Wayland platform closure plus parity audit last. This order gives
+  each band a usable substrate instead of asking later platform work to invent
+  missing shared contracts.
+- Because Steps 129-168 all touch public headers, shared runtime behavior,
+  renderer contracts, or platform-neutral event data, every step should keep
+  WSL Arch full debug in its normal definition of done even when the visible
+  feature name is Win32-specific.
+
 ## 2026-06-30 App-Opened Root View Lifecycle
 
 - Step 106 should remain a storage/lifecycle slice, not real multi-window

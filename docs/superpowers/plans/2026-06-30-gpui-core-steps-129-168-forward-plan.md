@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 106-128 remainder intact inside the
+**Architecture:** Keep the active Steps 108-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -17,15 +17,14 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-105 are complete on `master` through
-  `4357572 docs: mark step 105 merged`; the feature commit for Step 105 is
-  `cbc0dfe feat: add window options open window skeleton`, and Step 105 was
+- Steps 89-106 are complete on `master` through
+  `a9b1b96 feat: store app opened window root views`, and Step 106 was
   post-merge verified on Windows and WSL Arch Linux.
-- Steps 107-128 remain covered by the detailed execution plan in
+- Steps 108-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 106 is implemented in `.worktrees/window-root-view-lifecycle` and
+- Step 107 is implemented in `.worktrees/view-registry-skeleton` and
   feature-worktree verified on Windows and WSL Arch Linux.
-- Step 107 is the next active implementation step after Step 106 is committed,
+- Step 108 is the next active implementation step after Step 107 is committed,
   merged, post-merge verified, and cleaned up.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -86,7 +85,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Step 107-128 are still incomplete:
+second active branch while Step 108-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -130,15 +129,43 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-106 are complete or feature-worktree
-  verified; Steps 107-108 remain incomplete until merged and verified.
+  Current partial status: Steps 99-107 are complete or feature-worktree
+  verified; Step 108 remains incomplete until merged and verified.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 gate count from the current state: 22 implementation
-steps, Steps 107-128. Finishing those 22 steps is the only planned route into
+Remaining pre-back-40 gate count from the current state: 21 implementation
+steps, Steps 108-128. Finishing those 21 steps is the only planned route into
 Step 129.
+
+## Back-40 Execution Strategy
+
+The follow-on 40 steps should be run as a single continuation of the current
+discipline, not as a broad rewrite. The shape is:
+
+- Steps 129-138: make context-facing application code pleasant and observable
+  before widgets depend on it.
+- Steps 139-148: add keyed identity, lifecycle, state, style cascade, focus
+  handles, and first reusable widgets on top of that context layer.
+- Steps 149-158: deepen text, font, renderer command, batching, HiDPI, and
+  diagnostics contracts after widgets can produce representative output.
+- Steps 159-168: wire Windows/Wayland lifecycle, IME, drag/drop, wakeups,
+  accessibility, smoke tests, and parity documentation after the shared
+  renderer/text surfaces are stable.
+
+At each band boundary, do a short review before opening the next branch:
+
+- After Step 138, public app code should not need direct `WindowRuntime`
+  plumbing for entities, globals, scoped actions, subscriptions, deferred work,
+  timers, async completions, batching, or diagnostics.
+- After Step 148, the public prelude should express reusable button, label,
+  text input, and scrollable list UI with keyed state and style cascade.
+- After Step 158, widget/demo paint streams should expose text, glyph metadata,
+  opacity/transform, HiDPI scale, batching diagnostics, and unsupported-command
+  diagnostics.
+- After Step 168, `docs/gpui-core-api-parity.md` should separate implemented,
+  partial, missing, and Mac/Metal-deferred GPUI areas.
 
 ## File Map
 
@@ -175,12 +202,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 107 instead of starting Step 129
-after Step 106 is merged and post-merge verified:
+For the current pre-back-40 state, start Step 108 instead of starting Step 129
+after Step 107 is merged and post-merge verified:
 
 ```powershell
-git worktree add .worktrees/view-registry-skeleton -b codex/view-registry-skeleton master
-xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/child-view-placeholder -b codex/child-view-placeholder master
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

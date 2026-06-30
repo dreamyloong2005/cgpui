@@ -73,7 +73,17 @@ int main() {
         const cgpui::View* opened_root =
             app_context.runtime.app_opened_window_root_view(
                 opened.root_view_id);
+        ChildView registered_view;
+        const cgpui::ViewId registered_view_id =
+            app_context.runtime.register_view(registered_view);
+        const cgpui::View* found_view =
+            app_context.runtime.find_view(registered_view_id);
+        const bool removed_view =
+            app_context.runtime.remove_view(registered_view_id);
+        (void)app_context.runtime.root_view();
         (void)opened_root;
+        (void)found_view;
+        (void)removed_view;
       };
   const cgpui::WindowDescriptor window_descriptor =
       cgpui::WindowOptions{}

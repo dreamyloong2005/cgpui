@@ -1003,6 +1003,11 @@ struct RuntimeFixture {
   RecordingView view;
 };
 
+class RegistryView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {}
+};
+
 class RenderHookView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList&, cgpui::Size) override { paint_count += 1; }
@@ -3651,6 +3656,68 @@ int test_context_allocates_stable_view_ids() {
   return 0;
 }
 
+int test_runtime_registers_finds_and_removes_views() {
+  RuntimeFixture fixture;
+  RegistryView stack_view;
+  auto owned_child_view = std::make_unique<RegistryView>();
+  RegistryView* owned_child_ptr = owned_child_view.get();
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const cgpui::ViewId root_view_id{1};
+  const cgpui::View* root_view = runtime.root_view();
+  if (root_view != &fixture.view ||
+      runtime.find_view(root_view_id) != &fixture.view ||
+      !runtime.upgrade_view(cgpui::WeakView(root_view_id)).has_value()) {
+    return 327;
+  }
+
+  const cgpui::ViewId stack_view_id = runtime.register_view(stack_view);
+  const cgpui::ViewId owned_child_view_id =
+      runtime.register_view(std::move(owned_child_view));
+
+  if (stack_view_id.value <= root_view_id.value ||
+      owned_child_view_id.value <= stack_view_id.value ||
+      stack_view_id == owned_child_view_id) {
+    return 328;
+  }
+  if (runtime.find_view(stack_view_id) != &stack_view ||
+      runtime.find_view(owned_child_view_id) != owned_child_ptr) {
+    return 329;
+  }
+  if (!runtime.is_view_id_allocated(stack_view_id) ||
+      !runtime.is_view_id_allocated(owned_child_view_id)) {
+    return 330;
+  }
+
+  const bool removed_child = runtime.remove_view(owned_child_view_id);
+  if (!removed_child ||
+      runtime.find_view(owned_child_view_id) != nullptr ||
+      runtime.is_view_id_allocated(owned_child_view_id) ||
+      runtime.upgrade_view(cgpui::WeakView(owned_child_view_id)).has_value()) {
+    return 331;
+  }
+  if (runtime.remove_view(root_view_id) ||
+      runtime.find_view(root_view_id) != &fixture.view ||
+      !runtime.is_view_id_allocated(root_view_id)) {
+    return 332;
+  }
+
+  const cgpui::ViewId next_view_id = runtime.register_view(
+      std::make_unique<RegistryView>());
+  if (next_view_id.value <= owned_child_view_id.value ||
+      runtime.find_view(next_view_id) == nullptr) {
+    return 333;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* action_dispatch_fixture = nullptr;
 
 void dispatch_action_dispatch_sequence() {
@@ -4879,6 +4946,10 @@ int main() {
     return result;
   }
   if (const int result = test_context_allocates_stable_view_ids();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_registers_finds_and_removes_views();
       result != 0) {
     return result;
   }
