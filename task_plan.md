@@ -99,18 +99,15 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `c0d38c7 docs: mark step 118 merged`; the Step
-118 feature commit is `9dfc2e7 feat: add layer elevation z order`.
-Steps 89-118 are merged and post-merge verified on Windows and WSL Arch Linux.
-Step 119 is implemented and feature-worktree verified; Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 120-128 plus Step 119
-post-merge verification.
+pre-back-40 handoff state at `0893600 feat: add rounded rect paint command`.
+Steps 89-119 are merged and post-merge verified on Windows and WSL Arch Linux.
+Step 129 remains gated behind completion and Windows/WSL verification of Steps
+120-128 plus the post-Step-128 exit verification.
 
-After Step 119 merges, the effective distance to Step 129 is 9 implementation
-steps, Steps 120-128, plus Step 119 post-merge verification and the
-post-Step-128 targeted, Windows, and WSL verification. The effective distance
-through Step 168 is 49 implementation steps plus those verification gates and
-the four follow-on band checkpoint reviews.
+The effective distance to Step 129 is 9 implementation steps, Steps 120-128,
+plus post-Step-128 targeted, Windows, and WSL verification. The effective
+distance through Step 168 is 49 implementation steps plus those verification
+gates and the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 120-128 queue unless the plan is explicitly reprioritized.
@@ -326,9 +323,9 @@ have been removed.
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, Step 129 start
 packet, band checkpoints after Steps 138, 148, 158, and 168, and an execution
-gate that records Steps 115-117 as merged and post-merge verified. Step 129
+gate that records Steps 115-119 as merged and post-merge verified. Step 129
 remains gated behind completion plus Windows/WSL verification of Steps
-118-128.
+120-128.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
 is merged on `master` at `9dfc2e7 feat: add layer elevation z order`. RED
@@ -340,15 +337,14 @@ passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug
 passed 26/26.
 
 Step 119, rounded-rect paint command that preserves border radius metadata, is
-implemented and feature-worktree verified in
-`.worktrees/rounded-rect-paint-command` on
-`codex/rounded-rect-paint-command`. RED failed as expected on missing
-`PaintCommandKind`, `RoundedRect`, `PaintCommand::kind`,
-`PaintCommand::rounded_rect`, and `PaintList::fill_rounded_rect(...)`.
-Feature-worktree targeted tests passed 3/3, Windows full debug passed 29/29,
-and WSL Arch Linux full debug passed 26/26. After Step 119 is merged and
-post-merge verified, Step 120, Vulkan clip rect metadata for solid rectangles,
-is the next implementation slice.
+merged on `master` at `0893600 feat: add rounded rect paint command`. RED
+failed as expected on missing `PaintCommandKind`, `RoundedRect`,
+`PaintCommand::kind`, `PaintCommand::rounded_rect`, and
+`PaintList::fill_rounded_rect(...)`. Feature-worktree targeted tests passed
+3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. Post-merge targeted tests passed 3/3, Windows full debug passed 29/29,
+and WSL Arch Linux full debug passed 26/26. Step 120, Vulkan clip rect
+metadata for solid rectangles, is the next implementation slice.
 
 ## Risks
 

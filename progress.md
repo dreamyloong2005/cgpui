@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 119 Merge
+
+- Refreshed the post-Step-128 back-40 plan after Step 119 landed on `master`
+  at `0893600 feat: add rounded rect paint command`.
+- Updated `task_plan.md`,
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`,
+  and
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  so Step 119 is recorded as merged and post-merge verified.
+- Kept the后 40 步 as Steps 129-168 and preserved the entry gate: Step 129
+  starts only after Steps 120-128 are merged and the post-Step-128 targeted,
+  Windows full debug, and WSL Arch Linux full debug verification passes on a
+  clean `master`.
+- Clarified the current distance: 9 implementation steps remain to Step 129
+  (Steps 120-128), and 49 implementation steps remain through Step 168, plus
+  the post-Step-128 verification gate and four follow-on band checkpoint
+  reviews.
+- The next practical implementation action is Step 120 in a fresh
+  `.worktrees/vulkan-clip-rect-metadata` worktree on
+  `codex/vulkan-clip-rect-metadata`.
+
 ## 2026-06-30 Step 119 Rounded-Rect Paint Command
 
 - Started Step 119 in `.worktrees/rounded-rect-paint-command` on

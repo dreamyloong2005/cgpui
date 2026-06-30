@@ -12,15 +12,13 @@
 
 ## Current State
 
-- Steps 89-118 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-119 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `4038376 docs: refresh back forty plan after step 118`.
-- Step 118 post-merge verification passed: targeted tests 3/3, Windows full
+- `master` includes `0893600 feat: add rounded rect paint command`.
+- Step 119 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 119, rounded-rect paint command, is implemented and feature-worktree
-  verified in `.worktrees/rounded-rect-paint-command` on branch
-  `codex/rounded-rect-paint-command`. Step 120 becomes the next implementation
-  slice after Step 119 is merged and post-merge verified.
+- Step 120, Vulkan clip rect metadata for solid rectangles, is the next
+  implementation slice.
 
 ## File Map
 
@@ -167,8 +165,7 @@ Acceptance at the end of Band D:
 ## Remaining Execution Queue From Step 119
 
 This is the practical remaining sequence after Step 119. Steps 89-119 are kept
-as completed foundation after Step 119 is merged and post-merge verified; the
-active remaining queue is Steps 120-128.
+as completed foundation; the active remaining queue is Steps 120-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -261,8 +258,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-After Step 119 is committed, merged, and post-merge verified, start Step 120
-from a fresh feature worktree:
+Start Step 120 from a fresh feature worktree:
 
 ```powershell
 git worktree add .worktrees/vulkan-clip-rect-metadata -b codex/vulkan-clip-rect-metadata master
@@ -642,13 +638,14 @@ Arch Linux full debug passed 26/26.
 
 ### Step 119: Rounded-Rect Paint Command
 
-Status: implemented and feature-worktree verified in
-`.worktrees/rounded-rect-paint-command` on
-`codex/rounded-rect-paint-command`. RED failed as expected on missing
-`PaintCommandKind`, `RoundedRect`, `PaintCommand::kind`,
+Status: complete on `master` at
+`0893600 feat: add rounded rect paint command`. RED failed as expected on
+missing `PaintCommandKind`, `RoundedRect`, `PaintCommand::kind`,
 `PaintCommand::rounded_rect`, and `PaintList::fill_rounded_rect(...)`.
 Feature-worktree targeted tests passed 3/3, Windows full debug passed 29/29,
-and WSL Arch Linux full debug passed 26/26.
+and WSL Arch Linux full debug passed 26/26. Post-merge targeted tests passed
+3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26.
 
 **Files:**
 - Modify: `include/cgpui/renderer/renderer.hpp`

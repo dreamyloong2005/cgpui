@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 119 Merge
+
+- The后 40 步 are still Steps 129-168, but the live entry gate has moved
+  forward: Step 119 is merged and post-merge verified, so the remaining
+  pre-back-40 work is Steps 120-128 plus post-Step-128 Windows/WSL
+  verification.
+- Step 120 should now be the next worktree. Its scope is Vulkan consumption of
+  `PaintCommand::clip_rect` for solid rectangles; it should not expand into
+  rounded-rect rasterization or text drawing.
+- The Step 168 outcome remains a practical Windows/Linux GPUI-core foundation
+  plus a parity audit document. It is not full upstream GPUI parity, and
+  macOS/Cocoa + Metal remains explicitly deferred.
+
 ## 2026-06-30 Rounded-Rect Paint Command
 
 - Step 119 keeps rounded rectangles as paint-list command metadata first. The
