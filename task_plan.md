@@ -98,7 +98,10 @@ Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, and Windows/WSL verification matrix for
-all 40 follow-on steps.
+all 40 follow-on steps. It also records the current pre-back-40 handoff state:
+Step 105 is already open in `.worktrees/window-options-open-window`, with its
+baseline targeted tests passed, so the next active action is continuing that
+worktree rather than starting Step 129.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current active Step 105 unless the plan is explicitly reprioritized.
@@ -291,8 +294,12 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 ## Active Step
 
 Step 104 is complete, merged to `master`, and post-merge verified on Windows
-and WSL Arch Linux. Next implementation step is Step 105:
-`WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
+and WSL Arch Linux. Step 105 is already open in
+`.worktrees/window-options-open-window` on `codex/window-options-open-window`;
+its baseline targeted tests passed:
+`xmake test -P . app_runner_test/default ui_header_cleanliness/default`
+passed 2/2. Next implementation action is to add the Step 105 RED tests for
+`WindowOptions` and `AppContext::open_window(...)`.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168, but Step 129 remains
 gated behind completion and Windows/WSL verification of Steps 105-128.

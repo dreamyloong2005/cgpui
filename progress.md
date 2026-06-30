@@ -1685,6 +1685,28 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 26/26.
 
+## 2026-06-30 Back-40 Planning After Step 104
+
+- Refreshed the post-Step-128 back-40 plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Updated the current state from the stale Step 104 implementation commit to
+  the actual `master` head:
+  `3ae0615 docs: mark step 104 merged`.
+- Recorded that Step 105 is already open in
+  `.worktrees/window-options-open-window` on
+  `codex/window-options-open-window`, and that its baseline targeted tests
+  already passed:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added a Back-40 execution profile for Steps 129-168, preserving the four
+  bands: context/entity/global/async, keyed reconciliation/widgets,
+  text/font/renderer diagnostics, and Windows/Wayland platform closure plus
+  parity audit.
+- Updated `task_plan.md` so the root plan points future workers at the
+  existing Step 105 worktree instead of recreating it or starting Step 129.
+- No implementation code was changed during this planning refresh.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

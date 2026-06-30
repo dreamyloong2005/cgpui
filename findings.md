@@ -1218,3 +1218,19 @@
 - Running the legacy runtime setup first and the new app-context setup second
   keeps existing behavior stable and gives callers a deterministic order when
   both callbacks are supplied.
+
+## 2026-06-30 Back-40 Planning After Step 104
+
+- The post-Step-128 "后40步" remains Steps 129-168, not a replacement for the
+  active Step 105-128 execution queue. Starting Step 129 early would skip
+  `WindowOptions`, root-view storage, view registry, child-view placeholders,
+  routing ancestry, propagation, focus/scroll/layout depth, renderer text
+  metadata, cursor/clipboard/IME surfaces, and the public demo rewrite.
+- The next actionable implementation is already set up: continue
+  `.worktrees/window-options-open-window` for Step 105 and add RED coverage for
+  `WindowOptions` plus `AppContext::open_window(...)`. Recreating the Step 105
+  worktree would be churn.
+- The back-40 plan is useful as an execution profile now: 129-138 context and
+  async, 139-148 keyed elements/widgets, 149-158 text/font/renderer maturity,
+  and 159-168 Windows/Wayland closure plus the parity audit. Its entry gate
+  stays Step 128 merged and Windows/WSL verified on a clean `master`.

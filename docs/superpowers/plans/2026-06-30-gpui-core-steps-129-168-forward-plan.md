@@ -17,11 +17,17 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-104 are complete on `master` at
-  `8c8dc90 feat: add app context setup wrapper` and were
-  post-merge verified on Windows and WSL Arch Linux.
+- Steps 89-104 are complete on `master` through
+  `3ae0615 docs: mark step 104 merged`; the Step 104 implementation commit is
+  `8c8dc90 feat: add app context setup wrapper`. Step 104 was post-merge
+  verified on Windows and WSL Arch Linux.
 - Steps 105-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+- Step 105 has already been opened in
+  `.worktrees/window-options-open-window` on
+  `codex/window-options-open-window`, and its baseline targeted tests passed:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default`
+  passed 2/2. No Step 105 RED/GREEN implementation has landed yet.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -104,8 +110,9 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-104 are complete on `master`; Steps 105-108
-  remain.
+  Current partial status: Steps 99-104 are complete on `master`; Step 105 is
+  opened in `.worktrees/window-options-open-window` with baseline tests passed,
+  but Steps 105-108 remain incomplete.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
@@ -145,10 +152,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 105 instead of starting Step 129:
+For the current pre-back-40 state, continue Step 105 instead of starting Step
+129. The worktree already exists, so do not recreate it unless it has been
+explicitly removed:
 
 ```powershell
-git worktree add .worktrees/window-options-open-window -b codex/window-options-open-window master
+git -C .worktrees/window-options-open-window status --short --branch
+xmake test -P . app_runner_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract
@@ -170,6 +180,26 @@ Keep these 40 steps sequential by default. A later step may be split if its RED
 test reveals a larger dependency, but do not combine adjacent steps just
 because they touch the same files. The point of this queue is to preserve the
 small RED/GREEN/merge cadence that has kept the Windows and WSL suites stable.
+
+## Back-40 Execution Profile
+
+The 40-step follow-on should run as one disciplined continuation, not as a
+parallel rewrite:
+
+- Steps 129-138 are mostly public API and runtime orchestration. Expect frequent
+  `ui.hpp` and `ui.cpp` edits with `window_runtime_test` as the main safety net.
+- Steps 139-148 are element/widget work. Keep widget primitives built from
+  public element APIs so they stay useful as examples for application code.
+- Steps 149-158 are renderer/text maturity work. Keep metadata and command
+  snapshots deterministic before depending on full platform font discovery.
+- Steps 159-168 are platform and closure work. Keep Win32 and Wayland behavior
+  isolated behind platform files, and use Step 168 to document what remains
+  partial or Mac/Metal-deferred.
+
+The expected execution rhythm remains one step per feature branch, one focused
+RED test, one minimal GREEN implementation, targeted tests, Windows full debug,
+WSL Arch full debug, docs/progress update, commit, fast-forward merge, and
+post-merge verification.
 
 ## Step-by-Step Execution Matrix
 
