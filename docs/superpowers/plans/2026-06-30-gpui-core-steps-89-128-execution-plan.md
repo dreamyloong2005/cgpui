@@ -14,14 +14,19 @@
 
 - Steps 89-121 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `cf180f4 feat: add text paint command`.
+- `master` includes `ff02957 docs: refresh back forty handoff`; Step 121's
+  behavior commit is `cf180f4 feat: add text paint command`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121, text paint command separates text drawing from placeholder
   rectangles, is merged and post-merge verified: targeted tests 3/3, Windows
   full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 122, font descriptor and basic font-size style primitives, is the next
-  implementation slice.
+- Step 122, font descriptor and basic font-size style primitives, is
+  implemented and feature-worktree verified on
+  `codex/font-descriptor-font-size`: targeted tests 3/3, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 123, text caret and selection paint metadata, is the next implementation
+  slice after Step 122 merge and post-merge verification.
 
 ## File Map
 
@@ -149,7 +154,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 119: rounded-rect paint command preserves border radius metadata.
 - [x] Step 120: Vulkan honors clip rect metadata for solid rectangles.
 - [x] Step 121: text paint command separates text drawing from placeholder rectangles.
-- [ ] Step 122: font descriptor and basic font-size style primitives.
+- [x] Step 122: font descriptor and basic font-size style primitives.
 - [ ] Step 123: text element emits caret and selection paint metadata.
 - [ ] Step 124: platform cursor application for Win32 and Wayland.
 - [ ] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
@@ -243,7 +248,7 @@ leaving macOS/Metal for a later parity track.
 - [x] Step 119: add rounded-rect paint commands with border-radius metadata.
 - [x] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
 - [x] Step 121: add text paint commands instead of placeholder rectangles.
-- [ ] Step 122: add font descriptors and basic font-size style.
+- [x] Step 122: add font descriptors and basic font-size style.
 - [ ] Step 123: emit caret and selection paint metadata from text elements.
 - [ ] Step 124: apply runtime cursor state through Win32 and Wayland platform
   hooks.
@@ -262,18 +267,23 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 122 from a fresh feature worktree:
+Finish the Step 122 merge and post-merge verification, then start Step 123 from
+a fresh feature worktree:
 
 ```powershell
-git worktree add .worktrees/font-descriptor-font-size -b codex/font-descriptor-font-size master
-cd .worktrees/font-descriptor-font-size
+git checkout master
+git merge --ff-only codex/font-descriptor-font-size
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+xmake f -c -m debug -P .
+xmake test -P .
+wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
+git worktree add .worktrees/text-caret-selection-paint -b codex/text-caret-selection-paint master
 ```
 
-Step 122 should add a small `FontDescriptor`, basic `font_size` style metadata,
-builder/header coverage, and text element layout metrics that can feed Step
-123 caret/selection geometry. It should not add shaping, glyph cache, or
-Vulkan text drawing.
+Step 123 should use the Step 122 `FontDescriptor`/`font_size` metrics to emit
+simple caret and selection paint metadata from `TextElement`. It should not add
+full text shaping, glyph cache ownership, platform IME placement, or Vulkan
+text drawing.
 
 ## Step Details
 
@@ -708,6 +718,13 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - [ ] Add RED tests for `FontDescriptor`, `Style::font_size`, and builder setters.
 - [ ] Use font size in `TextElement` skeleton metrics before real shaping exists.
 - [ ] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+- [x] RED failed as expected on missing font/style/text metadata APIs.
+- [x] GREEN added `FontDescriptor`, `Style::font`, `Style::font_size`,
+  `StyleOverlay` font overrides, text builder `.font(...)`/`.font_size(...)`,
+  deterministic font-size text metrics, and `TextPaint` font metadata.
+- [x] Feature-worktree targeted tests passed 3/3.
+- [x] Feature-worktree Windows full debug passed 29/29.
+- [x] Feature-worktree WSL Arch full debug passed 26/26.
 
 ### Step 123: Text Caret and Selection Paint Metadata
 

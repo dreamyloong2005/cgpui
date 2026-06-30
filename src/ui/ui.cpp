@@ -150,15 +150,22 @@ void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
                        : std::optional<Rect>{clip_stack_.back()}});
 }
 
-void PaintList::fill_text(Rect bounds, Color color, std::string_view text) {
+void PaintList::fill_text(
+    Rect bounds,
+    Color color,
+    std::string_view text,
+    FontDescriptor font,
+    float font_size) {
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::text,
       .text =
           TextPaint{
               .bounds = bounds,
               .color = color,
+              .font = std::move(font),
               .content = std::string(text),
               .byte_length = text.size(),
+              .font_size = font_size,
           },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
@@ -284,10 +291,14 @@ void TextElement::paint(PaintList& paint_list) const {
   if (!bounds.has_value() || text().empty()) {
     return;
   }
+  const Style& text_style = style();
   paint_list.fill_text(
       *bounds,
-      Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F},
-      text());
+      text_style.foreground_color.value_or(
+          Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F}),
+      text(),
+      text_style.font,
+      text_style.font_size);
 }
 
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {

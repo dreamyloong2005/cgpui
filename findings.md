@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Font Descriptor And Font Size Style
+
+- Step 122 keeps font work as conservative public metadata: `FontDescriptor`
+  currently carries a family string, `Style` and `StyleOverlay` carry font and
+  `font_size`, and the element builder exposes `.font(...)` and
+  `.font_size(...)` without adding platform font discovery yet.
+- The default text metric contract is preserved at 16px height and 8px glyph
+  width because `TextElement` now derives deterministic fallback metrics as
+  glyph width `font_size * 0.5F` and height `font_size`.
+- `TextPaint` now carries copied font metadata and font size alongside bounds,
+  color, content, byte length, and clip metadata. This gives Step 123 a stable
+  metric source for caret/selection paint metadata.
+- Step 122 intentionally does not add shaping, glyph caches, font discovery,
+  Vulkan text drawing, caret/selection commands, cursor, clipboard, or IME
+  behavior. Those remain later planned slices.
+
 ## 2026-06-30 Text Paint Command Merged
 
 - Step 121 is now merged at `cf180f4 feat: add text paint command` and

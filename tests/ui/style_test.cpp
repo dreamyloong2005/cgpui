@@ -1,6 +1,7 @@
 #include "cgpui/ui/style.hpp"
 
 #include <concepts>
+#include <string>
 
 namespace {
 
@@ -119,6 +120,9 @@ int test_overflow_defaults_to_visible() {
 
 int test_style_defaults_are_empty() {
   const cgpui::Style style;
+  if (style.font.family != "" || !same(style.font_size, 16.0F)) {
+    return 61;
+  }
   if (style.background_color.has_value() || style.foreground_color.has_value()) {
     return 5;
   }
@@ -199,6 +203,8 @@ int test_style_builder_methods_store_values() {
           .with_flex_shrink(3.0F)
           .with_position(cgpui::Position::absolute)
           .with_inset(cgpui::edges(9.0F, 10.0F, 11.0F, 12.0F))
+          .with_font(cgpui::FontDescriptor{.family = "Inter"})
+          .with_font_size(20.0F)
           .with_clip_rect(cgpui::Rect{
               .origin = {.x = 3.0F, .y = 4.0F},
               .size = {.width = 50.0F, .height = 60.0F},
@@ -269,6 +275,9 @@ int test_style_builder_methods_store_values() {
       !same(style.inset.bottom, 11.0F) || !same(style.inset.left, 12.0F)) {
     return 57;
   }
+  if (style.font.family != "Inter" || !same(style.font_size, 20.0F)) {
+    return 62;
+  }
   if (!style.clip_rect.has_value() ||
       !same(style.clip_rect->origin.x, 3.0F) ||
       !same(style.clip_rect->origin.y, 4.0F) ||
@@ -294,6 +303,7 @@ int test_style_overlay_defaults_to_no_overrides() {
       overlay.justify_content.has_value() ||
       overlay.flex_grow.has_value() || overlay.flex_shrink.has_value() ||
       overlay.position.has_value() || overlay.inset.has_value() ||
+      overlay.font.has_value() || overlay.font_size.has_value() ||
       overlay.clip_rect.has_value()) {
     return 37;
   }
@@ -318,6 +328,8 @@ int test_style_overlay_defaults_to_no_overrides() {
           .with_flex_shrink(5.0F)
           .with_position(cgpui::Position::absolute)
           .with_inset(cgpui::edges(13.0F))
+          .with_font(cgpui::FontDescriptor{.family = "Serif"})
+          .with_font_size(18.0F)
           .with_clip_rect(cgpui::Rect{
               .origin = {.x = 7.0F, .y = 8.0F},
               .size = {.width = 9.0F, .height = 10.0F},
@@ -368,6 +380,10 @@ int test_style_overlay_defaults_to_no_overrides() {
       !authored.inset.has_value() || authored.inset->left != 13.0F) {
     return 58;
   }
+  if (!authored.font.has_value() || authored.font->family != "Serif" ||
+      !authored.font_size.has_value() || *authored.font_size != 18.0F) {
+    return 63;
+  }
   return authored.clip_rect.has_value() &&
                  authored.clip_rect->origin.x == 7.0F &&
                  authored.clip_rect->size.height == 10.0F
@@ -390,7 +406,9 @@ int test_style_state_resolves_hover_focus_disabled_order() {
                    .with_flex_shrink(1.0F)
                    .with_layer(1)
                    .with_position(cgpui::Position::relative)
-                   .with_inset(cgpui::edges(1.0F));
+                   .with_inset(cgpui::edges(1.0F))
+                   .with_font(cgpui::FontDescriptor{.family = "Base"})
+                   .with_font_size(14.0F);
   state.hover =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(30, 30, 30))
@@ -399,7 +417,8 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_align_items(cgpui::AlignItems::center)
           .with_flex_grow(2.0F)
           .with_layer(2)
-          .with_position(cgpui::Position::absolute);
+          .with_position(cgpui::Position::absolute)
+          .with_font_size(18.0F);
   state.focus =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(40, 40, 40))
@@ -407,13 +426,15 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_justify_content(cgpui::JustifyContent::end)
           .with_flex_shrink(3.0F)
           .with_layer(3)
-          .with_inset(cgpui::edges(4.0F));
+          .with_inset(cgpui::edges(4.0F))
+          .with_font(cgpui::FontDescriptor{.family = "Focus"});
   state.disabled =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(60, 60, 60))
           .with_border_width(cgpui::edges(3.0F))
           .with_layer(4)
-          .with_align_items(cgpui::AlignItems::end);
+          .with_align_items(cgpui::AlignItems::end)
+          .with_font_size(12.0F);
 
   const cgpui::Style hover =
       cgpui::resolved_style(state, cgpui::StyleStateFlags{.hovered = true});
@@ -426,7 +447,8 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       hover.flex_grow != 2.0F || hover.flex_shrink != 1.0F ||
       hover.layer != 2 ||
       hover.position != cgpui::Position::absolute ||
-      hover.inset.left != 1.0F) {
+      hover.inset.left != 1.0F ||
+      hover.font.family != "Base" || hover.font_size != 18.0F) {
     return 44;
   }
 
@@ -443,7 +465,8 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       focused.flex_grow != 2.0F || focused.flex_shrink != 3.0F ||
       focused.layer != 3 ||
       focused.position != cgpui::Position::absolute ||
-      focused.inset.left != 4.0F) {
+      focused.inset.left != 4.0F ||
+      focused.font.family != "Focus" || focused.font_size != 18.0F) {
     return 45;
   }
 
@@ -465,7 +488,8 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       disabled.flex_grow != 2.0F || disabled.flex_shrink != 3.0F ||
       disabled.layer != 4 ||
       disabled.position != cgpui::Position::absolute ||
-      disabled.inset.left != 4.0F) {
+      disabled.inset.left != 4.0F ||
+      disabled.font.family != "Focus" || disabled.font_size != 12.0F) {
     return 46;
   }
 
@@ -487,6 +511,9 @@ static_assert(std::same_as<decltype(cgpui::Style{}.flex_grow), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.flex_shrink), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.position), cgpui::Position>);
 static_assert(std::same_as<decltype(cgpui::Style{}.inset), cgpui::EdgeSizes>);
+static_assert(std::same_as<decltype(cgpui::FontDescriptor{}.family), std::string>);
+static_assert(std::same_as<decltype(cgpui::Style{}.font), cgpui::FontDescriptor>);
+static_assert(std::same_as<decltype(cgpui::Style{}.font_size), float>);
 static_assert(
     std::same_as<decltype(cgpui::Style{}.align_items), cgpui::AlignItems>);
 static_assert(std::same_as<

@@ -53,8 +53,10 @@ struct RoundedRect {
 struct TextPaint {
   Rect bounds;
   Color color;
+  FontDescriptor font;
   std::string content;
   std::size_t byte_length = 0;
+  float font_size = 16.0F;
 };
 
 struct PaintCommand {
@@ -72,7 +74,12 @@ class PaintList {
   void pop_clip();
   void fill_rect(Rect rect, Color color);
   void fill_rounded_rect(Rect rect, Color color, BorderRadii radius);
-  void fill_text(Rect bounds, Color color, std::string_view text);
+  void fill_text(
+      Rect bounds,
+      Color color,
+      std::string_view text,
+      FontDescriptor font = {},
+      float font_size = 16.0F);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
  private:

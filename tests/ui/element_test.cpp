@@ -1843,6 +1843,30 @@ int test_text_element_binds_text_model_and_lays_out_skeleton() {
              : 139;
 }
 
+int test_text_element_uses_font_size_for_deterministic_metrics() {
+  cgpui::TextModel model("abcd");
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_font(cgpui::FontDescriptor{.family = "Inter"})
+          .with_font_size(20.0F));
+
+  if (element.font().family != "Inter" || element.font_size() != 20.0F) {
+    return 280;
+  }
+
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 20.0F) {
+    return 281;
+  }
+
+  const std::optional<cgpui::Rect> bounds = element.layout_bounds();
+  return bounds.has_value() && bounds->size.width == 40.0F &&
+                 bounds->size.height == 20.0F
+             ? 0
+             : 282;
+}
+
 int test_child_view_element_references_view_and_lays_out_placeholder() {
   cgpui::ChildViewElement element(
       cgpui::ViewId{42},
@@ -1886,7 +1910,12 @@ int test_child_view_element_references_view_and_lays_out_placeholder() {
 
 int test_text_element_paints_text_command_from_layout_bounds() {
   cgpui::TextModel model("hi");
-  cgpui::TextElement element(&model);
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_foreground_color(cgpui::rgb(10, 20, 30))
+          .with_font(cgpui::FontDescriptor{.family = "Mono"})
+          .with_font_size(20.0F));
   (void)element.layout(cgpui::LayoutInput{});
 
   cgpui::PaintList paint_list;
@@ -1900,11 +1929,15 @@ int test_text_element_paints_text_command_from_layout_bounds() {
   }
 
   const cgpui::TextPaint& text = commands[0].text;
-  if (text.bounds.size.width != 16.0F || text.bounds.size.height != 16.0F) {
+  if (text.bounds.size.width != 20.0F || text.bounds.size.height != 20.0F) {
     return 142;
   }
   if (text.content != "hi" || text.byte_length != model.text().size()) {
     return 143;
+  }
+  if (text.font.family != "Mono" || text.font_size != 20.0F ||
+      text.color.r != 10.0F / 255.0F) {
+    return 283;
   }
 
   return text.color.a > 0.0F ? 0 : 144;
@@ -1913,7 +1946,11 @@ int test_text_element_paints_text_command_from_layout_bounds() {
 int test_element_builder_builds_text_leaf() {
   cgpui::TextModel model("builder");
   std::unique_ptr<cgpui::Element> element =
-      cgpui::ElementBuilder::text(model).build();
+      cgpui::ElementBuilder::text(model)
+          .font(cgpui::FontDescriptor{.family = "Builder"})
+          .font_size(18.0F)
+          .foreground(cgpui::rgb(100, 110, 120))
+          .build();
 
   auto* text = dynamic_cast<cgpui::TextElement*>(element.get());
   if (text == nullptr || text->model() != &model ||
@@ -1922,7 +1959,13 @@ int test_element_builder_builds_text_leaf() {
   }
 
   const cgpui::LayoutOutput output = text->layout(cgpui::LayoutInput{});
-  return output.size.width == 56.0F && output.size.height == 16.0F ? 0 : 144;
+  if (output.size.width != 63.0F || output.size.height != 18.0F) {
+    return 284;
+  }
+  return text->font().family == "Builder" && text->font_size() == 18.0F &&
+                 text->style().foreground_color.has_value()
+             ? 0
+             : 285;
 }
 
 int test_element_builder_builds_child_view_placeholder() {
@@ -3282,6 +3325,11 @@ int main() {
   }
   if (const int result =
           test_text_element_binds_text_model_and_lays_out_skeleton();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_uses_font_size_for_deterministic_metrics();
       result != 0) {
     return result;
   }

@@ -1,5 +1,39 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 122 Font Descriptor And Font Size Style
+
+- Continued Step 122 in `.worktrees/font-descriptor-font-size` on
+  `codex/font-descriptor-font-size`, rebased onto current `master` at
+  `ff02957 docs: refresh back forty handoff`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . style_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Added RED coverage for `FontDescriptor`, `Style::font`,
+  `Style::font_size`, `StyleOverlay` font overrides, builder
+  `.font(...)`/`.font_size(...)`, `TextElement` styled construction and
+  font-size metrics, `TextPaint` font metadata, and public header visibility.
+  The RED build failed as expected because those APIs and metadata did not
+  exist yet.
+- Implemented Step 122 in `include/cgpui/ui/style.hpp`,
+  `include/cgpui/ui/element.hpp`, `include/cgpui/ui/ui.hpp`, and
+  `src/ui/ui.cpp`: public font metadata on styles and overlays, deterministic
+  `font_size * 0.5F` fallback text metrics, builder font shortcuts,
+  foreground-color-aware text painting, and `TextPaint` font/font-size
+  payloads while preserving the default 16px text height and 8px glyph width.
+- Verified targeted tests in the feature worktree:
+  `xmake test -P . style_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  `findings.md`, and this progress log so Step 122 is recorded as implemented
+  and feature-worktree verified. Step 123, text element caret and selection
+  paint metadata, is the next implementation slice after Step 122 merge and
+  post-merge verification.
+
 ## 2026-06-30 Step 121 Post-Merge
 
 - Fast-forward merged Step 121 to `master` at

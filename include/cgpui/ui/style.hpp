@@ -3,6 +3,7 @@
 #include "cgpui/core/geometry.hpp"
 
 #include <optional>
+#include <string>
 
 namespace cgpui {
 
@@ -140,11 +141,20 @@ struct BorderRadii {
   }
 };
 
+struct FontDescriptor {
+  std::string family;
+
+  friend bool operator==(
+      const FontDescriptor&,
+      const FontDescriptor&) = default;
+};
+
 struct Style {
   std::optional<Color> background_color;
   std::optional<Color> foreground_color;
   std::optional<Color> border_color;
   std::optional<Rect> clip_rect;
+  FontDescriptor font;
   Size preferred_size;
   EdgeSizes padding;
   EdgeSizes margin;
@@ -160,6 +170,7 @@ struct Style {
   float flex_shrink = 0.0F;
   Position position = Position::relative;
   EdgeSizes inset;
+  float font_size = 16.0F;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -270,6 +281,18 @@ struct Style {
     return style;
   }
 
+  [[nodiscard]] Style with_font(FontDescriptor descriptor) const {
+    Style style = *this;
+    style.font = descriptor;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_font_size(float value) const {
+    Style style = *this;
+    style.font_size = value;
+    return style;
+  }
+
   [[nodiscard]] constexpr Style with_clip_rect(Rect rect) const {
     Style style = *this;
     style.clip_rect = rect;
@@ -297,6 +320,8 @@ struct StyleOverlay {
   std::optional<float> flex_shrink;
   std::optional<Position> position;
   std::optional<EdgeSizes> inset;
+  std::optional<FontDescriptor> font;
+  std::optional<float> font_size;
 
   [[nodiscard]] constexpr StyleOverlay with_background_color(
       Color color) const {
@@ -412,6 +437,18 @@ struct StyleOverlay {
     return overlay;
   }
 
+  [[nodiscard]] StyleOverlay with_font(FontDescriptor descriptor) const {
+    StyleOverlay overlay = *this;
+    overlay.font = descriptor;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_font_size(float value) const {
+    StyleOverlay overlay = *this;
+    overlay.font_size = value;
+    return overlay;
+  }
+
   [[nodiscard]] constexpr StyleOverlay with_clip_rect(Rect rect) const {
     StyleOverlay overlay = *this;
     overlay.clip_rect = rect;
@@ -491,6 +528,12 @@ struct StyleStateFlags {
   }
   if (overlay.inset.has_value()) {
     style.inset = *overlay.inset;
+  }
+  if (overlay.font.has_value()) {
+    style.font = *overlay.font;
+  }
+  if (overlay.font_size.has_value()) {
+    style.font_size = *overlay.font_size;
   }
   return style;
 }

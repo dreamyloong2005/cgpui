@@ -102,14 +102,15 @@ verification matrix for all 40 follow-on steps. It records the current
 pre-back-40 handoff state at `dc010b6 docs: mark step 121 merged`; the Step
 121 behavior commit is `cf180f4 feat: add text paint command`. Steps 89-121 are
 merged, docs-closed, and post-merge verified on Windows and WSL Arch Linux.
-Step 122 already has the clean handoff worktree
-`.worktrees/font-descriptor-font-size` on `codex/font-descriptor-font-size`.
-Step 129 remains gated behind completion and Windows/WSL verification of Steps
-122-128 plus the post-Step-128 exit verification.
+Step 122 is implemented and feature-worktree verified on
+`codex/font-descriptor-font-size`. Step 129 remains gated behind completion and
+Windows/WSL verification of Steps 123-128 after Step 122 merges, plus the
+post-Step-128 exit verification.
 
-The effective distance to Step 129 is 7 implementation steps, Steps 122-128,
-plus post-Step-128 targeted, Windows, and WSL verification. The effective
-distance through Step 168 is 47 implementation steps plus those verification
+The effective distance to Step 129 after Step 122 merges is 6 implementation
+steps, Steps 123-128, plus post-Step-128 targeted, Windows, and WSL
+verification. The effective
+distance through Step 168 is 46 implementation steps plus those verification
 gates and the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
@@ -248,7 +249,7 @@ the current Step 122-128 queue unless the plan is explicitly reprioritized.
 119. [x] Rounded-rect paint command that preserves border radius metadata.
 120. [x] Vulkan renderer honors clip rect metadata for solid rectangles.
 121. [x] Text paint command separates text drawing from placeholder rectangles.
-122. [ ] Font descriptor and basic font-size style primitives.
+122. [x] Font descriptor and basic font-size style primitives.
 123. [ ] Text element emits caret and selection paint metadata.
 124. [ ] Platform cursor application for Win32 and Wayland.
 125. [ ] Win32 system clipboard backend for text copy, cut, and paste.
@@ -329,7 +330,9 @@ artifacts, explicit keep-out-of-scope notes, Step 129 start packet, band
 checkpoints after Steps 138, 148, 158, and 168, and an execution gate that
 records Steps 115-121 as merged and post-merge verified. Step 129 remains
 gated behind completion plus Windows/WSL verification of Steps 122-128 and the
-post-Step-128 exit verification. Step 122 is the next implementation slice.
+post-Step-128 exit verification. Step 122 is implemented and feature-worktree
+verified; Step 123 is the next implementation slice after Step 122 merge and
+post-merge verification.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
 is merged on `master` at `9dfc2e7 feat: add layer elevation z order`. RED
@@ -366,7 +369,19 @@ drawing step. Feature-worktree targeted tests passed 3/3, Windows full debug
 passed 29/29, and WSL Arch Linux full debug passed 26/26. Post-merge targeted
 tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
 debug passed 26/26. Step 122, font descriptor and basic font-size style
-primitives, is the next implementation slice.
+primitives, was the next implementation slice.
+
+Step 122, font descriptor and basic font-size style primitives, is implemented
+in `codex/font-descriptor-font-size`. RED failed as expected on missing
+`FontDescriptor`, `Style::font`, `Style::font_size`, `StyleOverlay` font
+overrides, builder `.font(...)`/`.font_size(...)`, text font metrics, and text
+paint font metadata. GREEN adds public font metadata to `Style`/`StyleOverlay`,
+deterministic font-size-derived `TextElement` metrics, text builder font
+shortcuts, and `TextPaint` font/font-size metadata while preserving the default
+16px text metrics. Feature-worktree targeted tests passed 3/3, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 123, text
+element caret and selection paint metadata, is the next implementation slice
+after Step 122 is merged and post-merge verified.
 
 ## Risks
 

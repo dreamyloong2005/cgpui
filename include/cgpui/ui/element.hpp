@@ -620,7 +620,9 @@ class StyledElement : public Element {
 
 class TextElement : public Element {
  public:
-  explicit TextElement(TextModel* model) : model_(model) {}
+  explicit TextElement(TextModel* model, Style style = {})
+      : model_(model),
+        style_(std::move(style)) {}
 
   [[nodiscard]] TextModel* model() const {
     return model_;
@@ -630,10 +632,23 @@ class TextElement : public Element {
     return model_ == nullptr ? std::string_view{} : model_->text();
   }
 
+  [[nodiscard]] const Style& style() const {
+    return style_;
+  }
+
+  [[nodiscard]] const FontDescriptor& font() const {
+    return style_.font;
+  }
+
+  [[nodiscard]] float font_size() const {
+    return style_.font_size;
+  }
+
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const float glyph_width = font_size() * 0.5F;
     const Size preferred{
         .width = static_cast<float>(text().size()) * glyph_width,
-        .height = glyph_height,
+        .height = font_size(),
     };
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),
@@ -648,10 +663,8 @@ class TextElement : public Element {
   void paint(PaintList& paint_list) const override;
 
  private:
-  static constexpr float glyph_width = 8.0F;
-  static constexpr float glyph_height = 16.0F;
-
   TextModel* model_ = nullptr;
+  Style style_;
 };
 
 class ChildViewElement : public Element {
@@ -1108,6 +1121,16 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder font(FontDescriptor descriptor) && {
+    style_state_.base = style_state_.base.with_font(std::move(descriptor));
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder font_size(float value) && {
+    style_state_.base = style_state_.base.with_font_size(value);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder border_width(EdgeSizes edges) && {
     style_state_.base = style_state_.base.with_border_width(edges);
     return std::move(*this);
@@ -1228,7 +1251,8 @@ class ElementBuilder {
       return finish(std::make_unique<FixedSizeElement>(size_));
     }
     if (kind_ == Kind::text) {
-      return finish(std::make_unique<TextElement>(text_model_));
+      return finish(
+          std::make_unique<TextElement>(text_model_, style_state_.base));
     }
     if (kind_ == Kind::child_view) {
       return finish(std::make_unique<ChildViewElement>(child_view_id_, size_));

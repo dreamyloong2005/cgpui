@@ -24,7 +24,9 @@ class TestView final : public cgpui::View {
     paint_list.fill_text(
         cgpui::Rect{.origin = {2.0F, 3.0F}, .size = {12.0F, 16.0F}},
         cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
-        "header");
+        "header",
+        cgpui::FontDescriptor{.family = "Header"},
+        18.0F);
   }
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
@@ -76,11 +78,15 @@ int main() {
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)
                          .with_justify_content(cgpui::JustifyContent::end)
-                         .with_layer(2);
+                         .with_layer(2)
+                         .with_font(cgpui::FontDescriptor{.family = "Inter"})
+                         .with_font_size(15.0F);
   style_state.hover =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(64, 64, 64))
-          .with_justify_content(cgpui::JustifyContent::space_between);
+          .with_justify_content(cgpui::JustifyContent::space_between)
+          .with_font(cgpui::FontDescriptor{.family = "Hover"})
+          .with_font_size(17.0F);
   const cgpui::Style resolved = cgpui::resolved_style(
       style_state,
       cgpui::StyleStateFlags{.hovered = true});
@@ -125,6 +131,8 @@ int main() {
                               .padding(cgpui::edges(cgpui::px(1.0F)))
                               .background(cgpui::rgb(255, 0, 0))
                               .foreground(cgpui::rgba(255, 255, 255, 0.5F))
+                              .font(cgpui::FontDescriptor{.family = "UI"})
+                              .font_size(16.0F)
                               .hover_style(cgpui::StyleOverlay{}
                                                .with_background_color(
                                                    cgpui::rgb(0, 255, 0)))
@@ -164,6 +172,12 @@ int main() {
                                         .absolute()
                                         .inset(cgpui::edges(3.0F))));
   const auto* flex = dynamic_cast<const cgpui::FlexElement*>(flex_element.get());
+  cgpui::AnyElement text_element =
+      cgpui::into_element(cgpui::text(text_model)
+                              .font(cgpui::FontDescriptor{.family = "Text"})
+                              .font_size(19.0F));
+  const auto* built_text =
+      dynamic_cast<const cgpui::TextElement*>(text_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
       scroll_state,
@@ -189,6 +203,7 @@ int main() {
                  commands[2].kind == cgpui::PaintCommandKind::text &&
                  rounded.radius.top_left == 2.0F && text_model.text() == "x" &&
                  text.content == "header" && text.byte_length == 6 &&
+                 text.font.family == "Header" && text.font_size == 18.0F &&
                  render_record.sequence == 1 &&
                  render_record.root_element_id.has_value() &&
                  event_route.element_ancestry.size() == 1 &&
@@ -197,6 +212,8 @@ int main() {
                  resolved.background_color.has_value() &&
                  resolved.justify_content ==
                      cgpui::JustifyContent::space_between &&
+                 resolved.font.family == "Hover" &&
+                 resolved.font_size == 17.0F &&
                  static_cast<bool>(app_options.setup_context) &&
                  window_descriptor.title == "Header Window" &&
                  window_descriptor.size.width == 9.0F &&
@@ -218,6 +235,9 @@ int main() {
                   flex->children()[0]->position() ==
                       cgpui::Position::absolute &&
                   flex->children()[0]->inset().left == 3.0F &&
+                  built_text != nullptr &&
+                  built_text->font().family == "Text" &&
+                  built_text->font_size() == 19.0F &&
                   scroll_model.offset().x == 0.0F
               ? 0
               : 1;
