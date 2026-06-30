@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 94 Pointer Handler Shortcuts
+
+- Started Step 94 in `codex/pointer-handler-shortcuts` from `master` at
+  `5172ec8`.
+- Baseline targeted tests passed: `xmake test -P . element_test/default
+  window_runtime_test/default ui_header_cleanliness/default` passed 3/3.
+- Added RED `element_test` coverage for `.on_pointer_down(...)`,
+  `.on_pointer_up(...)`, and `.on_pointer_move(...)` receiving concrete
+  `PointerButton`/`PointerMoved` event data plus `ElementEventContext`; the
+  test failed to compile because `ElementBuilder` did not expose
+  `.on_pointer_down(...)`.
+- Implemented Step 94 in `include/cgpui/ui/element.hpp`: added
+  `PointerButtonHandler`, `PointerMoveHandler`, a transparent `PointerElement`
+  wrapper, and builder shortcuts for pointer down, up, and move.
+- Kept `.on_click(...)` source-compatible and preserved its existing
+  pointer-press semantics while allowing pointer handlers to compose as another
+  wrapper layer.
+- Updated `ui_header_cleanliness` to exercise pointer handler shortcuts through
+  the public UI headers.
+- Verified targeted tests passed 3/3.
+- Verified Windows full debug tests passed 29/29.
+- Verified WSL Arch Linux full debug tests passed 26/26.
+
 ## 2026-06-30 Step 93 Element Builder Fluent Style Shortcuts
 
 - Started Step 93 in `codex/element-builder-style-shortcuts` from `master` at

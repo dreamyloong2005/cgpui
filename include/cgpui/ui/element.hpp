@@ -55,6 +55,10 @@ struct ElementFocusContext {
 };
 
 using ClickHandler = std::function<EventResult(const ElementEventContext&)>;
+using PointerButtonHandler =
+    std::function<EventResult(const PointerButton&, const ElementEventContext&)>;
+using PointerMoveHandler =
+    std::function<EventResult(const PointerMoved&, const ElementEventContext&)>;
 using KeyHandler =
     std::function<EventResult(const KeyboardKey&, const ElementEventContext&)>;
 
@@ -489,6 +493,90 @@ class ClickElement : public Element {
   ClickHandler handler_;
 };
 
+class PointerElement : public Element {
+ public:
+  PointerElement(
+      std::unique_ptr<Element> child,
+      PointerButtonHandler down_handler,
+      PointerButtonHandler up_handler,
+      PointerMoveHandler move_handler)
+      : child_(std::move(child)),
+        down_handler_(std::move(down_handler)),
+        up_handler_(std::move(up_handler)),
+        move_handler_(std::move(move_handler)) {}
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    if (child_) {
+      const LayoutOutput output = child_->layout(input);
+      child_->set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      return output;
+    }
+    return Element::layout(input);
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override {
+    if (child_) {
+      child_->paint(paint_list);
+    }
+  }
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    if (!enabled()) {
+      return EventResult::unhandled();
+    }
+
+    if (const auto* pointer_button = std::get_if<PointerButton>(&event);
+        pointer_button != nullptr) {
+      PointerButtonHandler& handler =
+          pointer_button->pressed ? down_handler_ : up_handler_;
+      if (handler) {
+        const EventResult result = handler(*pointer_button, context);
+        if (result.consumed || result.cancelled) {
+          return result;
+        }
+      }
+    } else if (const auto* pointer_move = std::get_if<PointerMoved>(&event);
+               pointer_move != nullptr && move_handler_) {
+      const EventResult result = move_handler_(*pointer_move, context);
+      if (result.consumed || result.cancelled) {
+        return result;
+      }
+    }
+
+    return child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
+  }
+
+ private:
+  std::unique_ptr<Element> child_;
+  PointerButtonHandler down_handler_;
+  PointerButtonHandler up_handler_;
+  PointerMoveHandler move_handler_;
+};
+
 class FocusableElement : public Element {
  public:
   explicit FocusableElement(std::unique_ptr<Element> child)
@@ -713,6 +801,22 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder on_pointer_down(
+      PointerButtonHandler handler) && {
+    pointer_down_handler_ = std::move(handler);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder on_pointer_up(PointerButtonHandler handler) && {
+    pointer_up_handler_ = std::move(handler);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder on_pointer_move(PointerMoveHandler handler) && {
+    pointer_move_handler_ = std::move(handler);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder on_key(KeyHandler handler) && {
     key_handler_ = std::move(handler);
     return std::move(*this);
@@ -785,6 +889,15 @@ class ElementBuilder {
       click_element->set_enabled(enabled_);
       element = std::move(click_element);
     }
+    if (pointer_down_handler_ || pointer_up_handler_ || pointer_move_handler_) {
+      auto pointer_element = std::make_unique<PointerElement>(
+          std::move(element),
+          pointer_down_handler_,
+          pointer_up_handler_,
+          pointer_move_handler_);
+      pointer_element->set_enabled(enabled_);
+      element = std::move(pointer_element);
+    }
     if (key_handler_) {
       auto key_element =
           std::make_unique<KeyElement>(std::move(element), key_handler_);
@@ -807,6 +920,9 @@ class ElementBuilder {
   bool enabled_ = true;
   bool focusable_ = false;
   ClickHandler click_handler_;
+  PointerButtonHandler pointer_down_handler_;
+  PointerButtonHandler pointer_up_handler_;
+  PointerMoveHandler pointer_move_handler_;
   KeyHandler key_handler_;
   std::vector<std::unique_ptr<Element>> children_;
 };

@@ -12,15 +12,15 @@
 
 ## Current State
 
-- Steps 89-92 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-94 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `6e7d34c feat: add style unit color helpers`.
+- `master` is at the Step 94 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  active after Step 92 cleanup.
-- The next implementation slice is Step 94:
-  Pointer handler shortcuts for down, up, move, and click authoring paths.
+  expected to remain active after Step 94 cleanup.
+- The next implementation slice is Step 95:
+  Focus, hover, and disabled style-state overlay primitives.
 
 ## File Map
 
@@ -85,7 +85,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 91: child overloads for builders and owned element values.
 - [x] Step 92: style unit/color helpers.
 - [x] Step 93: builder style shortcuts.
-- [ ] Step 94: pointer handler shortcuts.
+- [x] Step 94: pointer handler shortcuts.
 - [ ] Step 95: focus/hover/disabled style-state primitives.
 - [ ] Step 96: `View::render(ViewContext&)` skeleton.
 - [ ] Step 97: runtime render pass installs rendered element trees.
@@ -164,10 +164,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 94
+## Remaining Execution Queue From Step 95
 
-This is the practical "后 40 步" sequence after Step 93. Steps 89-93 are kept
-as completed foundation; the active remaining queue is Steps 94-128.
+This is the practical "后 40 步" sequence after Step 94. Steps 89-94 are kept
+as completed foundation; the active remaining queue is Steps 95-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -175,7 +175,7 @@ Goal: make user code author UI through GPUI-like factories and `View::render`
 without touching model lifecycle yet.
 
 - [x] Step 93: land fluent builder style shortcuts on `ElementBuilder`.
-- [ ] Step 94: add pointer-down/up/move/click authoring shortcuts.
+- [x] Step 94: add pointer-down/up/move/click authoring shortcuts.
 - [ ] Step 95: add base/hover/focus/disabled style overlay primitives and
   deterministic style resolution.
 - [ ] Step 96: add optional `View::render(ViewContext&)` while preserving the
@@ -260,16 +260,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 94 in an isolated worktree:
+Start Step 95 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/pointer-handler-shortcuts -b codex/pointer-handler-shortcuts master
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/style-state-overlays -b codex/style-state-overlays master
+xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Then add the RED tests for pointer down/up/move/click shortcuts, implement the
-minimal handler wrappers in `include/cgpui/ui/element.hpp`, and follow the
-standard per-step verification/merge workflow above.
+Then add the RED tests for base/hover/focus/disabled style overlays,
+deterministic style resolution, and builder authoring methods. Implement the
+minimal style-state value and builder storage in `include/cgpui/ui/style.hpp`
+and `include/cgpui/ui/element.hpp`, then follow the standard per-step
+verification/merge workflow above.
 
 ## Step Details
 
@@ -302,6 +304,8 @@ Status: complete on `master` after the Step 93 merge.
 - [ ] Targeted test command: `xmake test -P . element_test/default style_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 94: Pointer Handler Shortcuts
+
+Status: complete on `master` after the Step 94 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`

@@ -2083,6 +2083,139 @@ int test_element_builder_click_handler_respects_disabled_state() {
   return !result.consumed && !result.cancelled ? 0 : 165;
 }
 
+int test_element_builder_pointer_handlers_route_concrete_events() {
+  int down_count = 0;
+  int up_count = 0;
+  int move_count = 0;
+  cgpui::Point down_position{};
+  cgpui::Point up_position{};
+  cgpui::Point move_position{};
+  cgpui::ElementId down_target{};
+  cgpui::ElementId up_target{};
+  cgpui::ElementId move_target{};
+
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .on_pointer_down([&](
+                               const cgpui::PointerButton& event,
+                               const cgpui::ElementEventContext& context) {
+            down_count += 1;
+            down_position = event.position;
+            down_target = context.target_element_id;
+            return cgpui::EventResult::consumed_event();
+          })
+          .on_pointer_up([&](
+                             const cgpui::PointerButton& event,
+                             const cgpui::ElementEventContext& context) {
+            up_count += 1;
+            up_position = event.position;
+            up_target = context.target_element_id;
+            return cgpui::EventResult::unhandled();
+          })
+          .on_pointer_move([&](
+                               const cgpui::PointerMoved& event,
+                               const cgpui::ElementEventContext& context) {
+            move_count += 1;
+            move_position = event.position;
+            move_target = context.target_element_id;
+            return cgpui::EventResult::cancelled_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{41});
+
+  const cgpui::ElementEventContext context{.target_element_id = element->id()};
+  const cgpui::EventResult down_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      context);
+  const cgpui::EventResult up_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 3.0F, .y = 4.0F}},
+      context);
+  const cgpui::EventResult move_result = element->handle_event(
+      cgpui::PointerMoved{.position = {.x = 5.0F, .y = 6.0F}},
+      context);
+
+  if (down_count != 1 || up_count != 1 || move_count != 1) {
+    return 216;
+  }
+  if (down_position.x != 1.0F || down_position.y != 2.0F ||
+      up_position.x != 3.0F || up_position.y != 4.0F ||
+      move_position.x != 5.0F || move_position.y != 6.0F) {
+    return 217;
+  }
+  if (down_target != cgpui::ElementId{41} ||
+      up_target != cgpui::ElementId{41} ||
+      move_target != cgpui::ElementId{41}) {
+    return 218;
+  }
+  if (!down_result.consumed || down_result.cancelled) {
+    return 219;
+  }
+  if (up_result.consumed || up_result.cancelled) {
+    return 220;
+  }
+  return move_result.consumed && move_result.cancelled ? 0 : 221;
+}
+
+int test_element_builder_pointer_handlers_respect_disabled_state() {
+  int down_count = 0;
+  int up_count = 0;
+  int move_count = 0;
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .disabled()
+          .on_pointer_down([&](
+                               const cgpui::PointerButton&,
+                               const cgpui::ElementEventContext&) {
+            down_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .on_pointer_up([&](
+                             const cgpui::PointerButton&,
+                             const cgpui::ElementEventContext&) {
+            up_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .on_pointer_move([&](
+                               const cgpui::PointerMoved&,
+                               const cgpui::ElementEventContext&) {
+            move_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{42});
+
+  const cgpui::ElementEventContext context{.target_element_id = element->id()};
+  const cgpui::EventResult down_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      context);
+  const cgpui::EventResult up_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 3.0F, .y = 4.0F}},
+      context);
+  const cgpui::EventResult move_result = element->handle_event(
+      cgpui::PointerMoved{.position = {.x = 5.0F, .y = 6.0F}},
+      context);
+
+  if (down_count != 0 || up_count != 0 || move_count != 0) {
+    return 222;
+  }
+  return !down_result.consumed && !up_result.consumed &&
+                 !move_result.consumed
+             ? 0
+             : 223;
+}
+
 int test_styled_element_forwards_events_to_child() {
   auto child = std::make_unique<EventCountingElement>();
   EventCountingElement* child_ptr = child.get();
@@ -2489,6 +2622,16 @@ int main() {
   }
   if (const int result =
           test_element_builder_click_handler_respects_disabled_state();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_pointer_handlers_route_concrete_events();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_pointer_handlers_respect_disabled_state();
       result != 0) {
     return result;
   }

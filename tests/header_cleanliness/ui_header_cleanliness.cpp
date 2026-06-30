@@ -26,9 +26,30 @@ int main() {
                               .size(cgpui::px(1.0F), cgpui::px(2.0F))
                               .padding(cgpui::edges(cgpui::px(1.0F)))
                               .background(cgpui::rgb(255, 0, 0))
-                              .foreground(cgpui::rgba(255, 255, 255, 0.5F)));
-  const auto* styled =
-      dynamic_cast<const cgpui::StyledElement*>(element.get());
+                              .foreground(cgpui::rgba(255, 255, 255, 0.5F))
+                              .on_pointer_down([](
+                                                   const cgpui::PointerButton&,
+                                                   const cgpui::
+                                                       ElementEventContext&) {
+                                return cgpui::EventResult::consumed_event();
+                              })
+                              .on_pointer_up([](
+                                                 const cgpui::PointerButton&,
+                                                 const cgpui::
+                                                     ElementEventContext&) {
+                                return cgpui::EventResult::unhandled();
+                              })
+                              .on_pointer_move([](
+                                                   const cgpui::PointerMoved&,
+                                                   const cgpui::
+                                                       ElementEventContext&) {
+                                return cgpui::EventResult::unhandled();
+                              }));
+  const auto* pointer =
+      dynamic_cast<const cgpui::PointerElement*>(element.get());
+  const auto* styled = pointer == nullptr
+      ? nullptr
+      : dynamic_cast<const cgpui::StyledElement*>(pointer->child());
   scroll_model.set_viewport_size(cgpui::Size{10.0F, 10.0F});
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});

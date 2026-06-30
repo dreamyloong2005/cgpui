@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Pointer Handler Shortcuts
+
+- Pointer handler shortcuts fit the existing wrapper pattern: keep element
+  layout, paint, and hit testing transparent while intercepting only matching
+  `PointerButton` or `PointerMoved` events.
+- `.on_click(...)` remains source-compatible and still means pointer press; the
+  new `.on_pointer_down(...)`, `.on_pointer_up(...)`, and
+  `.on_pointer_move(...)` handlers expose concrete event data for authoring
+  paths that need button or position details.
+- Pointer handlers should return their handler result only when consumed or
+  cancelled; otherwise the wrapper can continue forwarding to its child, which
+  keeps future bubbling/ancestor propagation work from being boxed in too early.
+
 ## 2026-06-30 Element Builder Fluent Style Shortcuts
 
 - Builder-level style shortcuts should remain thin mutations of the builder's
