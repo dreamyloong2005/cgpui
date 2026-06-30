@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 110 Merge
+
+- Refreshed `task_plan.md`,
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`,
+  and
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the plans to the actual current `master` state:
+  `10f2dd3 feat: add event propagation phases`.
+- Recorded that Steps 89-110 are merged, post-merge verified on Windows and
+  WSL Arch Linux, and cleaned up; Step 111 is now the active next slice.
+- Kept the post-Step-128 follow-on queue as Steps 129-168 and preserved the
+  gate: do not start Step 129 until Steps 111-128 are merged and Windows/WSL
+  verified on a clean `master`.
+- Updated the current distance: 18 implementation steps to Step 129, and 58
+  implementation steps from the current state through Step 168, plus the four
+  follow-on band checkpoint reviews.
+- No implementation code changed during this planning refresh.
+
 ## 2026-06-30 Step 110 Event Propagation Phases
 
 - Started Step 110 in `.worktrees/event-propagation-phases` on

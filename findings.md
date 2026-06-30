@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 110 Merge
+
+- The后 40 步 remain Steps 129-168. They should still be treated as the
+  post-Step-128 follow-on queue, not as the active implementation queue.
+- Current `master` is anchored at `10f2dd3 feat: add event propagation phases`;
+  Steps 89-110 are merged and post-merge verified on Windows and WSL Arch
+  Linux.
+- From this state, Step 129 is 18 implementation steps away: Steps 111-128 plus
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification. Step 168 is 58 implementation steps away: Steps 111-168 plus
+  the four band checkpoint reviews.
+- The next active implementation should remain Step 111, focus traversal over
+  enabled focusable elements with Tab and Shift+Tab actions. Starting Step 129
+  before focus, scroll, layout depth, renderer/text metadata, cursor/clipboard,
+  IME geometry, and the public-prelude demo rewrite land would destabilize the
+  follow-on context/widget/platform plan.
+- The back-40 band order should stay: context/entity/global/async, keyed
+  reconciliation/widgets/style cascade, text/font/renderer diagnostics, then
+  Windows/Wayland platform closure plus the parity audit.
+
 ## 2026-06-30 Event Propagation Phases
 
 - Step 110 uses `EventRoute::element_ancestry` as the dispatch route. The order

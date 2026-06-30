@@ -99,18 +99,18 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `08d0fef docs: mark step 109 merged`: Step 109 is
-merged and post-merge verified on Windows and WSL Arch Linux, Step 110 is the
-next implementation step, and Step 129 remains gated behind completion and
-Windows/WSL verification of Steps 110-128.
+pre-back-40 handoff state at `10f2dd3 feat: add event propagation phases`:
+Steps 89-110 are merged and post-merge verified on Windows and WSL Arch Linux,
+Step 111 is the next implementation step, and Step 129 remains gated behind
+completion and Windows/WSL verification of Steps 111-128.
 
-From the current state, the effective distance to Step 129 is 19 implementation
-steps, Steps 110-128, plus post-Step-128 targeted, Windows, and WSL
-verification. The effective distance through Step 168 is 59 implementation
-steps, Steps 110-168, plus the four follow-on band checkpoint reviews.
+From the current state, the effective distance to Step 129 is 18 implementation
+steps, Steps 111-128, plus post-Step-128 targeted, Windows, and WSL
+verification. The effective distance through Step 168 is 58 implementation
+steps, Steps 111-168, plus the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 110-128 queue unless the plan is explicitly reprioritized.
+the current Step 111-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -295,16 +295,14 @@ the current Step 110-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 110 is implemented and feature-worktree verified in
-`.worktrees/event-propagation-phases` on `codex/event-propagation-phases`.
-After Step 110 is committed, merged, post-merge verified, and cleaned up, the
-next implementation step is Step 111: focus traversal over enabled focusable
+Step 110 is merged to `master` at `10f2dd3 feat: add event propagation phases`,
+post-merge verified on Windows and WSL Arch Linux, and cleaned up. The next
+implementation step is Step 111: focus traversal over enabled focusable
 elements with Tab and Shift+Tab actions.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 111-128 after Step 110
-merges.
+behind completion and Windows/WSL verification of Steps 111-128.
 
 ## Risks
 

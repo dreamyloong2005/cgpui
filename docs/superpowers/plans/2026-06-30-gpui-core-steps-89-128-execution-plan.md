@@ -12,16 +12,14 @@
 
 ## Current State
 
-- Steps 89-109 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-110 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `2ba27c3 docs: refresh post-128 planning after step 109`; the
-  Step 109 feature commit is `74df1df feat: add event route ancestry`.
-- Step 110 is implemented and feature-worktree verified in
-  `.worktrees/event-propagation-phases` on
-  `codex/event-propagation-phases`.
-- Step 109 is post-merge verified on Windows and WSL Arch Linux.
-- The next implementation slice after Step 110 merges is Step 111: focus
-  traversal over enabled focusable elements with Tab and Shift+Tab actions.
+- `master` is at `10f2dd3 feat: add event propagation phases`; the Step 110
+  feature commit is `10f2dd3 feat: add event propagation phases`.
+- The Step 110 worktree `.worktrees/event-propagation-phases` and branch
+  `codex/event-propagation-phases` have been cleaned up.
+- The next implementation slice is Step 111: focus traversal over enabled
+  focusable elements with Tab and Shift+Tab actions.
 
 ## File Map
 
@@ -165,10 +163,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 96
+## Remaining Execution Queue From Step 111
 
-This is the practical remaining sequence after Step 98. Steps 89-98 are kept
-as completed foundation; the active remaining queue is Steps 99-128.
+This is the practical remaining sequence after Step 110. Steps 89-110 are kept
+as completed foundation; the active remaining queue is Steps 111-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -261,8 +259,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-After Step 110 is committed, merged, post-merge verified, and cleaned up, start
-Step 111 in an isolated worktree:
+Start Step 111 in an isolated worktree:
 
 ```powershell
 git worktree add .worktrees/focus-traversal -b codex/focus-traversal master
