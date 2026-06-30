@@ -101,7 +101,7 @@ RED test intent, targeted commands, and Windows/WSL verification matrix for
 all 40 follow-on steps.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 99 unless the plan is explicitly reprioritized.
+the current active Step 101 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.

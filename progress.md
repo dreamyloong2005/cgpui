@@ -1516,6 +1516,25 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
 
+## 2026-06-30 Back-40 Planning Refresh
+
+- Updated
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked for the "后40步" plan.
+- Refreshed the forward plan's current state from the stale Step 99 snapshot to
+  the actual Step 100-complete / Step 101-active state.
+- Added a Back-40 scope summary for Steps 129-168: context/entity/global/async,
+  keyed reconciliation/widgets, text/font/renderer diagnostics, and
+  Windows/Wayland platform completion plus parity audit.
+- Updated `task_plan.md` so the follow-on queue explicitly does not preempt the
+  current active Step 101.
+- Confirmed the main worktree is on `master` with no tracked/staged changes
+  before planning edits; only the existing untracked `.vscode/` is present.
+- Noted that Step 100's feature worktree/branch still exists and should be
+  cleaned before starting Step 101:
+  `.worktrees/view-context-model-helpers` and
+  `codex/view-context-model-helpers`.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

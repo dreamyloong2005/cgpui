@@ -1125,3 +1125,16 @@
   failed updates schedule redraws.
 - `remove_model` can delegate to existing entity removal semantics, including
   notifying subscribed views only when an actual model is removed.
+
+## 2026-06-30 Back-40 Plan Boundary
+
+- The "后40步" plan is Steps 129-168, not a replacement for the active
+  Steps 101-128 queue. Step 129 remains gated on Step 128 being merged and
+  verified on both Windows and WSL Arch Linux.
+- The post-Step-128 work should keep the current four-band shape:
+  context/entity/global/async first, keyed reconciliation/widgets second,
+  text/font/renderer maturity third, and Windows/Wayland platform closure plus
+  parity audit last.
+- The exit condition for Step 168 is a practical Windows/Linux GPUI-core
+  foundation with an explicit audit of completed, partial, missing, and
+  Mac/Metal-deferred areas; it should not claim full upstream GPUI parity.

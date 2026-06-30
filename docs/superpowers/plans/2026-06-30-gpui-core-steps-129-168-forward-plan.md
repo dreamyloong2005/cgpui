@@ -4,7 +4,12 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Step 99-128 queue intact, then use Steps 129-168 to deepen context/entity ergonomics, keyed element reconciliation, reusable widgets, text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior. Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
+**Architecture:** Keep the active Steps 101-128 remainder intact inside the
+current 89-128 execution queue, then use Steps 129-168 to deepen
+context/entity ergonomics, keyed element reconciliation, reusable widgets,
+text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
+Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and
+macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 **Tech Stack:** C++23, xmake, public header-cleanliness tests, deterministic UI/runtime tests, Win32/Vulkan, Wayland/Vulkan, WSL Arch Linux verification, and feature-worktree RED/GREEN execution.
 
@@ -12,10 +17,18 @@
 
 ## Current State
 
-- Steps 89-98 are complete on `master`; Step 99 remains the active next implementation step.
-- Steps 99-128 are covered by the detailed execution plan in `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- This document is a forward plan for the next 40 steps after Step 128. Do not execute Step 129 until Step 128 is merged and verified unless the roadmap is explicitly reprioritized.
-- The main worktree is expected to stay on `master` with no tracked/staged changes aside from planning edits and the pre-existing untracked `.vscode/`.
+- Steps 89-100 are complete on `master`; Step 101 is the active next
+  implementation step in the current 89-128 execution window.
+- Steps 101-128 remain covered by the detailed execution plan in
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+- This document is the follow-on plan for the next 40 steps after Step 128.
+  Do not execute Step 129 until Step 128 is merged and verified unless the
+  roadmap is explicitly reprioritized.
+- The main worktree is on `master` with no tracked/staged changes; the known
+  local-only untracked item is `.vscode/`.
+- The Step 100 feature worktree/branch may still exist during planning cleanup:
+  `.worktrees/view-context-model-helpers` and
+  `codex/view-context-model-helpers`.
 
 ## Planning Snapshot
 
@@ -45,12 +58,35 @@ GPUI-like public prelude, common widgets are reusable, text/render command
 streams are backend-ready, platform hooks exist for the active targets, and the
 remaining GPUI gaps are visible enough to plan the next milestone honestly.
 
+## Back-40 Scope Summary
+
+The "back 40 steps" are Steps 129-168. They intentionally begin only after the
+Step 128 demo rewrite proves the current core can express a real Windows/Linux
+application through the public prelude.
+
+- Steps 129-138: close context-side API gaps. This gives author code typed
+  context aliases, entity handles, globals, scoped actions, subscription
+  ownership, deferred callbacks, timers, async completions, update batching,
+  and diagnostics.
+- Steps 139-148: make reusable UI possible. This adds keyed reconciliation,
+  lifecycle hooks, element state, style vocabulary/cascade, focus handles, and
+  the first widget primitives: button, label, text input, and scrollable list.
+- Steps 149-158: mature text and renderer contracts. This adds font discovery
+  skeletons, shaping metadata, glyph cache interfaces, Vulkan text handling,
+  opacity/transform metadata, batching, frame stats, HiDPI propagation,
+  snapshot tests, and unsupported-command diagnostics.
+- Steps 159-168: close Windows/Linux platform behavior. This adds multi-window
+  runtime storage, window lifecycle events, Win32 and Wayland IME/DnD hooks,
+  platform wakeups, accessibility snapshots, demo smoke tests, and the final
+  GPUI-core API parity audit.
+
 ## Execution Gate From The Current State
 
 Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
+  Current partial status: Steps 99-100 are complete; Steps 101-108 remain.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
