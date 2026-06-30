@@ -17,15 +17,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-115 are complete on `master` through
-  `bc7b1fc docs: plan back forty after step 115`.
-- Step 116 is implemented and feature-worktree verified in
-  `.worktrees/flex-grow-shrink` on branch `codex/flex-grow-shrink`. RED
-  failed as expected on missing flex grow/shrink APIs, targeted tests passed
-  3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
-  26/26. Merge and post-merge verification remain.
-- Steps 116-128 remain the active gate before this follow-on plan until Step
-  116 is merged. They are covered by the detailed execution plan in
+- Steps 89-116 are complete on `master` through
+  `2806a4a feat: add flex grow shrink layout`.
+- Step 116 post-merge verification passed: targeted tests 3/3, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Steps 117-128 remain the active gate before this follow-on plan. They are
+  covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -36,12 +33,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`bc7b1fc docs: plan back forty after step 115`. It is the execution plan for
+`2806a4a feat: add flex grow shrink layout`. It is the execution plan for
 Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is committing, merging, post-merge verifying, and
-cleaning up Step 116 unless the roadmap is explicitly reprioritized.
+implementation action is Step 117, absolute positioning and inset style
+primitive, unless the roadmap is explicitly reprioritized.
 
-- Finish the current gate first: Steps 116-128 close layout depth,
+- Finish the current gate first: Steps 117-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
   demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
@@ -51,12 +48,11 @@ cleaning up Step 116 unless the roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- From the current feature-worktree state, the effective distance to Step 129
-  is 13 implementation steps until Step 116 is merged. After Step 116 merges,
-  it becomes 12 implementation steps, Steps 117-128, plus post-Step-128
-  targeted, Windows, and WSL verification. The effective distance through Step
-  168 becomes 52 implementation steps after Step 116 merges, plus the
-  post-Step-128 verification and the four band checkpoint reviews.
+- From the current `master` state, the effective distance to Step 129 is 12
+  implementation steps, Steps 117-128, plus post-Step-128 targeted, Windows,
+  and WSL verification. The effective distance through Step 168 is 52
+  implementation steps plus the post-Step-128 verification and the four band
+  checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -154,7 +150,7 @@ Keep these out of Steps 129-168 unless the roadmap is explicitly rewritten:
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 116-128 are still incomplete:
+second active branch while Steps 117-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -204,14 +200,13 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 112 scroll element binding has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 116-118 have landed the remaining planned layout primitives. Step
-  116 is feature-worktree verified and pending merge/post-merge verification.
+- [ ] Steps 117-118 have landed the remaining planned layout primitives. Step
+  116 flex grow/shrink is already merged and post-merge verified.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count from the current feature-worktree
-state: 13 steps until Step 116 merges, then 12 steps, Steps 117-128, plus
-post-Step-128 Windows/WSL verification.
+Remaining pre-back-40 implementation count from the current `master` state:
+12 steps, Steps 117-128, plus post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 
@@ -276,15 +271,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish Step 116 merge and post-merge
-verification instead of starting Step 129:
+For the current pre-back-40 state, start Step 117 instead of starting Step
+129:
 
 ```powershell
-cd .worktrees/flex-grow-shrink
-xmake test -P . element_test/default style_test/default ui_header_cleanliness/default
-git commit -m "feat: add flex grow shrink layout"
-cd ..\..
-git merge --ff-only codex/flex-grow-shrink
+git worktree add .worktrees/absolute-position-insets -b codex/absolute-position-insets master
+cd .worktrees/absolute-position-insets
+xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

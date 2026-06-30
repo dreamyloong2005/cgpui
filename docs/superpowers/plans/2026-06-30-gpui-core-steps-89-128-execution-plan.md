@@ -12,15 +12,14 @@
 
 ## Current State
 
-- Steps 89-115 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-116 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `bc7b1fc docs: plan back forty after step 115`.
-- Step 116 is implemented and feature-worktree verified in
-  `.worktrees/flex-grow-shrink` on `codex/flex-grow-shrink`. RED failed as
-  expected on missing flex grow/shrink APIs, targeted tests passed 3/3,
-  Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
-  The next action is to commit, merge, post-merge verify, and clean up Step
-  116.
+- `master` includes `2806a4a feat: add flex grow shrink layout`.
+- Step 116 post-merge verification passed: targeted tests 3/3, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 117, absolute positioning and inset style primitive, is the next active
+  implementation slice. Use `.worktrees/absolute-position-insets` on branch
+  `codex/absolute-position-insets`.
 
 ## File Map
 
@@ -130,7 +129,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 113: wheel and trackpad scroll routing into bound scroll state.
 - [x] Step 114: hidden overflow participates in hit testing.
 - [x] Step 115: flex alignment and justification primitives.
-- [ ] Step 116: flex grow and shrink factors.
+- [x] Step 116: flex grow and shrink factors.
 - [ ] Step 117: absolute positioning and inset style primitive.
 - [ ] Step 118: layer/elevation style primitive mapped onto deterministic z order.
 
@@ -164,10 +163,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 116
+## Remaining Execution Queue From Step 117
 
-This is the practical remaining sequence after Step 115. Steps 89-115 are kept
-as completed foundation; the active remaining queue is Steps 116-128.
+This is the practical remaining sequence after Step 116. Steps 89-116 are kept
+as completed foundation; the active remaining queue is Steps 117-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -225,7 +224,7 @@ of single-target-only.
 - [x] Step 113: route wheel/trackpad scroll events into bound scroll state.
 - [x] Step 114: make hidden overflow constrain hit testing.
 - [x] Step 115: add flex alignment and justification primitives.
-- [ ] Step 116: add flex grow and shrink factors.
+- [x] Step 116: add flex grow and shrink factors.
 - [ ] Step 117: add absolute positioning and inset style.
 - [ ] Step 118: add layer/elevation mapped to deterministic z order.
 
@@ -260,19 +259,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 116 merge and post-merge verification from the existing feature
-worktree:
+Start Step 117 from a fresh feature worktree:
 
 ```powershell
-cd .worktrees/flex-grow-shrink
-xmake test -P . element_test/default style_test/default ui_header_cleanliness/default
-git commit -m "feat: add flex grow shrink layout"
-cd ..\..
-git merge --ff-only codex/flex-grow-shrink
+git worktree add .worktrees/absolute-position-insets -b codex/absolute-position-insets master
+cd .worktrees/absolute-position-insets
+xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
-After post-merge Windows and WSL verification, Step 117 is the next
-implementation slice.
+Add RED coverage for absolute positioning and inset style primitives before
+implementing the smallest GREEN change.
 
 ## Step Details
 
@@ -601,8 +597,7 @@ passed 26/26.
 
 ### Step 116: Flex Grow and Shrink
 
-Status: implemented and verified in `.worktrees/flex-grow-shrink`; merge and
-post-merge verification remain.
+Status: complete on `master` at `2806a4a`.
 
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`

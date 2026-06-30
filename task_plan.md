@@ -99,22 +99,19 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `bc7b1fc docs: plan back forty after step 115`:
-Steps 89-115 are merged and post-merge verified on Windows and WSL Arch
-Linux, Step 116 is implemented and feature-worktree verified in
-`.worktrees/flex-grow-shrink`, and Step 129 remains gated behind completion
-and Windows/WSL verification of Steps 116-128 until Step 116 is merged.
+pre-back-40 handoff state at `2806a4a feat: add flex grow shrink layout`:
+Steps 89-116 are merged and post-merge verified on Windows and WSL Arch
+Linux, and Step 129 remains gated behind completion and Windows/WSL
+verification of Steps 117-128.
 
-From the current feature-worktree state, the effective distance to Step 129 is
-13 implementation steps until Step 116 is merged; after the Step 116 merge it
-will become 12 implementation steps, Steps 117-128, plus post-Step-128
-targeted, Windows, and WSL verification. The effective distance through Step
-168 becomes 52 implementation steps after Step 116 merges, plus the
-post-Step-128 verification and the four
+From the current `master` state, the effective distance to Step 129 is 12
+implementation steps, Steps 117-128, plus post-Step-128 targeted, Windows,
+and WSL verification. The effective distance through Step 168 is 52
+implementation steps plus the post-Step-128 verification and the four
 follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 116-128 queue unless the plan is explicitly reprioritized.
+the current Step 117-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -243,7 +240,7 @@ the current Step 116-128 queue unless the plan is explicitly reprioritized.
 113. [x] Wheel and trackpad scroll routing into bound scroll state.
 114. [x] Hidden overflow participates in hit testing, not only paint clip metadata.
 115. [x] Flex alignment and justification primitives.
-116. [ ] Flex grow and shrink factors for child layout.
+116. [x] Flex grow and shrink factors for child layout.
 117. [ ] Absolute positioning and inset style primitive.
 118. [ ] Layer/elevation style primitive mapped onto deterministic z order.
 119. [ ] Rounded-rect paint command that preserves border radius metadata.
@@ -307,18 +304,23 @@ passed 26/26. Post-merge targeted tests passed 3/3, Windows full debug passed
 29/29, and WSL Arch Linux full debug passed 26/26. The Step 115 worktree and
 feature branch have been removed.
 
-Step 116, flex grow and shrink factors for child layout, is implemented and
-verified in `.worktrees/flex-grow-shrink` on `codex/flex-grow-shrink`. RED
-failed as expected on missing `flex_grow`/`flex_shrink` style, overlay,
-builder, and element APIs. Targeted tests passed 3/3, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. The next action is
-to commit, merge, post-merge verify, and clean up Step 116; after that, Step
-117 becomes the active implementation step.
+Step 116, flex grow and shrink factors for child layout, is merged on `master`
+at `2806a4a feat: add flex grow shrink layout`. RED failed as expected on
+missing `flex_grow`/`flex_shrink` style, overlay, builder, and element APIs.
+Feature-worktree targeted tests passed 3/3, Windows full debug passed 29/29,
+and WSL Arch Linux full debug passed 26/26. Post-merge targeted tests passed
+3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. The Step 116 worktree and feature branch have been removed.
+
+Step 117, absolute positioning and inset style primitive, is now the active
+implementation step. Start it from a fresh
+`.worktrees/absolute-position-insets` worktree on branch
+`codex/absolute-position-insets`.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, Step 129 start
 packet, and band checkpoints after Steps 138, 148, 158, and 168. Step 129
-remains gated behind completion and Windows/WSL verification of Steps 116-128.
+remains gated behind completion and Windows/WSL verification of Steps 117-128.
 
 ## Risks
 

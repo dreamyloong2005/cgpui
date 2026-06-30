@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Flex Grow And Shrink Merged
+
+- After Step 116 merged, the remaining pre-back-40 gate is Steps 117-128 plus
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification.
+- Step 117 should start from a fresh `.worktrees/absolute-position-insets`
+  worktree and keep absolute positioning/insets as layout metadata first,
+  before Step 118 layers/elevation and Step 119+ renderer command hardening.
+
 ## 2026-06-30 Flex Grow And Shrink
 
 - Flex grow and shrink factors need to live on `Element`, not only on
