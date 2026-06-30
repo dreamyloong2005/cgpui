@@ -313,6 +313,7 @@ int WindowRuntime::run(
   hovered_element_id_.reset();
   cursor_shape_ = CursorShape::default_arrow;
   last_event_result_ = EventResult::unhandled();
+  last_render_record_.reset();
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
   current_event_route_.reset();
@@ -322,6 +323,7 @@ int WindowRuntime::run(
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
   event_dispatch_sequence_ = 0;
+  render_sequence_ = 0;
   frame_index_ = 0;
 
   auto window_result = application_.create_window(
@@ -556,10 +558,21 @@ void WindowRuntime::handle_redraw() {
 
   ViewContext render_context = context();
   AnyElement rendered = view_.render(render_context);
+  std::optional<ElementId> rendered_root_id;
   if (rendered != nullptr) {
     auto tree = std::make_unique<ElementTree>();
-    (void)tree->set_root(std::move(rendered));
+    rendered_root_id = tree->set_root(std::move(rendered));
     set_element_tree(std::move(tree));
+  }
+
+  last_render_record_ = RenderRecord{
+      .sequence = ++render_sequence_,
+      .view_id = root_view_id_,
+      .viewport_size = viewport_size_,
+      .root_element_id = rendered_root_id,
+  };
+  if (after_render_callback_) {
+    after_render_callback_(context(), *last_render_record_);
   }
 
   if (owned_element_tree_ != nullptr) {
@@ -649,6 +662,11 @@ WindowRuntimeContext WindowRuntime::context() {
 void WindowRuntime::set_after_frame_callback(
     WindowRuntimeFrameCallback callback) {
   after_frame_callback_ = std::move(callback);
+}
+
+void WindowRuntime::set_after_render_callback(
+    WindowRuntimeRenderCallback callback) {
+  after_render_callback_ = std::move(callback);
 }
 
 void WindowRuntime::set_after_event_callback(
@@ -861,6 +879,13 @@ void WindowRuntime::set_element_cursor(
   element_cursors_[element_id.value] = cursor_shape;
 }
 
+void WindowRuntime::request_render() {
+  invalidation_state_.render = true;
+  invalidation_state_.layout = true;
+  invalidation_state_.paint = true;
+  schedule_redraw();
+}
+
 void WindowRuntime::request_layout() {
   invalidation_state_.layout = true;
   invalidation_state_.paint = true;
@@ -878,6 +903,10 @@ void WindowRuntime::clear_invalidation() {
 
 InvalidationState WindowRuntime::invalidation_state() const {
   return invalidation_state_;
+}
+
+std::optional<RenderRecord> WindowRuntime::last_render_record() const {
+  return last_render_record_;
 }
 
 std::span<const EntitySubscription> WindowRuntime::subscriptions_for_view(
@@ -1081,6 +1110,10 @@ bool WindowRuntimeContext::copy_selection_to_clipboard() const {
 
 bool WindowRuntimeContext::cut_selection_to_clipboard() const {
   return runtime.cut_selection_to_clipboard();
+}
+
+void WindowRuntimeContext::request_render() const {
+  runtime.request_render();
 }
 
 void WindowRuntimeContext::request_layout() const {

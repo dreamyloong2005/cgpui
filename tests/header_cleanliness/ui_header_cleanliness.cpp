@@ -16,7 +16,7 @@ class TestView final : public cgpui::View {
   }
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
-    context.request_paint();
+    context.request_render();
     return cgpui::into_element(cgpui::div().size(3.0F, 4.0F));
   }
 };
@@ -26,6 +26,12 @@ int main() {
   TestView view;
   cgpui::TextModel text_model;
   cgpui::ScrollModel scroll_model;
+  cgpui::RenderRecord render_record{
+      .sequence = 1,
+      .view_id = cgpui::ViewId{1},
+      .viewport_size = cgpui::Size{3.0F, 4.0F},
+      .root_element_id = cgpui::ElementId{2},
+  };
   cgpui::StyleState style_state;
   style_state.base = cgpui::Style{}.with_background_color(cgpui::rgb(0, 0, 0));
   style_state.hover =
@@ -75,6 +81,8 @@ int main() {
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});
   return paint_list.commands().size() == 1 && text_model.text() == "x" &&
+                 render_record.sequence == 1 &&
+                 render_record.root_element_id.has_value() &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  resolved.background_color.has_value() &&
                  resolved.background_color->r == 64.0F / 255.0F &&

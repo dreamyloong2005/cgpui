@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Render Invalidation Observability
+
+- Render invalidation should be a strict superset of layout and paint
+  invalidation: `request_render()` sets render/layout/paint and schedules a
+  redraw, while existing `request_layout()` and `request_paint()` keep the new
+  render bit false.
+- The first after-render observation point belongs immediately after
+  `View::render(...)` returns and any non-null root element is installed, before
+  layout, paint, invalidation clearing, and frame index increment. This lets
+  callers inspect the render sequence and installed root id while the frame is
+  still in progress.
+- `RenderRecord::root_element_id` should report the root installed by the
+  current render pass. If a view returns an empty `AnyElement`, the record can
+  still report sequence, view id, and viewport size with no installed root id.
+- Resetting render sequence and last render record at `WindowRuntime::run()`
+  keeps each run deterministic and matches the existing event/frame sequence
+  reset behavior.
+
 ## 2026-06-30 Steps 129-168 Execution Matrix
 
 - The follow-on 40 steps should start only after Step 128 has a clean

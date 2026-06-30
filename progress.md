@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 98 Render Invalidation Observability
+
+- Started Step 98 in `codex/render-invalidation-observability` from `master`
+  at `9e09d32`.
+- Baseline targeted tests passed: `xmake test -P .
+  window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- Added RED `window_runtime_test` and `ui_header_cleanliness` coverage for
+  `ViewContext::request_render()`, `InvalidationState::render`,
+  `RenderRecord`, `WindowRuntime::set_after_render_callback(...)`, and
+  `WindowRuntime::last_render_record()`; the RED build failed because
+  `WindowRuntimeContext::request_render` and `cgpui::RenderRecord` did not
+  exist.
+- Implemented Step 98 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  render invalidation now sets render/layout/paint and schedules redraw,
+  redraw records a render sequence with view id, viewport size, and installed
+  root element id, and after-render callbacks observe the record before layout
+  and frame completion.
+- Updated existing invalidation coverage to prove `request_layout()` and
+  `request_paint()` do not set the new render invalidation bit.
+- Verified targeted tests passed 2/2.
+- Verified Windows full debug tests passed 29/29.
+- Verified WSL Arch Linux full debug tests passed 26/26.
+
 ## 2026-06-30 Steps 129-168 Execution Matrix Refresh
 
 - Expanded

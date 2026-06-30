@@ -164,8 +164,16 @@ struct TextEditBinding {
 };
 
 struct InvalidationState {
+  bool render = false;
   bool layout = false;
   bool paint = false;
+};
+
+struct RenderRecord {
+  int sequence = 0;
+  ViewId view_id;
+  Size viewport_size;
+  std::optional<ElementId> root_element_id;
 };
 
 struct EntitySubscription {
@@ -238,6 +246,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;
   [[nodiscard]] bool cut_selection_to_clipboard() const;
+  void request_render() const;
   void request_layout() const;
   void request_paint() const;
   void clear_invalidation() const;
@@ -268,6 +277,8 @@ using AppRendererFactory = std::function<Result<std::unique_ptr<Renderer>>(
     const RenderSurfaceDescriptor&)>;
 using WindowRuntimeFrameCallback =
     std::function<void(const WindowRuntimeContext&)>;
+using WindowRuntimeRenderCallback =
+    std::function<void(const WindowRuntimeContext&, const RenderRecord&)>;
 using WindowRuntimeEventCallback =
     std::function<void(const WindowRuntimeContext&, const EventDispatchRecord&)>;
 using WindowRuntimeErrorCallback =
@@ -292,6 +303,7 @@ class WindowRuntime {
       WindowRuntimeOptions options = {});
 
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
+  void set_after_render_callback(WindowRuntimeRenderCallback callback);
   void set_after_event_callback(WindowRuntimeEventCallback callback);
   void set_close_requested_callback(WindowRuntimeFrameCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
@@ -320,10 +332,12 @@ class WindowRuntime {
   [[nodiscard]] bool copy_selection_to_clipboard();
   [[nodiscard]] bool cut_selection_to_clipboard();
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
+  void request_render();
   void request_layout();
   void request_paint();
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
+  [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
   [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
       ViewId view_id) const;
   [[nodiscard]] ViewId allocate_view_id();
@@ -375,6 +389,7 @@ class WindowRuntime {
   View& view_;
   RendererFactory renderer_factory_;
   WindowRuntimeFrameCallback after_frame_callback_;
+  WindowRuntimeRenderCallback after_render_callback_;
   WindowRuntimeEventCallback after_event_callback_;
   WindowRuntimeFrameCallback close_requested_callback_;
   WindowRuntimeErrorCallback error_callback_;
@@ -388,6 +403,7 @@ class WindowRuntime {
   std::optional<ElementId> hovered_element_id_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   EventResult last_event_result_{};
+  std::optional<RenderRecord> last_render_record_;
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<ActionDispatchResult> last_action_dispatch_;
   std::optional<EventRoute> current_event_route_;
@@ -396,6 +412,7 @@ class WindowRuntime {
   ViewId root_view_id_{1};
   std::uint64_t next_view_id_ = 2;
   int event_dispatch_sequence_ = 0;
+  int render_sequence_ = 0;
   int frame_index_ = 0;
   std::unordered_map<std::type_index, std::any> entity_stores_;
   std::unordered_map<std::string, ActionHandler> action_handlers_;

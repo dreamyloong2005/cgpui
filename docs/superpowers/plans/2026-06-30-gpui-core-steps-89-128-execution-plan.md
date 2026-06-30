@@ -12,15 +12,15 @@
 
 ## Current State
 
-- Steps 89-97 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-98 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at the Step 97 feature merge.
+- `master` is at the Step 98 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  expected to remain active after Step 97 cleanup.
-- The next implementation slice is Step 98:
-  ViewContext render invalidation helper and after-render observability.
+  expected to remain active after Step 98 cleanup.
+- The next implementation slice is Step 99:
+  Public `Model<T>`/`Entity<T>` aliases over typed entity ids.
 
 ## File Map
 
@@ -89,7 +89,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 95: focus/hover/disabled style-state primitives.
 - [x] Step 96: `View::render(ViewContext&)` skeleton.
 - [x] Step 97: runtime render pass installs rendered element trees.
-- [ ] Step 98: render invalidation helper and after-render observability.
+- [x] Step 98: render invalidation helper and after-render observability.
 
 Acceptance at the end of Band A:
 
@@ -166,8 +166,8 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 96
 
-This is the practical remaining sequence after Step 97. Steps 89-97 are kept
-as completed foundation; the active remaining queue is Steps 98-128.
+This is the practical remaining sequence after Step 98. Steps 89-98 are kept
+as completed foundation; the active remaining queue is Steps 99-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -181,7 +181,7 @@ without touching model lifecycle yet.
 - [x] Step 96: add optional `View::render(ViewContext&)` while preserving the
   existing `paint(...)` contract.
 - [x] Step 97: make redraw install the root view's rendered element tree.
-- [ ] Step 98: expose render invalidation and after-render observability.
+- [x] Step 98: expose render invalidation and after-render observability.
 
 Exit check: a root view can return a public-prelude-authored element tree from
 `render(...)`, and redraw can install that tree for layout, hit testing, and
@@ -260,18 +260,17 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 98 in an isolated worktree:
+Start Step 99 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/render-invalidation-observability -b codex/render-invalidation-observability master
-xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/model-entity-aliases -b codex/model-entity-aliases master
+xmake test -P . entity_store_test/default core_header_cleanliness/default prelude_header_cleanliness/default
 ```
 
-Then add the RED tests for `ViewContext::request_render()` and after-render
-observability that reports render sequence and installed root element id.
-Implement render invalidation as a narrow layer over the current redraw and
-invalidation flow, then follow the standard per-step verification/merge
-workflow above.
+Then add the RED tests for public `Model<T>` and `Entity<T>` authoring aliases
+over typed entity ids. Keep the aliases source-compatible with the existing
+`EntityStore<T>` semantics, then follow the standard per-step
+verification/merge workflow above.
 
 ## Step Details
 
@@ -360,14 +359,16 @@ Status: complete on `master` after the Step 95 merge.
 
 ### Step 98: Render Invalidation Helper and After-Render Observability
 
+Status: complete on `master` after the Step 98 merge.
+
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for `ViewContext::request_render()` and an after-render callback or record that reports render sequence and installed root element id.
-- [ ] Implement render invalidation as a narrow layer over existing layout/paint invalidation and redraw scheduling.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for `ViewContext::request_render()` and an after-render callback or record that reports render sequence and installed root element id.
+- [x] Implement render invalidation as a narrow layer over existing layout/paint invalidation and redraw scheduling.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
 
 ### Step 99: Public `Model<T>` and `Entity<T>` Aliases
 
