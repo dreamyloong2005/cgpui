@@ -4,6 +4,7 @@
 #include "cgpui/core/events.hpp"
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/native_surface.hpp"
+#include "cgpui/platform/target.hpp"
 
 #include <functional>
 #include <memory>

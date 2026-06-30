@@ -3,10 +3,42 @@
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/platform/native_surface.hpp"
+#include "cgpui/platform/target.hpp"
 
 #include <memory>
+#include <string_view>
 
 namespace cgpui {
+
+enum class RendererBackendTarget {
+  vulkan,
+  metal,
+};
+
+[[nodiscard]] constexpr std::string_view renderer_backend_target_name(
+    RendererBackendTarget target) {
+  switch (target) {
+    case RendererBackendTarget::vulkan:
+      return "Vulkan";
+    case RendererBackendTarget::metal:
+      return "Metal";
+  }
+
+  return "Unknown";
+}
+
+[[nodiscard]] constexpr RendererBackendTarget default_renderer_backend_for(
+    DesktopPlatformTarget target) {
+  switch (target) {
+    case DesktopPlatformTarget::windows:
+    case DesktopPlatformTarget::linux_wayland:
+      return RendererBackendTarget::vulkan;
+    case DesktopPlatformTarget::macos_cocoa:
+      return RendererBackendTarget::metal;
+  }
+
+  return RendererBackendTarget::vulkan;
+}
 
 struct RenderSurfaceDescriptor {
   NativeSurfaceHandle native_surface;

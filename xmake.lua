@@ -303,6 +303,13 @@ target("win32_window_source_test")
     add_files("tests/architecture/win32_window_source_test.cpp")
     add_tests("default")
 
+target("desktop_target_readiness_test")
+    set_kind("binary")
+    add_files("tests/architecture/desktop_target_readiness_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 if is_plat("windows") then
     target("vulkan_resize_test")
         set_kind("binary")

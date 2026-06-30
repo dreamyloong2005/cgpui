@@ -123,13 +123,17 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 85. [x] Public prelude header for core authoring APIs.
 86. [x] ViewContext event route access helper.
 87. [x] ViewContext input state access helper.
+88. [x] Mac readiness audit and desktop target mapping.
 
 ## Active Step
 
-Steps 68-87 complete; ready for final verification and next planning.
+Step 88 complete; continue Windows/Linux API work with macOS/Cocoa + Metal
+kept as an explicit target boundary.
 
 ## Risks
 
 - Keep old APIs source-compatible where practical while adding result-returning semantics.
 - Avoid building a full view tree before the routing primitives exist.
 - Keep each step small enough for Windows and WSL verification.
+- Keep macOS readiness as a boundary/audit track until the Windows/Linux core
+  API surface is stable enough to justify Metal parity work.

@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Mac Readiness
+
+- Started Step 88: Mac readiness audit and desktop target mapping.
+- Added RED `desktop_target_readiness_test` coverage for explicit desktop
+  platform targets, renderer backend targets, the Windows/Linux Vulkan and
+  macOS Metal mapping, existing macOS xmake slots, and a persistent readiness
+  audit document; the test failed because the public target enums and helper
+  APIs did not exist.
+- Implemented the Step 88 public boundary with `DesktopPlatformTarget`,
+  `RendererBackendTarget`, target-name helpers, and
+  `default_renderer_backend_for(...)`.
+- Added `docs/platform-mac-readiness.md` to record current Cocoa/Metal slots,
+  out-of-scope work, and Mac-neutral rules for future Windows/Linux API steps.
+
 ## 2026-06-29
 
 - Created the 20-step plan for the Windows/Linux GPUI-core milestone.

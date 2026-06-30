@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Mac Readiness Audit
+
+- The repository already has macOS source slots:
+  `src/platform/macos/macos_application.mm` creates a Cocoa `NSWindow` backed
+  by `CAMetalLayer`, and `src/renderer/metal/metal_renderer.mm` accepts
+  `MetalSurfaceHandle`.
+- `xmake.lua` already gates macOS platform and Metal renderer sources under
+  `is_plat("macosx")`, so Step 88 does not need to move files or alter
+  Windows/Linux build branches.
+- The useful boundary improvement is a small public target map:
+  Windows/Win32 -> Vulkan, Linux/Wayland -> Vulkan, and macOS/Cocoa -> Metal.
+- Full Mac parity is still intentionally out of scope for this slice; the
+  next Windows/Linux API steps should stay renderer-neutral above the existing
+  `Renderer` and `NativeSurfaceHandle` abstractions.
+
 ## 2026-06-29 Baseline
 
 - Current UI runtime has a single root `View`, a stable root `ViewId{1}`, input snapshots, keyboard focus owner, and pointer capture owner.
