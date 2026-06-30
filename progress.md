@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 114 Closeout
+
+- Refreshed the post-Step-128 back-40 plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the forward plan to the current `master` head:
+  `ac745f8 docs: mark step 114 merged`, with the Step 114 behavior commit
+  still recorded as `d78a017 feat: clip hidden overflow hit testing`.
+- Recorded that Step 115 is already open in
+  `.worktrees/flex-alignment-justification` on
+  `codex/flex-alignment-justification`, with baseline targeted tests passing:
+  `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+- Kept the后 40 步 as Steps 129-168 and preserved the gate: do not start Step
+  129 until Steps 115-128 are complete, merged, and verified on Windows and WSL
+  Arch Linux.
+- The remaining distance from current `master` is 14 implementation steps to
+  Step 129, Steps 115-128, plus post-Step-128 targeted, Windows full debug, and
+  WSL Arch full debug verification. The distance through Step 168 remains 54
+  implementation steps plus the four band checkpoint reviews.
+- No implementation code changed during this planning refresh.
+
 ## 2026-06-30 Step 114 Post-Merge
 
 - Committed Step 114 as

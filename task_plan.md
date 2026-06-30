@@ -99,10 +99,11 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `d78a017 feat: clip hidden overflow hit testing`:
-Steps 89-114 are merged and post-merge verified on Windows and WSL Arch Linux,
-and Step 129 remains gated behind completion and Windows/WSL verification of
-Steps 115-128.
+pre-back-40 handoff state at `ac745f8 docs: mark step 114 merged`: Steps
+89-114 are merged and post-merge verified on Windows and WSL Arch Linux, Step
+115 is opened in `.worktrees/flex-alignment-justification` with baseline
+targeted tests passing and no implementation edits yet, and Step 129 remains
+gated behind completion and Windows/WSL verification of Steps 115-128.
 
 From the current `master` state, the effective distance to Step 129 is 14
 implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows, and
@@ -300,6 +301,13 @@ with behavior commit `d78a017 feat: clip hidden overflow hit testing`,
 post-merge targeted tests passed 3/3, Windows full debug passed 29/29, and WSL
 Arch Linux full debug passed 26/26. The next implementation step is Step 115:
 flex alignment and justification primitives.
+
+Step 115 already has a feature worktree at
+`.worktrees/flex-alignment-justification` on
+`codex/flex-alignment-justification`, based on `ac745f8 docs: mark step 114
+merged`. Its baseline targeted tests passed with
+`xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+No Step 115 RED/GREEN edits have been made yet.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated

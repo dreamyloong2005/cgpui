@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 114 Closeout
+
+- The后 40 步 remain Steps 129-168 and should still be treated as a
+  post-Step-128 execution queue, not the active branch queue while Steps
+  115-128 are incomplete.
+- Current `master` is anchored at `ac745f8 docs: mark step 114 merged`; the
+  Step 114 behavior commit is `d78a017 feat: clip hidden overflow hit testing`.
+- Step 115 already has a worktree at `.worktrees/flex-alignment-justification`
+  on `codex/flex-alignment-justification`, and its baseline targeted tests have
+  passed. The next practical action is to add Step 115 RED tests there, not to
+  recreate the worktree or start Step 129.
+- The route to Step 129 is 14 incomplete implementation steps, Steps 115-128,
+  plus post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification. The route through Step 168 is 54 implementation steps plus
+  checkpoint reviews after Steps 138, 148, 158, and 168.
+- The back-40 order remains context/entity/global/async first, keyed
+  reconciliation/widgets/style cascade second, text/font/renderer diagnostics
+  third, and Windows/Wayland platform closure plus parity audit last.
+
 ## 2026-06-30 Hidden Overflow Hit Testing
 
 - `StyledElement` needed its own `hit_test(...)` override because the inherited

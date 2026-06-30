@@ -18,9 +18,15 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-114 are complete on `master` through
+  `ac745f8 docs: mark step 114 merged`. The Step 114 behavior commit is
   `d78a017 feat: clip hidden overflow hit testing`.
 - Step 114 was post-merge verified on Windows and WSL Arch Linux, and its
   feature branch `codex/hidden-overflow-hit-testing` has been deleted.
+- Step 115 is already opened in
+  `.worktrees/flex-alignment-justification` on branch
+  `codex/flex-alignment-justification`, with baseline targeted tests passing:
+  `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+  No Step 115 implementation edits have landed yet.
 - Steps 115-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -33,10 +39,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`d78a017 feat: clip hidden overflow hit testing`. It is the execution plan for
-Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is starting Step 115 unless the roadmap is explicitly
-reprioritized.
+`ac745f8 docs: mark step 114 merged`. It is the execution plan for Steps
+129-168 after the Step 128 gate, not a new active branch queue. The next
+implementation action is continuing Step 115 in the existing
+`.worktrees/flex-alignment-justification` worktree unless the roadmap is
+explicitly reprioritized.
 
 - Finish the current gate first: Steps 115-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -50,7 +57,9 @@ reprioritized.
   and cleanup.
 - From the current `master` state, the effective distance to Step 129 is 14
   implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. The effective distance through Step 168 is 54
+  and WSL verification. Step 115 has an existing worktree and baseline, but it
+  still counts as incomplete until RED/GREEN, merge, and post-merge
+  verification finish. The effective distance through Step 168 is 54
   implementation steps, Steps 115-168, plus the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
@@ -229,10 +238,11 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 115 instead of starting Step 129:
+For the current pre-back-40 state, continue the existing Step 115 worktree
+instead of starting Step 129:
 
 ```powershell
-git worktree add .worktrees/flex-alignment-justification -b codex/flex-alignment-justification master
+cd .worktrees/flex-alignment-justification
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
