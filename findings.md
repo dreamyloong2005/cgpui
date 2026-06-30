@@ -781,3 +781,13 @@
 - Legacy non-owning roots can hit-test child ids that `routed_element()` cannot
   safely resolve, so cursor lookup keeps the old behavior for unresolved ids
   and only suppresses cursor bindings for resolved disabled elements.
+
+## 2026-06-30 Focused Text Model Lookup
+
+- The runtime already treats element keyboard focus as the owner selector for
+  text input, IME, text edit actions, and clipboard operations, so a public
+  `focused_text_model()` helper can be the single soft-fail lookup for that
+  binding.
+- Clipboard paste/copy/cut can reuse the helper directly, reducing duplicate
+  `keyboard_focus_element_owner_` and `text_models_` lookup logic before
+  ViewContext grows focused-text mutation helpers.

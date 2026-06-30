@@ -308,6 +308,8 @@ class WindowRuntime {
   void bind_key(KeyBinding binding);
   void bind_text_edit_action(TextEditBinding binding);
   void bind_text_model(ElementId element_id, TextModel* model);
+  [[nodiscard]] TextModel* focused_text_model();
+  [[nodiscard]] const TextModel* focused_text_model() const;
   void set_clipboard(Clipboard* clipboard);
   [[nodiscard]] bool paste_clipboard_text();
   [[nodiscard]] bool copy_selection_to_clipboard();

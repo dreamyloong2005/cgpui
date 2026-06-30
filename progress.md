@@ -662,6 +662,24 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 83: Runtime text model lookup helper for focused element.
+- Added RED `window_runtime_test` coverage for
+  `WindowRuntime::focused_text_model()` mutable and const overloads returning
+  the text model bound to the current element keyboard focus owner, including
+  no-focus, unbound, and focus-release soft failures.
+- Confirmed RED with `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default`: `window_runtime_test.cpp` failed to compile
+  because `WindowRuntime::focused_text_model()` did not exist.
+- Implemented mutable and const runtime `focused_text_model()` overloads and
+  reused the helper in clipboard paste/copy/cut focused-text paths.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 79: Element builder disabled convenience helper.
 - Added RED `element_test` coverage for `ElementBuilder::disabled()` disabling
   a built element and composing with focusable/click wrappers without allowing

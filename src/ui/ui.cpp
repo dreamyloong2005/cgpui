@@ -760,12 +760,36 @@ void WindowRuntime::bind_text_model(ElementId element_id, TextModel* model) {
   text_models_[element_id.value] = model;
 }
 
+TextModel* WindowRuntime::focused_text_model() {
+  if (!keyboard_focus_element_owner_.has_value()) {
+    return nullptr;
+  }
+
+  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
+  if (model == text_models_.end()) {
+    return nullptr;
+  }
+  return model->second;
+}
+
+const TextModel* WindowRuntime::focused_text_model() const {
+  if (!keyboard_focus_element_owner_.has_value()) {
+    return nullptr;
+  }
+
+  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
+  if (model == text_models_.end()) {
+    return nullptr;
+  }
+  return model->second;
+}
+
 void WindowRuntime::set_clipboard(Clipboard* clipboard) {
   clipboard_ = clipboard;
 }
 
 bool WindowRuntime::paste_clipboard_text() {
-  if (clipboard_ == nullptr || !keyboard_focus_element_owner_.has_value()) {
+  if (clipboard_ == nullptr) {
     return false;
   }
 
@@ -774,26 +798,26 @@ bool WindowRuntime::paste_clipboard_text() {
     return false;
   }
 
-  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
-  if (model == text_models_.end() || model->second == nullptr) {
+  TextModel* model = focused_text_model();
+  if (model == nullptr) {
     return false;
   }
 
-  model->second->insert_text(*text);
+  model->insert_text(*text);
   return true;
 }
 
 bool WindowRuntime::copy_selection_to_clipboard() {
-  if (clipboard_ == nullptr || !keyboard_focus_element_owner_.has_value()) {
+  if (clipboard_ == nullptr) {
     return false;
   }
 
-  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
-  if (model == text_models_.end() || model->second == nullptr) {
+  TextModel* model = focused_text_model();
+  if (model == nullptr) {
     return false;
   }
 
-  const std::string selected_text = model->second->selected_text();
+  const std::string selected_text = model->selected_text();
   if (selected_text.empty()) {
     return false;
   }
@@ -801,17 +825,16 @@ bool WindowRuntime::copy_selection_to_clipboard() {
 }
 
 bool WindowRuntime::cut_selection_to_clipboard() {
-  if (!copy_selection_to_clipboard() ||
-      !keyboard_focus_element_owner_.has_value()) {
+  if (!copy_selection_to_clipboard()) {
     return false;
   }
 
-  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
-  if (model == text_models_.end() || model->second == nullptr) {
+  TextModel* model = focused_text_model();
+  if (model == nullptr) {
     return false;
   }
 
-  return model->second->delete_forward();
+  return model->delete_forward();
 }
 
 void WindowRuntime::set_element_cursor(

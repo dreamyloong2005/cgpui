@@ -3269,6 +3269,58 @@ int test_runtime_routes_text_input_to_focused_text_model() {
   return 0;
 }
 
+int test_runtime_reports_focused_text_model() {
+  RuntimeFixture fixture;
+
+  cgpui::TextModel first("one");
+  cgpui::TextModel second("two");
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  runtime.bind_text_model(cgpui::ElementId{21}, &first);
+  runtime.bind_text_model(cgpui::ElementId{22}, &second);
+
+  if (runtime.focused_text_model() != nullptr) {
+    return 290;
+  }
+
+  runtime.request_keyboard_focus(cgpui::ElementId{21});
+  if (runtime.focused_text_model() != &first) {
+    return 291;
+  }
+
+  const cgpui::WindowRuntime& const_runtime = runtime;
+  if (const_runtime.focused_text_model() != &first) {
+    return 292;
+  }
+
+  runtime.request_keyboard_focus(cgpui::ElementId{22});
+  cgpui::TextModel* focused = runtime.focused_text_model();
+  if (focused != &second) {
+    return 293;
+  }
+  focused->insert_text("!");
+  if (second.text() != "two!") {
+    return 294;
+  }
+
+  runtime.bind_text_model(cgpui::ElementId{22}, nullptr);
+  if (runtime.focused_text_model() != nullptr) {
+    return 295;
+  }
+
+  runtime.release_keyboard_focus(cgpui::ElementId{22});
+  if (runtime.focused_text_model() != nullptr) {
+    return 296;
+  }
+
+  return 0;
+}
+
 int test_view_context_binds_text_model_to_element() {
   RuntimeFixture fixture;
   text_input_routing_fixture = &fixture;
@@ -3984,6 +4036,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_text_input_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_reports_focused_text_model();
       result != 0) {
     return result;
   }
