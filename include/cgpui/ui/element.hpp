@@ -644,10 +644,13 @@ class TextElement : public Element {
     return style_.font_size;
   }
 
+  [[nodiscard]] float glyph_width() const {
+    return font_size() * 0.5F;
+  }
+
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const float glyph_width = font_size() * 0.5F;
     const Size preferred{
-        .width = static_cast<float>(text().size()) * glyph_width,
+        .width = static_cast<float>(text().size()) * glyph_width(),
         .height = font_size(),
     };
     const LayoutOutput output{

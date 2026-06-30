@@ -1,5 +1,43 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 123 Text Caret And Selection Paint Metadata
+
+- Continued Step 123 in `.worktrees/text-caret-selection-paint` on
+  `codex/text-caret-selection-paint` from `master` at
+  `5497a8f docs: mark step 122 merged`.
+- Recovered the interrupted session state: the main worktree was clean for
+  tracked files with only the known untracked `.vscode/`, and the Step 123
+  worktree had expected edits in `include/cgpui/ui/element.hpp`,
+  `include/cgpui/ui/ui.hpp`, `src/ui/ui.cpp`,
+  `tests/header_cleanliness/ui_header_cleanliness.cpp`, and
+  `tests/ui/element_test.cpp`.
+- Baseline targeted tests had passed before RED:
+  `xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Added RED coverage for text selection and caret paint command metadata,
+  including header visibility, selected text geometry, caret byte offset
+  geometry, and caret emission for empty bound text models. The RED build
+  failed as expected on missing `PaintCommandKind::text_selection`,
+  `PaintCommandKind::text_caret`, `TextSelectionPaint`, `TextCaretPaint`,
+  `PaintCommand` payloads, and `PaintList::fill_text_selection(...)` /
+  `fill_text_caret(...)`.
+- Implemented Step 123 in shared UI code: added text selection and caret paint
+  payloads/fill helpers, exposed `TextElement::glyph_width()`, emitted
+  selection metadata before text and caret metadata after text, kept empty text
+  caret metadata, and skipped text-class commands in `render_view(...)`.
+- Verified targeted tests in the feature worktree:
+  `xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  `findings.md`, and this progress log so Step 123 is recorded as implemented
+  and feature-worktree verified. Step 123 still needs commit, merge,
+  post-merge verification, docs closeout, and cleanup before Step 124 begins.
+
 ## 2026-06-30 Step 122 Post-Merge
 
 - Fast-forward merged Step 122 to `master` at

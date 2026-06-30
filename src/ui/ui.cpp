@@ -172,6 +172,44 @@ void PaintList::fill_text(
                        : std::optional<Rect>{clip_stack_.back()}});
 }
 
+void PaintList::fill_text_selection(
+    Rect rect,
+    Color color,
+    TextSelectionRange range,
+    float font_size) {
+  commands_.push_back(PaintCommand{
+      .kind = PaintCommandKind::text_selection,
+      .text_selection =
+          TextSelectionPaint{
+              .rect = rect,
+              .color = color,
+              .range = range,
+              .font_size = font_size,
+          },
+      .clip_rect = clip_stack_.empty()
+                       ? std::optional<Rect>{}
+                       : std::optional<Rect>{clip_stack_.back()}});
+}
+
+void PaintList::fill_text_caret(
+    Rect rect,
+    Color color,
+    std::size_t byte_offset,
+    float font_size) {
+  commands_.push_back(PaintCommand{
+      .kind = PaintCommandKind::text_caret,
+      .text_caret =
+          TextCaretPaint{
+              .rect = rect,
+              .color = color,
+              .byte_offset = byte_offset,
+              .font_size = font_size,
+          },
+      .clip_rect = clip_stack_.empty()
+                       ? std::optional<Rect>{}
+                       : std::optional<Rect>{clip_stack_.back()}});
+}
+
 std::span<const PaintCommand> PaintList::commands() const {
   return commands_;
 }
@@ -288,17 +326,58 @@ void StyledElement::paint(PaintList& paint_list) const {
 
 void TextElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
-  if (!bounds.has_value() || text().empty()) {
+  if (!bounds.has_value() || model_ == nullptr) {
     return;
   }
   const Style& text_style = style();
-  paint_list.fill_text(
-      *bounds,
-      text_style.foreground_color.value_or(
-          Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F}),
-      text(),
-      text_style.font,
-      text_style.font_size);
+  const Color text_color = text_style.foreground_color.value_or(
+      Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
+  const float font_size_value = text_style.font_size;
+  const float glyph_width_value = glyph_width();
+  const TextSelectionRange selection = model_->selection();
+  if (!selection.collapsed) {
+    paint_list.fill_text_selection(
+        Rect{
+            .origin =
+                {
+                    .x = bounds->origin.x +
+                         (static_cast<float>(selection.start) *
+                          glyph_width_value),
+                    .y = bounds->origin.y,
+                },
+            .size =
+                {
+                    .width = static_cast<float>(selection.end - selection.start) *
+                             glyph_width_value,
+                    .height = font_size_value,
+                },
+        },
+        Color{.r = 0.22F, .g = 0.42F, .b = 0.80F, .a = 0.38F},
+        selection,
+        font_size_value);
+  }
+  if (!text().empty()) {
+    paint_list.fill_text(
+        *bounds,
+        text_color,
+        text(),
+        text_style.font,
+        font_size_value);
+  }
+  paint_list.fill_text_caret(
+      Rect{
+          .origin =
+              {
+                  .x = bounds->origin.x +
+                       (static_cast<float>(model_->cursor()) *
+                        glyph_width_value),
+                  .y = bounds->origin.y,
+              },
+          .size = {.width = 1.0F, .height = font_size_value},
+      },
+      text_color,
+      model_->cursor(),
+      font_size_value);
 }
 
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
@@ -318,7 +397,9 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   PaintList paint_list;
   view.paint(paint_list, viewport_size);
   for (const auto& command : paint_list.commands()) {
-    if (command.kind == PaintCommandKind::text) {
+    if (command.kind == PaintCommandKind::text ||
+        command.kind == PaintCommandKind::text_selection ||
+        command.kind == PaintCommandKind::text_caret) {
       continue;
     }
     SolidRect rect = command.solid_rect;

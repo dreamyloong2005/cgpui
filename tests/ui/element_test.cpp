@@ -1921,7 +1921,7 @@ int test_text_element_paints_text_command_from_layout_bounds() {
   cgpui::PaintList paint_list;
   element.paint(paint_list);
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 1) {
+  if (commands.size() != 2) {
     return 140;
   }
   if (commands[0].kind != cgpui::PaintCommandKind::text) {
@@ -1940,7 +1940,77 @@ int test_text_element_paints_text_command_from_layout_bounds() {
     return 283;
   }
 
-  return text.color.a > 0.0F ? 0 : 144;
+  const cgpui::TextCaretPaint& caret = commands[1].text_caret;
+  return commands[1].kind == cgpui::PaintCommandKind::text_caret &&
+                 caret.byte_offset == model.cursor() &&
+                 caret.rect.origin.x == 20.0F &&
+                 caret.rect.size.height == 20.0F && text.color.a > 0.0F
+             ? 0
+             : 144;
+}
+
+int test_text_element_paints_caret_and_selection_metadata() {
+  cgpui::TextModel model("abcd");
+  model.set_selection(1, 3);
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_font(cgpui::FontDescriptor{.family = "Mono"})
+          .with_font_size(20.0F));
+  (void)element.layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 3) {
+    return 286;
+  }
+  if (commands[0].kind != cgpui::PaintCommandKind::text_selection ||
+      commands[1].kind != cgpui::PaintCommandKind::text ||
+      commands[2].kind != cgpui::PaintCommandKind::text_caret) {
+    return 287;
+  }
+
+  const cgpui::TextSelectionPaint& selection = commands[0].text_selection;
+  if (selection.range.start != 1 || selection.range.end != 3 ||
+      selection.rect.origin.x != 10.0F || selection.rect.origin.y != 0.0F ||
+      selection.rect.size.width != 20.0F ||
+      selection.rect.size.height != 20.0F ||
+      selection.font_size != 20.0F) {
+    return 288;
+  }
+
+  const cgpui::TextCaretPaint& caret = commands[2].text_caret;
+  if (caret.byte_offset != 3 || caret.rect.origin.x != 30.0F ||
+      caret.rect.origin.y != 0.0F || caret.rect.size.width != 1.0F ||
+      caret.rect.size.height != 20.0F || caret.font_size != 20.0F) {
+    return 289;
+  }
+
+  return commands[1].text.font.family == "Mono" ? 0 : 290;
+}
+
+int test_empty_text_element_still_paints_caret_metadata() {
+  cgpui::TextModel model;
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}.with_font_size(18.0F));
+  (void)element.layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1 ||
+      commands[0].kind != cgpui::PaintCommandKind::text_caret) {
+    return 291;
+  }
+
+  const cgpui::TextCaretPaint& caret = commands[0].text_caret;
+  return caret.byte_offset == 0 && caret.rect.origin.x == 0.0F &&
+                 caret.rect.size.width == 1.0F &&
+                 caret.rect.size.height == 18.0F
+             ? 0
+             : 292;
 }
 
 int test_element_builder_builds_text_leaf() {
@@ -3340,6 +3410,16 @@ int main() {
   }
   if (const int result =
           test_text_element_paints_text_command_from_layout_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_paints_caret_and_selection_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_empty_text_element_still_paints_caret_metadata();
       result != 0) {
     return result;
   }

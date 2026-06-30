@@ -24,8 +24,12 @@
 - Step 122, font descriptor and basic font-size style primitives, is merged and
   post-merge verified: targeted tests 3/3, Windows full debug 29/29, and WSL
   Arch Linux full debug 26/26.
-- Step 123, text caret and selection paint metadata, is the next implementation
-  slice.
+- Step 123, text caret and selection paint metadata, is implemented in
+  `.worktrees/text-caret-selection-paint` on
+  `codex/text-caret-selection-paint` and feature-worktree verified: targeted
+  tests 3/3, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+  It still needs commit, merge, post-merge verification, docs closeout, and
+  cleanup before Step 124 begins.
 
 ## File Map
 
@@ -154,7 +158,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 120: Vulkan honors clip rect metadata for solid rectangles.
 - [x] Step 121: text paint command separates text drawing from placeholder rectangles.
 - [x] Step 122: font descriptor and basic font-size style primitives.
-- [ ] Step 123: text element emits caret and selection paint metadata.
+- [x] Step 123: text element emits caret and selection paint metadata.
 - [ ] Step 124: platform cursor application for Win32 and Wayland.
 - [ ] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
 - [ ] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
@@ -248,7 +252,7 @@ leaving macOS/Metal for a later parity track.
 - [x] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
 - [x] Step 121: add text paint commands instead of placeholder rectangles.
 - [x] Step 122: add font descriptors and basic font-size style.
-- [ ] Step 123: emit caret and selection paint metadata from text elements.
+- [x] Step 123: emit caret and selection paint metadata from text elements.
 - [ ] Step 124: apply runtime cursor state through Win32 and Wayland platform
   hooks.
 - [ ] Step 125: add a Win32 system clipboard backend for UTF-8 text.
@@ -266,22 +270,21 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 123 from a fresh feature worktree:
+Finish Step 123 merge and post-merge verification from the feature worktree:
 
 ```powershell
 git checkout master
-git merge --ff-only codex/font-descriptor-font-size
-xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+git merge --ff-only codex/text-caret-selection-paint
+xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default
 xmake f -c -m debug -P .
 xmake test -P .
 wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
-git worktree add .worktrees/text-caret-selection-paint -b codex/text-caret-selection-paint master
 ```
 
-Step 123 should use the Step 122 `FontDescriptor`/`font_size` metrics to emit
-simple caret and selection paint metadata from `TextElement`. It should not add
-full text shaping, glyph cache ownership, platform IME placement, or Vulkan
-text drawing.
+After Step 123 docs closeout and cleanup, start Step 124 in a fresh
+`.worktrees/platform-cursor-application` worktree. Step 124 should apply
+runtime cursor state through Win32 and Wayland platform hooks without expanding
+into clipboard, IME, or cursor theme loading beyond testable hooks.
 
 ## Step Details
 
@@ -730,14 +733,24 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 ### Step 123: Text Caret and Selection Paint Metadata
 
 **Files:**
-- Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `include/cgpui/ui/element.hpp`
+- Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/element_test.cpp`
-- Modify: `tests/ui/text_model_test.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for caret and selection paint metadata emitted from `TextElement` when the model has cursor/selection state.
-- [ ] Keep geometry simple and derived from the current fixed/font-size text metrics.
-- [ ] Targeted test command: `xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default`.
+- [x] Added RED tests for caret and selection paint metadata emitted from
+  `TextElement` when the model has cursor/selection state; RED failed as
+  expected on missing paint command kinds, payloads, and fill helpers.
+- [x] Kept geometry simple and derived from the current font-size fallback text
+  metrics.
+- [x] Targeted test command passed 3/3:
+  `xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
+- [ ] Commit, merge, post-merge verify, docs closeout, and cleanup.
 
 ### Step 124: Platform Cursor Application
 

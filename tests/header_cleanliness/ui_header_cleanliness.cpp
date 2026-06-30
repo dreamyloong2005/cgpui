@@ -27,6 +27,16 @@ class TestView final : public cgpui::View {
         "header",
         cgpui::FontDescriptor{.family = "Header"},
         18.0F);
+    paint_list.fill_text_selection(
+        cgpui::Rect{.origin = {3.0F, 4.0F}, .size = {5.0F, 18.0F}},
+        cgpui::Color{.r = 0.2F, .g = 0.4F, .b = 0.8F, .a = 0.5F},
+        cgpui::TextSelectionRange{.start = 1, .end = 3, .collapsed = false},
+        18.0F);
+    paint_list.fill_text_caret(
+        cgpui::Rect{.origin = {9.0F, 4.0F}, .size = {1.0F, 18.0F}},
+        cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+        3,
+        18.0F);
   }
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
@@ -193,17 +203,25 @@ int main() {
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 3) {
+  if (commands.size() != 5) {
     return 1;
   }
   const cgpui::RoundedRect& rounded = commands[1].rounded_rect;
   const cgpui::TextPaint& text = commands[2].text;
+  const cgpui::TextSelectionPaint& selection = commands[3].text_selection;
+  const cgpui::TextCaretPaint& caret = commands[4].text_caret;
   return commands[0].kind == cgpui::PaintCommandKind::solid_rect &&
                  commands[1].kind == cgpui::PaintCommandKind::rounded_rect &&
                  commands[2].kind == cgpui::PaintCommandKind::text &&
+                 commands[3].kind ==
+                     cgpui::PaintCommandKind::text_selection &&
+                 commands[4].kind == cgpui::PaintCommandKind::text_caret &&
                  rounded.radius.top_left == 2.0F && text_model.text() == "x" &&
                  text.content == "header" && text.byte_length == 6 &&
                  text.font.family == "Header" && text.font_size == 18.0F &&
+                 selection.range.start == 1 && selection.range.end == 3 &&
+                 selection.rect.size.width == 5.0F &&
+                 caret.byte_offset == 3 && caret.rect.size.width == 1.0F &&
                  render_record.sequence == 1 &&
                  render_record.root_element_id.has_value() &&
                  event_route.element_ancestry.size() == 1 &&

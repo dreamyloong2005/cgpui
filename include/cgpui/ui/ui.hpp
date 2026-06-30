@@ -42,6 +42,8 @@ enum class PaintCommandKind {
   solid_rect,
   rounded_rect,
   text,
+  text_selection,
+  text_caret,
 };
 
 struct RoundedRect {
@@ -59,11 +61,27 @@ struct TextPaint {
   float font_size = 16.0F;
 };
 
+struct TextSelectionPaint {
+  Rect rect;
+  Color color;
+  TextSelectionRange range;
+  float font_size = 16.0F;
+};
+
+struct TextCaretPaint {
+  Rect rect;
+  Color color;
+  std::size_t byte_offset = 0;
+  float font_size = 16.0F;
+};
+
 struct PaintCommand {
   PaintCommandKind kind = PaintCommandKind::solid_rect;
   SolidRect solid_rect;
   RoundedRect rounded_rect;
   TextPaint text;
+  TextSelectionPaint text_selection;
+  TextCaretPaint text_caret;
   std::optional<Rect> clip_rect;
 };
 
@@ -79,6 +97,16 @@ class PaintList {
       Color color,
       std::string_view text,
       FontDescriptor font = {},
+      float font_size = 16.0F);
+  void fill_text_selection(
+      Rect rect,
+      Color color,
+      TextSelectionRange range,
+      float font_size = 16.0F);
+  void fill_text_caret(
+      Rect rect,
+      Color color,
+      std::size_t byte_offset,
       float font_size = 16.0F);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 

@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Text Caret And Selection Paint Metadata
+
+- Step 123 is implemented in `.worktrees/text-caret-selection-paint` on
+  `codex/text-caret-selection-paint` and feature-worktree verified on Windows
+  and WSL Arch Linux.
+- Caret and selection are paint-list metadata only at this stage:
+  `PaintCommandKind::text_selection`, `PaintCommandKind::text_caret`,
+  `TextSelectionPaint`, `TextCaretPaint`, and matching `PaintList` fill helpers
+  expose intent without adding Vulkan text drawing.
+- `TextElement` uses the existing Step 122 deterministic fallback metrics:
+  glyph width is `font_size * 0.5F`, selection geometry is derived from sorted
+  byte offsets, and caret geometry is one pixel wide at the model cursor.
+- A bound empty `TextModel` still emits caret metadata. Text content commands
+  are emitted only when text is non-empty.
+- `render_view(...)` skips text, text selection, and text caret commands until
+  later text/glyph renderer work consumes them directly.
+- Step 123 intentionally does not add shaping, glyph cache ownership, platform
+  IME placement, platform cursor/clipboard behavior, or Vulkan text drawing.
+
 ## 2026-06-30 Font Descriptor And Font Size Style Merged
 
 - Step 122 is merged on `master` at
