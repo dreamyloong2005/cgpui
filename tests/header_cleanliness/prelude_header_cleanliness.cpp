@@ -24,6 +24,11 @@ class PreludeView final : public cgpui::View {
 int main() {
   cgpui::ElementTree tree;
   cgpui::TextModel model("x");
+  cgpui::EntityStore<cgpui::TextModel> models;
+  const cgpui::Model<cgpui::TextModel> model_id =
+      models.insert(cgpui::TextModel("model"));
+  const cgpui::Entity<cgpui::TextModel> entity_id = model_id;
+  (void)entity_id;
   const cgpui::ElementId root_id =
       tree.set_root(cgpui::div()
                         .size(cgpui::px(12.0F), cgpui::px(8.0F))

@@ -20,8 +20,10 @@ int main() {
   (void)ime_event;
 
   cgpui::EntityStore<int> entities;
-  const auto entity_id = entities.insert(1);
+  const cgpui::Entity<int> entity_id = entities.insert(1);
+  const cgpui::Model<int> model_id = entity_id;
   (void)entity_id;
+  (void)model_id;
 
   cgpui::MemoryClipboard clipboard;
   (void)clipboard.write_text("x");

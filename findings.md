@@ -1099,3 +1099,17 @@
 - Step 168 should not claim full GPUI parity. Its exit condition is a practical
   Windows/Linux GPUI-core foundation plus an explicit audit of implemented,
   partial, missing, and Mac/Metal-deferred areas.
+
+## 2026-06-30 Model Entity Aliases
+
+- `Model<T>` and `Entity<T>` should remain pure public authoring aliases over
+  `EntityId<T>` at this stage; introducing wrapper objects before Step 100/101
+  would create ownership and upgrade semantics before the plan has the model
+  helpers and weak handles to support them.
+- Header-cleanliness coverage belongs in both `core_header_cleanliness` and the
+  public prelude because the aliases are part of the low-level entity API and
+  also need to be available to normal GPUI-like authoring code through
+  `cgpui/cgpui.hpp`.
+- Reusing `EntityId<T>` preserves the existing typed-id separation between
+  unrelated model/entity payload types and keeps `EntityStore<T>` monotonic id
+  behavior unchanged.

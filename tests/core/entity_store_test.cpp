@@ -19,11 +19,16 @@ static_assert(!std::is_same_v<
               cgpui::EntityId<Document>,
               cgpui::EntityId<Panel>>);
 
+static_assert(std::is_same_v<cgpui::Entity<Document>, cgpui::EntityId<Document>>);
+static_assert(std::is_same_v<cgpui::Model<Document>, cgpui::EntityId<Document>>);
+
 int test_entity_store_insert_get_and_remove() {
   cgpui::EntityStore<Document> store;
 
-  const auto first = store.insert(Document{.title = "first", .revision = 1});
-  const auto second = store.insert(Document{.title = "second", .revision = 2});
+  const cgpui::Entity<Document> first =
+      store.insert(Document{.title = "first", .revision = 1});
+  const cgpui::Model<Document> second =
+      store.insert(Document{.title = "second", .revision = 2});
 
   if (first.value == 0 || second.value != first.value + 1) {
     return 1;
@@ -65,12 +70,12 @@ int test_entity_store_insert_get_and_remove() {
 int test_entity_store_keeps_ids_monotonic_after_remove() {
   cgpui::EntityStore<Panel> store;
 
-  const auto first = store.insert(Panel{.index = 1});
+  const cgpui::Model<Panel> first = store.insert(Panel{.index = 1});
   if (!store.remove(first)) {
     return 10;
   }
 
-  const auto second = store.insert(Panel{.index = 2});
+  const cgpui::Entity<Panel> second = store.insert(Panel{.index = 2});
   if (second.value <= first.value) {
     return 11;
   }

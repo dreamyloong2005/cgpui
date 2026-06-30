@@ -12,15 +12,15 @@
 
 ## Current State
 
-- Steps 89-98 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-99 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at the Step 98 feature merge.
+- `master` is at the Step 99 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  expected to remain active after Step 98 cleanup.
-- The next implementation slice is Step 99:
-  Public `Model<T>`/`Entity<T>` aliases over typed entity ids.
+  expected to remain active after Step 99 cleanup.
+- The next implementation slice is Step 100:
+  `ViewContext` model helpers for create, read, update, and remove.
 
 ## File Map
 
@@ -101,7 +101,7 @@ Acceptance at the end of Band A:
 
 Purpose: introduce the GPUI-style model and app shell needed for real applications.
 
-- [ ] Step 99: public `Model<T>`/`Entity<T>` aliases over typed entity ids.
+- [x] Step 99: public `Model<T>`/`Entity<T>` aliases over typed entity ids.
 - [ ] Step 100: `ViewContext` model helpers for create, read, update, and remove.
 - [ ] Step 101: weak entity/view handle primitives with soft-fail upgrade.
 - [ ] Step 102: observe/subscribe callback helper for model changes.
@@ -192,7 +192,7 @@ paint while old views still compile.
 Goal: introduce typed models, app setup, window opening, and view identity
 storage before nested view/event work.
 
-- [ ] Step 99: add public `Model<T>` and `Entity<T>` aliases over typed entity
+- [x] Step 99: add public `Model<T>` and `Entity<T>` aliases over typed entity
   ids.
 - [ ] Step 100: add `ViewContext` helpers for model create/read/update/remove.
 - [ ] Step 101: add weak entity/view handles with soft-fail upgrade.
@@ -260,17 +260,17 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 99 in an isolated worktree:
+Start Step 100 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/model-entity-aliases -b codex/model-entity-aliases master
-xmake test -P . entity_store_test/default core_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/view-context-model-helpers -b codex/view-context-model-helpers master
+xmake test -P . window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Then add the RED tests for public `Model<T>` and `Entity<T>` authoring aliases
-over typed entity ids. Keep the aliases source-compatible with the existing
-`EntityStore<T>` semantics, then follow the standard per-step
-verification/merge workflow above.
+Then add the RED tests for `ViewContext` model create/read/update/remove
+helpers over the existing runtime entity store. Preserve the current entity
+store behavior, notify changed models only after successful updates, then follow
+the standard per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -372,6 +372,8 @@ Status: complete on `master` after the Step 98 merge.
 
 ### Step 99: Public `Model<T>` and `Entity<T>` Aliases
 
+Status: complete on `master` after the Step 99 merge.
+
 **Files:**
 - Modify: `include/cgpui/core/entity.hpp`
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -379,9 +381,9 @@ Status: complete on `master` after the Step 98 merge.
 - Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 - Modify: `tests/header_cleanliness/prelude_header_cleanliness.cpp`
 
-- [ ] Add RED compile tests for `Model<T>` and `Entity<T>` as public authoring aliases over typed ids.
-- [ ] Implement aliases without changing `EntityStore<T>` semantics.
-- [ ] Targeted test command: `xmake test -P . entity_store_test/default core_header_cleanliness/default prelude_header_cleanliness/default`.
+- [x] Add RED compile tests for `Model<T>` and `Entity<T>` as public authoring aliases over typed ids.
+- [x] Implement aliases without changing `EntityStore<T>` semantics.
+- [x] Targeted test command: `xmake test -P . entity_store_test/default core_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 100: ViewContext Model Helpers
 

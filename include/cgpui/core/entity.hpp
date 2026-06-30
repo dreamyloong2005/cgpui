@@ -14,6 +14,12 @@ struct EntityId {
 };
 
 template <typename T>
+using Entity = EntityId<T>;
+
+template <typename T>
+using Model = EntityId<T>;
+
+template <typename T>
 class EntityStore {
  public:
   template <typename... Args>

@@ -217,7 +217,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 96. [x] GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the current view contract.
 97. [x] Runtime render pass installs the root view's rendered element tree.
 98. [x] ViewContext render invalidation helper and after-render observability.
-99. [ ] Public `Model<T>`/`Entity<T>` authoring aliases over typed entity ids.
+99. [x] Public `Model<T>`/`Entity<T>` authoring aliases over typed entity ids.
 100. [ ] ViewContext model helpers for create, read, update, and remove.
 101. [ ] Weak entity/view handle primitives with soft-fail upgrade.
 102. [ ] ViewContext observe/subscribe callback helper for model changes.
@@ -290,8 +290,8 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 98 is complete. Next implementation step is Step 99:
-Public `Model<T>`/`Entity<T>` authoring aliases over typed entity ids.
+Step 99 is complete. Next implementation step is Step 100:
+ViewContext model helpers for create, read, update, and remove.
 
 ## Risks
 
