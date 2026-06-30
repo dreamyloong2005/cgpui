@@ -11,6 +11,19 @@ enum class Overflow {
   hidden,
 };
 
+enum class AlignItems {
+  start,
+  center,
+  end,
+};
+
+enum class JustifyContent {
+  start,
+  center,
+  end,
+  space_between,
+};
+
 [[nodiscard]] constexpr float px(float value) {
   return value;
 }
@@ -135,6 +148,8 @@ struct Style {
   Overflow overflow = Overflow::visible;
   int z_index = 0;
   float gap = 0.0F;
+  AlignItems align_items = AlignItems::start;
+  JustifyContent justify_content = JustifyContent::start;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -202,6 +217,19 @@ struct Style {
     return style;
   }
 
+  [[nodiscard]] constexpr Style with_align_items(AlignItems value) const {
+    Style style = *this;
+    style.align_items = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_justify_content(
+      JustifyContent value) const {
+    Style style = *this;
+    style.justify_content = value;
+    return style;
+  }
+
   [[nodiscard]] constexpr Style with_clip_rect(Rect rect) const {
     Style style = *this;
     style.clip_rect = rect;
@@ -222,6 +250,8 @@ struct StyleOverlay {
   std::optional<Overflow> overflow;
   std::optional<int> z_index;
   std::optional<float> gap;
+  std::optional<AlignItems> align_items;
+  std::optional<JustifyContent> justify_content;
 
   [[nodiscard]] constexpr StyleOverlay with_background_color(
       Color color) const {
@@ -293,6 +323,20 @@ struct StyleOverlay {
     return overlay;
   }
 
+  [[nodiscard]] constexpr StyleOverlay with_align_items(
+      AlignItems value) const {
+    StyleOverlay overlay = *this;
+    overlay.align_items = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_justify_content(
+      JustifyContent value) const {
+    StyleOverlay overlay = *this;
+    overlay.justify_content = value;
+    return overlay;
+  }
+
   [[nodiscard]] constexpr StyleOverlay with_clip_rect(Rect rect) const {
     StyleOverlay overlay = *this;
     overlay.clip_rect = rect;
@@ -351,6 +395,12 @@ struct StyleStateFlags {
   }
   if (overlay.gap.has_value()) {
     style.gap = *overlay.gap;
+  }
+  if (overlay.align_items.has_value()) {
+    style.align_items = *overlay.align_items;
+  }
+  if (overlay.justify_content.has_value()) {
+    style.justify_content = *overlay.justify_content;
   }
   return style;
 }

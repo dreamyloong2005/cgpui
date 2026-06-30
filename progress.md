@@ -1,5 +1,35 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 115 Flex Alignment And Justification
+
+- Continued Step 115 in `.worktrees/flex-alignment-justification` on
+  `codex/flex-alignment-justification`, fast-forwarded to
+  `d929502 docs: refresh back forty plan after step 114`.
+- Added RED tests in `style_test`, `element_test`, and
+  `ui_header_cleanliness` for public `AlignItems` and `JustifyContent` enums,
+  style/default/overlay resolution, builder fluent methods, and row/column
+  child origins for main-axis justification and cross-axis alignment.
+- Verified the RED build failed as expected because `Style::align_items`,
+  `Style::justify_content`, `StyleOverlay` fields, `AlignItems`,
+  `JustifyContent`, builder methods, and `FlexElement` accessors did not exist.
+- Implemented Step 115 in `include/cgpui/ui/style.hpp` and
+  `include/cgpui/ui/element.hpp`: flex style now stores `align_items` and
+  `justify_content`, overlays merge those fields, builders forward them into
+  `FlexElement`, and flex layout positions children using constrained free
+  space for start/center/end/space-between plus cross-axis start/center/end.
+- Verified targeted tests:
+  `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P . && xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 115 is marked implemented and feature-worktree
+  verified. Step 116 becomes the next implementation slice after Step 115
+  merge and post-merge verification.
+
 ## 2026-06-30 Back-40 Planning After Step 114 Closeout
 
 - Refreshed the post-Step-128 back-40 plan at

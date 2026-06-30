@@ -14,13 +14,15 @@
 
 - Steps 89-114 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `d78a017 feat: clip hidden overflow hit testing`; the Step
-  113 behavior commit remains `7a2ef39 feat: route scroll events to scroll
-  state`.
+- `master` includes `d929502 docs: refresh back forty plan after step 114`.
+  The Step 114 behavior commit remains
+  `d78a017 feat: clip hidden overflow hit testing`.
 - The Step 114 worktree `.worktrees/hidden-overflow-hit-testing` has been
   deregistered and its branch `codex/hidden-overflow-hit-testing` deleted.
-- The next implementation slice is Step 115: flex alignment and justification
-  primitives.
+- Step 115 is implemented and feature-worktree verified in
+  `.worktrees/flex-alignment-justification` on
+  `codex/flex-alignment-justification`. The next action is to commit, merge,
+  post-merge verify, and clean up Step 115.
 
 ## File Map
 
@@ -129,7 +131,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 112: scroll element binding helper backed by `ScrollState`.
 - [x] Step 113: wheel and trackpad scroll routing into bound scroll state.
 - [x] Step 114: hidden overflow participates in hit testing.
-- [ ] Step 115: flex alignment and justification primitives.
+- [x] Step 115: flex alignment and justification primitives.
 - [ ] Step 116: flex grow and shrink factors.
 - [ ] Step 117: absolute positioning and inset style primitive.
 - [ ] Step 118: layer/elevation style primitive mapped onto deterministic z order.
@@ -224,7 +226,7 @@ of single-target-only.
 - [x] Step 112: add a scroll-element binding helper backed by `ScrollState`.
 - [x] Step 113: route wheel/trackpad scroll events into bound scroll state.
 - [x] Step 114: make hidden overflow constrain hit testing.
-- [ ] Step 115: add flex alignment and justification primitives.
+- [x] Step 115: add flex alignment and justification primitives.
 - [ ] Step 116: add flex grow and shrink factors.
 - [ ] Step 117: add absolute positioning and inset style.
 - [ ] Step 118: add layer/elevation mapped to deterministic z order.
@@ -260,15 +262,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 115 in a fresh isolated worktree:
+Finish Step 115 merge and post-merge verification from the existing feature
+worktree:
 
 ```powershell
-git worktree add .worktrees/flex-alignment-justification -b codex/flex-alignment-justification master
+cd .worktrees/flex-alignment-justification
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+git commit -m "feat: add flex alignment justification"
+cd ..\..
+git merge --ff-only codex/flex-alignment-justification
 ```
 
-Add RED tests for `AlignItems`, `JustifyContent`, and row/column child origin
-behavior, then follow the standard per-step verification/merge workflow above.
+After post-merge Windows and WSL verification, Step 116 is the next
+implementation slice.
 
 ## Step Details
 
@@ -580,15 +586,19 @@ Status: complete on `master` at
 
 ### Step 115: Flex Alignment and Justification
 
+Status: implemented and verified in
+`.worktrees/flex-alignment-justification`; merge and post-merge verification
+remain.
+
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for `AlignItems`, `JustifyContent`, and builder/style setters.
-- [ ] Implement row/column child origins for start, center, end, and space-between where current constraints make the free space observable.
-- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for `AlignItems`, `JustifyContent`, and builder/style setters.
+- [x] Implement row/column child origins for start, center, end, and space-between where current constraints make the free space observable.
+- [x] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
 
 ### Step 116: Flex Grow and Shrink
 

@@ -22,11 +22,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `d78a017 feat: clip hidden overflow hit testing`.
 - Step 114 was post-merge verified on Windows and WSL Arch Linux, and its
   feature branch `codex/hidden-overflow-hit-testing` has been deleted.
-- Step 115 is already opened in
+- Step 115 is implemented and feature-worktree verified in
   `.worktrees/flex-alignment-justification` on branch
-  `codex/flex-alignment-justification`, with baseline targeted tests passing:
-  `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
-  No Step 115 implementation edits have landed yet.
+  `codex/flex-alignment-justification`. RED failed as expected on missing
+  flex alignment/justification APIs, targeted tests passed 3/3, Windows full
+  debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Merge and
+  post-merge verification remain.
 - Steps 115-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -41,9 +42,8 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 This refresh is anchored at `master` HEAD
 `ac745f8 docs: mark step 114 merged`. It is the execution plan for Steps
 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is continuing Step 115 in the existing
-`.worktrees/flex-alignment-justification` worktree unless the roadmap is
-explicitly reprioritized.
+implementation action is committing, merging, post-merge verifying, and
+cleaning up Step 115 unless the roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 115-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -57,10 +57,12 @@ explicitly reprioritized.
   and cleanup.
 - From the current `master` state, the effective distance to Step 129 is 14
   implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. Step 115 has an existing worktree and baseline, but it
-  still counts as incomplete until RED/GREEN, merge, and post-merge
-  verification finish. The effective distance through Step 168 is 54
-  implementation steps, Steps 115-168, plus the four band checkpoint reviews.
+  and WSL verification. Step 115 is feature-worktree verified, but still counts
+  as incomplete until merge and post-merge verification finish. After Step 115
+  merges, the effective distance to Step 129 becomes 13 implementation steps,
+  Steps 116-128, plus post-Step-128 verification. The effective distance
+  through Step 168 becomes 53 implementation steps after Step 115 merges, plus
+  the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -168,12 +170,14 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 112 scroll element binding has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 115-118 have landed the planned layout primitives.
+- [ ] Steps 115-118 have landed the planned layout primitives. Step 115 is
+  feature-worktree verified and pending merge/post-merge verification.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count from the current `master` state: 14
-steps, Steps 115-128, plus post-Step-128 Windows/WSL verification.
+steps, Steps 115-128, plus post-Step-128 Windows/WSL verification. After Step
+115 merges, this becomes 13 steps, Steps 116-128.
 
 ## Back-40 Execution Strategy
 
@@ -238,12 +242,15 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, continue the existing Step 115 worktree
-instead of starting Step 129:
+For the current pre-back-40 state, finish Step 115 merge and post-merge
+verification instead of starting Step 129:
 
 ```powershell
 cd .worktrees/flex-alignment-justification
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+git commit -m "feat: add flex alignment justification"
+cd ..\..
+git merge --ff-only codex/flex-alignment-justification
 ```
 
 ## Post-Step-128 Planning Contract

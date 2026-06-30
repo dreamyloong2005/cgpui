@@ -64,9 +64,14 @@ int main() {
       .event_kind = cgpui::EventKind::pointer_moved,
   };
   cgpui::StyleState style_state;
-  style_state.base = cgpui::Style{}.with_background_color(cgpui::rgb(0, 0, 0));
+  style_state.base = cgpui::Style{}
+                         .with_background_color(cgpui::rgb(0, 0, 0))
+                         .with_align_items(cgpui::AlignItems::center)
+                         .with_justify_content(cgpui::JustifyContent::end);
   style_state.hover =
-      cgpui::StyleOverlay{}.with_background_color(cgpui::rgb(64, 64, 64));
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(64, 64, 64))
+          .with_justify_content(cgpui::JustifyContent::space_between);
   const cgpui::Style resolved = cgpui::resolved_style(
       style_state,
       cgpui::StyleStateFlags{.hovered = true});
@@ -133,11 +138,17 @@ int main() {
                                 return cgpui::EventResult::unhandled();
                               })
                                .on_pointer_move([](
-                                                    const cgpui::PointerMoved&,
-                                                    const cgpui::
-                                                        ElementEventContext&) {
+                                                   const cgpui::PointerMoved&,
+                                                   const cgpui::
+                                                       ElementEventContext&) {
                                  return cgpui::EventResult::unhandled();
                                }));
+  cgpui::AnyElement flex_element =
+      cgpui::into_element(cgpui::h_flex()
+                              .align_items(cgpui::AlignItems::center)
+                              .justify_content(cgpui::JustifyContent::end)
+                              .child(cgpui::div().size(1.0F, 1.0F)));
+  const auto* flex = dynamic_cast<const cgpui::FlexElement*>(flex_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
       scroll_state,
@@ -159,6 +170,8 @@ int main() {
                  event_route.view_ancestry.size() == 1 &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  resolved.background_color.has_value() &&
+                 resolved.justify_content ==
+                     cgpui::JustifyContent::space_between &&
                  static_cast<bool>(app_options.setup_context) &&
                  window_descriptor.title == "Header Window" &&
                  window_descriptor.size.width == 9.0F &&
@@ -170,6 +183,9 @@ int main() {
                   styled->style().foreground_color.has_value() &&
                   styled->style().foreground_color->a == 0.5F &&
                   scroll != nullptr && scroll->state() == &scroll_state &&
+                  flex != nullptr &&
+                  flex->align_items() == cgpui::AlignItems::center &&
+                  flex->justify_content() == cgpui::JustifyContent::end &&
                   scroll_model.offset().x == 0.0F
               ? 0
               : 1;

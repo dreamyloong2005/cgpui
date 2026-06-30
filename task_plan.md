@@ -99,16 +99,18 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `ac745f8 docs: mark step 114 merged`: Steps
-89-114 are merged and post-merge verified on Windows and WSL Arch Linux, Step
-115 is opened in `.worktrees/flex-alignment-justification` with baseline
-targeted tests passing and no implementation edits yet, and Step 129 remains
-gated behind completion and Windows/WSL verification of Steps 115-128.
+pre-back-40 handoff state at `d929502 docs: refresh back forty plan after step
+114`: Steps 89-114 are merged and post-merge verified on Windows and WSL Arch
+Linux, Step 115 is implemented and feature-worktree verified in
+`.worktrees/flex-alignment-justification`, and Step 129 remains gated behind
+completion and Windows/WSL verification of Steps 115-128.
 
-From the current `master` state, the effective distance to Step 129 is 14
-implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 is 54 implementation
-steps, Steps 115-168, plus the four follow-on band checkpoint reviews.
+From the current `master` state, the effective distance to Step 129 is still
+14 implementation steps until Step 115 is merged; after the Step 115 merge it
+will become 13 implementation steps, Steps 116-128, plus post-Step-128
+targeted, Windows, and WSL verification. The effective distance through Step
+168 becomes 53 implementation steps after Step 115 merges, plus the four
+follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 114-128 queue unless the plan is explicitly reprioritized.
@@ -239,7 +241,7 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 112. [x] Scroll element binding helper backed by `ScrollState`.
 113. [x] Wheel and trackpad scroll routing into bound scroll state.
 114. [x] Hidden overflow participates in hit testing, not only paint clip metadata.
-115. [ ] Flex alignment and justification primitives.
+115. [x] Flex alignment and justification primitives.
 116. [ ] Flex grow and shrink factors for child layout.
 117. [ ] Absolute positioning and inset style primitive.
 118. [ ] Layer/elevation style primitive mapped onto deterministic z order.
@@ -296,18 +298,13 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 114, hidden overflow participates in hit testing, is merged to `master`
-with behavior commit `d78a017 feat: clip hidden overflow hit testing`,
-post-merge targeted tests passed 3/3, Windows full debug passed 29/29, and WSL
-Arch Linux full debug passed 26/26. The next implementation step is Step 115:
-flex alignment and justification primitives.
-
-Step 115 already has a feature worktree at
-`.worktrees/flex-alignment-justification` on
-`codex/flex-alignment-justification`, based on `ac745f8 docs: mark step 114
-merged`. Its baseline targeted tests passed with
-`xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
-No Step 115 RED/GREEN edits have been made yet.
+Step 115, flex alignment and justification primitives, is implemented and
+verified in `.worktrees/flex-alignment-justification` on
+`codex/flex-alignment-justification`. RED failed as expected on missing
+`AlignItems`/`JustifyContent` API, targeted tests passed 3/3, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. The next
+action is to commit, merge, post-merge verify, and clean up Step 115; after
+that, Step 116 becomes the active implementation step.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated

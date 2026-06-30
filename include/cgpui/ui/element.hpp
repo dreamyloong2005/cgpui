@@ -258,6 +258,22 @@ class FlexElement : public Element {
     gap_ = gap;
   }
 
+  [[nodiscard]] AlignItems align_items() const {
+    return align_items_;
+  }
+
+  void set_align_items(AlignItems align_items) {
+    align_items_ = align_items;
+  }
+
+  [[nodiscard]] JustifyContent justify_content() const {
+    return justify_content_;
+  }
+
+  void set_justify_content(JustifyContent justify_content) {
+    justify_content_ = justify_content;
+  }
+
   void append_child(std::unique_ptr<Element> child) {
     if (child) {
       children_.push_back(std::move(child));
@@ -269,32 +285,26 @@ class FlexElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    std::vector<Size> child_sizes;
+    child_sizes.reserve(children_.size());
     Size content_size;
-    Point child_origin;
     std::size_t child_index = 0;
     for (const auto& child : children_) {
       if (child_index > 0) {
         if (direction_ == FlexDirection::row) {
-          child_origin.x += gap_;
           content_size.width += gap_;
         } else {
-          child_origin.y += gap_;
           content_size.height += gap_;
         }
       }
       const LayoutOutput child_output = child->layout(LayoutInput{});
-      child->set_layout_bounds(Rect{
-          .origin = child_origin,
-          .size = child_output.size,
-      });
+      child_sizes.push_back(child_output.size);
 
       if (direction_ == FlexDirection::row) {
-        child_origin.x += child_output.size.width;
         content_size.width += child_output.size.width;
         content_size.height =
             std::max(content_size.height, child_output.size.height);
       } else {
-        child_origin.y += child_output.size.height;
         content_size.width =
             std::max(content_size.width, child_output.size.width);
         content_size.height += child_output.size.height;
@@ -309,6 +319,46 @@ class FlexElement : public Element {
         .origin = output.origin,
         .size = output.size,
     });
+
+    const bool row = direction_ == FlexDirection::row;
+    const float output_main = row ? output.size.width : output.size.height;
+    const float output_cross = row ? output.size.height : output.size.width;
+    const float content_main = row ? content_size.width : content_size.height;
+    const float free_space = std::max(0.0F, output_main - content_main);
+    float main_offset = 0.0F;
+    float extra_gap = 0.0F;
+    if (justify_content_ == JustifyContent::center) {
+      main_offset = free_space / 2.0F;
+    } else if (justify_content_ == JustifyContent::end) {
+      main_offset = free_space;
+    } else if (justify_content_ == JustifyContent::space_between &&
+               child_sizes.size() > 1) {
+      extra_gap = free_space / static_cast<float>(child_sizes.size() - 1);
+    }
+
+    float cursor = main_offset;
+    for (std::size_t index = 0; index < children_.size(); ++index) {
+      const Size child_size = child_sizes[index];
+      const float child_cross = row ? child_size.height : child_size.width;
+      float cross_offset = 0.0F;
+      if (align_items_ == AlignItems::center) {
+        cross_offset = std::max(0.0F, output_cross - child_cross) / 2.0F;
+      } else if (align_items_ == AlignItems::end) {
+        cross_offset = std::max(0.0F, output_cross - child_cross);
+      }
+
+      children_[index]->set_layout_bounds(Rect{
+          .origin =
+              row ? Point{.x = cursor, .y = cross_offset}
+                  : Point{.x = cross_offset, .y = cursor},
+          .size = child_size,
+      });
+
+      cursor += row ? child_size.width : child_size.height;
+      if (index + 1 < child_sizes.size()) {
+        cursor += gap_ + extra_gap;
+      }
+    }
     return output;
   }
 
@@ -331,6 +381,8 @@ class FlexElement : public Element {
  private:
   FlexDirection direction_;
   float gap_ = 0.0F;
+  AlignItems align_items_ = AlignItems::start;
+  JustifyContent justify_content_ = JustifyContent::start;
   std::vector<std::unique_ptr<Element>> children_;
 };
 
@@ -941,6 +993,16 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder align_items(AlignItems value) && {
+    style_state_.base = style_state_.base.with_align_items(value);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder justify_content(JustifyContent value) && {
+    style_state_.base = style_state_.base.with_justify_content(value);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder enabled(bool value) && {
     enabled_ = value;
     return std::move(*this);
@@ -1019,6 +1081,8 @@ class ElementBuilder {
       auto element = std::make_unique<FlexElement>(
           kind_ == Kind::row ? FlexDirection::row : FlexDirection::column);
       element->set_gap(style_state_.base.gap);
+      element->set_align_items(style_state_.base.align_items);
+      element->set_justify_content(style_state_.base.justify_content);
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }

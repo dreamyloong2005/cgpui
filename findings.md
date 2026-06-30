@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Flex Alignment And Justification
+
+- Flex alignment and justification can stay entirely in shared style/element
+  code for Step 115. No runtime or platform-specific behavior is needed.
+- `JustifyContent::start` preserves the old flex layout behavior. `center` and
+  `end` use only positive constrained free space as initial main-axis offset,
+  and `space_between` keeps the authored `gap` as the base gap while
+  distributing extra free space between children.
+- `AlignItems` uses the final constrained cross-axis size, so rows align child
+  y origins and columns align child x origins. Cross-axis free space is clamped
+  at zero, preserving previous overflow behavior for children larger than the
+  constrained container.
+- Measuring children before assigning final bounds is necessary because the
+  final constrained flex size controls both main-axis justification and
+  cross-axis alignment.
+
 ## 2026-06-30 Back-40 Planning After Step 114 Closeout
 
 - The后 40 步 remain Steps 129-168 and should still be treated as a

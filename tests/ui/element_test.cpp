@@ -701,7 +701,102 @@ int test_flex_row_gap_spaces_children_on_main_axis() {
                  second_bounds->size.width == 30.0F &&
                  second_bounds->size.height == 8.0F
              ? 0
-             : 110;
+              : 110;
+}
+
+int test_flex_row_justify_content_positions_children_on_main_axis() {
+  auto make_row = [](cgpui::JustifyContent justify_content) {
+    auto element =
+        cgpui::ElementBuilder::row()
+            .gap(5.0F)
+            .justify_content(justify_content)
+            .child(std::make_unique<cgpui::FixedSizeElement>(
+                cgpui::Size{.width = 10.0F, .height = 10.0F}))
+            .child(std::make_unique<cgpui::FixedSizeElement>(
+                cgpui::Size{.width = 20.0F, .height = 10.0F}))
+            .build();
+    return std::unique_ptr<cgpui::FlexElement>(
+        dynamic_cast<cgpui::FlexElement*>(element.release()));
+  };
+
+  std::unique_ptr<cgpui::FlexElement> centered =
+      make_row(cgpui::JustifyContent::center);
+  if (centered == nullptr ||
+      centered->justify_content() != cgpui::JustifyContent::center) {
+    return 238;
+  }
+  const cgpui::LayoutOutput centered_output = centered->layout(
+      cgpui::LayoutInput{.constraints = {.min_size = {.width = 100.0F}}});
+  if (centered_output.size.width != 100.0F ||
+      centered_output.size.height != 10.0F) {
+    return 239;
+  }
+  const std::optional<cgpui::Rect> centered_first =
+      centered->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> centered_second =
+      centered->children()[1]->layout_bounds();
+  if (!centered_first.has_value() || !centered_second.has_value() ||
+      centered_first->origin.x != 32.5F ||
+      centered_second->origin.x != 47.5F) {
+    return 240;
+  }
+
+  std::unique_ptr<cgpui::FlexElement> ended =
+      make_row(cgpui::JustifyContent::end);
+  const cgpui::LayoutOutput ended_output = ended->layout(
+      cgpui::LayoutInput{.constraints = {.min_size = {.width = 100.0F}}});
+  const std::optional<cgpui::Rect> ended_first =
+      ended->children()[0]->layout_bounds();
+  if (ended_output.size.width != 100.0F || !ended_first.has_value() ||
+      ended_first->origin.x != 65.0F) {
+    return 241;
+  }
+
+  std::unique_ptr<cgpui::FlexElement> spaced =
+      make_row(cgpui::JustifyContent::space_between);
+  const cgpui::LayoutOutput spaced_output = spaced->layout(
+      cgpui::LayoutInput{.constraints = {.min_size = {.width = 100.0F}}});
+  const std::optional<cgpui::Rect> spaced_first =
+      spaced->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> spaced_second =
+      spaced->children()[1]->layout_bounds();
+  return spaced_output.size.width == 100.0F && spaced_first.has_value() &&
+                 spaced_second.has_value() &&
+                 spaced_first->origin.x == 0.0F &&
+                 spaced_second->origin.x == 80.0F
+             ? 0
+             : 242;
+}
+
+int test_flex_row_align_items_positions_children_on_cross_axis() {
+  auto element =
+      cgpui::ElementBuilder::row()
+          .align_items(cgpui::AlignItems::center)
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 10.0F, .height = 10.0F}))
+          .build();
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->align_items() != cgpui::AlignItems::center) {
+    return 243;
+  }
+  const cgpui::LayoutOutput centered_output = flex->layout(
+      cgpui::LayoutInput{.constraints = {.min_size = {.height = 40.0F}}});
+  const std::optional<cgpui::Rect> centered_child =
+      flex->children()[0]->layout_bounds();
+  if (centered_output.size.height != 40.0F || !centered_child.has_value() ||
+      centered_child->origin.y != 15.0F) {
+    return 244;
+  }
+
+  flex->set_align_items(cgpui::AlignItems::end);
+  const cgpui::LayoutOutput ended_output = flex->layout(
+      cgpui::LayoutInput{.constraints = {.min_size = {.height = 40.0F}}});
+  const std::optional<cgpui::Rect> ended_child =
+      flex->children()[0]->layout_bounds();
+  return ended_output.size.height == 40.0F && ended_child.has_value() &&
+                 ended_child->origin.y == 30.0F
+             ? 0
+             : 245;
 }
 
 int test_flex_column_lays_out_children_top_to_bottom() {
@@ -763,7 +858,55 @@ int test_flex_column_gap_spaces_children_on_main_axis() {
                  second_bounds->size.width == 30.0F &&
                  second_bounds->size.height == 8.0F
              ? 0
-             : 113;
+              : 113;
+}
+
+int test_flex_column_justify_content_and_align_items_position_children() {
+  auto element =
+      cgpui::ElementBuilder::column()
+          .gap(5.0F)
+          .justify_content(cgpui::JustifyContent::center)
+          .align_items(cgpui::AlignItems::end)
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 10.0F, .height = 10.0F}))
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 20.0F, .height = 20.0F}))
+          .build();
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr ||
+      flex->justify_content() != cgpui::JustifyContent::center ||
+      flex->align_items() != cgpui::AlignItems::end) {
+    return 246;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{
+      .constraints = {.min_size = {.width = 50.0F, .height = 80.0F}},
+  });
+  if (output.size.width != 50.0F || output.size.height != 80.0F) {
+    return 247;
+  }
+  const std::optional<cgpui::Rect> first_bounds =
+      flex->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  if (!first_bounds.has_value() || !second_bounds.has_value()) {
+    return 248;
+  }
+  if (first_bounds->origin.x != 40.0F || first_bounds->origin.y != 22.5F ||
+      second_bounds->origin.x != 30.0F ||
+      second_bounds->origin.y != 37.5F) {
+    return 249;
+  }
+
+  flex->set_justify_content(cgpui::JustifyContent::end);
+  (void)flex->layout(cgpui::LayoutInput{
+      .constraints = {.min_size = {.width = 50.0F, .height = 80.0F}},
+  });
+  const std::optional<cgpui::Rect> end_first_bounds =
+      flex->children()[0]->layout_bounds();
+  return end_first_bounds.has_value() && end_first_bounds->origin.y == 45.0F
+             ? 0
+             : 250;
 }
 
 int test_flex_hit_tests_children_before_self() {
@@ -2603,11 +2746,26 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result =
+          test_flex_row_justify_content_positions_children_on_main_axis();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_flex_row_align_items_positions_children_on_cross_axis();
+      result != 0) {
+    return result;
+  }
   if (const int result = test_flex_column_lays_out_children_top_to_bottom();
       result != 0) {
     return result;
   }
   if (const int result = test_flex_column_gap_spaces_children_on_main_axis();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_flex_column_justify_content_and_align_items_position_children();
       result != 0) {
     return result;
   }
