@@ -4,10 +4,10 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Step 128 remainder inside the current
-89-128 execution queue, then use Steps 129-168 to deepen context/entity
-ergonomics, keyed element reconciliation, reusable widgets, text/font
-rendering, diagnostics, and platform-backed Win32/Wayland behavior.
+**Architecture:** Keep the active Step 128 merge/verification gate inside the
+current 89-128 execution queue, then use Steps 129-168 to deepen
+context/entity ergonomics, keyed element reconciliation, reusable widgets,
+text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
 Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and
 macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
@@ -36,9 +36,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 126 is merged on `master` at
   `ab464d5 feat: add wayland clipboard skeleton`; post-merge targeted tests
   passed 1/1, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 127 is merged and post-merge verified on Windows and WSL Arch Linux;
-  Step 128 remains the active implementation gate before this follow-on plan.
-  They are covered by the detailed execution plan in
+- Step 127 is merged and post-merge verified on Windows and WSL Arch Linux.
+- Step 128 is implemented and feature-worktree verified in
+  `.worktrees/public-prelude-demo-rewrite`, but Step 129 remains gated behind
+  the Step 128 feature commit, merge, post-merge targeted/Windows/WSL
+  verification, docs closeout, and clean `master` status. Step 128 is covered
+  by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -166,6 +169,30 @@ Historical snapshot, superseded by the Step 127 merge refresh below.
   and clean `master` status.
 - The effective distance through Step 168 is 41 implementation slices plus the
   post-Step-128 verification gate and four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 128 GREEN
+
+- Step 128, GPUI-like demo rewrite using the public prelude and new authoring
+  API, is implemented and feature-worktree verified in
+  `.worktrees/public-prelude-demo-rewrite` on
+  `codex/public-prelude-demo-rewrite`.
+- RED failed as expected after `hello_window_lifetime_test` began requiring
+  `cgpui/cgpui.hpp`, `run_app`, `AppRunnerOptions`, `AppContext`,
+  `View::render(ViewContext&)`, public element factories, fluent builder
+  shortcuts, and `ViewContext` model/text helpers while rejecting manual
+  `WindowRuntime`/`ElementTree` demo setup.
+- GREEN rewrites the hello-window demo around the public prelude and `run_app`,
+  keeps Windows/Linux Vulkan startup intact, and preserves first-frame, resize,
+  close-request, and injected-text smoke behavior.
+- Feature-worktree verification passed: targeted architecture/prelude tests
+  2/2, Windows hello-window smoke tests 3/3, Windows full debug 29/29, and WSL
+  Arch Linux full debug 26/26.
+- The gate to Step 129 is now the Step 128 feature commit, fast-forward merge,
+  post-merge targeted verification, Windows full debug, WSL Arch full debug,
+  docs closeout, cleanup, and clean `master` status.
+- The effective distance through Step 168 is 40 follow-on implementation
+  slices plus the Step 128 merge/post-merge verification gate and four band
+  checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 

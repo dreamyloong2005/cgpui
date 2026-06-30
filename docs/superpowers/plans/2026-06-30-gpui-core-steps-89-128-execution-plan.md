@@ -44,7 +44,10 @@
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
 - Step 128, GPUI-like demo rewrite using the public prelude and new authoring
-  API, is the next implementation slice.
+  API, is implemented and feature-worktree verified in
+  `.worktrees/public-prelude-demo-rewrite`: targeted architecture/prelude tests
+  passed 2/2, Windows hello-window smoke tests passed 3/3, Windows full debug
+  passed 29/29, and WSL Arch Linux full debug passed 26/26.
 
 ## File Map
 
@@ -178,7 +181,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
 - [x] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
 - [x] Step 127: IME composition/candidate rectangle data from the focused text element.
-- [ ] Step 128: GPUI-like demo rewrite using the public prelude and new authoring API.
+- [x] Step 128: GPUI-like demo rewrite using the public prelude and new authoring API.
 
 Acceptance at the end of Band D:
 
@@ -275,7 +278,7 @@ leaving macOS/Metal for a later parity track.
   unsupported behavior.
 - [x] Step 127: expose IME candidate/composition rectangle data from the
   focused text element.
-- [ ] Step 128: rewrite the demo around public prelude, `run_app`,
+- [x] Step 128: rewrite the demo around public prelude, `run_app`,
   `AppContext`, `View::render`, factories, builder shortcuts, and text/model
   interactions.
 
@@ -285,20 +288,25 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 128 from a fresh feature worktree after Step 127 cleanup:
+Finish Step 128 merge and post-merge verification from the feature worktree:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/public-prelude-demo-rewrite -b codex/public-prelude-demo-rewrite master
 cd .worktrees/public-prelude-demo-rewrite
 xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default
+git add examples/hello_window/main.cpp README.md tests/architecture/hello_window_lifetime_test.cpp task_plan.md findings.md progress.md docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md
+git commit -m "feat: rewrite demo with public prelude"
+git checkout master
+git merge --ff-only codex/public-prelude-demo-rewrite
 ```
 
-Step 127 now exposes IME composition/candidate rectangle data from the focused
-text element without wiring platform IME placement yet. Step 128 should rewrite
-the demo around the public prelude, `run_app`, `AppContext`, `View::render`,
-free factories, builder shortcuts, and text/model interactions.
+Step 128 now rewrites the demo around the public prelude, `run_app`,
+`AppContext`, `View::render`, free factories, builder shortcuts, and
+text/model interactions while preserving the Windows/Linux Vulkan startup and
+lifecycle smoke paths. Step 129 must still wait for the Step 128 feature
+commit, merge, post-merge targeted/Windows/WSL verification, docs closeout,
+and cleanup.
 
 ## Step Details
 
@@ -887,9 +895,12 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - Modify: `README.md`
 - Modify: `tests/architecture/hello_window_lifetime_test.cpp`
 
-- [ ] Add RED architecture/demo coverage that looks for public prelude usage, `run_app`/`AppContext`, `View::render`, free factories, builder shortcuts, and model/text interactions.
-- [ ] Rewrite the demo to use the public prelude and new authoring API while keeping Windows/Linux Vulkan startup intact.
-- [ ] Targeted test command: `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`.
+- [x] Add RED architecture/demo coverage that looks for public prelude usage, `run_app`/`AppContext`, `View::render`, free factories, builder shortcuts, and model/text interactions.
+- [x] Rewrite the demo to use the public prelude and new authoring API while keeping Windows/Linux Vulkan startup intact.
+- [x] Targeted test command passed 2/2: `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`.
+- [x] Windows hello-window smoke tests passed 3/3: `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default hello_window/windows_first_frame hello_window/windows_resize_after_first_frame hello_window/windows_close_after_first_frame`.
+- [x] Feature-worktree Windows full debug passed 29/29: `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/public-prelude-demo-rewrite -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ## Risk Controls
 

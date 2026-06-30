@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Public Prelude Demo Rewrite
+
+- Step 128 rewrites `examples/hello_window` around the public prelude and
+  authoring APIs: `cgpui/cgpui.hpp`, `run_app`, `AppRunnerOptions`,
+  `AppContext`, `View::render(ViewContext&)`, free factories, fluent builder
+  shortcuts, and `ViewContext` model/text helpers.
+- The demo no longer owns a manual `ElementTree` or constructs
+  `WindowRuntime` directly. App-level lifecycle callbacks are still installed
+  during `setup_context`, while author-facing text binding, focus, cursor,
+  action, key binding, subscription, and model update calls go through
+  `ViewContext`.
+- Current rendered elements only give the runtime a stable root element id
+  during `ElementTree::set_root(...)`. The demo therefore binds the text model
+  to the rendered root id for this step and keeps true nested/keyed element
+  identity deferred to the planned keyed reconciliation/widget work.
+- Feature-worktree verification passed: targeted architecture/prelude tests
+  2/2, Windows hello-window smoke tests 3/3, Windows full debug 29/29, and WSL
+  Arch Linux full debug 26/26.
+
 ## 2026-07-01 IME Candidate Rectangle Data Merged
 
 - Step 127 is merged on `master` at

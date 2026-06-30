@@ -1,6 +1,6 @@
 # CGPUI
 
-CGPUI is a C++23-native UI framework inspired by GPUI's architecture. This foundation milestone focuses on clean platform, renderer, and UI boundaries.
+CGPUI is a C++23-native UI framework inspired by GPUI's architecture. This foundation milestone focuses on clean platform, renderer, UI, and public authoring API boundaries.
 
 ## Build
 
@@ -23,7 +23,7 @@ xmake run hello_window
 
 ## Current Foundation
 
-The current foundation defines architecture boundaries and compiles backend targets with Xmake. Windows presents Vulkan frames through the Win32 demo path, including clear color and solid rectangle draw commands. Linux now has a minimal Wayland xdg-shell window path and Vulkan Wayland surface creation wired to the shared renderer path. macOS still uses a renderer skeleton in this milestone.
+The current foundation defines architecture boundaries and compiles backend targets with Xmake. The hello window demo now uses the public `cgpui/cgpui.hpp` prelude, `run_app`, `AppContext`, `View::render`, free element factories, fluent builder shortcuts, and `ViewContext` model/text helpers. Windows presents Vulkan frames through the Win32 demo path, and Linux uses the Wayland xdg-shell window path with Vulkan Wayland surface creation wired to the shared renderer path. macOS still uses a renderer skeleton in this milestone.
 
 Linux Wayland runtime verification requires a Linux Wayland session or WSLg:
 

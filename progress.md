@@ -1,5 +1,47 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 128 Public Prelude Demo Rewrite
+
+- Continued Step 128 in `.worktrees/public-prelude-demo-rewrite` on
+  `codex/public-prelude-demo-rewrite` from `master` at
+  `75b6712 docs: mark step 127 merged`.
+- Recovered the interrupted session state: the main checkout was clean for
+  tracked files with only the known untracked `.vscode/`, and the Step 128
+  worktree had no edits before this continuation.
+- Baseline targeted tests had already passed before edits:
+  `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Added RED architecture coverage in
+  `tests/architecture/hello_window_lifetime_test.cpp` requiring the demo to use
+  `cgpui/cgpui.hpp`, `run_app`, `AppRunnerOptions`, `AppContext`,
+  `View::render(ViewContext&)`, public element factories, fluent builder
+  shortcuts, and `ViewContext` model/text helpers while rejecting direct
+  `WindowRuntime`, `ElementTree`, `ElementBuilder::box()`, and `runtime.*`
+  setup. RED failed as expected in `hello_window_lifetime_test/default`.
+- Rewrote `examples/hello_window/main.cpp` around the public prelude and
+  `run_app`, preserving first-frame, resize, close-request, and injected-text
+  smoke env vars. The demo now uses `View::render`, `div`, `v_stack`, `text`,
+  fluent style/handler builders, `AppContext` setup, and `ViewContext` text
+  binding, focus, cursor, action, key binding, subscription, and model update
+  helpers.
+- Updated `README.md` to describe the public-prelude demo and authoring API
+  surface.
+- Verified targeted tests after GREEN:
+  `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Verified Windows hello-window smoke tests:
+  `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default hello_window/windows_first_frame hello_window/windows_resize_after_first_frame hello_window/windows_close_after_first_frame`
+  passed 5/5, including 3/3 demo smoke tests.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/public-prelude-demo-rewrite -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  `findings.md`, and this progress log so Step 128 is recorded as implemented
+  and feature-worktree verified. Step 128 still needs feature commit, merge,
+  post-merge verification, docs closeout, and cleanup before Step 129 begins.
+
 ## 2026-07-01 Step 127 Post-Merge
 
 - Fast-forward merged Step 127 to `master` at
