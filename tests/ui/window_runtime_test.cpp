@@ -343,6 +343,27 @@ class RecordingView final : public cgpui::View {
         removed_model_again = context.remove_model(model_id);
         missing_model_after_remove = context.read_model(model_id) == nullptr;
       }
+      if (exercise_weak_entity_and_view_handles && keyboard_key_count == 1) {
+        model_id = context.new_model<RuntimeEntity>(41);
+        weak_model = cgpui::WeakEntity<RuntimeEntity>(model_id);
+        upgraded_weak_model = context.upgrade_entity(weak_model);
+        const RuntimeEntity* upgraded =
+            upgraded_weak_model.has_value()
+                ? context.read_model(*upgraded_weak_model)
+                : nullptr;
+        weak_model_read_value = upgraded == nullptr ? -1 : upgraded->value;
+        removed_model = context.remove_model(model_id);
+        upgraded_removed_weak_model = context.upgrade_entity(weak_model);
+
+        first_allocated_view_id = context.allocate_view_id();
+        weak_view = cgpui::WeakView(first_allocated_view_id);
+        upgraded_weak_view = context.upgrade_view(weak_view);
+        upgraded_root_weak_view =
+            context.upgrade_view(cgpui::WeakView(context.view_id));
+        upgraded_missing_weak_view =
+            context.upgrade_view(cgpui::WeakView(cgpui::ViewId{
+                first_allocated_view_id.value + 100}));
+      }
       if (exercise_view_identity_allocation && keyboard_key_count == 1) {
         root_view_id_was_allocated =
             context.is_view_id_allocated(context.view_id);
@@ -613,6 +634,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_entity_context_access = false;
   bool exercise_view_model_subscriptions = false;
   bool exercise_view_context_model_helpers = false;
+  bool exercise_weak_entity_and_view_handles = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
   bool exercise_view_context_action_helper = false;
@@ -707,6 +729,8 @@ class RecordingView final : public cgpui::View {
   cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
   cgpui::EntityId<RuntimeEntity> emplaced_entity_id{};
   cgpui::Model<RuntimeEntity> model_id{};
+  cgpui::WeakEntity<RuntimeEntity> weak_model{};
+  cgpui::WeakView weak_view{};
   bool root_view_id_was_allocated = false;
   bool zero_view_id_was_allocated = true;
   bool first_allocated_view_id_was_allocated = false;
@@ -743,6 +767,12 @@ class RecordingView final : public cgpui::View {
   bool view_context_pasted_clipboard = false;
   bool view_context_mutated_focused_text = false;
   bool view_context_skipped_missing_focused_text = true;
+  int weak_model_read_value = -1;
+  std::optional<cgpui::Model<RuntimeEntity>> upgraded_weak_model;
+  std::optional<cgpui::Model<RuntimeEntity>> upgraded_removed_weak_model;
+  std::optional<cgpui::ViewId> upgraded_weak_view;
+  std::optional<cgpui::ViewId> upgraded_root_weak_view;
+  std::optional<cgpui::ViewId> upgraded_missing_weak_view;
   cgpui::ViewId first_allocated_view_id{};
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
@@ -3383,6 +3413,64 @@ int test_view_context_model_helpers_create_read_update_and_remove() {
   return 0;
 }
 
+RuntimeFixture* weak_handle_fixture = nullptr;
+
+void dispatch_weak_handle_sequence() {
+  auto& callback = weak_handle_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 87,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_weak_entity_and_view_handles_upgrade_softly() {
+  RuntimeFixture fixture;
+  weak_handle_fixture = &fixture;
+  fixture.app.on_run = &dispatch_weak_handle_sequence;
+  fixture.view.exercise_weak_entity_and_view_handles = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  weak_handle_fixture = nullptr;
+
+  if (result != 0) {
+    return 260;
+  }
+  if (fixture.view.weak_model.empty() ||
+      fixture.view.weak_model.id() != fixture.view.model_id) {
+    return 261;
+  }
+  if (!fixture.view.upgraded_weak_model.has_value() ||
+      *fixture.view.upgraded_weak_model != fixture.view.model_id ||
+      fixture.view.weak_model_read_value != 41) {
+    return 262;
+  }
+  if (!fixture.view.removed_model ||
+      fixture.view.upgraded_removed_weak_model.has_value()) {
+    return 263;
+  }
+  if (fixture.view.weak_view.empty() ||
+      fixture.view.weak_view.id() != fixture.view.first_allocated_view_id) {
+    return 264;
+  }
+  if (!fixture.view.upgraded_weak_view.has_value() ||
+      *fixture.view.upgraded_weak_view != fixture.view.first_allocated_view_id ||
+      !fixture.view.upgraded_root_weak_view.has_value() ||
+      *fixture.view.upgraded_root_weak_view != fixture.view.first_view_id ||
+      fixture.view.upgraded_missing_weak_view.has_value()) {
+    return 265;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* view_identity_fixture = nullptr;
 
 void dispatch_view_identity_sequence() {
@@ -4661,6 +4749,10 @@ int main() {
   }
   if (const int result =
           test_view_context_model_helpers_create_read_update_and_remove();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_weak_entity_and_view_handles_upgrade_softly();
       result != 0) {
     return result;
   }

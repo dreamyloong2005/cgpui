@@ -70,6 +70,25 @@ struct ViewId {
   friend bool operator==(ViewId, ViewId) = default;
 };
 
+class WeakView {
+ public:
+  constexpr WeakView() = default;
+  constexpr explicit WeakView(ViewId id) : id_(id) {}
+
+  [[nodiscard]] constexpr ViewId id() const {
+    return id_;
+  }
+
+  [[nodiscard]] constexpr bool empty() const {
+    return id_.value == 0;
+  }
+
+  friend bool operator==(const WeakView&, const WeakView&) = default;
+
+ private:
+  ViewId id_;
+};
+
 class PointerCaptureOwner {
  public:
   [[nodiscard]] static constexpr PointerCaptureOwner view(ViewId view_id) {
@@ -221,6 +240,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
+  [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
   void capture_pointer(PointerCaptureOwner owner) const;
   void capture_pointer(ElementId element_id) const;
   void release_pointer(PointerCaptureOwner owner) const;
@@ -257,6 +277,10 @@ struct WindowRuntimeContext {
 
   template <typename T>
   [[nodiscard]] const T* read_model(Model<T> model) const;
+
+  template <typename T>
+  [[nodiscard]] std::optional<Model<T>> upgrade_entity(
+      WeakEntity<T> entity) const;
 
   template <typename T, typename Update>
   bool update_model(Model<T> model, Update&& update) const;
@@ -354,6 +378,7 @@ class WindowRuntime {
       ViewId view_id) const;
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
+  [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
   Result<void> resize_surface(Size size, DpiScale scale);
 
   template <typename T>
@@ -364,6 +389,10 @@ class WindowRuntime {
 
   template <typename T>
   [[nodiscard]] const T* read_entity(EntityId<T> id) const;
+
+  template <typename T>
+  [[nodiscard]] std::optional<EntityId<T>> upgrade_entity(
+      WeakEntity<T> entity) const;
 
   template <typename T>
   [[nodiscard]] T* mutate_entity(EntityId<T> id);
@@ -485,6 +514,12 @@ const T* WindowRuntimeContext::read_model(Model<T> model) const {
   return runtime.read_entity(model);
 }
 
+template <typename T>
+std::optional<Model<T>> WindowRuntimeContext::upgrade_entity(
+    WeakEntity<T> entity) const {
+  return runtime.upgrade_entity(entity);
+}
+
 template <typename T, typename Update>
 bool WindowRuntimeContext::update_model(Model<T> model, Update&& update) const {
   T* stored_model = runtime.mutate_entity(model);
@@ -524,6 +559,15 @@ const T* WindowRuntime::read_entity(EntityId<T> id) const {
     return nullptr;
   }
   return store->get(id);
+}
+
+template <typename T>
+std::optional<EntityId<T>> WindowRuntime::upgrade_entity(
+    WeakEntity<T> entity) const {
+  if (entity.empty() || read_entity(entity.id()) == nullptr) {
+    return std::nullopt;
+  }
+  return entity.id();
 }
 
 template <typename T>

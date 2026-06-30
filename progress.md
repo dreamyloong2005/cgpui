@@ -1535,6 +1535,35 @@
   `.worktrees/view-context-model-helpers` and
   `codex/view-context-model-helpers`.
 
+## 2026-06-30 Step 101 Weak Entity And View Handles
+
+- Committed the prior post-Step-128 planning refresh separately on `master` as
+  `006bc50 docs: refresh post-128 planning`, then removed the leftover
+  `.worktrees/view-context-model-helpers` worktree and deleted
+  `codex/view-context-model-helpers`.
+- Started Step 101 in `codex/weak-entity-view-handles` from `master` at
+  `006bc50`.
+- Verified baseline targeted tests:
+  `xmake test -P . entity_store_test/default window_runtime_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Added RED `entity_store_test`, `window_runtime_test`,
+  `ui_header_cleanliness`, `core_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for `WeakEntity<T>`, `WeakView`,
+  `ViewContext::upgrade_entity(...)`, and `ViewContext::upgrade_view(...)`;
+  the RED run failed as expected because `cgpui::WeakEntity` was not declared.
+- Implemented Step 101 in `include/cgpui/core/entity.hpp`,
+  `include/cgpui/ui/ui.hpp`, and `src/ui/ui.cpp`: weak handles store typed ids,
+  `empty()` reports zero ids, entity upgrade checks the runtime entity store,
+  and view upgrade checks allocated view ids.
+- Verified targeted tests:
+  `xmake test -P . entity_store_test/default window_runtime_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 4/4.
+- Verified Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

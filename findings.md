@@ -1138,3 +1138,15 @@
 - The exit condition for Step 168 is a practical Windows/Linux GPUI-core
   foundation with an explicit audit of completed, partial, missing, and
   Mac/Metal-deferred areas; it should not claim full upstream GPUI parity.
+
+## 2026-06-30 Weak Entity And View Handles
+
+- `WeakEntity<T>` should remain a lightweight typed-id wrapper at this stage.
+  Upgrade behavior belongs on `WindowRuntime`/`ViewContext`, where the runtime
+  can check whether the model/entity store still contains the id.
+- `WeakView` can mirror that shape for `ViewId`; the current liveness check is
+  `is_view_id_allocated(...)`, which matches the existing monotonic view-id
+  allocation model until Step 107 introduces a real multi-view registry.
+- Step 101 intentionally does not add observer ownership, subscription tokens,
+  or entity handle convenience methods. Those remain Step 102/133/130 work and
+  would overbuild this slice.

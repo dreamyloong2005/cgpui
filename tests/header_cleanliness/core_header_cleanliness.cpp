@@ -22,6 +22,8 @@ int main() {
   cgpui::EntityStore<int> entities;
   const cgpui::Entity<int> entity_id = entities.insert(1);
   const cgpui::Model<int> model_id = entity_id;
+  const cgpui::WeakEntity<int> weak_entity(model_id);
+  (void)weak_entity;
   (void)entity_id;
   (void)model_id;
 

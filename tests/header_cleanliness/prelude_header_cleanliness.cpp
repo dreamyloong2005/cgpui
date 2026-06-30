@@ -28,7 +28,11 @@ int main() {
   const cgpui::Model<cgpui::TextModel> model_id =
       models.insert(cgpui::TextModel("model"));
   const cgpui::Entity<cgpui::TextModel> entity_id = model_id;
+  const cgpui::WeakEntity<cgpui::TextModel> weak_model(model_id);
+  const cgpui::WeakView weak_view(cgpui::ViewId{1});
   (void)entity_id;
+  (void)weak_model;
+  (void)weak_view;
   const cgpui::ElementId root_id =
       tree.set_root(cgpui::div()
                         .size(cgpui::px(12.0F), cgpui::px(8.0F))

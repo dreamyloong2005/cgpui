@@ -20,6 +20,26 @@ template <typename T>
 using Model = EntityId<T>;
 
 template <typename T>
+class WeakEntity {
+ public:
+  constexpr WeakEntity() = default;
+  constexpr explicit WeakEntity(EntityId<T> id) : id_(id) {}
+
+  [[nodiscard]] constexpr EntityId<T> id() const {
+    return id_;
+  }
+
+  [[nodiscard]] constexpr bool empty() const {
+    return id_.value == 0;
+  }
+
+  friend bool operator==(const WeakEntity&, const WeakEntity&) = default;
+
+ private:
+  EntityId<T> id_;
+};
+
+template <typename T>
 class EntityStore {
  public:
   template <typename... Args>

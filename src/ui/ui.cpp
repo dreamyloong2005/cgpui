@@ -950,6 +950,13 @@ bool WindowRuntime::is_view_id_allocated(ViewId view_id) const {
   return view_id.value != 0 && view_id.value < next_view_id_;
 }
 
+std::optional<ViewId> WindowRuntime::upgrade_view(WeakView view) const {
+  if (view.empty() || !is_view_id_allocated(view.id())) {
+    return std::nullopt;
+  }
+  return view.id();
+}
+
 bool WindowRuntime::notify_entity_changed(
     std::type_index entity_type,
     std::uint64_t entity_id_value) {
@@ -993,6 +1000,10 @@ ViewInputState WindowRuntimeContext::input_state() const {
 
 bool WindowRuntimeContext::is_view_id_allocated(ViewId view_id) const {
   return runtime.is_view_id_allocated(view_id);
+}
+
+std::optional<ViewId> WindowRuntimeContext::upgrade_view(WeakView view) const {
+  return runtime.upgrade_view(view);
 }
 
 void WindowRuntimeContext::capture_pointer(PointerCaptureOwner owner) const {

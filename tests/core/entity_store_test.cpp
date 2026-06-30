@@ -21,6 +21,9 @@ static_assert(!std::is_same_v<
 
 static_assert(std::is_same_v<cgpui::Entity<Document>, cgpui::EntityId<Document>>);
 static_assert(std::is_same_v<cgpui::Model<Document>, cgpui::EntityId<Document>>);
+static_assert(!std::is_same_v<
+              cgpui::WeakEntity<Document>,
+              cgpui::WeakEntity<Panel>>);
 
 int test_entity_store_insert_get_and_remove() {
   cgpui::EntityStore<Document> store;
@@ -86,6 +89,28 @@ int test_entity_store_keeps_ids_monotonic_after_remove() {
   return 0;
 }
 
+int test_weak_entity_stores_typed_id() {
+  cgpui::EntityStore<Document> store;
+
+  const cgpui::Entity<Document> entity =
+      store.insert(Document{.title = "weak", .revision = 5});
+  const cgpui::WeakEntity<Document> weak_entity(entity);
+
+  if (weak_entity.empty()) {
+    return 20;
+  }
+  if (weak_entity.id() != entity) {
+    return 21;
+  }
+
+  const cgpui::WeakEntity<Document> empty;
+  if (!empty.empty() || empty.id().value != 0) {
+    return 22;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -95,6 +120,9 @@ int main() {
   }
   if (const int result = test_entity_store_keeps_ids_monotonic_after_remove();
       result != 0) {
+    return result;
+  }
+  if (const int result = test_weak_entity_stores_typed_id(); result != 0) {
     return result;
   }
   return 0;

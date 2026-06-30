@@ -22,6 +22,10 @@ class TestView final : public cgpui::View {
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
     context.request_render();
     const cgpui::Model<TestModel> model = context.new_model<TestModel>(1);
+    const cgpui::WeakEntity<TestModel> weak_model(model);
+    (void)context.upgrade_entity(weak_model);
+    const cgpui::WeakView weak_view(context.view_id);
+    (void)context.upgrade_view(weak_view);
     (void)context.read_model(model);
     (void)context.update_model(
         model,
