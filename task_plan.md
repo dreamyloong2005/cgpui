@@ -115,7 +115,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 77. [x] Element builder focusable helper.
 78. [x] Element builder key handler helper.
 79. [x] Element builder disabled convenience helper.
-80. [ ] Element tree enabled descendant traversal query.
+80. [x] Element tree enabled descendant traversal query.
 81. [ ] Runtime skips disabled elements for focus activation.
 82. [ ] Runtime clears hover cursor when hovered element becomes disabled.
 83. [ ] Runtime text model lookup helper for focused element.
@@ -126,7 +126,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 80: Element tree enabled descendant traversal query.
+Step 81: Runtime skips disabled elements for focus activation.
 
 ## Risks
 

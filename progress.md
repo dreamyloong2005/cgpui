@@ -606,6 +606,21 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 80: Element tree enabled descendant traversal query.
+- Added RED `element_test` coverage for `ElementTree::enabled_preorder_ids()`
+  returning only enabled nodes in preorder while still traversing children of a
+  disabled parent, plus empty-tree behavior; the test failed because the helper
+  did not exist.
+- Implemented `enabled_preorder_ids()` with a dedicated recursive helper that
+  filters push-time by `Element::enabled()` without pruning descendants.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 79: Element builder disabled convenience helper.
 - Added RED `element_test` coverage for `ElementBuilder::disabled()` disabling
   a built element and composing with focusable/click wrappers without allowing

@@ -889,6 +889,12 @@ class ElementTree {
     return ids;
   }
 
+  [[nodiscard]] std::vector<ElementId> enabled_preorder_ids() const {
+    std::vector<ElementId> ids;
+    append_enabled_preorder_ids(root_id_, ids);
+    return ids;
+  }
+
   void paint(PaintList& paint_list) const {
     paint_subtree(root_id_, paint_list);
   }
@@ -934,6 +940,22 @@ class ElementTree {
     ids.push_back(id);
     for (ElementId child_id : node->children) {
       append_preorder_ids(child_id, ids);
+    }
+  }
+
+  void append_enabled_preorder_ids(
+      ElementId id,
+      std::vector<ElementId>& ids) const {
+    const Node* node = find_node(id);
+    if (node == nullptr) {
+      return;
+    }
+
+    if (node->element->enabled()) {
+      ids.push_back(id);
+    }
+    for (ElementId child_id : node->children) {
+      append_enabled_preorder_ids(child_id, ids);
     }
   }
 

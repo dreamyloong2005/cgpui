@@ -760,3 +760,9 @@
 - `ElementBuilder::disabled()` is pure authoring sugar over `enabled(false)`;
   keeping it as a flag flip lets the existing wrapper enabled propagation
   handle composed elements consistently.
+
+## 2026-06-30 ElementTree Enabled Traversal
+
+- `enabled_preorder_ids()` filters by each node's current `enabled()` state at
+  push time but still traverses descendants, which makes it a general enabled
+  query rather than a disabled-subtree pruning policy.

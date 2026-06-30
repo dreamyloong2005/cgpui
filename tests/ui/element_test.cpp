@@ -1480,6 +1480,34 @@ int test_element_tree_preorder_ids_handles_empty_tree() {
   return tree.preorder_ids().empty() ? 0 : 156;
 }
 
+int test_element_tree_reports_enabled_preorder_ids() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.set_root(std::make_unique<NamedElement>(1));
+  const cgpui::ElementId disabled_child_id =
+      tree.append_child(root_id, std::make_unique<NamedElement>(2));
+  const cgpui::ElementId grandchild_id =
+      tree.append_child(disabled_child_id, std::make_unique<NamedElement>(3));
+  const cgpui::ElementId enabled_child_id =
+      tree.append_child(root_id, std::make_unique<NamedElement>(4));
+
+  tree.get(disabled_child_id)->set_enabled(false);
+
+  const std::vector<cgpui::ElementId> ids = tree.enabled_preorder_ids();
+  const std::vector<cgpui::ElementId> expected{
+      root_id,
+      grandchild_id,
+      enabled_child_id,
+  };
+
+  return ids == expected ? 0 : 184;
+}
+
+int test_element_tree_enabled_preorder_ids_handles_empty_tree() {
+  cgpui::ElementTree tree;
+  return tree.enabled_preorder_ids().empty() ? 0 : 185;
+}
+
 int test_element_tree_finds_element_by_id_and_type() {
   cgpui::ElementTree tree;
   const cgpui::ElementId root_id =
@@ -2074,6 +2102,15 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_preorder_ids_handles_empty_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_tree_reports_enabled_preorder_ids();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_tree_enabled_preorder_ids_handles_empty_tree();
       result != 0) {
     return result;
   }
