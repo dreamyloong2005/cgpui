@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Font Descriptor And Font Size Style Merged
+
+- Step 122 is merged on `master` at
+  `58561b1 feat: add font size style` and post-merge verified on Windows and
+  WSL Arch Linux.
+- The remaining pre-back-40 gate is Steps 123-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch full debug verification.
+- Step 123 should use the deterministic Step 122 `font_size` metrics and
+  `TextPaint` font metadata to emit caret and selection paint metadata. Keep
+  shaping, glyph cache ownership, platform IME placement, and Vulkan text
+  drawing out of Step 123.
+
 ## 2026-06-30 Font Descriptor And Font Size Style
 
 - Step 122 keeps font work as conservative public metadata: `FontDescriptor`

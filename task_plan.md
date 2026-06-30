@@ -99,22 +99,19 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `dc010b6 docs: mark step 121 merged`; the Step
-121 behavior commit is `cf180f4 feat: add text paint command`. Steps 89-121 are
-merged, docs-closed, and post-merge verified on Windows and WSL Arch Linux.
-Step 122 is implemented and feature-worktree verified on
-`codex/font-descriptor-font-size`. Step 129 remains gated behind completion and
-Windows/WSL verification of Steps 123-128 after Step 122 merges, plus the
+pre-back-40 handoff after Step 122: the Step 122 behavior commit is
+`58561b1 feat: add font size style`. Steps 89-122 are merged, docs-closed, and
+post-merge verified on Windows and WSL Arch Linux. Step 129 remains gated
+behind completion and Windows/WSL verification of Steps 123-128, plus the
 post-Step-128 exit verification.
 
-The effective distance to Step 129 after Step 122 merges is 6 implementation
-steps, Steps 123-128, plus post-Step-128 targeted, Windows, and WSL
-verification. The effective
+The effective distance to Step 129 is 6 implementation steps, Steps 123-128,
+plus post-Step-128 targeted, Windows, and WSL verification. The effective
 distance through Step 168 is 46 implementation steps plus those verification
 gates and the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 122-128 queue unless the plan is explicitly reprioritized.
+the current Step 123-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -328,11 +325,9 @@ The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, per-step exit
 artifacts, explicit keep-out-of-scope notes, Step 129 start packet, band
 checkpoints after Steps 138, 148, 158, and 168, and an execution gate that
-records Steps 115-121 as merged and post-merge verified. Step 129 remains
-gated behind completion plus Windows/WSL verification of Steps 122-128 and the
-post-Step-128 exit verification. Step 122 is implemented and feature-worktree
-verified; Step 123 is the next implementation slice after Step 122 merge and
-post-merge verification.
+records Steps 115-122 as merged and post-merge verified. Step 129 remains
+gated behind completion plus Windows/WSL verification of Steps 123-128 and the
+post-Step-128 exit verification. Step 123 is the next implementation slice.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
 is merged on `master` at `9dfc2e7 feat: add layer elevation z order`. RED
@@ -371,17 +366,19 @@ tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
 debug passed 26/26. Step 122, font descriptor and basic font-size style
 primitives, was the next implementation slice.
 
-Step 122, font descriptor and basic font-size style primitives, is implemented
-in `codex/font-descriptor-font-size`. RED failed as expected on missing
+Step 122, font descriptor and basic font-size style primitives, is merged on
+`master` at `58561b1 feat: add font size style`. RED failed as expected on
+missing
 `FontDescriptor`, `Style::font`, `Style::font_size`, `StyleOverlay` font
 overrides, builder `.font(...)`/`.font_size(...)`, text font metrics, and text
 paint font metadata. GREEN adds public font metadata to `Style`/`StyleOverlay`,
 deterministic font-size-derived `TextElement` metrics, text builder font
 shortcuts, and `TextPaint` font/font-size metadata while preserving the default
 16px text metrics. Feature-worktree targeted tests passed 3/3, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 123, text
-element caret and selection paint metadata, is the next implementation slice
-after Step 122 is merged and post-merge verified.
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Post-merge
+targeted tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux
+full debug passed 26/26. Step 123, text element caret and selection paint
+metadata, is the next implementation slice.
 
 ## Risks
 

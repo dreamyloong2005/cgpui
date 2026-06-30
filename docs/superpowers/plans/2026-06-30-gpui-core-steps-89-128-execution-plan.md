@@ -12,21 +12,20 @@
 
 ## Current State
 
-- Steps 89-121 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-122 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `ff02957 docs: refresh back forty handoff`; Step 121's
-  behavior commit is `cf180f4 feat: add text paint command`.
+- `master` includes `58561b1 feat: add font size style`; Step 121's behavior
+  commit is `cf180f4 feat: add text paint command`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121, text paint command separates text drawing from placeholder
   rectangles, is merged and post-merge verified: targeted tests 3/3, Windows
   full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 122, font descriptor and basic font-size style primitives, is
-  implemented and feature-worktree verified on
-  `codex/font-descriptor-font-size`: targeted tests 3/3, Windows full debug
-  29/29, and WSL Arch Linux full debug 26/26.
+- Step 122, font descriptor and basic font-size style primitives, is merged and
+  post-merge verified: targeted tests 3/3, Windows full debug 29/29, and WSL
+  Arch Linux full debug 26/26.
 - Step 123, text caret and selection paint metadata, is the next implementation
-  slice after Step 122 merge and post-merge verification.
+  slice.
 
 ## File Map
 
@@ -267,8 +266,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish the Step 122 merge and post-merge verification, then start Step 123 from
-a fresh feature worktree:
+Start Step 123 from a fresh feature worktree:
 
 ```powershell
 git checkout master
@@ -715,9 +713,9 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for `FontDescriptor`, `Style::font_size`, and builder setters.
-- [ ] Use font size in `TextElement` skeleton metrics before real shaping exists.
-- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for `FontDescriptor`, `Style::font_size`, and builder setters.
+- [x] Use font size in `TextElement` skeleton metrics before real shaping exists.
+- [x] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
 - [x] RED failed as expected on missing font/style/text metadata APIs.
 - [x] GREEN added `FontDescriptor`, `Style::font`, `Style::font_size`,
   `StyleOverlay` font overrides, text builder `.font(...)`/`.font_size(...)`,
@@ -725,6 +723,9 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - [x] Feature-worktree targeted tests passed 3/3.
 - [x] Feature-worktree Windows full debug passed 29/29.
 - [x] Feature-worktree WSL Arch full debug passed 26/26.
+- [x] Post-merge targeted tests passed 3/3.
+- [x] Post-merge Windows full debug passed 29/29.
+- [x] Post-merge WSL Arch full debug passed 26/26.
 
 ### Step 123: Text Caret and Selection Paint Metadata
 

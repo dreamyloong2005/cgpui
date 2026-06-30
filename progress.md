@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 122 Post-Merge
+
+- Fast-forward merged Step 122 to `master` at
+  `58561b1 feat: add font size style`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . style_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  forward plan so Step 122 is marked merged and post-merge verified. Step 123,
+  text element caret and selection paint metadata, is the next implementation
+  slice.
+
 ## 2026-06-30 Step 122 Font Descriptor And Font Size Style
 
 - Continued Step 122 in `.worktrees/font-descriptor-font-size` on
