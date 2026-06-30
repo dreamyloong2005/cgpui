@@ -240,6 +240,113 @@ int test_element_builder_child_accepts_typed_element_ownership() {
   return output.size.width == 21.0F && output.size.height == 9.0F ? 0 : 202;
 }
 
+int test_element_builder_fluent_style_shortcuts_mutate_box_style() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .size(cgpui::Size{.width = cgpui::px(64.0F),
+                                                 .height = cgpui::px(32.0F)})
+                              .padding(cgpui::edges(1.0F, 2.0F, 3.0F, 4.0F))
+                              .margin(cgpui::edges(5.0F, 6.0F))
+                              .background(cgpui::rgb(10, 20, 30))
+                              .foreground(cgpui::rgba(200, 210, 220, 0.5F))
+                              .border_width(cgpui::edges(7.0F))
+                              .border_color(cgpui::rgb(40, 50, 60))
+                              .border_radius(cgpui::BorderRadii::corners(
+                                  1.0F,
+                                  2.0F,
+                                  3.0F,
+                                  4.0F)));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 203;
+  }
+
+  const cgpui::Style& style = styled->style();
+  if (style.preferred_size.width != 64.0F ||
+      style.preferred_size.height != 32.0F) {
+    return 204;
+  }
+  if (style.padding.top != 1.0F || style.padding.right != 2.0F ||
+      style.padding.bottom != 3.0F || style.padding.left != 4.0F) {
+    return 205;
+  }
+  if (style.margin.left != 5.0F || style.margin.right != 5.0F ||
+      style.margin.top != 6.0F || style.margin.bottom != 6.0F) {
+    return 206;
+  }
+  if (!style.background_color.has_value() ||
+      style.background_color->r != 10.0F / 255.0F ||
+      !style.foreground_color.has_value() ||
+      style.foreground_color->a != 0.5F) {
+    return 207;
+  }
+  if (style.border_width.top != 7.0F || !style.border_color.has_value() ||
+      style.border_color->g != 50.0F / 255.0F) {
+    return 208;
+  }
+  return style.border_radius.top_left == 1.0F &&
+                 style.border_radius.top_right == 2.0F &&
+                 style.border_radius.bottom_right == 3.0F &&
+                 style.border_radius.bottom_left == 4.0F
+             ? 0
+             : 209;
+}
+
+int test_element_builder_fluent_size_shortcut_accepts_dimensions() {
+  cgpui::AnyElement styled_element =
+      cgpui::into_element(cgpui::div().size(cgpui::px(20.0F), cgpui::px(10.0F)));
+  const auto* styled =
+      dynamic_cast<const cgpui::StyledElement*>(styled_element.get());
+  if (styled == nullptr ||
+      styled->style().preferred_size.width != 20.0F ||
+      styled->style().preferred_size.height != 10.0F) {
+    return 210;
+  }
+
+  cgpui::AnyElement fixed_element = cgpui::into_element(
+      cgpui::ElementBuilder::fixed_size(
+          cgpui::Size{.width = 1.0F, .height = 2.0F})
+          .size(cgpui::px(30.0F), cgpui::px(40.0F)));
+  const auto* fixed =
+      dynamic_cast<const cgpui::FixedSizeElement*>(fixed_element.get());
+  return fixed != nullptr && fixed->preferred_size().width == 30.0F &&
+                 fixed->preferred_size().height == 40.0F
+             ? 0
+             : 211;
+}
+
+int test_element_builder_fluent_gap_shortcut_applies_to_stack_and_flex() {
+  cgpui::AnyElement row =
+      cgpui::into_element(cgpui::h_flex()
+                              .gap(cgpui::px(4.0F))
+                              .child(cgpui::div().size(10.0F, 3.0F))
+                              .child(cgpui::div().size(20.0F, 5.0F)));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(row.get());
+  if (flex == nullptr || flex->gap() != 4.0F) {
+    return 212;
+  }
+  const cgpui::LayoutOutput row_output = flex->layout(cgpui::LayoutInput{});
+  if (row_output.size.width != 34.0F || row_output.size.height != 5.0F) {
+    return 213;
+  }
+
+  cgpui::AnyElement stack =
+      cgpui::into_element(cgpui::v_stack()
+                              .gap(cgpui::px(6.0F))
+                              .child(cgpui::div().size(10.0F, 3.0F))
+                              .child(cgpui::div().size(20.0F, 5.0F)));
+  auto* vertical_stack = dynamic_cast<cgpui::VerticalStackElement*>(stack.get());
+  if (vertical_stack == nullptr || vertical_stack->gap() != 6.0F) {
+    return 214;
+  }
+  const cgpui::LayoutOutput stack_output =
+      vertical_stack->layout(cgpui::LayoutInput{});
+  return stack_output.size.width == 20.0F &&
+                 stack_output.size.height == 14.0F
+             ? 0
+             : 215;
+}
+
 int test_base_element_lays_out_zero_size() {
   TestElement element;
   const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
@@ -2067,6 +2174,21 @@ int main() {
   }
   if (const int result =
           test_element_builder_child_accepts_typed_element_ownership();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_fluent_style_shortcuts_mutate_box_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_fluent_size_shortcut_accepts_dimensions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_fluent_gap_shortcut_applies_to_stack_and_flex();
       result != 0) {
     return result;
   }

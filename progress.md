@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 93 Element Builder Fluent Style Shortcuts
+
+- Started Step 93 in `codex/element-builder-style-shortcuts` from `master` at
+  `58fcd46`.
+- Baseline targeted tests passed: `xmake test -P . element_test/default
+  style_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 4/4.
+- Added RED `element_test` coverage for `.size(Size)`,
+  `.size(float, float)`, `.padding(...)`, `.margin(...)`, `.background(...)`,
+  `.foreground(...)`, `.border_width(...)`, `.border_color(...)`,
+  `.border_radius(...)`, and `.gap(...)`; the test failed to compile because
+  `ElementBuilder` did not expose `.size(...)` or `.gap(...)`.
+- Implemented Step 93 in `include/cgpui/ui/element.hpp`: fluent builder style
+  shortcuts now mutate the retained `Style`, and `.size(...)` also updates
+  `FixedSizeElement` builders' stored size before build.
+- Updated `ui_header_cleanliness` and `prelude_header_cleanliness` to exercise
+  the new public fluent style methods through `cgpui/ui/*` and `cgpui/cgpui.hpp`.
+- Verified targeted tests passed 4/4.
+- Verified Windows full debug tests passed 29/29.
+- Verified WSL Arch Linux full debug tests passed 26/26.
+
 ## 2026-06-30 Remaining Steps 93-128 Planning Refresh
 
 - Refreshed

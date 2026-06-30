@@ -173,7 +173,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 90. [x] Free authoring factories for `div()`, `h_flex()`, `v_flex()`, `v_stack()`, and `text(...)`.
 91. [x] Element builder child overloads for builders, `AnyElement`, and element ownership.
 92. [x] Style unit and color helpers: `px`, `rgb`, `rgba`, and edge constructors.
-93. [ ] Element builder fluent style shortcuts for size, spacing, background, border, radius, and gap.
+93. [x] Element builder fluent style shortcuts for size, spacing, background, border, radius, and gap.
 94. [ ] Pointer handler shortcuts for down, up, move, and click authoring paths.
 95. [ ] Focus, hover, and disabled style-state overlay primitives.
 96. [ ] GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the current view contract.
@@ -212,9 +212,8 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 92 is complete. Next implementation step is Step 93:
-Element builder fluent style shortcuts for size, spacing, background, border,
-radius, and gap.
+Step 93 is complete. Next implementation step is Step 94:
+Pointer handler shortcuts for down, up, move, and click authoring paths.
 
 ## Risks
 

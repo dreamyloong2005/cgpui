@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Element Builder Fluent Style Shortcuts
+
+- Builder-level style shortcuts should remain thin mutations of the builder's
+  retained `Style`; this keeps `.style(Style)` source-compatible and avoids a
+  second style storage path.
+- `.size(Size)` and `.size(float, float)` need to update both
+  `style_.preferred_size` and `size_` when the builder kind is `fixed_size`,
+  because `FixedSizeElement` build output reads `size_` rather than
+  `style_.preferred_size`.
+- `.gap(float)` can share the retained style path because row, column, and
+  vertical stack builders already copy `style_.gap` into their concrete element
+  before appending children.
+
 ## 2026-06-30 Remaining Steps 93-128 Plan Shape
 
 - The user-facing "后 40 步" still refers to the Step 89-128 target band, but

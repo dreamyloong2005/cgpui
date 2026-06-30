@@ -20,18 +20,15 @@ int main() {
   cgpui::ElementTree tree;
   cgpui::TextModel model("x");
   const cgpui::ElementId root_id =
-      tree.set_root(cgpui::div().style(cgpui::Style{}
-                                           .with_gap(cgpui::px(1.0F))
-                                           .with_margin(cgpui::edges(2.0F, 1.0F))
-                                           .with_background_color(cgpui::rgb(
-                                               32,
-                                               64,
-                                               128))
-                                           .with_border_color(cgpui::rgba(
-                                               255,
-                                               255,
-                                               255,
-                                               0.75F)))
+      tree.set_root(cgpui::div()
+                        .size(cgpui::px(12.0F), cgpui::px(8.0F))
+                        .gap(cgpui::px(1.0F))
+                        .margin(cgpui::edges(2.0F, 1.0F))
+                        .background(cgpui::rgb(32, 64, 128))
+                        .foreground(cgpui::rgba(255, 255, 255, 0.75F))
+                        .border_width(cgpui::edges(1.0F))
+                        .border_color(cgpui::rgba(255, 255, 255, 0.75F))
+                        .border_radius(cgpui::BorderRadii::all(2.0F))
                         .child(cgpui::text(model))
                         .build());
   PreludeView view;

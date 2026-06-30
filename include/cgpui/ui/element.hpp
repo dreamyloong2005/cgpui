@@ -641,6 +641,58 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder size(Size size) && {
+    style_ = style_.with_preferred_size(size);
+    if (kind_ == Kind::fixed_size) {
+      size_ = size;
+    }
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder size(float width, float height) && {
+    return std::move(*this).size(Size{.width = width, .height = height});
+  }
+
+  [[nodiscard]] ElementBuilder padding(EdgeSizes edges) && {
+    style_ = style_.with_padding(edges);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder margin(EdgeSizes edges) && {
+    style_ = style_.with_margin(edges);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder background(Color color) && {
+    style_ = style_.with_background_color(color);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder foreground(Color color) && {
+    style_ = style_.with_foreground_color(color);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder border_width(EdgeSizes edges) && {
+    style_ = style_.with_border_width(edges);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder border_color(Color color) && {
+    style_ = style_.with_border_color(color);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder border_radius(BorderRadii radius) && {
+    style_ = style_.with_border_radius(radius);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder gap(float value) && {
+    style_ = style_.with_gap(value);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder enabled(bool value) && {
     enabled_ = value;
     return std::move(*this);

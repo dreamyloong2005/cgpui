@@ -19,9 +19,8 @@
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
   active after Step 92 cleanup.
-- The next implementation slice is Step 93:
-  Element builder fluent style shortcuts for size, spacing, background,
-  border, radius, and gap.
+- The next implementation slice is Step 94:
+  Pointer handler shortcuts for down, up, move, and click authoring paths.
 
 ## File Map
 
@@ -85,7 +84,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 90: free factories `div()`, `h_flex()`, `v_flex()`, `v_stack()`, `text(...)`.
 - [x] Step 91: child overloads for builders and owned element values.
 - [x] Step 92: style unit/color helpers.
-- [ ] Step 93: builder style shortcuts.
+- [x] Step 93: builder style shortcuts.
 - [ ] Step 94: pointer handler shortcuts.
 - [ ] Step 95: focus/hover/disabled style-state primitives.
 - [ ] Step 96: `View::render(ViewContext&)` skeleton.
@@ -165,17 +164,17 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 93
+## Remaining Execution Queue From Step 94
 
-This is the practical "后 40 步" sequence after Step 92. Steps 89-92 are kept
-as completed foundation; the active remaining queue is Steps 93-128.
+This is the practical "后 40 步" sequence after Step 93. Steps 89-93 are kept
+as completed foundation; the active remaining queue is Steps 94-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
 Goal: make user code author UI through GPUI-like factories and `View::render`
 without touching model lifecycle yet.
 
-- [ ] Step 93: land fluent builder style shortcuts on `ElementBuilder`.
+- [x] Step 93: land fluent builder style shortcuts on `ElementBuilder`.
 - [ ] Step 94: add pointer-down/up/move/click authoring shortcuts.
 - [ ] Step 95: add base/hover/focus/disabled style overlay primitives and
   deterministic style resolution.
@@ -261,15 +260,15 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 93 in an isolated worktree:
+Start Step 94 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/element-builder-style-shortcuts -b codex/element-builder-style-shortcuts master
-xmake test -P . element_test/default style_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/pointer-handler-shortcuts -b codex/pointer-handler-shortcuts master
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Then add the RED tests for builder style shortcuts, implement the minimal
-`ElementBuilder` methods in `include/cgpui/ui/element.hpp`, and follow the
+Then add the RED tests for pointer down/up/move/click shortcuts, implement the
+minimal handler wrappers in `include/cgpui/ui/element.hpp`, and follow the
 standard per-step verification/merge workflow above.
 
 ## Step Details
@@ -290,7 +289,7 @@ Status: complete on `master` at `6e7d34c`.
 
 ### Step 93: Element Builder Fluent Style Shortcuts
 
-Status: next.
+Status: complete on `master` after the Step 93 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`
