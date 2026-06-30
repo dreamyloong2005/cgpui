@@ -21,11 +21,13 @@ int main() {
   cgpui::ScrollModel scroll_model;
   const cgpui::Style style =
       cgpui::Style{}.with_padding(cgpui::EdgeSizes::all(1.0F));
+  cgpui::AnyElement element = cgpui::into_element(
+      cgpui::ElementBuilder::fixed_size(cgpui::Size{1.0F, 2.0F}));
   scroll_model.set_viewport_size(cgpui::Size{10.0F, 10.0F});
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});
   return paint_list.commands().size() == 1 && text_model.text() == "x" &&
-                 style.padding.top == 1.0F &&
+                 style.padding.top == 1.0F && element != nullptr &&
                  scroll_model.offset().x == 0.0F
              ? 0
              : 1;

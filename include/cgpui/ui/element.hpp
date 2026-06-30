@@ -19,6 +19,8 @@
 namespace cgpui {
 
 class PaintList;
+class Element;
+class ElementBuilder;
 
 struct ElementId {
   std::uint64_t value = 0;
@@ -54,6 +56,8 @@ struct ElementFocusContext {
 using ClickHandler = std::function<EventResult(const ElementEventContext&)>;
 using KeyHandler =
     std::function<EventResult(const KeyboardKey&, const ElementEventContext&)>;
+
+using AnyElement = std::unique_ptr<Element>;
 
 class Element {
  public:
@@ -745,6 +749,14 @@ class ElementBuilder {
   KeyHandler key_handler_;
   std::vector<std::unique_ptr<Element>> children_;
 };
+
+[[nodiscard]] inline AnyElement into_element(AnyElement element) {
+  return element;
+}
+
+[[nodiscard]] inline AnyElement into_element(ElementBuilder builder) {
+  return std::move(builder).build();
+}
 
 class ElementTree {
  public:

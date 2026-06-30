@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 AnyElement Authoring
+
+- `AnyElement` can be a public alias for the existing
+  `std::unique_ptr<Element>` ownership model, which keeps Step 89 source
+  compatible with all current tree, builder, and runtime installation APIs.
+- `into_element(ElementBuilder)` should build by value from the existing
+  rvalue-qualified `ElementBuilder::build()` path; this establishes the common
+  conversion convention without adding Step 90 factory helpers yet.
+- Keeping `into_element(AnyElement)` as the owned-element identity overload
+  gives later child overloads and free factories one public spell to target
+  while avoiding reference-counted ownership or type erasure churn.
+
 ## 2026-06-30 128-Step Planning
 
 - The next highest-leverage path toward a GPUI-like core API is authoring

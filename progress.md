@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 89 AnyElement Authoring
+
+- Started Step 89: Public `AnyElement` alias and minimal into-element
+  authoring convention.
+- Added RED `element_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for `cgpui::AnyElement`,
+  `into_element(AnyElement)`, and `into_element(ElementBuilder)`; the test
+  failed because the public authoring symbols did not exist.
+- Implemented Step 89 in `codex/any-element-authoring`: added
+  `using AnyElement = std::unique_ptr<Element>` and two minimal
+  `into_element(...)` overloads in `include/cgpui/ui/element.hpp`.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 ## 2026-06-30 128-Step Planning
 
 - Planned the next 40 implementation steps after Step 88, covering Steps

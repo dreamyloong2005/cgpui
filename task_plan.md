@@ -143,7 +143,7 @@ Windows/Linux core API is stable enough for parity work.
 86. [x] ViewContext event route access helper.
 87. [x] ViewContext input state access helper.
 88. [x] Mac readiness audit and desktop target mapping.
-89. [ ] Public `AnyElement` alias and minimal into-element authoring convention.
+89. [x] Public `AnyElement` alias and minimal into-element authoring convention.
 90. [ ] Free authoring factories for `div()`, `h_flex()`, `v_flex()`, `v_stack()`, and `text(...)`.
 91. [ ] Element builder child overloads for builders, `AnyElement`, and element ownership.
 92. [ ] Style unit and color helpers: `px`, `rgb`, `rgba`, and edge constructors.
@@ -186,8 +186,9 @@ Windows/Linux core API is stable enough for parity work.
 
 ## Active Step
 
-Steps 89-128 are planned. Next implementation step is Step 89:
-Public `AnyElement` alias and minimal into-element authoring convention.
+Step 89 is complete. Next implementation step is Step 90:
+Free authoring factories for `div()`, `h_flex()`, `v_flex()`, `v_stack()`,
+and `text(...)`.
 
 ## Risks
 

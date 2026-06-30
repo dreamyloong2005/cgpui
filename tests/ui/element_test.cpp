@@ -59,6 +59,7 @@ class FocusableCountingElement final : public cgpui::Element {
 
 static_assert(std::same_as<decltype(cgpui::ElementId{}.value), std::uint64_t>);
 static_assert(std::equality_comparable<cgpui::ElementId>);
+static_assert(std::same_as<cgpui::AnyElement, std::unique_ptr<cgpui::Element>>);
 
 int test_element_id_defaults_to_invalid() {
   const cgpui::ElementId id{};
@@ -84,6 +85,33 @@ int test_element_is_polymorphic() {
   std::unique_ptr<cgpui::Element> element = std::make_unique<TestElement>();
   element->assign_id(cgpui::ElementId{7});
   return element->id() == cgpui::ElementId{7} ? 0 : 5;
+}
+
+int test_any_element_into_element_preserves_owned_element() {
+  cgpui::AnyElement element =
+      cgpui::into_element(std::make_unique<NamedElement>(9));
+  auto* named = dynamic_cast<NamedElement*>(element.get());
+
+  if (named == nullptr || named->value() != 9) {
+    return 184;
+  }
+
+  element->assign_id(cgpui::ElementId{44});
+  return element->id() == cgpui::ElementId{44} ? 0 : 185;
+}
+
+int test_element_builder_into_element_builds_owned_element() {
+  cgpui::AnyElement element = cgpui::into_element(
+      cgpui::ElementBuilder::fixed_size(
+          cgpui::Size{.width = 12.0F, .height = 34.0F}));
+  auto* fixed = dynamic_cast<cgpui::FixedSizeElement*>(element.get());
+
+  if (fixed == nullptr) {
+    return 186;
+  }
+
+  const cgpui::LayoutOutput output = fixed->layout(cgpui::LayoutInput{});
+  return output.size.width == 12.0F && output.size.height == 34.0F ? 0 : 187;
 }
 
 int test_base_element_lays_out_zero_size() {
@@ -1884,6 +1912,14 @@ int main() {
     return result;
   }
   if (const int result = test_element_is_polymorphic(); result != 0) {
+    return result;
+  }
+  if (const int result = test_any_element_into_element_preserves_owned_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_into_element_builds_owned_element();
+      result != 0) {
     return result;
   }
   if (const int result = test_base_element_lays_out_zero_size(); result != 0) {
