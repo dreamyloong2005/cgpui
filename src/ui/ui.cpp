@@ -1027,6 +1027,21 @@ void WindowRuntimeContext::bind_text_model(
   runtime.bind_text_model(element_id, model);
 }
 
+bool WindowRuntimeContext::mutate_focused_text_model(
+    FocusedTextModelMutation mutation) const {
+  if (!mutation) {
+    return false;
+  }
+
+  TextModel* model = runtime.focused_text_model();
+  if (model == nullptr) {
+    return false;
+  }
+
+  mutation(*model);
+  return true;
+}
+
 void WindowRuntimeContext::set_element_cursor(
     ElementId element_id,
     CursorShape cursor_shape) const {

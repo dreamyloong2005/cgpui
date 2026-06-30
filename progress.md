@@ -680,6 +680,27 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 84: ViewContext focused text model mutation helper.
+- Added RED `window_runtime_test` coverage for
+  `ViewContext::mutate_focused_text_model(...)` mutating the currently focused
+  bound text model and soft-failing without mutation after focus is released.
+- Confirmed RED with `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default`: `window_runtime_test.cpp` failed to compile
+  because `WindowRuntimeContext::mutate_focused_text_model` did not exist.
+- Implemented `FocusedTextModelMutation` and
+  `WindowRuntimeContext::mutate_focused_text_model(...)` as a thin forward over
+  the runtime focused text model lookup.
+- Initial GREEN attempt failed with return code 300 because the test reused a
+  text-input routing sequence that inserted extra text; corrected it to a
+  key-only sequence for this helper.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 79: Element builder disabled convenience helper.
 - Added RED `element_test` coverage for `ElementBuilder::disabled()` disabling
   a built element and composing with focusable/click wrappers without allowing

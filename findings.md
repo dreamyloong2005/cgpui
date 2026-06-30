@@ -791,3 +791,12 @@
 - Clipboard paste/copy/cut can reuse the helper directly, reducing duplicate
   `keyboard_focus_element_owner_` and `text_models_` lookup logic before
   ViewContext grows focused-text mutation helpers.
+
+## 2026-06-30 ViewContext Focused Text Mutation
+
+- A focused-text mutation helper fits the existing capability-forwarding
+  `ViewContext` style: it looks up the runtime's focused text model, invokes an
+  author callback when present, and returns false for no callback or no focused
+  model.
+- Tests for the helper should use key-only event sequences because generic text
+  input routing tests intentionally insert text between keyboard events.

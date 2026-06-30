@@ -389,6 +389,26 @@ class RecordingView final : public cgpui::View {
             view_context_bound_text_model);
         context.request_keyboard_focus(focused_keyboard_element_id);
       }
+      if (exercise_view_context_focused_text_mutation) {
+        if (keyboard_key_count == 1) {
+          context.bind_text_model(
+              focused_keyboard_element_id,
+              view_context_bound_text_model);
+          context.request_keyboard_focus(focused_keyboard_element_id);
+        } else if (keyboard_key_count == 2) {
+          view_context_mutated_focused_text =
+              context.mutate_focused_text_model([](cgpui::TextModel& model) {
+                model.insert_text("!");
+              });
+        } else if (keyboard_key_count == 3) {
+          context.release_keyboard_focus(focused_keyboard_element_id);
+        } else if (keyboard_key_count == 4) {
+          view_context_skipped_missing_focused_text =
+              !context.mutate_focused_text_model([](cgpui::TextModel& model) {
+                model.insert_text("?");
+              });
+        }
+      }
       if (exercise_view_context_text_edit_binding &&
           keyboard_key_count == 1) {
         context.bind_text_model(
@@ -551,6 +571,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_scheduled_invalidation_redraw = false;
   bool exercise_view_context_convenience = false;
   bool exercise_view_context_text_model_binding = false;
+  bool exercise_view_context_focused_text_mutation = false;
   bool exercise_view_context_text_edit_binding = false;
   bool exercise_view_context_element_tree_installation = false;
   bool exercise_view_context_cursor_binding = false;
@@ -657,6 +678,8 @@ class RecordingView final : public cgpui::View {
   bool view_context_copied_selection = false;
   bool view_context_cut_selection = false;
   bool view_context_pasted_clipboard = false;
+  bool view_context_mutated_focused_text = false;
+  bool view_context_skipped_missing_focused_text = true;
   cgpui::ViewId first_allocated_view_id{};
   cgpui::ViewId second_allocated_view_id{};
   cgpui::ViewId third_allocated_view_id{};
@@ -3359,6 +3382,59 @@ int test_view_context_binds_text_model_to_element() {
   return 0;
 }
 
+RuntimeFixture* focused_text_mutation_fixture = nullptr;
+
+void dispatch_view_context_focused_text_mutation_sequence() {
+  auto& callback = focused_text_mutation_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 85,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 86,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 87,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_view_context_mutates_focused_text_model() {
+  RuntimeFixture fixture;
+  focused_text_mutation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_focused_text_mutation_sequence;
+  fixture.view.exercise_view_context_focused_text_mutation = true;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+
+  cgpui::TextModel model("hi");
+  fixture.view.view_context_bound_text_model = &model;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  focused_text_mutation_fixture = nullptr;
+
+  if (result != 0) {
+    return 297;
+  }
+  if (!fixture.view.view_context_mutated_focused_text) {
+    return 298;
+  }
+  if (!fixture.view.view_context_skipped_missing_focused_text) {
+    return 299;
+  }
+  if (model.text() != "hi!" || model.cursor() != 3) {
+    return 300;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* view_context_element_tree_fixture = nullptr;
 
 void dispatch_view_context_element_tree_sequence() {
@@ -4044,6 +4120,10 @@ int main() {
     return result;
   }
   if (const int result = test_view_context_binds_text_model_to_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_mutates_focused_text_model();
       result != 0) {
     return result;
   }

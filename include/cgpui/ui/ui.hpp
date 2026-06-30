@@ -27,6 +27,7 @@ struct WindowRuntimeContext;
 
 using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
+using FocusedTextModelMutation = std::function<void(TextModel&)>;
 
 struct PaintCommand {
   SolidRect solid_rect;
@@ -227,6 +228,8 @@ struct WindowRuntimeContext {
   void bind_key(KeyBinding binding) const;
   void bind_text_edit_action(TextEditBinding binding) const;
   void bind_text_model(ElementId element_id, TextModel* model) const;
+  [[nodiscard]] bool mutate_focused_text_model(
+      FocusedTextModelMutation mutation) const;
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape) const;
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;
