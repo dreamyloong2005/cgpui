@@ -53,6 +53,32 @@ Windows/Linux core API is stable enough for parity work.
 - `git status --short --branch` on `master` has no tracked/staged changes from
   the work, aside from the pre-existing untracked `.vscode/`.
 
+## Steps 89-128 Execution Roadmap
+
+Detailed execution plan:
+`docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+
+- Band A, Steps 89-98: authoring ergonomics and render entry. This lands the
+  GPUI-like public surface for elements, style helpers, event handler
+  shortcuts, style states, `View::render(ViewContext&)`, rendered tree
+  installation, and render invalidation observability.
+- Band B, Steps 99-108: model, app, window, and view lifecycle. This introduces
+  public model aliases, context model helpers, weak handles, observations,
+  model-driven invalidation, `AppContext`, `WindowOptions`, root-view
+  lifecycle storage, a view registry, and child-view placeholders.
+- Band C, Steps 109-118: event propagation, focus traversal, scroll routing,
+  hidden-overflow hit testing, and deeper layout controls. This makes route
+  ancestry, bubbling, Tab traversal, scroll state binding, flex alignment,
+  grow/shrink, absolute positioning, and layer/elevation behavior explicit.
+- Band D, Steps 119-128: render command depth, text metadata, platform cursor
+  and clipboard backends, IME geometry, and the public-prelude demo rewrite.
+  This is the Windows/Linux backend-hardening band while macOS remains a
+  readiness boundary.
+
+Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
+`master`, then remove `.worktrees/element-child-overloads` and delete
+`codex/element-child-overloads`.
+
 ## Steps
 
 1. [x] EventResult: make view event handlers return consumed/cancelled state.

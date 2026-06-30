@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Steps 89-128 Execution Planning
+
+- Wrote the detailed execution plan for the remaining 40-step window at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+- Added a Steps 89-128 execution roadmap to `task_plan.md`, grouped into four
+  bands: authoring/render entry, model/app/window lifecycle, event/layout depth,
+  and render/text/platform/demo hardening.
+- Confirmed the main worktree is on `master` with no tracked/staged changes
+  before planning edits, aside from the known untracked `.vscode/`.
+- Noted the required pre-Step-92 cleanup: run the Step 91 post-merge WSL full
+  debug verification on `master`, then remove
+  `.worktrees/element-child-overloads` and delete
+  `codex/element-child-overloads`.
+- Completed that pre-Step-92 cleanup: WSL Arch full debug on `master` passed
+  26/26, `.worktrees/element-child-overloads` was removed, and
+  `codex/element-child-overloads` was deleted.
+
 ## 2026-06-30 Step 91 Element Child Overloads
 
 - Started Step 91: Element builder child overloads for builders,

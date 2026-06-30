@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Steps 89-128 Execution Planning
+
+- The remaining Windows/Linux core API work is best sequenced in four bands:
+  authoring/render entry first, then model/app/window lifecycle, then
+  event/layout depth, then renderer/text/platform hardening and the public demo.
+- Step 92 should stay deliberately small: inline `px`, `rgb`, `rgba`, and
+  `edges(...)` helpers can layer over the existing `float`, `Color`, and
+  `EdgeSizes` primitives without adding a new length type yet.
+- Step 93 can then mutate the builder's retained `Style` directly, because
+  `ElementBuilder` already owns `style_` and builds `StyledElement`, flex,
+  stack, and text variants from that data.
+- Steps 96-98 should preserve the existing `View::paint(...)` contract while
+  adding `View::render(ViewContext&)`; this lets current tests and demos keep
+  compiling while the GPUI-like render path becomes available.
+- Before implementing Step 92, the Step 91 feature worktree still needs the
+  post-merge WSL verification/cleanup on `master`.
+
 ## 2026-06-30 Element Child Overloads
 
 - `AnyElement` is already `std::unique_ptr<Element>`, so the existing
