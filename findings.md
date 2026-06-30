@@ -25,15 +25,14 @@
   follow-on queue. They should not preempt the active Step 111-128 gate.
 - Current `master` is anchored at `d52ce80 docs: mark step 110 merged`; the
   Step 110 behavior commit is `10f2dd3 feat: add event propagation phases`.
-- Step 111 is already open in `.worktrees/focus-traversal` on
-  `codex/focus-traversal`. Planning should point future workers at continuing
-  that worktree, not recreating it or starting Step 129 early.
-- From current `master`, Step 129 is 18 implementation steps away: Steps
-  111-128 plus post-Step-128 targeted, Windows full debug, and WSL Arch full
-  debug verification. Once Step 111 is merged, that becomes 17 remaining
-  pre-back-40 implementation steps.
-- Step 168 is still 58 implementation steps away from current `master`: Steps
-  111-168 plus the four band checkpoint reviews after Steps 138, 148, 158, and
+- Step 111 has landed on `master`; planning should point future workers at
+  Step 112, not at recreating `.worktrees/focus-traversal` or starting Step 129
+  early.
+- From current `master`, Step 129 is 17 implementation steps away: Steps
+  112-128 plus post-Step-128 targeted, Windows full debug, and WSL Arch full
+  debug verification.
+- Step 168 is still 57 implementation steps away from current `master`: Steps
+  112-168 plus the four band checkpoint reviews after Steps 138, 148, 158, and
   168.
 - The back-40 band order remains context/entity/global/async first, keyed
   reconciliation/widgets/style cascade second, text/font/renderer diagnostics

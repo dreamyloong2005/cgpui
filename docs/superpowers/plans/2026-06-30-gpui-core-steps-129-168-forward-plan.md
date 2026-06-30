@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 111-128 remainder intact inside the
+**Architecture:** Keep the active Steps 112-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -22,13 +22,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `10f2dd3 feat: add event propagation phases`.
 - Step 110 was post-merge verified on Windows and WSL Arch Linux, and its
   feature worktree/branch have been cleaned up.
-- Steps 111-128 remain the active gate before this follow-on plan. They are
+- Steps 112-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 111 is implemented and targeted-verified in its open worktree at
-  `.worktrees/focus-traversal` on branch `codex/focus-traversal`; finish full
-  Windows/WSL verification, commit, merge, and post-merge verify that branch
-  before opening Step 112.
+- Step 111 is merged to `master` at `fe4dd43 feat: add focus traversal`,
+  post-merge verified on Windows and WSL Arch Linux, and cleaned up. Step 112
+  is the next active implementation step.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -40,12 +39,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 This refresh is anchored at `master` HEAD
 `d52ce80 docs: mark step 110 merged`. It is the execution plan for Steps
 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is full-verifying and merging the existing Step 111
-worktree unless the roadmap is explicitly reprioritized.
+implementation action is starting Step 112 unless the roadmap is explicitly
+reprioritized.
 
-- Finish the current gate first: Steps 111-128 close focus, scroll, layout
-  depth, render command metadata, cursor/clipboard/IME hooks, and the
-  public-prelude demo rewrite.
+- Finish the current gate first: Steps 112-128 close scroll, layout depth,
+  render command metadata, cursor/clipboard/IME hooks, and the public-prelude
+  demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
   keyed widgets/style cascade, text/font/renderer diagnostics, and
   Windows/Wayland platform closure plus the parity audit.
@@ -53,14 +52,11 @@ worktree unless the roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- The effective distance from the current `master` state to Step 129 is 18
-  implementation steps, Steps 111-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. Step 111 has feature-worktree implementation and
-  targeted verification, but the gate still counts it until it is merged and
-  post-merge verified. After Step 111 is merged, that drops to 17 remaining
-  pre-back-40 implementation steps. The effective distance from the current
-  `master` state through Step 168 is 58 implementation steps, Steps 111-168,
-  plus the four band checkpoint reviews.
+- The effective distance from the current `master` state to Step 129 is 17
+  implementation steps, Steps 112-128, plus post-Step-128 targeted, Windows,
+  and WSL verification. The effective distance from the current `master` state
+  through Step 168 is 57 implementation steps, Steps 112-168, plus the four
+  band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -118,7 +114,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 111-128 are still incomplete:
+second active branch while Steps 112-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -164,16 +160,13 @@ Do not begin Step 129 until all of these are true:
 - [x] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
 - [x] Step 109 has landed element and view route ancestry metadata, giving Step 110 a target-to-root route for propagation.
 - [x] Step 110 has landed target handling, ancestor bubbling, disabled-ancestor skipping, and root view fallback using route ancestry on `master`.
-- [ ] Steps 111-118 have landed focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives. Step 111 is implemented and targeted-verified in its feature worktree but has not landed on `master` yet.
+- [ ] Steps 112-118 have landed scroll routing, overflow-aware hit testing, and the planned layout primitives. Step 111 focus traversal has landed on `master`.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count from the current state: 18 steps,
-Steps 111-128. Finishing those steps plus post-Step-128 Windows/WSL
-verification is the planned route into Step 129. Step 111 is implemented and
-targeted-verified in `.worktrees/focus-traversal`, but it is not counted as
-complete for this gate until it is committed, fast-forward merged to `master`,
-and post-merge verified on Windows and WSL Arch Linux.
+Remaining pre-back-40 implementation count from the current state: 17 steps,
+Steps 112-128. Finishing those steps plus post-Step-128 Windows/WSL
+verification is the planned route into Step 129.
 
 ## Back-40 Execution Strategy
 
@@ -238,12 +231,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, full-verify and merge Step 111 instead of
-starting Step 129 or recreating the worktree:
+For the current pre-back-40 state, start Step 112 instead of starting Step
+129:
 
 ```powershell
-cd .worktrees/focus-traversal
-xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
+git worktree add .worktrees/scroll-element-binding -b codex/scroll-element-binding master
+xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default
 git status --short --branch
 ```
 

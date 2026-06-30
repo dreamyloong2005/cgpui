@@ -12,16 +12,13 @@
 
 ## Current State
 
-- Steps 89-110 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-111 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `d52ce80 docs: mark step 110 merged`; the Step 110 feature
-  commit is `10f2dd3 feat: add event propagation phases`.
-- The Step 110 worktree `.worktrees/event-propagation-phases` and branch
-  `codex/event-propagation-phases` have been cleaned up.
-- Step 111 is implemented and targeted-verified in `.worktrees/focus-traversal`
-  on `codex/focus-traversal`: focus traversal over enabled focusable elements
-  with Tab and Shift+Tab actions. It still needs feature-worktree full
-  Windows/WSL verification, commit, merge, post-merge verification, and cleanup.
+- `master` is at `fe4dd43 feat: add focus traversal`.
+- The Step 111 worktree `.worktrees/focus-traversal` and branch
+  `codex/focus-traversal` have been cleaned up.
+- The next implementation slice is Step 112: scroll element binding helper
+  backed by `ScrollState`.
 
 ## File Map
 
@@ -165,10 +162,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 111
+## Remaining Execution Queue From Step 112
 
-This is the practical remaining sequence after Step 110. Steps 89-110 are kept
-as completed foundation; the active remaining queue is Steps 111-128.
+This is the practical remaining sequence after Step 111. Steps 89-111 are kept
+as completed foundation; the active remaining queue is Steps 112-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -261,16 +258,15 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Continue Step 111 in its existing isolated worktree:
+Start Step 112 in an isolated worktree:
 
 ```powershell
-cd .worktrees/focus-traversal
-xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
+git worktree add .worktrees/scroll-element-binding -b codex/scroll-element-binding master
+xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Step 111 has passed feature-worktree targeted verification. Finish
-feature-worktree Windows/WSL full verification, commit, fast-forward merge,
-post-merge verification, and cleanup before starting Step 112.
+Add RED tests for binding `ScrollState` to an element and querying the binding,
+then follow the standard per-step verification/merge workflow above.
 
 ## Step Details
 

@@ -26,10 +26,18 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 26/26.
-- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168 follow-on
-  plan so Step 111 is marked implemented and feature-worktree targeted
-  verified. Commit, merge, post-merge verification, and cleanup remain before
-  Step 112 starts.
+- Committed Step 111 as `fe4dd43 feat: add focus traversal`, fast-forward
+  merged it to `master`, and verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Removed `.worktrees/focus-traversal` and deleted
+  `codex/focus-traversal`. The next active implementation step is Step 112:
+  scroll element binding helper backed by `ScrollState`.
 
 ## 2026-06-30 Back-40 Planning After Step 111 Worktree Start
 
