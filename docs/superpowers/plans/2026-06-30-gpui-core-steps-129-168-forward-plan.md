@@ -18,6 +18,7 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-118 are complete on `master` through
+  `c0d38c7 docs: mark step 118 merged`; the Step 118 feature commit is
   `9dfc2e7 feat: add layer elevation z order`.
 - Step 118 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
@@ -34,10 +35,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The main worktree is on `master` with no tracked/staged changes before this
   planning refresh; the known local-only untracked item is `.vscode/`.
 
-## 2026-06-30 Back-40 Planning Refresh
+## 2026-06-30 Back-40 Planning After Step 118 Docs Closeout
 
 This refresh is anchored at `master` HEAD
-`9dfc2e7 feat: add layer elevation z order`. It is the execution plan for
+`c0d38c7 docs: mark step 118 merged`. The Step 118 behavior commit is
+`9dfc2e7 feat: add layer elevation z order`. This is the execution plan for
 Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
 implementation action is Step 119, rounded-rect paint command, unless the
 roadmap is explicitly reprioritized.
@@ -57,6 +59,8 @@ roadmap is explicitly reprioritized.
   and WSL verification. The effective distance through Step 168 is 50
   implementation steps plus the post-Step-128 verification and the four band
   checkpoint reviews.
+- The main worktree currently has no tracked or staged changes; `.vscode/`
+  remains the known local-only untracked item.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.

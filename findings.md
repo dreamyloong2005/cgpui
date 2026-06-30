@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 118 Docs Closeout
+
+- The后 40 步 are Steps 129-168 and remain gated behind completion of Steps
+  119-128 plus post-Step-128 Windows and WSL verification.
+- Current planning should anchor on the docs closeout commit
+  `c0d38c7 docs: mark step 118 merged`, not only the Step 118 feature commit
+  `9dfc2e7 feat: add layer elevation z order`.
+- The intended Step 168 outcome is a practical Windows/Linux GPUI-core
+  foundation plus `docs/gpui-core-api-parity.md`; it is not a claim of full
+  upstream GPUI parity and it keeps macOS/Cocoa + Metal deferred.
+- The immediate implementation action is still Step 119 in
+  `.worktrees/rounded-rect-paint-command`, starting with RED tests for
+  border-radius metadata in rounded-rect paint commands.
+
 ## 2026-06-30 Layer/Elevation Z Order Merged
 
 - After Step 118 merged, the remaining pre-back-40 gate is Steps 119-128 plus

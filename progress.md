@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 118 Docs Closeout
+
+- Refreshed the post-Step-128 back-40 planning document after the user asked to
+  plan the "后40步".
+- Anchored the forward plan to the actual current `master` docs closeout:
+  `c0d38c7 docs: mark step 118 merged`; the Step 118 feature commit remains
+  `9dfc2e7 feat: add layer elevation z order`.
+- Confirmed the follow-on queue remains Steps 129-168 and must not preempt the
+  active Steps 119-128 gate.
+- Confirmed the remaining distance to Step 129 is 10 implementation steps,
+  Steps 119-128, plus post-Step-128 targeted, Windows full debug, and WSL Arch
+  full debug verification on a clean `master`.
+- Updated `task_plan.md` and the forward plan with the corrected handoff
+  anchor. No implementation code changed during this planning refresh.
+
 ## 2026-06-30 Step 118 Post-Merge
 
 - Fast-forward merged Step 118, `9dfc2e7 feat: add layer elevation z order`,

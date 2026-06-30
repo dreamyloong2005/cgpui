@@ -99,7 +99,8 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `9dfc2e7 feat: add layer elevation z order`.
+pre-back-40 handoff state at `c0d38c7 docs: mark step 118 merged`; the Step
+118 feature commit is `9dfc2e7 feat: add layer elevation z order`.
 Steps 89-118 are merged and post-merge verified on Windows and WSL Arch Linux,
 and Step 129 remains gated behind completion and Windows/WSL verification of
 Steps 119-128.
