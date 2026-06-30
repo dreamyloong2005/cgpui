@@ -290,9 +290,12 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 103 is complete in the active feature worktree. Next implementation step
-after merging Step 103 is Step 104:
+Step 104 is active in `.worktrees/app-context-wrapper` on branch
+`codex/app-context-wrapper`:
 Public `AppContext` wrapper over the app runner setup phase.
+
+The post-Step-128 back-40 plan is ready as Steps 129-168, but Step 129 remains
+gated behind completion and Windows/WSL verification of Steps 104-128.
 
 ## Risks
 

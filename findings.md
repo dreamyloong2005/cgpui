@@ -1193,3 +1193,16 @@
 - Observer callbacks remain part of `notify_entity_changed(...)`; Step 103
   changes the invalidation level after a match, while preserving Step 102's
   callback timing and missing-model soft-fail behavior.
+
+## 2026-06-30 Back-40 Planning After Step 103
+
+- The post-Step-128 "back 40" plan is Steps 129-168. It should remain a
+  follow-on execution queue, not a replacement for the active Step 104-128
+  work.
+- Step 129 must stay gated on a clean Step 128 merge plus Windows and WSL Arch
+  full debug verification, because the back-40 depends on the AppContext,
+  WindowOptions, view registry, routing, layout, text command, cursor,
+  clipboard, IME, and public-demo surfaces still scheduled in Steps 104-128.
+- The current state for planning is Step 103 complete on `master` at
+  `5949c84`, with Step 104 already opened in `.worktrees/app-context-wrapper`
+  and baseline targeted tests passing.

@@ -12,18 +12,17 @@
 
 ## Current State
 
-- Steps 89-102 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-103 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 103 is implemented and feature-worktree verified in
-  `codex/model-update-invalidates-subscribed-views`, but still needs full
-  Windows/WSL verification, commit, fast-forward merge to `master`, post-merge
-  verification, and worktree/branch cleanup.
-- `master` is at the Step 102 feature merge while Step 103 remains in its
-  feature worktree.
+- Step 104 is active in `codex/app-context-wrapper` at
+  `.worktrees/app-context-wrapper`. Baseline targeted verification has passed:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default`.
+- `master` is at `5949c84 feat: render-invalidate subscribed model changes`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation slice after merging Step 103 is Step 104:
-  public `AppContext` wrapper over the app runner setup phase.
+- The next implementation action is the Step 104 RED test for a public
+  `AppContext` wrapper over the app runner setup phase.
 
 ## File Map
 
@@ -263,16 +262,10 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 103's current feature worktree first: run Windows full debug and
-WSL full debug verification, commit, fast-forward merge to `master`, rerun
-targeted/Windows/WSL verification on `master`, then clean up
-`.worktrees/model-update-invalidates-subscribed-views` and
-`codex/model-update-invalidates-subscribed-views`.
-
-Then start Step 104 in an isolated worktree:
+Continue Step 104 in the existing isolated worktree:
 
 ```powershell
-git worktree add .worktrees/app-context-wrapper -b codex/app-context-wrapper master
+cd .worktrees/app-context-wrapper
 xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
 ```
 
@@ -421,8 +414,7 @@ Status: complete on `master` after the Step 101 merge.
 
 ### Step 102: Observe/Subscribe Callback Helper
 
-Status: implemented and feature-worktree verified in
-`codex/model-observe-subscribe-helper`; not yet merged to `master`.
+Status: complete on `master` after the Step 102 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -435,8 +427,7 @@ Status: implemented and feature-worktree verified in
 
 ### Step 103: Model Update Invalidates Subscribed Views
 
-Status: implemented and feature-worktree targeted-test verified in
-`codex/model-update-invalidates-subscribed-views`; not yet merged to `master`.
+Status: complete on `master` after the Step 103 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -448,6 +439,9 @@ Status: implemented and feature-worktree targeted-test verified in
 - [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
 
 ### Step 104: AppContext Wrapper
+
+Status: active in `.worktrees/app-context-wrapper` on
+`codex/app-context-wrapper`; baseline targeted verification passed.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`

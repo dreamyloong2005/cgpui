@@ -1642,6 +1642,18 @@
   `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
   passed 2/2.
 
+## 2026-06-30 Back-40 Planning After Step 103
+
+- Refreshed the post-Step-128 back-40 plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  so it now reflects the actual current state: Steps 89-103 complete on
+  `master`, Step 104 active in `.worktrees/app-context-wrapper`, and Steps
+  105-128 still gating Step 129.
+- Updated the 89-128 execution plan to remove stale Step 103 merge/cleanup
+  instructions and make the recommended next action the Step 104 RED test.
+- Updated `task_plan.md` so the active step is Step 104 and the back-40 queue
+  remains gated behind Step 128 plus Windows/WSL verification.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:
