@@ -117,7 +117,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 79. [x] Element builder disabled convenience helper.
 80. [x] Element tree enabled descendant traversal query.
 81. [x] Runtime skips disabled elements for focus activation.
-82. [ ] Runtime clears hover cursor when hovered element becomes disabled.
+82. [x] Runtime clears hover cursor when hovered element becomes disabled.
 83. [ ] Runtime text model lookup helper for focused element.
 84. [ ] ViewContext focused text model mutation helper.
 85. [ ] Public prelude header for core authoring APIs.
@@ -126,7 +126,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 82: Runtime clears hover cursor when hovered element becomes disabled.
+Step 83: Runtime text model lookup helper for focused element.
 
 ## Risks
 

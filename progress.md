@@ -640,6 +640,28 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 82: Runtime clears hover cursor when hovered element becomes
+  disabled.
+- Added RED `window_runtime_test` coverage for an element that first drives a
+  text cursor while hovered, then becomes disabled before a second pointer move
+  over the same hit target; hover should still report the element, but cursor
+  shape should fall back to the default arrow.
+- Confirmed RED with `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default`: `window_runtime_test/default` failed, and a
+  direct run surfaced return code 289 from the new disabled-hover cursor
+  assertion.
+- Implemented cursor lookup gating so resolved disabled hovered elements keep
+  hover state but do not apply element cursor bindings; unresolved legacy child
+  ids keep prior cursor behavior.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2 after correcting the gate to avoid
+  breaking legacy non-owning child cursor routing.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 79: Element builder disabled convenience helper.
 - Added RED `element_test` coverage for `ElementBuilder::disabled()` disabling
   a built element and composing with focusable/click wrappers without allowing

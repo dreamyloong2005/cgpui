@@ -772,3 +772,12 @@
 - Disabled elements remain routable and observable through hit testing, but
   runtime click-to-focus activation should use the same interaction gate as
   element event dispatch: the element must be both enabled and focusable.
+
+## 2026-06-30 Disabled Hover Cursor
+
+- Hover state should continue to describe the physical hit target, but cursor
+  shape is an interaction affordance and should only be driven by enabled
+  elements when the runtime can resolve the hovered id to a live element.
+- Legacy non-owning roots can hit-test child ids that `routed_element()` cannot
+  safely resolve, so cursor lookup keeps the old behavior for unresolved ids
+  and only suppresses cursor bindings for resolved disabled elements.

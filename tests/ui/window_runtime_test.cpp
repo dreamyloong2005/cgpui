@@ -1910,6 +1910,77 @@ int test_runtime_routes_cursor_shape_from_hovered_element() {
   return 0;
 }
 
+RuntimeFixture* disabled_hover_cursor_fixture = nullptr;
+
+void dispatch_disabled_hover_cursor_sequence() {
+  auto& callback = disabled_hover_cursor_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_runtime_clears_cursor_when_hovered_element_becomes_disabled() {
+  RuntimeFixture fixture;
+  disabled_hover_cursor_fixture = &fixture;
+  fixture.app.on_run = &dispatch_disabled_hover_cursor_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  cgpui::FixedSizeElement* root_ptr = root.get();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_element_cursor(root_id, cgpui::CursorShape::text);
+
+  int pointer_move_count = 0;
+  cgpui::CursorShape first_cursor = cgpui::CursorShape::default_arrow;
+  cgpui::CursorShape second_cursor = cgpui::CursorShape::text;
+  std::optional<cgpui::ElementId> second_hover;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::pointer_moved) {
+          return;
+        }
+        pointer_move_count += 1;
+        if (pointer_move_count == 1) {
+          first_cursor = context.input.cursor_shape;
+          root_ptr->set_enabled(false);
+        } else if (pointer_move_count == 2) {
+          second_cursor = context.input.cursor_shape;
+          second_hover = context.input.hovered_element_id;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = true});
+  disabled_hover_cursor_fixture = nullptr;
+
+  if (result != 0) {
+    return 285;
+  }
+  if (root_id.value == 0 || pointer_move_count != 2) {
+    return 286;
+  }
+  if (first_cursor != cgpui::CursorShape::text) {
+    return 287;
+  }
+  if (!second_hover.has_value() || *second_hover != root_id) {
+    return 288;
+  }
+  if (second_cursor != cgpui::CursorShape::default_arrow) {
+    return 289;
+  }
+  return 0;
+}
+
 RuntimeFixture* view_context_cursor_fixture = nullptr;
 
 void dispatch_view_context_cursor_binding_sequence() {
@@ -3815,6 +3886,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_cursor_shape_from_hovered_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_clears_cursor_when_hovered_element_becomes_disabled();
       result != 0) {
     return result;
   }

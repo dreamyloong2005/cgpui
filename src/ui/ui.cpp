@@ -418,10 +418,13 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
           hovered_element_id_ = hit_element_id;
           cursor_shape_ = CursorShape::default_arrow;
           if (hit_element_id.has_value()) {
-            if (const auto cursor =
-                    element_cursors_.find(hit_element_id->value);
-                cursor != element_cursors_.end()) {
-              cursor_shape_ = cursor->second;
+            const Element* hovered_element = routed_element(*hit_element_id);
+            if (hovered_element == nullptr || hovered_element->enabled()) {
+              if (const auto cursor =
+                      element_cursors_.find(hit_element_id->value);
+                  cursor != element_cursors_.end()) {
+                cursor_shape_ = cursor->second;
+              }
             }
           }
         }
