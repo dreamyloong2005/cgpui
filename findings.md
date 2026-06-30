@@ -800,3 +800,15 @@
   model.
 - Tests for the helper should use key-only event sequences because generic text
   input routing tests intentionally insert text between keyboard events.
+
+## 2026-06-30 Public Prelude Header
+
+- `include/cgpui/cgpui.hpp` can stay as a simple aggregate header over the
+  existing module headers for now; no new source target or platform-specific
+  selection is needed for this authoring convenience.
+- Header-cleanliness coverage should instantiate a concrete `View`, which means
+  the test fixture must implement both `paint` and `handle_event` from the
+  current public `View` contract.
+- The prelude intentionally exposes the existing API surface without changing
+  ownership or runtime behavior, keeping this slice an additive source
+  compatibility improvement.

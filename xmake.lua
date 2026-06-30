@@ -225,6 +225,13 @@ target("ui_header_cleanliness")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("prelude_header_cleanliness")
+    set_kind("binary")
+    add_files("tests/header_cleanliness/prelude_header_cleanliness.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("render_view_test")
     set_kind("binary")
     add_files("tests/ui/render_view_test.cpp")

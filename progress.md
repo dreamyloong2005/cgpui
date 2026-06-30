@@ -1187,3 +1187,21 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 23/23.
+
+- Started Step 85: Public prelude header for core authoring APIs.
+- Added RED `prelude_header_cleanliness` coverage that includes
+  `cgpui/cgpui.hpp` and exercises common authoring symbols through that single
+  public header; the test failed because the prelude header did not exist.
+- Implemented Step 85 in `codex/public-prelude-header`: added
+  `include/cgpui/cgpui.hpp` as an aggregate public header for the current core,
+  platform, renderer, and UI authoring API surface.
+- Initial GREEN attempt failed because the test-only `PreludeView` fixture did
+  not implement pure virtual `View::paint`; fixed the fixture to match the
+  existing public `View` contract.
+- Verified targeted tests: `xmake test -P . prelude_header_cleanliness/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 28/28.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 25/25.
