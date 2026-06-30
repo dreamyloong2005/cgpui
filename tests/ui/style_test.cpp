@@ -43,6 +43,52 @@ int test_edge_sizes_helpers_expand_values() {
   return 0;
 }
 
+int test_style_unit_and_edge_authoring_helpers() {
+  if (!same(cgpui::px(12.5F), 12.5F)) {
+    return 31;
+  }
+
+  const cgpui::EdgeSizes all = cgpui::edges(3.0F);
+  if (!same(all.top, 3.0F) || !same(all.right, 3.0F) ||
+      !same(all.bottom, 3.0F) || !same(all.left, 3.0F)) {
+    return 32;
+  }
+
+  const cgpui::EdgeSizes axes = cgpui::edges(6.0F, 2.0F);
+  if (!same(axes.top, 2.0F) || !same(axes.right, 6.0F) ||
+      !same(axes.bottom, 2.0F) || !same(axes.left, 6.0F)) {
+    return 33;
+  }
+
+  const cgpui::EdgeSizes explicit_edges =
+      cgpui::edges(1.0F, 2.0F, 3.0F, 4.0F);
+  if (!same(explicit_edges.top, 1.0F) ||
+      !same(explicit_edges.right, 2.0F) ||
+      !same(explicit_edges.bottom, 3.0F) ||
+      !same(explicit_edges.left, 4.0F)) {
+    return 34;
+  }
+
+  return 0;
+}
+
+int test_color_authoring_helpers_normalize_channels() {
+  const cgpui::Color red = cgpui::rgb(255, 0, 0);
+  if (!same(red.r, 1.0F) || !same(red.g, 0.0F) ||
+      !same(red.b, 0.0F) || !same(red.a, 1.0F)) {
+    return 35;
+  }
+
+  const cgpui::Color orange = cgpui::rgba(255, 128, 0, 0.5F);
+  if (!same(orange.r, 1.0F) ||
+      !same(orange.g, 128.0F / 255.0F) ||
+      !same(orange.b, 0.0F) || !same(orange.a, 0.5F)) {
+    return 36;
+  }
+
+  return 0;
+}
+
 int test_border_radii_helpers_expand_values() {
   const cgpui::BorderRadii radii;
   if (!same(radii.top_left, 0.0F) || !same(radii.top_right, 0.0F) ||
@@ -202,12 +248,25 @@ static_assert(std::same_as<decltype(cgpui::Style{}.overflow), cgpui::Overflow>);
 static_assert(std::same_as<decltype(cgpui::Style{}.z_index), int>);
 static_assert(std::same_as<decltype(cgpui::Style{}.gap), float>);
 static_assert(std::same_as<decltype(cgpui::Style{}.margin), cgpui::EdgeSizes>);
+static_assert(std::same_as<decltype(cgpui::px(1.0F)), float>);
+static_assert(std::same_as<decltype(cgpui::rgb(255, 255, 255)), cgpui::Color>);
+static_assert(
+    std::same_as<decltype(cgpui::rgba(255, 255, 255, 1.0F)), cgpui::Color>);
+static_assert(std::same_as<decltype(cgpui::edges(1.0F)), cgpui::EdgeSizes>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
     return result;
   }
   if (const int result = test_edge_sizes_helpers_expand_values();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_style_unit_and_edge_authoring_helpers();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_color_authoring_helpers_normalize_channels();
       result != 0) {
     return result;
   }

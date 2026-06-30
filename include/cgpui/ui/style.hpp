@@ -11,6 +11,32 @@ enum class Overflow {
   hidden,
 };
 
+[[nodiscard]] constexpr float px(float value) {
+  return value;
+}
+
+[[nodiscard]] constexpr Color rgb(int red, int green, int blue) {
+  return Color{
+      .r = static_cast<float>(red) / 255.0F,
+      .g = static_cast<float>(green) / 255.0F,
+      .b = static_cast<float>(blue) / 255.0F,
+      .a = 1.0F,
+  };
+}
+
+[[nodiscard]] constexpr Color rgba(
+    int red,
+    int green,
+    int blue,
+    float alpha) {
+  return Color{
+      .r = static_cast<float>(red) / 255.0F,
+      .g = static_cast<float>(green) / 255.0F,
+      .b = static_cast<float>(blue) / 255.0F,
+      .a = alpha,
+  };
+}
+
 struct EdgeSizes {
   float top = 0.0F;
   float right = 0.0F;
@@ -50,6 +76,22 @@ struct EdgeSizes {
     };
   }
 };
+
+[[nodiscard]] constexpr EdgeSizes edges(float value) {
+  return EdgeSizes::all(value);
+}
+
+[[nodiscard]] constexpr EdgeSizes edges(float horizontal, float vertical) {
+  return EdgeSizes::axes(horizontal, vertical);
+}
+
+[[nodiscard]] constexpr EdgeSizes edges(
+    float top,
+    float right,
+    float bottom,
+    float left) {
+  return EdgeSizes::trbl(top, right, bottom, left);
+}
 
 struct BorderRadii {
   float top_left = 0.0F;

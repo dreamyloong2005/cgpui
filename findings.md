@@ -1,5 +1,16 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Style Unit And Color Helpers
+
+- `px(float)` can remain a direct `float` identity helper for now because every
+  current style/layout field already stores pixel-like lengths as `float`.
+- Free `edges(...)` helpers should forward to the existing `EdgeSizes::all`,
+  `EdgeSizes::axes`, and `EdgeSizes::trbl` constructors so Step 93 builder
+  shortcuts can use concise authoring names without adding another edge type.
+- `rgb` and `rgba` normalize integer 0-255 color channels into the existing
+  floating `Color` representation; alpha remains a `float` so authored opacity
+  composes with the current `Color::a` field directly.
+
 ## 2026-06-30 Steps 89-128 Execution Planning
 
 - The remaining Windows/Linux core API work is best sequenced in four bands:

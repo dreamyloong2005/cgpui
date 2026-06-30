@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 92 Style Unit And Color Helpers
+
+- Started Step 92: Style unit and color helpers: `px`, `rgb`, `rgba`, and
+  edge constructors.
+- Added RED `style_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for `px(float)`, `rgb(...)`,
+  `rgba(...)`, and `edges(...)`; the test failed because those helpers were not
+  defined in `cgpui`.
+- Implemented Step 92 in `codex/style-unit-color-helpers`: added header-only
+  `px`, `rgb`, `rgba`, and `edges` helpers in `include/cgpui/ui/style.hpp`.
+- Verified targeted tests: `xmake test -P . style_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 ## 2026-06-30 Steps 89-128 Execution Planning
 
 - Wrote the detailed execution plan for the remaining 40-step window at
