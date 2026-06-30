@@ -102,10 +102,10 @@ verification matrix for all 40 follow-on steps. It records the current
 pre-back-40 handoff state at `45a8dad docs: mark step 120 merged`; the Step
 120 behavior commit is `9aba0e6 feat: honor vulkan solid rect clips`. Steps
 89-120 are merged and post-merge verified on Windows and WSL Arch Linux.
-Step 121 is active in `.worktrees/text-paint-command` on
-`codex/text-paint-command`, and Step 129 remains gated behind completion and
-Windows/WSL verification of Steps 121-128 plus the post-Step-128 exit
-verification.
+Step 121 is implemented and feature-worktree verified in
+`.worktrees/text-paint-command` on `codex/text-paint-command`, and Step 129
+remains gated behind completion and Windows/WSL verification of Steps 121-128
+plus the post-Step-128 exit verification.
 
 The effective distance to Step 129 is 8 implementation steps, Steps 121-128,
 plus post-Step-128 targeted, Windows, and WSL verification. The effective
@@ -331,9 +331,10 @@ artifacts, explicit keep-out-of-scope notes, Step 129 start packet, band
 checkpoints after Steps 138, 148, 158, and 168, and an execution gate that
 records Steps 115-120 as merged and post-merge verified. Step 129 remains
 gated behind completion plus Windows/WSL verification of Steps 121-128 and the
-post-Step-128 exit verification. Step 121 is currently active in
-`.worktrees/text-paint-command`; future work should finish and merge that
-branch before opening Step 122 or any back-40 branch.
+post-Step-128 exit verification. Step 121 is implemented and feature-worktree
+verified in `.worktrees/text-paint-command`; future work should commit, merge,
+post-merge verify, and close out that branch before opening Step 122 or any
+back-40 branch.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
 is merged on `master` at `9dfc2e7 feat: add layer elevation z order`. RED
@@ -358,9 +359,19 @@ merged on `master` at `9aba0e6 feat: honor vulkan solid rect clips`. RED
 failed as expected on missing `SolidRect::clip_rect`. Feature-worktree targeted
 tests passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full
 debug passed 26/26. Post-merge targeted tests passed 4/4, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 121, text paint
-command separates text drawing from placeholder rectangles, is the next
-implementation slice.
+passed 29/29, and WSL Arch Linux full debug passed 26/26.
+
+Step 121, text paint command separates text drawing from placeholder
+rectangles, is implemented and feature-worktree verified in
+`.worktrees/text-paint-command` on `codex/text-paint-command`. RED failed as
+expected on missing text paint command APIs before the implementation. GREEN
+adds `PaintCommandKind::text`, `TextPaint`, `PaintList::fill_text(...)`, text
+clip metadata, `TextElement` text-command painting, and a render path that
+skips text commands until a later Vulkan text drawing step. Feature-worktree
+targeted tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux
+full debug passed 26/26. Step 122, font descriptor and basic font-size style
+primitives, is the next implementation slice after Step 121 is committed,
+merged, and post-merge verified.
 
 ## Risks
 

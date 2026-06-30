@@ -14,11 +14,15 @@
 
 - Steps 89-120 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `9aba0e6 feat: honor vulkan solid rect clips`.
+- `master` includes `dec75ba docs: refine back forty execution plan`; the Step
+  120 behavior commit is `9aba0e6 feat: honor vulkan solid rect clips`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121, text paint command separates text drawing from placeholder
-  rectangles, is the next implementation slice.
+  rectangles, is implemented and feature-worktree verified in
+  `.worktrees/text-paint-command` on `codex/text-paint-command`. It still needs
+  final targeted verification after docs updates, commit, fast-forward merge,
+  post-merge verification on `master`, docs closeout, and cleanup.
 
 ## File Map
 
@@ -145,7 +149,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 
 - [x] Step 119: rounded-rect paint command preserves border radius metadata.
 - [x] Step 120: Vulkan honors clip rect metadata for solid rectangles.
-- [ ] Step 121: text paint command separates text drawing from placeholder rectangles.
+- [ ] Step 121: text paint command separates text drawing from placeholder rectangles. Implemented and feature-worktree verified; pending commit, merge, post-merge verification, and docs closeout.
 - [ ] Step 122: font descriptor and basic font-size style primitives.
 - [ ] Step 123: text element emits caret and selection paint metadata.
 - [ ] Step 124: platform cursor application for Win32 and Wayland.
@@ -239,7 +243,7 @@ leaving macOS/Metal for a later parity track.
 
 - [x] Step 119: add rounded-rect paint commands with border-radius metadata.
 - [x] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
-- [ ] Step 121: add text paint commands instead of placeholder rectangles.
+- [ ] Step 121: add text paint commands instead of placeholder rectangles. Implemented and feature-worktree verified; pending commit, merge, post-merge verification, and docs closeout.
 - [ ] Step 122: add font descriptors and basic font-size style.
 - [ ] Step 123: emit caret and selection paint metadata from text elements.
 - [ ] Step 124: apply runtime cursor state through Win32 and Wayland platform
@@ -259,17 +263,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 121 from a fresh feature worktree:
+Finish Step 121 in the existing feature worktree:
 
 ```powershell
-git worktree add .worktrees/text-paint-command -b codex/text-paint-command master
 cd .worktrees/text-paint-command
 xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
 ```
 
-Step 121 should add RED coverage for text commands containing text content,
-bounds, color, and model-derived metadata, replacing placeholder text
-rectangles without adding real font shaping yet.
+Step 121 has added text commands containing text content, bounds, color, and
+model-derived byte length metadata, replacing placeholder text rectangles
+without adding real font shaping. The remaining action is to re-run the
+targeted tests after docs edits, commit `codex/text-paint-command`, merge it to
+`master`, run post-merge targeted/Windows/WSL verification, mark Step 121
+merged, then open Step 122.
 
 ## Step Details
 
@@ -687,9 +693,11 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED tests for text commands containing text content, bounds, color, and model-derived metadata.
-- [ ] Change `TextElement::paint` from placeholder rectangles to a text command while preserving older tests through updated expectations.
-- [ ] Targeted test command: `xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for text commands containing text content, bounds, color, and model-derived metadata.
+- [x] Change `TextElement::paint` from placeholder rectangles to a text command while preserving older tests through updated expectations.
+- [x] Targeted test command: `xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug: `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug: `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
 
 ### Step 122: Font Descriptor and Font Size Style
 

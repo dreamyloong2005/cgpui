@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Text Paint Command
+
+- Step 121 separates UI text intent from rectangle painting by adding
+  `PaintCommandKind::text`, `TextPaint`, and `PaintList::fill_text(...)`.
+  Text payloads preserve bounds, color, copied UTF-8 content, byte length, and
+  active clip metadata.
+- `TextElement::paint(...)` now emits text commands instead of a placeholder
+  solid rectangle. This keeps later font, caret, selection, glyph cache, and
+  Vulkan text work attached to explicit text metadata instead of trying to
+  infer text from rectangle fallbacks.
+- `render_view(...)` intentionally skips text commands for now. That is better
+  than converting text back to a solid rectangle because Step 152 will teach
+  Vulkan to consume text/glyph metadata directly; until then text commands are
+  observable in paint-list tests but not drawn by the simple rect renderer.
+- Step 121 intentionally does not add font descriptors, font size style,
+  caret/selection paint metadata, glyph caches, platform clipboard behavior, or
+  real text shaping. Those remain Steps 122, 123, 125/126, and 149-152 work.
+- Step 122 should build on this by adding font descriptor and font-size style
+  metadata before caret/selection geometry tries to use text metrics.
+
 ## 2026-06-30 Back-40 Planning With Step 121 Active
 
 - The后 40 步 remain Steps 129-168 and are still gated behind Steps 121-128

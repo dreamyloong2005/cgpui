@@ -9,12 +9,14 @@
 #include "cgpui/ui/text.hpp"
 
 #include <any>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
@@ -39,6 +41,7 @@ using ModelObserver =
 enum class PaintCommandKind {
   solid_rect,
   rounded_rect,
+  text,
 };
 
 struct RoundedRect {
@@ -47,10 +50,18 @@ struct RoundedRect {
   BorderRadii radius;
 };
 
+struct TextPaint {
+  Rect bounds;
+  Color color;
+  std::string content;
+  std::size_t byte_length = 0;
+};
+
 struct PaintCommand {
   PaintCommandKind kind = PaintCommandKind::solid_rect;
   SolidRect solid_rect;
   RoundedRect rounded_rect;
+  TextPaint text;
   std::optional<Rect> clip_rect;
 };
 
@@ -61,6 +72,7 @@ class PaintList {
   void pop_clip();
   void fill_rect(Rect rect, Color color);
   void fill_rounded_rect(Rect rect, Color color, BorderRadii radius);
+  void fill_text(Rect bounds, Color color, std::string_view text);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
  private:

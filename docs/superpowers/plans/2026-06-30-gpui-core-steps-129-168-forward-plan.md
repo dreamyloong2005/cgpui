@@ -22,9 +22,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `9aba0e6 feat: honor vulkan solid rect clips`.
 - Step 120 post-merge verification passed before the docs closeout: targeted
   tests 4/4, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 121 is active in `.worktrees/text-paint-command` on
-  `codex/text-paint-command`. It is still part of the pre-back-40 gate until
-  committed, merged to `master`, post-merge verified, and closed out in docs.
+- Step 121 is implemented and feature-worktree verified in
+  `.worktrees/text-paint-command` on `codex/text-paint-command`. It is still
+  part of the pre-back-40 gate until committed, merged to `master`,
+  post-merge verified, and closed out in docs.
 - Steps 121-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -41,9 +42,10 @@ This refresh is anchored at `master` HEAD
 must not preempt the active Step 121 worktree or the rest of the Step 121-128
 gate.
 
-- Step 121 is already open in `.worktrees/text-paint-command`; continue that
-  branch through review, docs update, commit, merge, post-merge Windows/WSL
-  verification, and cleanup before opening Step 122.
+- Step 121 is already implemented and feature-worktree verified in
+  `.worktrees/text-paint-command`; continue that branch through final targeted
+  verification after docs edits, commit, merge, post-merge Windows/WSL
+  verification, docs closeout, and cleanup before opening Step 122.
 - Until Step 121 merges, the effective distance to Step 129 remains 8
   implementation steps, Steps 121-128, plus the post-Step-128 targeted,
   Windows full debug, and WSL Arch Linux verification on `master`.
@@ -327,8 +329,10 @@ Do not begin Step 129 until all of these are true:
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-8 implementation steps, Steps 121-128, plus post-Step-128 Windows/WSL
-verification.
+Step 121 is feature-worktree verified but not merged. The gate still counts 8
+implementation steps, Steps 121-128, until Step 121 lands on `master`; after
+that merge, it becomes 7 implementation steps, Steps 122-128, plus
+post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 

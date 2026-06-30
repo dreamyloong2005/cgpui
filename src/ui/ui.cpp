@@ -150,6 +150,21 @@ void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
                        : std::optional<Rect>{clip_stack_.back()}});
 }
 
+void PaintList::fill_text(Rect bounds, Color color, std::string_view text) {
+  commands_.push_back(PaintCommand{
+      .kind = PaintCommandKind::text,
+      .text =
+          TextPaint{
+              .bounds = bounds,
+              .color = color,
+              .content = std::string(text),
+              .byte_length = text.size(),
+          },
+      .clip_rect = clip_stack_.empty()
+                       ? std::optional<Rect>{}
+                       : std::optional<Rect>{clip_stack_.back()}});
+}
+
 std::span<const PaintCommand> PaintList::commands() const {
   return commands_;
 }
@@ -269,9 +284,10 @@ void TextElement::paint(PaintList& paint_list) const {
   if (!bounds.has_value() || text().empty()) {
     return;
   }
-  paint_list.fill_rect(
+  paint_list.fill_text(
       *bounds,
-      Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
+      Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F},
+      text());
 }
 
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
@@ -291,6 +307,9 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   PaintList paint_list;
   view.paint(paint_list, viewport_size);
   for (const auto& command : paint_list.commands()) {
+    if (command.kind == PaintCommandKind::text) {
+      continue;
+    }
     SolidRect rect = command.solid_rect;
     rect.clip_rect = command.clip_rect;
     (*frame)->draw_rect(rect);

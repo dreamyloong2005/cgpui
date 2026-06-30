@@ -1628,26 +1628,36 @@ int test_paint_list_attaches_current_clip_to_commands() {
       cgpui::Color{.r = 0.4F, .a = 1.0F},
       cgpui::BorderRadii::all(3.0F));
   paint_list.pop_clip();
+  paint_list.push_clip(clip);
+  paint_list.fill_text(
+      cgpui::Rect{.size = {.width = 35.0F, .height = 16.0F}},
+      cgpui::Color{.g = 0.6F, .a = 1.0F},
+      "clip text");
+  paint_list.pop_clip();
   paint_list.fill_rect(
       cgpui::Rect{.size = {.width = 30.0F, .height = 10.0F}},
       cgpui::Color{.b = 0.3F, .a = 1.0F});
 
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 4) {
+  if (commands.size() != 5) {
     return 127;
   }
-  if (commands[0].clip_rect.has_value() || commands[3].clip_rect.has_value()) {
+  if (commands[0].clip_rect.has_value() || commands[4].clip_rect.has_value()) {
     return 128;
   }
   return commands[1].kind == cgpui::PaintCommandKind::solid_rect &&
                  commands[2].kind == cgpui::PaintCommandKind::rounded_rect &&
+                 commands[3].kind == cgpui::PaintCommandKind::text &&
                  commands[1].clip_rect.has_value() &&
                  commands[2].clip_rect.has_value() &&
+                 commands[3].clip_rect.has_value() &&
                  commands[1].clip_rect->origin.x == 2.0F &&
                  commands[2].clip_rect->origin.y == 3.0F &&
                  commands[2].rounded_rect.radius.top_left == 3.0F &&
                  commands[1].clip_rect->size.width == 40.0F &&
-                 commands[2].clip_rect->size.height == 20.0F
+                 commands[2].clip_rect->size.height == 20.0F &&
+                 commands[3].text.content == "clip text" &&
+                 commands[3].text.byte_length == 9
              ? 0
              : 129;
 }
@@ -1874,7 +1884,7 @@ int test_child_view_element_references_view_and_lays_out_placeholder() {
              : 231;
 }
 
-int test_text_element_paints_text_placeholder_from_layout_bounds() {
+int test_text_element_paints_text_command_from_layout_bounds() {
   cgpui::TextModel model("hi");
   cgpui::TextElement element(&model);
   (void)element.layout(cgpui::LayoutInput{});
@@ -1885,12 +1895,19 @@ int test_text_element_paints_text_placeholder_from_layout_bounds() {
   if (commands.size() != 1) {
     return 140;
   }
-  if (commands[0].solid_rect.rect.size.width != 16.0F ||
-      commands[0].solid_rect.rect.size.height != 16.0F) {
+  if (commands[0].kind != cgpui::PaintCommandKind::text) {
     return 141;
   }
 
-  return commands[0].solid_rect.color.a > 0.0F ? 0 : 142;
+  const cgpui::TextPaint& text = commands[0].text;
+  if (text.bounds.size.width != 16.0F || text.bounds.size.height != 16.0F) {
+    return 142;
+  }
+  if (text.content != "hi" || text.byte_length != model.text().size()) {
+    return 143;
+  }
+
+  return text.color.a > 0.0F ? 0 : 144;
 }
 
 int test_element_builder_builds_text_leaf() {
@@ -3274,7 +3291,7 @@ int main() {
     return result;
   }
   if (const int result =
-          test_text_element_paints_text_placeholder_from_layout_bounds();
+          test_text_element_paints_text_command_from_layout_bounds();
       result != 0) {
     return result;
   }

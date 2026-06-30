@@ -1,5 +1,37 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 121 Text Paint Command
+
+- Continued Step 121 in `.worktrees/text-paint-command` on
+  `codex/text-paint-command`, rebased onto current `master` at
+  `dec75ba docs: refine back forty execution plan`.
+- The prior RED cycle for this step failed as expected on missing text paint
+  command APIs: `PaintCommandKind::text`, `TextPaint`,
+  `PaintCommand::text`, and `PaintList::fill_text(...)`.
+- Implemented text paint command metadata in `include/cgpui/ui/ui.hpp` and
+  `src/ui/ui.cpp`: `PaintCommandKind::text`, `TextPaint`,
+  `PaintList::fill_text(...)`, text clip metadata, and `TextElement::paint`
+  now emitting text commands instead of placeholder rectangles.
+- Updated `render_view(...)` so text commands are skipped until a later Vulkan
+  text drawing step rather than being converted back into rectangle fallback.
+- Added/updated coverage in `tests/ui/element_test.cpp`,
+  `tests/ui/render_view_test.cpp`, and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for text command
+  payloads, clip propagation, header visibility, and render-view text-command
+  skipping.
+- Verified targeted tests in the feature worktree:
+  `xmake test -P . element_test/default render_view_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168 forward
+  plan so Step 121 is recorded as implemented and feature-worktree verified.
+  Step 122 is the next implementation slice after Step 121 commit, merge,
+  post-merge verification, docs closeout, and cleanup.
+
 ## 2026-06-30 Back-40 Planning With Step 121 Active
 
 - Refreshed the post-Step-128 forward plan at

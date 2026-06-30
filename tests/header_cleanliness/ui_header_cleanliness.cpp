@@ -21,6 +21,10 @@ class TestView final : public cgpui::View {
         cgpui::Rect{.origin = {1.0F, 2.0F}, .size = {3.0F, 4.0F}},
         cgpui::Color{.r = 0.0F, .g = 1.0F, .b = 0.0F, .a = 1.0F},
         cgpui::BorderRadii::all(2.0F));
+    paint_list.fill_text(
+        cgpui::Rect{.origin = {2.0F, 3.0F}, .size = {12.0F, 16.0F}},
+        cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+        "header");
   }
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
@@ -175,13 +179,16 @@ int main() {
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 2) {
+  if (commands.size() != 3) {
     return 1;
   }
   const cgpui::RoundedRect& rounded = commands[1].rounded_rect;
+  const cgpui::TextPaint& text = commands[2].text;
   return commands[0].kind == cgpui::PaintCommandKind::solid_rect &&
                  commands[1].kind == cgpui::PaintCommandKind::rounded_rect &&
+                 commands[2].kind == cgpui::PaintCommandKind::text &&
                  rounded.radius.top_left == 2.0F && text_model.text() == "x" &&
+                 text.content == "header" && text.byte_length == 6 &&
                  render_record.sequence == 1 &&
                  render_record.root_element_id.has_value() &&
                  event_route.element_ancestry.size() == 1 &&
