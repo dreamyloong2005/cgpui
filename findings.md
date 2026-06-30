@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Event Route Ancestry Metadata
+
+- Step 109 keeps ancestry as a route snapshot, not a propagation behavior
+  change. `EventRoute::element_ancestry` is ordered target-to-root so Step 110
+  can handle the target first and then bubble through ancestors without
+  recomputing parent links.
+- `EventRoute::view_ancestry` is also ordered target-to-root. A normal root
+  event records only `ViewId{1}`; a hit on a registered `ChildViewElement`
+  records the child `ViewId` followed by the root view. The current event still
+  dispatches through the existing root view fallback until Step 110 adds real
+  propagation phases.
+- Runtime route refresh must happen after the final target is selected,
+  because keyboard focus, pointer capture, and hit testing can each choose a
+  different element or view target. View-target pointer capture clears the
+  element target before ancestry is recalculated so stale element metadata does
+  not leak into view-routed events.
+- Child-view route targeting only upgrades to the child view when the placeholder
+  references a registered live view. Removed or missing child views still leave
+  the event on the root route, matching the view registry soft-fail contract.
+
 ## 2026-06-30 Child-View Placeholder
 
 - Step 108 is intentionally metadata-only. `ChildViewElement` stores a

@@ -167,6 +167,8 @@ enum class EventKind {
 struct EventRoute {
   ViewId target_view_id;
   std::optional<ElementId> target_element_id;
+  std::vector<ElementId> element_ancestry;
+  std::vector<ViewId> view_ancestry;
   EventKind event_kind = EventKind::unknown;
 };
 
@@ -464,6 +466,13 @@ class WindowRuntime {
   void schedule_redraw();
   void flush_deferred_redraw_request();
   void fail_and_quit(Error error);
+  void refresh_route_ancestry(EventRoute& route) const;
+  [[nodiscard]] std::vector<ElementId> element_ancestry_for(
+      ElementId element_id) const;
+  [[nodiscard]] std::vector<ViewId> view_ancestry_for(
+      ViewId view_id) const;
+  [[nodiscard]] std::optional<ViewId> child_view_target_for(
+      ElementId element_id) const;
   [[nodiscard]] Element* routed_element(ElementId element_id);
   [[nodiscard]] const Element* routed_element(ElementId element_id) const;
   [[nodiscard]] WindowRuntimeContext context();

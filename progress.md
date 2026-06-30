@@ -1716,6 +1716,27 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
 
+- Started Step 109: event route carries element and view ancestry metadata in
+  `.worktrees/event-route-ancestry` on `codex/event-route-ancestry`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Added RED `window_runtime_test` and `ui_header_cleanliness` coverage for
+  `EventRoute::element_ancestry` and `EventRoute::view_ancestry`; the test
+  failed as expected because those public fields did not exist.
+- Implemented Step 109 in `codex/event-route-ancestry`: added target-to-root
+  element ancestry, target-to-root view ancestry, route refresh after keyboard
+  focus/pointer capture/hit-test target selection, and live child-view
+  placeholder targeting metadata without changing event propagation phases.
+- Verified targeted tests:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 ## 2026-06-30 Back-40 Planning Refresh
 
 - Updated

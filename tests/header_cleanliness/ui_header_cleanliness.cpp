@@ -56,6 +56,13 @@ int main() {
       .viewport_size = cgpui::Size{3.0F, 4.0F},
       .root_element_id = cgpui::ElementId{2},
   };
+  cgpui::EventRoute event_route{
+      .target_view_id = cgpui::ViewId{1},
+      .target_element_id = cgpui::ElementId{2},
+      .element_ancestry = {cgpui::ElementId{2}},
+      .view_ancestry = {cgpui::ViewId{1}},
+      .event_kind = cgpui::EventKind::pointer_moved,
+  };
   cgpui::StyleState style_state;
   style_state.base = cgpui::Style{}.with_background_color(cgpui::rgb(0, 0, 0));
   style_state.hover =
@@ -142,6 +149,8 @@ int main() {
   return paint_list.commands().size() == 1 && text_model.text() == "x" &&
                  render_record.sequence == 1 &&
                  render_record.root_element_id.has_value() &&
+                 event_route.element_ancestry.size() == 1 &&
+                 event_route.view_ancestry.size() == 1 &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  resolved.background_color.has_value() &&
                  static_cast<bool>(app_options.setup_context) &&

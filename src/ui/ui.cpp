@@ -83,6 +83,7 @@ void apply_pointer_capture_owner_to_route(
     EventRoute& route) {
   if (const ViewId* view_id = owner.view_id(); view_id != nullptr) {
     route.target_view_id = *view_id;
+    route.target_element_id.reset();
     return;
   }
   if (const ElementId* element_id = owner.element_id();
@@ -320,6 +321,7 @@ EventRoute EventRouter::route_to_root(
     ViewId root_view_id) {
   return EventRoute{
       .target_view_id = root_view_id,
+      .view_ancestry = {root_view_id},
       .event_kind = event_kind_for(event)};
 }
 
@@ -576,6 +578,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     } else if (hit_element_id.has_value()) {
       current_event_route_->target_element_id = hit_element_id;
     }
+    refresh_route_ancestry(*current_event_route_);
     if (is_focus_activation_event(event) &&
         current_event_route_->target_element_id.has_value()) {
       if (Element* element =
@@ -729,6 +732,69 @@ void WindowRuntime::fail_and_quit(Error error) {
     error_callback_(error);
   }
   application_.quit();
+}
+
+void WindowRuntime::refresh_route_ancestry(EventRoute& route) const {
+  route.element_ancestry.clear();
+  if (route.target_element_id.has_value()) {
+    route.element_ancestry =
+        element_ancestry_for(*route.target_element_id);
+    if (const std::optional<ViewId> child_view_id =
+            child_view_target_for(*route.target_element_id);
+        child_view_id.has_value()) {
+      route.target_view_id = *child_view_id;
+    }
+  }
+  route.view_ancestry = view_ancestry_for(route.target_view_id);
+}
+
+std::vector<ElementId> WindowRuntime::element_ancestry_for(
+    ElementId element_id) const {
+  std::vector<ElementId> ancestry;
+  if (element_id.value == 0) {
+    return ancestry;
+  }
+
+  if (owned_element_tree_ != nullptr) {
+    ElementId current = element_id;
+    while (current.value != 0 && owned_element_tree_->get(current) != nullptr) {
+      ancestry.push_back(current);
+      const std::optional<ElementId> parent =
+          owned_element_tree_->parent(current);
+      if (!parent.has_value()) {
+        break;
+      }
+      current = *parent;
+    }
+    return ancestry;
+  }
+
+  if (element_root_ != nullptr && element_root_->id() == element_id) {
+    ancestry.push_back(element_id);
+  }
+  return ancestry;
+}
+
+std::vector<ViewId> WindowRuntime::view_ancestry_for(ViewId view_id) const {
+  std::vector<ViewId> ancestry;
+  if (view_id.value != 0) {
+    ancestry.push_back(view_id);
+  }
+  if (view_id != root_view_id_ && root_view_id_.value != 0) {
+    ancestry.push_back(root_view_id_);
+  }
+  return ancestry;
+}
+
+std::optional<ViewId> WindowRuntime::child_view_target_for(
+    ElementId element_id) const {
+  const auto* child_view =
+      dynamic_cast<const ChildViewElement*>(routed_element(element_id));
+  if (child_view == nullptr || child_view->view_id().value == 0 ||
+      find_view(child_view->view_id()) == nullptr) {
+    return {};
+  }
+  return child_view->view_id();
 }
 
 Element* WindowRuntime::routed_element(ElementId element_id) {

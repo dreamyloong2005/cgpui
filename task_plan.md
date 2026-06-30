@@ -99,10 +99,10 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It also records the current
-pre-back-40 handoff state: Step 108 is merged and post-merge verified on
-Windows and WSL Arch Linux, Step 109 is the active implementation step, and
+pre-back-40 handoff state: Step 109 is implemented and feature-verified on
+Windows and WSL Arch Linux, Step 110 is the next implementation step, and
 Step 129 remains gated behind completion and Windows/WSL verification of Steps
-109-128.
+110-128.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 109-128 queue unless the plan is explicitly reprioritized.
@@ -227,7 +227,7 @@ the current Step 109-128 queue unless the plan is explicitly reprioritized.
 106. [x] Runtime root view lifecycle storage for app-opened windows.
 107. [x] View registry skeleton for multiple view ids beyond the root.
 108. [x] Child-view element placeholder that embeds another view's rendered output.
-109. [ ] Event route carries element and view ancestry metadata.
+109. [x] Event route carries element and view ancestry metadata.
 110. [ ] Event propagation phases: target handling then ancestor bubbling before view fallback.
 111. [ ] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
 112. [ ] Scroll element binding helper backed by `ScrollState`.
@@ -290,9 +290,10 @@ the current Step 109-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 108 is merged to `master` and post-merge verified on Windows and WSL Arch
-Linux. The active implementation step is Step 109: event route carries element
-and view ancestry metadata.
+Step 109 is implemented in `codex/event-route-ancestry` and feature-verified
+on Windows and WSL Arch Linux. The active implementation step after merge is
+Step 110: event propagation phases: target handling then ancestor bubbling
+before view fallback.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
