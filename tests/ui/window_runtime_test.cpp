@@ -2172,6 +2172,14 @@ void dispatch_element_event_dispatch_sequence() {
   callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
 }
 
+RuntimeFixture* hidden_overflow_hit_test_fixture = nullptr;
+
+void dispatch_hidden_overflow_hit_test_sequence() {
+  auto& callback = hidden_overflow_hit_test_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {20.0F, 5.0F}});
+}
+
 int test_runtime_dispatches_consumed_element_event_before_view_fallback() {
   RuntimeFixture fixture;
   element_event_dispatch_fixture = &fixture;
@@ -2340,6 +2348,55 @@ int test_runtime_skips_disabled_element_event_and_falls_back_to_view() {
   }
 
   return 0;
+}
+
+int test_runtime_respects_hidden_overflow_clip_during_hit_testing() {
+  RuntimeFixture fixture;
+  hidden_overflow_hit_test_fixture = &fixture;
+  fixture.app.on_run = &dispatch_hidden_overflow_hit_test_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id = tree->set_root(
+      std::make_unique<cgpui::StyledElement>(
+          cgpui::Style{}
+              .with_overflow(cgpui::Overflow::hidden)
+              .with_clip_rect(cgpui::Rect{
+                  .origin = {.x = 0.0F, .y = 0.0F},
+                  .size = {.width = 10.0F, .height = 10.0F},
+              })
+              .with_preferred_size(
+                  cgpui::Size{.width = 50.0F, .height = 30.0F})));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  std::vector<std::optional<cgpui::ElementId>> routed_ids;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_moved) {
+          routed_ids.push_back(record.route.target_element_id);
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  hidden_overflow_hit_test_fixture = nullptr;
+
+  if (result != 0) {
+    return 396;
+  }
+  if (routed_ids.size() != 2 || !routed_ids[0].has_value() ||
+      *routed_ids[0] != root_id) {
+    return 397;
+  }
+  return !routed_ids[1].has_value() ? 0 : 398;
 }
 
 RuntimeFixture* event_propagation_fixture = nullptr;
@@ -5580,6 +5637,11 @@ int main() {
   }
   if (const int result =
           test_runtime_skips_disabled_element_event_and_falls_back_to_view();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_respects_hidden_overflow_clip_during_hit_testing();
       result != 0) {
     return result;
   }

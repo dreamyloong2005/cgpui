@@ -397,6 +397,23 @@ class StyledElement : public Element {
 
   void paint(PaintList& paint_list) const override;
 
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    if (style().overflow == Overflow::hidden) {
+      const std::optional<Rect> bounds = layout_bounds();
+      if (!bounds.has_value()) {
+        return {};
+      }
+      const Rect clip_bounds =
+          style().clip_rect.has_value() ? *style().clip_rect : *bounds;
+      if (!contains(clip_bounds, point)) {
+        return {};
+      }
+    }
+
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
       const ElementEventContext& context) override {

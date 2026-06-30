@@ -102,13 +102,15 @@ verification matrix for all 40 follow-on steps. It records the current
 pre-back-40 handoff state at `2251d44 docs: mark step 113 merged`, with the
 Step 113 behavior commit at `7a2ef39 feat: route scroll events to scroll
 state`: Steps 89-113 are merged and post-merge verified on Windows and WSL Arch
-Linux, and Step 129 remains gated behind completion and Windows/WSL
-verification of Steps 114-128.
+Linux, Step 114 is implemented and feature-worktree verified in
+`.worktrees/hidden-overflow-hit-testing`, and Step 129 remains gated behind
+completion and Windows/WSL verification of Steps 115-128 after Step 114 merges.
 
-From the current `master` state, the effective distance to Step 129 is 15
-implementation steps, Steps 114-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 is 55 implementation
-steps, Steps 114-168, plus the four follow-on band checkpoint reviews.
+After the Step 114 feature branch merges, the effective distance to Step 129 is
+14 implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows,
+and WSL verification. The effective distance through Step 168 is 54
+implementation steps, Steps 115-168, plus the four follow-on band checkpoint
+reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 114-128 queue unless the plan is explicitly reprioritized.
@@ -238,7 +240,7 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 111. [x] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
 112. [x] Scroll element binding helper backed by `ScrollState`.
 113. [x] Wheel and trackpad scroll routing into bound scroll state.
-114. [ ] Hidden overflow participates in hit testing, not only paint clip metadata.
+114. [x] Hidden overflow participates in hit testing, not only paint clip metadata.
 115. [ ] Flex alignment and justification primitives.
 116. [ ] Flex grow and shrink factors for child layout.
 117. [ ] Absolute positioning and inset style primitive.
@@ -296,16 +298,19 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 113, wheel and trackpad scroll routing into bound scroll state, is merged
-to `master` with behavior commit `7a2ef39 feat: route scroll events to scroll
-state` and docs closeout `2251d44 docs: mark step 113 merged`, post-merge
-verified on Windows and WSL Arch Linux, and cleaned up. The next
-implementation step is Step 114: hidden overflow participates in hit testing,
-not only paint clip metadata.
+Step 114, hidden overflow participates in hit testing, is implemented and
+verified in `.worktrees/hidden-overflow-hit-testing` on
+`codex/hidden-overflow-hit-testing`. The RED targeted run failed as expected in
+`element_test/default` and `window_runtime_test/default`; after GREEN, targeted
+tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
+debug passed 26/26. The next action is to commit Step 114, fast-forward merge
+it to `master`, run post-merge verification, clean up the worktree/branch, and
+then start Step 115: flex alignment and justification primitives.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 114-128.
+behind completion and Windows/WSL verification of Steps 115-128 after Step 114
+merges.
 
 ## Risks
 

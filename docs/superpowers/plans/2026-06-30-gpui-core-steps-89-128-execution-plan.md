@@ -18,8 +18,10 @@
   behavior commit is `7a2ef39 feat: route scroll events to scroll state`.
 - The Step 113 worktree `.worktrees/scroll-routing` and branch
   `codex/scroll-routing` have been cleaned up.
-- The next implementation slice is Step 114: hidden overflow participates in
-  hit testing, not only paint clip metadata.
+- Step 114 is implemented and feature-worktree verified in
+  `.worktrees/hidden-overflow-hit-testing` on
+  `codex/hidden-overflow-hit-testing`; after merge, the next implementation
+  slice is Step 115: flex alignment and justification primitives.
 
 ## File Map
 
@@ -127,7 +129,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
 - [x] Step 112: scroll element binding helper backed by `ScrollState`.
 - [x] Step 113: wheel and trackpad scroll routing into bound scroll state.
-- [ ] Step 114: hidden overflow participates in hit testing.
+- [x] Step 114: hidden overflow participates in hit testing.
 - [ ] Step 115: flex alignment and justification primitives.
 - [ ] Step 116: flex grow and shrink factors.
 - [ ] Step 117: absolute positioning and inset style primitive.
@@ -163,10 +165,11 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 114
+## Remaining Execution Queue From Step 115
 
-This is the practical remaining sequence after Step 113. Steps 89-113 are kept
-as completed foundation; the active remaining queue is Steps 114-128.
+This is the practical remaining sequence after Step 114. Steps 89-113 are kept
+as completed foundation, and Step 114 is implemented and feature-worktree
+verified; the active remaining queue after merge is Steps 115-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -222,7 +225,7 @@ of single-target-only.
   elements.
 - [x] Step 112: add a scroll-element binding helper backed by `ScrollState`.
 - [x] Step 113: route wheel/trackpad scroll events into bound scroll state.
-- [ ] Step 114: make hidden overflow constrain hit testing.
+- [x] Step 114: make hidden overflow constrain hit testing.
 - [ ] Step 115: add flex alignment and justification primitives.
 - [ ] Step 116: add flex grow and shrink factors.
 - [ ] Step 117: add absolute positioning and inset style.
@@ -259,15 +262,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 114 in an isolated worktree:
+Commit, fast-forward merge, post-merge verify, and clean up Step 114 from the
+existing isolated worktree:
 
 ```powershell
-git worktree add .worktrees/hidden-overflow-hit-testing -b codex/hidden-overflow-hit-testing master
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
+git checkout master
+git merge --ff-only codex/hidden-overflow-hit-testing
 xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Add RED tests proving hidden overflow prevents hits outside clipping bounds,
-then follow the standard per-step verification/merge workflow above.
+After the post-merge Windows and WSL verification passes, start Step 115 in a
+fresh `codex/flex-alignment-justification` worktree.
 
 ## Step Details
 
@@ -565,14 +571,18 @@ Status: complete on `master` after the Step 109 merge.
 
 ### Step 114: Hidden Overflow Hit Testing
 
+Status: implemented and feature-worktree verified in
+`.worktrees/hidden-overflow-hit-testing` on
+`codex/hidden-overflow-hit-testing`; merge and post-merge verification remain.
+
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests proving hidden overflow prevents hits outside the clipping bounds while visible overflow preserves current behavior.
-- [ ] Apply existing `Style::overflow` and `clip_rect` data to hit testing.
-- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests proving hidden overflow prevents hits outside the clipping bounds while visible overflow preserves current behavior.
+- [x] Apply existing `Style::overflow` and `clip_rect` data to hit testing.
+- [x] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`.
 
 ### Step 115: Flex Alignment and Justification
 

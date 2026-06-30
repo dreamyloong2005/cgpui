@@ -1,5 +1,38 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 114 Hidden Overflow Hit Testing
+
+- Continued Step 114 in `.worktrees/hidden-overflow-hit-testing` on
+  `codex/hidden-overflow-hit-testing`.
+- Moved the interrupted Step 114 RED test draft out of the main worktree and
+  kept it in the feature worktree; the main `master` worktree is clean for
+  tracked files again except the known untracked `.vscode/`.
+- Added RED coverage in `element_test` and `window_runtime_test` requiring
+  `StyledElement` hidden overflow to clip hit testing to layout bounds or an
+  explicit `clip_rect`, while visible overflow still lets an overflowing child
+  receive hits.
+- Verified RED with a real rebuild:
+  `xmake -r -P . element_test && xmake -r -P . window_runtime_test && xmake -r -P . ui_header_cleanliness && xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`
+  failed as expected in `element_test/default` and
+  `window_runtime_test/default`; direct debug of the rebuilt executables showed
+  the new assertion return codes `232` and `398`.
+- Implemented `StyledElement::hit_test(...)` in `include/cgpui/ui/element.hpp`:
+  hidden overflow now rejects points outside the explicit clip rect or layout
+  bounds before child/self hit testing, while visible overflow still checks the
+  child before falling back to the styled element itself.
+- Verified targeted tests after GREEN:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P . && xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 114 is marked implemented and feature-worktree
+  verified; Step 115 becomes the next implementation slice after Step 114
+  merge and post-merge verification.
+
 ## 2026-06-30 Back-40 Planning At Step 113 Closeout
 
 - Refreshed the post-Step-128 follow-on plan for Steps 129-168 after the user

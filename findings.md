@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Hidden Overflow Hit Testing
+
+- `StyledElement` needed its own `hit_test(...)` override because the inherited
+  `Element::hit_test(...)` only checked the styled wrapper's layout bounds; it
+  neither forwarded to the owned child nor applied `Overflow::hidden` clip
+  semantics.
+- Hidden overflow hit testing should mirror the existing paint clip contract:
+  if `Style::clip_rect` is present, use it as the hit-test clip; otherwise use
+  the styled element's layout bounds. Points outside that clip return no hit
+  before checking child or self hits.
+- Visible overflow must keep checking the child before falling back to the
+  styled element itself. This preserves current authoring behavior where a
+  child can be hit outside the wrapper's own bounds when overflow remains
+  visible.
+- Runtime coverage for an internally owned child is limited by
+  `ElementTree::get(...)`: a child owned inside `StyledElement` is not a tree
+  node, so runtime route assertions should verify root/no-target clipping
+  behavior unless a later step promotes internal children into the tree.
+- Keep `ScrollElement::hit_test(...)` wrapper-targeting unchanged. Step 113
+  depends on scroll routing finding the scroll viewport wrapper so the runtime
+  can locate the bound `ScrollState`.
+
 ## 2026-06-30 Back-40 Planning At Step 113 Docs Closeout
 
 - The后 40 步 are still Steps 129-168, and the current anchor should be the

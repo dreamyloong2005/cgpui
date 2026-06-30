@@ -1344,6 +1344,83 @@ int test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata() {
              : 134;
 }
 
+int test_styled_element_hidden_overflow_clips_hit_testing_to_bounds() {
+  auto child = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 50.0F, .height = 30.0F});
+  child->assign_id(cgpui::ElementId{136});
+
+  cgpui::StyledElement element(
+      cgpui::Style{}.with_overflow(cgpui::Overflow::hidden),
+      std::move(child));
+  element.assign_id(cgpui::ElementId{135});
+  (void)element.layout(cgpui::LayoutInput{});
+  element.set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 20.0F, .height = 10.0F},
+  });
+
+  if (element.hit_test(cgpui::Point{.x = 5.0F, .y = 5.0F}) !=
+      cgpui::ElementId{136}) {
+    return 232;
+  }
+  return element.hit_test(cgpui::Point{.x = 25.0F, .y = 5.0F}).value == 0
+             ? 0
+             : 233;
+}
+
+int test_styled_element_visible_overflow_preserves_child_hit_testing() {
+  auto child = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 50.0F, .height = 30.0F});
+  child->assign_id(cgpui::ElementId{138});
+
+  cgpui::StyledElement element(
+      cgpui::Style{}.with_overflow(cgpui::Overflow::visible),
+      std::move(child));
+  element.assign_id(cgpui::ElementId{137});
+  (void)element.layout(cgpui::LayoutInput{});
+  element.set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 20.0F, .height = 10.0F},
+  });
+
+  if (element.hit_test(cgpui::Point{.x = 5.0F, .y = 5.0F}) !=
+      cgpui::ElementId{138}) {
+    return 234;
+  }
+  return element.hit_test(cgpui::Point{.x = 25.0F, .y = 5.0F}) ==
+                 cgpui::ElementId{138}
+             ? 0
+             : 235;
+}
+
+int test_styled_element_hidden_overflow_clips_hit_testing_to_explicit_clip_rect() {
+  auto child = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 50.0F, .height = 30.0F});
+  child->assign_id(cgpui::ElementId{140});
+
+  const cgpui::Rect clip{
+      .origin = {.x = 4.0F, .y = 5.0F},
+      .size = {.width = 12.0F, .height = 8.0F},
+  };
+  cgpui::StyledElement element(
+      cgpui::Style{}
+          .with_overflow(cgpui::Overflow::hidden)
+          .with_clip_rect(clip),
+      std::move(child));
+  element.assign_id(cgpui::ElementId{139});
+  (void)element.layout(cgpui::LayoutInput{});
+
+  if (element.hit_test(cgpui::Point{.x = 6.0F, .y = 6.0F}) !=
+      cgpui::ElementId{140}) {
+    return 236;
+  }
+  if (element.hit_test(cgpui::Point{.x = 2.0F, .y = 6.0F}).value != 0 ||
+      element.hit_test(cgpui::Point{.x = 16.0F, .y = 6.0F}).value != 0) {
+    return 237;
+  }
+  return 0;
+}
+
 int test_text_element_binds_text_model_and_lays_out_skeleton() {
   cgpui::TextModel model("hello");
   cgpui::TextElement element(&model);
@@ -2620,6 +2697,21 @@ int main() {
   }
   if (const int result =
           test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_hidden_overflow_clips_hit_testing_to_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_visible_overflow_preserves_child_hit_testing();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_hidden_overflow_clips_hit_testing_to_explicit_clip_rect();
       result != 0) {
     return result;
   }
