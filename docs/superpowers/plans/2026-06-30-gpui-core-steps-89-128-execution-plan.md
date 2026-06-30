@@ -12,14 +12,13 @@
 
 ## Current State
 
-- Steps 89-112 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-113 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `1e9ebda docs: refresh back forty planning after step 112`.
-- Step 113 is implemented and feature-worktree verified in
-  `.worktrees/scroll-routing` on `codex/scroll-routing`.
-- The next merge action is to commit Step 113, fast-forward merge it to
-  `master`, then run post-merge targeted, Windows full debug, and WSL Arch full
-  debug verification. After that, Step 114 is the next implementation slice.
+- `master` includes `7a2ef39 feat: route scroll events to scroll state`.
+- The Step 113 worktree `.worktrees/scroll-routing` and branch
+  `codex/scroll-routing` have been cleaned up.
+- The next implementation slice is Step 114: hidden overflow participates in
+  hit testing, not only paint clip metadata.
 
 ## File Map
 
@@ -163,10 +162,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 113
+## Remaining Execution Queue From Step 114
 
-This is the practical remaining sequence after Step 112. Steps 89-112 are kept
-as completed foundation; the active remaining queue is Steps 113-128.
+This is the practical remaining sequence after Step 113. Steps 89-113 are kept
+as completed foundation; the active remaining queue is Steps 114-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -259,16 +258,15 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 113 merge from the existing isolated worktree:
+Start Step 114 in an isolated worktree:
 
 ```powershell
-git -C .worktrees/scroll-routing status --short --branch
-git -C .worktrees/scroll-routing commit -am "feat: route scroll events to scroll state"
-git merge --ff-only codex/scroll-routing
+git worktree add .worktrees/hidden-overflow-hit-testing -b codex/hidden-overflow-hit-testing master
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Then run post-merge targeted, Windows full debug, and WSL Arch full debug
-verification before cleaning up the worktree and branch.
+Add RED tests proving hidden overflow prevents hits outside clipping bounds,
+then follow the standard per-step verification/merge workflow above.
 
 ## Step Details
 

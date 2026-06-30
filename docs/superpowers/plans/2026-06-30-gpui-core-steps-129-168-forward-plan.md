@@ -4,8 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 114-128 remainder intact after Step 113
-merges inside the
+**Architecture:** Keep the active Steps 114-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -18,16 +17,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-112 are complete on `master` through
-  `7b5f564 feat: add scroll element binding`, with the docs closeout at
-  `ed948a7 docs: mark step 112 merged`.
-- Step 112 was post-merge verified on Windows and WSL Arch Linux, and its
+- Steps 89-113 are complete on `master` through
+  `7a2ef39 feat: route scroll events to scroll state`.
+- Step 113 was post-merge verified on Windows and WSL Arch Linux, and its
   feature worktree/branch have been cleaned up.
-- Step 113 is implemented and feature-worktree verified in
-  `.worktrees/scroll-routing` on `codex/scroll-routing`; it still needs commit,
-  merge, post-merge verification, and cleanup.
-- Steps 114-128 remain the active gate before this follow-on plan after Step
-  113 merges. They are
+- Steps 114-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
@@ -39,14 +33,14 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`ed948a7 docs: mark step 112 merged`. It is the execution plan for Steps
+`7a2ef39 feat: route scroll events to scroll state`. It is the execution plan for Steps
 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is committing and merging the already-created Step 113
-worktree unless the roadmap is explicitly reprioritized.
+implementation action is starting Step 114 unless the roadmap is explicitly
+reprioritized.
 
 - Finish the current gate first: Steps 114-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
-  demo rewrite after Step 113's scroll routing merges.
+  demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
   keyed widgets/style cascade, text/font/renderer diagnostics, and
   Windows/Wayland platform closure plus the parity audit.
@@ -54,11 +48,10 @@ worktree unless the roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- The effective distance after Step 113 merges to Step 129 is 15
+- The effective distance from the current `master` state to Step 129 is 15
   implementation steps, Steps 114-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. The effective distance through Step 168 after Step 113
-  merges is 55 implementation steps, Steps 114-168, plus the four band
-  checkpoint reviews.
+  and WSL verification. The effective distance through Step 168 is 55
+  implementation steps, Steps 114-168, plus the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -168,8 +161,8 @@ Do not begin Step 129 until all of these are true:
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count after Step 113 merges: 15 steps,
-Steps 114-128, plus post-Step-128 Windows/WSL verification.
+Remaining pre-back-40 implementation count from the current `master` state: 15
+steps, Steps 114-128, plus post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 
@@ -234,13 +227,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish merging the existing Step 113
-worktree instead of starting Step 129:
+For the current pre-back-40 state, start Step 114 instead of starting Step
+129:
 
 ```powershell
-git -C .worktrees/scroll-routing status --short --branch
-git -C .worktrees/scroll-routing commit -am "feat: route scroll events to scroll state"
-git merge --ff-only codex/scroll-routing
+git worktree add .worktrees/hidden-overflow-hit-testing -b codex/hidden-overflow-hit-testing master
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

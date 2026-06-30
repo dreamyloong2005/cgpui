@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 113 Post-Merge
+
+- Committed Step 113 as `7a2ef39 feat: route scroll events to scroll state`
+  from `.worktrees/scroll-routing` on `codex/scroll-routing`.
+- Fast-forward merged Step 113 to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default scroll_test/default
+  element_test/default ui_header_cleanliness/default` passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Removed `.worktrees/scroll-routing` and deleted `codex/scroll-routing`.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan after merge so the current active implementation step is Step
+  114: hidden overflow participates in hit testing, not only paint clip
+  metadata.
+
+
 ## 2026-06-30 Step 113 Scroll Routing
 
 - Continued Step 113 in `.worktrees/scroll-routing` on
