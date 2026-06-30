@@ -937,6 +937,10 @@ void WindowRuntimeContext::request_keyboard_focus(ElementId element_id) const {
   runtime.request_keyboard_focus(element_id);
 }
 
+void WindowRuntimeContext::focus(ElementId element_id) const {
+  runtime.request_keyboard_focus(element_id);
+}
+
 void WindowRuntimeContext::release_keyboard_focus() const {
   runtime.release_keyboard_focus();
 }
@@ -946,6 +950,10 @@ void WindowRuntimeContext::release_keyboard_focus(ViewId view_id) const {
 }
 
 void WindowRuntimeContext::release_keyboard_focus(ElementId element_id) const {
+  runtime.release_keyboard_focus(element_id);
+}
+
+void WindowRuntimeContext::blur(ElementId element_id) const {
   runtime.release_keyboard_focus(element_id);
 }
 

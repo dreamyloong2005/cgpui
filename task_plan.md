@@ -109,7 +109,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 71. [x] ViewContext key binding helper.
 72. [x] ViewContext text edit binding helper.
 73. [x] ViewContext cursor binding helper.
-74. [ ] ViewContext focus request/release element helpers.
+74. [x] ViewContext focus request/release element helpers.
 75. [ ] ViewContext pointer capture element helpers.
 76. [ ] Element builder click handler helper.
 77. [ ] Element builder focusable helper.
@@ -126,7 +126,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 74: ViewContext focus request/release element helpers.
+Step 75: ViewContext pointer capture element helpers.
 
 ## Risks
 

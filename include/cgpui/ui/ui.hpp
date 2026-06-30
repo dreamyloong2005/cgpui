@@ -213,9 +213,11 @@ struct WindowRuntimeContext {
   void request_keyboard_focus() const;
   void request_keyboard_focus(ViewId view_id) const;
   void request_keyboard_focus(ElementId element_id) const;
+  void focus(ElementId element_id) const;
   void release_keyboard_focus() const;
   void release_keyboard_focus(ViewId view_id) const;
   void release_keyboard_focus(ElementId element_id) const;
+  void blur(ElementId element_id) const;
   void set_element_tree(std::unique_ptr<ElementTree> tree) const;
   void register_action(std::string name, ActionHandler handler) const;
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;

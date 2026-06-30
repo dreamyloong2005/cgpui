@@ -779,6 +779,23 @@
 - Extended the active queue with Steps 86-87 so the requested 20-step run covers
   Steps 68-87 inclusive.
 
+- Started Step 74: ViewContext focus request/release element helpers.
+- Added RED `window_runtime_test` coverage for GPUI-like
+  `ViewContext::focus(ElementId)` and `ViewContext::blur(ElementId)` helpers
+  that focus an element on one key event and release it on a later key event;
+  the test failed to compile because those short authoring helpers did not
+  exist.
+- Implemented Step 74 in `codex/view-context-focus-element-helpers`: added
+  `WindowRuntimeContext::focus(ElementId)` and `blur(ElementId)` as thin
+  forwards over existing element keyboard-focus request/release APIs.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 63: Runtime clicks request focus for focusable elements.
 - Added RED `window_runtime_test` coverage for a left pointer-button press on a
   hit-tested focusable element requesting keyboard focus, invoking the element

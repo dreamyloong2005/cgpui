@@ -708,3 +708,12 @@
 - A cursor binding registered during one event is visible to later pointer
   hover routing, matching the existing runtime cursor state path and preserving
   platform-neutral behavior for Windows and Wayland.
+
+## 2026-06-30 ViewContext Element Focus Helpers
+
+- Short `ViewContext::focus(ElementId)` and `blur(ElementId)` helpers can layer
+  over the existing element keyboard-focus request/release APIs without changing
+  routing semantics.
+- Keeping the long `request_keyboard_focus(ElementId)` APIs alongside the short
+  helpers preserves compatibility while giving author code a more GPUI-like
+  spelling for common element focus flows.
