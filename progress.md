@@ -3036,3 +3036,34 @@
   Step 124 Windows targeted command:
   `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default`
   passed the built Windows targets 2/2.
+
+## 2026-07-01 Step 125 Win32 System Clipboard Backend
+
+- Started Step 125 in `.worktrees/win32-system-clipboard` on
+  `codex/win32-system-clipboard` from `master` at
+  `e0d7248 docs: mark step 124 merged`.
+- Verified the baseline targeted test before edits:
+  `xmake test -P . clipboard_test/default` passed 1/1.
+- Added RED coverage in `tests/platform/clipboard_test.cpp` for Win32 system
+  clipboard UTF-8 interop: platform clipboard reads text written through
+  Win32 `CF_UNICODETEXT`, and platform clipboard writes text readable through
+  Win32. The RED only became meaningful after a forced target rebuild; then
+  `clipboard_test/default` failed as expected against the memory-only platform
+  clipboard.
+- Implemented Step 125 in `src/platform/clipboard.cpp` and `xmake.lua`:
+  Windows `create_platform_clipboard()` now returns a `CF_UNICODETEXT`-backed
+  UTF-8 clipboard implementation, non-Windows keeps `MemoryClipboard`, and
+  Windows clipboard consumers link `user32`.
+- Verified targeted tests after GREEN:
+  `xmake -r -P . clipboard_test; xmake test -P . clipboard_test/default`
+  passed 1/1.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug using the actual distro
+  name `archlinux`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-system-clipboard -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  `findings.md`, and this progress log so Step 125 is recorded as implemented
+  and feature-worktree verified. Step 125 still needs commit, merge,
+  post-merge verification, docs closeout, and cleanup before Step 126 begins.

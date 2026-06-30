@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Win32 System Clipboard Backend
+
+- Step 125 keeps `MemoryClipboard` as the deterministic test/runtime fixture
+  while making the Windows platform clipboard real through
+  `CF_UNICODETEXT`.
+- `create_platform_clipboard()` now remains platform-neutral at the API
+  boundary: Windows returns a UTF-8 wrapper over the system clipboard, while
+  non-Windows keeps the existing memory fallback until the Wayland skeleton in
+  Step 126.
+- The RED test needs a forced target rebuild after editing
+  `tests/platform/clipboard_test.cpp`; otherwise xmake may reuse the previous
+  binary and falsely report the old clipboard contract as passing.
+- The WSL distro name on this machine is `archlinux`, not `Arch`; use
+  `wsl -d archlinux ...` for Linux verification.
+
 ## 2026-07-01 Platform Cursor Application Merged
 
 - Step 124 is merged on `master` at

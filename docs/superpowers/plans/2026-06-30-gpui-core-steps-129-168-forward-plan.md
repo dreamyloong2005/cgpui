@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 125-128 remainder intact inside the
+**Architecture:** Keep the active Steps 126-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -30,7 +30,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 124 post-merge verification passed: targeted Windows tests for built
   targets 2/2, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Steps 125-128 remain the active implementation gate before this follow-on
+- Step 125 is implemented and feature-worktree verified; it still needs merge,
+  post-merge verification, and docs closeout before Step 126 starts.
+- Steps 126-128 remain the active implementation gate before this follow-on
   plan. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
@@ -54,6 +56,25 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   Steps 125-128, followed by post-Step-128 targeted verification, Windows full
   debug, WSL Arch full debug, and clean `master` status.
 - The effective distance through Step 168 is 44
+  implementation slices plus the post-Step-128 verification gate and four band
+  checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 125 GREEN
+
+- Step 125, Win32 system clipboard backend for text copy, cut, and paste, is
+  implemented and feature-worktree verified in `.worktrees/win32-system-clipboard`.
+  RED failed on Win32 system clipboard interop after a forced test rebuild;
+  GREEN adds a `CF_UNICODETEXT`-backed UTF-8 Win32 clipboard while preserving
+  deterministic `MemoryClipboard` behavior for runtime tests and non-Windows
+  fallback.
+- Feature-worktree verification passed: targeted Windows clipboard test 1/1,
+  Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 125 still needs feature commit, fast-forward merge to `master`,
+  post-merge targeted/Windows/WSL verification, docs closeout, and cleanup.
+- After the Step 125 merge, the gate to Step 129 is 3 implementation slices:
+  Steps 126-128, followed by post-Step-128 targeted verification, Windows full
+  debug, WSL Arch full debug, and clean `master` status.
+- The effective distance through Step 168 after the Step 125 merge is 43
   implementation slices plus the post-Step-128 verification gate and four band
   checkpoint reviews.
 
@@ -439,12 +460,12 @@ Do not begin Step 129 until all of these are true:
   on Windows and WSL Arch Linux.
 - [x] Step 123 caret/selection command metadata has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 125-128 have landed Win32/Wayland clipboard hooks, IME geometry,
+- [ ] Steps 126-128 have landed Wayland clipboard hooks, IME geometry,
   and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-4 implementation steps, Steps 125-128, plus post-Step-128 Windows/WSL
+3 implementation steps, Steps 126-128, plus post-Step-128 Windows/WSL
 verification.
 
 ## Back-40 Execution Strategy
@@ -510,13 +531,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 125 instead of starting Step 129:
+For the current pre-back-40 state, finish Step 125 before starting Step 126 or
+Step 129:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/win32-system-clipboard -b codex/win32-system-clipboard master
-cd .worktrees/win32-system-clipboard
+git merge --ff-only codex/win32-system-clipboard
 xmake test -P . clipboard_test/default
 ```
 

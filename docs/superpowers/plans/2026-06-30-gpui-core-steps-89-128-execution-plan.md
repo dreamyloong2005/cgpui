@@ -14,6 +14,9 @@
 
 - Steps 89-124 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
+- Step 125 is implemented and feature-worktree verified in
+  `.worktrees/win32-system-clipboard`; it still needs feature commit, merge,
+  post-merge verification, and docs closeout.
 - Step 124 is merged on `master` at
   `74ad787 feat: apply platform cursors`; post-merge targeted tests passed on
   Windows for built targets 2/2, Windows full debug passed 29/29, and WSL Arch
@@ -31,8 +34,8 @@
 - Step 123, text caret and selection paint metadata, is merged and post-merge
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
-- Step 125, Win32 system clipboard backend for text copy, cut, and paste, is
-  the next implementation slice.
+- Step 126, Wayland system clipboard backend skeleton for text copy, cut, and
+  paste, is the next implementation slice after the Step 125 merge closeout.
 
 ## File Map
 
@@ -163,7 +166,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 122: font descriptor and basic font-size style primitives.
 - [x] Step 123: text element emits caret and selection paint metadata.
 - [x] Step 124: platform cursor application for Win32 and Wayland.
-- [ ] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
+- [x] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
 - [ ] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
 - [ ] Step 127: IME composition/candidate rectangle data from the focused text element.
 - [ ] Step 128: GPUI-like demo rewrite using the public prelude and new authoring API.
@@ -258,7 +261,7 @@ leaving macOS/Metal for a later parity track.
 - [x] Step 123: emit caret and selection paint metadata from text elements.
 - [x] Step 124: apply runtime cursor state through Win32 and Wayland platform
   hooks.
-- [ ] Step 125: add a Win32 system clipboard backend for UTF-8 text.
+- [x] Step 125: add a Win32 system clipboard backend for UTF-8 text.
 - [ ] Step 126: add a Wayland clipboard backend skeleton with graceful
   unsupported behavior.
 - [ ] Step 127: expose IME candidate/composition rectangle data from the
@@ -273,18 +276,21 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 125 from a fresh feature worktree:
+Finish Step 125 by committing the feature worktree, fast-forward merging it to
+`master`, running post-merge targeted/Windows/WSL verification, and doing docs
+closeout. Then start Step 126 from a fresh feature worktree:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/win32-system-clipboard -b codex/win32-system-clipboard master
-cd .worktrees/win32-system-clipboard
+git worktree add .worktrees/wayland-clipboard-skeleton -b codex/wayland-clipboard-skeleton master
+cd .worktrees/wayland-clipboard-skeleton
 xmake test -P . clipboard_test/default
 ```
 
-Step 125 should add a Win32 system clipboard backend for UTF-8 text while
-leaving the existing memory clipboard path deterministic for runtime tests.
+Step 126 should add a Wayland clipboard backend skeleton with graceful
+unsupported/no-seat behavior while preserving runtime copy/cut/paste through
+the shared `Clipboard` interface.
 
 ## Step Details
 
@@ -799,9 +805,16 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - Modify: `src/platform/win32/win32_application.cpp`
 - Modify: `tests/platform/clipboard_test.cpp`
 
-- [ ] Add RED tests for a Win32 clipboard implementation that reads/writes UTF-8 text through the system clipboard.
-- [ ] Keep `MemoryClipboard` unchanged for deterministic runtime tests.
-- [ ] Targeted test command: `xmake test -P . clipboard_test/default`.
+- [x] Add RED tests for a Win32 clipboard implementation that reads/writes
+  UTF-8 text through the system clipboard. RED failed as expected after a
+  forced rebuild on the missing Win32 system interop path.
+- [x] Keep `MemoryClipboard` unchanged for deterministic runtime tests.
+- [x] Targeted test command passed 1/1:
+  `xmake -r -P . clipboard_test; xmake test -P . clipboard_test/default`.
+- [x] Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-system-clipboard -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 126: Wayland System Clipboard Backend Skeleton
 

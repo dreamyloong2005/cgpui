@@ -26,6 +26,9 @@ target("cgpui_platform")
     remove_files("src/platform/platform_unimplemented.cpp")
     add_deps("cgpui_core")
     add_includedirs(public_includedirs, {public = true})
+    if is_plat("windows") then
+        add_syslinks("user32")
+    end
 
 target("cgpui_platform_fallback")
     set_kind("static")
@@ -210,6 +213,9 @@ target("clipboard_test")
     add_files("tests/platform/clipboard_test.cpp")
     add_deps("cgpui_core", "cgpui_platform")
     add_includedirs(public_includedirs)
+    if is_plat("windows") then
+        add_syslinks("user32")
+    end
     add_tests("default")
 
 target("cgpui_ui")
