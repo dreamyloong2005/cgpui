@@ -12,15 +12,16 @@
 
 ## Current State
 
-- Steps 89-125 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-126 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
 - Step 125 is merged on `master` at
   `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
   1/1, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
-- Step 126 is implemented and feature-worktree verified in
-  `.worktrees/wayland-clipboard-skeleton`; it still needs feature commit,
-  merge, post-merge verification, and docs closeout.
+- Step 126 is merged on `master` at
+  `ab464d5 feat: add wayland clipboard skeleton`; post-merge targeted tests
+  passed 1/1, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - Step 124 is merged on `master` at
   `74ad787 feat: apply platform cursors`; post-merge targeted tests passed on
   Windows for built targets 2/2, Windows full debug passed 29/29, and WSL Arch
@@ -39,7 +40,7 @@
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
 - Step 127, IME composition/candidate rectangle data from the focused text
-  element, is the next implementation slice after the Step 126 merge closeout.
+  element, is the next implementation slice.
 
 ## File Map
 
@@ -280,9 +281,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 126 by committing the feature worktree, fast-forward merging it to
-`master`, running post-merge targeted/Windows/WSL verification, and doing docs
-closeout. Then start Step 127 from a fresh feature worktree:
+Start Step 127 from a fresh feature worktree:
 
 ```powershell
 git checkout master
@@ -844,6 +843,14 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] WSL Arch full debug passed 26/26:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `ab464d5 feat: add wayland clipboard skeleton`.
+- [x] Post-merge targeted test passed 1/1:
+  `xmake test -P . clipboard_test/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 127: IME Candidate Rectangle Data
 

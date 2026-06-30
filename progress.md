@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 126 Post-Merge
+
+- Fast-forward merged Step 126 to `master` at
+  `ab464d5 feat: add wayland clipboard skeleton`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . clipboard_test/default` passed 1/1.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, the 129-168 forward
+  plan, and `findings.md` so Step 126 is marked merged and post-merge
+  verified. Step 127, IME composition/candidate rectangle data from the
+  focused text element, is the next implementation slice.
+
 ## 2026-07-01 Step 126 Wayland Clipboard Skeleton
 
 - Started Step 126 in `.worktrees/wayland-clipboard-skeleton` on

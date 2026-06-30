@@ -99,11 +99,10 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff after Step 126 GREEN: Steps 89-125 are merged and
-post-merge verified on Windows and WSL Arch Linux, and Step 126 is implemented
-and feature-worktree verified. Step 129 remains gated behind completion and
-Windows/WSL verification of Steps 127-128, plus the post-Step-128 exit
-verification.
+pre-back-40 handoff after Step 126: Steps 89-126 are merged and post-merge
+verified on Windows and WSL Arch Linux. Step 129 remains gated behind
+completion and Windows/WSL verification of Steps 127-128, plus the
+post-Step-128 exit verification.
 
 After the Step 126 merge, the effective distance to Step 129 is 2
 implementation steps, Steps 127-128, plus post-Step-128 targeted, Windows, and
@@ -423,17 +422,19 @@ debug passed 26/26. Step 126, Wayland system clipboard backend skeleton for
 text copy, cut, and paste, is the next implementation slice.
 
 Step 126, Wayland system clipboard backend skeleton for text copy, cut, and
-paste, is implemented in `.worktrees/wayland-clipboard-skeleton`. RED failed as
-expected on missing Linux `WaylandClipboard`, `WaylandClipboardSupport`, and
-`WaylandClipboardOptions` APIs. GREEN adds a Linux-only Wayland clipboard
-skeleton that reports `unsupported`, `no_seat`, or `available` support states,
-keeps graceful memory fallback read/write behavior for unsupported/no-seat
-runtime copy/cut/paste, and makes Linux `create_platform_clipboard()` return
-the Wayland skeleton instead of `MemoryClipboard`. Feature-worktree targeted
-tests passed 1/1 on Windows and WSL Arch Linux, Windows full debug passed
-29/29, and WSL Arch Linux full debug passed 26/26. Step 126 still needs
-feature commit, merge, post-merge verification, and docs closeout before Step
-127 starts.
+paste, is merged on `master` at `ab464d5 feat: add wayland clipboard
+skeleton`. RED failed as expected on missing Linux `WaylandClipboard`,
+`WaylandClipboardSupport`, and `WaylandClipboardOptions` APIs. GREEN adds a
+Linux-only Wayland clipboard skeleton that reports `unsupported`, `no_seat`, or
+`available` support states, keeps graceful memory fallback read/write behavior
+for unsupported/no-seat runtime copy/cut/paste, and makes Linux
+`create_platform_clipboard()` return the Wayland skeleton instead of
+`MemoryClipboard`. Feature-worktree targeted tests passed 1/1 on Windows and
+WSL Arch Linux, Windows full debug passed 29/29, and WSL Arch Linux full debug
+passed 26/26. Post-merge targeted tests passed 1/1, Windows full debug passed
+29/29, and WSL Arch Linux full debug passed 26/26. Step 127, IME
+composition/candidate rectangle data from the focused text element, is the next
+implementation slice.
 
 ## Risks
 

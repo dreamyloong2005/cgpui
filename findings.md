@@ -1,5 +1,15 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Wayland Clipboard Skeleton Merged
+
+- Step 126 is merged on `master` at
+  `ab464d5 feat: add wayland clipboard skeleton` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The remaining pre-back-40 gate is Steps 127-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch Linux full debug verification.
+- Step 127 should expose focused text IME composition/candidate rectangle data
+  without wiring platform IME placement yet.
+
 ## 2026-07-01 Wayland Clipboard Skeleton
 
 - Step 126 keeps Wayland clipboard work deliberately skeletal: Linux now has a
@@ -21,9 +31,10 @@
 - Step 125 is merged on `master` at
   `389b9fb feat: add win32 system clipboard` and post-merge verified on
   Windows and WSL Arch Linux.
-- The remaining pre-back-40 gate is Steps 126-128 plus the post-Step-128
+- The remaining pre-back-40 gate after Step 125 was Steps 126-128 plus the post-Step-128
   targeted, Windows full debug, and WSL Arch Linux full debug verification.
-- Step 126 should start from `.worktrees/wayland-clipboard-skeleton` on
+- From the Step 125 merge snapshot, Step 126 should start from
+  `.worktrees/wayland-clipboard-skeleton` on
   `codex/wayland-clipboard-skeleton` and add a Wayland clipboard backend
   skeleton with graceful unsupported/no-seat behavior while preserving the
   shared `Clipboard` interface.
