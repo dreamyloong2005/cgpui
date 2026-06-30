@@ -1150,3 +1150,32 @@
 - Step 101 intentionally does not add observer ownership, subscription tokens,
   or entity handle convenience methods. Those remain Step 102/133/130 work and
   would overbuild this slice.
+
+## 2026-06-30 Back-40 Entry Contract Refresh
+
+- The后 40 步 plan should stay an execution-ready queue for Steps 129-168, not
+  an active implementation plan while Step 102-128 still have unresolved
+  runtime, model, event, layout, renderer, platform, and demo work.
+- The important boundary is the Step 128 handoff: Step 129 should start only
+  after the public-prelude demo, model invalidation, view/app lifecycle,
+  routing/focus/scroll/layout depth, text command metadata, cursor/clipboard,
+  and IME geometry are all merged and verified on Windows and WSL Arch Linux.
+- Since Step 102 already implements observation callbacks in its feature
+  worktree, the next active implementation step is Step 103: make model
+  updates/removals invalidate subscribed views automatically while preserving
+  Step 102 observer callback semantics.
+
+## 2026-06-30 Model Observe Helper
+
+- Model observers should be public typed callbacks at the authoring boundary
+  (`ModelObserver<T>`) and erased only inside the runtime storage layer, where
+  `std::type_index` plus the raw entity id can match notifications without
+  duplicating stores per model type.
+- Observing a missing model should soft-fail and avoid registering the
+  callback. That keeps stale ids from creating future callbacks that look
+  alive but cannot read their model.
+- Step 102 intentionally keeps automatic subscribed-view invalidation out of
+  the observe helper. `notify_entity_changed(...)` still preserves the
+  existing layout invalidation behavior, while Step 103 can formalize the
+  model-driven subscribed-view invalidation contract without changing the
+  observer callback shape.

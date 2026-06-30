@@ -30,6 +30,10 @@ using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
 using FocusedTextModelMutation = std::function<void(TextModel&)>;
 
+template <typename T>
+using ModelObserver =
+    std::function<void(const WindowRuntimeContext&, Model<T>)>;
+
 struct PaintCommand {
   SolidRect solid_rect;
   std::optional<Rect> clip_rect;
@@ -201,6 +205,12 @@ struct EntitySubscription {
   std::uint64_t entity_id_value = 0;
 };
 
+struct EntityObserver {
+  std::type_index entity_type{typeid(void)};
+  std::uint64_t entity_id_value = 0;
+  std::function<void(const WindowRuntimeContext&, std::uint64_t)> callback;
+};
+
 enum class CursorShape {
   default_arrow,
   pointing_hand,
@@ -284,6 +294,9 @@ struct WindowRuntimeContext {
 
   template <typename T, typename Update>
   bool update_model(Model<T> model, Update&& update) const;
+
+  template <typename T, typename Observer>
+  bool observe_model(Model<T> model, Observer&& observer) const;
 
   template <typename T>
   bool remove_model(Model<T> model) const;
@@ -397,6 +410,9 @@ class WindowRuntime {
   template <typename T>
   [[nodiscard]] T* mutate_entity(EntityId<T> id);
 
+  template <typename T, typename Observer>
+  bool observe_model(EntityId<T> entity_id, Observer&& observer);
+
   template <typename T>
   bool remove_entity(EntityId<T> id);
 
@@ -463,6 +479,7 @@ class WindowRuntime {
   Clipboard* clipboard_ = nullptr;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::vector<EntitySubscription> entity_subscriptions_;
+  std::vector<EntityObserver> entity_observers_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;
@@ -530,6 +547,13 @@ bool WindowRuntimeContext::update_model(Model<T> model, Update&& update) const {
   return runtime.notify_entity_changed(model);
 }
 
+template <typename T, typename Observer>
+bool WindowRuntimeContext::observe_model(
+    Model<T> model,
+    Observer&& observer) const {
+  return runtime.observe_model(model, std::forward<Observer>(observer));
+}
+
 template <typename T>
 bool WindowRuntimeContext::remove_model(Model<T> model) const {
   return runtime.remove_entity(model);
@@ -577,6 +601,28 @@ T* WindowRuntime::mutate_entity(EntityId<T> id) {
     return nullptr;
   }
   return store->get(id);
+}
+
+template <typename T, typename Observer>
+bool WindowRuntime::observe_model(
+    EntityId<T> entity_id,
+    Observer&& observer) {
+  ModelObserver<T> observer_fn{std::forward<Observer>(observer)};
+  if (!observer_fn || read_entity(entity_id) == nullptr) {
+    return false;
+  }
+
+  entity_observers_.push_back(EntityObserver{
+      .entity_type = std::type_index(typeid(T)),
+      .entity_id_value = entity_id.value,
+      .callback =
+          [observer = std::move(observer_fn)](
+              const WindowRuntimeContext& context,
+              std::uint64_t entity_id_value) {
+            observer(context, Model<T>{entity_id_value});
+          },
+  });
+  return true;
 }
 
 template <typename T>

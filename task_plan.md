@@ -101,7 +101,7 @@ RED test intent, targeted commands, and Windows/WSL verification matrix for
 all 40 follow-on steps.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 102 unless the plan is explicitly reprioritized.
+the current active Step 103 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -220,7 +220,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 99. [x] Public `Model<T>`/`Entity<T>` authoring aliases over typed entity ids.
 100. [x] ViewContext model helpers for create, read, update, and remove.
 101. [x] Weak entity/view handle primitives with soft-fail upgrade.
-102. [ ] ViewContext observe/subscribe callback helper for model changes.
+102. [x] ViewContext observe/subscribe callback helper for model changes.
 103. [ ] Model update notification automatically invalidates subscribed views.
 104. [ ] Public `AppContext` wrapper over the app runner setup phase.
 105. [ ] `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
@@ -290,8 +290,9 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 101 is complete. Next implementation step is Step 102:
-ViewContext observe/subscribe callback helper for model changes.
+Step 102 is complete in the active feature worktree. Next implementation step
+after merging Step 102 is Step 103:
+Model update notification automatically invalidates subscribed views.
 
 ## Risks
 

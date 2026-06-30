@@ -26,6 +26,9 @@ class TestView final : public cgpui::View {
     (void)context.upgrade_entity(weak_model);
     const cgpui::WeakView weak_view(context.view_id);
     (void)context.upgrade_view(weak_view);
+    (void)context.observe_model(
+        model,
+        [](const cgpui::ViewContext&, cgpui::Model<TestModel>) {});
     (void)context.read_model(model);
     (void)context.update_model(
         model,

@@ -1564,6 +1564,57 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 26/26.
 
+## 2026-06-30 Back-40 Planning After Step 102
+
+- Refreshed the post-Step-128 follow-on plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  while working inside `codex/model-observe-subscribe-helper`.
+- Updated the forward plan's current state: Steps 89-101 are complete on
+  `master`; Step 102 is implemented and feature-worktree verified but still
+  needs final targeted verification after docs changes, commit, merge,
+  post-merge verification, and cleanup; Steps 103-128 remain the active
+  prerequisite queue before Step 129.
+- Added a Back-40 entry contract that requires Step 128 on a clean `master`,
+  post-Step-128 targeted verification, Windows full debug, WSL Arch full debug,
+  render/model/route/text/platform readiness, and no tracked/staged changes
+  before starting Step 129.
+- Updated the 89-128 execution plan and `task_plan.md` so Step 102 is marked
+  complete in the feature worktree and the next implementation slice after
+  merge is Step 103:
+  `model-update-invalidates-subscribed-views`.
+
+## 2026-06-30 Step 102 Model Observe Helper
+
+- Started Step 102 in `codex/model-observe-subscribe-helper` from `master` at
+  `f3e3bcb`.
+- Baseline targeted tests passed:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED `window_runtime_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for `ModelObserver<T>`,
+  `ViewContext::observe_model(...)`, missing-model soft failure, callback
+  context visibility, update notifications, and remove notifications; the RED
+  build failed as expected because `WindowRuntimeContext::observe_model` did
+  not exist.
+- Implemented Step 102 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  typed public model observer callbacks are stored as erased
+  `EntityObserver` records by model type/id, missing model observation returns
+  `false`, and `notify_entity_changed(...)` invokes matching callbacks before
+  preserving the existing layout invalidation behavior.
+- Updated header-cleanliness coverage so both `cgpui/ui/ui.hpp` and
+  `cgpui/cgpui.hpp` expose the observe helper and `ModelObserver<T>` alias.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- After the back-40 planning refresh, re-ran the targeted Step 102 tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

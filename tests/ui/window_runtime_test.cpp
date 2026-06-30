@@ -343,6 +343,43 @@ class RecordingView final : public cgpui::View {
         removed_model_again = context.remove_model(model_id);
         missing_model_after_remove = context.read_model(model_id) == nullptr;
       }
+      if (exercise_view_context_model_observe_helper &&
+          keyboard_key_count == 1) {
+        model_id = context.new_model<RuntimeEntity>(7);
+        observed_model = context.observe_model(
+            model_id,
+            [this](const cgpui::ViewContext& observe_context,
+                   cgpui::Model<RuntimeEntity> observed) {
+              model_observer_count += 1;
+              model_observer_saw_view_id = observe_context.view_id;
+              model_observer_saw_model = observed;
+              const RuntimeEntity* current =
+                  observe_context.read_model(observed);
+              model_observer_last_value =
+                  current == nullptr ? -1 : current->value;
+            });
+        observed_missing_model = context.observe_model(
+            cgpui::Model<RuntimeEntity>{model_id.value + 100},
+            [this](const cgpui::ViewContext&,
+                   cgpui::Model<RuntimeEntity>) {
+              missing_model_observer_count += 1;
+            });
+        updated_model = context.update_model(
+            model_id,
+            [](RuntimeEntity& model) {
+              model.value = 13;
+            });
+        observer_count_after_update = model_observer_count;
+        observer_value_after_update = model_observer_last_value;
+        removed_model = context.remove_model(model_id);
+        observer_count_after_remove = model_observer_count;
+        observer_value_after_remove = model_observer_last_value;
+        update_missing_model = context.update_model(
+            cgpui::Model<RuntimeEntity>{model_id.value + 100},
+            [](RuntimeEntity& model) {
+              model.value = 99;
+            });
+      }
       if (exercise_weak_entity_and_view_handles && keyboard_key_count == 1) {
         model_id = context.new_model<RuntimeEntity>(41);
         weak_model = cgpui::WeakEntity<RuntimeEntity>(model_id);
@@ -634,6 +671,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_entity_context_access = false;
   bool exercise_view_model_subscriptions = false;
   bool exercise_view_context_model_helpers = false;
+  bool exercise_view_context_model_observe_helper = false;
   bool exercise_weak_entity_and_view_handles = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
@@ -716,6 +754,8 @@ class RecordingView final : public cgpui::View {
   bool removed_model = false;
   bool removed_model_again = true;
   bool missing_model_after_remove = false;
+  bool observed_model = false;
+  bool observed_missing_model = true;
   bool first_subscription_matches_entity = false;
   bool notified_subscribed_entity = false;
   bool notified_missing_entity = true;
@@ -724,6 +764,13 @@ class RecordingView final : public cgpui::View {
   int emplaced_entity_read_value = -1;
   int first_model_read_value = -1;
   int updated_model_read_value = -1;
+  int model_observer_count = 0;
+  int missing_model_observer_count = 0;
+  int model_observer_last_value = -1;
+  int observer_count_after_update = 0;
+  int observer_count_after_remove = 0;
+  int observer_value_after_update = -1;
+  int observer_value_after_remove = -1;
   std::size_t subscriptions_after_subscribe = 0;
   cgpui::EntityId<RuntimeEntity> entity_id{};
   cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
@@ -741,6 +788,8 @@ class RecordingView final : public cgpui::View {
   bool next_unallocated_view_id_was_missing = false;
   int dispatched_action_count = 0;
   cgpui::ViewId action_saw_context_view_id{};
+  cgpui::ViewId model_observer_saw_view_id{};
+  cgpui::Model<RuntimeEntity> model_observer_saw_model{};
   cgpui::ActionDispatchResult first_action_result{};
   cgpui::ActionDispatchResult second_action_result{};
   std::optional<cgpui::ActionDispatchResult> last_action_result_from_context;
@@ -3413,6 +3462,66 @@ int test_view_context_model_helpers_create_read_update_and_remove() {
   return 0;
 }
 
+RuntimeFixture* view_context_model_observe_fixture = nullptr;
+
+void dispatch_view_context_model_observe_sequence() {
+  auto& callback = view_context_model_observe_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 79,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_view_context_observes_model_changes() {
+  RuntimeFixture fixture;
+  view_context_model_observe_fixture = &fixture;
+  fixture.app.on_run = &dispatch_view_context_model_observe_sequence;
+  fixture.view.exercise_view_context_model_observe_helper = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  view_context_model_observe_fixture = nullptr;
+
+  if (result != 0) {
+    return 266;
+  }
+  if (!fixture.view.observed_model ||
+      fixture.view.observed_missing_model ||
+      fixture.view.missing_model_observer_count != 0) {
+    return 267;
+  }
+  if (!fixture.view.updated_model ||
+      !fixture.view.removed_model ||
+      fixture.view.update_missing_model) {
+    return 268;
+  }
+  if (fixture.view.observer_count_after_update != 1 ||
+      fixture.view.observer_value_after_update != 13) {
+    return 269;
+  }
+  if (fixture.view.observer_count_after_remove != 2 ||
+      fixture.view.observer_value_after_remove != -1) {
+    return 270;
+  }
+  if (fixture.view.model_observer_saw_view_id != fixture.view.first_view_id ||
+      fixture.view.model_observer_saw_model != fixture.view.model_id) {
+    return 271;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1) {
+    return 272;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* weak_handle_fixture = nullptr;
 
 void dispatch_weak_handle_sequence() {
@@ -4749,6 +4858,10 @@ int main() {
   }
   if (const int result =
           test_view_context_model_helpers_create_read_update_and_remove();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_observes_model_changes();
       result != 0) {
     return result;
   }
