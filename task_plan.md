@@ -99,7 +99,8 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `7a2ef39 feat: route scroll events to scroll
+pre-back-40 handoff state at `2251d44 docs: mark step 113 merged`, with the
+Step 113 behavior commit at `7a2ef39 feat: route scroll events to scroll
 state`: Steps 89-113 are merged and post-merge verified on Windows and WSL Arch
 Linux, and Step 129 remains gated behind completion and Windows/WSL
 verification of Steps 114-128.
@@ -296,8 +297,9 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 ## Active Step
 
 Step 113, wheel and trackpad scroll routing into bound scroll state, is merged
-to `master` at `7a2ef39 feat: route scroll events to scroll state`,
-post-merge verified on Windows and WSL Arch Linux, and cleaned up. The next
+to `master` with behavior commit `7a2ef39 feat: route scroll events to scroll
+state` and docs closeout `2251d44 docs: mark step 113 merged`, post-merge
+verified on Windows and WSL Arch Linux, and cleaned up. The next
 implementation step is Step 114: hidden overflow participates in hit testing,
 not only paint clip metadata.
 

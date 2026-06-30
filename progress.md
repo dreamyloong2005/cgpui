@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning At Step 113 Closeout
+
+- Refreshed the post-Step-128 follow-on plan for Steps 129-168 after the user
+  asked to plan the "后40步".
+- Corrected the current-state anchor from the Step 113 behavior commit
+  `7a2ef39 feat: route scroll events to scroll state` to the actual current
+  `master` docs closeout `2251d44 docs: mark step 113 merged`.
+- Updated the forward execution gate so Step 113 is checked off and the
+  remaining pre-back-40 gate is Steps 114-128 plus post-Step-128 targeted,
+  Windows full debug, and WSL Arch full debug verification.
+- Kept the back-40 plan as a sequential Step 129-168 queue with checkpoint
+  reviews after Steps 138, 148, 158, and 168. No implementation code changed.
+
 ## 2026-06-30 Step 113 Post-Merge
 
 - Committed Step 113 as `7a2ef39 feat: route scroll events to scroll state`

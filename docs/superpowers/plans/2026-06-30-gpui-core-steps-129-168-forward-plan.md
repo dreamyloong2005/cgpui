@@ -18,9 +18,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-113 are complete on `master` through
-  `7a2ef39 feat: route scroll events to scroll state`.
-- Step 113 was post-merge verified on Windows and WSL Arch Linux, and its
-  feature worktree/branch have been cleaned up.
+  `2251d44 docs: mark step 113 merged`.
+- Step 113's behavior commit is
+  `7a2ef39 feat: route scroll events to scroll state`; it was post-merge
+  verified on Windows and WSL Arch Linux, and its feature worktree/branch have
+  been cleaned up.
 - Steps 114-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -33,7 +35,7 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`7a2ef39 feat: route scroll events to scroll state`. It is the execution plan for Steps
+`2251d44 docs: mark step 113 merged`. It is the execution plan for Steps
 129-168 after the Step 128 gate, not a new active branch queue. The next
 implementation action is starting Step 114 unless the roadmap is explicitly
 reprioritized.
@@ -109,7 +111,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 112-128 are still incomplete:
+second active branch while Steps 114-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -157,7 +159,8 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 110 has landed target handling, ancestor bubbling, disabled-ancestor skipping, and root view fallback using route ancestry on `master`.
 - [x] Step 111 focus traversal has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 112 scroll element binding has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 113-118 have landed wheel/trackpad scroll routing, overflow-aware hit testing, and the planned layout primitives.
+- [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
+- [ ] Steps 114-118 have landed overflow-aware hit testing and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 

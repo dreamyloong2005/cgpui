@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning At Step 113 Docs Closeout
+
+- The后 40 步 are still Steps 129-168, and the current anchor should be the
+  docs closeout commit `2251d44 docs: mark step 113 merged`, not only the Step
+  113 behavior commit `7a2ef39 feat: route scroll events to scroll state`.
+- The gate into Step 129 is now exactly Steps 114-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch full debug verification.
+- The execution order should stay sequential and banded: Steps 129-138 for
+  context/entity/global/async, Steps 139-148 for keyed reconciliation/widgets,
+  Steps 149-158 for text/font/renderer diagnostics, and Steps 159-168 for
+  Windows/Wayland platform closure plus the parity audit.
+- The next practical implementation action remains Step 114 in a fresh
+  `.worktrees/hidden-overflow-hit-testing` worktree, not Step 129.
+
 ## 2026-06-30 Scroll Routing
 
 - `PointerScrolled` routing belongs after route target selection and ancestry

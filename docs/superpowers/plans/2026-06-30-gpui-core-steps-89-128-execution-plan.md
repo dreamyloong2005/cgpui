@@ -14,7 +14,8 @@
 
 - Steps 89-113 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `7a2ef39 feat: route scroll events to scroll state`.
+- `master` includes `2251d44 docs: mark step 113 merged`; the Step 113
+  behavior commit is `7a2ef39 feat: route scroll events to scroll state`.
 - The Step 113 worktree `.worktrees/scroll-routing` and branch
   `codex/scroll-routing` have been cleaned up.
 - The next implementation slice is Step 114: hidden overflow participates in
