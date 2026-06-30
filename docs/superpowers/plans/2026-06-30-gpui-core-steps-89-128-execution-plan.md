@@ -14,11 +14,13 @@
 
 - Steps 89-111 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `fe4dd43 feat: add focus traversal`.
+- `master` is at `3366e42 docs: mark step 111 merged`.
 - The Step 111 worktree `.worktrees/focus-traversal` and branch
   `codex/focus-traversal` have been cleaned up.
-- The next implementation slice is Step 112: scroll element binding helper
-  backed by `ScrollState`.
+- Step 112 is implemented and targeted-verified in
+  `.worktrees/scroll-element-binding` on branch
+  `codex/scroll-element-binding`; finish full Windows/WSL verification,
+  commit, merge, and post-merge verification before starting Step 113.
 
 ## File Map
 
@@ -124,7 +126,8 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 109: event route carries element and view ancestry metadata.
 - [x] Step 110: target handling and ancestor bubbling before view fallback.
 - [x] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
-- [ ] Step 112: scroll element binding helper backed by `ScrollState`.
+- [x] Step 112: scroll element binding helper backed by `ScrollState`
+  implemented and targeted-verified in the feature worktree.
 - [ ] Step 113: wheel and trackpad scroll routing into bound scroll state.
 - [ ] Step 114: hidden overflow participates in hit testing.
 - [ ] Step 115: flex alignment and justification primitives.
@@ -162,10 +165,11 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 112
+## Remaining Execution Queue From Step 113
 
-This is the practical remaining sequence after Step 111. Steps 89-111 are kept
-as completed foundation; the active remaining queue is Steps 112-128.
+This is the practical remaining sequence after Step 112. Steps 89-112 are kept
+as completed foundation once Step 112 is merged; the active remaining queue is
+Steps 113-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -219,7 +223,7 @@ of single-target-only.
   propagation phases.
 - [x] Step 111: add Tab and Shift+Tab focus traversal over enabled focusable
   elements.
-- [ ] Step 112: add a scroll-element binding helper backed by `ScrollState`.
+- [x] Step 112: add a scroll-element binding helper backed by `ScrollState`.
 - [ ] Step 113: route wheel/trackpad scroll events into bound scroll state.
 - [ ] Step 114: make hidden overflow constrain hit testing.
 - [ ] Step 115: add flex alignment and justification primitives.
@@ -258,15 +262,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 112 in an isolated worktree:
+Finish Step 112 in the existing isolated worktree:
 
 ```powershell
-git worktree add .worktrees/scroll-element-binding -b codex/scroll-element-binding master
-xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default
+cd .worktrees/scroll-element-binding
+xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+xmake f -c -m debug -P .
+xmake test -P .
+wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui/.worktrees/scroll-element-binding && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
 ```
 
-Add RED tests for binding `ScrollState` to an element and querying the binding,
-then follow the standard per-step verification/merge workflow above.
+Then commit, fast-forward merge to `master`, repeat targeted/Windows/WSL
+verification on `master`, clean up the worktree/branch, and advance the active
+step to Step 113.
 
 ## Step Details
 
@@ -546,9 +554,9 @@ Status: complete on `master` after the Step 109 merge.
 - Modify: `tests/ui/scroll_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for binding `ScrollState` to an element and querying the binding.
-- [ ] Implement a scroll wrapper/helper that keeps layout behavior compatible with the wrapped child.
-- [ ] Targeted test command: `xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for binding `ScrollState` to an element and querying the binding.
+- [x] Implement a scroll wrapper/helper that keeps layout behavior compatible with the wrapped child.
+- [x] Targeted test command: `xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 113: Wheel and Trackpad Scroll Routing
 

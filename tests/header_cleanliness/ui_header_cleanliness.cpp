@@ -132,12 +132,18 @@ int main() {
                                                      ElementEventContext&) {
                                 return cgpui::EventResult::unhandled();
                               })
-                              .on_pointer_move([](
-                                                   const cgpui::PointerMoved&,
-                                                   const cgpui::
-                                                       ElementEventContext&) {
-                                return cgpui::EventResult::unhandled();
-                              }));
+                               .on_pointer_move([](
+                                                    const cgpui::PointerMoved&,
+                                                    const cgpui::
+                                                        ElementEventContext&) {
+                                 return cgpui::EventResult::unhandled();
+                               }));
+  cgpui::ScrollState scroll_state;
+  cgpui::AnyElement scroll_element = cgpui::scroll(
+      scroll_state,
+      cgpui::div().size(cgpui::Size{7.0F, 8.0F}));
+  const auto* scroll =
+      dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
   const auto* pointer =
       dynamic_cast<const cgpui::PointerElement*>(element.get());
   const auto* styled = pointer == nullptr
@@ -161,9 +167,10 @@ int main() {
                  styled->style().preferred_size.width == 1.0F &&
                  styled->style().background_color.has_value() &&
                  styled->style().background_color->r == 1.0F &&
-                 styled->style().foreground_color.has_value() &&
-                 styled->style().foreground_color->a == 0.5F &&
-                 scroll_model.offset().x == 0.0F
-             ? 0
-             : 1;
+                  styled->style().foreground_color.has_value() &&
+                  styled->style().foreground_color->a == 0.5F &&
+                  scroll != nullptr && scroll->state() == &scroll_state &&
+                  scroll_model.offset().x == 0.0F
+              ? 0
+              : 1;
 }

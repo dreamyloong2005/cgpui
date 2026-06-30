@@ -77,4 +77,6 @@ class ScrollModel {
   Size content_size_;
 };
 
+using ScrollState = ScrollModel;
+
 } // namespace cgpui

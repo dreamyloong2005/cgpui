@@ -1,4 +1,5 @@
 #include "cgpui/ui/element.hpp"
+#include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/style.hpp"
 #include "cgpui/ui/text.hpp"
 #include "cgpui/ui/ui.hpp"
@@ -2369,6 +2370,46 @@ int test_styled_element_skips_disabled_child_event_handling() {
   return 0;
 }
 
+int test_scroll_element_binds_state_and_preserves_child_layout() {
+  cgpui::ScrollState state;
+  cgpui::AnyElement element =
+      cgpui::scroll(
+          state,
+          cgpui::div().size(cgpui::Size{.width = 80.0F, .height = 90.0F}));
+  auto* scroll = dynamic_cast<cgpui::ScrollElement*>(element.get());
+  if (scroll == nullptr || scroll->state() != &state || scroll->child() == nullptr) {
+    return 224;
+  }
+
+  scroll->assign_id(cgpui::ElementId{50});
+  scroll->child()->assign_id(cgpui::ElementId{51});
+  const cgpui::LayoutOutput output = scroll->layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .max_size = {.width = 40.0F, .height = 30.0F},
+          },
+  });
+
+  if (output.size.width != 40.0F || output.size.height != 30.0F) {
+    return 225;
+  }
+  if (state.viewport_size().width != 40.0F ||
+      state.viewport_size().height != 30.0F ||
+      state.content_size().width != 80.0F ||
+      state.content_size().height != 90.0F) {
+    return 226;
+  }
+  const std::optional<cgpui::Rect> child_bounds = scroll->child()->layout_bounds();
+  if (!child_bounds.has_value() || child_bounds->size.width != 80.0F ||
+      child_bounds->size.height != 90.0F) {
+    return 227;
+  }
+  return scroll->hit_test(cgpui::Point{.x = 10.0F, .y = 10.0F}) ==
+                 cgpui::ElementId{51}
+             ? 0
+             : 228;
+}
+
 } // namespace
 
 int main() {
@@ -2756,6 +2797,11 @@ int main() {
   }
   if (const int result =
           test_styled_element_skips_disabled_child_event_handling();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scroll_element_binds_state_and_preserves_child_layout();
       result != 0) {
     return result;
   }

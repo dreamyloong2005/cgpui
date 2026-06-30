@@ -24,6 +24,7 @@ class PreludeView final : public cgpui::View {
 int main() {
   cgpui::ElementTree tree;
   cgpui::TextModel model("x");
+  cgpui::ScrollState scroll_state;
   cgpui::EntityStore<cgpui::TextModel> models;
   const cgpui::Model<cgpui::TextModel> model_id =
       models.insert(cgpui::TextModel("model"));
@@ -64,6 +65,10 @@ int main() {
                         .child(cgpui::child_view(cgpui::ViewId{2})
                                    .size(4.0F, 5.0F))
                         .build());
+  cgpui::AnyElement scroll_element =
+      cgpui::scroll(scroll_state, cgpui::div().size(6.0F, 7.0F));
+  const auto* scroll =
+      dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
   PreludeView view;
   cgpui::AppRunnerOptions options;
   options.setup_context = app_setup;
@@ -71,7 +76,8 @@ int main() {
   (void)options;
   return root_id.value != 0 && tree.root_id() == root_id &&
                  window_descriptor.title == "Prelude Window" &&
-                 window_descriptor.size.height == 13.0F
+                 window_descriptor.size.height == 13.0F &&
+                 scroll != nullptr && scroll->state() == &scroll_state
              ? 0
              : 1;
 }

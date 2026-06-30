@@ -235,7 +235,7 @@ the current Step 112-128 queue unless the plan is explicitly reprioritized.
 109. [x] Event route carries element and view ancestry metadata.
 110. [x] Event propagation phases: target handling then ancestor bubbling before view fallback.
 111. [x] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
-112. [ ] Scroll element binding helper backed by `ScrollState`.
+112. [x] Scroll element binding helper backed by `ScrollState`.
 113. [ ] Wheel and trackpad scroll routing into bound scroll state.
 114. [ ] Hidden overflow participates in hit testing, not only paint clip metadata.
 115. [ ] Flex alignment and justification primitives.
@@ -295,11 +295,11 @@ the current Step 112-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 111, focus traversal over enabled focusable elements with Tab and
-Shift+Tab actions, is merged to `master` at `fe4dd43 feat: add focus traversal`,
-post-merge verified on Windows and WSL Arch Linux, and cleaned up. The next
-implementation step is Step 112: scroll element binding helper backed by
-`ScrollState`.
+Step 112, scroll element binding helper backed by `ScrollState`, is implemented
+in `.worktrees/scroll-element-binding` on branch `codex/scroll-element-binding`
+and targeted-verified in the feature worktree. Finish full Windows/WSL
+verification, commit, fast-forward merge, and post-merge verification before
+starting Step 113.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated

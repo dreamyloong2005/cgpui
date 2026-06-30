@@ -1,10 +1,14 @@
 #include "cgpui/ui/scroll.hpp"
 
+#include <type_traits>
+
 namespace {
 
 bool same(float lhs, float rhs) {
   return lhs == rhs;
 }
+
+static_assert(std::is_same_v<cgpui::ScrollState, cgpui::ScrollModel>);
 
 int test_scroll_model_defaults_to_zero_offset() {
   const cgpui::ScrollModel model;
@@ -70,6 +74,18 @@ int test_scroll_model_reports_scrollable_axes() {
   return model.can_scroll_x() && !model.can_scroll_y() ? 0 : 10;
 }
 
+int test_scroll_state_alias_preserves_scroll_model_semantics() {
+  cgpui::ScrollState state;
+  state.set_viewport_size(cgpui::Size{.width = 40.0F, .height = 30.0F});
+  state.set_content_size(cgpui::Size{.width = 90.0F, .height = 90.0F});
+  state.scroll_by(cgpui::Point{.x = 80.0F, .y = 75.0F});
+
+  return same(state.offset().x, 50.0F) && same(state.offset().y, 60.0F) &&
+                 state.can_scroll_x() && state.can_scroll_y()
+             ? 0
+             : 11;
+}
+
 } // namespace
 
 int main() {
@@ -86,6 +102,10 @@ int main() {
     return result;
   }
   if (const int result = test_scroll_model_reports_scrollable_axes();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_scroll_state_alias_preserves_scroll_model_semantics();
       result != 0) {
     return result;
   }

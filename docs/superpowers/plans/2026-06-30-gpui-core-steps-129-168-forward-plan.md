@@ -17,17 +17,18 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-110 are complete on `master` through
-  `d52ce80 docs: mark step 110 merged`; the Step 110 feature commit is
-  `10f2dd3 feat: add event propagation phases`.
-- Step 110 was post-merge verified on Windows and WSL Arch Linux, and its
+- Steps 89-111 are complete on `master` through
+  `3366e42 docs: mark step 111 merged`; the Step 111 feature commit is
+  `fe4dd43 feat: add focus traversal`.
+- Step 111 was post-merge verified on Windows and WSL Arch Linux, and its
   feature worktree/branch have been cleaned up.
-- Steps 112-128 remain the active gate before this follow-on plan. They are
+- Step 112 is active in `.worktrees/scroll-element-binding` on branch
+  `codex/scroll-element-binding`. Its scroll binding API has reached GREEN
+  targeted verification in the feature worktree, but it still needs full
+  Windows/WSL verification, commit, merge, post-merge verification, and cleanup.
+- Steps 113-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 111 is merged to `master` at `fe4dd43 feat: add focus traversal`,
-  post-merge verified on Windows and WSL Arch Linux, and cleaned up. Step 112
-  is the next active implementation step.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -37,10 +38,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`d52ce80 docs: mark step 110 merged`. It is the execution plan for Steps
+`3366e42 docs: mark step 111 merged`, with Step 112 already in progress in
+`.worktrees/scroll-element-binding`. It is the execution plan for Steps
 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is starting Step 112 unless the roadmap is explicitly
-reprioritized.
+implementation action is finishing Step 112 verification and merge unless the
+roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 112-128 close scroll, layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -54,9 +56,11 @@ reprioritized.
   and cleanup.
 - The effective distance from the current `master` state to Step 129 is 17
   implementation steps, Steps 112-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. The effective distance from the current `master` state
-  through Step 168 is 57 implementation steps, Steps 112-168, plus the four
-  band checkpoint reviews.
+  and WSL verification. Because Step 112 is already implemented and
+  targeted-verified in its feature worktree, the practical remaining distance
+  after Step 112 is merged will be 16 implementation steps, Steps 113-128. The
+  effective distance from the current `master` state through Step 168 is 57
+  implementation steps, Steps 112-168, plus the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -160,13 +164,17 @@ Do not begin Step 129 until all of these are true:
 - [x] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
 - [x] Step 109 has landed element and view route ancestry metadata, giving Step 110 a target-to-root route for propagation.
 - [x] Step 110 has landed target handling, ancestor bubbling, disabled-ancestor skipping, and root view fallback using route ancestry on `master`.
-- [ ] Steps 112-118 have landed scroll routing, overflow-aware hit testing, and the planned layout primitives. Step 111 focus traversal has landed on `master`.
+- [x] Step 111 focus traversal has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
+- [ ] Step 112 scroll element binding is implemented and targeted-verified in `.worktrees/scroll-element-binding`, but still needs full Windows/WSL verification, commit, merge, and post-merge verification.
+- [ ] Steps 113-118 have landed wheel/trackpad scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count from the current state: 17 steps,
-Steps 112-128. Finishing those steps plus post-Step-128 Windows/WSL
-verification is the planned route into Step 129.
+Remaining pre-back-40 implementation count from the current `master` state: 17
+steps, Steps 112-128. Because Step 112 is already GREEN in its feature
+worktree, the immediate route is to finish Step 112 verification and merge; at
+that point the remaining pre-back-40 count becomes 16 implementation steps,
+Steps 113-128, plus post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 
@@ -231,12 +239,15 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 112 instead of starting Step
+For the current pre-back-40 state, finish Step 112 instead of starting Step
 129:
 
 ```powershell
-git worktree add .worktrees/scroll-element-binding -b codex/scroll-element-binding master
-xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default
+cd .worktrees/scroll-element-binding
+xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+xmake f -c -m debug -P .
+xmake test -P .
+wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui/.worktrees/scroll-element-binding && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
 git status --short --branch
 ```
 

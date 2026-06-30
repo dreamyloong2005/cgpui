@@ -1477,3 +1477,16 @@
   starts because `setup_context` runs before platform window creation. Clearing
   records at the start of `WindowRuntime::run(...)` would erase the only Step
   105 observable state and weaken the handoff to Step 106.
+
+## 2026-06-30 Back-40 Planning After Step 112 GREEN
+
+- The后 40 步 plan remains Steps 129-168 and should still wait behind the Step
+  128 gate. Step 112 being GREEN in its feature worktree improves the distance
+  estimate but does not open Step 129 yet because full verification, merge, and
+  Steps 113-128 are still required.
+- The immediate action is to finish Step 112 verification and merge from
+  `.worktrees/scroll-element-binding`, then continue Step 113: wheel and
+  trackpad scroll routing into bound scroll state.
+- After Step 112 merges, the remaining route to the back-40 entry is 16
+  implementation steps, Steps 113-128, plus post-Step-128 targeted, Windows
+  full debug, and WSL Arch full debug verification on a clean `master`.

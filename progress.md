@@ -1858,6 +1858,33 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
 
+- Refreshed the post-Step-128 back-40 planning document in the active Step 112
+  worktree after the user asked for the next 40-step plan.
+- Updated
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  so its current-state section is anchored at `3366e42 docs: mark step 111
+  merged`, records Step 112 as implemented/targeted-verified but not yet
+  merged, and points the immediate execution path at finishing Step 112
+  verification instead of creating the Step 112 worktree again.
+- Clarified the back-40 entry distance: from current `master`, Step 129 is
+  still gated by 17 implementation steps, Steps 112-128, plus post-Step-128
+  Windows/WSL verification; after Step 112 merges, that becomes 16 steps,
+  Steps 113-128, plus post-Step-128 verification.
+
+## 2026-06-30 Step 112 Scroll Element Binding
+
+- Re-synced the 89-128 execution plan so Step 112 is recorded as implemented
+  and targeted-verified in `.worktrees/scroll-element-binding`, with Step 113
+  as the next implementation step after Step 112 merges.
+- Re-ran Step 112 targeted verification:
+  `xmake test -P . scroll_test/default element_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 4/4.
+- Verified Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 - Started Step 109: event route carries element and view ancestry metadata in
   `.worktrees/event-route-ancestry` on `codex/event-route-ancestry`.
 - Verified baseline targeted tests before edits:

@@ -2,6 +2,7 @@
 
 #include "cgpui/core/events.hpp"
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/style.hpp"
 #include "cgpui/ui/text.hpp"
 
@@ -741,6 +742,81 @@ class KeyElement : public Element {
   KeyHandler handler_;
 };
 
+class ScrollElement : public Element {
+ public:
+  ScrollElement(ScrollState& state, std::unique_ptr<Element> child)
+      : state_(&state),
+        child_(std::move(child)) {}
+
+  [[nodiscard]] ScrollState* state() {
+    return state_;
+  }
+
+  [[nodiscard]] const ScrollState* state() const {
+    return state_;
+  }
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    if (child_ == nullptr) {
+      const LayoutOutput output = Element::layout(input);
+      if (state_ != nullptr) {
+        state_->set_viewport_size(output.size);
+        state_->set_content_size(output.size);
+      }
+      return output;
+    }
+
+    const LayoutOutput child_output = child_->layout(LayoutInput{});
+    child_->set_layout_bounds(Rect{
+        .origin = child_output.origin,
+        .size = child_output.size,
+    });
+    const LayoutOutput output{
+        .size = constrain_size(child_output.size, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    if (state_ != nullptr) {
+      state_->set_viewport_size(output.size);
+      state_->set_content_size(child_output.size);
+    }
+    return output;
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override {
+    if (child_) {
+      child_->paint(paint_list);
+    }
+  }
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    return child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
+  }
+
+ private:
+  ScrollState* state_ = nullptr;
+  std::unique_ptr<Element> child_;
+};
+
 class ElementBuilder {
  public:
   [[nodiscard]] static ElementBuilder box() {
@@ -1036,6 +1112,14 @@ class ElementBuilder {
 
 [[nodiscard]] inline ElementBuilder child_view(ViewId view_id) {
   return ElementBuilder::child_view(view_id);
+}
+
+[[nodiscard]] inline AnyElement scroll(ScrollState& state, AnyElement child) {
+  return std::make_unique<ScrollElement>(state, std::move(child));
+}
+
+[[nodiscard]] inline AnyElement scroll(ScrollState& state, ElementBuilder child) {
+  return scroll(state, into_element(std::move(child)));
 }
 
 class ElementTree {
