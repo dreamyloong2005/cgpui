@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 109 Merge
+
+- Refreshed
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the follow-on plan to the current `master` state:
+  `08d0fef docs: mark step 109 merged`, with Step 109's feature commit
+  `74df1df feat: add event route ancestry`.
+- Kept the active implementation action as Step 110 and kept Step 129 gated
+  behind Steps 110-128 plus post-Step-128 targeted, Windows full debug, and WSL
+  Arch full debug verification.
+- Recorded the current distance: 19 implementation steps to reach Step 129, and
+  59 implementation steps from the current state through Step 168, plus the
+  planned band checkpoint reviews.
+- No implementation code changed during this planning refresh.
+
 ## 2026-06-30 Step 108 Post-Merge
 
 - Committed Step 108 as `71c94bb feat: add child view placeholder` from

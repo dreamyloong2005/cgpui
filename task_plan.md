@@ -98,11 +98,16 @@ Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
-verification matrix for all 40 follow-on steps. It also records the current
-pre-back-40 handoff state: Step 109 is merged and post-merge verified on
-Windows and WSL Arch Linux, Step 110 is the next implementation step, and
-Step 129 remains gated behind completion and Windows/WSL verification of Steps
-110-128.
+verification matrix for all 40 follow-on steps. It records the current
+pre-back-40 handoff state at `08d0fef docs: mark step 109 merged`: Step 109 is
+merged and post-merge verified on Windows and WSL Arch Linux, Step 110 is the
+next implementation step, and Step 129 remains gated behind completion and
+Windows/WSL verification of Steps 110-128.
+
+From the current state, the effective distance to Step 129 is 19 implementation
+steps, Steps 110-128, plus post-Step-128 targeted, Windows, and WSL
+verification. The effective distance through Step 168 is 59 implementation
+steps, Steps 110-168, plus the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 110-128 queue unless the plan is explicitly reprioritized.

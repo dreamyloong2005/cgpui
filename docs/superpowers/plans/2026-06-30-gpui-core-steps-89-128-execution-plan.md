@@ -14,7 +14,8 @@
 
 - Steps 89-109 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `74df1df feat: add event route ancestry`.
+- `master` is at `08d0fef docs: mark step 109 merged`; the Step 109 feature
+  commit is `74df1df feat: add event route ancestry`.
 - The main worktree has no tracked/staged content changes from Step 109; the
   known local-only untracked item is `.vscode/`.
 - Step 109 is post-merge verified on Windows and WSL Arch Linux.

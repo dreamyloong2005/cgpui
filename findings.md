@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 109 Merge
+
+- The post-Step-128 "back 40" remains Steps 129-168. It is an execution-ready
+  follow-on queue, not the active branch queue while Step 110-128 are still
+  incomplete.
+- Current `master` is anchored at `08d0fef docs: mark step 109 merged`; the
+  Step 109 feature commit is `74df1df feat: add event route ancestry`.
+- From this state, Step 129 is 19 implementation steps away: Steps 110-128 plus
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification. Step 168 is 59 implementation steps away: Steps 110-168 plus
+  the four band checkpoint reviews.
+- The back-40 order should stay banded: context/entity/global/async first,
+  keyed reconciliation/widgets/style cascade second, text/font/renderer
+  diagnostics third, and Windows/Wayland platform closure plus parity audit
+  last. This order avoids asking widgets or platform hooks to invent missing
+  shared runtime contracts.
+
 ## 2026-06-30 Event Route Ancestry Metadata
 
 - Step 109 keeps ancestry as a route snapshot, not a propagation behavior
