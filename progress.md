@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 91 Element Child Overloads
+
+- Started Step 91: Element builder child overloads for builders,
+  `AnyElement`, and element ownership.
+- Added RED `element_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for `.child(ElementBuilder)`,
+  `.child(AnyElement)`, and typed `std::unique_ptr<T>` element ownership; the
+  test failed because only `std::unique_ptr<Element>` was accepted.
+- Implemented Step 91 in `codex/element-child-overloads`: added a builder
+  child overload that materializes through `into_element(...)`, plus a
+  constrained typed-ownership template for `std::unique_ptr<T>` where
+  `T : Element`.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 ## 2026-06-30 Step 90 Element Authoring Factories
 
 - Started Step 90: Free authoring factories for `div()`, `h_flex()`,

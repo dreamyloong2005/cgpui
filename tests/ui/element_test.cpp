@@ -178,6 +178,68 @@ int test_free_authoring_factories_compose_with_existing_builder_methods() {
              : 195;
 }
 
+int test_element_builder_child_accepts_builder() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .style(cgpui::Style{}.with_gap(3.0F))
+                              .child(cgpui::div().style(
+                                  cgpui::Style{}.with_preferred_size(
+                                      cgpui::Size{.width = 6.0F,
+                                                  .height = 4.0F})))
+                              .child(cgpui::div().style(
+                                  cgpui::Style{}.with_preferred_size(
+                                      cgpui::Size{.width = 8.0F,
+                                                  .height = 5.0F}))));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->children().size() != 2) {
+    return 196;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{});
+  if (output.size.width != 17.0F || output.size.height != 5.0F) {
+    return 197;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 9.0F &&
+                 second_bounds->size.width == 8.0F
+             ? 0
+             : 198;
+}
+
+int test_element_builder_child_accepts_any_element() {
+  cgpui::AnyElement child =
+      cgpui::into_element(cgpui::div().style(
+          cgpui::Style{}.with_preferred_size(
+              cgpui::Size{.width = 13.0F, .height = 7.0F})));
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::v_stack().child(std::move(child)));
+
+  auto* stack = dynamic_cast<cgpui::VerticalStackElement*>(element.get());
+  if (stack == nullptr || stack->children().size() != 1) {
+    return 199;
+  }
+
+  const cgpui::LayoutOutput output = stack->layout(cgpui::LayoutInput{});
+  return output.size.width == 13.0F && output.size.height == 7.0F ? 0 : 200;
+}
+
+int test_element_builder_child_accepts_typed_element_ownership() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::v_stack().child(
+          std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 21.0F, .height = 9.0F})));
+
+  auto* stack = dynamic_cast<cgpui::VerticalStackElement*>(element.get());
+  if (stack == nullptr || stack->children().size() != 1) {
+    return 201;
+  }
+
+  const cgpui::LayoutOutput output = stack->layout(cgpui::LayoutInput{});
+  return output.size.width == 21.0F && output.size.height == 9.0F ? 0 : 202;
+}
+
 int test_base_element_lays_out_zero_size() {
   TestElement element;
   const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
@@ -1992,6 +2054,19 @@ int main() {
   }
   if (const int result =
           test_free_authoring_factories_compose_with_existing_builder_methods();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_child_accepts_builder();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_child_accepts_any_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_child_accepts_typed_element_ownership();
       result != 0) {
     return result;
   }

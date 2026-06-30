@@ -145,7 +145,7 @@ Windows/Linux core API is stable enough for parity work.
 88. [x] Mac readiness audit and desktop target mapping.
 89. [x] Public `AnyElement` alias and minimal into-element authoring convention.
 90. [x] Free authoring factories for `div()`, `h_flex()`, `v_flex()`, `v_stack()`, and `text(...)`.
-91. [ ] Element builder child overloads for builders, `AnyElement`, and element ownership.
+91. [x] Element builder child overloads for builders, `AnyElement`, and element ownership.
 92. [ ] Style unit and color helpers: `px`, `rgb`, `rgba`, and edge constructors.
 93. [ ] Element builder fluent style shortcuts for size, spacing, background, border, radius, and gap.
 94. [ ] Pointer handler shortcuts for down, up, move, and click authoring paths.
@@ -186,9 +186,8 @@ Windows/Linux core API is stable enough for parity work.
 
 ## Active Step
 
-Step 90 is complete. Next implementation step is Step 91:
-Element builder child overloads for builders, `AnyElement`, and element
-ownership.
+Step 91 is complete. Next implementation step is Step 92:
+Style unit and color helpers: `px`, `rgb`, `rgba`, and edge constructors.
 
 ## Risks
 

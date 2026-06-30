@@ -6,6 +6,7 @@
 #include "cgpui/ui/text.hpp"
 
 #include <algorithm>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -672,6 +673,14 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder child(ElementBuilder child) &&;
+
+  template <typename T>
+    requires std::derived_from<T, Element> && (!std::same_as<T, Element>)
+  [[nodiscard]] ElementBuilder child(std::unique_ptr<T> child) && {
+    return std::move(*this).child(std::unique_ptr<Element>(std::move(child)));
+  }
+
   [[nodiscard]] std::unique_ptr<Element> build() && {
     if (kind_ == Kind::fixed_size) {
       return finish(std::make_unique<FixedSizeElement>(size_));
@@ -756,6 +765,11 @@ class ElementBuilder {
 
 [[nodiscard]] inline AnyElement into_element(ElementBuilder builder) {
   return std::move(builder).build();
+}
+
+[[nodiscard]] inline ElementBuilder ElementBuilder::child(
+    ElementBuilder child) && {
+  return std::move(*this).child(into_element(std::move(child)));
 }
 
 [[nodiscard]] inline ElementBuilder div() {

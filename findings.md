@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Element Child Overloads
+
+- `AnyElement` is already `std::unique_ptr<Element>`, so the existing
+  base-ownership overload is the public `AnyElement` path; Step 91 only needs
+  extra overloads for builder materialization and typed derived ownership.
+- `.child(ElementBuilder)` should call `into_element(...)` internally, keeping
+  all builder-to-owned conversion behavior in the same public convention added
+  in Step 89.
+- The typed ownership template should exclude `Element` itself so normal
+  `std::unique_ptr<Element>` and `AnyElement` calls continue using the existing
+  non-template overload and overload resolution stays predictable.
+
 ## 2026-06-30 Element Authoring Factories
 
 - Free factories should return `ElementBuilder`, not `AnyElement`, because the
