@@ -1577,6 +1577,58 @@ int test_element_builder_applies_enabled_state_to_built_element() {
   return 0;
 }
 
+int test_element_builder_focusable_helper_marks_built_element_focusable() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box().focusable().build();
+  element->assign_id(cgpui::ElementId{37});
+
+  if (!element->focusable()) {
+    return 166;
+  }
+
+  element->focus(cgpui::ElementFocusContext{.element_id = element->id()});
+  return element->enabled() ? 0 : 167;
+}
+
+int test_element_builder_focusable_helper_preserves_disabled_state() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box().enabled(false).focusable().build();
+
+  if (element->enabled()) {
+    return 168;
+  }
+  return element->focusable() ? 0 : 169;
+}
+
+int test_element_builder_focusable_helper_composes_with_click_handler() {
+  int click_count = 0;
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .focusable()
+          .on_click([&](const cgpui::ElementEventContext&) {
+            click_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{38});
+
+  if (!element->focusable()) {
+    return 170;
+  }
+
+  const cgpui::EventResult result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+
+  if (click_count != 1) {
+    return 171;
+  }
+  return result.consumed && !result.cancelled ? 0 : 172;
+}
+
 int test_element_builder_click_handler_runs_on_pointer_press() {
   int click_count = 0;
   cgpui::ElementId clicked_element_id{};
@@ -1947,6 +1999,21 @@ int main() {
   }
   if (const int result =
           test_element_builder_applies_enabled_state_to_built_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_focusable_helper_marks_built_element_focusable();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_focusable_helper_preserves_disabled_state();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_focusable_helper_composes_with_click_handler();
       result != 0) {
     return result;
   }

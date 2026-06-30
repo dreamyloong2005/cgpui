@@ -737,3 +737,12 @@
 - Wrapper elements created by builder helpers must mirror the builder's
   enabled state on the wrapper itself, not only on the wrapped child, because
   direct event dispatch sees the outer element first.
+
+## 2026-06-30 Element Builder Focusable Helper
+
+- Builder-level focusability can also be an opt-in wrapper, preserving existing
+  concrete element types unless the helper is requested.
+- Wrapper composition order matters: behavior wrappers like click handling need
+  to stay inside capability wrappers like focusability so `focusable()` remains
+  visible on the built element while event handling still reaches the click
+  handler.

@@ -482,6 +482,62 @@ class ClickElement : public Element {
   ClickHandler handler_;
 };
 
+class FocusableElement : public Element {
+ public:
+  explicit FocusableElement(std::unique_ptr<Element> child)
+      : child_(std::move(child)) {}
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] bool focusable() const override {
+    return true;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    if (child_) {
+      const LayoutOutput output = child_->layout(input);
+      child_->set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      return output;
+    }
+    return Element::layout(input);
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override {
+    if (child_) {
+      child_->paint(paint_list);
+    }
+  }
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    return !enabled() || child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
+  }
+
+ private:
+  std::unique_ptr<Element> child_;
+};
+
 class ElementBuilder {
  public:
   [[nodiscard]] static ElementBuilder box() {
@@ -519,6 +575,11 @@ class ElementBuilder {
 
   [[nodiscard]] ElementBuilder enabled(bool value) && {
     enabled_ = value;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder focusable() && {
+    focusable_ = true;
     return std::move(*this);
   }
 
@@ -584,7 +645,13 @@ class ElementBuilder {
       auto click_element =
           std::make_unique<ClickElement>(std::move(element), click_handler_);
       click_element->set_enabled(enabled_);
-      return click_element;
+      element = std::move(click_element);
+    }
+    if (focusable_) {
+      auto focusable_element =
+          std::make_unique<FocusableElement>(std::move(element));
+      focusable_element->set_enabled(enabled_);
+      element = std::move(focusable_element);
     }
     return element;
   }
@@ -594,6 +661,7 @@ class ElementBuilder {
   Size size_;
   TextModel* text_model_ = nullptr;
   bool enabled_ = true;
+  bool focusable_ = false;
   ClickHandler click_handler_;
   std::vector<std::unique_ptr<Element>> children_;
 };

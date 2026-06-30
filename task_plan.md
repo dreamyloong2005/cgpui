@@ -112,7 +112,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 74. [x] ViewContext focus request/release element helpers.
 75. [x] ViewContext pointer capture element helpers.
 76. [x] Element builder click handler helper.
-77. [ ] Element builder focusable helper.
+77. [x] Element builder focusable helper.
 78. [ ] Element builder key handler helper.
 79. [ ] Element builder disabled convenience helper.
 80. [ ] Element tree enabled descendant traversal query.
@@ -126,7 +126,7 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 
 ## Active Step
 
-Step 77: Element builder focusable helper.
+Step 78: Element builder key handler helper.
 
 ## Risks
 
