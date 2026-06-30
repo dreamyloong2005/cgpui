@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 111 Worktree Start
+
+- Refreshed `task_plan.md`,
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`,
+  and
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the follow-on plan to the actual current `master` state:
+  `d52ce80 docs: mark step 110 merged`; the Step 110 feature commit remains
+  `10f2dd3 feat: add event propagation phases`.
+- Recorded that Step 111 already has an active worktree at
+  `.worktrees/focus-traversal` on branch `codex/focus-traversal`, so the next
+  action is to finish, commit, merge, and post-merge verify that branch instead
+  of recreating it or starting Step 129.
+- Kept the post-Step-128 follow-on queue as Steps 129-168 and preserved the
+  gate: do not start Step 129 until Steps 111-128 are merged and Windows/WSL
+  verified on a clean `master`.
+- Updated the distance wording: from current `master`, Step 129 is 18
+  implementation steps away; after Step 111 merges, it becomes 17 remaining
+  pre-back-40 steps. Step 168 remains 58 implementation steps from current
+  `master`, plus the four follow-on band checkpoint reviews.
+- No implementation code changed during this planning refresh.
+
 ## 2026-06-30 Back-40 Planning After Step 110 Merge
 
 - Refreshed `task_plan.md`,

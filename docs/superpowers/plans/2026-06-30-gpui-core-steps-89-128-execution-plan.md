@@ -14,12 +14,13 @@
 
 - Steps 89-110 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `10f2dd3 feat: add event propagation phases`; the Step 110
-  feature commit is `10f2dd3 feat: add event propagation phases`.
+- `master` is at `d52ce80 docs: mark step 110 merged`; the Step 110 feature
+  commit is `10f2dd3 feat: add event propagation phases`.
 - The Step 110 worktree `.worktrees/event-propagation-phases` and branch
   `codex/event-propagation-phases` have been cleaned up.
-- The next implementation slice is Step 111: focus traversal over enabled
-  focusable elements with Tab and Shift+Tab actions.
+- Step 111 is active in `.worktrees/focus-traversal` on
+  `codex/focus-traversal`: focus traversal over enabled focusable elements with
+  Tab and Shift+Tab actions.
 
 ## File Map
 
@@ -259,15 +260,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 111 in an isolated worktree:
+Continue Step 111 in its existing isolated worktree:
 
 ```powershell
-git worktree add .worktrees/focus-traversal -b codex/focus-traversal master
+cd .worktrees/focus-traversal
 xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Add RED tests for Tab and Shift+Tab traversal over enabled focusable elements,
-then follow the standard per-step verification/merge workflow above.
+Step 111 already has an active branch. Finish its docs update, targeted
+verification, commit, fast-forward merge, post-merge Windows/WSL verification,
+and cleanup before starting Step 112.
 
 ## Step Details
 

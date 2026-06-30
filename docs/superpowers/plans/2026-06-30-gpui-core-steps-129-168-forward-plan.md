@@ -18,14 +18,16 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-110 are complete on `master` through
+  `d52ce80 docs: mark step 110 merged`; the Step 110 feature commit is
   `10f2dd3 feat: add event propagation phases`.
 - Step 110 was post-merge verified on Windows and WSL Arch Linux, and its
   feature worktree/branch have been cleaned up.
 - Steps 111-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 111 is the next active implementation step: focus traversal over enabled
-  focusable elements with Tab and Shift+Tab actions.
+- Step 111 is the active implementation step. It already has an open worktree
+  at `.worktrees/focus-traversal` on branch `codex/focus-traversal`; finish,
+  commit, merge, and post-merge verify that branch before opening Step 112.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -35,10 +37,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`10f2dd3 feat: add event propagation phases`. It is the execution plan for
-Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is Step 111 unless the roadmap is explicitly
-reprioritized.
+`d52ce80 docs: mark step 110 merged`. It is the execution plan for Steps
+129-168 after the Step 128 gate, not a new active branch queue. The next
+implementation action is finishing and merging the existing Step 111 worktree
+unless the roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 111-128 close focus, scroll, layout
   depth, render command metadata, cursor/clipboard/IME hooks, and the
@@ -50,11 +52,12 @@ reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- The effective distance from the current state to Step 129 is 18 implementation
-  steps, Steps 111-128, plus post-Step-128 targeted, Windows, and WSL
-  verification. The effective distance from the current state through Step 168
-  is 58 implementation steps, Steps 111-168, plus the four band checkpoint
-  reviews.
+- The effective distance from the current `master` state to Step 129 is 18
+  implementation steps, Steps 111-128, plus post-Step-128 targeted, Windows,
+  and WSL verification. After Step 111 is merged, that drops to 17 remaining
+  pre-back-40 implementation steps. The effective distance from the current
+  `master` state through Step 168 is 58 implementation steps, Steps 111-168,
+  plus the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -164,7 +167,10 @@ Do not begin Step 129 until all of these are true:
 
 Remaining pre-back-40 implementation count from the current state: 18 steps,
 Steps 111-128. Finishing those steps plus post-Step-128 Windows/WSL
-verification is the planned route into Step 129.
+verification is the planned route into Step 129. Step 111 is already open in
+`.worktrees/focus-traversal`, but it is not counted as complete for this gate
+until it is committed, fast-forward merged to `master`, and post-merge verified
+on Windows and WSL Arch Linux.
 
 ## Back-40 Execution Strategy
 
@@ -229,11 +235,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 111 instead of starting Step 129:
+For the current pre-back-40 state, continue Step 111 instead of starting Step
+129 or recreating the worktree:
 
 ```powershell
-git worktree add .worktrees/focus-traversal -b codex/focus-traversal master
+cd .worktrees/focus-traversal
 xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
+git status --short --branch
 ```
 
 ## Post-Step-128 Planning Contract

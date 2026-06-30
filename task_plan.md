@@ -99,15 +99,18 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `10f2dd3 feat: add event propagation phases`:
-Steps 89-110 are merged and post-merge verified on Windows and WSL Arch Linux,
-Step 111 is the next implementation step, and Step 129 remains gated behind
-completion and Windows/WSL verification of Steps 111-128.
+pre-back-40 handoff state at `d52ce80 docs: mark step 110 merged`: Steps
+89-110 are merged and post-merge verified on Windows and WSL Arch Linux, Step
+111 is already open in `.worktrees/focus-traversal` on
+`codex/focus-traversal`, and Step 129 remains gated behind completion and
+Windows/WSL verification of Steps 111-128.
 
-From the current state, the effective distance to Step 129 is 18 implementation
-steps, Steps 111-128, plus post-Step-128 targeted, Windows, and WSL
-verification. The effective distance through Step 168 is 58 implementation
-steps, Steps 111-168, plus the four follow-on band checkpoint reviews.
+From the current `master` state, the effective distance to Step 129 is 18
+implementation steps, Steps 111-128, plus post-Step-128 targeted, Windows, and
+WSL verification. After Step 111 is merged, that becomes 17 remaining
+pre-back-40 implementation steps. The effective distance through Step 168 is 58
+implementation steps, Steps 111-168, plus the four follow-on band checkpoint
+reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 111-128 queue unless the plan is explicitly reprioritized.
@@ -296,9 +299,12 @@ the current Step 111-128 queue unless the plan is explicitly reprioritized.
 ## Active Step
 
 Step 110 is merged to `master` at `10f2dd3 feat: add event propagation phases`,
-post-merge verified on Windows and WSL Arch Linux, and cleaned up. The next
-implementation step is Step 111: focus traversal over enabled focusable
-elements with Tab and Shift+Tab actions.
+with docs closeout at `d52ce80 docs: mark step 110 merged`. It is post-merge
+verified on Windows and WSL Arch Linux and cleaned up. Step 111, focus
+traversal over enabled focusable elements with Tab and Shift+Tab actions, is
+already open in `.worktrees/focus-traversal` on branch `codex/focus-traversal`
+and should be finished, committed, merged, and post-merge verified before Step
+112 starts.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
