@@ -17,19 +17,41 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-106 are complete on `master` through
-  `a9b1b96 feat: store app opened window root views`, and Step 106 was
-  post-merge verified on Windows and WSL Arch Linux.
-- Steps 108-128 remain covered by the detailed execution plan in
+- Steps 89-107 are complete on `master` through
+  `cff072f docs: mark step 107 merged`, and Step 107 was post-merge verified
+  on Windows and WSL Arch Linux.
+- Steps 108-128 remain the active gate before this follow-on plan. They are
+  covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 107 is implemented, merged to `master`, post-merge verified on Windows
-  and WSL Arch Linux, and its feature worktree/branch have been cleaned up.
-- Step 108 is the active implementation step.
+- Step 108 is the active implementation step in
+  `.worktrees/child-view-placeholder` on branch
+  `codex/child-view-placeholder`; its baseline targeted tests have passed.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
 - The main worktree is on `master` with no tracked/staged changes; the known
   local-only untracked item is `.vscode/`.
+
+## 2026-06-30 Back-40 Planning Refresh
+
+The user asked to plan the "后40步" while Step 108 is active. This document is
+therefore the execution plan for Steps 129-168, not a new active branch queue.
+The next implementation action remains Step 108 unless the roadmap is
+explicitly reprioritized.
+
+- Finish the current gate first: Steps 108-128 close child-view placeholders,
+  ancestry/propgation, focus, scroll, layout depth, render command metadata,
+  cursor/clipboard/IME hooks, and the public-prelude demo rewrite.
+- Then run Steps 129-168 as four 10-step bands: context/entity/async,
+  keyed widgets/style cascade, text/font/renderer diagnostics, and
+  Windows/Wayland platform closure plus the parity audit.
+- Keep the same cadence for the back 40: feature worktree, RED test, GREEN
+  implementation, targeted tests, Windows full debug, WSL Arch full debug,
+  docs/progress update, commit, fast-forward merge, post-merge verification,
+  and cleanup.
+- Step 168 is a milestone audit, not a parity victory lap. It should document
+  implemented, partial, missing, and Mac/Metal-deferred areas with a
+  Windows/Linux completion lens.
 
 ## Planning Snapshot
 
@@ -128,8 +150,9 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-107 are complete or feature-worktree
-  verified; Step 108 remains incomplete until merged and verified.
+  Current partial status: Steps 99-107 are complete on `master`; Step 108 is
+  active in `.worktrees/child-view-placeholder` and remains incomplete until
+  merged and verified.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
@@ -201,10 +224,11 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 108 instead of starting Step 129:
+For the current pre-back-40 state, continue the existing Step 108 worktree
+instead of starting Step 129 or recreating the branch:
 
 ```powershell
-git worktree add .worktrees/child-view-placeholder -b codex/child-view-placeholder master
+cd .worktrees/child-view-placeholder
 xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
 ```
 

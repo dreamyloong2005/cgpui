@@ -102,6 +102,10 @@ verification matrix for all 40 follow-on steps. It also records the current
 pre-back-40 handoff state: Step 107 is merged and post-merge verified, Step
 108 is the active implementation step, and Step 129 remains gated behind
 completion and Windows/WSL verification of Steps 108-128.
+The latest planning refresh also records the existing Step 108 worktree
+`.worktrees/child-view-placeholder` on branch `codex/child-view-placeholder`
+and keeps Step 129-168 as a follow-on queue rather than a competing active
+branch.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current active Step 108 unless the plan is explicitly reprioritized.

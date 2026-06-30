@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning While Step 108 Active
+
+- Refreshed
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Updated the follow-on plan's current state to match `master` at
+  `cff072f docs: mark step 107 merged`: Step 107 is merged, post-merge
+  verified on Windows and WSL Arch Linux, and cleaned up.
+- Recorded that Step 108 is already active in
+  `.worktrees/child-view-placeholder` on `codex/child-view-placeholder`, with
+  baseline targeted tests previously passing:
+  `xmake test -P . element_test/default window_runtime_test/default
+  ui_header_cleanliness/default`.
+- Kept Step 129 gated behind completion and post-merge Windows/WSL verification
+  of Steps 108-128. The后 40 步 remain Steps 129-168: context/entity/async,
+  keyed widgets/style cascade, text/font/renderer diagnostics, and
+  Windows/Wayland platform closure plus the parity audit.
+- Updated `task_plan.md` so future resumes see the existing Step 108 worktree
+  and do not recreate it or start Step 129 prematurely.
+
 ## 2026-06-30 Step 107 Post-Merge
 
 - Committed Step 107 as `00b7b32 feat: add view registry skeleton` from

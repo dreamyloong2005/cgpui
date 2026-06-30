@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning While Step 108 Active
+
+- The後 40 步 are still Steps 129-168, but the active implementation path has
+  not crossed the Step 128 gate yet. Step 108 already has a worktree, so the
+  next engineering action should continue `.worktrees/child-view-placeholder`
+  instead of creating a Step 129 branch.
+- The post-Step-128 plan should be treated as an execution-ready queue with
+  branch slugs, RED test intents, targeted commands, Windows full debug, and
+  WSL Arch full debug for every step. It is not just a roadmap, but it is still
+  blocked by Steps 108-128.
+- The current pre-back-40 gate count is 21 implementation steps: Step 108
+  through Step 128. The high-risk gate items are event ancestry/propagation,
+  text paint metadata, Vulkan clip/text command handling, cursor/clipboard
+  backends, IME geometry, and the public-prelude demo rewrite.
+- Step 168 should close with a parity audit, not a claim of full upstream GPUI
+  equivalence. The useful audit split is implemented, partial, missing, and
+  Mac/Metal-deferred areas for the Windows/Linux track.
+
 ## 2026-06-30 View Registry Skeleton
 
 - Step 107 is intentionally a registry/lifetime skeleton, not child-view
