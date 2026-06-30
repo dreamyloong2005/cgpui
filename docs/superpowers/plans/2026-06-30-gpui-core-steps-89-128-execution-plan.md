@@ -12,10 +12,16 @@
 
 ## Current State
 
-- Steps 89-91 are implemented and merged to `master`.
-- `master` is at `25876cc feat: add element builder child overloads`.
-- The main worktree has no tracked/staged changes; the only known untracked local item is `.vscode/`.
-- Before Step 92 implementation starts, finish the Step 91 post-merge WSL verification and remove `.worktrees/element-child-overloads`.
+- Steps 89-92 are implemented, merged to `master`, and post-merge verified on
+  Windows and WSL Arch Linux.
+- `master` is at `6e7d34c feat: add style unit color helpers`.
+- The main worktree has no tracked/staged changes; the only known untracked
+  local item is `.vscode/`.
+- No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
+  active after Step 92 cleanup.
+- The next implementation slice is Step 93:
+  Element builder fluent style shortcuts for size, spacing, background,
+  border, radius, and gap.
 
 ## File Map
 
@@ -78,7 +84,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 89: `AnyElement` and `into_element(...)`.
 - [x] Step 90: free factories `div()`, `h_flex()`, `v_flex()`, `v_stack()`, `text(...)`.
 - [x] Step 91: child overloads for builders and owned element values.
-- [ ] Step 92: style unit/color helpers.
+- [x] Step 92: style unit/color helpers.
 - [ ] Step 93: builder style shortcuts.
 - [ ] Step 94: pointer handler shortcuts.
 - [ ] Step 95: focus/hover/disabled style-state primitives.
@@ -159,9 +165,118 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
+## Remaining Execution Queue From Step 93
+
+This is the practical "后 40 步" sequence after Step 92. Steps 89-92 are kept
+as completed foundation; the active remaining queue is Steps 93-128.
+
+### Checkpoint 1: Finish Authoring Entry, Steps 93-98
+
+Goal: make user code author UI through GPUI-like factories and `View::render`
+without touching model lifecycle yet.
+
+- [ ] Step 93: land fluent builder style shortcuts on `ElementBuilder`.
+- [ ] Step 94: add pointer-down/up/move/click authoring shortcuts.
+- [ ] Step 95: add base/hover/focus/disabled style overlay primitives and
+  deterministic style resolution.
+- [ ] Step 96: add optional `View::render(ViewContext&)` while preserving the
+  existing `paint(...)` contract.
+- [ ] Step 97: make redraw install the root view's rendered element tree.
+- [ ] Step 98: expose render invalidation and after-render observability.
+
+Exit check: a root view can return a public-prelude-authored element tree from
+`render(...)`, and redraw can install that tree for layout, hit testing, and
+paint while old views still compile.
+
+### Checkpoint 2: Add GPUI-Like Data And App Shell, Steps 99-108
+
+Goal: introduce typed models, app setup, window opening, and view identity
+storage before nested view/event work.
+
+- [ ] Step 99: add public `Model<T>` and `Entity<T>` aliases over typed entity
+  ids.
+- [ ] Step 100: add `ViewContext` helpers for model create/read/update/remove.
+- [ ] Step 101: add weak entity/view handles with soft-fail upgrade.
+- [ ] Step 102: add model observe/subscribe callbacks.
+- [ ] Step 103: make model updates notify observers and invalidate subscribed
+  views.
+- [ ] Step 104: expose an `AppContext` setup wrapper.
+- [ ] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
+  skeleton.
+- [ ] Step 106: store app-opened root view lifetimes explicitly.
+- [ ] Step 107: add the first view registry for multiple `ViewId`s.
+- [ ] Step 108: add a child-view element placeholder that references a
+  registered view.
+
+Exit check: app setup can create a window with a root view, user code can
+mutate typed models through `ViewContext`, and model updates can trigger view
+invalidation.
+
+### Checkpoint 3: Deepen Interaction And Layout, Steps 109-118
+
+Goal: make routed events, focus, scroll, and layout behavior tree-aware instead
+of single-target-only.
+
+- [ ] Step 109: attach element and view ancestry metadata to event routes.
+- [ ] Step 110: implement target handling, ancestor bubbling, and view fallback
+  propagation phases.
+- [ ] Step 111: add Tab and Shift+Tab focus traversal over enabled focusable
+  elements.
+- [ ] Step 112: add a scroll-element binding helper backed by `ScrollState`.
+- [ ] Step 113: route wheel/trackpad scroll events into bound scroll state.
+- [ ] Step 114: make hidden overflow constrain hit testing.
+- [ ] Step 115: add flex alignment and justification primitives.
+- [ ] Step 116: add flex grow and shrink factors.
+- [ ] Step 117: add absolute positioning and inset style.
+- [ ] Step 118: add layer/elevation mapped to deterministic z order.
+
+Exit check: event records can explain target and ancestor paths, bubbling can
+stop on consumed results, focus/scroll use tree queries, and layout has the
+minimum controls for app-like UI.
+
+### Checkpoint 4: Replace Placeholders With Backend-Ready Rendering, Steps 119-128
+
+Goal: harden the renderer/platform surface for Windows and Wayland/Vulkan while
+leaving macOS/Metal for a later parity track.
+
+- [ ] Step 119: add rounded-rect paint commands with border-radius metadata.
+- [ ] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
+- [ ] Step 121: add text paint commands instead of placeholder rectangles.
+- [ ] Step 122: add font descriptors and basic font-size style.
+- [ ] Step 123: emit caret and selection paint metadata from text elements.
+- [ ] Step 124: apply runtime cursor state through Win32 and Wayland platform
+  hooks.
+- [ ] Step 125: add a Win32 system clipboard backend for UTF-8 text.
+- [ ] Step 126: add a Wayland clipboard backend skeleton with graceful
+  unsupported behavior.
+- [ ] Step 127: expose IME candidate/composition rectangle data from the
+  focused text element.
+- [ ] Step 128: rewrite the demo around public prelude, `run_app`,
+  `AppContext`, `View::render`, factories, builder shortcuts, and text/model
+  interactions.
+
+Exit check: paint streams distinguish rectangles, rounded rectangles, text,
+caret, and selection; Vulkan consumes clipping metadata; Win32 and Wayland have
+cursor/clipboard integration points; the demo uses the public GPUI-like API.
+
+## Current Recommended Next Step
+
+Start Step 93 in an isolated worktree:
+
+```powershell
+git worktree add .worktrees/element-builder-style-shortcuts -b codex/element-builder-style-shortcuts master
+xmake test -P . element_test/default style_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+```
+
+Then add the RED tests for builder style shortcuts, implement the minimal
+`ElementBuilder` methods in `include/cgpui/ui/element.hpp`, and follow the
+standard per-step verification/merge workflow above.
+
 ## Step Details
 
 ### Step 92: Style Unit and Color Helpers
+
+Status: complete on `master` at `6e7d34c`.
 
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`
@@ -174,6 +289,8 @@ Acceptance at the end of Band D:
 - [ ] Targeted test command: `xmake test -P . style_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 93: Element Builder Fluent Style Shortcuts
+
+Status: next.
 
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`

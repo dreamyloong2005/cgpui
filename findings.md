@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Remaining Steps 93-128 Plan Shape
+
+- The user-facing "后 40 步" still refers to the Step 89-128 target band, but
+  Steps 89-92 are already complete on `master`; the active implementation
+  queue is therefore Steps 93-128.
+- The safest order is still mostly sequential because Step 93-98 authoring and
+  render entry unlock model/app lifecycle work, Step 99-108 lifecycle unlocks
+  child-view ancestry, and Step 109-118 interaction/layout metadata feeds the
+  Step 119-128 renderer/platform/demo hardening work.
+- Step 124-127 are the highest platform-risk region because they cross from
+  pure command/runtime metadata into Win32 and Wayland backend behavior; keep
+  memory clipboard and deterministic tests available while platform backends
+  mature.
+
 ## 2026-06-30 Style Unit And Color Helpers
 
 - `px(float)` can remain a direct `float` identity helper for now because every

@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Remaining Steps 93-128 Planning Refresh
+
+- Refreshed
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`
+  after Step 92 was merged at `6e7d34c`.
+- Updated the detailed plan's current state to show Steps 89-92 complete, no
+  active `codex/*` branches, no active `.worktrees/*`, and Step 93 as the next
+  implementation slice.
+- Added a practical remaining execution queue:
+  Checkpoint 1 covers Steps 93-98 for authoring and `View::render`,
+  Checkpoint 2 covers Steps 99-108 for model/app/window lifecycle,
+  Checkpoint 3 covers Steps 109-118 for propagation/focus/scroll/layout, and
+  Checkpoint 4 covers Steps 119-128 for renderer/platform/demo hardening.
+- Confirmed before the planning edit that `master` had no tracked/staged
+  changes and only the known untracked `.vscode/` item.
+
 ## 2026-06-30 Step 92 Style Unit And Color Helpers
 
 - Started Step 92: Style unit and color helpers: `px`, `rgb`, `rgba`, and
