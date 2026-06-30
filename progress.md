@@ -403,6 +403,20 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 26/26.
+- Fast-forward merged Step 109 to `master` at
+  `74df1df feat: add event route ancestry`, removed
+  `.worktrees/event-route-ancestry`, and deleted
+  `codex/event-route-ancestry`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated the active handoff: Step 110 is next, and the pre-back-40 gate is now
+  Steps 110-128, 19 implementation steps before Step 129 can start.
 - Merged Step 104 to `master` at `8c8dc90`, verified post-merge targeted tests
   passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.

@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 108-128 remainder intact inside the
+**Architecture:** Keep the active Steps 110-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -17,14 +17,13 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-108 are complete on `master` through
-  `71c94bb feat: add child view placeholder`, and Step 108 was post-merge
+- Steps 89-109 are complete on `master` through
+  `74df1df feat: add event route ancestry`, and Step 109 was post-merge
   verified on Windows and WSL Arch Linux.
-- Steps 109-128 remain the active gate before this follow-on plan. They are
+- Steps 110-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 109 is the active implementation step: event route carries element and
-  view ancestry metadata.
+- Step 110 is the active implementation step: event propagation phases.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -35,9 +34,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 The user asked to plan the "后40步" while Step 108 was active. This document is
 therefore the execution plan for Steps 129-168, not a new active branch queue.
-The next action is Step 109 unless the roadmap is explicitly reprioritized.
+The next action is Step 110 unless the roadmap is explicitly reprioritized.
 
-- Finish the current gate first: Steps 109-128 close ancestry/propagation,
+- Finish the current gate first: Steps 110-128 close propagation,
   focus, scroll, layout depth, render command metadata, cursor/clipboard/IME
   hooks, and the public-prelude demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
@@ -104,7 +103,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Step 109-128 are still incomplete:
+second active branch while Steps 110-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -148,12 +147,12 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [x] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-- [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
+- [ ] Steps 110-118 have landed bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count from the current state: 20 steps,
-Steps 109-128. Finishing those steps plus post-Step-128 Windows/WSL
+Remaining pre-back-40 implementation count from the current state: 19 steps,
+Steps 110-128. Finishing those steps plus post-Step-128 Windows/WSL
 verification is the planned route into Step 129.
 
 ## Back-40 Execution Strategy
@@ -219,10 +218,10 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 109 instead of starting Step 129:
+For the current pre-back-40 state, start Step 110 instead of starting Step 129:
 
 ```powershell
-git worktree add .worktrees/event-route-ancestry -b codex/event-route-ancestry master
+git worktree add .worktrees/event-propagation-phases -b codex/event-propagation-phases master
 xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
