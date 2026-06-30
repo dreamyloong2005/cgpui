@@ -14,11 +14,11 @@
 
 - Steps 89-95 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at the Step 94 feature merge.
+- `master` is at the Step 95 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  expected to remain active after Step 94 cleanup.
+  expected to remain active after Step 95 cleanup.
 - The next implementation slice is Step 96:
   GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the
   current view contract.
@@ -165,10 +165,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 95
+## Remaining Execution Queue From Step 96
 
-This is the practical "后 40 步" sequence after Step 94. Steps 89-94 are kept
-as completed foundation; the active remaining queue is Steps 95-128.
+This is the practical remaining sequence after Step 95. Steps 89-95 are kept
+as completed foundation; the active remaining queue is Steps 96-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -261,18 +261,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 95 in an isolated worktree:
+Start Step 96 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/style-state-overlays -b codex/style-state-overlays master
-xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+git worktree add .worktrees/view-render-hook -b codex/view-render-hook master
+xmake test -P . window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
 ```
 
-Then add the RED tests for base/hover/focus/disabled style overlays,
-deterministic style resolution, and builder authoring methods. Implement the
-minimal style-state value and builder storage in `include/cgpui/ui/style.hpp`
-and `include/cgpui/ui/element.hpp`, then follow the standard per-step
-verification/merge workflow above.
+Then add the RED tests proving old `paint(...)`-only views still compile,
+`View::render(ViewContext&)` can be optionally overridden, and the default
+render hook returns an empty `AnyElement`. Implement the minimal additive
+virtual hook in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`, then follow the
+standard per-step verification/merge workflow above.
 
 ## Step Details
 

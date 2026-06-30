@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Steps 129-168 Planning Refresh
+
+- Refreshed the forward plan for Steps 129-168 after Step 95 was merged and
+  verified, so it now treats Step 96 as the active implementation slice and
+  Steps 96-128 as the prerequisite gate before Step 129 can start.
+- Added an explicit execution gate to
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  covering the remaining Step 96-128 bands: render entry, model/app lifecycle,
+  event/layout depth, render/platform hardening, and post-Step-128 Windows plus
+  WSL verification.
+- Updated the Step 89-128 detailed execution plan's current state and
+  recommended next command to start Step 96 in `codex/view-render-hook`.
+
 ## 2026-06-30 Step 95 Style-State Overlays
 
 - Started Step 95 in `codex/style-state-overlays` from `master` at `9d1288a`.
@@ -36,7 +49,8 @@
   with four post-Step-128 bands: context/entity/global/async, keyed
   reconciliation/widgets/style cascade, text/font/renderer depth, and
   Windows/Wayland platform completion plus API parity audit.
-- Kept the active implementation step unchanged: Step 95 remains next.
+- At that planning moment, kept the active implementation step unchanged:
+  Step 95 remained next.
 
 ## 2026-06-30 Step 94 Pointer Handler Shortcuts
 

@@ -98,7 +98,7 @@ Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 95 unless the plan is explicitly reprioritized.
+the current active Step 96 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.

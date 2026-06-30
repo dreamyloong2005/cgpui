@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Steps 129-168 Planning Refresh
+
+- The forward queue should be treated as a post-Step-128 plan, not as the next
+  active implementation queue: Step 96 still gates the current track because
+  `View::render`, runtime render-tree installation, model/app lifecycle,
+  bubbling/focus/scroll/layout depth, render commands, cursor/clipboard/IME
+  surfaces, and the public-prelude demo all feed the APIs used by Steps
+  129-168.
+- The most useful planning boundary is an execution gate rather than a second
+  competing active plan. This keeps the follow-on route visible while preserving
+  the current Step 96-128 RED/GREEN workflow.
+- After Step 128, the first 10 follow-on steps should bias toward context,
+  entity, global, scoped action, subscription, deferred, timer, async, batching,
+  and diagnostics APIs before widget or renderer expansion.
+
 ## 2026-06-30 Style-State Overlays
 
 - A separate `StyleOverlay` is necessary because `Style` has non-optional
