@@ -1205,3 +1205,19 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
+
+- Started Step 86: ViewContext event route access helper.
+- Added RED `window_runtime_test` coverage for
+  `ViewContext::current_event_route()` mirroring the existing `event_route`
+  field during view event handling and after-event callbacks; the test failed
+  to compile because the helper did not exist.
+- Implemented Step 86 in `codex/view-context-event-route-helper`: added
+  `WindowRuntimeContext::current_event_route()` as a thin snapshot accessor over
+  the existing public route field.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 28/28.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 25/25.

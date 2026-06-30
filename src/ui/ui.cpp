@@ -939,6 +939,10 @@ ViewId WindowRuntimeContext::allocate_view_id() const {
   return runtime.allocate_view_id();
 }
 
+std::optional<EventRoute> WindowRuntimeContext::current_event_route() const {
+  return event_route;
+}
+
 bool WindowRuntimeContext::is_view_id_allocated(ViewId view_id) const {
   return runtime.is_view_id_allocated(view_id);
 }

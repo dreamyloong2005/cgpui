@@ -812,3 +812,13 @@
 - The prelude intentionally exposes the existing API surface without changing
   ownership or runtime behavior, keeping this slice an additive source
   compatibility improvement.
+
+## 2026-06-30 ViewContext Event Route Helper
+
+- `ViewContext::current_event_route()` should be a snapshot accessor over the
+  existing `event_route` field, not a live recomputation from `WindowRuntime`.
+- Keeping the public field and adding the helper preserves compatibility while
+  giving author code a more intentional GPUI-like route lookup spelling.
+- The helper is valid in both view event handlers and after-event callbacks
+  because `WindowRuntime::context()` already snapshots `current_event_route_`
+  into the context object for both paths.
