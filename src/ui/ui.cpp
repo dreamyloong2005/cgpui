@@ -291,7 +291,9 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   PaintList paint_list;
   view.paint(paint_list, viewport_size);
   for (const auto& command : paint_list.commands()) {
-    (*frame)->draw_rect(command.solid_rect);
+    SolidRect rect = command.solid_rect;
+    rect.clip_rect = command.clip_rect;
+    (*frame)->draw_rect(rect);
   }
 
   return (*frame)->present();

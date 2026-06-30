@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Vulkan Clip Rect Metadata
+
+- Step 120 extends `SolidRect` with optional renderer-facing clip metadata so
+  clipped paint commands can reach the backend without introducing a separate
+  paint-command renderer API yet.
+- `render_view(...)` must copy `PaintCommand::clip_rect` onto the `SolidRect`
+  sent to `RenderFrame::draw_rect(...)`; otherwise the UI paint-list metadata
+  added in Steps 53 and 119 stops before the renderer boundary.
+- The current Vulkan solid-rect implementation uses `vkCmdClearAttachments`
+  with a `VkClearRect`. Honoring clip metadata means computing the framebuffer-
+  clamped intersection of `SolidRect::rect` and `SolidRect::clip_rect` before
+  issuing the clear. This is equivalent to a scissor for the current clear-rect
+  path and does not require a graphics pipeline yet.
+- Win32 pixel sampling from an sRGB swapchain reports the clear color after
+  conversion, so the outside-clip test should assert a dark clear-color range,
+  not the raw linear `0.08/0.09/0.10` channel bytes.
+- Step 121 can now focus on text paint commands. It should not revisit Vulkan
+  clip handling or rounded-rect rasterization unless new text command tests
+  force a shared command-vocabulary change.
+
 ## 2026-06-30 Back-40 Planning After Step 119 Merge
 
 - The后 40 步 are still Steps 129-168, but the live entry gate has moved

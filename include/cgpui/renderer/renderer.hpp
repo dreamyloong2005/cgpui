@@ -6,6 +6,7 @@
 #include "cgpui/platform/target.hpp"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 namespace cgpui {
@@ -49,6 +50,7 @@ struct RenderSurfaceDescriptor {
 struct SolidRect {
   Rect rect;
   Color color;
+  std::optional<Rect> clip_rect;
 };
 
 class RenderFrame {

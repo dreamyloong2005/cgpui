@@ -1,5 +1,38 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 120 Vulkan Clip Rect Metadata
+
+- Started Step 120 in `.worktrees/vulkan-clip-rect-metadata` on
+  `codex/vulkan-clip-rect-metadata` from `master` at
+  `eca28e8 docs: refresh back forty plan after step 119`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . vulkan_solid_rect_test/default` passed 1/1.
+- Added RED coverage in `vulkan_solid_rect_test` requiring `SolidRect` to carry
+  `clip_rect` metadata and requiring the Vulkan solid-rect draw path to leave a
+  sampled pixel outside the clip as the clear color.
+- Verified the RED build failed as expected on missing `SolidRect::clip_rect`.
+- Implemented Step 120 in `include/cgpui/renderer/renderer.hpp`,
+  `src/ui/ui.cpp`, and `src/renderer/vulkan/vulkan_renderer.cpp`: `SolidRect`
+  now carries optional clip metadata, the UI render path forwards
+  `PaintCommand::clip_rect` to the renderer, and Vulkan clear-rect generation
+  draws the intersection of the solid rect and clip rect.
+- During GREEN debugging, the outside-clip sample already read the clear color
+  after sRGB conversion (`RGB(80,84,89)`), so the test's clear-color predicate
+  was corrected to match the presented framebuffer rather than linear color
+  constants.
+- Verified targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default element_test/default
+  window_runtime_test/default ui_header_cleanliness/default` passed 4/4.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 120 is marked implemented and feature-worktree
+  verified. Step 121 becomes the next implementation slice after Step 120
+  merge and post-merge verification.
+
 ## 2026-06-30 Back-40 Planning After Step 119 Merge
 
 - Refreshed the post-Step-128 back-40 plan after Step 119 landed on `master`

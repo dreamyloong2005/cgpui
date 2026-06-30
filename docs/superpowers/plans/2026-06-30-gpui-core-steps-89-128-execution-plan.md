@@ -17,8 +17,10 @@
 - `master` includes `0893600 feat: add rounded rect paint command`.
 - Step 119 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 120, Vulkan clip rect metadata for solid rectangles, is the next
-  implementation slice.
+- Step 120, Vulkan clip rect metadata for solid rectangles, is implemented and
+  feature-worktree verified in `.worktrees/vulkan-clip-rect-metadata` on
+  branch `codex/vulkan-clip-rect-metadata`. Step 121 becomes the next
+  implementation slice after Step 120 is merged and post-merge verified.
 
 ## File Map
 
@@ -144,7 +146,7 @@ Acceptance at the end of Band C:
 Purpose: replace placeholder rendering and memory-only platform behaviors with command and backend surfaces that Windows/Linux can actually consume.
 
 - [x] Step 119: rounded-rect paint command preserves border radius metadata.
-- [ ] Step 120: Vulkan honors clip rect metadata for solid rectangles.
+- [x] Step 120: Vulkan honors clip rect metadata for solid rectangles.
 - [ ] Step 121: text paint command separates text drawing from placeholder rectangles.
 - [ ] Step 122: font descriptor and basic font-size style primitives.
 - [ ] Step 123: text element emits caret and selection paint metadata.
@@ -164,8 +166,9 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 119
 
-This is the practical remaining sequence after Step 119. Steps 89-119 are kept
-as completed foundation; the active remaining queue is Steps 120-128.
+This is the practical remaining sequence after Step 120. Steps 89-120 are kept
+as completed foundation after Step 120 is merged and post-merge verified; the
+active remaining queue is Steps 121-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -237,7 +240,7 @@ Goal: harden the renderer/platform surface for Windows and Wayland/Vulkan while
 leaving macOS/Metal for a later parity track.
 
 - [x] Step 119: add rounded-rect paint commands with border-radius metadata.
-- [ ] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
+- [x] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
 - [ ] Step 121: add text paint commands instead of placeholder rectangles.
 - [ ] Step 122: add font descriptors and basic font-size style.
 - [ ] Step 123: emit caret and selection paint metadata from text elements.
@@ -258,17 +261,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 120 from a fresh feature worktree:
+After Step 120 is committed, merged, and post-merge verified, start Step 121
+from a fresh feature worktree:
 
 ```powershell
-git worktree add .worktrees/vulkan-clip-rect-metadata -b codex/vulkan-clip-rect-metadata master
-cd .worktrees/vulkan-clip-rect-metadata
-xmake test -P . vulkan_solid_rect_test/default
+git worktree add .worktrees/text-paint-command -b codex/text-paint-command master
+cd .worktrees/text-paint-command
+xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
 ```
 
-Step 120 should add RED coverage for Vulkan consuming `PaintCommand::clip_rect`
-metadata for solid rectangles. It should not change rounded-rect drawing
-behavior yet.
+Step 121 should add RED coverage for text commands containing text content,
+bounds, color, and model-derived metadata, replacing placeholder text
+rectangles without adding real font shaping yet.
 
 ## Step Details
 
@@ -661,14 +665,20 @@ and WSL Arch Linux full debug passed 26/26. Post-merge targeted tests passed
 
 ### Step 120: Vulkan Clip Rect Metadata
 
+Status: implemented and feature-worktree verified in
+`.worktrees/vulkan-clip-rect-metadata` on
+`codex/vulkan-clip-rect-metadata`. RED failed as expected on missing
+`SolidRect::clip_rect`. Feature-worktree targeted tests passed 4/4, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+
 **Files:**
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `include/cgpui/renderer/renderer.hpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED renderer tests or command-level tests for clipped solid rectangles.
-- [ ] Map `PaintCommand::clip_rect` to Vulkan scissor state for solid rectangles.
-- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+- [x] Add RED renderer tests or command-level tests for clipped solid rectangles.
+- [x] Map `PaintCommand::clip_rect` to Vulkan scissor state for solid rectangles.
+- [x] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
 
 ### Step 121: Text Paint Command
 

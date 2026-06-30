@@ -4,6 +4,7 @@
 #define NOMINMAX
 #include <windows.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 
@@ -90,17 +91,20 @@ class VisibleWindow {
     };
   }
 
-  [[nodiscard]] bool sample_center(COLORREF& color) const {
+  [[nodiscard]] bool sample_client_pixel(int x, int y, COLORREF& color) const {
     RECT client_rect{};
     if (GetClientRect(hwnd_, &client_rect) == 0) {
       return false;
     }
 
-    POINT center{
-        .x = (client_rect.right - client_rect.left) / 2,
-        .y = (client_rect.bottom - client_rect.top) / 2,
+    const int client_width = static_cast<int>(client_rect.right - client_rect.left);
+    const int client_height =
+        static_cast<int>(client_rect.bottom - client_rect.top);
+    POINT point{
+        .x = std::clamp(x, 0, client_width - 1),
+        .y = std::clamp(y, 0, client_height - 1),
     };
-    if (ClientToScreen(hwnd_, &center) == 0) {
+    if (ClientToScreen(hwnd_, &point) == 0) {
       return false;
     }
 
@@ -108,7 +112,7 @@ class VisibleWindow {
     if (screen == nullptr) {
       return false;
     }
-    color = GetPixel(screen, center.x, center.y);
+    color = GetPixel(screen, point.x, point.y);
     ReleaseDC(nullptr, screen);
     return color != CLR_INVALID;
   }
@@ -123,6 +127,15 @@ bool is_blue_dominant(COLORREF color) {
   const auto green = static_cast<int>(GetGValue(color));
   const auto blue = static_cast<int>(GetBValue(color));
   return blue >= green + 25 && green >= red + 40;
+}
+
+bool is_dark_clear_color(COLORREF color) {
+  const auto red = static_cast<int>(GetRValue(color));
+  const auto green = static_cast<int>(GetGValue(color));
+  const auto blue = static_cast<int>(GetBValue(color));
+  return red >= 55 && red <= 110 && green >= 55 && green <= 115 &&
+         blue >= 55 && blue <= 125 && blue <= green + 25 &&
+         green <= red + 25;
 }
 
 } // namespace
@@ -166,6 +179,19 @@ int main() {
                   },
           },
       .color = cgpui::Color{.r = 0.23F, .g = 0.55F, .b = 0.86F, .a = 1.0F},
+      .clip_rect =
+          cgpui::Rect{
+              .origin =
+                  cgpui::Point{
+                      .x = framebuffer_size.width * 0.10F,
+                      .y = framebuffer_size.height * 0.10F,
+                  },
+              .size =
+                  cgpui::Size{
+                      .width = framebuffer_size.width * 0.42F,
+                      .height = framebuffer_size.height * 0.80F,
+                  },
+          },
   });
 
   if (auto presented = (*frame)->present(); !presented) {
@@ -177,14 +203,27 @@ int main() {
   for (int attempt = 0; attempt < 10; ++attempt) {
     pump_messages();
     Sleep(50);
-    if (window.sample_center(sampled) && is_blue_dominant(sampled)) {
-      return 0;
+    if (window.sample_client_pixel(
+            static_cast<int>(framebuffer_size.width * 0.30F),
+            static_cast<int>(framebuffer_size.height * 0.50F),
+            sampled) &&
+        is_blue_dominant(sampled)) {
+      COLORREF clipped_sample = CLR_INVALID;
+      if (window.sample_client_pixel(
+              static_cast<int>(framebuffer_size.width * 0.70F),
+              static_cast<int>(framebuffer_size.height * 0.50F),
+              clipped_sample) &&
+          is_dark_clear_color(clipped_sample)) {
+        return 0;
+      }
+      sampled = clipped_sample;
+      break;
     }
   }
 
   if (sampled != CLR_INVALID) {
-    std::cerr << "Expected blue-dominant center pixel, got RGB("
-              << static_cast<int>(GetRValue(sampled)) << ", "
+    std::cerr << "Expected clipped solid rect outside sample to stay clear, "
+              << "got RGB(" << static_cast<int>(GetRValue(sampled)) << ", "
               << static_cast<int>(GetGValue(sampled)) << ", "
               << static_cast<int>(GetBValue(sampled)) << ")\n";
   }
