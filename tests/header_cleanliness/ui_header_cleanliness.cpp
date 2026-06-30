@@ -21,8 +21,7 @@ int main() {
   cgpui::ScrollModel scroll_model;
   const cgpui::Style style =
       cgpui::Style{}.with_padding(cgpui::EdgeSizes::all(1.0F));
-  cgpui::AnyElement element = cgpui::into_element(
-      cgpui::ElementBuilder::fixed_size(cgpui::Size{1.0F, 2.0F}));
+  cgpui::AnyElement element = cgpui::into_element(cgpui::div());
   scroll_model.set_viewport_size(cgpui::Size{10.0F, 10.0F});
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});

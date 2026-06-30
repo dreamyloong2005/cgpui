@@ -114,6 +114,70 @@ int test_element_builder_into_element_builds_owned_element() {
   return output.size.width == 12.0F && output.size.height == 34.0F ? 0 : 187;
 }
 
+int test_free_authoring_factories_create_builders() {
+  cgpui::TextModel model("factory");
+  cgpui::AnyElement div = cgpui::into_element(cgpui::div());
+  cgpui::AnyElement row = cgpui::into_element(cgpui::h_flex());
+  cgpui::AnyElement column = cgpui::into_element(cgpui::v_flex());
+  cgpui::AnyElement stack = cgpui::into_element(cgpui::v_stack());
+  cgpui::AnyElement text = cgpui::into_element(cgpui::text(model));
+
+  auto* styled = dynamic_cast<cgpui::StyledElement*>(div.get());
+  auto* row_flex = dynamic_cast<cgpui::FlexElement*>(row.get());
+  auto* column_flex = dynamic_cast<cgpui::FlexElement*>(column.get());
+  auto* vertical_stack = dynamic_cast<cgpui::VerticalStackElement*>(stack.get());
+  auto* text_element = dynamic_cast<cgpui::TextElement*>(text.get());
+
+  if (styled == nullptr || styled->child() != nullptr) {
+    return 188;
+  }
+  if (row_flex == nullptr ||
+      row_flex->direction() != cgpui::FlexDirection::row) {
+    return 189;
+  }
+  if (column_flex == nullptr ||
+      column_flex->direction() != cgpui::FlexDirection::column) {
+    return 190;
+  }
+  if (vertical_stack == nullptr || vertical_stack->children().size() != 0) {
+    return 191;
+  }
+  return text_element != nullptr && text_element->model() == &model &&
+                 text_element->text() == "factory"
+             ? 0
+             : 192;
+}
+
+int test_free_authoring_factories_compose_with_existing_builder_methods() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .style(cgpui::Style{}.with_gap(5.0F))
+                              .child(cgpui::into_element(
+                                  cgpui::ElementBuilder::fixed_size(
+                                      cgpui::Size{.width = 10.0F,
+                                                  .height = 4.0F})))
+                              .child(cgpui::into_element(
+                                  cgpui::ElementBuilder::fixed_size(
+                                      cgpui::Size{.width = 20.0F,
+                                                  .height = 8.0F}))));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->gap() != 5.0F) {
+    return 193;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{});
+  if (output.size.width != 35.0F || output.size.height != 8.0F) {
+    return 194;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 15.0F &&
+                 second_bounds->size.width == 20.0F
+             ? 0
+             : 195;
+}
+
 int test_base_element_lays_out_zero_size() {
   TestElement element;
   const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
@@ -1919,6 +1983,15 @@ int main() {
     return result;
   }
   if (const int result = test_element_builder_into_element_builds_owned_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_free_authoring_factories_create_builders();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_free_authoring_factories_compose_with_existing_builder_methods();
       result != 0) {
     return result;
   }

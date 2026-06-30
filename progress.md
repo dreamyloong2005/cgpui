@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 90 Element Authoring Factories
+
+- Started Step 90: Free authoring factories for `div()`, `h_flex()`,
+  `v_flex()`, `v_stack()`, and `text(...)`.
+- Added RED `element_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for GPUI-like free factory names; the
+  test failed because the factory functions did not exist.
+- Implemented Step 90 in `codex/element-authoring-factories`: added inline
+  factory functions in `include/cgpui/ui/element.hpp` that return the existing
+  `ElementBuilder` variants.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 3/3.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 29/29.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+
 ## 2026-06-30 Step 89 AnyElement Authoring
 
 - Started Step 89: Public `AnyElement` alias and minimal into-element

@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Element Authoring Factories
+
+- Free factories should return `ElementBuilder`, not `AnyElement`, because the
+  existing fluent builder methods still need to compose before ownership is
+  materialized through `into_element(...)` or `build()`.
+- `div()` maps directly to the current styled-box builder, `h_flex()` and
+  `v_flex()` map to row/column flex builders, `v_stack()` maps to the stack
+  builder, and `text(TextModel&)` preserves the existing non-owning text-model
+  binding convention.
+- Keeping these helpers in `element.hpp` makes them visible through both
+  `cgpui/ui/element.hpp` and the public prelude without creating another
+  authoring header before the child-conversion overloads land.
+
 ## 2026-06-30 AnyElement Authoring
 
 - `AnyElement` can be a public alias for the existing

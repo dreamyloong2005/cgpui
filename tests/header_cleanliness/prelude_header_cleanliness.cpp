@@ -19,11 +19,9 @@ class PreludeView final : public cgpui::View {
 int main() {
   cgpui::ElementTree tree;
   cgpui::TextModel model("x");
-  cgpui::AnyElement child =
-      cgpui::into_element(cgpui::ElementBuilder::text(model));
+  cgpui::AnyElement child = cgpui::into_element(cgpui::text(model));
   const cgpui::ElementId root_id =
-      tree.set_root(cgpui::ElementBuilder::box()
-                        .style(cgpui::Style{}.with_gap(1.0F))
+      tree.set_root(cgpui::div().style(cgpui::Style{}.with_gap(1.0F))
                         .child(std::move(child))
                         .build());
   PreludeView view;

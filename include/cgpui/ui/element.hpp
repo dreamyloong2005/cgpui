@@ -758,6 +758,26 @@ class ElementBuilder {
   return std::move(builder).build();
 }
 
+[[nodiscard]] inline ElementBuilder div() {
+  return ElementBuilder::box();
+}
+
+[[nodiscard]] inline ElementBuilder h_flex() {
+  return ElementBuilder::row();
+}
+
+[[nodiscard]] inline ElementBuilder v_flex() {
+  return ElementBuilder::column();
+}
+
+[[nodiscard]] inline ElementBuilder v_stack() {
+  return ElementBuilder::v_stack();
+}
+
+[[nodiscard]] inline ElementBuilder text(TextModel& model) {
+  return ElementBuilder::text(model);
+}
+
 class ElementTree {
  public:
   [[nodiscard]] ElementId set_root(std::unique_ptr<Element> element) {
