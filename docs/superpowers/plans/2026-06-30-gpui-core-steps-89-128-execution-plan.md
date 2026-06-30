@@ -12,16 +12,14 @@
 
 ## Current State
 
-- Steps 89-117 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-118 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `c3b6ecb docs: mark step 117 merged`; the Step 117 feature
-  commit is `210c85d feat: add absolute positioning insets`.
-- Step 117 post-merge verification passed: targeted tests 3/3, Windows full
+- `master` includes `9dfc2e7 feat: add layer elevation z order`.
+- Step 118 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 118, layer/elevation style primitive, is implemented and
-  feature-worktree verified in `.worktrees/layer-elevation-z-order` on branch
-  `codex/layer-elevation-z-order`. Merge and post-merge verification remain
-  before Step 119 starts.
+- Step 119, rounded-rect paint command, is the next active implementation
+  slice. Start it from a fresh `.worktrees/rounded-rect-paint-command`
+  worktree on branch `codex/rounded-rect-paint-command`.
 
 ## File Map
 
@@ -165,10 +163,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 117
+## Remaining Execution Queue From Step 118
 
-This is the practical remaining sequence after Step 117. Steps 89-117 are kept
-as completed foundation; the active remaining queue is Steps 118-128.
+This is the practical remaining sequence after Step 118. Steps 89-118 are kept
+as completed foundation; the active remaining queue is Steps 119-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -261,19 +259,12 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 118 by committing the feature branch, fast-forward merging it to
-`master`, and running post-merge targeted, Windows full debug, and WSL Arch
-Linux full debug verification. Then start Step 119 from a fresh feature
-worktree:
+Start Step 119 from a fresh feature worktree:
 
 ```powershell
-git checkout master
-git merge --ff-only codex/layer-elevation-z-order
-xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
-xmake f -c -m debug -P .
-xmake test -P .
-wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
 git worktree add .worktrees/rounded-rect-paint-command -b codex/rounded-rect-paint-command master
+cd .worktrees/rounded-rect-paint-command
+xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
 ```
 
 Step 119 should add RED coverage for rounded-rect paint command metadata before
@@ -631,8 +622,9 @@ Status: complete on `master` at `2806a4a`.
 
 ### Step 118: Layer/Elevation Style Primitive
 
-Status: implemented and feature-worktree verified in
-`.worktrees/layer-elevation-z-order` on `codex/layer-elevation-z-order`.
+Status: complete on `master` at `9dfc2e7 feat: add layer elevation z order`.
+Post-merge targeted tests passed 3/3, Windows full debug passed 29/29, and WSL
+Arch Linux full debug passed 26/26.
 
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`

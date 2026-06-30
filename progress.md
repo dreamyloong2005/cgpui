@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 118 Post-Merge
+
+- Fast-forward merged Step 118, `9dfc2e7 feat: add layer elevation z order`,
+  from `.worktrees/layer-elevation-z-order` on
+  `codex/layer-elevation-z-order` to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . style_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan after merge so the current active implementation step is Step
+  119: rounded-rect paint command that preserves border radius metadata.
+
 ## 2026-06-30 Step 118 Layer/Elevation Z Order
 
 - Started Step 118 in `.worktrees/layer-elevation-z-order` on

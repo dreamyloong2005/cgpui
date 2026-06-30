@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 118-128 remainder intact inside the
+**Architecture:** Keep the active Steps 119-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -17,16 +17,15 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-117 are complete on `master` through
-  `c3b6ecb docs: mark step 117 merged`; the Step 117 feature commit is
-  `210c85d feat: add absolute positioning insets`.
-- Step 117 post-merge verification passed: targeted tests 3/3, Windows full
+- Steps 89-118 are complete on `master` through
+  `9dfc2e7 feat: add layer elevation z order`.
+- Step 118 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 118, layer/elevation style primitive mapped onto deterministic z order,
-  is the next active implementation slice. Start it from a fresh
-  `.worktrees/layer-elevation-z-order` worktree on branch
-  `codex/layer-elevation-z-order`.
-- Steps 118-128 remain the active gate before this follow-on plan. They are
+- Step 119, rounded-rect paint command preserving border radius metadata, is
+  the next active implementation slice. Start it from a fresh
+  `.worktrees/rounded-rect-paint-command` worktree on branch
+  `codex/rounded-rect-paint-command`.
+- Steps 119-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
@@ -38,12 +37,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`c3b6ecb docs: mark step 117 merged`. It is the execution plan for
+`9dfc2e7 feat: add layer elevation z order`. It is the execution plan for
 Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is Step 118, layer/elevation style primitive, unless the
+implementation action is Step 119, rounded-rect paint command, unless the
 roadmap is explicitly reprioritized.
 
-- Finish the current gate first: Steps 118-128 close layout depth,
+- Finish the current gate first: Steps 119-128 close render command depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
   demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
@@ -53,9 +52,9 @@ roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- From the current `master` state, the effective distance to Step 129 is 11
-  implementation steps, Steps 118-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. The effective distance through Step 168 is 51
+- From the current `master` state, the effective distance to Step 129 is 10
+  implementation steps, Steps 119-128, plus post-Step-128 targeted, Windows,
+  and WSL verification. The effective distance through Step 168 is 50
   implementation steps plus the post-Step-128 verification and the four band
   checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
@@ -172,7 +171,7 @@ Keep these out of Steps 129-168 unless the roadmap is explicitly rewritten:
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 118-128 are still incomplete:
+second active branch while Steps 119-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -226,12 +225,13 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 116 flex grow/shrink has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 117 absolute positioning/insets has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
-- [ ] Step 118 has landed the remaining planned layer/elevation primitive.
+- [x] Step 118 layer/elevation ordering has landed on `master` and is
+  post-merge verified on Windows and WSL Arch Linux.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count from the current `master` state:
-11 implementation steps, Steps 118-128, plus post-Step-128 Windows/WSL
+10 implementation steps, Steps 119-128, plus post-Step-128 Windows/WSL
 verification.
 
 ## Back-40 Execution Strategy
@@ -297,13 +297,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 118 instead of starting Step
+For the current pre-back-40 state, start Step 119 instead of starting Step
 129:
 
 ```powershell
-git worktree add .worktrees/layer-elevation-z-order -b codex/layer-elevation-z-order master
-cd .worktrees/layer-elevation-z-order
-xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+git worktree add .worktrees/rounded-rect-paint-command -b codex/rounded-rect-paint-command master
+cd .worktrees/rounded-rect-paint-command
+xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

@@ -1,5 +1,15 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Layer/Elevation Z Order Merged
+
+- After Step 118 merged, the remaining pre-back-40 gate is Steps 119-128 plus
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification.
+- Step 119 should build on the current paint command stream by preserving
+  border-radius metadata in a rounded-rect command shape first. Avoid changing
+  Vulkan rounded drawing behavior until the command metadata is pinned by RED
+  tests.
+
 ## 2026-06-30 Layer/Elevation Z Order
 
 - Step 118 maps layer/elevation onto deterministic paint order by adding
