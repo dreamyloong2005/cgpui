@@ -39,6 +39,9 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_pointer_move_sent() const;
   [[nodiscard]] bool wait_for_pointer_button_sent() const;
   [[nodiscard]] bool wait_for_pointer_scroll_sent() const;
+  [[nodiscard]] bool wait_for_pointer_cursor_set() const;
+  [[nodiscard]] bool wait_for_pointer_cursor_set_count(
+      std::uint32_t count) const;
   [[nodiscard]] bool wait_for_keyboard_modifiers_sent() const;
   [[nodiscard]] bool wait_for_keyboard_key_sent() const;
   [[nodiscard]] bool wait_for_keyboard_leave_sent() const;

@@ -1961,3 +1961,25 @@
 - The effective distance to Step 129 is 7 implementation slices plus the
   Step 128 exit verification. The effective distance through Step 168 is 47
   implementation slices plus four band checkpoint reviews.
+
+## 2026-07-01 Platform Cursor Application
+
+- `CursorShape` needs to live below the UI layer once platform windows apply
+  cursors directly. Moving it from `include/cgpui/ui/ui.hpp` to
+  `include/cgpui/core/events.hpp` lets both `WindowRuntime` and
+  `PlatformWindow` use the same platform-neutral enum without making platform
+  depend on UI.
+- The narrow runtime contract is to apply platform cursor changes after routed
+  pointer hover recomputes `cursor_shape_`, and only when the shape changes.
+  This keeps existing input snapshots intact while avoiding redundant platform
+  calls for repeated pointer moves over the same cursor shape.
+- Win32 can map the existing cursor shapes to system cursor resources with
+  `LoadCursorW`, update the window class cursor through `SetClassLongPtrW`, and
+  call `SetCursor` for immediate feedback.
+- Wayland should stay a skeleton at Step 124: store the requested shape and
+  issue a testable `wl_pointer.set_cursor` request when the pointer is over the
+  window, but defer cursor theme loading and cursor surfaces to a later
+  platform-depth step.
+- The Wayland test compositor must count `set_cursor` requests, not merely
+  record a boolean, because pointer enter can apply the default cursor before
+  the explicit `PlatformWindow::set_cursor(text)` call.

@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 123-128 remainder intact inside the
+**Architecture:** Keep the active Steps 125-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -28,7 +28,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 123 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Steps 124-128 remain the active implementation gate before this follow-on
+- Step 124 is implemented and feature-worktree verified; it still needs merge,
+  post-merge verification, and docs closeout before Step 125 starts.
+- Steps 125-128 remain the active implementation gate before this follow-on
   plan. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
@@ -36,6 +38,25 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   roadmap is explicitly reprioritized.
 - The main worktree is on `master` with no tracked/staged changes before this
   planning refresh; the known local-only untracked item is `.vscode/`.
+
+## 2026-07-01 Back-40 Planning After Step 124 GREEN
+
+- Step 124, platform cursor application for Win32 and Wayland, is implemented
+  and feature-worktree verified in `.worktrees/platform-cursor-application`.
+  RED failed on missing `PlatformWindow::set_cursor(...)`; GREEN connects
+  runtime hover cursor state to a platform cursor API, maps Win32 system
+  cursors, and adds a testable Wayland `wl_pointer.set_cursor` skeleton without
+  cursor theme loading.
+- Feature-worktree verification passed: targeted Windows and WSL tests,
+  Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 124 still needs feature commit, fast-forward merge to `master`,
+  post-merge targeted/Windows/WSL verification, docs closeout, and cleanup.
+- After the Step 124 merge, the gate to Step 129 is 4 implementation slices:
+  Steps 125-128, followed by post-Step-128 targeted verification, Windows full
+  debug, WSL Arch full debug, and clean `master` status.
+- The effective distance through Step 168 after the Step 124 merge is 44
+  implementation slices plus the post-Step-128 verification gate and four band
+  checkpoint reviews.
 
 ## 2026-06-30 Back-40 Planning After Step 122 Merge
 

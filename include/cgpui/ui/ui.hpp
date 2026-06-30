@@ -293,16 +293,6 @@ struct EntityObserver {
   std::function<void(const WindowRuntimeContext&, std::uint64_t)> callback;
 };
 
-enum class CursorShape {
-  default_arrow,
-  pointing_hand,
-  text,
-  crosshair,
-  resize_left_right,
-  resize_up_down,
-  not_allowed,
-};
-
 struct ViewInputState {
   bool focused = false;
   bool pointer_captured = false;
@@ -526,6 +516,7 @@ class WindowRuntime {
   void handle_redraw();
   void schedule_redraw();
   void flush_deferred_redraw_request();
+  void apply_cursor_shape(CursorShape cursor_shape);
   void fail_and_quit(Error error);
   void refresh_route_ancestry(EventRoute& route) const;
   [[nodiscard]] std::vector<ElementId> element_ancestry_for(
@@ -574,6 +565,7 @@ class WindowRuntime {
   std::optional<ElementId> keyboard_focus_element_owner_;
   std::optional<ElementId> hovered_element_id_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
+  CursorShape applied_cursor_shape_ = CursorShape::default_arrow;
   EventResult last_event_result_{};
   std::optional<RenderRecord> last_render_record_;
   std::optional<EventDispatchRecord> last_event_dispatch_;

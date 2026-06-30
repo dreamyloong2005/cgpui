@@ -348,6 +348,17 @@ struct WaylandTestCompositor::State {
     return flag.load();
   }
 
+  [[nodiscard]] bool wait_for_cursor_count(std::uint32_t count) const {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+    while (std::chrono::steady_clock::now() < deadline) {
+      if (pointer_cursor_set_count.load() >= count) {
+        return true;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    return pointer_cursor_set_count.load() >= count;
+  }
+
   void request_resize_configure(std::int32_t width, std::int32_t height) {
     resize_width.store(width);
     resize_height.store(height);
@@ -527,11 +538,18 @@ struct WaylandTestCompositor::State {
   static void handle_seat_destroyed(wl_resource* resource);
   static void pointer_set_cursor(
       wl_client*,
-      wl_resource*,
+      wl_resource* resource,
       std::uint32_t,
       wl_resource*,
       std::int32_t,
-      std::int32_t) {}
+      std::int32_t) {
+    auto* compositor =
+        static_cast<State*>(wl_resource_get_user_data(resource));
+    if (compositor != nullptr) {
+      compositor->pointer_cursor_set.store(true);
+      compositor->pointer_cursor_set_count.fetch_add(1);
+    }
+  }
   static void handle_pointer_destroyed(wl_resource* resource);
   static void handle_keyboard_destroyed(wl_resource* resource);
 
@@ -609,6 +627,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_button_sent{false};
   std::atomic_bool pointer_scroll_pending{false};
   std::atomic_bool pointer_scroll_sent{false};
+  std::atomic_bool pointer_cursor_set{false};
+  std::atomic_uint32_t pointer_cursor_set_count{0};
   std::atomic_bool keyboard_keymap_sent{false};
   std::atomic_bool keyboard_modifiers_pending{false};
   std::atomic_bool keyboard_modifiers_sent{false};
@@ -1351,6 +1371,15 @@ bool WaylandTestCompositor::wait_for_pointer_button_sent() const {
 
 bool WaylandTestCompositor::wait_for_pointer_scroll_sent() const {
   return state_->wait_for_flag(state_->pointer_scroll_sent);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_cursor_set() const {
+  return state_->wait_for_flag(state_->pointer_cursor_set);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_cursor_set_count(
+    std::uint32_t count) const {
+  return state_->wait_for_cursor_count(count);
 }
 
 bool WaylandTestCompositor::wait_for_keyboard_modifiers_sent() const {

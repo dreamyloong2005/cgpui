@@ -20,6 +20,16 @@ enum class KeyAction {
   released,
 };
 
+enum class CursorShape {
+  default_arrow,
+  pointing_hand,
+  text,
+  crosshair,
+  resize_left_right,
+  resize_up_down,
+  not_allowed,
+};
+
 struct KeyboardModifiers {
   bool shift = false;
   bool control = false;

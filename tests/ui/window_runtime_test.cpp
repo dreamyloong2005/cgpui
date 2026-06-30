@@ -925,6 +925,11 @@ class FakeWindow final : public cgpui::PlatformWindow {
 
   void set_title(std::string_view title) override { last_title = title; }
 
+  void set_cursor(cgpui::CursorShape cursor_shape) override {
+    set_cursor_count += 1;
+    last_cursor_shape = cursor_shape;
+  }
+
   void dispatch_resize(cgpui::Size size, cgpui::DpiScale scale) {
     state_.framebuffer_size = size;
     state_.scale = scale;
@@ -936,6 +941,8 @@ class FakeWindow final : public cgpui::PlatformWindow {
   cgpui::PlatformEventCallback callback;
   int request_redraw_count = 0;
   int request_close_count = 0;
+  int set_cursor_count = 0;
+  cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
   std::string_view last_title;
 
  private:
@@ -987,6 +994,9 @@ class FakeApplication final : public cgpui::PlatformApplication {
     void request_close() override { window_.request_close(); }
     void set_title(std::string_view title) override {
       window_.set_title(title);
+    }
+    void set_cursor(cgpui::CursorShape cursor_shape) override {
+      window_.set_cursor(cursor_shape);
     }
 
    private:
@@ -2822,6 +2832,63 @@ int test_runtime_routes_cursor_shape_from_hovered_element() {
   if (fixture.view.last_cursor_shape != cgpui::CursorShape::default_arrow ||
       third_cursor != cgpui::CursorShape::default_arrow) {
     return 183;
+  }
+  if (fixture.window.set_cursor_count != 3 ||
+      fixture.window.last_cursor_shape != cgpui::CursorShape::default_arrow) {
+    return 184;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* platform_cursor_fixture = nullptr;
+
+void dispatch_platform_cursor_sequence() {
+  auto& callback = platform_cursor_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {5.0F, 15.0F}});
+}
+
+int test_runtime_applies_hover_cursor_to_platform_window() {
+  RuntimeFixture fixture;
+  platform_cursor_fixture = &fixture;
+  fixture.app.on_run = &dispatch_platform_cursor_sequence;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{40});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{41});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  second->assign_id(cgpui::ElementId{42});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+  (void)stack.layout(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+  runtime.set_element_cursor(cgpui::ElementId{41}, cgpui::CursorShape::text);
+  runtime.set_element_cursor(
+      cgpui::ElementId{42},
+      cgpui::CursorShape::pointing_hand);
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  platform_cursor_fixture = nullptr;
+
+  if (result != 0) {
+    return 901;
+  }
+  if (fixture.window.set_cursor_count != 2) {
+    return 902;
+  }
+  if (fixture.window.last_cursor_shape != cgpui::CursorShape::pointing_hand) {
+    return 903;
   }
 
   return 0;
@@ -5670,6 +5737,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_cursor_shape_from_hovered_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_applies_hover_cursor_to_platform_window();
       result != 0) {
     return result;
   }

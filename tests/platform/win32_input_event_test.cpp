@@ -85,6 +85,14 @@ int main() {
     return 4;
   }
 
+  (*window)->set_cursor(cgpui::CursorShape::text);
+  const auto expected_text_cursor =
+      reinterpret_cast<LONG_PTR>(LoadCursorW(nullptr, MAKEINTRESOURCEW(32513)));
+  const auto applied_text_cursor = GetClassLongPtrW(hwnd, GCLP_HCURSOR);
+  if (applied_text_cursor != expected_text_cursor) {
+    return 11;
+  }
+
   SendMessageW(
       hwnd,
       WM_MOUSEMOVE,

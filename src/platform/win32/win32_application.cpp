@@ -71,6 +71,26 @@ KeyboardModifiers current_modifiers() {
   };
 }
 
+const wchar_t* cursor_id_for(CursorShape cursor_shape) {
+  switch (cursor_shape) {
+    case CursorShape::pointing_hand:
+      return MAKEINTRESOURCEW(32649);
+    case CursorShape::text:
+      return MAKEINTRESOURCEW(32513);
+    case CursorShape::crosshair:
+      return MAKEINTRESOURCEW(32515);
+    case CursorShape::resize_left_right:
+      return MAKEINTRESOURCEW(32644);
+    case CursorShape::resize_up_down:
+      return MAKEINTRESOURCEW(32645);
+    case CursorShape::not_allowed:
+      return MAKEINTRESOURCEW(32648);
+    case CursorShape::default_arrow:
+      return MAKEINTRESOURCEW(32512);
+  }
+  return MAKEINTRESOURCEW(32512);
+}
+
 class Win32Window final : public PlatformWindow {
  public:
   Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state)
@@ -105,6 +125,18 @@ class Win32Window final : public PlatformWindow {
   void set_title(std::string_view title) override {
     const auto wide_title = widen(title);
     SetWindowTextW(hwnd_, wide_title.c_str());
+  }
+
+  void set_cursor(CursorShape cursor_shape) override {
+    HCURSOR cursor = LoadCursorW(nullptr, cursor_id_for(cursor_shape));
+    if (cursor == nullptr) {
+      cursor = LoadCursorW(nullptr, cursor_id_for(CursorShape::default_arrow));
+    }
+    current_cursor_ = cursor;
+    if (hwnd_ != nullptr) {
+      SetClassLongPtrW(hwnd_, GCLP_HCURSOR, reinterpret_cast<LONG_PTR>(cursor));
+      SetCursor(cursor);
+    }
   }
 
   void update_size() {
@@ -197,6 +229,7 @@ class Win32Window final : public PlatformWindow {
  private:
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
+  HCURSOR current_cursor_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
 };

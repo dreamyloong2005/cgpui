@@ -2978,3 +2978,38 @@
 - Updated `task_plan.md` and `findings.md` with the same handoff state and
   distance estimate: 7 implementation slices to Step 129, and 47 slices
   through Step 168 including the remaining pre-back-40 gate.
+
+- Resumed Step 124 in `.worktrees/platform-cursor-application` on
+  `codex/platform-cursor-application`.
+- Confirmed the main `master` checkout had no tracked/staged changes and only
+  the known untracked `.vscode/` entry.
+- Verified Step 124 baseline targeted tests before edits:
+  Windows `xmake test -P . window_runtime_test/default
+  win32_input_event_test/default wayland_pointer_button_test/default` passed
+  the built Windows targets 2/2, and WSL Arch Linux targeted passed the built
+  Linux targets 2/2.
+- Added RED coverage for `PlatformWindow::set_cursor(CursorShape)`, runtime
+  hover cursor application to the platform window, Win32 text cursor mapping,
+  and Wayland `wl_pointer.set_cursor` observation through the test compositor.
+  RED failed as expected on missing `PlatformWindow::set_cursor(...)`.
+- Implemented Step 124: moved `CursorShape` into `core/events.hpp`, added
+  `PlatformWindow::set_cursor(...)`, wired runtime pointer-hover cursor changes
+  to the platform window, mapped Win32 shapes to system cursors, and added a
+  Wayland `wl_pointer.set_cursor` skeleton hook without cursor theme loading.
+- Verified targeted tests after GREEN:
+  Windows `xmake test -P . window_runtime_test/default
+  win32_input_event_test/default wayland_pointer_button_test/default` passed
+  built targets 2/2; WSL Arch Linux targeted passed built targets 2/2 including
+  `wayland_pointer_button_test/default`.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Hardened the Wayland cursor test compositor to count `set_cursor` requests
+  so the explicit platform cursor application is distinguished from the default
+  pointer-enter application; re-ran targeted tests on Windows and WSL
+  successfully.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  and `findings.md` to record Step 124 feature-worktree GREEN status and set
+  Step 125 as the next implementation slice after merge closeout.

@@ -14,6 +14,9 @@
 
 - Steps 89-123 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
+- Step 124 is implemented and feature-worktree verified in
+  `.worktrees/platform-cursor-application`; it still needs feature commit,
+  merge, post-merge verification, and docs closeout.
 - `master` includes `b0b9e00 feat: add text caret selection paint`; Step 122's
   behavior commit is `58561b1 feat: add font size style`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
@@ -27,6 +30,8 @@
 - Step 123, text caret and selection paint metadata, is merged and post-merge
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
+- Step 125, Win32 system clipboard backend for text copy, cut, and paste, is
+  the next implementation slice after the Step 124 merge closeout.
 
 ## File Map
 
@@ -156,7 +161,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 121: text paint command separates text drawing from placeholder rectangles.
 - [x] Step 122: font descriptor and basic font-size style primitives.
 - [x] Step 123: text element emits caret and selection paint metadata.
-- [ ] Step 124: platform cursor application for Win32 and Wayland.
+- [x] Step 124: platform cursor application for Win32 and Wayland.
 - [ ] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
 - [ ] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
 - [ ] Step 127: IME composition/candidate rectangle data from the focused text element.
@@ -250,7 +255,7 @@ leaving macOS/Metal for a later parity track.
 - [x] Step 121: add text paint commands instead of placeholder rectangles.
 - [x] Step 122: add font descriptors and basic font-size style.
 - [x] Step 123: emit caret and selection paint metadata from text elements.
-- [ ] Step 124: apply runtime cursor state through Win32 and Wayland platform
+- [x] Step 124: apply runtime cursor state through Win32 and Wayland platform
   hooks.
 - [ ] Step 125: add a Win32 system clipboard backend for UTF-8 text.
 - [ ] Step 126: add a Wayland clipboard backend skeleton with graceful
@@ -267,19 +272,20 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 124 from a fresh feature worktree:
+Finish Step 124 by committing the feature worktree, fast-forward merging it to
+`master`, running post-merge targeted/Windows/WSL verification, and doing docs
+closeout. Then start Step 125 from a fresh feature worktree:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/platform-cursor-application -b codex/platform-cursor-application master
-cd .worktrees/platform-cursor-application
-xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default
+git worktree add .worktrees/win32-system-clipboard -b codex/win32-system-clipboard master
+cd .worktrees/win32-system-clipboard
+xmake test -P . clipboard_test/default
 ```
 
-Step 124 should apply runtime cursor state through Win32 and Wayland platform
-hooks without expanding into clipboard, IME, or cursor theme loading beyond
-testable hooks.
+Step 125 should add a Win32 system clipboard backend for UTF-8 text while
+leaving the existing memory clipboard path deterministic for runtime tests.
 
 ## Step Details
 
@@ -762,11 +768,22 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/platform/win32_input_event_test.cpp`
 - Modify: `tests/platform/wayland_pointer_button_test.cpp`
+- Modify: `tests/platform/wayland_test_compositor.hpp`
+- Modify: `tests/platform/wayland_test_compositor.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for runtime cursor state reaching a platform cursor application hook.
-- [ ] Implement Win32 cursor mapping and a Wayland hook/skeleton that can be exercised by tests without requiring full compositor cursor themes.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default`.
+- [x] Add RED tests for runtime cursor state reaching a platform cursor
+  application hook. RED failed as expected on missing
+  `PlatformWindow::set_cursor(...)`.
+- [x] Implement Win32 cursor mapping and a Wayland hook/skeleton that can be
+  exercised by tests without requiring full compositor cursor themes.
+- [x] Targeted test command passed on Windows for built targets and on WSL for
+  Wayland coverage:
+  `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default`.
+- [x] Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] WSL Arch full debug passed 26/26:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
 
 ### Step 125: Win32 System Clipboard Backend
 

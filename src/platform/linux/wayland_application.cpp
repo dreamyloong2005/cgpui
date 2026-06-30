@@ -348,6 +348,14 @@ class WaylandWindow final : public PlatformWindow {
     wl_surface_commit(surface_);
   }
 
+  void set_cursor(CursorShape cursor_shape) override {
+    cursor_shape_ = cursor_shape;
+  }
+
+  [[nodiscard]] CursorShape cursor_shape() const {
+    return cursor_shape_;
+  }
+
   [[nodiscard]] bool configured() const { return configured_; }
 
   void pointer_moved(Point position) {
@@ -493,6 +501,7 @@ class WaylandWindow final : public PlatformWindow {
   xdg_toplevel* toplevel_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
+  CursorShape cursor_shape_ = CursorShape::default_arrow;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;
 };
@@ -835,10 +844,11 @@ class WaylandApplication final : public PlatformApplication {
       wl_fixed_t surface_x,
       wl_fixed_t surface_y) {
     (void)pointer;
-    (void)serial;
     auto* app = static_cast<WaylandApplication*>(data);
+    app->pointer_enter_serial_ = serial;
     app->pointer_window_ = app->find_window(surface);
     app->pointer_position_ = point_from_fixed(surface_x, surface_y);
+    app->apply_cursor_for(app->pointer_window_);
   }
 
   static void handle_pointer_leave(
@@ -1004,6 +1014,21 @@ class WaylandApplication final : public PlatformApplication {
     }
   }
 
+  void set_window_cursor(WaylandWindow& window, CursorShape cursor_shape) {
+    window.set_cursor(cursor_shape);
+    if (pointer_window_ == &window) {
+      apply_cursor_for(&window);
+    }
+  }
+
+  void apply_cursor_for(WaylandWindow* window) {
+    if (window == nullptr || pointer_ == nullptr) {
+      return;
+    }
+    wl_pointer_set_cursor(pointer_, pointer_enter_serial_, nullptr, 0, 0);
+    (void)wl_display_flush(display_);
+  }
+
   void load_keyboard_keymap(
       std::uint32_t format,
       std::int32_t fd,
@@ -1125,6 +1150,10 @@ class WaylandApplication final : public PlatformApplication {
       window_->set_title(title);
     }
 
+    void set_cursor(CursorShape cursor_shape) override {
+      app_.set_window_cursor(*window_, cursor_shape);
+    }
+
    private:
     std::unique_ptr<WaylandWindow> window_;
     WaylandApplication& app_;
@@ -1146,6 +1175,7 @@ class WaylandApplication final : public PlatformApplication {
   Point pointer_position_{};
   Point pending_scroll_delta_{};
   std::string initialization_error_;
+  std::uint32_t pointer_enter_serial_ = 0;
   bool pointer_scroll_pending_ = false;
   bool running_ = true;
 };

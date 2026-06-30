@@ -117,9 +117,14 @@ class FakeWindow final : public cgpui::PlatformWindow {
     last_title = title;
   }
 
+  void set_cursor(cgpui::CursorShape cursor_shape) override {
+    last_cursor_shape = cursor_shape;
+  }
+
   cgpui::PlatformEventCallback callback;
   int request_redraw_count = 0;
   int request_close_count = 0;
+  cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
   std::string_view last_title;
 
  private:
@@ -173,6 +178,9 @@ class FakeApplication final : public cgpui::PlatformApplication {
     void request_close() override { window_.request_close(); }
     void set_title(std::string_view title) override {
       window_.set_title(title);
+    }
+    void set_cursor(cgpui::CursorShape cursor_shape) override {
+      window_.set_cursor(cursor_shape);
     }
 
    private:

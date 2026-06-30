@@ -496,6 +496,7 @@ int WindowRuntime::run(
   keyboard_focus_element_owner_.reset();
   hovered_element_id_.reset();
   cursor_shape_ = CursorShape::default_arrow;
+  applied_cursor_shape_ = CursorShape::default_arrow;
   last_event_result_ = EventResult::unhandled();
   last_render_record_.reset();
   last_event_dispatch_.reset();
@@ -711,6 +712,9 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     } else if (std::holds_alternative<PointerMoved>(event)) {
       hovered_element_id_.reset();
       cursor_shape_ = CursorShape::default_arrow;
+    }
+    if (std::holds_alternative<PointerMoved>(event)) {
+      apply_cursor_shape(cursor_shape_);
     }
     if (keyboard_focus_element_owner_.has_value() &&
         is_keyboard_routed_event(event)) {
@@ -1370,6 +1374,14 @@ void WindowRuntime::flush_deferred_redraw_request() {
   }
   deferred_redraw_request_ = false;
   window_->request_redraw();
+}
+
+void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
+  if (window_ == nullptr || applied_cursor_shape_ == cursor_shape) {
+    return;
+  }
+  applied_cursor_shape_ = cursor_shape;
+  window_->set_cursor(cursor_shape);
 }
 
 ViewId WindowRuntime::allocate_view_id() {

@@ -84,6 +84,10 @@ class MacOSWindow final : public PlatformWindow {
     [ns_title release];
   }
 
+  void set_cursor(CursorShape cursor_shape) override {
+    (void)cursor_shape;
+  }
+
   void refresh_state() {
     const bool close_requested = state_.close_requested;
     state_ = make_window_state(window_);

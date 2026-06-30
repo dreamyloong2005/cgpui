@@ -41,8 +41,10 @@ int main() {
   }
 
   bool moved = false;
+  bool cursor_requested = false;
   bool pressed = false;
   bool released = false;
+  cgpui::PlatformWindow* platform_window = nullptr;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Pointer Test",
@@ -51,6 +53,10 @@ int main() {
         if (const auto* move = std::get_if<cgpui::PointerMoved>(&event);
             move != nullptr && point_equals(move->position, expected_position)) {
           moved = true;
+          if (!cursor_requested && platform_window != nullptr) {
+            platform_window->set_cursor(cgpui::CursorShape::text);
+            cursor_requested = true;
+          }
         }
         if (const auto* button = std::get_if<cgpui::PointerButton>(&event);
             button != nullptr && button->button == cgpui::MouseButton::left &&
@@ -68,6 +74,7 @@ int main() {
   if (!window) {
     return 4;
   }
+  platform_window = window->get();
 
   std::atomic_bool run_finished{false};
   int run_result = -1;
@@ -103,11 +110,17 @@ int main() {
   if (!compositor.wait_for_pointer_move_sent()) {
     return 6;
   }
+  if (!compositor.wait_for_pointer_cursor_set_count(2)) {
+    return 12;
+  }
   if (!compositor.wait_for_pointer_button_sent()) {
     return 7;
   }
   if (!moved) {
     return 8;
+  }
+  if (!cursor_requested) {
+    return 11;
   }
   if (!pressed || !released) {
     return 10;
