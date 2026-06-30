@@ -53,6 +53,23 @@ Windows/Linux core API is stable enough for parity work.
 - `git status --short --branch` on `master` has no tracked/staged changes from
   the work, aside from the pre-existing untracked `.vscode/`.
 
+## Definition Of Done For The 168-Step Follow-On Goal
+
+- Steps 1-128 remain implemented, merged to `master`, and verified on Windows
+  and WSL Arch Linux.
+- Steps 129-168 below are implemented only after the 128-step goal is complete;
+  until then they are a planned follow-on queue, not the active execution focus.
+- The follow-on work moves from "close to GPUI core API" toward a practical
+  Windows/Linux GPUI-core experience: context/entity ergonomics, keyed
+  reconciliation, reusable widgets, text/font rendering depth, async/timer
+  integration, diagnostics, and platform-backed Win32/Wayland behavior.
+- Windows and Linux continue to use Vulkan; Linux continues to target Wayland.
+- macOS/Cocoa + Metal remains a readiness boundary and must not become a parity
+  requirement inside this follow-on Windows/Linux track.
+- Each implementation step follows the same RED/GREEN, feature-worktree,
+  merge, Windows verification, and WSL verification discipline used for Steps
+  89-128.
+
 ## Steps 89-128 Execution Roadmap
 
 Detailed execution plan:
@@ -74,6 +91,24 @@ Detailed execution plan:
   and clipboard backends, IME geometry, and the public-prelude demo rewrite.
   This is the Windows/Linux backend-hardening band while macOS remains a
   readiness boundary.
+
+## Steps 129-168 Follow-On Roadmap
+
+Detailed follow-on plan:
+`docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
+
+These steps are intentionally queued after Step 128. They should not preempt
+the current active Step 95 unless the plan is explicitly reprioritized.
+
+- Band E, Steps 129-138: GPUI-like context, entity, global state, action
+  scoping, subscriptions, and async/timer primitives.
+- Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
+  style classes/themes, focus handles, and reusable widget primitives.
+- Band G, Steps 149-158: text/font rendering maturity, glyph cache surfaces,
+  renderer command batching, opacity/transform, and frame diagnostics.
+- Band H, Steps 159-168: Windows/Wayland platform completion, multi-window
+  lifecycle, accessibility/debug surfaces, packaging checks, and API parity
+  documentation.
 
 Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 `master`, then remove `.worktrees/element-child-overloads` and delete
@@ -209,6 +244,46 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 126. [ ] Wayland system clipboard backend skeleton for text copy, cut, and paste.
 127. [ ] IME composition/candidate rectangle data from the focused text element.
 128. [ ] GPUI-like demo rewrite using the public prelude and new authoring API.
+129. [ ] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
+130. [ ] Entity handle API with `read`, `update`, and `downgrade` convenience methods.
+131. [ ] Global app state registry with typed `set_global`, `global`, and `update_global` helpers.
+132. [ ] Scoped action registry for app, window, view, and focused element actions.
+133. [ ] Subscription ownership token that disconnects observers on drop/removal.
+134. [ ] Deferred callback queue for `cx.defer(...)` style post-event work.
+135. [ ] Timer API for one-shot and repeating callbacks through the runtime loop.
+136. [ ] Async task handle skeleton with main-thread completion dispatch.
+137. [ ] Runtime update batching so multiple model/global changes coalesce redraws.
+138. [ ] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
+139. [ ] Keyed element identity and keyed reconciliation beyond parent-local index matching.
+140. [ ] Element lifecycle hooks for mount, update, and unmount notifications.
+141. [ ] Element state storage keyed by element id for reusable widgets.
+142. [ ] Style class and theme token primitives for reusable design vocabulary.
+143. [ ] Style cascade resolution combining base, class, state, and inline styles.
+144. [ ] `FocusHandle` primitive with request, release, contains, and focused queries.
+145. [ ] Button widget primitive built from public element, focus, style, and action APIs.
+146. [ ] Label widget primitive using text style and text paint commands.
+147. [ ] Text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
+148. [ ] Scrollable list container with stable item keys and viewport clipping metadata.
+149. [ ] Font database abstraction and platform font discovery skeleton for Win32 and Linux.
+150. [ ] Text shaping run abstraction with deterministic fallback metrics before full shaping.
+151. [ ] Glyph atlas/cache interface shared by text elements and Vulkan renderer.
+152. [ ] Vulkan text draw path consumes text paint commands through cached glyph metadata.
+153. [ ] Opacity and transform paint metadata with deterministic command ordering.
+154. [ ] Renderer command batching by clip, opacity, transform, and primitive kind.
+155. [ ] Frame timing and paint/layout/render statistics exposed through diagnostics.
+156. [ ] HiDPI scale propagation into layout, text metrics, and renderer resources.
+157. [ ] Snapshot tests for paint command streams emitted by the demo and widgets.
+158. [ ] Renderer fallback path for unsupported commands with explicit diagnostics.
+159. [ ] Multi-window runtime registry with per-window root view and renderer ownership.
+160. [ ] Window activation, focus, minimize, restore, and close lifecycle events.
+161. [ ] Win32 IME composition window placement wired to focused text geometry.
+162. [ ] Wayland text-input/IME protocol skeleton wired to focused text geometry.
+163. [ ] Win32 drag-and-drop text/file event skeleton.
+164. [ ] Wayland data-device drag-and-drop text/file event skeleton.
+165. [ ] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
+166. [ ] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
+167. [ ] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
+168. [ ] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
 ## Active Step
 

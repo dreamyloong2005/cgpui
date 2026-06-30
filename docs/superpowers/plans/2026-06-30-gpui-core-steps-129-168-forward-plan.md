@@ -1,0 +1,588 @@
+# GPUI Core Steps 129-168 Forward Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
+
+**Architecture:** Keep the active Step 95-128 queue intact, then use Steps 129-168 to deepen context/entity ergonomics, keyed element reconciliation, reusable widgets, text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior. Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
+
+**Tech Stack:** C++23, xmake, public header-cleanliness tests, deterministic UI/runtime tests, Win32/Vulkan, Wayland/Vulkan, WSL Arch Linux verification, and feature-worktree RED/GREEN execution.
+
+---
+
+## Current State
+
+- Steps 89-94 are complete on `master`; Step 95 remains the active next implementation step.
+- Steps 95-128 already have a detailed execution plan in `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+- This document is a forward plan for the next 40 steps after Step 128. Do not execute Step 129 until Step 128 is merged and verified unless the roadmap is explicitly reprioritized.
+- The main worktree is expected to stay on `master` with no tracked/staged changes aside from planning edits and the pre-existing untracked `.vscode/`.
+
+## File Map
+
+- `include/cgpui/ui/ui.hpp`: context aliases, app/window/runtime APIs, scoped actions, timers, async completion dispatch, diagnostics, multi-window registry, lifecycle events.
+- `src/ui/ui.cpp`: runtime behavior for deferred callbacks, timers, batching, diagnostics, multi-window storage, event-loop wakeups, lifecycle dispatch.
+- `include/cgpui/core/entity.hpp`: entity handles, weak handles, global handles, subscription tokens.
+- `include/cgpui/ui/element.hpp`: keyed reconciliation, lifecycle hooks, element state storage, widget primitives, style cascade wiring, scrollable list behavior.
+- `include/cgpui/ui/style.hpp`: style classes, theme tokens, cascade inputs, opacity, transform, text/font style fields.
+- `include/cgpui/ui/text.hpp`: text input widget support, shaping runs, IME/caret geometry, selection metadata.
+- `include/cgpui/renderer/renderer.hpp`: text/glyph commands, opacity/transform metadata, batching keys, diagnostics records.
+- `src/renderer/vulkan/vulkan_renderer.cpp`: glyph cache consumption, text drawing, batching, HiDPI resource handling, unsupported-command diagnostics.
+- `include/cgpui/platform/platform.hpp`: event-loop wakeup, lifecycle events, drag/drop and accessibility skeleton hooks.
+- `src/platform/win32/win32_application.cpp`: Win32 IME placement, drag/drop skeleton, lifecycle events, wakeups, accessibility skeleton.
+- `src/platform/linux/wayland_application.cpp`: Wayland text-input skeleton, data-device drag/drop skeleton, lifecycle events, wakeups, accessibility skeleton.
+- `examples/hello_window/main.cpp`: post-Step-128 demo smoke surface for public API parity checks.
+- `tests/ui/*.cpp`, `tests/platform/*.cpp`, `tests/renderer/*.cpp`, `tests/architecture/*.cpp`, `tests/header_cleanliness/*.cpp`: RED/GREEN coverage for each slice.
+
+## Execution Rules
+
+Use one isolated worktree and one branch per step:
+
+```powershell
+git worktree add .worktrees/<slug> -b codex/<slug> master
+```
+
+For every step:
+
+- [ ] Add the RED test first and confirm the expected failure.
+- [ ] Implement the smallest GREEN change.
+- [ ] Run targeted tests in the feature worktree.
+- [ ] Run Windows full debug verification: `xmake f -c -m debug -P .; xmake test -P .`.
+- [ ] Run WSL Arch full debug verification for shared UI/runtime/renderer/platform/build changes.
+- [ ] Update `task_plan.md`, `progress.md`, and `findings.md`.
+- [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
+- [ ] Remove the feature worktree and delete the branch.
+
+## Milestone Bands
+
+### Band E: Context, Entity, Global State, and Async, Steps 129-138
+
+Purpose: make the model/context side feel closer to GPUI authoring instead of direct runtime plumbing.
+
+- [ ] Step 129: public `Context<T>` authoring alias over `ViewContext` for view/model code.
+- [ ] Step 130: entity handle API with `read`, `update`, and `downgrade` convenience methods.
+- [ ] Step 131: global app state registry with typed `set_global`, `global`, and `update_global` helpers.
+- [ ] Step 132: scoped action registry for app, window, view, and focused element actions.
+- [ ] Step 133: subscription ownership token that disconnects observers on drop/removal.
+- [ ] Step 134: deferred callback queue for `cx.defer(...)` style post-event work.
+- [ ] Step 135: timer API for one-shot and repeating callbacks through the runtime loop.
+- [ ] Step 136: async task handle skeleton with main-thread completion dispatch.
+- [ ] Step 137: runtime update batching so multiple model/global changes coalesce redraws.
+- [ ] Step 138: public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
+
+Exit check: author code can use context-shaped APIs for entities, globals, actions, subscriptions, deferred work, timers, and async completions, with deterministic diagnostics and redraw batching.
+
+### Band F: Reconciliation, Style Cascade, Focus Handles, and Widgets, Steps 139-148
+
+Purpose: make elements reusable and widget-ready, not just one-off builder trees.
+
+- [ ] Step 139: keyed element identity and keyed reconciliation beyond parent-local index matching.
+- [ ] Step 140: element lifecycle hooks for mount, update, and unmount notifications.
+- [ ] Step 141: element state storage keyed by element id for reusable widgets.
+- [ ] Step 142: style class and theme token primitives for reusable design vocabulary.
+- [ ] Step 143: style cascade resolution combining base, class, state, and inline styles.
+- [ ] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
+- [ ] Step 145: button widget primitive built from public element, focus, style, and action APIs.
+- [ ] Step 146: label widget primitive using text style and text paint commands.
+- [ ] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
+- [ ] Step 148: scrollable list container with stable item keys and viewport clipping metadata.
+
+Exit check: the public prelude can express common app UI controls through reusable widgets, keyed state, style classes/themes, and focus handles.
+
+### Band G: Text, Font, Renderer, and Diagnostics Depth, Steps 149-158
+
+Purpose: turn text and renderer output from metadata/placeholder paths into backend-ready command streams.
+
+- [ ] Step 149: font database abstraction and platform font discovery skeleton for Win32 and Linux.
+- [ ] Step 150: text shaping run abstraction with deterministic fallback metrics before full shaping.
+- [ ] Step 151: glyph atlas/cache interface shared by text elements and Vulkan renderer.
+- [ ] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
+- [ ] Step 153: opacity and transform paint metadata with deterministic command ordering.
+- [ ] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
+- [ ] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
+- [ ] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
+- [ ] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
+- [ ] Step 158: renderer fallback path for unsupported commands with explicit diagnostics.
+
+Exit check: text, opacity, transform, batching, HiDPI scale, and renderer diagnostics are represented in command streams and Vulkan-facing code without regressing existing rectangle rendering.
+
+### Band H: Platform Completion, Multi-Window, Accessibility, and Parity Audit, Steps 159-168
+
+Purpose: connect the public API to Windows/Wayland runtime behavior and close the Windows/Linux parity loop.
+
+- [ ] Step 159: multi-window runtime registry with per-window root view and renderer ownership.
+- [ ] Step 160: window activation, focus, minimize, restore, and close lifecycle events.
+- [ ] Step 161: Win32 IME composition window placement wired to focused text geometry.
+- [ ] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
+- [ ] Step 163: Win32 drag-and-drop text/file event skeleton.
+- [ ] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
+- [ ] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
+- [ ] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
+- [ ] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
+- [ ] Step 168: GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
+
+Exit check: Windows and Wayland have the platform hooks needed by the public core API, the demo is smoke-tested on both active targets, and the remaining GPUI parity gaps are explicitly documented.
+
+## Step Details
+
+### Step 129: Public `Context<T>` Authoring Alias
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `tests/header_cleanliness/prelude_header_cleanliness.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED compile coverage that lets a view/model author spell `Context<MyView>` and call existing `ViewContext` helpers through it.
+- [ ] Implement the alias or wrapper as an additive API over `ViewContext`.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default prelude_header_cleanliness/default`.
+
+### Step 130: Entity Handle Convenience API
+
+**Files:**
+- Modify: `include/cgpui/core/entity.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `tests/core/entity_store_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for an entity handle that stores a typed id and supports `read(cx)`, `update(cx, fn)`, and `downgrade()`.
+- [ ] Implement handle helpers over the existing entity store/context APIs.
+- [ ] Targeted test command: `xmake test -P . entity_store_test/default window_runtime_test/default`.
+
+### Step 131: Global App State Registry
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/app_runner_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for typed `set_global`, `global`, and `update_global` helpers.
+- [ ] Store globals by `std::type_index` and keep missing globals as soft-fail lookups.
+- [ ] Targeted test command: `xmake test -P . app_runner_test/default window_runtime_test/default`.
+
+### Step 132: Scoped Action Registry
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for app/window/view/focused-element action lookup order.
+- [ ] Extend the existing action registry with explicit scope metadata while preserving global action behavior.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 133: Subscription Ownership Token
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for a subscription token that disconnects observer callbacks when released or removed.
+- [ ] Implement token ids and soft-fail removal without changing existing subscription query behavior.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 134: Deferred Callback Queue
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for `ViewContext::defer(...)` running after the current event dispatch and before the next redraw flush.
+- [ ] Implement a FIFO deferred callback queue owned by `WindowRuntime`.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 135: Timer API
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for deterministic one-shot and repeating timer callbacks driven by a fake runtime tick.
+- [ ] Implement timer registration/cancellation without requiring real OS timers in unit tests.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 136: Async Task Handle Skeleton
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for spawning a task handle and delivering completion back through the runtime main-thread queue.
+- [ ] Implement a minimal task/completion abstraction with deterministic test injection.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 137: Runtime Update Batching
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests proving multiple model/global updates coalesce into one scheduled redraw.
+- [ ] Implement an update batch guard or queue flush around existing invalidation scheduling.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 138: Public Diagnostics Snapshot
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for diagnostics that report entity counts, subscription counts, invalidation state, frame index, and recent render status.
+- [ ] Expose a read-only runtime/context diagnostics snapshot.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 139: Keyed Element Identity
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for stable ids across keyed child reorder, insert, and removal.
+- [ ] Extend reconciliation with optional stable keys while preserving existing index-based behavior for unkeyed children.
+- [ ] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default`.
+
+### Step 140: Element Lifecycle Hooks
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for mount, update, and unmount callbacks during root and keyed child reconciliation.
+- [ ] Implement lifecycle hooks with no-op defaults on `Element`.
+- [ ] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default`.
+
+### Step 141: Element State Storage
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for state storage keyed by element id and preserved across keyed reconciliation.
+- [ ] Implement a type-indexed state bag with soft-fail lookup.
+- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default`.
+
+### Step 142: Style Classes and Theme Tokens
+
+**Files:**
+- Modify: `include/cgpui/ui/style.hpp`
+- Modify: `tests/ui/style_test.cpp`
+- Modify: `tests/header_cleanliness/prelude_header_cleanliness.cpp`
+
+- [ ] Add RED tests for class ids, theme token ids, and typed color/spacing token lookup.
+- [ ] Implement inert style vocabulary primitives before applying cascade behavior.
+- [ ] Targeted test command: `xmake test -P . style_test/default prelude_header_cleanliness/default`.
+
+### Step 143: Style Cascade Resolution
+
+**Files:**
+- Modify: `include/cgpui/ui/style.hpp`
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `tests/ui/style_test.cpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for base, class, state, and inline style resolution order.
+- [ ] Implement deterministic cascade merge rules using the Step 95 style-state primitives.
+- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default`.
+
+### Step 144: FocusHandle Primitive
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for focus handles requesting/releasing focus and querying current focus.
+- [ ] Implement handle storage over existing element focus owner data.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 145: Button Widget Primitive
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for a button widget invoking an action/click handler, exposing focusability, disabled state, and style states.
+- [ ] Build the widget from existing element wrappers and public builder APIs.
+- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default`.
+
+### Step 146: Label Widget Primitive
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for a label widget emitting text paint commands with foreground/font style.
+- [ ] Implement the label as a thin text element helper with style support.
+- [ ] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default`.
+
+### Step 147: Text Input Widget Primitive
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `include/cgpui/ui/text.hpp`
+- Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for focused text input handling selection, clipboard, key edits, and IME geometry.
+- [ ] Compose the widget from `TextModel`, focus handle, text element, and runtime text helpers.
+- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default text_model_test/default`.
+
+### Step 148: Scrollable List Container
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `include/cgpui/ui/scroll.hpp`
+- Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/ui/scroll_test.cpp`
+
+- [ ] Add RED tests for stable keyed list items, viewport clipping metadata, and scroll state offset.
+- [ ] Implement a scrollable list container on top of existing scroll state and keyed elements.
+- [ ] Targeted test command: `xmake test -P . element_test/default scroll_test/default`.
+
+### Step 149: Font Database Skeleton
+
+**Files:**
+- Modify: `include/cgpui/ui/text.hpp`
+- Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `tests/ui/text_model_test.cpp`
+- Modify: `tests/platform/win32_text_input_test.cpp`
+
+- [ ] Add RED tests for platform-neutral font descriptors and deterministic fake font discovery.
+- [ ] Add Win32/Linux discovery skeletons with graceful empty-result behavior in tests.
+- [ ] Targeted test command: `xmake test -P . text_model_test/default win32_text_input_test/default`.
+
+### Step 150: Text Shaping Run Abstraction
+
+**Files:**
+- Modify: `include/cgpui/ui/text.hpp`
+- Modify: `tests/ui/text_model_test.cpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for shaping runs carrying text, font, glyph advances, and fallback metrics.
+- [ ] Implement deterministic fallback shaping without requiring HarfBuzz yet.
+- [ ] Targeted test command: `xmake test -P . text_model_test/default element_test/default`.
+
+### Step 151: Glyph Atlas/Cache Interface
+
+**Files:**
+- Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `include/cgpui/ui/text.hpp`
+- Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for glyph cache lookup/miss records and text command glyph metadata.
+- [ ] Define renderer-facing glyph atlas interfaces without forcing a concrete Vulkan allocation in this slice.
+- [ ] Targeted test command: `xmake test -P . element_test/default vulkan_solid_rect_test/default`.
+
+### Step 152: Vulkan Text Draw Path
+
+**Files:**
+- Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
+- Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
+
+- [ ] Add RED renderer tests for text draw command acceptance with cached glyph metadata.
+- [ ] Implement a minimal Vulkan text command path that is testable without real font discovery.
+- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+
+### Step 153: Opacity and Transform Metadata
+
+**Files:**
+- Modify: `include/cgpui/ui/style.hpp`
+- Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `tests/ui/style_test.cpp`
+- Modify: `tests/ui/element_test.cpp`
+
+- [ ] Add RED tests for opacity and transform style fields reaching paint command metadata.
+- [ ] Implement metadata propagation without changing default paint output.
+- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default`.
+
+### Step 154: Renderer Command Batching
+
+**Files:**
+- Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
+- Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
+
+- [ ] Add RED tests for stable batching keys by clip, opacity, transform, and primitive kind.
+- [ ] Implement command grouping diagnostics before optimizing GPU paths.
+- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+
+### Step 155: Frame Statistics Diagnostics
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for layout, paint, render, command count, and frame timing fields.
+- [ ] Populate deterministic counters in tests and leave real timing optional.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default`.
+
+### Step 156: HiDPI Scale Propagation
+
+**Files:**
+- Modify: `include/cgpui/ui/layout.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/layout_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests proving DPI scale affects text metrics, layout context, and renderer resize data consistently.
+- [ ] Thread scale through layout/render context without changing authored logical pixel APIs.
+- [ ] Targeted test command: `xmake test -P . layout_test/default window_runtime_test/default`.
+
+### Step 157: Paint Command Snapshot Tests
+
+**Files:**
+- Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/ui/render_view_test.cpp`
+- Modify: `tests/architecture/hello_window_lifetime_test.cpp`
+
+- [ ] Add RED snapshot-style tests for demo/widget paint command streams.
+- [ ] Add deterministic serializers for paint commands in tests only.
+- [ ] Targeted test command: `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default`.
+
+### Step 158: Renderer Unsupported-Command Diagnostics
+
+**Files:**
+- Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
+- Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
+
+- [ ] Add RED tests proving unsupported renderer commands produce explicit diagnostics instead of silent drops.
+- [ ] Implement fallback diagnostics while keeping supported solid/text paths unchanged.
+- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+
+### Step 159: Multi-Window Runtime Registry
+
+**Files:**
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/app_runner_test.cpp`
+
+- [ ] Add RED tests for multiple runtime/window records with independent root views and renderers.
+- [ ] Implement a registry that keeps ownership explicit and preserves the single-window path.
+- [ ] Targeted test command: `xmake test -P . app_runner_test/default`.
+
+### Step 160: Window Lifecycle Events
+
+**Files:**
+- Modify: `include/cgpui/core/events.hpp`
+- Modify: `include/cgpui/platform/platform.hpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for activation, focus, minimize, restore, and close lifecycle events.
+- [ ] Route lifecycle events through existing dispatch records and callbacks.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+
+### Step 161: Win32 IME Placement
+
+**Files:**
+- Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/platform/win32_text_input_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for focused text geometry reaching Win32 IME candidate/composition placement data.
+- [ ] Wire the existing IME geometry surface into the Win32 platform layer.
+- [ ] Targeted test command: `xmake test -P . win32_text_input_test/default window_runtime_test/default`.
+
+### Step 162: Wayland Text-Input IME Skeleton
+
+**Files:**
+- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `tests/platform/wayland_keyboard_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for a Wayland text-input skeleton consuming focused text geometry with graceful unsupported behavior.
+- [ ] Keep protocol wiring isolated in the Wayland platform source.
+- [ ] Targeted test command: `xmake test -P . wayland_keyboard_test/default window_runtime_test/default`.
+
+### Step 163: Win32 Drag-and-Drop Skeleton
+
+**Files:**
+- Modify: `include/cgpui/core/events.hpp`
+- Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `tests/platform/win32_input_event_test.cpp`
+
+- [ ] Add RED tests for text/file drag-enter, drag-over, drop, and leave event shapes.
+- [ ] Implement Win32 skeleton event translation with deterministic test hooks.
+- [ ] Targeted test command: `xmake test -P . win32_input_event_test/default`.
+
+### Step 164: Wayland Data-Device Drag-and-Drop Skeleton
+
+**Files:**
+- Modify: `include/cgpui/core/events.hpp`
+- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `tests/platform/wayland_pointer_button_test.cpp`
+
+- [ ] Add RED tests for Wayland data-device drag/drop event shapes with graceful no-data behavior.
+- [ ] Implement isolated Wayland skeleton hooks.
+- [ ] Targeted test command: `xmake test -P . wayland_pointer_button_test/default`.
+
+### Step 165: Platform Event Loop Wakeup API
+
+**Files:**
+- Modify: `include/cgpui/platform/platform.hpp`
+- Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests proving timers, async completions, and deferred callbacks request platform wakeups.
+- [ ] Add a platform wakeup method with Win32/Wayland implementations and deterministic fakes.
+- [ ] Targeted test command: `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_keyboard_test/default`.
+
+### Step 166: Accessibility Tree Skeleton
+
+**Files:**
+- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `include/cgpui/platform/platform.hpp`
+- Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
+
+- [ ] Add RED tests for accessibility roles/names/focus state on labels, buttons, and text inputs.
+- [ ] Expose a platform-neutral accessibility tree snapshot before OS-specific adapters.
+- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default`.
+
+### Step 167: Windows/Linux Demo Smoke Tests
+
+**Files:**
+- Modify: `examples/hello_window/main.cpp`
+- Modify: `tests/architecture/hello_window_lifetime_test.cpp`
+- Modify: `xmake.lua`
+
+- [ ] Add RED smoke coverage for demo startup, input, text, clipboard, redraw, and close paths on Windows and Linux.
+- [ ] Keep smoke tests bounded with existing first-frame and close-after-first-frame environment controls.
+- [ ] Targeted test command: `xmake test -P . hello_window_lifetime_test/default`.
+
+### Step 168: GPUI-Core API Parity Audit
+
+**Files:**
+- Create: `docs/gpui-core-api-parity.md`
+- Modify: `task_plan.md`
+- Modify: `findings.md`
+
+- [ ] Add RED architecture coverage requiring the parity audit document to list implemented, partial, missing, and Mac-deferred API areas.
+- [ ] Write the audit with a Windows/Linux-only completion lens and a separate Mac parity handoff section.
+- [ ] Targeted test command: `xmake test -P . desktop_target_readiness_test/default`.
+
+## Risk Controls
+
+- Do not start Step 129 before Step 128 is actually merged and verified unless the user explicitly reprioritizes.
+- Keep context/entity/global APIs additive and source-compatible with the Step 99-108 model work.
+- Keep widgets implemented from public primitives; avoid special private runtime hooks unless a prior step exposes them generally.
+- Keep renderer text work command-driven before depending on full platform font discovery.
+- Keep Win32 and Wayland behavior behind platform sources; public headers should stay platform-neutral.
+- Keep macOS/Metal out of this Windows/Linux completion track except for explicit readiness notes.

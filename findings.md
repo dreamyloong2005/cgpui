@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Steps 129-168 Forward Plan
+
+- Steps 129-168 should remain a follow-on queue until Steps 95-128 finish,
+  because the later context/widget/platform work depends on `View::render`,
+  model helpers, propagation, text paint commands, cursor/clipboard/IME
+  surfaces, and the public-prelude demo rewrite.
+- The highest-leverage next 40 steps after Step 128 are not more authoring
+  sugar; they are API-shape completion and runtime maturity: typed contexts,
+  entity handles, globals, scoped actions, subscription ownership, deferred
+  work, timers, async completions, keyed reconciliation, style cascade,
+  widgets, text/font renderer depth, multi-window storage, and Win32/Wayland
+  lifecycle hooks.
+- The riskiest region is Steps 149-168, where text/font rendering and platform
+  hooks cross from deterministic metadata into Vulkan, Win32, and Wayland
+  behavior. Keep each step command-driven, fakeable in tests, and backed by
+  Windows plus WSL verification.
+
 ## 2026-06-30 Pointer Handler Shortcuts
 
 - Pointer handler shortcuts fit the existing wrapper pattern: keep element

@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Steps 129-168 Forward Planning
+
+- Removed the completed Step 94 feature branch
+  `codex/pointer-handler-shortcuts` after confirming the Step 94 worktree was
+  already gone.
+- Added a follow-on Definition of Done and roadmap for Steps 129-168 to
+  `task_plan.md`; this future queue is explicitly gated on completing and
+  verifying Steps 95-128 first.
+- Wrote
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  with four post-Step-128 bands: context/entity/global/async, keyed
+  reconciliation/widgets/style cascade, text/font/renderer depth, and
+  Windows/Wayland platform completion plus API parity audit.
+- Kept the active implementation step unchanged: Step 95 remains next.
+
 ## 2026-06-30 Step 94 Pointer Handler Shortcuts
 
 - Started Step 94 in `codex/pointer-handler-shortcuts` from `master` at
