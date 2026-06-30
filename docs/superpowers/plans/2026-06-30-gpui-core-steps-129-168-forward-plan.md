@@ -17,13 +17,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-119 are complete on `master` through
-  `0893600 feat: add rounded rect paint command`.
-- Step 119 post-merge verification passed: targeted tests 3/3, Windows full
+- Steps 89-120 are complete on `master` through
+  `9aba0e6 feat: honor vulkan solid rect clips`.
+- Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 120 is implemented and feature-worktree verified in
-  `.worktrees/vulkan-clip-rect-metadata` on
-  `codex/vulkan-clip-rect-metadata`.
 - Steps 121-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -33,7 +30,35 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The main worktree is on `master` with no tracked/staged changes before this
   planning refresh; the known local-only untracked item is `.vscode/`.
 
+## 2026-06-30 Back-40 Planning After Step 120 Merge
+
+This refresh is anchored at `master` HEAD
+`9aba0e6 feat: honor vulkan solid rect clips`. Step 120 is now merged and
+post-merge verified; the active gate before Step 129 is exactly Steps 121-128
+plus the post-Step-128 targeted, Windows, and WSL verification. The next
+implementation action is Step 121, text paint command metadata, not Step 129.
+
+- Finish the current gate first: Steps 121-128 close text/caret/selection
+  command metadata, cursor/clipboard/IME hooks, and the public-prelude demo
+  rewrite.
+- Then run Steps 129-168 as four 10-step bands: context/entity/async, keyed
+  widgets/style cascade, text/font/renderer diagnostics, and Windows/Wayland
+  platform closure plus the parity audit.
+- Keep the same cadence for the back 40: feature worktree, RED test, GREEN
+  implementation, targeted tests, Windows full debug, WSL Arch full debug,
+  docs/progress update, commit, fast-forward merge, post-merge verification,
+  and cleanup.
+- The effective distance to Step 129 is 8 implementation steps, Steps 121-128,
+  plus post-Step-128 targeted, Windows, and WSL verification.
+- The effective distance through Step 168 is 48 implementation steps plus the
+  post-Step-128 verification gate and four band checkpoint reviews.
+- Step 168 is a milestone audit, not a parity victory lap. It should document
+  implemented, partial, missing, and Mac/Metal-deferred areas with a
+  Windows/Linux completion lens.
+
 ## 2026-06-30 Back-40 Planning After Step 119 Merge
+
+Historical snapshot, superseded by the Step 120 merge refresh above.
 
 This refresh is anchored at `master` HEAD
 `0893600 feat: add rounded rect paint command`. Step 119 is now merged and
@@ -266,17 +291,16 @@ Do not begin Step 129 until all of these are true:
   post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 119 rounded-rect command metadata has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
-- [ ] Step 120 Vulkan clip handling is implemented and feature-worktree
-  verified; it still needs merge and post-merge Windows/WSL verification on
-  `master`.
+- [x] Step 120 Vulkan clip handling has landed on `master` and is
+  post-merge verified on Windows and WSL Arch Linux.
 - [ ] Steps 121-128 have landed text/caret/selection command metadata,
   Win32/Wayland cursor and clipboard hooks, IME geometry, and the
   public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count after Step 120 merges:
-8 implementation steps, Steps 121-128, plus Step 120 post-merge verification
-and post-Step-128 Windows/WSL verification.
+Remaining pre-back-40 implementation count:
+8 implementation steps, Steps 121-128, plus post-Step-128 Windows/WSL
+verification.
 
 ## Back-40 Execution Strategy
 
@@ -341,12 +365,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish Step 120 instead of starting Step
-129:
+For the current pre-back-40 state, start Step 121 instead of starting Step 129:
 
 ```powershell
-cd .worktrees/vulkan-clip-rect-metadata
-xmake test -P . vulkan_solid_rect_test/default element_test/default window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/text-paint-command -b codex/text-paint-command master
+cd .worktrees/text-paint-command
+xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

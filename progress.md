@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 120 Post-Merge And Back-40 Planning
+
+- Fast-forward merged Step 120 to `master` at
+  `9aba0e6 feat: honor vulkan solid rect clips`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . vulkan_solid_rect_test/default element_test/default
+  window_runtime_test/default ui_header_cleanliness/default` passed 4/4.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so the后 40 步 gate records Steps 89-120 as merged and
+  post-merge verified.
+- The remaining pre-back-40 route is now Steps 121-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch Linux full debug verification on
+  `master`.
+
 ## 2026-06-30 Step 120 Vulkan Clip Rect Metadata
 
 - Started Step 120 in `.worktrees/vulkan-clip-rect-metadata` on

@@ -12,15 +12,13 @@
 
 ## Current State
 
-- Steps 89-119 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-120 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `0893600 feat: add rounded rect paint command`.
-- Step 119 post-merge verification passed: targeted tests 3/3, Windows full
+- `master` includes `9aba0e6 feat: honor vulkan solid rect clips`.
+- Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 120, Vulkan clip rect metadata for solid rectangles, is implemented and
-  feature-worktree verified in `.worktrees/vulkan-clip-rect-metadata` on
-  branch `codex/vulkan-clip-rect-metadata`. Step 121 becomes the next
-  implementation slice after Step 120 is merged and post-merge verified.
+- Step 121, text paint command separates text drawing from placeholder
+  rectangles, is the next implementation slice.
 
 ## File Map
 
@@ -261,8 +259,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-After Step 120 is committed, merged, and post-merge verified, start Step 121
-from a fresh feature worktree:
+Start Step 121 from a fresh feature worktree:
 
 ```powershell
 git worktree add .worktrees/text-paint-command -b codex/text-paint-command master
@@ -665,11 +662,11 @@ and WSL Arch Linux full debug passed 26/26. Post-merge targeted tests passed
 
 ### Step 120: Vulkan Clip Rect Metadata
 
-Status: implemented and feature-worktree verified in
-`.worktrees/vulkan-clip-rect-metadata` on
-`codex/vulkan-clip-rect-metadata`. RED failed as expected on missing
-`SolidRect::clip_rect`. Feature-worktree targeted tests passed 4/4, Windows
-full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+Status: complete on `master` at `9aba0e6 feat: honor vulkan solid rect clips`.
+RED failed as expected on missing `SolidRect::clip_rect`. Feature-worktree
+targeted tests passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux
+full debug passed 26/26. Post-merge targeted tests passed 4/4, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 
 **Files:**
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`

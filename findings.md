@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 120 Merge
+
+- The后 40 步 remain Steps 129-168, and they are now gated behind Steps
+  121-128 plus the post-Step-128 Windows/WSL verification on `master`.
+- Step 120 is no longer part of the active gate: it is merged at
+  `9aba0e6 feat: honor vulkan solid rect clips` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The next implementation slice is Step 121, text paint command metadata. It
+  should replace text placeholder rectangles with command metadata without
+  pulling in font descriptors, caret/selection rendering, or platform clipboard
+  work early.
+- The Step 168 outcome remains a practical Windows/Linux GPUI-core foundation
+  plus a parity audit document. It is not full upstream GPUI parity, and
+  macOS/Cocoa + Metal remains explicitly deferred.
+
 ## 2026-06-30 Vulkan Clip Rect Metadata
 
 - Step 120 extends `SolidRect` with optional renderer-facing clip metadata so
