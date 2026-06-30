@@ -554,6 +554,14 @@ void WindowRuntime::handle_redraw() {
     return;
   }
 
+  ViewContext render_context = context();
+  AnyElement rendered = view_.render(render_context);
+  if (rendered != nullptr) {
+    auto tree = std::make_unique<ElementTree>();
+    (void)tree->set_root(std::move(rendered));
+    set_element_tree(std::move(tree));
+  }
+
   if (owned_element_tree_ != nullptr) {
     (void)owned_element_tree_->layout_root(LayoutInput{
         .constraints =

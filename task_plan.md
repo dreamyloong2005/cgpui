@@ -98,7 +98,7 @@ Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 97 unless the plan is explicitly reprioritized.
+the current active Step 98 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -212,7 +212,7 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 94. [x] Pointer handler shortcuts for down, up, move, and click authoring paths.
 95. [x] Focus, hover, and disabled style-state overlay primitives.
 96. [x] GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the current view contract.
-97. [ ] Runtime render pass installs the root view's rendered element tree.
+97. [x] Runtime render pass installs the root view's rendered element tree.
 98. [ ] ViewContext render invalidation helper and after-render observability.
 99. [ ] Public `Model<T>`/`Entity<T>` authoring aliases over typed entity ids.
 100. [ ] ViewContext model helpers for create, read, update, and remove.
@@ -287,8 +287,8 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 96 is complete. Next implementation step is Step 97:
-Runtime render pass installs the root view's rendered element tree.
+Step 97 is complete. Next implementation step is Step 98:
+ViewContext render invalidation helper and after-render observability.
 
 ## Risks
 

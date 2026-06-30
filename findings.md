@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Runtime Render Pass
+
+- The narrow Step 97 integration point is `WindowRuntime::handle_redraw()`:
+  rendering before the existing owned-tree layout pass lets the runtime reuse
+  current `ElementTree::layout_root`, hit testing, routed-element lookup, and
+  invalidation cleanup behavior.
+- `View::render(ViewContext&)` takes a non-const lvalue context, so the runtime
+  must materialize `ViewContext render_context = context();` before calling the
+  hook instead of passing the temporary result of `context()` directly.
+- A non-null render result should replace the runtime owned tree through the
+  same `set_element_tree(...)` path used by `ViewContext`; this keeps
+  `element_root()` and pointer routing consistent with manually installed
+  trees.
+- Existing `paint(...)` is still invoked by `render_view(...)` after the render
+  tree is installed, preserving the compatibility contract until later steps
+  route paint command generation through the rendered element tree.
+
 ## 2026-06-30 View Render Hook Skeleton
 
 - `ViewContext` must be available before `View` is declared because the new

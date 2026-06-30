@@ -910,6 +910,29 @@ class RenderHookView final : public cgpui::View {
   bool saw_context_viewport_size = false;
 };
 
+class RuntimeRenderView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size viewport_size) override {
+    paint_count += 1;
+    last_paint_viewport_size = viewport_size;
+  }
+
+  cgpui::AnyElement render(cgpui::ViewContext& context) override {
+    render_count += 1;
+    saw_context_view_id = context.view_id == cgpui::ViewId{1};
+    saw_context_viewport_size =
+        equal(context.viewport_size, cgpui::Size{640.0F, 480.0F});
+    return cgpui::into_element(
+        cgpui::div().size(cgpui::Size{700.0F, 600.0F}));
+  }
+
+  int paint_count = 0;
+  int render_count = 0;
+  bool saw_context_view_id = false;
+  bool saw_context_viewport_size = false;
+  cgpui::Size last_paint_viewport_size{};
+};
+
 int test_redraw_paints_initial_viewport() {
   RuntimeFixture fixture;
   fixture.app.on_run = +[] {};
@@ -996,6 +1019,71 @@ int test_view_render_hook_defaults_empty_and_can_be_overridden() {
   }
   if (!runtime.invalidation_state().paint) {
     return 304;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* runtime_render_pass_fixture = nullptr;
+
+void dispatch_runtime_render_pass_sequence() {
+  runtime_render_pass_fixture->window.request_redraw();
+  auto& callback = runtime_render_pass_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+}
+
+int test_runtime_render_pass_installs_rendered_element_tree() {
+  RuntimeFixture fixture;
+  RuntimeRenderView view;
+  runtime_render_pass_fixture = &fixture;
+  fixture.app.on_run = &dispatch_runtime_render_pass_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  std::optional<cgpui::ElementId> routed_element_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_moved) {
+          routed_element_id = record.route.target_element_id;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  runtime_render_pass_fixture = nullptr;
+
+  if (result != 0) {
+    return 305;
+  }
+  if (view.render_count != 1 || view.paint_count != 1) {
+    return 306;
+  }
+  if (!view.saw_context_view_id || !view.saw_context_viewport_size ||
+      !equal(view.last_paint_viewport_size, cgpui::Size{640.0F, 480.0F})) {
+    return 307;
+  }
+  if (runtime.element_tree() == nullptr || runtime.element_root() == nullptr) {
+    return 308;
+  }
+  const cgpui::ElementId root_id = runtime.element_tree()->root_id();
+  if (root_id.value == 0 || runtime.element_root()->id() != root_id) {
+    return 309;
+  }
+  const std::optional<cgpui::Rect> bounds =
+      runtime.element_root()->layout_bounds();
+  if (!bounds.has_value() || bounds->size.width != 640.0F ||
+      bounds->size.height != 480.0F) {
+    return 310;
+  }
+  if (!routed_element_id.has_value() || *routed_element_id != root_id) {
+    return 311;
   }
 
   return 0;
@@ -4162,6 +4250,11 @@ int main() {
   }
   if (const int result =
           test_view_render_hook_defaults_empty_and_can_be_overridden();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_render_pass_installs_rendered_element_tree();
       result != 0) {
     return result;
   }

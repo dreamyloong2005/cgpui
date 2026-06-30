@@ -12,15 +12,15 @@
 
 ## Current State
 
-- Steps 89-96 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-97 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at the Step 96 feature merge.
+- `master` is at the Step 97 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  expected to remain active after Step 96 cleanup.
-- The next implementation slice is Step 97:
-  Runtime render pass installs the root view's rendered element tree.
+  expected to remain active after Step 97 cleanup.
+- The next implementation slice is Step 98:
+  ViewContext render invalidation helper and after-render observability.
 
 ## File Map
 
@@ -88,7 +88,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 94: pointer handler shortcuts.
 - [x] Step 95: focus/hover/disabled style-state primitives.
 - [x] Step 96: `View::render(ViewContext&)` skeleton.
-- [ ] Step 97: runtime render pass installs rendered element trees.
+- [x] Step 97: runtime render pass installs rendered element trees.
 - [ ] Step 98: render invalidation helper and after-render observability.
 
 Acceptance at the end of Band A:
@@ -166,8 +166,8 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 96
 
-This is the practical remaining sequence after Step 96. Steps 89-96 are kept
-as completed foundation; the active remaining queue is Steps 97-128.
+This is the practical remaining sequence after Step 97. Steps 89-97 are kept
+as completed foundation; the active remaining queue is Steps 98-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -180,7 +180,7 @@ without touching model lifecycle yet.
   deterministic style resolution.
 - [x] Step 96: add optional `View::render(ViewContext&)` while preserving the
   existing `paint(...)` contract.
-- [ ] Step 97: make redraw install the root view's rendered element tree.
+- [x] Step 97: make redraw install the root view's rendered element tree.
 - [ ] Step 98: expose render invalidation and after-render observability.
 
 Exit check: a root view can return a public-prelude-authored element tree from
@@ -260,18 +260,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 97 in an isolated worktree:
+Start Step 98 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/runtime-render-pass -b codex/runtime-render-pass master
-xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
+git worktree add .worktrees/render-invalidation-observability -b codex/render-invalidation-observability master
+xmake test -P . window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Then add the RED tests proving a root view's `render(...)` result is installed
-as the owned runtime element tree before redraw layout and hit testing, while
-existing `paint(...)` invocation remains compatible. Implement the minimal
-runtime render pass in `src/ui/ui.cpp`, then follow the standard per-step
-verification/merge workflow above.
+Then add the RED tests for `ViewContext::request_render()` and after-render
+observability that reports render sequence and installed root element id.
+Implement render invalidation as a narrow layer over the current redraw and
+invalidation flow, then follow the standard per-step verification/merge
+workflow above.
 
 ## Step Details
 

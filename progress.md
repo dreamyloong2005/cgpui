@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 97 Runtime Render Pass
+
+- Started Step 97 in `codex/runtime-render-pass` from `master` at `b17d261`.
+- Baseline targeted tests passed: `xmake test -P .
+  window_runtime_test/default element_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Added RED `window_runtime_test` coverage for redraw calling
+  `View::render(ViewContext&)`, installing the returned element as the runtime
+  owned `ElementTree`, laying it out to the viewport, and routing a subsequent
+  pointer move to the rendered root element; the test failed with return code
+  306 because redraw did not call `render(...)`.
+- Implemented Step 97 in `src/ui/ui.cpp`: `WindowRuntime::handle_redraw`
+  creates a render context, calls `view_.render(...)`, wraps a non-null
+  `AnyElement` in an `ElementTree`, and reuses the existing owned-tree layout,
+  hit-test, and paint-compatible redraw flow.
+- Verified targeted tests passed 3/3.
+- Verified Windows full debug tests passed 29/29.
+- Verified WSL Arch Linux full debug tests passed 26/26.
+
 ## 2026-06-30 Step 96 View Render Hook Skeleton
 
 - Started Step 96 in `codex/view-render-hook` from `master` at `4a1557e`.
