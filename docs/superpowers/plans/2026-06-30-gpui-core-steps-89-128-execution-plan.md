@@ -12,15 +12,16 @@
 
 ## Current State
 
-- Steps 89-94 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-95 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
 - `master` is at the Step 94 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
   expected to remain active after Step 94 cleanup.
-- The next implementation slice is Step 95:
-  Focus, hover, and disabled style-state overlay primitives.
+- The next implementation slice is Step 96:
+  GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the
+  current view contract.
 
 ## File Map
 
@@ -86,7 +87,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 92: style unit/color helpers.
 - [x] Step 93: builder style shortcuts.
 - [x] Step 94: pointer handler shortcuts.
-- [ ] Step 95: focus/hover/disabled style-state primitives.
+- [x] Step 95: focus/hover/disabled style-state primitives.
 - [ ] Step 96: `View::render(ViewContext&)` skeleton.
 - [ ] Step 97: runtime render pass installs rendered element trees.
 - [ ] Step 98: render invalidation helper and after-render observability.
@@ -176,7 +177,7 @@ without touching model lifecycle yet.
 
 - [x] Step 93: land fluent builder style shortcuts on `ElementBuilder`.
 - [x] Step 94: add pointer-down/up/move/click authoring shortcuts.
-- [ ] Step 95: add base/hover/focus/disabled style overlay primitives and
+- [x] Step 95: add base/hover/focus/disabled style overlay primitives and
   deterministic style resolution.
 - [ ] Step 96: add optional `View::render(ViewContext&)` while preserving the
   existing `paint(...)` contract.
@@ -318,6 +319,8 @@ Status: complete on `master` after the Step 94 merge.
 - [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`.
 
 ### Step 95: Style-State Overlay Primitives
+
+Status: complete on `master` after the Step 95 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`

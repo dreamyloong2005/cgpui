@@ -132,22 +132,24 @@ std::span<const PaintCommand> PaintList::commands() const {
 
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
+  const Style& base_style = style();
   const bool uses_hidden_overflow_clip =
-      bounds.has_value() && style_.overflow == Overflow::hidden;
+      bounds.has_value() && base_style.overflow == Overflow::hidden;
   if (uses_hidden_overflow_clip) {
-    paint_list.push_clip(
-        style_.clip_rect.has_value() ? *style_.clip_rect : *bounds);
+    paint_list.push_clip(base_style.clip_rect.has_value()
+                             ? *base_style.clip_rect
+                             : *bounds);
   }
-  if (bounds.has_value() && style_.background_color.has_value()) {
-    paint_list.fill_rect(*bounds, *style_.background_color);
+  if (bounds.has_value() && base_style.background_color.has_value()) {
+    paint_list.fill_rect(*bounds, *base_style.background_color);
   }
-  if (bounds.has_value() && style_.border_color.has_value()) {
+  if (bounds.has_value() && base_style.border_color.has_value()) {
     const Rect rect = *bounds;
-    const Color color = *style_.border_color;
-    const float top = style_.border_width.top;
-    const float right = style_.border_width.right;
-    const float bottom = style_.border_width.bottom;
-    const float left = style_.border_width.left;
+    const Color color = *base_style.border_color;
+    const float top = base_style.border_width.top;
+    const float right = base_style.border_width.right;
+    const float bottom = base_style.border_width.bottom;
+    const float left = base_style.border_width.left;
     const float vertical_side_height =
         std::max(0.0F, rect.size.height - top - bottom);
 

@@ -347,6 +347,52 @@ int test_element_builder_fluent_gap_shortcut_applies_to_stack_and_flex() {
              : 215;
 }
 
+int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .background(cgpui::rgb(10, 10, 10))
+                              .hover_style(cgpui::StyleOverlay{}
+                                               .with_background_color(
+                                                   cgpui::rgb(20, 20, 20))
+                                               .with_padding(
+                                                   cgpui::edges(2.0F)))
+                              .focus_style(cgpui::StyleOverlay{}
+                                               .with_foreground_color(
+                                                   cgpui::rgb(30, 30, 30)))
+                              .disabled_style(cgpui::StyleOverlay{}
+                                                  .with_background_color(
+                                                      cgpui::rgb(40, 40, 40))
+                                                  .with_border_width(
+                                                      cgpui::edges(3.0F))));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 224;
+  }
+
+  if (!styled->style().background_color.has_value() ||
+      styled->style().background_color->r != 10.0F / 255.0F) {
+    return 225;
+  }
+
+  const cgpui::Style resolved = cgpui::resolved_style(
+      styled->style_state(),
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .disabled = true,
+      });
+  if (!resolved.background_color.has_value() ||
+      resolved.background_color->r != 40.0F / 255.0F ||
+      !resolved.foreground_color.has_value() ||
+      resolved.foreground_color->r != 30.0F / 255.0F ||
+      resolved.padding.top != 2.0F ||
+      resolved.border_width.left != 3.0F) {
+    return 226;
+  }
+
+  return 0;
+}
+
 int test_base_element_lays_out_zero_size() {
   TestElement element;
   const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
@@ -2322,6 +2368,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_fluent_gap_shortcut_applies_to_stack_and_flex();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_style_state_overlays_are_stored_on_styled_box();
       result != 0) {
     return result;
   }

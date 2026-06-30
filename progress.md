@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 95 Style-State Overlays
+
+- Started Step 95 in `codex/style-state-overlays` from `master` at `9d1288a`.
+- Baseline targeted tests passed: `xmake test -P . style_test/default
+  element_test/default ui_header_cleanliness/default` passed 3/3.
+- Added RED `style_test`, `element_test`, and `ui_header_cleanliness` coverage
+  for `StyleOverlay`, `StyleState`, `StyleStateFlags`, `resolved_style(...)`,
+  and builder authoring methods `.hover_style(...)`, `.focus_style(...)`, and
+  `.disabled_style(...)`; the RED run failed to compile because
+  `cgpui::StyleOverlay`, `StyleState`, `StyleStateFlags`, and
+  `resolved_style(...)` did not exist.
+- Implemented Step 95 in `include/cgpui/ui/style.hpp` and
+  `include/cgpui/ui/element.hpp`: `StyleOverlay` stores optional per-field
+  overrides, `StyleState` stores base/hover/focus/disabled style data,
+  `resolved_style(...)` applies hover, then focus, then disabled overlays, and
+  `ElementBuilder` stores state overlays on `StyledElement`.
+- Updated `StyledElement` layout, z-index, and paint to read the base style
+  through `style()` while preserving the old `.style()` accessor and existing
+  source-compatible `StyledElement(Style, child)` constructor.
+- Verified targeted tests passed 3/3.
+- Verified Windows full debug tests passed 29/29.
+- Verified WSL Arch Linux full debug tests passed 26/26.
+
 ## 2026-06-30 Steps 129-168 Forward Planning
 
 - Removed the completed Step 94 feature branch

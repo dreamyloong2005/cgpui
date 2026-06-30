@@ -330,11 +330,21 @@ class FlexElement : public Element {
 class StyledElement : public Element {
  public:
   explicit StyledElement(Style style, std::unique_ptr<Element> child = {})
-      : style_(style),
+      : style_state_(StyleState{.base = style}),
+        child_(std::move(child)) {}
+
+  explicit StyledElement(
+      StyleState style_state,
+      std::unique_ptr<Element> child = {})
+      : style_state_(style_state),
         child_(std::move(child)) {}
 
   [[nodiscard]] const Style& style() const {
-    return style_;
+    return style_state_.base;
+  }
+
+  [[nodiscard]] const StyleState& style_state() const {
+    return style_state_;
   }
 
   [[nodiscard]] Element* child() {
@@ -346,26 +356,27 @@ class StyledElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    Size content_size = style_.preferred_size;
+    const Style& base_style = style();
+    Size content_size = base_style.preferred_size;
     if (child_) {
       const LayoutOutput child_output = child_->layout(input);
       content_size = child_output.size;
       child_->set_layout_bounds(Rect{
           .origin =
               {
-                  .x = style_.margin.left + style_.padding.left,
-                  .y = style_.margin.top + style_.padding.top,
+                  .x = base_style.margin.left + base_style.padding.left,
+                  .y = base_style.margin.top + base_style.padding.top,
               },
           .size = child_output.size,
       });
     }
     const Size preferred{
-        .width = content_size.width + style_.padding.left +
-                 style_.padding.right + style_.margin.left +
-                 style_.margin.right,
-        .height = content_size.height + style_.padding.top +
-                  style_.padding.bottom + style_.margin.top +
-                  style_.margin.bottom,
+        .width = content_size.width + base_style.padding.left +
+                 base_style.padding.right + base_style.margin.left +
+                 base_style.margin.right,
+        .height = content_size.height + base_style.padding.top +
+                  base_style.padding.bottom + base_style.margin.top +
+                  base_style.margin.bottom,
     };
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),
@@ -388,11 +399,11 @@ class StyledElement : public Element {
   }
 
   [[nodiscard]] int z_index() const override {
-    return style_.z_index;
+    return style().z_index;
   }
 
  private:
-  Style style_;
+  StyleState style_state_;
   std::unique_ptr<Element> child_;
 };
 
@@ -725,12 +736,27 @@ class ElementBuilder {
   }
 
   [[nodiscard]] ElementBuilder style(Style style) && {
-    style_ = style;
+    style_state_.base = style;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder hover_style(StyleOverlay overlay) && {
+    style_state_.hover = overlay;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder focus_style(StyleOverlay overlay) && {
+    style_state_.focus = overlay;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder disabled_style(StyleOverlay overlay) && {
+    style_state_.disabled = overlay;
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder size(Size size) && {
-    style_ = style_.with_preferred_size(size);
+    style_state_.base = style_state_.base.with_preferred_size(size);
     if (kind_ == Kind::fixed_size) {
       size_ = size;
     }
@@ -742,42 +768,42 @@ class ElementBuilder {
   }
 
   [[nodiscard]] ElementBuilder padding(EdgeSizes edges) && {
-    style_ = style_.with_padding(edges);
+    style_state_.base = style_state_.base.with_padding(edges);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder margin(EdgeSizes edges) && {
-    style_ = style_.with_margin(edges);
+    style_state_.base = style_state_.base.with_margin(edges);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder background(Color color) && {
-    style_ = style_.with_background_color(color);
+    style_state_.base = style_state_.base.with_background_color(color);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder foreground(Color color) && {
-    style_ = style_.with_foreground_color(color);
+    style_state_.base = style_state_.base.with_foreground_color(color);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder border_width(EdgeSizes edges) && {
-    style_ = style_.with_border_width(edges);
+    style_state_.base = style_state_.base.with_border_width(edges);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder border_color(Color color) && {
-    style_ = style_.with_border_color(color);
+    style_state_.base = style_state_.base.with_border_color(color);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder border_radius(BorderRadii radius) && {
-    style_ = style_.with_border_radius(radius);
+    style_state_.base = style_state_.base.with_border_radius(radius);
     return std::move(*this);
   }
 
   [[nodiscard]] ElementBuilder gap(float value) && {
-    style_ = style_.with_gap(value);
+    style_state_.base = style_state_.base.with_gap(value);
     return std::move(*this);
   }
 
@@ -846,7 +872,7 @@ class ElementBuilder {
     }
     if (kind_ == Kind::v_stack) {
       auto element = std::make_unique<VerticalStackElement>();
-      element->set_gap(style_.gap);
+      element->set_gap(style_state_.base.gap);
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }
@@ -855,7 +881,7 @@ class ElementBuilder {
     if (kind_ == Kind::row || kind_ == Kind::column) {
       auto element = std::make_unique<FlexElement>(
           kind_ == Kind::row ? FlexDirection::row : FlexDirection::column);
-      element->set_gap(style_.gap);
+      element->set_gap(style_state_.base.gap);
       for (auto& child : children_) {
         element->append_child(std::move(child));
       }
@@ -865,7 +891,8 @@ class ElementBuilder {
     if (!children_.empty()) {
       child = std::move(children_.front());
     }
-    return finish(std::make_unique<StyledElement>(style_, std::move(child)));
+    return finish(
+        std::make_unique<StyledElement>(style_state_, std::move(child)));
   }
 
  private:
@@ -914,7 +941,7 @@ class ElementBuilder {
   }
 
   Kind kind_ = Kind::box;
-  Style style_;
+  StyleState style_state_;
   Size size_;
   TextModel* text_model_ = nullptr;
   bool enabled_ = true;

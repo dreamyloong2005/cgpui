@@ -209,4 +209,166 @@ struct Style {
   }
 };
 
+struct StyleOverlay {
+  std::optional<Color> background_color;
+  std::optional<Color> foreground_color;
+  std::optional<Color> border_color;
+  std::optional<Rect> clip_rect;
+  std::optional<Size> preferred_size;
+  std::optional<EdgeSizes> padding;
+  std::optional<EdgeSizes> margin;
+  std::optional<EdgeSizes> border_width;
+  std::optional<BorderRadii> border_radius;
+  std::optional<Overflow> overflow;
+  std::optional<int> z_index;
+  std::optional<float> gap;
+
+  [[nodiscard]] constexpr StyleOverlay with_background_color(
+      Color color) const {
+    StyleOverlay overlay = *this;
+    overlay.background_color = color;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_foreground_color(
+      Color color) const {
+    StyleOverlay overlay = *this;
+    overlay.foreground_color = color;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_preferred_size(Size size) const {
+    StyleOverlay overlay = *this;
+    overlay.preferred_size = size;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_padding(EdgeSizes edges) const {
+    StyleOverlay overlay = *this;
+    overlay.padding = edges;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_margin(EdgeSizes edges) const {
+    StyleOverlay overlay = *this;
+    overlay.margin = edges;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_border_width(
+      EdgeSizes edges) const {
+    StyleOverlay overlay = *this;
+    overlay.border_width = edges;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_border_color(Color color) const {
+    StyleOverlay overlay = *this;
+    overlay.border_color = color;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_border_radius(
+      BorderRadii radius) const {
+    StyleOverlay overlay = *this;
+    overlay.border_radius = radius;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_overflow(Overflow value) const {
+    StyleOverlay overlay = *this;
+    overlay.overflow = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_z_index(int value) const {
+    StyleOverlay overlay = *this;
+    overlay.z_index = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_gap(float value) const {
+    StyleOverlay overlay = *this;
+    overlay.gap = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_clip_rect(Rect rect) const {
+    StyleOverlay overlay = *this;
+    overlay.clip_rect = rect;
+    return overlay;
+  }
+};
+
+struct StyleState {
+  Style base;
+  StyleOverlay hover;
+  StyleOverlay focus;
+  StyleOverlay disabled;
+};
+
+struct StyleStateFlags {
+  bool hovered = false;
+  bool focused = false;
+  bool disabled = false;
+};
+
+[[nodiscard]] constexpr Style apply_style_overlay(
+    Style style,
+    const StyleOverlay& overlay) {
+  if (overlay.background_color.has_value()) {
+    style.background_color = overlay.background_color;
+  }
+  if (overlay.foreground_color.has_value()) {
+    style.foreground_color = overlay.foreground_color;
+  }
+  if (overlay.border_color.has_value()) {
+    style.border_color = overlay.border_color;
+  }
+  if (overlay.clip_rect.has_value()) {
+    style.clip_rect = overlay.clip_rect;
+  }
+  if (overlay.preferred_size.has_value()) {
+    style.preferred_size = *overlay.preferred_size;
+  }
+  if (overlay.padding.has_value()) {
+    style.padding = *overlay.padding;
+  }
+  if (overlay.margin.has_value()) {
+    style.margin = *overlay.margin;
+  }
+  if (overlay.border_width.has_value()) {
+    style.border_width = *overlay.border_width;
+  }
+  if (overlay.border_radius.has_value()) {
+    style.border_radius = *overlay.border_radius;
+  }
+  if (overlay.overflow.has_value()) {
+    style.overflow = *overlay.overflow;
+  }
+  if (overlay.z_index.has_value()) {
+    style.z_index = *overlay.z_index;
+  }
+  if (overlay.gap.has_value()) {
+    style.gap = *overlay.gap;
+  }
+  return style;
+}
+
+[[nodiscard]] constexpr Style resolved_style(
+    const StyleState& state,
+    StyleStateFlags flags) {
+  Style style = state.base;
+  if (flags.hovered) {
+    style = apply_style_overlay(style, state.hover);
+  }
+  if (flags.focused) {
+    style = apply_style_overlay(style, state.focus);
+  }
+  if (flags.disabled) {
+    style = apply_style_overlay(style, state.disabled);
+  }
+  return style;
+}
+
 } // namespace cgpui

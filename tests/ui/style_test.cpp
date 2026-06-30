@@ -240,6 +240,138 @@ int test_style_builder_methods_store_values() {
   return 0;
 }
 
+int test_style_overlay_defaults_to_no_overrides() {
+  const cgpui::StyleOverlay overlay;
+  if (overlay.background_color.has_value() ||
+      overlay.foreground_color.has_value() ||
+      overlay.preferred_size.has_value() || overlay.padding.has_value() ||
+      overlay.margin.has_value() || overlay.border_width.has_value() ||
+      overlay.border_color.has_value() ||
+      overlay.border_radius.has_value() || overlay.overflow.has_value() ||
+      overlay.z_index.has_value() || overlay.gap.has_value() ||
+      overlay.clip_rect.has_value()) {
+    return 37;
+  }
+
+  const cgpui::StyleOverlay authored =
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(10, 20, 30))
+          .with_foreground_color(cgpui::rgb(40, 50, 60))
+          .with_preferred_size(cgpui::Size{.width = 11.0F, .height = 12.0F})
+          .with_padding(cgpui::edges(1.0F))
+          .with_margin(cgpui::edges(2.0F))
+          .with_border_width(cgpui::edges(3.0F))
+          .with_border_color(cgpui::rgb(70, 80, 90))
+          .with_border_radius(cgpui::BorderRadii::all(4.0F))
+          .with_overflow(cgpui::Overflow::hidden)
+          .with_z_index(5)
+          .with_gap(6.0F)
+          .with_clip_rect(cgpui::Rect{
+              .origin = {.x = 7.0F, .y = 8.0F},
+              .size = {.width = 9.0F, .height = 10.0F},
+          });
+
+  if (!authored.background_color.has_value() ||
+      authored.background_color->r != 10.0F / 255.0F ||
+      !authored.foreground_color.has_value() ||
+      authored.foreground_color->g != 50.0F / 255.0F) {
+    return 38;
+  }
+  if (!authored.preferred_size.has_value() ||
+      authored.preferred_size->width != 11.0F ||
+      authored.preferred_size->height != 12.0F) {
+    return 39;
+  }
+  if (!authored.padding.has_value() || authored.padding->left != 1.0F ||
+      !authored.margin.has_value() || authored.margin->top != 2.0F ||
+      !authored.border_width.has_value() ||
+      authored.border_width->right != 3.0F) {
+    return 40;
+  }
+  if (!authored.border_color.has_value() ||
+      authored.border_color->b != 90.0F / 255.0F ||
+      !authored.border_radius.has_value() ||
+      authored.border_radius->bottom_left != 4.0F) {
+    return 41;
+  }
+  if (!authored.overflow.has_value() ||
+      *authored.overflow != cgpui::Overflow::hidden ||
+      !authored.z_index.has_value() || *authored.z_index != 5 ||
+      !authored.gap.has_value() || *authored.gap != 6.0F) {
+    return 42;
+  }
+  return authored.clip_rect.has_value() &&
+                 authored.clip_rect->origin.x == 7.0F &&
+                 authored.clip_rect->size.height == 10.0F
+             ? 0
+             : 43;
+}
+
+int test_style_state_resolves_hover_focus_disabled_order() {
+  cgpui::StyleState state;
+  state.base = cgpui::Style{}
+                   .with_background_color(cgpui::rgb(10, 10, 10))
+                   .with_foreground_color(cgpui::rgb(20, 20, 20))
+                   .with_preferred_size(
+                       cgpui::Size{.width = 100.0F, .height = 30.0F})
+                   .with_padding(cgpui::edges(2.0F))
+                   .with_gap(1.0F);
+  state.hover =
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(30, 30, 30))
+          .with_padding(cgpui::edges(4.0F))
+          .with_gap(2.0F);
+  state.focus =
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(40, 40, 40))
+          .with_foreground_color(cgpui::rgb(50, 50, 50));
+  state.disabled =
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(60, 60, 60))
+          .with_border_width(cgpui::edges(3.0F));
+
+  const cgpui::Style hover =
+      cgpui::resolved_style(state, cgpui::StyleStateFlags{.hovered = true});
+  if (!hover.background_color.has_value() ||
+      hover.background_color->r != 30.0F / 255.0F ||
+      hover.foreground_color->r != 20.0F / 255.0F ||
+      hover.padding.top != 4.0F || hover.gap != 2.0F) {
+    return 44;
+  }
+
+  const cgpui::Style focused = cgpui::resolved_style(
+      state,
+      cgpui::StyleStateFlags{.hovered = true, .focused = true});
+  if (!focused.background_color.has_value() ||
+      focused.background_color->r != 40.0F / 255.0F ||
+      !focused.foreground_color.has_value() ||
+      focused.foreground_color->r != 50.0F / 255.0F ||
+      focused.padding.top != 4.0F || focused.gap != 2.0F) {
+    return 45;
+  }
+
+  const cgpui::Style disabled = cgpui::resolved_style(
+      state,
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .disabled = true,
+      });
+  if (!disabled.background_color.has_value() ||
+      disabled.background_color->r != 60.0F / 255.0F ||
+      !disabled.foreground_color.has_value() ||
+      disabled.foreground_color->r != 50.0F / 255.0F ||
+      disabled.padding.top != 4.0F || disabled.gap != 2.0F ||
+      disabled.border_width.left != 3.0F) {
+    return 46;
+  }
+
+  return disabled.preferred_size.width == 100.0F &&
+                 disabled.preferred_size.height == 30.0F
+             ? 0
+             : 47;
+}
+
 } // namespace
 
 static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
@@ -253,6 +385,13 @@ static_assert(std::same_as<decltype(cgpui::rgb(255, 255, 255)), cgpui::Color>);
 static_assert(
     std::same_as<decltype(cgpui::rgba(255, 255, 255, 1.0F)), cgpui::Color>);
 static_assert(std::same_as<decltype(cgpui::edges(1.0F)), cgpui::EdgeSizes>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleOverlay{}.preferred_size),
+              std::optional<cgpui::Size>>);
+static_assert(std::same_as<decltype(cgpui::StyleState{}.base), cgpui::Style>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleStateFlags{}.hovered),
+              bool>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
@@ -281,6 +420,14 @@ int main() {
     return result;
   }
   if (const int result = test_style_builder_methods_store_values();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_style_overlay_defaults_to_no_overrides();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_style_state_resolves_hover_focus_disabled_order();
       result != 0) {
     return result;
   }

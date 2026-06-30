@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Style-State Overlays
+
+- A separate `StyleOverlay` is necessary because `Style` has non-optional
+  scalar/POD fields where zero is a valid authored value; optional overlay
+  fields preserve "unset" versus "override to zero" semantics.
+- Step 95 should stay authoring/data-only: `resolved_style(...)` is
+  deterministic and testable, but runtime hover/focus/disabled application can
+  wait for later render/style resolution work.
+- The merge order is base, hover, focus, disabled. This lets disabled state win
+  over active interaction state while still inheriting focus/hover fields that
+  disabled does not override.
+- `StyledElement` can store a full `StyleState` while keeping its old
+  `style()` API as a base-style accessor. That preserves existing layout,
+  paint, z-index, and tests while making state overlays available to later
+  runtime/style-cascade slices.
+
 ## 2026-06-30 Steps 129-168 Forward Plan
 
 - Steps 129-168 should remain a follow-on queue until Steps 95-128 finish,
