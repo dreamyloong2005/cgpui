@@ -21,13 +21,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `4357572 docs: mark step 105 merged`; the feature commit for Step 105 is
   `cbc0dfe feat: add window options open window skeleton`, and Step 105 was
   post-merge verified on Windows and WSL Arch Linux.
-- Steps 106-128 remain covered by the detailed execution plan in
+- Steps 107-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 106 is the current active implementation step:
-  runtime root view lifecycle storage for app-opened windows.
-- Step 106 already has an active worktree and branch:
-  `.worktrees/window-root-view-lifecycle` on
-  `codex/window-root-view-lifecycle`.
+- Step 106 is implemented in `.worktrees/window-root-view-lifecycle` and
+  feature-worktree verified on Windows and WSL Arch Linux.
+- Step 107 is the next active implementation step after Step 106 is committed,
+  merged, post-merge verified, and cleaned up.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -87,7 +86,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Step 106-128 are still incomplete:
+second active branch while Step 107-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -131,15 +130,14 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-105 are complete on `master`; Step 106 is
-  open in `.worktrees/window-root-view-lifecycle`; Steps 106-108 remain
-  incomplete until merged and verified.
+  Current partial status: Steps 99-106 are complete or feature-worktree
+  verified; Steps 107-108 remain incomplete until merged and verified.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 gate count from the current state: 23 implementation
-steps, Steps 106-128. Finishing those 23 steps is the only planned route into
+Remaining pre-back-40 gate count from the current state: 22 implementation
+steps, Steps 107-128. Finishing those 22 steps is the only planned route into
 Step 129.
 
 ## File Map
@@ -177,11 +175,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 106 instead of starting Step 129:
+For the current pre-back-40 state, start Step 107 instead of starting Step 129
+after Step 106 is merged and post-merge verified:
 
 ```powershell
-git worktree add .worktrees/window-root-view-lifecycle -b codex/window-root-view-lifecycle master
-xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/view-registry-skeleton -b codex/view-registry-skeleton master
+xmake test -P . window_runtime_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

@@ -69,6 +69,24 @@ class TestView final : public cgpui::View {
   int paint_count = 0;
 };
 
+class LifetimeView final : public cgpui::View {
+ public:
+  explicit LifetimeView(bool& destroyed) : destroyed_(destroyed) {}
+  ~LifetimeView() override { destroyed_ = true; }
+
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_count += 1;
+    paint_list.fill_rect(
+        cgpui::Rect{.origin = {}, .size = {.width = 4.0F, .height = 4.0F}},
+        cgpui::Color{.r = 0.4F, .g = 0.5F, .b = 0.6F, .a = 1.0F});
+  }
+
+  int paint_count = 0;
+
+ private:
+  bool& destroyed_;
+};
+
 class FakeWindow final : public cgpui::PlatformWindow {
  public:
   explicit FakeWindow(cgpui::WindowState state) : state_(state) {}
@@ -374,6 +392,90 @@ int test_window_options_and_app_context_open_window_skeleton() {
   return 0;
 }
 
+int test_app_opened_window_keeps_root_view_alive_until_run_app_returns() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  bool setup_called = false;
+  bool after_frame_called = false;
+  bool root_destroyed = false;
+  bool root_destroyed_during_setup = false;
+  bool root_destroyed_during_frame = false;
+  bool root_view_stored_during_setup = false;
+  bool root_view_stored_during_frame = false;
+  bool root_view_id_allocated = false;
+  cgpui::ViewId opened_root_view_id;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                auto root_view = std::make_unique<LifetimeView>(root_destroyed);
+                const cgpui::View* root_view_ptr = root_view.get();
+                const cgpui::AppOpenedWindow opened =
+                    context.open_window(
+                        cgpui::WindowOptions{}
+                            .title("Owned Root")
+                            .size(320.0F, 200.0F),
+                        std::move(root_view));
+                opened_root_view_id = opened.root_view_id;
+                root_view_id_allocated =
+                    context.runtime.is_view_id_allocated(opened.root_view_id);
+                root_view_stored_during_setup =
+                    context.runtime.app_opened_window_root_view(
+                        opened.root_view_id) == root_view_ptr;
+                root_destroyed_during_setup = root_destroyed;
+                context.runtime.set_after_frame_callback(
+                    [&, root_view_ptr](
+                        const cgpui::ViewContext& frame_context) {
+                      after_frame_called = true;
+                      root_view_stored_during_frame =
+                          frame_context.runtime.app_opened_window_root_view(
+                              opened_root_view_id) == root_view_ptr;
+                      root_destroyed_during_frame = root_destroyed;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 20;
+  }
+  if (!setup_called || !after_frame_called) {
+    return 21;
+  }
+  if (opened_root_view_id.value == 0 || !root_view_id_allocated) {
+    return 22;
+  }
+  if (!root_view_stored_during_setup || !root_view_stored_during_frame) {
+    return 23;
+  }
+  if (root_destroyed_during_setup || root_destroyed_during_frame) {
+    return 24;
+  }
+  if (!root_destroyed) {
+    return 25;
+  }
+  if (application.create_window_count != 1) {
+    return 26;
+  }
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -387,6 +489,11 @@ int main() {
   }
   if (const int result =
           test_window_options_and_app_context_open_window_skeleton();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_app_opened_window_keeps_root_view_alive_until_run_app_returns();
       result != 0) {
     return result;
   }

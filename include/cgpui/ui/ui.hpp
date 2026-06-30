@@ -11,6 +11,7 @@
 #include <any>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -68,6 +69,12 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
+struct ViewId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(ViewId, ViewId) = default;
+};
+
 struct WindowOptions {
   WindowDescriptor descriptor;
 
@@ -79,18 +86,16 @@ struct WindowOptions {
 
 struct AppOpenedWindow {
   WindowDescriptor descriptor;
+  ViewId root_view_id;
 };
 
 struct AppContext {
   WindowRuntime& runtime;
 
   [[nodiscard]] AppOpenedWindow open_window(WindowOptions options) const;
-};
-
-struct ViewId {
-  std::uint64_t value = 0;
-
-  friend bool operator==(ViewId, ViewId) = default;
+  [[nodiscard]] AppOpenedWindow open_window(
+      WindowOptions options,
+      std::unique_ptr<View> root_view) const;
 };
 
 class WeakView {
@@ -372,7 +377,12 @@ class WindowRuntime {
       const WindowDescriptor& descriptor,
       WindowRuntimeOptions options = {});
   [[nodiscard]] AppOpenedWindow open_window(WindowOptions options);
+  [[nodiscard]] AppOpenedWindow open_window(
+      WindowOptions options,
+      std::unique_ptr<View> root_view);
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
+  [[nodiscard]] const View* app_opened_window_root_view(
+      ViewId root_view_id) const;
 
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
   void set_after_render_callback(WindowRuntimeRenderCallback callback);
@@ -504,6 +514,8 @@ class WindowRuntime {
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
   std::vector<AppOpenedWindow> app_opened_windows_;
+  std::unordered_map<std::uint64_t, std::unique_ptr<View>>
+      app_opened_window_root_views_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;

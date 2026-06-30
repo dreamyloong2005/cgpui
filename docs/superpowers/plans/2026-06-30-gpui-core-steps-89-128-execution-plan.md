@@ -14,11 +14,13 @@
 
 - Steps 89-105 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `cbc0dfe feat: add window options open window skeleton`.
+- `master` is at `58c5b8a docs: refresh back forty planning after step 105`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation slice is Step 106:
-  runtime root view lifecycle storage for app-opened windows.
+- Step 106 is implemented in `.worktrees/window-root-view-lifecycle` and
+  feature-worktree verified on Windows and WSL Arch Linux.
+- The next implementation slice after merging Step 106 is Step 107:
+  view registry skeleton for multiple view ids.
 
 ## File Map
 
@@ -106,7 +108,7 @@ Purpose: introduce the GPUI-style model and app shell needed for real applicatio
 - [x] Step 103: model update notification invalidates subscribed views.
 - [x] Step 104: public `AppContext` wrapper over app setup.
 - [x] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
-- [ ] Step 106: runtime root view lifecycle storage for app-opened windows.
+- [x] Step 106: runtime root view lifecycle storage for app-opened windows.
 - [ ] Step 107: view registry skeleton for multiple view ids.
 - [ ] Step 108: child-view element placeholder that embeds another view's rendered output.
 
@@ -200,7 +202,7 @@ storage before nested view/event work.
 - [x] Step 104: expose an `AppContext` setup wrapper.
 - [x] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
   skeleton.
-- [ ] Step 106: store app-opened root view lifetimes explicitly.
+- [x] Step 106: store app-opened root view lifetimes explicitly.
 - [ ] Step 107: add the first view registry for multiple `ViewId`s.
 - [ ] Step 108: add a child-view element placeholder that references a
   registered view.
@@ -258,15 +260,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 106 in an isolated worktree:
+After Step 106 is committed, merged, and post-merge verified, start Step 107
+in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/window-root-view-lifecycle -b codex/window-root-view-lifecycle master
-xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/view-registry-skeleton -b codex/view-registry-skeleton master
+xmake test -P . window_runtime_test/default ui_header_cleanliness/default
 ```
 
-Add RED tests showing app-opened windows keep root view ownership/lifetime
-stable through `run_app`, then follow the standard per-step
+Add RED tests showing views can be registered, found, and removed by `ViewId`
+while preserving the existing root view id, then follow the standard per-step
 verification/merge workflow above.
 
 ## Step Details
@@ -463,15 +466,18 @@ Status: complete on `master` after the Step 105 merge.
 
 ### Step 106: Runtime Root View Lifecycle Storage
 
+Status: implemented and feature-worktree verified; commit, merge, and
+post-merge verification still need to finish before Step 107 starts.
+
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/app_runner_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests showing app-opened windows keep root view ownership/lifetime stable through `run_app`.
-- [ ] Add runtime/app storage that owns or references root views through an explicit lifecycle container.
-- [ ] Targeted test command: `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests showing app-opened windows keep root view ownership/lifetime stable through `run_app`.
+- [x] Add runtime/app storage that owns or references root views through an explicit lifecycle container.
+- [x] Targeted test command: `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 107: View Registry Skeleton
 

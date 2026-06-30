@@ -40,6 +40,11 @@ class TestView final : public cgpui::View {
   }
 };
 
+class ChildView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {}
+};
+
 int main() {
   cgpui::PaintList paint_list;
   TestView view;
@@ -62,10 +67,13 @@ int main() {
       [](cgpui::AppContext& app_context) {
         (void)app_context.runtime.invalidation_state();
         const cgpui::AppOpenedWindow opened =
-            app_context.open_window(cgpui::WindowOptions{}
-                                        .title("Header Window")
-                                        .size(9.0F, 7.0F));
-        (void)opened;
+            app_context.open_window(
+                cgpui::WindowOptions{}.title("Header Window").size(9.0F, 7.0F),
+                std::make_unique<ChildView>());
+        const cgpui::View* opened_root =
+            app_context.runtime.app_opened_window_root_view(
+                opened.root_view_id);
+        (void)opened_root;
       };
   const cgpui::WindowDescriptor window_descriptor =
       cgpui::WindowOptions{}

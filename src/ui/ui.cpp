@@ -153,6 +153,12 @@ AppOpenedWindow AppContext::open_window(WindowOptions options) const {
   return runtime.open_window(std::move(options));
 }
 
+AppOpenedWindow AppContext::open_window(
+    WindowOptions options,
+    std::unique_ptr<View> root_view) const {
+  return runtime.open_window(std::move(options), std::move(root_view));
+}
+
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
@@ -402,13 +408,39 @@ int WindowRuntime::run(
 }
 
 AppOpenedWindow WindowRuntime::open_window(WindowOptions options) {
-  AppOpenedWindow opened{.descriptor = options.to_descriptor()};
+  AppOpenedWindow opened{
+      .descriptor = options.to_descriptor(),
+      .root_view_id = {}};
+  app_opened_windows_.push_back(opened);
+  return opened;
+}
+
+AppOpenedWindow WindowRuntime::open_window(
+    WindowOptions options,
+    std::unique_ptr<View> root_view) {
+  AppOpenedWindow opened{
+      .descriptor = options.to_descriptor(),
+      .root_view_id = allocate_view_id()};
+  if (root_view != nullptr) {
+    app_opened_window_root_views_.insert_or_assign(
+        opened.root_view_id.value,
+        std::move(root_view));
+  }
   app_opened_windows_.push_back(opened);
   return opened;
 }
 
 std::span<const AppOpenedWindow> WindowRuntime::app_opened_windows() const {
   return app_opened_windows_;
+}
+
+const View* WindowRuntime::app_opened_window_root_view(
+    ViewId root_view_id) const {
+  const auto entry = app_opened_window_root_views_.find(root_view_id.value);
+  if (entry == app_opened_window_root_views_.end()) {
+    return nullptr;
+  }
+  return entry->second.get();
 }
 
 void WindowRuntime::handle_event(const PlatformEvent& event) {

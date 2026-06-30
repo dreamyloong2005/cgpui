@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 App-Opened Root View Lifecycle
+
+- Step 106 should remain a storage/lifecycle slice, not real multi-window
+  platform creation. `AppContext::open_window(WindowOptions,
+  std::unique_ptr<View>)` records the window descriptor, allocates a distinct
+  `ViewId`, and transfers root view ownership into `WindowRuntime`; `run_app`
+  still creates only the one platform/native window from the primary
+  descriptor.
+- Keeping `open_window(WindowOptions)` source-compatible with an empty
+  `root_view_id` preserves the Step 105 skeleton path while allowing callers
+  that supply root view ownership to receive an allocated id and query the
+  stored view during setup and frame callbacks.
+- The runtime-owned root view container naturally destroys app-opened root
+  views when `run_app` returns and the `WindowRuntime` is destroyed. No
+  explicit cleanup at `WindowRuntime::run()` start or end is needed for this
+  slice, and clearing there would risk erasing setup-time app-opened windows.
+- The initial Step 106 GREEN failure was test-side: the after-frame callback
+  captured a setup-local pointer variable by reference. Capturing the pointer
+  value keeps the test checking runtime lifecycle behavior instead of a
+  dangling test reference.
+
 ## 2026-06-30 Back-40 Planning After Step 105 Merge
 
 - The "后40步" plan is now an execution-ready follow-on queue for Steps

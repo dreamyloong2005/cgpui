@@ -1,5 +1,41 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 106 App-Opened Root View Lifecycle
+
+- Continued Step 106 in `.worktrees/window-root-view-lifecycle` on
+  `codex/window-root-view-lifecycle`, then fast-forwarded the worktree to
+  `58c5b8a docs: refresh back forty planning after step 105`.
+- Baseline targeted tests had already passed before the RED coverage was
+  added:
+  `xmake test -P . app_runner_test/default window_runtime_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- RED coverage was already present in `app_runner_test` and
+  `ui_header_cleanliness`: `AppContext::open_window(WindowOptions,
+  std::unique_ptr<View>)`, `AppOpenedWindow::root_view_id`, and
+  `WindowRuntime::app_opened_window_root_view(...)` failed to compile before
+  implementation.
+- Implemented Step 106 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  `AppOpenedWindow` now records a `root_view_id`, `AppContext` and
+  `WindowRuntime` expose an overload that accepts root view ownership, and
+  `WindowRuntime` stores app-opened root views in a runtime-owned lifecycle
+  container addressable by `ViewId`.
+- Diagnosed the first GREEN failure: `app_runner_test` exited with code 23
+  because the after-frame test callback captured a setup-local root-view
+  pointer variable by reference after `setup_context` returned. Fixed the test
+  to capture the pointer value while preserving state recording by reference.
+- Verified targeted tests after GREEN:
+  `xmake test -P . app_runner_test/default window_runtime_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed
+  4/4.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 106 is marked implemented and feature-worktree
+  verified, with Step 107 as the next implementation slice after merge.
+
 ## 2026-06-30 Back-40 Planning After Step 105 Merge
 
 - Refreshed
