@@ -641,19 +641,8 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
       }
     }
-    EventResult result = EventResult::unhandled();
-    if (current_event_route_->target_element_id.has_value()) {
-      if (Element* element =
-              routed_element(*current_event_route_->target_element_id);
-          element != nullptr && element->enabled()) {
-        result = element->handle_event(
-            event,
-            ElementEventContext{
-                .target_element_id =
-                    *current_event_route_->target_element_id,
-            });
-      }
-    }
+    EventResult result =
+        dispatch_routed_element_event(event, *current_event_route_);
     if (!result.consumed && !result.cancelled) {
       dispatching_view_event_ = true;
       result = view_.handle_event(event, context());
@@ -795,6 +784,36 @@ std::optional<ViewId> WindowRuntime::child_view_target_for(
     return {};
   }
   return child_view->view_id();
+}
+
+EventResult WindowRuntime::dispatch_routed_element_event(
+    const PlatformEvent& event,
+    const EventRoute& route) {
+  if (!route.target_element_id.has_value()) {
+    return EventResult::unhandled();
+  }
+
+  const ElementEventContext context{
+      .target_element_id = *route.target_element_id,
+  };
+  const std::span<const ElementId> ancestry(route.element_ancestry);
+  const auto route_ids =
+      ancestry.empty()
+          ? std::span<const ElementId>(&*route.target_element_id, 1)
+          : ancestry;
+  for (ElementId element_id : route_ids) {
+    Element* element = routed_element(element_id);
+    if (element == nullptr || !element->enabled()) {
+      continue;
+    }
+
+    const EventResult result = element->handle_event(event, context);
+    if (result.consumed || result.cancelled) {
+      return result;
+    }
+  }
+
+  return EventResult::unhandled();
 }
 
 Element* WindowRuntime::routed_element(ElementId element_id) {

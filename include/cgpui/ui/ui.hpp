@@ -473,6 +473,9 @@ class WindowRuntime {
       ViewId view_id) const;
   [[nodiscard]] std::optional<ViewId> child_view_target_for(
       ElementId element_id) const;
+  [[nodiscard]] EventResult dispatch_routed_element_event(
+      const PlatformEvent& event,
+      const EventRoute& route);
   [[nodiscard]] Element* routed_element(ElementId element_id);
   [[nodiscard]] const Element* routed_element(ElementId element_id) const;
   [[nodiscard]] WindowRuntimeContext context();

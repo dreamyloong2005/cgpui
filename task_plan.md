@@ -233,7 +233,7 @@ the current Step 110-128 queue unless the plan is explicitly reprioritized.
 107. [x] View registry skeleton for multiple view ids beyond the root.
 108. [x] Child-view element placeholder that embeds another view's rendered output.
 109. [x] Event route carries element and view ancestry metadata.
-110. [ ] Event propagation phases: target handling then ancestor bubbling before view fallback.
+110. [x] Event propagation phases: target handling then ancestor bubbling before view fallback.
 111. [ ] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
 112. [ ] Scroll element binding helper backed by `ScrollState`.
 113. [ ] Wheel and trackpad scroll routing into bound scroll state.
@@ -295,13 +295,16 @@ the current Step 110-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 109 is merged to `master` and post-merge verified on Windows and WSL Arch
-Linux. The active implementation step is Step 110: event propagation phases:
-target handling then ancestor bubbling before view fallback.
+Step 110 is implemented and feature-worktree verified in
+`.worktrees/event-propagation-phases` on `codex/event-propagation-phases`.
+After Step 110 is committed, merged, post-merge verified, and cleaned up, the
+next implementation step is Step 111: focus traversal over enabled focusable
+elements with Tab and Shift+Tab actions.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 110-128.
+behind completion and Windows/WSL verification of Steps 111-128 after Step 110
+merges.
 
 ## Risks
 

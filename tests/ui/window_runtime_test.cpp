@@ -2342,6 +2342,267 @@ int test_runtime_skips_disabled_element_event_and_falls_back_to_view() {
   return 0;
 }
 
+RuntimeFixture* event_propagation_fixture = nullptr;
+cgpui::WindowRuntime* event_propagation_runtime = nullptr;
+cgpui::ElementId event_propagation_target_id;
+
+void dispatch_event_propagation_keyboard_sequence() {
+  auto& callback = event_propagation_fixture->window.callback;
+  event_propagation_runtime->request_keyboard_focus(event_propagation_target_id);
+  callback(cgpui::KeyboardKey{
+      .key_code = 65,
+      .action = cgpui::KeyAction::pressed});
+}
+
+struct EventPropagationTree {
+  std::unique_ptr<cgpui::ElementTree> tree;
+  cgpui::ElementId root_id;
+  cgpui::ElementId child_id;
+  cgpui::ElementId target_id;
+  RuntimeEventElement* root = nullptr;
+  RuntimeEventElement* child = nullptr;
+  RuntimeEventElement* target = nullptr;
+};
+
+EventPropagationTree make_event_propagation_tree() {
+  EventPropagationTree propagation_tree{
+      .tree = std::make_unique<cgpui::ElementTree>()};
+  auto root = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 80.0F, .height = 80.0F});
+  propagation_tree.root = root.get();
+  propagation_tree.root_id = propagation_tree.tree->set_root(std::move(root));
+
+  auto child = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 60.0F, .height = 60.0F});
+  propagation_tree.child = child.get();
+  propagation_tree.child_id =
+      propagation_tree.tree->append_child(propagation_tree.root_id,
+                                          std::move(child));
+
+  auto target = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 40.0F, .height = 40.0F});
+  propagation_tree.target = target.get();
+  propagation_tree.target_id =
+      propagation_tree.tree->append_child(propagation_tree.child_id,
+                                          std::move(target));
+  (void)propagation_tree.tree->layout_root(cgpui::LayoutInput{});
+  return propagation_tree;
+}
+
+int test_runtime_stops_event_propagation_when_target_consumes() {
+  RuntimeFixture fixture;
+  event_propagation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_propagation_keyboard_sequence;
+  fixture.view.consume_next_event = true;
+
+  EventPropagationTree propagation_tree = make_event_propagation_tree();
+  propagation_tree.target->result = cgpui::EventResult::consumed_event();
+  propagation_tree.child->result = cgpui::EventResult::consumed_event();
+  propagation_tree.root->result = cgpui::EventResult::consumed_event();
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(propagation_tree.tree));
+  event_propagation_runtime = &runtime;
+  event_propagation_target_id = propagation_tree.target_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  event_propagation_fixture = nullptr;
+  event_propagation_runtime = nullptr;
+  event_propagation_target_id = {};
+
+  if (result != 0) {
+    return 349;
+  }
+  if (propagation_tree.target->event_count != 1 ||
+      propagation_tree.child->event_count != 0 ||
+      propagation_tree.root->event_count != 0 ||
+      fixture.view.event_count != 0) {
+    return 350;
+  }
+  if (!dispatch_record.result.consumed || dispatch_record.result.cancelled) {
+    return 351;
+  }
+  if (dispatch_record.route.element_ancestry.size() != 3 ||
+      dispatch_record.route.element_ancestry[0] != propagation_tree.target_id ||
+      dispatch_record.route.element_ancestry[1] != propagation_tree.child_id ||
+      dispatch_record.route.element_ancestry[2] != propagation_tree.root_id) {
+    return 352;
+  }
+
+  return 0;
+}
+
+int test_runtime_bubbles_unhandled_target_event_to_ancestor() {
+  RuntimeFixture fixture;
+  event_propagation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_propagation_keyboard_sequence;
+  fixture.view.consume_next_event = true;
+
+  EventPropagationTree propagation_tree = make_event_propagation_tree();
+  propagation_tree.child->result = cgpui::EventResult::consumed_event();
+  propagation_tree.root->result = cgpui::EventResult::consumed_event();
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(propagation_tree.tree));
+  event_propagation_runtime = &runtime;
+  event_propagation_target_id = propagation_tree.target_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  event_propagation_fixture = nullptr;
+  event_propagation_runtime = nullptr;
+  event_propagation_target_id = {};
+
+  if (result != 0) {
+    return 353;
+  }
+  if (propagation_tree.target->event_count != 1 ||
+      propagation_tree.child->event_count != 1 ||
+      propagation_tree.root->event_count != 0 ||
+      fixture.view.event_count != 0) {
+    return 354;
+  }
+  if (propagation_tree.child->last_target_element_id !=
+      propagation_tree.target_id) {
+    return 355;
+  }
+  if (!dispatch_record.result.consumed || dispatch_record.result.cancelled) {
+    return 356;
+  }
+
+  return 0;
+}
+
+int test_runtime_falls_back_to_view_after_unhandled_event_ancestry() {
+  RuntimeFixture fixture;
+  event_propagation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_propagation_keyboard_sequence;
+  fixture.view.consume_next_event = true;
+
+  EventPropagationTree propagation_tree = make_event_propagation_tree();
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(propagation_tree.tree));
+  event_propagation_runtime = &runtime;
+  event_propagation_target_id = propagation_tree.target_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  event_propagation_fixture = nullptr;
+  event_propagation_runtime = nullptr;
+  event_propagation_target_id = {};
+
+  if (result != 0) {
+    return 357;
+  }
+  if (propagation_tree.target->event_count != 1 ||
+      propagation_tree.child->event_count != 1 ||
+      propagation_tree.root->event_count != 1 ||
+      fixture.view.event_count != 1) {
+    return 358;
+  }
+  if (fixture.view.last_route_element_id != propagation_tree.target_id ||
+      !fixture.view.saw_event_route) {
+    return 359;
+  }
+  if (!dispatch_record.result.consumed || dispatch_record.result.cancelled) {
+    return 360;
+  }
+
+  return 0;
+}
+
+int test_runtime_skips_disabled_ancestors_during_event_bubbling() {
+  RuntimeFixture fixture;
+  event_propagation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_propagation_keyboard_sequence;
+  fixture.view.consume_next_event = true;
+
+  EventPropagationTree propagation_tree = make_event_propagation_tree();
+  propagation_tree.child->set_enabled(false);
+  propagation_tree.child->result = cgpui::EventResult::consumed_event();
+  propagation_tree.root->result = cgpui::EventResult::consumed_event();
+
+  cgpui::EventDispatchRecord dispatch_record{};
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(propagation_tree.tree));
+  event_propagation_runtime = &runtime;
+  event_propagation_target_id = propagation_tree.target_id;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        dispatch_record = record;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  event_propagation_fixture = nullptr;
+  event_propagation_runtime = nullptr;
+  event_propagation_target_id = {};
+
+  if (result != 0) {
+    return 361;
+  }
+  if (propagation_tree.target->event_count != 1 ||
+      propagation_tree.child->event_count != 0 ||
+      propagation_tree.root->event_count != 1 ||
+      fixture.view.event_count != 0) {
+    return 362;
+  }
+  if (propagation_tree.root->last_target_element_id !=
+      propagation_tree.target_id) {
+    return 363;
+  }
+  if (!dispatch_record.result.consumed || dispatch_record.result.cancelled) {
+    return 364;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* hover_state_fixture = nullptr;
 
 void dispatch_hover_state_sequence() {
@@ -5055,6 +5316,26 @@ int main() {
   }
   if (const int result =
           test_runtime_skips_disabled_element_event_and_falls_back_to_view();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_stops_event_propagation_when_target_consumes();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_bubbles_unhandled_target_event_to_ancestor();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_falls_back_to_view_after_unhandled_event_ancestry();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_skips_disabled_ancestors_during_event_bubbling();
       result != 0) {
     return result;
   }

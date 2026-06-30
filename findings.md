@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Event Propagation Phases
+
+- Step 110 uses `EventRoute::element_ancestry` as the dispatch route. The order
+  remains target-to-root: the target element handles first, then each ancestor
+  can handle the same event until one returns consumed or cancelled.
+- `ElementEventContext::target_element_id` intentionally remains the original
+  route target for every bubbling phase. This lets ancestor handlers know which
+  descendant was hit/focused without changing the public context shape yet.
+- Disabled elements remain part of route ancestry for diagnostics, but their
+  handlers are skipped during bubbling. Dispatch continues to later enabled
+  ancestors and only falls back to the root view when every routed element
+  returns unhandled or is skipped.
+- A route without `element_ancestry` still falls back to the route target id,
+  preserving compatibility for legacy routes while Step 109's ancestry refresh
+  is now the normal path.
+
 ## 2026-06-30 Back-40 Planning After Step 109 Merge
 
 - The post-Step-128 "back 40" remains Steps 129-168. It is an execution-ready

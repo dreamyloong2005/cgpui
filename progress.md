@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 110 Event Propagation Phases
+
+- Started Step 110 in `.worktrees/event-propagation-phases` on
+  `codex/event-propagation-phases` from `master` at
+  `2ba27c3 docs: refresh post-128 planning after step 109`.
+- Baseline targeted tests passed before edits:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Added RED `window_runtime_test` coverage for target-consumed stop behavior,
+  ancestor bubbling after an unhandled target, root view fallback after all
+  routed elements are unhandled, and disabled ancestor skipping.
+- Verified the RED targeted run failed as expected in
+  `window_runtime_test/default` while `element_test/default` and
+  `ui_header_cleanliness/default` passed.
+- Implemented Step 110 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  `WindowRuntime::dispatch_routed_element_event(...)` now dispatches through
+  route ancestry target-to-root, skips disabled elements, stops on consumed or
+  cancelled results, and only falls back to the root view when the routed
+  element chain remains unhandled.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 110 is marked implemented and feature-worktree
+  verified, with Step 111 as the next implementation slice after merge.
+
 ## 2026-06-30 Back-40 Planning After Step 109 Merge
 
 - Refreshed

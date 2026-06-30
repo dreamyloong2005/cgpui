@@ -14,13 +14,14 @@
 
 - Steps 89-109 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `08d0fef docs: mark step 109 merged`; the Step 109 feature
-  commit is `74df1df feat: add event route ancestry`.
-- The main worktree has no tracked/staged content changes from Step 109; the
-  known local-only untracked item is `.vscode/`.
+- `master` is at `2ba27c3 docs: refresh post-128 planning after step 109`; the
+  Step 109 feature commit is `74df1df feat: add event route ancestry`.
+- Step 110 is implemented and feature-worktree verified in
+  `.worktrees/event-propagation-phases` on
+  `codex/event-propagation-phases`.
 - Step 109 is post-merge verified on Windows and WSL Arch Linux.
-- The active implementation slice is Step 110: event propagation phases:
-  target handling then ancestor bubbling before view fallback.
+- The next implementation slice after Step 110 merges is Step 111: focus
+  traversal over enabled focusable elements with Tab and Shift+Tab actions.
 
 ## File Map
 
@@ -124,7 +125,7 @@ Acceptance at the end of Band B:
 Purpose: turn the element tree from a hit-test target into a richer interactive layout tree.
 
 - [x] Step 109: event route carries element and view ancestry metadata.
-- [ ] Step 110: target handling and ancestor bubbling before view fallback.
+- [x] Step 110: target handling and ancestor bubbling before view fallback.
 - [ ] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
 - [ ] Step 112: scroll element binding helper backed by `ScrollState`.
 - [ ] Step 113: wheel and trackpad scroll routing into bound scroll state.
@@ -217,7 +218,7 @@ Goal: make routed events, focus, scroll, and layout behavior tree-aware instead
 of single-target-only.
 
 - [x] Step 109: attach element and view ancestry metadata to event routes.
-- [ ] Step 110: implement target handling, ancestor bubbling, and view fallback
+- [x] Step 110: implement target handling, ancestor bubbling, and view fallback
   propagation phases.
 - [ ] Step 111: add Tab and Shift+Tab focus traversal over enabled focusable
   elements.
@@ -260,16 +261,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 110 in an isolated worktree:
+After Step 110 is committed, merged, post-merge verified, and cleaned up, start
+Step 111 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/event-propagation-phases -b codex/event-propagation-phases master
+git worktree add .worktrees/focus-traversal -b codex/focus-traversal master
 xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Add RED tests for target handling, ancestor bubbling, consumed stop behavior,
-and root view fallback using the route ancestry arrays from Step 109, then
-follow the standard per-step verification/merge workflow above.
+Add RED tests for Tab and Shift+Tab traversal over enabled focusable elements,
+then follow the standard per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -526,9 +527,9 @@ Status: complete on `master` after the Step 109 merge.
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for target handling, ancestor bubbling, consumed stop behavior, and view fallback.
-- [ ] Implement propagation using route ancestry without changing disabled-element gates.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for target handling, ancestor bubbling, consumed stop behavior, and view fallback.
+- [x] Implement propagation using route ancestry without changing disabled-element gates.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default`.
 
 ### Step 111: Focus Traversal
 
