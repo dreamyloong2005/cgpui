@@ -1,5 +1,15 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Text Paint Command Merged
+
+- Step 121 is now merged at `cf180f4 feat: add text paint command` and
+  post-merge verified on Windows and WSL Arch Linux.
+- The remaining pre-back-40 gate is Steps 122-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch full debug verification.
+- Step 122 should now add font descriptor and basic font-size style primitives
+  on top of explicit text command metadata. Keep shaping, glyph caches, and
+  Vulkan text drawing out of Step 122.
+
 ## 2026-06-30 Text Paint Command
 
 - Step 121 separates UI text intent from rectangle painting by adding

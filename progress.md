@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 121 Post-Merge
+
+- Fast-forward merged Step 121 to `master` at
+  `cf180f4 feat: add text paint command`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . element_test/default render_view_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  forward plan so Step 121 is marked merged and post-merge verified. Step 122,
+  font descriptor and basic font-size style primitives, is the next
+  implementation slice.
+
 ## 2026-06-30 Step 121 Text Paint Command
 
 - Continued Step 121 in `.worktrees/text-paint-command` on

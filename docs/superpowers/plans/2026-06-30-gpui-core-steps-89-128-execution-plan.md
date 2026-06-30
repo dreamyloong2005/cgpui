@@ -12,17 +12,16 @@
 
 ## Current State
 
-- Steps 89-120 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-121 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `dec75ba docs: refine back forty execution plan`; the Step
-  120 behavior commit is `9aba0e6 feat: honor vulkan solid rect clips`.
+- `master` includes `cf180f4 feat: add text paint command`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121, text paint command separates text drawing from placeholder
-  rectangles, is implemented and feature-worktree verified in
-  `.worktrees/text-paint-command` on `codex/text-paint-command`. It still needs
-  final targeted verification after docs updates, commit, fast-forward merge,
-  post-merge verification on `master`, docs closeout, and cleanup.
+  rectangles, is merged and post-merge verified: targeted tests 3/3, Windows
+  full debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 122, font descriptor and basic font-size style primitives, is the next
+  implementation slice.
 
 ## File Map
 
@@ -149,7 +148,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 
 - [x] Step 119: rounded-rect paint command preserves border radius metadata.
 - [x] Step 120: Vulkan honors clip rect metadata for solid rectangles.
-- [ ] Step 121: text paint command separates text drawing from placeholder rectangles. Implemented and feature-worktree verified; pending commit, merge, post-merge verification, and docs closeout.
+- [x] Step 121: text paint command separates text drawing from placeholder rectangles.
 - [ ] Step 122: font descriptor and basic font-size style primitives.
 - [ ] Step 123: text element emits caret and selection paint metadata.
 - [ ] Step 124: platform cursor application for Win32 and Wayland.
@@ -243,7 +242,7 @@ leaving macOS/Metal for a later parity track.
 
 - [x] Step 119: add rounded-rect paint commands with border-radius metadata.
 - [x] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
-- [ ] Step 121: add text paint commands instead of placeholder rectangles. Implemented and feature-worktree verified; pending commit, merge, post-merge verification, and docs closeout.
+- [x] Step 121: add text paint commands instead of placeholder rectangles.
 - [ ] Step 122: add font descriptors and basic font-size style.
 - [ ] Step 123: emit caret and selection paint metadata from text elements.
 - [ ] Step 124: apply runtime cursor state through Win32 and Wayland platform
@@ -263,19 +262,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 121 in the existing feature worktree:
+Start Step 122 from a fresh feature worktree:
 
 ```powershell
-cd .worktrees/text-paint-command
-xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
+git worktree add .worktrees/font-descriptor-font-size -b codex/font-descriptor-font-size master
+cd .worktrees/font-descriptor-font-size
+xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Step 121 has added text commands containing text content, bounds, color, and
-model-derived byte length metadata, replacing placeholder text rectangles
-without adding real font shaping. The remaining action is to re-run the
-targeted tests after docs edits, commit `codex/text-paint-command`, merge it to
-`master`, run post-merge targeted/Windows/WSL verification, mark Step 121
-merged, then open Step 122.
+Step 122 should add a small `FontDescriptor`, basic `font_size` style metadata,
+builder/header coverage, and text element layout metrics that can feed Step
+123 caret/selection geometry. It should not add shaping, glyph cache, or
+Vulkan text drawing.
 
 ## Step Details
 
