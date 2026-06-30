@@ -2066,6 +2066,32 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
 
+## 2026-06-30 Back-40 Planning After Step 115 Merge
+
+- Refreshed the durable post-Step-128 "后40步" plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after Step 115 merged to `master` at
+  `c443592 feat: add flex alignment justification`.
+- Updated the 89-128 execution plan so the active queue is now Steps 116-128,
+  with Step 116 as the next implementation slice:
+  flex grow and shrink factors for child layout.
+- Updated `task_plan.md` so the active step is Step 116 and the remaining
+  distance to Step 129 is 13 implementation steps, Steps 116-128, plus the
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification.
+- Kept the后 40 步 plan as Steps 129-168: context/entity/global/async,
+  keyed reconciliation/widgets, text/font/renderer diagnostics, and
+  Windows/Wayland platform completion plus the parity audit.
+- Removed the now-merged Step 115 worktree
+  `.worktrees/flex-alignment-justification` and deleted branch
+  `codex/flex-alignment-justification`.
+- Confirmed the main worktree remains on `master` with no tracked/staged
+  changes before the planning edits; the known untracked local item is still
+  `.vscode/`.
+- Encountered a PowerShell range syntax issue while inspecting file slices:
+  `Select-Object -Index 0..90` failed because the range was passed as a
+  string. Re-ran the inspection with `-TotalCount` and `-Skip/-First`.
+
 - Refreshed the post-Step-128 back-40 planning document in the active Step 112
   worktree after the user asked for the next 40-step plan.
 - Updated

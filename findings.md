@@ -1609,3 +1609,18 @@
 - After Step 112 merged and post-merge verification passed, the active 128-step
   route is Step 113 through Step 128. The back-40 entry remains gated behind
   Step 128 and Windows/WSL full verification.
+
+## 2026-06-30 Back-40 Planning After Step 115 Merge
+
+- The后 40 步 plan remains Steps 129-168 and is still gated behind Step 128.
+  Step 115 is now fully merged and post-merge verified, so the active
+  pre-back-40 route is Steps 116-128 rather than Steps 115-128.
+- From `master` at `c443592 feat: add flex alignment justification`, the
+  effective distance to Step 129 is 13 implementation steps plus the
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification. The distance through Step 168 is 53 implementation steps plus
+  the Step 128 exit verification and four 10-step band checkpoint reviews.
+- Step 116 should start from `.worktrees/flex-grow-shrink` on
+  `codex/flex-grow-shrink` and should first add RED coverage for child flex
+  grow/shrink factors affecting main-axis allocation while preserving default
+  zero-grow behavior.

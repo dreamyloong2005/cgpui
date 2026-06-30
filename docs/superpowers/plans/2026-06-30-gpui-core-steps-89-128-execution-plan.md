@@ -12,17 +12,16 @@
 
 ## Current State
 
-- Steps 89-114 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-115 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `d929502 docs: refresh back forty plan after step 114`.
-  The Step 114 behavior commit remains
-  `d78a017 feat: clip hidden overflow hit testing`.
-- The Step 114 worktree `.worktrees/hidden-overflow-hit-testing` has been
-  deregistered and its branch `codex/hidden-overflow-hit-testing` deleted.
-- Step 115 is implemented and feature-worktree verified in
-  `.worktrees/flex-alignment-justification` on
-  `codex/flex-alignment-justification`. The next action is to commit, merge,
-  post-merge verify, and clean up Step 115.
+- `master` includes `c443592 feat: add flex alignment justification`. The
+  Step 115 worktree `.worktrees/flex-alignment-justification` has been
+  removed and its branch `codex/flex-alignment-justification` deleted.
+- Step 115 post-merge verification passed: targeted tests 3/3, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 116, flex grow and shrink factors for child layout, is the next active
+  implementation slice. Use `.worktrees/flex-grow-shrink` on branch
+  `codex/flex-grow-shrink`.
 
 ## File Map
 
@@ -166,10 +165,10 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 115
+## Remaining Execution Queue From Step 116
 
-This is the practical remaining sequence after Step 114. Steps 89-114 are kept
-as completed foundation; the active remaining queue is Steps 115-128.
+This is the practical remaining sequence after Step 115. Steps 89-115 are kept
+as completed foundation; the active remaining queue is Steps 116-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -262,19 +261,17 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 115 merge and post-merge verification from the existing feature
-worktree:
+Start Step 116 from a fresh feature worktree:
 
 ```powershell
-cd .worktrees/flex-alignment-justification
-xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
-git commit -m "feat: add flex alignment justification"
-cd ..\..
-git merge --ff-only codex/flex-alignment-justification
+git worktree add .worktrees/flex-grow-shrink -b codex/flex-grow-shrink master
+cd .worktrees/flex-grow-shrink
+xmake test -P . element_test/default style_test/default ui_header_cleanliness/default
 ```
 
-After post-merge Windows and WSL verification, Step 116 is the next
-implementation slice.
+Add RED coverage for child flex grow/shrink factors and confirm it fails for
+the expected missing API or behavior before implementing the smallest GREEN
+change.
 
 ## Step Details
 
@@ -586,9 +583,10 @@ Status: complete on `master` at
 
 ### Step 115: Flex Alignment and Justification
 
-Status: implemented and verified in
-`.worktrees/flex-alignment-justification`; merge and post-merge verification
-remain.
+Status: complete on `master` at
+`c443592 feat: add flex alignment justification`. Post-merge targeted tests
+passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug
+passed 26/26.
 
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`

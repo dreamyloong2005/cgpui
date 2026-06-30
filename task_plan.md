@@ -99,21 +99,19 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `d929502 docs: refresh back forty plan after step
-114`: Steps 89-114 are merged and post-merge verified on Windows and WSL Arch
-Linux, Step 115 is implemented and feature-worktree verified in
-`.worktrees/flex-alignment-justification`, and Step 129 remains gated behind
-completion and Windows/WSL verification of Steps 115-128.
+pre-back-40 handoff state at `c443592 feat: add flex alignment
+justification`: Steps 89-115 are merged and post-merge verified on Windows
+and WSL Arch Linux, and Step 129 remains gated behind completion and
+Windows/WSL verification of Steps 116-128.
 
-From the current `master` state, the effective distance to Step 129 is still
-14 implementation steps until Step 115 is merged; after the Step 115 merge it
-will become 13 implementation steps, Steps 116-128, plus post-Step-128
-targeted, Windows, and WSL verification. The effective distance through Step
-168 becomes 53 implementation steps after Step 115 merges, plus the four
+From the current `master` state, the effective distance to Step 129 is 13
+implementation steps, Steps 116-128, plus post-Step-128 targeted, Windows,
+and WSL verification. The effective distance through Step 168 is 53
+implementation steps plus the post-Step-128 verification and the four
 follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 114-128 queue unless the plan is explicitly reprioritized.
+the current Step 116-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -298,17 +296,21 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 115, flex alignment and justification primitives, is implemented and
-verified in `.worktrees/flex-alignment-justification` on
-`codex/flex-alignment-justification`. RED failed as expected on missing
-`AlignItems`/`JustifyContent` API, targeted tests passed 3/3, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. The next
-action is to commit, merge, post-merge verify, and clean up Step 115; after
-that, Step 116 becomes the active implementation step.
+Step 115, flex alignment and justification primitives, is merged on `master`
+at `c443592 feat: add flex alignment justification`. RED failed as expected
+on missing `AlignItems`/`JustifyContent` API, feature-worktree targeted tests
+passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug
+passed 26/26. Post-merge targeted tests passed 3/3, Windows full debug passed
+29/29, and WSL Arch Linux full debug passed 26/26. The Step 115 worktree and
+feature branch have been removed.
+
+Step 116, flex grow and shrink factors for child layout, is now the active
+implementation step. Start it from a fresh `.worktrees/flex-grow-shrink`
+worktree on branch `codex/flex-grow-shrink`.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 115-128.
+behind completion and Windows/WSL verification of Steps 116-128.
 
 ## Risks
 
