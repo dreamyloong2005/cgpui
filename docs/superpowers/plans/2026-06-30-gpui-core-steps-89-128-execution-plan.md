@@ -12,15 +12,13 @@
 
 ## Current State
 
-- Steps 89-111 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-112 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `3366e42 docs: mark step 111 merged`.
-- The Step 111 worktree `.worktrees/focus-traversal` and branch
-  `codex/focus-traversal` have been cleaned up.
-- Step 112 is implemented and targeted-verified in
-  `.worktrees/scroll-element-binding` on branch
-  `codex/scroll-element-binding`; finish full Windows/WSL verification,
-  commit, merge, and post-merge verification before starting Step 113.
+- `master` is at `7b5f564 feat: add scroll element binding`.
+- The Step 112 worktree `.worktrees/scroll-element-binding` and branch
+  `codex/scroll-element-binding` have been cleaned up.
+- The next implementation slice is Step 113: wheel and trackpad scroll routing
+  into bound scroll state.
 
 ## File Map
 
@@ -126,8 +124,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 109: event route carries element and view ancestry metadata.
 - [x] Step 110: target handling and ancestor bubbling before view fallback.
 - [x] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
-- [x] Step 112: scroll element binding helper backed by `ScrollState`
-  implemented and targeted-verified in the feature worktree.
+- [x] Step 112: scroll element binding helper backed by `ScrollState`.
 - [ ] Step 113: wheel and trackpad scroll routing into bound scroll state.
 - [ ] Step 114: hidden overflow participates in hit testing.
 - [ ] Step 115: flex alignment and justification primitives.
@@ -168,8 +165,7 @@ Acceptance at the end of Band D:
 ## Remaining Execution Queue From Step 113
 
 This is the practical remaining sequence after Step 112. Steps 89-112 are kept
-as completed foundation once Step 112 is merged; the active remaining queue is
-Steps 113-128.
+as completed foundation; the active remaining queue is Steps 113-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -262,19 +258,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 112 in the existing isolated worktree:
+Start Step 113 in an isolated worktree:
 
 ```powershell
-cd .worktrees/scroll-element-binding
-xmake test -P . scroll_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
-xmake f -c -m debug -P .
-xmake test -P .
-wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui/.worktrees/scroll-element-binding && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
+git worktree add .worktrees/scroll-routing -b codex/scroll-routing master
+xmake test -P . window_runtime_test/default scroll_test/default ui_header_cleanliness/default
 ```
 
-Then commit, fast-forward merge to `master`, repeat targeted/Windows/WSL
-verification on `master`, clean up the worktree/branch, and advance the active
-step to Step 113.
+Add RED tests for `PointerScrolled` events mutating the `ScrollState` bound to
+the routed element, then follow the standard per-step verification/merge
+workflow above.
 
 ## Step Details
 

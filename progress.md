@@ -531,6 +531,20 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 26/26.
+
+- Committed Step 112 as `7b5f564 feat: add scroll element binding` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . scroll_test/default element_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 4/4.
+- Verified post-merge Windows full debug tests:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Removed `.worktrees/scroll-element-binding` and deleted
+  `codex/scroll-element-binding`. The next active implementation step is Step
+  113: wheel and trackpad scroll routing into bound scroll state.
 - Fast-forward merged Step 109 to `master` at
   `74df1df feat: add event route ancestry`, removed
   `.worktrees/event-route-ancestry`, and deleted

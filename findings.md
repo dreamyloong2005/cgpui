@@ -1490,3 +1490,17 @@
 - After Step 112 merges, the remaining route to the back-40 entry is 16
   implementation steps, Steps 113-128, plus post-Step-128 targeted, Windows
   full debug, and WSL Arch full debug verification on a clean `master`.
+
+## 2026-06-30 Scroll Element Binding Merged
+
+- `ScrollState` is intentionally an alias over `ScrollModel` at Step 112. That
+  gives the public authoring API the GPUI-like name without duplicating scroll
+  model storage or creating a second offset/update path before event routing
+  lands in Step 113.
+- `ScrollElement` binds a `ScrollState&` to one child, syncs viewport/content
+  sizes during layout, and preserves child hit testing and event forwarding.
+  Wheel/trackpad deltas are intentionally still Step 113 so the binding surface
+  can be verified before runtime scroll routing mutates it.
+- After Step 112 merged and post-merge verification passed, the active 128-step
+  route is Step 113 through Step 128. The back-40 entry remains gated behind
+  Step 128 and Windows/WSL full verification.
