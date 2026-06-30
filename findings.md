@@ -1,5 +1,16 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 IME Candidate Rectangle Data Merged
+
+- Step 127 is merged on `master` at
+  `80aadae feat: add focused text ime rect` and post-merge verified on Windows
+  and WSL Arch Linux.
+- The remaining pre-back-40 gate is Step 128 plus the post-Step-128 targeted,
+  Windows full debug, and WSL Arch Linux full debug verification.
+- Step 128 should rewrite the demo around the public prelude and new authoring
+  APIs; it should not expand into Win32 IME placement or Wayland text-input
+  protocol work now that focused-text IME geometry is available.
+
 ## 2026-07-01 IME Candidate Rectangle Data
 
 - Step 127 exposes IME composition/candidate geometry as shared runtime data,

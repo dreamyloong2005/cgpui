@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 127 Post-Merge
+
+- Fast-forward merged Step 127 to `master` at
+  `80aadae feat: add focused text ime rect`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, the 129-168 forward
+  plan, and `findings.md` so Step 127 is marked merged and post-merge
+  verified. Step 128, GPUI-like demo rewrite using the public prelude and new
+  authoring API, is the next implementation slice.
+
 ## 2026-07-01 Step 127 IME Candidate Rectangle Data
 
 - Continued Step 127 in `.worktrees/ime-candidate-rect` on

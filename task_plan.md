@@ -99,14 +99,14 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff after Step 126: Steps 89-126 are merged and post-merge
+pre-back-40 handoff after Step 127: Steps 89-127 are merged and post-merge
 verified on Windows and WSL Arch Linux. Step 129 remains gated behind
-completion and Windows/WSL verification of Steps 127-128, plus the
-post-Step-128 exit verification.
+completion and Windows/WSL verification of Step 128, plus the post-Step-128
+exit verification.
 
-After the Step 126 merge, the effective distance to Step 129 is 2
-implementation steps, Steps 127-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 is 42 implementation
+After the Step 127 merge, the effective distance to Step 129 is 1
+implementation step, Step 128, plus post-Step-128 targeted, Windows, and WSL
+verification. The effective distance through Step 168 is 41 implementation
 steps plus those verification gates and the four follow-on band checkpoint
 reviews.
 
@@ -435,18 +435,18 @@ passed 26/26. Post-merge targeted tests passed 1/1, Windows full debug passed
 29/29, and WSL Arch Linux full debug passed 26/26.
 
 Step 127, IME composition/candidate rectangle data from the focused text
-element, is implemented and feature-worktree verified in
-`.worktrees/ime-candidate-rect` on `codex/ime-candidate-rect`. RED failed as
-expected on missing `ImeCandidateRect` and `focused_text_ime_rect()` APIs.
-GREEN adds public `ImeCandidateRect` metadata plus
-`WindowRuntime::focused_text_ime_rect()` and
+element, is merged on `master` at `80aadae feat: add focused text ime rect`.
+RED failed as expected on missing `ImeCandidateRect` and
+`focused_text_ime_rect()` APIs. GREEN adds public `ImeCandidateRect` metadata
+plus `WindowRuntime::focused_text_ime_rect()` and
 `WindowRuntimeContext::focused_text_ime_rect()`, deriving the candidate rect
 from the focused `TextElement` layout bounds, cursor byte offset,
 font-size-derived glyph width, and caret height. Feature-worktree targeted
 tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
-debug passed 26/26. Step 127 still needs feature commit, fast-forward merge,
-post-merge targeted/Windows/WSL verification, docs closeout, and cleanup
-before Step 128 begins.
+debug passed 26/26. Post-merge targeted tests passed 3/3, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 128,
+GPUI-like demo rewrite using the public prelude and new authoring API, is the
+next implementation slice.
 
 ## Risks
 

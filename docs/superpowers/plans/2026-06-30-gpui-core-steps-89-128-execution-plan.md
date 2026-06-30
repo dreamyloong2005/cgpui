@@ -12,11 +12,12 @@
 
 ## Current State
 
-- Steps 89-126 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-127 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 127 is implemented and feature-worktree verified in
-  `.worktrees/ime-candidate-rect`; it still needs commit, merge, post-merge
-  verification, docs closeout, and cleanup.
+- Step 127 is merged on `master` at
+  `80aadae feat: add focused text ime rect`; post-merge targeted tests passed
+  3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26.
 - Step 125 is merged on `master` at
   `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
   1/1, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
@@ -43,7 +44,7 @@
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
 - Step 128, GPUI-like demo rewrite using the public prelude and new authoring
-  API, is the next implementation slice after Step 127 merge closeout.
+  API, is the next implementation slice.
 
 ## File Map
 
@@ -284,19 +285,20 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 127 from the existing feature worktree:
+Start Step 128 from a fresh feature worktree after Step 127 cleanup:
 
 ```powershell
 git checkout master
 git status --short --branch
-cd .worktrees/ime-candidate-rect
-xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default
+git worktree add .worktrees/public-prelude-demo-rewrite -b codex/public-prelude-demo-rewrite master
+cd .worktrees/public-prelude-demo-rewrite
+xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default
 ```
 
 Step 127 now exposes IME composition/candidate rectangle data from the focused
-text element without wiring platform IME placement yet. The remaining Step 127
-closeout is feature commit, fast-forward merge to `master`, post-merge
-targeted/Windows/WSL verification, docs closeout, and worktree cleanup.
+text element without wiring platform IME placement yet. Step 128 should rewrite
+the demo around the public prelude, `run_app`, `AppContext`, `View::render`,
+free factories, builder shortcuts, and text/model interactions.
 
 ## Step Details
 
@@ -869,6 +871,14 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - [x] Targeted test command passed 3/3: `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`.
 - [x] Windows full debug passed 29/29: `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] WSL Arch full debug passed 26/26: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/ime-candidate-rect -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `80aadae feat: add focused text ime rect`.
+- [x] Post-merge targeted test passed 3/3:
+  `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 128: GPUI-Like Demo Rewrite
 

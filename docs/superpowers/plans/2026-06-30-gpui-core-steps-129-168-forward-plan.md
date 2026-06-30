@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 127-128 remainder inside the current
+**Architecture:** Keep the active Step 128 remainder inside the current
 89-128 execution queue, then use Steps 129-168 to deepen context/entity
 ergonomics, keyed element reconciliation, reusable widgets, text/font
 rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -36,9 +36,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 126 is merged on `master` at
   `ab464d5 feat: add wayland clipboard skeleton`; post-merge targeted tests
   passed 1/1, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 127 is implemented and feature-worktree verified in
-  `.worktrees/ime-candidate-rect`; Step 128 remains the active implementation
-  gate before this follow-on plan. They are covered by the detailed execution plan in
+- Step 127 is merged and post-merge verified on Windows and WSL Arch Linux;
+  Step 128 remains the active implementation gate before this follow-on plan.
+  They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -126,6 +126,8 @@ Historical snapshot, superseded by the Step 126 merge refresh below.
 
 ## 2026-07-01 Back-40 Planning After Step 127 GREEN
 
+Historical snapshot, superseded by the Step 127 merge refresh below.
+
 - Step 127, IME composition/candidate rectangle data from the focused text
   element, is implemented and feature-worktree verified in
   `.worktrees/ime-candidate-rect`.
@@ -145,6 +147,25 @@ Historical snapshot, superseded by the Step 126 merge refresh below.
 - The effective distance through Step 168 after the Step 127 merge will be 41
   implementation slices plus the post-Step-128 verification gate and four band
   checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 127 Merge
+
+- Step 127, IME composition/candidate rectangle data from the focused text
+  element, is merged on `master` at
+  `80aadae feat: add focused text ime rect`.
+- RED failed on missing public `ImeCandidateRect` and
+  `focused_text_ime_rect()` APIs. GREEN adds `ImeCandidateRect`,
+  `WindowRuntime::focused_text_ime_rect()`, and
+  `WindowRuntimeContext::focused_text_ime_rect()`, deriving the candidate rect
+  from the focused `TextElement` layout bounds, cursor byte offset,
+  font-size-derived glyph width, and caret height.
+- Post-merge verification passed: targeted tests 3/3, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- The gate to Step 129 is now 1 implementation slice: Step 128, followed by
+  post-Step-128 targeted verification, Windows full debug, WSL Arch full debug,
+  and clean `master` status.
+- The effective distance through Step 168 is 41 implementation slices plus the
+  post-Step-128 verification gate and four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
@@ -555,14 +576,14 @@ Do not begin Step 129 until all of these are true:
   post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 126 Wayland clipboard skeleton has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
-- [ ] Step 127 IME geometry has landed on `master` and is post-merge verified
+- [x] Step 127 IME geometry has landed on `master` and is post-merge verified
   on Windows and WSL Arch Linux.
 - [ ] Step 128 has landed the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-1 implementation step remains after the Step 127 merge: Step 128, plus
-post-Step-128 Windows/WSL verification.
+1 implementation step remains: Step 128, plus post-Step-128 Windows/WSL
+verification.
 
 ## Back-40 Execution Strategy
 
@@ -627,14 +648,14 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 127 before starting Step 129:
+For the current pre-back-40 state, start Step 128 before starting Step 129:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/ime-candidate-rect -b codex/ime-candidate-rect master
-cd .worktrees/ime-candidate-rect
-xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default
+git worktree add .worktrees/public-prelude-demo-rewrite -b codex/public-prelude-demo-rewrite master
+cd .worktrees/public-prelude-demo-rewrite
+xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract
