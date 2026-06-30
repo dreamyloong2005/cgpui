@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 IME Candidate Rectangle Data
+
+- Step 127 exposes IME composition/candidate geometry as shared runtime data,
+  not platform placement: `ImeCandidateRect`,
+  `WindowRuntime::focused_text_ime_rect()`, and
+  `WindowRuntimeContext::focused_text_ime_rect()` give later Win32 and Wayland
+  IME code one geometry source to consume.
+- The candidate rectangle intentionally mirrors Step 123 caret geometry:
+  origin x is the focused `TextElement` layout x plus cursor byte offset times
+  deterministic glyph width (`font_size * 0.5F`), origin y is the text element
+  layout y, width is `1.0F`, and height is the text element font size.
+- The runtime lookup soft-fails with `std::nullopt` when there is no focused
+  text element, no bound `TextModel`, no routed `TextElement`, or no layout
+  bounds. This keeps platform IME placement code from guessing stale geometry.
+- Step 127 deliberately does not call Win32 IME APIs or Wayland text-input
+  protocols. Those are later platform-depth slices; this step only pins the
+  shared focused-text geometry contract.
+
 ## 2026-07-01 Wayland Clipboard Skeleton Merged
 
 - Step 126 is merged on `master` at

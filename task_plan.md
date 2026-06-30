@@ -251,7 +251,7 @@ the current Step 127-128 queue unless the plan is explicitly reprioritized.
 124. [x] Platform cursor application for Win32 and Wayland.
 125. [x] Win32 system clipboard backend for text copy, cut, and paste.
 126. [x] Wayland system clipboard backend skeleton for text copy, cut, and paste.
-127. [ ] IME composition/candidate rectangle data from the focused text element.
+127. [x] IME composition/candidate rectangle data from the focused text element.
 128. [ ] GPUI-like demo rewrite using the public prelude and new authoring API.
 129. [ ] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
 130. [ ] Entity handle API with `read`, `update`, and `downgrade` convenience methods.
@@ -432,9 +432,21 @@ for unsupported/no-seat runtime copy/cut/paste, and makes Linux
 `MemoryClipboard`. Feature-worktree targeted tests passed 1/1 on Windows and
 WSL Arch Linux, Windows full debug passed 29/29, and WSL Arch Linux full debug
 passed 26/26. Post-merge targeted tests passed 1/1, Windows full debug passed
-29/29, and WSL Arch Linux full debug passed 26/26. Step 127, IME
-composition/candidate rectangle data from the focused text element, is the next
-implementation slice.
+29/29, and WSL Arch Linux full debug passed 26/26.
+
+Step 127, IME composition/candidate rectangle data from the focused text
+element, is implemented and feature-worktree verified in
+`.worktrees/ime-candidate-rect` on `codex/ime-candidate-rect`. RED failed as
+expected on missing `ImeCandidateRect` and `focused_text_ime_rect()` APIs.
+GREEN adds public `ImeCandidateRect` metadata plus
+`WindowRuntime::focused_text_ime_rect()` and
+`WindowRuntimeContext::focused_text_ime_rect()`, deriving the candidate rect
+from the focused `TextElement` layout bounds, cursor byte offset,
+font-size-derived glyph width, and caret height. Feature-worktree targeted
+tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
+debug passed 26/26. Step 127 still needs feature commit, fast-forward merge,
+post-merge targeted/Windows/WSL verification, docs closeout, and cleanup
+before Step 128 begins.
 
 ## Risks
 

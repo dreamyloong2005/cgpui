@@ -1253,6 +1253,45 @@ const TextModel* WindowRuntime::focused_text_model() const {
   return model->second;
 }
 
+std::optional<ImeCandidateRect> WindowRuntime::focused_text_ime_rect() const {
+  if (!keyboard_focus_element_owner_.has_value()) {
+    return {};
+  }
+
+  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
+  if (model == text_models_.end() || model->second == nullptr) {
+    return {};
+  }
+
+  const auto* text_element = dynamic_cast<const TextElement*>(
+      routed_element(*keyboard_focus_element_owner_));
+  if (text_element == nullptr) {
+    return {};
+  }
+
+  const std::optional<Rect> bounds = text_element->layout_bounds();
+  if (!bounds.has_value()) {
+    return {};
+  }
+
+  const std::size_t byte_offset = model->second->cursor();
+  return ImeCandidateRect{
+      .element_id = *keyboard_focus_element_owner_,
+      .rect =
+          Rect{
+              .origin =
+                  {
+                      .x = bounds->origin.x +
+                           (static_cast<float>(byte_offset) *
+                            text_element->glyph_width()),
+                      .y = bounds->origin.y,
+                  },
+              .size = {.width = 1.0F, .height = text_element->font_size()},
+          },
+      .byte_offset = byte_offset,
+  };
+}
+
 void WindowRuntime::set_clipboard(Clipboard* clipboard) {
   clipboard_ = clipboard;
 }
@@ -1556,6 +1595,11 @@ bool WindowRuntimeContext::mutate_focused_text_model(
 
   mutation(*model);
   return true;
+}
+
+std::optional<ImeCandidateRect> WindowRuntimeContext::focused_text_ime_rect()
+    const {
+  return runtime.focused_text_ime_rect();
 }
 
 void WindowRuntimeContext::set_element_cursor(

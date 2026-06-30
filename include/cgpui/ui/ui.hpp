@@ -75,6 +75,12 @@ struct TextCaretPaint {
   float font_size = 16.0F;
 };
 
+struct ImeCandidateRect {
+  ElementId element_id;
+  Rect rect;
+  std::size_t byte_offset = 0;
+};
+
 struct PaintCommand {
   PaintCommandKind kind = PaintCommandKind::solid_rect;
   SolidRect solid_rect;
@@ -344,6 +350,7 @@ struct WindowRuntimeContext {
   void bind_text_model(ElementId element_id, TextModel* model) const;
   [[nodiscard]] bool mutate_focused_text_model(
       FocusedTextModelMutation mutation) const;
+  [[nodiscard]] std::optional<ImeCandidateRect> focused_text_ime_rect() const;
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape) const;
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;
@@ -464,6 +471,7 @@ class WindowRuntime {
   void bind_text_model(ElementId element_id, TextModel* model);
   [[nodiscard]] TextModel* focused_text_model();
   [[nodiscard]] const TextModel* focused_text_model() const;
+  [[nodiscard]] std::optional<ImeCandidateRect> focused_text_ime_rect() const;
   void set_clipboard(Clipboard* clipboard);
   [[nodiscard]] bool paste_clipboard_text();
   [[nodiscard]] bool copy_selection_to_clipboard();

@@ -1,5 +1,45 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 127 IME Candidate Rectangle Data
+
+- Continued Step 127 in `.worktrees/ime-candidate-rect` on
+  `codex/ime-candidate-rect` from `master` at
+  `f3319ea docs: mark step 126 merged`.
+- Recovered the interrupted session state: the main checkout was clean for
+  tracked files with only the known untracked `.vscode/`, and the Step 127
+  feature worktree had no edits before this continuation.
+- The baseline targeted tests had already passed before edits:
+  `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `ImeCandidateRect`, runtime/context `focused_text_ime_rect()` access, caret
+  geometry from a focused laid-out `TextElement`, and `std::nullopt` when focus
+  or layout is missing. RED failed as expected on missing `ImeCandidateRect`.
+- Implemented Step 127 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  `ImeCandidateRect` carries the focused element id, caret/candidate rect, and
+  cursor byte offset; `WindowRuntime::focused_text_ime_rect()` derives geometry
+  from the focused `TextElement` layout bounds plus font-size-derived glyph
+  metrics; `WindowRuntimeContext::focused_text_ime_rect()` forwards the shared
+  data to view/context code.
+- During GREEN, the first runtime test expected a manually assigned origin, but
+  the default initial redraw correctly re-laid out the element tree at the
+  viewport origin before events. The test expectation was corrected to assert
+  the runtime layout result while the missing-layout soft-fail test remains
+  redraw-free.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/ime-candidate-rect -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  `findings.md`, and this progress log so Step 127 is recorded as implemented
+  and feature-worktree verified. Step 127 still needs feature commit, merge,
+  post-merge verification, docs closeout, and cleanup before Step 128 begins.
+
 ## 2026-07-01 Step 126 Post-Merge
 
 - Fast-forward merged Step 126 to `master` at

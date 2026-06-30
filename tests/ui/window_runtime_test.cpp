@@ -540,6 +540,14 @@ class RecordingView final : public cgpui::View {
             view_context_cursor_element_id,
             cgpui::CursorShape::text);
       }
+      if (exercise_view_context_ime_rect && keyboard_key_count == 2) {
+        const std::optional<cgpui::ImeCandidateRect> rect =
+            context.focused_text_ime_rect();
+        view_context_ime_rect_present = rect.has_value();
+        if (rect.has_value()) {
+          view_context_ime_rect = *rect;
+        }
+      }
       if (request_keyboard_focus_on_first_key && keyboard_key_count == 1) {
         context.runtime.request_keyboard_focus();
       }
@@ -690,6 +698,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_context_cursor_binding = false;
   bool exercise_view_context_focus_element_helpers = false;
   bool exercise_view_context_pointer_capture_helpers = false;
+  bool exercise_view_context_ime_rect = false;
   bool capture_on_first_pointer_move = false;
   bool release_on_third_pointer_move = false;
   bool capture_pointer_owner_on_first_pointer_move = false;
@@ -820,6 +829,8 @@ class RecordingView final : public cgpui::View {
   bool view_context_pasted_clipboard = false;
   bool view_context_mutated_focused_text = false;
   bool view_context_skipped_missing_focused_text = true;
+  bool view_context_ime_rect_present = false;
+  cgpui::ImeCandidateRect view_context_ime_rect{};
   int weak_model_read_value = -1;
   std::optional<cgpui::Model<RuntimeEntity>> upgraded_weak_model;
   std::optional<cgpui::Model<RuntimeEntity>> upgraded_removed_weak_model;
@@ -5014,6 +5025,121 @@ int test_runtime_reports_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* ime_rect_fixture = nullptr;
+
+void dispatch_focused_text_ime_rect_sequence() {
+  auto& callback = ime_rect_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 85,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_reports_focused_text_ime_rect() {
+  RuntimeFixture fixture;
+  ime_rect_fixture = &fixture;
+  fixture.app.on_run = &dispatch_focused_text_ime_rect_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{1};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+  fixture.view.exercise_view_context_ime_rect = true;
+
+  cgpui::TextModel model("abcd");
+  model.set_selection(3, 3);
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId text_id =
+      tree->set_root(std::make_unique<cgpui::TextElement>(
+          &model,
+          cgpui::Style{}.with_font_size(20.0F)));
+  cgpui::TextElement* text_element = tree->find_as<cgpui::TextElement>(text_id);
+  if (text_element == nullptr) {
+    return 301;
+  }
+  text_element->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 10.0F, .y = 12.0F},
+      .size = {.width = 40.0F, .height = 20.0F}});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(text_id, &model);
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ImeCandidateRect> callback_rect;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.sequence == 2) {
+          callback_rect = context.runtime.focused_text_ime_rect();
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  ime_rect_fixture = nullptr;
+
+  if (result != 0) {
+    return 302;
+  }
+  const std::optional<cgpui::ImeCandidateRect> runtime_rect =
+      runtime.focused_text_ime_rect();
+  if (!runtime_rect.has_value() || !callback_rect.has_value() ||
+      !fixture.view.view_context_ime_rect_present) {
+    return 303;
+  }
+  if (runtime_rect->element_id != text_id ||
+      callback_rect->element_id != text_id ||
+      fixture.view.view_context_ime_rect.element_id != text_id) {
+    return 304;
+  }
+  if (runtime_rect->byte_offset != 3 || callback_rect->byte_offset != 3 ||
+      fixture.view.view_context_ime_rect.byte_offset != 3) {
+    return 305;
+  }
+  const cgpui::Rect rect = runtime_rect->rect;
+  if (rect.origin.x != 30.0F || rect.origin.y != 0.0F ||
+      rect.size.width != 1.0F || rect.size.height != 20.0F) {
+    return 306;
+  }
+  if (callback_rect->rect.origin.x != rect.origin.x ||
+      fixture.view.view_context_ime_rect.rect.origin.x != rect.origin.x) {
+    return 307;
+  }
+
+  return 0;
+}
+
+int test_runtime_omits_focused_text_ime_rect_without_focus_or_layout() {
+  RuntimeFixture fixture;
+  cgpui::TextModel model("abc");
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId text_id =
+      tree->set_root(std::make_unique<cgpui::TextElement>(
+          &model,
+          cgpui::Style{}.with_font_size(18.0F)));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(text_id, &model);
+  runtime.set_element_tree(std::move(tree));
+
+  if (runtime.focused_text_ime_rect().has_value()) {
+    return 308;
+  }
+  runtime.request_keyboard_focus(text_id);
+  if (runtime.focused_text_ime_rect().has_value()) {
+    return 309;
+  }
+  return 0;
+}
+
 int test_view_context_binds_text_model_to_element() {
   RuntimeFixture fixture;
   text_input_routing_fixture = &fixture;
@@ -5893,6 +6019,15 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_reports_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_reports_focused_text_ime_rect();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_omits_focused_text_ime_rect_without_focus_or_layout();
       result != 0) {
     return result;
   }

@@ -14,6 +14,9 @@
 
 - Steps 89-126 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
+- Step 127 is implemented and feature-worktree verified in
+  `.worktrees/ime-candidate-rect`; it still needs commit, merge, post-merge
+  verification, docs closeout, and cleanup.
 - Step 125 is merged on `master` at
   `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
   1/1, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
@@ -39,8 +42,8 @@
 - Step 123, text caret and selection paint metadata, is merged and post-merge
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
-- Step 127, IME composition/candidate rectangle data from the focused text
-  element, is the next implementation slice.
+- Step 128, GPUI-like demo rewrite using the public prelude and new authoring
+  API, is the next implementation slice after Step 127 merge closeout.
 
 ## File Map
 
@@ -173,7 +176,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 124: platform cursor application for Win32 and Wayland.
 - [x] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
 - [x] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
-- [ ] Step 127: IME composition/candidate rectangle data from the focused text element.
+- [x] Step 127: IME composition/candidate rectangle data from the focused text element.
 - [ ] Step 128: GPUI-like demo rewrite using the public prelude and new authoring API.
 
 Acceptance at the end of Band D:
@@ -269,7 +272,7 @@ leaving macOS/Metal for a later parity track.
 - [x] Step 125: add a Win32 system clipboard backend for UTF-8 text.
 - [x] Step 126: add a Wayland clipboard backend skeleton with graceful
   unsupported behavior.
-- [ ] Step 127: expose IME candidate/composition rectangle data from the
+- [x] Step 127: expose IME candidate/composition rectangle data from the
   focused text element.
 - [ ] Step 128: rewrite the demo around public prelude, `run_app`,
   `AppContext`, `View::render`, factories, builder shortcuts, and text/model
@@ -281,18 +284,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 127 from a fresh feature worktree:
+Finish Step 127 from the existing feature worktree:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/ime-candidate-rect -b codex/ime-candidate-rect master
 cd .worktrees/ime-candidate-rect
 xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default
 ```
 
-Step 127 should expose IME composition/candidate rectangle data from the
-focused text element without wiring platform IME placement yet.
+Step 127 now exposes IME composition/candidate rectangle data from the focused
+text element without wiring platform IME placement yet. The remaining Step 127
+closeout is feature commit, fast-forward merge to `master`, post-merge
+targeted/Windows/WSL verification, docs closeout, and worktree cleanup.
 
 ## Step Details
 
@@ -855,16 +859,16 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 ### Step 127: IME Candidate Rectangle Data
 
 **Files:**
-- Modify: `include/cgpui/ui/text.hpp`
-- Modify: `include/cgpui/ui/element.hpp`
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
-- Modify: `tests/platform/win32_text_input_test.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for focused text elements reporting a candidate/composition rectangle based on caret geometry.
-- [ ] Expose the data through runtime/context so Win32 and Wayland IME code can consume it later.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`.
+- [x] Added RED tests for focused text elements reporting a candidate/composition rectangle based on caret geometry.
+- [x] Exposed the data through runtime/context so Win32 and Wayland IME code can consume it later.
+- [x] Targeted test command passed 3/3: `xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default`.
+- [x] Windows full debug passed 29/29: `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] WSL Arch full debug passed 26/26: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/ime-candidate-rect -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 128: GPUI-Like Demo Rewrite
 

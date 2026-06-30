@@ -83,6 +83,11 @@ int main() {
       .view_ancestry = {cgpui::ViewId{1}},
       .event_kind = cgpui::EventKind::pointer_moved,
   };
+  cgpui::ImeCandidateRect ime_rect{
+      .element_id = cgpui::ElementId{2},
+      .rect = cgpui::Rect{.origin = {4.0F, 5.0F}, .size = {1.0F, 18.0F}},
+      .byte_offset = 3,
+  };
   cgpui::StyleState style_state;
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
@@ -222,6 +227,9 @@ int main() {
                  selection.range.start == 1 && selection.range.end == 3 &&
                  selection.rect.size.width == 5.0F &&
                  caret.byte_offset == 3 && caret.rect.size.width == 1.0F &&
+                 ime_rect.byte_offset == 3 &&
+                 ime_rect.element_id == cgpui::ElementId{2} &&
+                 ime_rect.rect.size.height == 18.0F &&
                  render_record.sequence == 1 &&
                  render_record.root_element_id.has_value() &&
                  event_route.element_ancestry.size() == 1 &&
