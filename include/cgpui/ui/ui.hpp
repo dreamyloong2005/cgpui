@@ -24,6 +24,7 @@
 namespace cgpui {
 
 struct WindowRuntimeContext;
+using ViewContext = WindowRuntimeContext;
 
 using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
@@ -50,6 +51,7 @@ class PaintList {
 class View {
  public:
   virtual ~View() = default;
+  virtual AnyElement render(ViewContext& context);
   virtual void paint(PaintList& paint_list, Size viewport_size) = 0;
   virtual EventResult handle_event(
       const PlatformEvent& event,
@@ -259,8 +261,6 @@ struct WindowRuntimeContext {
   template <typename T>
   void subscribe_view_to_entity(ViewId view_id, EntityId<T> entity_id) const;
 };
-
-using ViewContext = WindowRuntimeContext;
 
 using RendererFactory =
     std::function<Result<Renderer*>(const RenderSurfaceDescriptor&)>;

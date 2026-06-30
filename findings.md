@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 View Render Hook Skeleton
+
+- `ViewContext` must be available before `View` is declared because the new
+  virtual render hook uses the GPUI-like context spelling directly in the base
+  class.
+- The first render hook should be additive: the default `View::render` returns
+  an empty `AnyElement`, while the existing `paint(...)` method remains pure
+  virtual and source-compatible for old runtime and demo paths.
+- Step 96 deliberately does not install the rendered tree into the runtime.
+  That behavior remains Step 97 so the API hook can be verified separately
+  from redraw, layout, hit testing, and owned element tree replacement.
+- Calling `request_paint()` or `request_layout()` from render already works
+  through `ViewContext` because the alias still forwards to
+  `WindowRuntimeContext`; Step 98 can add render-specific invalidation and
+  observability without changing the Step 96 hook shape.
+
 ## 2026-06-30 Steps 129-168 Planning Refresh
 
 - The forward queue should be treated as a post-Step-128 plan, not as the next

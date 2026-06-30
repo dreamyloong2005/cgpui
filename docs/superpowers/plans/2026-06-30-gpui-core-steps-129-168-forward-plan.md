@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Step 96-128 queue intact, then use Steps 129-168 to deepen context/entity ergonomics, keyed element reconciliation, reusable widgets, text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior. Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
+**Architecture:** Keep the active Step 97-128 queue intact, then use Steps 129-168 to deepen context/entity ergonomics, keyed element reconciliation, reusable widgets, text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior. Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 **Tech Stack:** C++23, xmake, public header-cleanliness tests, deterministic UI/runtime tests, Win32/Vulkan, Wayland/Vulkan, WSL Arch Linux verification, and feature-worktree RED/GREEN execution.
 
@@ -12,8 +12,8 @@
 
 ## Current State
 
-- Steps 89-95 are complete on `master`; Step 96 remains the active next implementation step.
-- Steps 96-128 already have a detailed execution plan in `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
+- Steps 89-96 are complete on `master`; Step 97 remains the active next implementation step.
+- Steps 97-128 are covered by the detailed execution plan in `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is a forward plan for the next 40 steps after Step 128. Do not execute Step 129 until Step 128 is merged and verified unless the roadmap is explicitly reprioritized.
 - The main worktree is expected to stay on `master` with no tracked/staged changes aside from planning edits and the pre-existing untracked `.vscode/`.
 

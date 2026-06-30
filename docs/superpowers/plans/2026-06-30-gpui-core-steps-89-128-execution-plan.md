@@ -12,16 +12,15 @@
 
 ## Current State
 
-- Steps 89-95 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-96 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at the Step 95 feature merge.
+- `master` is at the Step 96 feature merge.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
 - No `codex/*` feature branches or `.worktrees/*` implementation worktrees are
-  expected to remain active after Step 95 cleanup.
-- The next implementation slice is Step 96:
-  GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the
-  current view contract.
+  expected to remain active after Step 96 cleanup.
+- The next implementation slice is Step 97:
+  Runtime render pass installs the root view's rendered element tree.
 
 ## File Map
 
@@ -88,7 +87,7 @@ Purpose: make the public API feel GPUI-like before deeper lifecycle work depends
 - [x] Step 93: builder style shortcuts.
 - [x] Step 94: pointer handler shortcuts.
 - [x] Step 95: focus/hover/disabled style-state primitives.
-- [ ] Step 96: `View::render(ViewContext&)` skeleton.
+- [x] Step 96: `View::render(ViewContext&)` skeleton.
 - [ ] Step 97: runtime render pass installs rendered element trees.
 - [ ] Step 98: render invalidation helper and after-render observability.
 
@@ -167,8 +166,8 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 96
 
-This is the practical remaining sequence after Step 95. Steps 89-95 are kept
-as completed foundation; the active remaining queue is Steps 96-128.
+This is the practical remaining sequence after Step 96. Steps 89-96 are kept
+as completed foundation; the active remaining queue is Steps 97-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -179,7 +178,7 @@ without touching model lifecycle yet.
 - [x] Step 94: add pointer-down/up/move/click authoring shortcuts.
 - [x] Step 95: add base/hover/focus/disabled style overlay primitives and
   deterministic style resolution.
-- [ ] Step 96: add optional `View::render(ViewContext&)` while preserving the
+- [x] Step 96: add optional `View::render(ViewContext&)` while preserving the
   existing `paint(...)` contract.
 - [ ] Step 97: make redraw install the root view's rendered element tree.
 - [ ] Step 98: expose render invalidation and after-render observability.
@@ -261,18 +260,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 96 in an isolated worktree:
+Start Step 97 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/view-render-hook -b codex/view-render-hook master
-xmake test -P . window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/runtime-render-pass -b codex/runtime-render-pass master
+xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Then add the RED tests proving old `paint(...)`-only views still compile,
-`View::render(ViewContext&)` can be optionally overridden, and the default
-render hook returns an empty `AnyElement`. Implement the minimal additive
-virtual hook in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`, then follow the
-standard per-step verification/merge workflow above.
+Then add the RED tests proving a root view's `render(...)` result is installed
+as the owned runtime element tree before redraw layout and hit testing, while
+existing `paint(...)` invocation remains compatible. Implement the minimal
+runtime render pass in `src/ui/ui.cpp`, then follow the standard per-step
+verification/merge workflow above.
 
 ## Step Details
 

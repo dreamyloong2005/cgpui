@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 96 View Render Hook Skeleton
+
+- Started Step 96 in `codex/view-render-hook` from `master` at `4a1557e`.
+- Baseline targeted tests passed: `xmake test -P .
+  window_runtime_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Added RED `window_runtime_test`, `ui_header_cleanliness`, and
+  `prelude_header_cleanliness` coverage for an optional
+  `View::render(ViewContext&)` override returning `AnyElement`, default render
+  output staying empty, context visibility inside render, and preservation of
+  the existing `paint(...)` contract; the forced RED build failed because
+  `View::render` did not exist.
+- Implemented Step 96 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  `ViewContext` is declared before `View`, `View` has a virtual
+  `render(ViewContext&)` hook, and the default implementation returns an empty
+  `AnyElement`.
+- Verified targeted tests passed 3/3.
+- Verified Windows full debug tests passed 29/29.
+- Verified WSL Arch Linux full debug tests passed 26/26.
+
 ## 2026-06-30 Steps 129-168 Planning Refresh
 
 - Refreshed the forward plan for Steps 129-168 after Step 95 was merged and

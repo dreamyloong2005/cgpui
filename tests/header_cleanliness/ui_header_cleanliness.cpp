@@ -14,6 +14,11 @@ class TestView final : public cgpui::View {
         cgpui::Rect{.origin = {10.0F, 10.0F}, .size = {20.0F, 20.0F}},
         cgpui::Color{.r = 1.0F, .g = 0.0F, .b = 0.0F, .a = 1.0F});
   }
+
+  cgpui::AnyElement render(cgpui::ViewContext& context) override {
+    context.request_paint();
+    return cgpui::into_element(cgpui::div().size(3.0F, 4.0F));
+  }
 };
 
 int main() {

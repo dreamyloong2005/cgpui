@@ -890,6 +890,26 @@ struct RuntimeFixture {
   RecordingView view;
 };
 
+class RenderHookView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override { paint_count += 1; }
+
+  cgpui::AnyElement render(cgpui::ViewContext& context) override {
+    render_count += 1;
+    saw_context_view_id = context.view_id == cgpui::ViewId{9};
+    saw_context_viewport_size =
+        equal(context.viewport_size, cgpui::Size{123.0F, 45.0F});
+    context.request_paint();
+    return cgpui::into_element(
+        cgpui::div().size(cgpui::Size{10.0F, 20.0F}));
+  }
+
+  int paint_count = 0;
+  int render_count = 0;
+  bool saw_context_view_id = false;
+  bool saw_context_viewport_size = false;
+};
+
 int test_redraw_paints_initial_viewport() {
   RuntimeFixture fixture;
   fixture.app.on_run = +[] {};
@@ -929,6 +949,53 @@ int test_redraw_paints_initial_viewport() {
   }
   if (!equal(fixture.view.last_viewport_size, cgpui::Size{640.0F, 480.0F})) {
     return 5;
+  }
+
+  return 0;
+}
+
+int test_view_render_hook_defaults_empty_and_can_be_overridden() {
+  RuntimeFixture fixture;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  cgpui::WindowRuntimeContext context{
+      .runtime = runtime,
+      .application = fixture.app,
+      .window = fixture.window,
+      .renderer = fixture.renderer,
+      .view_id = cgpui::ViewId{9},
+      .viewport_size = cgpui::Size{123.0F, 45.0F},
+      .input = {},
+      .event_route = {},
+      .last_event_result = {},
+      .last_event_dispatch = {},
+      .frame_index = 3};
+
+  cgpui::AnyElement default_rendered = fixture.view.render(context);
+  if (default_rendered != nullptr) {
+    return 300;
+  }
+
+  RenderHookView render_hook_view;
+  cgpui::AnyElement rendered = render_hook_view.render(context);
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(rendered.get());
+  if (render_hook_view.render_count != 1 || render_hook_view.paint_count != 0) {
+    return 301;
+  }
+  if (!render_hook_view.saw_context_view_id ||
+      !render_hook_view.saw_context_viewport_size) {
+    return 302;
+  }
+  if (styled == nullptr ||
+      !equal(styled->style().preferred_size, cgpui::Size{10.0F, 20.0F})) {
+    return 303;
+  }
+  if (!runtime.invalidation_state().paint) {
+    return 304;
   }
 
   return 0;
@@ -4091,6 +4158,11 @@ int test_runtime_routes_ime_composition_to_focused_text_model() {
 
 int main() {
   if (const int result = test_redraw_paints_initial_viewport(); result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_view_render_hook_defaults_empty_and_can_be_overridden();
+      result != 0) {
     return result;
   }
   if (const int result = test_resize_updates_renderer_and_viewport();

@@ -269,6 +269,11 @@ int run_app(
   return runtime.run(options.window, options.runtime);
 }
 
+AnyElement View::render(ViewContext& context) {
+  (void)context;
+  return {};
+}
+
 EventResult View::handle_event(
     const PlatformEvent& event,
     const WindowRuntimeContext& context) {

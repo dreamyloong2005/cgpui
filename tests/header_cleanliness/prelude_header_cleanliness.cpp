@@ -14,6 +14,11 @@ class PreludeView final : public cgpui::View {
     context.request_paint();
     return cgpui::EventResult::unhandled();
   }
+
+  cgpui::AnyElement render(cgpui::ViewContext& context) override {
+    context.request_layout();
+    return cgpui::into_element(cgpui::div().size(2.0F, 3.0F));
+  }
 };
 
 int main() {
