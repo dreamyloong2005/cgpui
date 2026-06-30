@@ -12,15 +12,17 @@
 
 ## Current State
 
-- Steps 89-106 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-107 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `a9b1b96 feat: store app opened window root views`.
-- The main worktree has no tracked/staged changes; the only known untracked
-  local item is `.vscode/`.
-- Step 107 is implemented, merged to `master`, post-merge verified on Windows
-  and WSL Arch Linux, and its feature worktree/branch have been cleaned up.
-- The active implementation slice is Step 108: child-view element placeholder
-  that embeds another view's rendered output.
+- `master` is at `87f3b9c docs: refresh back forty planning for step 108`.
+- The main worktree has no tracked/staged content changes from Step 108; the
+  known local-only untracked item is `.vscode/`.
+- Step 108 is implemented in `.worktrees/child-view-placeholder` on
+  `codex/child-view-placeholder` and feature-worktree verified on Windows and
+  WSL Arch Linux. It still needs final docs verification, commit,
+  fast-forward merge, post-merge verification, and cleanup.
+- The next implementation slice after Step 108 merges is Step 109: event route
+  carries element and view ancestry metadata.
 
 ## File Map
 
@@ -110,7 +112,7 @@ Purpose: introduce the GPUI-style model and app shell needed for real applicatio
 - [x] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 - [x] Step 106: runtime root view lifecycle storage for app-opened windows.
 - [x] Step 107: view registry skeleton for multiple view ids.
-- [ ] Step 108: child-view element placeholder that embeds another view's rendered output.
+- [x] Step 108: child-view element placeholder that embeds another view's rendered output.
 
 Acceptance at the end of Band B:
 
@@ -204,7 +206,7 @@ storage before nested view/event work.
   skeleton.
 - [x] Step 106: store app-opened root view lifetimes explicitly.
 - [x] Step 107: add the first view registry for multiple `ViewId`s.
-- [ ] Step 108: add a child-view element placeholder that references a
+- [x] Step 108: add a child-view element placeholder that references a
   registered view.
 
 Exit check: app setup can create a window with a root view, user code can
@@ -260,16 +262,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 108 in an isolated worktree:
+Finish the Step 108 merge workflow from the existing feature worktree:
 
 ```powershell
-git worktree add .worktrees/child-view-placeholder -b codex/child-view-placeholder master
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
+cd .worktrees/child-view-placeholder
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git commit -m "feat: add child view placeholder"
+git checkout master
+git merge --ff-only codex/child-view-placeholder
 ```
 
-Add RED tests for an element that references a registered child `ViewId` and
-exposes placeholder layout/hit-test/render metadata, then follow the standard
-per-step verification/merge workflow above.
+Then run the standard post-merge targeted, Windows full debug, and WSL Arch
+full debug verification before removing the feature worktree and branch.
 
 ## Step Details
 
@@ -492,6 +496,10 @@ Status: complete on `master` after the Step 107 merge.
 
 ### Step 108: Child-View Element Placeholder
 
+Status: implemented and feature-worktree verified in
+`.worktrees/child-view-placeholder`; pending commit, merge, post-merge
+verification, and cleanup.
+
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -499,9 +507,9 @@ Status: complete on `master` after the Step 107 merge.
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for an element that references a child `ViewId` and exposes placeholder layout/hit-test/render metadata.
-- [ ] Add a builder/helper for child-view placeholders after the view registry exists.
-- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for an element that references a child `ViewId` and exposes placeholder layout/hit-test/render metadata.
+- [x] Add a builder/helper for child-view placeholders after the view registry exists.
+- [x] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
 
 ### Step 109: Event Route Ancestry Metadata
 

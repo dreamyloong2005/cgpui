@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Child-View Placeholder
+
+- Step 108 is intentionally metadata-only. `ChildViewElement` stores a
+  `ViewId`, lays out to a constrained placeholder size, participates in
+  hit-testing as a normal element, and paints nothing for now.
+- Real nested view rendering, parent/child view ancestry, and event propagation
+  across view boundaries remain Step 109/110 work. Keeping Step 108 small gives
+  those steps a concrete element marker without forcing their routing semantics
+  early.
+- `ViewId` belongs in `element.hpp` now because child-view placeholders are
+  authorable through element builders and public prelude helpers. Keeping a
+  duplicate `ViewId` in `ui.hpp` would either make `element.hpp` depend on the
+  runtime header or split the public id type.
+- The runtime integration test should only prove that a registered child
+  `ViewId` can be referenced by an installed placeholder element while
+  `WindowRuntime::find_view(...)` still resolves the view. It should not call
+  the child view's `render(...)` yet.
+
 ## 2026-06-30 Back-40 Planning While Step 108 Active
 
 - The後 40 步 are still Steps 129-168, but the active implementation path has

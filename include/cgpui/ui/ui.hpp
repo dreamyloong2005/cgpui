@@ -70,12 +70,6 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
-struct ViewId {
-  std::uint64_t value = 0;
-
-  friend bool operator==(ViewId, ViewId) = default;
-};
-
 struct WindowOptions {
   WindowDescriptor descriptor;
 

@@ -61,6 +61,8 @@ int main() {
                         .border_color(cgpui::rgba(255, 255, 255, 0.75F))
                         .border_radius(cgpui::BorderRadii::all(2.0F))
                         .child(cgpui::text(model))
+                        .child(cgpui::child_view(cgpui::ViewId{2})
+                                   .size(4.0F, 5.0F))
                         .build());
   PreludeView view;
   cgpui::AppRunnerOptions options;

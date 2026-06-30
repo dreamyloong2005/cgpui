@@ -3718,6 +3718,54 @@ int test_runtime_registers_finds_and_removes_views() {
   return 0;
 }
 
+int test_registered_child_view_can_be_embedded_as_placeholder_element() {
+  RuntimeFixture fixture;
+  RegistryView child_view;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const cgpui::ViewId child_view_id = runtime.register_view(child_view);
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(cgpui::child_view(child_view_id)
+                         .size(cgpui::Size{.width = 96.0F, .height = 64.0F})
+                         .build());
+  runtime.set_element_tree(std::move(tree));
+
+  if (runtime.find_view(child_view_id) != &child_view) {
+    return 334;
+  }
+  const cgpui::ElementTree* installed_tree = runtime.element_tree();
+  if (installed_tree == nullptr || installed_tree->root_id() != root_id) {
+    return 335;
+  }
+
+  const auto* placeholder =
+      installed_tree->find_as<cgpui::ChildViewElement>(root_id);
+  if (placeholder == nullptr || placeholder->view_id() != child_view_id) {
+    return 336;
+  }
+
+  const cgpui::LayoutOutput output =
+      installed_tree->layout_root(cgpui::LayoutInput{});
+  if (output.size.width != 96.0F || output.size.height != 64.0F) {
+    return 337;
+  }
+
+  if (installed_tree->hit_test_root(cgpui::Point{.x = 8.0F, .y = 8.0F}) !=
+      root_id) {
+    return 338;
+  }
+  return installed_tree->hit_test_root(cgpui::Point{.x = 96.0F, .y = 8.0F})
+                     .value == 0
+             ? 0
+             : 339;
+}
+
 RuntimeFixture* action_dispatch_fixture = nullptr;
 
 void dispatch_action_dispatch_sequence() {
@@ -4950,6 +4998,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_registers_finds_and_removes_views();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_registered_child_view_can_be_embedded_as_placeholder_element();
       result != 0) {
     return result;
   }

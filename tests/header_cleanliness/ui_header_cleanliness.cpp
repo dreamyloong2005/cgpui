@@ -76,12 +76,18 @@ int main() {
         ChildView registered_view;
         const cgpui::ViewId registered_view_id =
             app_context.runtime.register_view(registered_view);
+        cgpui::AnyElement placeholder =
+            cgpui::into_element(cgpui::child_view(registered_view_id)
+                                    .size(cgpui::Size{5.0F, 6.0F}));
+        const auto* child_view_placeholder =
+            dynamic_cast<const cgpui::ChildViewElement*>(placeholder.get());
         const cgpui::View* found_view =
             app_context.runtime.find_view(registered_view_id);
         const bool removed_view =
             app_context.runtime.remove_view(registered_view_id);
         (void)app_context.runtime.root_view();
         (void)opened_root;
+        (void)child_view_placeholder;
         (void)found_view;
         (void)removed_view;
       };

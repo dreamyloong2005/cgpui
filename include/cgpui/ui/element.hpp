@@ -29,6 +29,12 @@ struct ElementId {
   friend bool operator==(ElementId, ElementId) = default;
 };
 
+struct ViewId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(ViewId, ViewId) = default;
+};
+
 struct EventResult {
   bool consumed = false;
   bool cancelled = false;
@@ -443,6 +449,36 @@ class TextElement : public Element {
   TextModel* model_ = nullptr;
 };
 
+class ChildViewElement : public Element {
+ public:
+  ChildViewElement(ViewId view_id, Size placeholder_size)
+      : view_id_(view_id),
+        placeholder_size_(placeholder_size) {}
+
+  [[nodiscard]] ViewId view_id() const {
+    return view_id_;
+  }
+
+  [[nodiscard]] Size placeholder_size() const {
+    return placeholder_size_;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const LayoutOutput output{
+        .size = constrain_size(placeholder_size_, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+ private:
+  ViewId view_id_;
+  Size placeholder_size_;
+};
+
 class ClickElement : public Element {
  public:
   ClickElement(std::unique_ptr<Element> child, ClickHandler handler)
@@ -735,6 +771,12 @@ class ElementBuilder {
     return builder;
   }
 
+  [[nodiscard]] static ElementBuilder child_view(ViewId view_id) {
+    ElementBuilder builder(Kind::child_view);
+    builder.child_view_id_ = view_id;
+    return builder;
+  }
+
   [[nodiscard]] ElementBuilder style(Style style) && {
     style_state_.base = style;
     return std::move(*this);
@@ -757,7 +799,7 @@ class ElementBuilder {
 
   [[nodiscard]] ElementBuilder size(Size size) && {
     style_state_.base = style_state_.base.with_preferred_size(size);
-    if (kind_ == Kind::fixed_size) {
+    if (kind_ == Kind::fixed_size || kind_ == Kind::child_view) {
       size_ = size;
     }
     return std::move(*this);
@@ -870,6 +912,9 @@ class ElementBuilder {
     if (kind_ == Kind::text) {
       return finish(std::make_unique<TextElement>(text_model_));
     }
+    if (kind_ == Kind::child_view) {
+      return finish(std::make_unique<ChildViewElement>(child_view_id_, size_));
+    }
     if (kind_ == Kind::v_stack) {
       auto element = std::make_unique<VerticalStackElement>();
       element->set_gap(style_state_.base.gap);
@@ -903,6 +948,7 @@ class ElementBuilder {
     v_stack,
     fixed_size,
     text,
+    child_view,
   };
 
   explicit ElementBuilder(Kind kind) : kind_(kind) {}
@@ -944,6 +990,7 @@ class ElementBuilder {
   StyleState style_state_;
   Size size_;
   TextModel* text_model_ = nullptr;
+  ViewId child_view_id_;
   bool enabled_ = true;
   bool focusable_ = false;
   ClickHandler click_handler_;
@@ -985,6 +1032,10 @@ class ElementBuilder {
 
 [[nodiscard]] inline ElementBuilder text(TextModel& model) {
   return ElementBuilder::text(model);
+}
+
+[[nodiscard]] inline ElementBuilder child_view(ViewId view_id) {
+  return ElementBuilder::child_view(view_id);
 }
 
 class ElementTree {

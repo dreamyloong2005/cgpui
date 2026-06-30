@@ -1372,6 +1372,47 @@ int test_text_element_binds_text_model_and_lays_out_skeleton() {
              : 139;
 }
 
+int test_child_view_element_references_view_and_lays_out_placeholder() {
+  cgpui::ChildViewElement element(
+      cgpui::ViewId{42},
+      cgpui::Size{.width = 120.0F, .height = 80.0F});
+  element.assign_id(cgpui::ElementId{45});
+
+  if (element.view_id() != cgpui::ViewId{42} ||
+      element.placeholder_size().width != 120.0F ||
+      element.placeholder_size().height != 80.0F) {
+    return 227;
+  }
+
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .min_size = {.width = 40.0F, .height = 20.0F},
+              .max_size = {.width = 100.0F, .height = 90.0F},
+          },
+  });
+  if (output.size.width != 100.0F || output.size.height != 80.0F) {
+    return 228;
+  }
+
+  const std::optional<cgpui::Rect> bounds = element.layout_bounds();
+  if (!bounds.has_value() || bounds->origin.x != 0.0F ||
+      bounds->origin.y != 0.0F || bounds->size.width != 100.0F ||
+      bounds->size.height != 80.0F) {
+    return 229;
+  }
+
+  if (element.hit_test(cgpui::Point{.x = 99.0F, .y = 79.0F}) !=
+      cgpui::ElementId{45}) {
+    return 230;
+  }
+  return element.hit_test(cgpui::Point{.x = 100.0F, .y = 79.0F}).value == 0 &&
+                 element.hit_test(cgpui::Point{.x = 99.0F, .y = 80.0F})
+                         .value == 0
+             ? 0
+             : 231;
+}
+
 int test_text_element_paints_text_placeholder_from_layout_bounds() {
   cgpui::TextModel model("hi");
   cgpui::TextElement element(&model);
@@ -1404,6 +1445,20 @@ int test_element_builder_builds_text_leaf() {
 
   const cgpui::LayoutOutput output = text->layout(cgpui::LayoutInput{});
   return output.size.width == 56.0F && output.size.height == 16.0F ? 0 : 144;
+}
+
+int test_element_builder_builds_child_view_placeholder() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::child_view(cgpui::ViewId{84})
+                              .size(cgpui::Size{.width = 48.0F,
+                                                 .height = 36.0F}));
+  auto* child_view = dynamic_cast<cgpui::ChildViewElement*>(element.get());
+  if (child_view == nullptr || child_view->view_id() != cgpui::ViewId{84}) {
+    return 232;
+  }
+
+  const cgpui::LayoutOutput output = child_view->layout(cgpui::LayoutInput{});
+  return output.size.width == 48.0F && output.size.height == 36.0F ? 0 : 233;
 }
 
 int test_styled_element_layout_includes_padding_without_child() {
@@ -2533,11 +2588,20 @@ int main() {
     return result;
   }
   if (const int result =
+          test_child_view_element_references_view_and_lays_out_placeholder();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
           test_text_element_paints_text_placeholder_from_layout_bounds();
       result != 0) {
     return result;
   }
   if (const int result = test_element_builder_builds_text_leaf();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_builds_child_view_placeholder();
       result != 0) {
     return result;
   }

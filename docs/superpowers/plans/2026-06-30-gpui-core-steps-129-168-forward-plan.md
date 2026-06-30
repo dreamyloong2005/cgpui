@@ -18,14 +18,15 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-107 are complete on `master` through
-  `cff072f docs: mark step 107 merged`, and Step 107 was post-merge verified
-  on Windows and WSL Arch Linux.
+  `87f3b9c docs: refresh back forty planning for step 108`, and Step 107 was
+  post-merge verified on Windows and WSL Arch Linux.
 - Steps 108-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 108 is the active implementation step in
+- Step 108 is implemented and feature-worktree verified in
   `.worktrees/child-view-placeholder` on branch
-  `codex/child-view-placeholder`; its baseline targeted tests have passed.
+  `codex/child-view-placeholder`; it still needs commit, fast-forward merge,
+  post-merge verification, and cleanup before Step 109 starts.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -34,10 +35,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## 2026-06-30 Back-40 Planning Refresh
 
-The user asked to plan the "后40步" while Step 108 is active. This document is
+The user asked to plan the "后40步" while Step 108 was active. This document is
 therefore the execution plan for Steps 129-168, not a new active branch queue.
-The next implementation action remains Step 108 unless the roadmap is
-explicitly reprioritized.
+The next action remains finishing the Step 108 merge workflow unless the
+roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 108-128 close child-view placeholders,
   ancestry/propgation, focus, scroll, layout depth, render command metadata,
@@ -151,15 +152,16 @@ Do not begin Step 129 until all of these are true:
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
   Current partial status: Steps 99-107 are complete on `master`; Step 108 is
-  active in `.worktrees/child-view-placeholder` and remains incomplete until
-  merged and verified.
+  implemented and feature-worktree verified, but remains incomplete for the
+  gate until it is merged and post-merge verified.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 gate count from the current state: 21 implementation
-steps, Steps 108-128. Finishing those 21 steps is the only planned route into
-Step 129.
+Remaining pre-back-40 implementation count after the Step 108 feature merge:
+20 steps, Steps 109-128. Step 108 still counts as gate-incomplete until its
+commit, fast-forward merge, post-merge Windows/WSL verification, and cleanup
+are complete.
 
 ## Back-40 Execution Strategy
 
@@ -224,12 +226,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, continue the existing Step 108 worktree
+For the current pre-back-40 state, finish the existing Step 108 worktree
 instead of starting Step 129 or recreating the branch:
 
 ```powershell
 cd .worktrees/child-view-placeholder
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
+xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

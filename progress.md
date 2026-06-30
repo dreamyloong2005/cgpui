@@ -1,5 +1,34 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 108 Child-View Placeholder
+
+- Continued Step 108 in `.worktrees/child-view-placeholder` on
+  `codex/child-view-placeholder`, fast-forwarded to
+  `87f3b9c docs: refresh back forty planning for step 108`.
+- Added RED coverage in `element_test`, `window_runtime_test`,
+  `ui_header_cleanliness`, and `prelude_header_cleanliness` for
+  `ChildViewElement`, `child_view(ViewId)`, `ElementBuilder::child_view(...)`,
+  placeholder layout/hit testing, and embedding a registered child view id in
+  an installed `ElementTree`.
+- Verified the RED build failed as expected because `cgpui::child_view` and
+  `cgpui::ChildViewElement` were not declared.
+- Implemented Step 108 in `include/cgpui/ui/element.hpp` and
+  `include/cgpui/ui/ui.hpp`: moved lightweight `ViewId` into `element.hpp`,
+  added `ChildViewElement` as a metadata/layout/hit-test placeholder, and added
+  builder/free authoring helpers for child-view placeholders.
+- Verified targeted tests after GREEN:
+  `xmake test -P . element_test/default window_runtime_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed
+  4/4.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168 forward
+  plan so Step 108 is marked implemented and feature-worktree verified, with
+  Step 109 as the next implementation slice after merge.
+
 ## 2026-06-30 Back-40 Planning While Step 108 Active
 
 - Refreshed
