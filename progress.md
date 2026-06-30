@@ -3013,3 +3013,26 @@
 - Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
   and `findings.md` to record Step 124 feature-worktree GREEN status and set
   Step 125 as the next implementation slice after merge closeout.
+- Committed Step 124 as `74ad787 feat: apply platform cursors` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests on Windows:
+  `xmake test -P . window_runtime_test/default win32_input_event_test/default
+  wayland_pointer_button_test/default` passed built targets 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168 forward
+  plan so Step 124 is marked merged and post-merge verified. Step 125, Win32
+  system clipboard backend for text copy, cut, and paste, is the next
+  implementation slice.
+
+- Completed Step 124 docs closeout edits in `task_plan.md`, the 89-128
+  execution plan, and the 129-168 forward plan. The remaining cleanup is to
+  verify the docs closeout, commit it, and remove the merged Step 124 feature
+  worktree and branch.
+- Verified docs closeout formatting with `git diff --check` and re-ran the
+  Step 124 Windows targeted command:
+  `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default`
+  passed the built Windows targets 2/2.

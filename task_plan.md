@@ -99,20 +99,19 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff after Step 124: Steps 89-123 are merged and post-merge
-verified on Windows and WSL Arch Linux, and Step 124 is implemented and
-feature-worktree verified. Step 129 remains gated behind merging Step 124,
+pre-back-40 handoff after Step 124: Steps 89-124 are merged and post-merge
+verified on Windows and WSL Arch Linux. Step 129 remains gated behind
 completion and Windows/WSL verification of Steps 125-128, plus the
 post-Step-128 exit verification.
 
-After the Step 124 merge, the effective distance to Step 129 is 4
+From the Step 124 merge closeout, the effective distance to Step 129 is 4
 implementation steps, Steps 125-128, plus post-Step-128 targeted, Windows, and
 WSL verification. The effective distance through Step 168 is 44 implementation
 steps plus those verification gates and the four follow-on band checkpoint
 reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 124-128 queue unless the plan is explicitly reprioritized.
+the current Step 125-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -396,16 +395,18 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 124,
 platform cursor application for Win32 and Wayland, is the next implementation
 slice.
 
-Step 124, platform cursor application for Win32 and Wayland, is implemented in
-the feature worktree. RED failed as expected on missing
-`PlatformWindow::set_cursor(...)`; GREEN moves `CursorShape` into the core
-event surface, adds the platform cursor API, applies runtime hover cursor
+Step 124, platform cursor application for Win32 and Wayland, is merged on
+`master` at `74ad787 feat: apply platform cursors`. RED failed as expected on
+missing `PlatformWindow::set_cursor(...)`; GREEN moves `CursorShape` into the
+core event surface, adds the platform cursor API, applies runtime hover cursor
 changes to the platform window, maps Win32 cursor shapes to system cursors, and
 adds a Wayland `wl_pointer.set_cursor` skeleton hook without cursor theme
 loading. Feature-worktree targeted tests passed on Windows and WSL Arch Linux,
 Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
-Step 124 still needs feature commit, merge, post-merge verification, and docs
-closeout before Step 125 starts.
+Post-merge targeted tests passed on Windows for built targets 2/2, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 125,
+Win32 system clipboard backend for text copy, cut, and paste, is the next
+implementation slice.
 
 ## Risks
 

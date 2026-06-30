@@ -12,13 +12,14 @@
 
 ## Current State
 
-- Steps 89-123 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-124 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 124 is implemented and feature-worktree verified in
-  `.worktrees/platform-cursor-application`; it still needs feature commit,
-  merge, post-merge verification, and docs closeout.
-- `master` includes `b0b9e00 feat: add text caret selection paint`; Step 122's
-  behavior commit is `58561b1 feat: add font size style`.
+- Step 124 is merged on `master` at
+  `74ad787 feat: apply platform cursors`; post-merge targeted tests passed on
+  Windows for built targets 2/2, Windows full debug passed 29/29, and WSL Arch
+  Linux full debug passed 26/26.
+- Step 123's behavior commit is `b0b9e00 feat: add text caret selection paint`;
+  Step 122's behavior commit is `58561b1 feat: add font size style`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121, text paint command separates text drawing from placeholder
@@ -31,7 +32,7 @@
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
 - Step 125, Win32 system clipboard backend for text copy, cut, and paste, is
-  the next implementation slice after the Step 124 merge closeout.
+  the next implementation slice.
 
 ## File Map
 
@@ -272,9 +273,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 124 by committing the feature worktree, fast-forward merging it to
-`master`, running post-merge targeted/Windows/WSL verification, and doing docs
-closeout. Then start Step 125 from a fresh feature worktree:
+Start Step 125 from a fresh feature worktree:
 
 ```powershell
 git checkout master
@@ -783,6 +782,13 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - [x] Windows full debug passed 29/29:
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] WSL Arch full debug passed 26/26:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
+- [x] Merged to `master` at `74ad787 feat: apply platform cursors`.
+- [x] Post-merge targeted tests passed on Windows for built targets 2/2:
+  `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
 
 ### Step 125: Win32 System Clipboard Backend

@@ -17,8 +17,8 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-123 are complete on `master`; the Step 123 behavior commit is
-  `b0b9e00 feat: add text caret selection paint`.
+- Steps 89-124 are complete on `master`; the Step 124 behavior commit is
+  `74ad787 feat: apply platform cursors`.
 - Step 120 post-merge verification passed before the docs closeout: targeted
   tests 4/4, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121 post-merge verification passed: targeted tests 3/3, Windows full
@@ -28,33 +28,32 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 123 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 124 is implemented and feature-worktree verified; it still needs merge,
-  post-merge verification, and docs closeout before Step 125 starts.
+- Step 124 post-merge verification passed: targeted Windows tests for built
+  targets 2/2, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Steps 125-128 remain the active implementation gate before this follow-on
   plan. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
-- The main worktree is on `master` with no tracked/staged changes before this
-  planning refresh; the known local-only untracked item is `.vscode/`.
+- The main worktree is on `master`; the known local-only untracked item is
+  `.vscode/`.
 
-## 2026-07-01 Back-40 Planning After Step 124 GREEN
+## 2026-07-01 Back-40 Planning After Step 124 Merge
 
-- Step 124, platform cursor application for Win32 and Wayland, is implemented
-  and feature-worktree verified in `.worktrees/platform-cursor-application`.
-  RED failed on missing `PlatformWindow::set_cursor(...)`; GREEN connects
-  runtime hover cursor state to a platform cursor API, maps Win32 system
-  cursors, and adds a testable Wayland `wl_pointer.set_cursor` skeleton without
-  cursor theme loading.
+- Step 124, platform cursor application for Win32 and Wayland, is merged on
+  `master` at `74ad787 feat: apply platform cursors`. RED failed on missing
+  `PlatformWindow::set_cursor(...)`; GREEN connects runtime hover cursor state
+  to a platform cursor API, maps Win32 system cursors, and adds a testable
+  Wayland `wl_pointer.set_cursor` skeleton without cursor theme loading.
 - Feature-worktree verification passed: targeted Windows and WSL tests,
   Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 124 still needs feature commit, fast-forward merge to `master`,
-  post-merge targeted/Windows/WSL verification, docs closeout, and cleanup.
-- After the Step 124 merge, the gate to Step 129 is 4 implementation slices:
+- Post-merge verification passed: targeted Windows tests for built targets 2/2,
+  Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- The gate to Step 129 is now 4 implementation slices:
   Steps 125-128, followed by post-Step-128 targeted verification, Windows full
   debug, WSL Arch full debug, and clean `master` status.
-- The effective distance through Step 168 after the Step 124 merge is 44
+- The effective distance through Step 168 is 44
   implementation slices plus the post-Step-128 verification gate and four band
   checkpoint reviews.
 
@@ -440,12 +439,12 @@ Do not begin Step 129 until all of these are true:
   on Windows and WSL Arch Linux.
 - [x] Step 123 caret/selection command metadata has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 124-128 have landed Win32/Wayland cursor and clipboard hooks, IME
-  geometry, and the public-prelude demo rewrite.
+- [ ] Steps 125-128 have landed Win32/Wayland clipboard hooks, IME geometry,
+  and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-5 implementation steps, Steps 124-128, plus post-Step-128 Windows/WSL
+4 implementation steps, Steps 125-128, plus post-Step-128 Windows/WSL
 verification.
 
 ## Back-40 Execution Strategy
@@ -511,14 +510,14 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 124 instead of starting Step 129:
+For the current pre-back-40 state, start Step 125 instead of starting Step 129:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/platform-cursor-application -b codex/platform-cursor-application master
-cd .worktrees/platform-cursor-application
-xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default
+git worktree add .worktrees/win32-system-clipboard -b codex/win32-system-clipboard master
+cd .worktrees/win32-system-clipboard
+xmake test -P . clipboard_test/default
 ```
 
 ## Post-Step-128 Planning Contract

@@ -1,5 +1,15 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Platform Cursor Application Merged
+
+- Step 124 is merged on `master` at
+  `74ad787 feat: apply platform cursors` and post-merge verified on Windows and
+  WSL Arch Linux.
+- The remaining pre-back-40 gate is Steps 125-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch full debug verification.
+- Step 125 should add a Win32 system clipboard backend for UTF-8 text while
+  keeping the existing memory clipboard path deterministic for runtime tests.
+
 ## 2026-07-01 Text Caret And Selection Paint Metadata Merged
 
 - Step 123 is merged on `master` at
