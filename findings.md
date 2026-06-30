@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Absolute Positioning And Insets
+
+- Position and inset need to live on the final `Element`, not only on `Style`,
+  because parent stack/flex layout reads each built child after behavior
+  wrappers like click, pointer, key, and focusability have been applied.
+- Default `Position::relative` preserves all previous stack/flex layout.
+  Absolute children are measured for their own size but excluded from normal
+  flow size, gap spacing, flex grow/shrink allocation, justification, and
+  alignment.
+- Step 117 intentionally gives `left` and `top` placement semantics first.
+  `right` and `bottom` are stored in `EdgeSizes` for API continuity and later
+  anchoring work, but they should not drive layout until a later step adds
+  explicit right/bottom behavior and tests.
+- Stack and flex layout should place absolute children after the parent output
+  size is known. This keeps normal-flow children deterministic and gives Step
+  118 layer/elevation work a stable layout substrate.
+
 ## 2026-06-30 Back-40 Planning After Step 116 Docs Closeout
 
 - The后 40 步 are still Steps 129-168, and the current planning anchor should

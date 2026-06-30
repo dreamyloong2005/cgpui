@@ -1,5 +1,39 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 117 Absolute Positioning And Insets
+
+- Continued Step 117 in `.worktrees/absolute-position-insets` on
+  `codex/absolute-position-insets` after fast-forwarding it to
+  `bbce440 docs: refresh back forty planning after step 116`.
+- The prior RED run failed as expected on missing `Position`,
+  `Style::position`, `Style::inset`, `StyleOverlay::position/inset`,
+  `with_position`, `with_inset`, builder `.absolute()`/`.inset(...)`, and
+  `Element::position()`/`inset()` APIs.
+- Implemented Step 117 in `include/cgpui/ui/style.hpp` and
+  `include/cgpui/ui/element.hpp`: styles and overlays now store position and
+  inset metadata, builders expose `.position(...)`, `.absolute()`, and
+  `.inset(...)`, final wrapper elements preserve the metadata, and stack/flex
+  layout measures absolute children while excluding them from normal flow.
+- Added/extended coverage in `tests/ui/style_test.cpp`,
+  `tests/ui/element_test.cpp`, and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for style defaults,
+  overlay resolution, public header visibility, builder propagation, and flex
+  row absolute positioning.
+- Verified `git diff --check` in the feature worktree; it reported only the
+  repository's expected CRLF normalization warnings.
+- Verified targeted tests:
+  `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 117 is marked implemented and feature-worktree
+  verified. Step 118 becomes the next implementation slice after Step 117
+  merge and post-merge verification.
+
 ## 2026-06-30 Back-40 Planning After Step 116 Docs Closeout
 
 - Refreshed the post-Step-128 follow-on plan at

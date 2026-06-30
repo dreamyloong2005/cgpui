@@ -894,6 +894,69 @@ int test_flex_column_shrink_reduces_children_on_main_axis() {
              : 258;
 }
 
+int test_element_builder_absolute_and_inset_shortcuts_apply_to_child() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .child(cgpui::div()
+                                         .size(10.0F, 4.0F)
+                                         .absolute()
+                                         .inset(cgpui::edges(2.0F, 3.0F))));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->children().size() != 1) {
+    return 259;
+  }
+
+  const cgpui::Element& child = *flex->children()[0];
+  return child.position() == cgpui::Position::absolute &&
+                 child.inset().top == 3.0F && child.inset().left == 2.0F
+             ? 0
+             : 260;
+}
+
+int test_flex_row_absolute_children_do_not_affect_main_layout() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .gap(5.0F)
+                              .child(cgpui::div().size(10.0F, 4.0F))
+                              .child(cgpui::div()
+                                         .size(20.0F, 6.0F)
+                                         .absolute()
+                                         .inset(cgpui::edges(
+                                             2.0F,
+                                             0.0F,
+                                             0.0F,
+                                             7.0F)))
+                              .child(cgpui::div().size(30.0F, 5.0F)));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->children().size() != 3) {
+    return 261;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{
+      .constraints = {.min_size = {.width = 80.0F, .height = 40.0F}},
+  });
+  if (output.size.width != 80.0F || output.size.height != 40.0F) {
+    return 262;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      flex->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> absolute_bounds =
+      flex->children()[1]->layout_bounds();
+  const std::optional<cgpui::Rect> third_bounds =
+      flex->children()[2]->layout_bounds();
+  return first_bounds.has_value() && absolute_bounds.has_value() &&
+                 third_bounds.has_value() &&
+                 first_bounds->origin.x == 0.0F &&
+                 third_bounds->origin.x == 15.0F &&
+                 absolute_bounds->origin.x == 7.0F &&
+                 absolute_bounds->origin.y == 2.0F &&
+                 absolute_bounds->size.width == 20.0F &&
+                 absolute_bounds->size.height == 6.0F
+             ? 0
+             : 263;
+}
+
 int test_flex_column_lays_out_children_top_to_bottom() {
   cgpui::FlexElement flex(cgpui::FlexDirection::column);
   flex.append_child(
@@ -2861,6 +2924,16 @@ int main() {
     return result;
   }
   if (const int result = test_flex_column_shrink_reduces_children_on_main_axis();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_absolute_and_inset_shortcuts_apply_to_child();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_flex_row_absolute_children_do_not_affect_main_layout();
       result != 0) {
     return result;
   }

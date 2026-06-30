@@ -127,6 +127,22 @@ class Element {
     flex_shrink_ = value;
   }
 
+  [[nodiscard]] Position position() const {
+    return position_;
+  }
+
+  void set_position(Position value) {
+    position_ = value;
+  }
+
+  [[nodiscard]] EdgeSizes inset() const {
+    return inset_;
+  }
+
+  void set_inset(EdgeSizes value) {
+    inset_ = value;
+  }
+
   [[nodiscard]] virtual bool focusable() const {
     return false;
   }
@@ -160,8 +176,15 @@ class Element {
   bool enabled_ = true;
   float flex_grow_ = 0.0F;
   float flex_shrink_ = 0.0F;
+  Position position_ = Position::relative;
+  EdgeSizes inset_;
   mutable std::optional<Rect> layout_bounds_;
 };
+
+[[nodiscard]] inline Point absolute_origin(Size parent_size, EdgeSizes inset) {
+  (void)parent_size;
+  return Point{.x = inset.left, .y = inset.top};
+}
 
 class FixedSizeElement : public Element {
  public:
@@ -209,19 +232,22 @@ class VerticalStackElement : public Element {
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
     Size content_size;
-    std::size_t child_index = 0;
+    std::size_t relative_child_index = 0;
     for (const auto& child : children_) {
-      if (child_index > 0) {
+      const LayoutOutput child_output = child->layout(LayoutInput{});
+      if (child->position() == Position::absolute) {
+        continue;
+      }
+      if (relative_child_index > 0) {
         content_size.height += gap_;
       }
-      const LayoutOutput child_output = child->layout(LayoutInput{});
       child->set_layout_bounds(Rect{
           .origin = {.x = 0.0F, .y = content_size.height},
           .size = child_output.size,
       });
       content_size.width = std::max(content_size.width, child_output.size.width);
       content_size.height += child_output.size.height;
-      child_index += 1;
+      relative_child_index += 1;
     }
 
     const LayoutOutput output{
@@ -231,6 +257,16 @@ class VerticalStackElement : public Element {
         .origin = output.origin,
         .size = output.size,
     });
+    for (const auto& child : children_) {
+      if (child->position() != Position::absolute) {
+        continue;
+      }
+      const LayoutOutput child_output = child->layout(LayoutInput{});
+      child->set_layout_bounds(Rect{
+          .origin = absolute_origin(output.size, child->inset()),
+          .size = child_output.size,
+      });
+    }
     return output;
   }
 
@@ -308,17 +344,25 @@ class FlexElement : public Element {
     Size content_size;
     float total_flex_grow = 0.0F;
     float total_flex_shrink = 0.0F;
-    std::size_t child_index = 0;
-    for (const auto& child : children_) {
-      if (child_index > 0) {
+    std::vector<std::size_t> relative_indices;
+    relative_indices.reserve(children_.size());
+    std::size_t relative_child_index = 0;
+    for (std::size_t child_index = 0; child_index < children_.size();
+         ++child_index) {
+      const auto& child = children_[child_index];
+      const LayoutOutput child_output = child->layout(LayoutInput{});
+      child_sizes.push_back(child_output.size);
+      if (child->position() == Position::absolute) {
+        continue;
+      }
+      relative_indices.push_back(child_index);
+      if (relative_child_index > 0) {
         if (direction_ == FlexDirection::row) {
           content_size.width += gap_;
         } else {
           content_size.height += gap_;
         }
       }
-      const LayoutOutput child_output = child->layout(LayoutInput{});
-      child_sizes.push_back(child_output.size);
       total_flex_grow += std::max(0.0F, child->flex_grow());
       total_flex_shrink += std::max(0.0F, child->flex_shrink());
 
@@ -331,7 +375,7 @@ class FlexElement : public Element {
             std::max(content_size.width, child_output.size.width);
         content_size.height += child_output.size.height;
       }
-      child_index += 1;
+      relative_child_index += 1;
     }
 
     const LayoutOutput output{
@@ -349,6 +393,9 @@ class FlexElement : public Element {
     const float positive_free_space = std::max(0.0F, output_main - content_main);
     const float overflow_space = std::max(0.0F, content_main - output_main);
     for (std::size_t index = 0; index < child_sizes.size(); ++index) {
+      if (children_[index]->position() == Position::absolute) {
+        continue;
+      }
       Size& child_size = child_sizes[index];
       float child_main = row ? child_size.width : child_size.height;
       if (positive_free_space > 0.0F && total_flex_grow > 0.0F) {
@@ -370,9 +417,11 @@ class FlexElement : public Element {
     }
 
     float laid_out_main = 0.0F;
-    for (std::size_t index = 0; index < child_sizes.size(); ++index) {
+    for (std::size_t relative_index = 0; relative_index < relative_indices.size();
+         ++relative_index) {
+      const std::size_t index = relative_indices[relative_index];
       laid_out_main += row ? child_sizes[index].width : child_sizes[index].height;
-      if (index + 1 < child_sizes.size()) {
+      if (relative_index + 1 < relative_indices.size()) {
         laid_out_main += gap_;
       }
     }
@@ -384,12 +433,14 @@ class FlexElement : public Element {
     } else if (justify_content_ == JustifyContent::end) {
       main_offset = free_space;
     } else if (justify_content_ == JustifyContent::space_between &&
-               child_sizes.size() > 1) {
-      extra_gap = free_space / static_cast<float>(child_sizes.size() - 1);
+               relative_indices.size() > 1) {
+      extra_gap = free_space / static_cast<float>(relative_indices.size() - 1);
     }
 
     float cursor = main_offset;
-    for (std::size_t index = 0; index < children_.size(); ++index) {
+    for (std::size_t relative_index = 0; relative_index < relative_indices.size();
+         ++relative_index) {
+      const std::size_t index = relative_indices[relative_index];
       const Size child_size = child_sizes[index];
       const float child_cross = row ? child_size.height : child_size.width;
       float cross_offset = 0.0F;
@@ -407,9 +458,18 @@ class FlexElement : public Element {
       });
 
       cursor += row ? child_size.width : child_size.height;
-      if (index + 1 < child_sizes.size()) {
+      if (relative_index + 1 < relative_indices.size()) {
         cursor += gap_ + extra_gap;
       }
+    }
+    for (std::size_t index = 0; index < children_.size(); ++index) {
+      if (children_[index]->position() != Position::absolute) {
+        continue;
+      }
+      children_[index]->set_layout_bounds(Rect{
+          .origin = absolute_origin(output.size, children_[index]->inset()),
+          .size = child_sizes[index],
+      });
     }
     return output;
   }
@@ -1065,6 +1125,20 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder position(Position value) && {
+    style_state_.base = style_state_.base.with_position(value);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder absolute() && {
+    return std::move(*this).position(Position::absolute);
+  }
+
+  [[nodiscard]] ElementBuilder inset(EdgeSizes edges) && {
+    style_state_.base = style_state_.base.with_inset(edges);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder enabled(bool value) && {
     enabled_ = value;
     return std::move(*this);
@@ -1176,12 +1250,16 @@ class ElementBuilder {
     element->set_enabled(enabled_);
     element->set_flex_grow(style_state_.base.flex_grow);
     element->set_flex_shrink(style_state_.base.flex_shrink);
+    element->set_position(style_state_.base.position);
+    element->set_inset(style_state_.base.inset);
     if (click_handler_) {
       auto click_element =
           std::make_unique<ClickElement>(std::move(element), click_handler_);
       click_element->set_enabled(enabled_);
       click_element->set_flex_grow(style_state_.base.flex_grow);
       click_element->set_flex_shrink(style_state_.base.flex_shrink);
+      click_element->set_position(style_state_.base.position);
+      click_element->set_inset(style_state_.base.inset);
       element = std::move(click_element);
     }
     if (pointer_down_handler_ || pointer_up_handler_ || pointer_move_handler_) {
@@ -1193,6 +1271,8 @@ class ElementBuilder {
       pointer_element->set_enabled(enabled_);
       pointer_element->set_flex_grow(style_state_.base.flex_grow);
       pointer_element->set_flex_shrink(style_state_.base.flex_shrink);
+      pointer_element->set_position(style_state_.base.position);
+      pointer_element->set_inset(style_state_.base.inset);
       element = std::move(pointer_element);
     }
     if (key_handler_) {
@@ -1201,6 +1281,8 @@ class ElementBuilder {
       key_element->set_enabled(enabled_);
       key_element->set_flex_grow(style_state_.base.flex_grow);
       key_element->set_flex_shrink(style_state_.base.flex_shrink);
+      key_element->set_position(style_state_.base.position);
+      key_element->set_inset(style_state_.base.inset);
       element = std::move(key_element);
     }
     if (focusable_) {
@@ -1209,6 +1291,8 @@ class ElementBuilder {
       focusable_element->set_enabled(enabled_);
       focusable_element->set_flex_grow(style_state_.base.flex_grow);
       focusable_element->set_flex_shrink(style_state_.base.flex_shrink);
+      focusable_element->set_position(style_state_.base.position);
+      focusable_element->set_inset(style_state_.base.inset);
       element = std::move(focusable_element);
     }
     return element;

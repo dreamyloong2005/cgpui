@@ -150,7 +150,9 @@ int main() {
                               .child(cgpui::div()
                                          .size(1.0F, 1.0F)
                                          .flex_grow(1.0F)
-                                         .flex_shrink(2.0F)));
+                                         .flex_shrink(2.0F)
+                                         .absolute()
+                                         .inset(cgpui::edges(3.0F))));
   const auto* flex = dynamic_cast<const cgpui::FlexElement*>(flex_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
@@ -191,6 +193,9 @@ int main() {
                   flex->justify_content() == cgpui::JustifyContent::end &&
                   flex->children()[0]->flex_grow() == 1.0F &&
                   flex->children()[0]->flex_shrink() == 2.0F &&
+                  flex->children()[0]->position() ==
+                      cgpui::Position::absolute &&
+                  flex->children()[0]->inset().left == 3.0F &&
                   scroll_model.offset().x == 0.0F
               ? 0
               : 1;

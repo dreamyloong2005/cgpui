@@ -99,17 +99,18 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `1e542bd docs: mark step 116 merged`: Steps
-89-116 are merged and post-merge verified on Windows and WSL Arch Linux, Step
-117 is active in `.worktrees/absolute-position-insets` on
-`codex/absolute-position-insets`, and Step 129 remains gated behind completion
-and Windows/WSL verification of Steps 117-128.
+pre-back-40 handoff state at `bbce440 docs: refresh back forty planning after
+step 116`: Steps 89-116 are merged and post-merge verified on Windows and WSL
+Arch Linux, Step 117 is implemented and feature-worktree verified in
+`.worktrees/absolute-position-insets` on `codex/absolute-position-insets`, and
+Step 129 remains gated behind completion and Windows/WSL verification of Steps
+117-128.
 
-From the current `master` state, the effective distance to Step 129 is 12
-implementation steps, Steps 117-128, plus post-Step-128 targeted, Windows,
-and WSL verification. The effective distance through Step 168 is 52
-implementation steps plus the post-Step-128 verification and the four
-follow-on band checkpoint reviews.
+From the current `master` state, the effective distance to Step 129 is Step
+117 merge/post-merge verification plus 11 implementation steps, Steps 118-128,
+and post-Step-128 targeted, Windows, and WSL verification. The effective
+distance through Step 168 is that same pre-back-40 gate plus 40 follow-on
+implementation steps and the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 117-128 queue unless the plan is explicitly reprioritized.
@@ -242,7 +243,7 @@ the current Step 117-128 queue unless the plan is explicitly reprioritized.
 114. [x] Hidden overflow participates in hit testing, not only paint clip metadata.
 115. [x] Flex alignment and justification primitives.
 116. [x] Flex grow and shrink factors for child layout.
-117. [ ] Absolute positioning and inset style primitive.
+117. [x] Absolute positioning and inset style primitive.
 118. [ ] Layer/elevation style primitive mapped onto deterministic z order.
 119. [ ] Rounded-rect paint command that preserves border radius metadata.
 120. [ ] Vulkan renderer honors clip rect metadata for solid rectangles.
@@ -313,16 +314,20 @@ and WSL Arch Linux full debug passed 26/26. Post-merge targeted tests passed
 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
 26/26. The Step 116 worktree and feature branch have been removed.
 
-Step 117, absolute positioning and inset style primitive, is now the active
-implementation step. Start it from a fresh
-`.worktrees/absolute-position-insets` worktree on branch
-`codex/absolute-position-insets`.
+Step 117, absolute positioning and inset style primitive, is implemented and
+feature-worktree verified in `.worktrees/absolute-position-insets` on branch
+`codex/absolute-position-insets`. RED failed as expected on missing
+`Position`, `Style::position`, `Style::inset`, overlay, builder, and element
+APIs. Targeted tests passed 3/3, Windows full debug passed 29/29, and WSL Arch
+Linux full debug passed 26/26. The next action is to commit, fast-forward
+merge, post-merge verify, and then start Step 118.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, Step 129 start
 packet, and band checkpoints after Steps 138, 148, 158, and 168. It also
-records the current Step 117 worktree as the next action, so Step 129 remains
-gated behind completion and Windows/WSL verification of Steps 117-128.
+records Step 117 as feature-worktree verified and pending merge, so Step 129
+remains gated behind post-merge verification of Step 117 and completion plus
+Windows/WSL verification of Steps 118-128.
 
 ## Risks
 

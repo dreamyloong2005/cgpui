@@ -24,6 +24,11 @@ enum class JustifyContent {
   space_between,
 };
 
+enum class Position {
+  relative,
+  absolute,
+};
+
 [[nodiscard]] constexpr float px(float value) {
   return value;
 }
@@ -152,6 +157,8 @@ struct Style {
   JustifyContent justify_content = JustifyContent::start;
   float flex_grow = 0.0F;
   float flex_shrink = 0.0F;
+  Position position = Position::relative;
+  EdgeSizes inset;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -244,6 +251,18 @@ struct Style {
     return style;
   }
 
+  [[nodiscard]] constexpr Style with_position(Position value) const {
+    Style style = *this;
+    style.position = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_inset(EdgeSizes edges) const {
+    Style style = *this;
+    style.inset = edges;
+    return style;
+  }
+
   [[nodiscard]] constexpr Style with_clip_rect(Rect rect) const {
     Style style = *this;
     style.clip_rect = rect;
@@ -268,6 +287,8 @@ struct StyleOverlay {
   std::optional<JustifyContent> justify_content;
   std::optional<float> flex_grow;
   std::optional<float> flex_shrink;
+  std::optional<Position> position;
+  std::optional<EdgeSizes> inset;
 
   [[nodiscard]] constexpr StyleOverlay with_background_color(
       Color color) const {
@@ -365,6 +386,18 @@ struct StyleOverlay {
     return overlay;
   }
 
+  [[nodiscard]] constexpr StyleOverlay with_position(Position value) const {
+    StyleOverlay overlay = *this;
+    overlay.position = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_inset(EdgeSizes edges) const {
+    StyleOverlay overlay = *this;
+    overlay.inset = edges;
+    return overlay;
+  }
+
   [[nodiscard]] constexpr StyleOverlay with_clip_rect(Rect rect) const {
     StyleOverlay overlay = *this;
     overlay.clip_rect = rect;
@@ -435,6 +468,12 @@ struct StyleStateFlags {
   }
   if (overlay.flex_shrink.has_value()) {
     style.flex_shrink = *overlay.flex_shrink;
+  }
+  if (overlay.position.has_value()) {
+    style.position = *overlay.position;
+  }
+  if (overlay.inset.has_value()) {
+    style.inset = *overlay.inset;
   }
   return style;
 }

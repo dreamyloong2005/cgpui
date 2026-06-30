@@ -14,12 +14,15 @@
 
 - Steps 89-116 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `2806a4a feat: add flex grow shrink layout`.
+- `master` includes `bbce440 docs: refresh back forty planning after step
+  116`; the Step 116 feature commit is
+  `2806a4a feat: add flex grow shrink layout`.
 - Step 116 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 117, absolute positioning and inset style primitive, is the next active
-  implementation slice. Use `.worktrees/absolute-position-insets` on branch
-  `codex/absolute-position-insets`.
+- Step 117, absolute positioning and inset style primitive, is implemented and
+  feature-worktree verified in `.worktrees/absolute-position-insets` on branch
+  `codex/absolute-position-insets`. The next action is Step 117 commit, merge,
+  post-merge verification, cleanup, and then Step 118.
 
 ## File Map
 
@@ -130,7 +133,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 - [x] Step 114: hidden overflow participates in hit testing.
 - [x] Step 115: flex alignment and justification primitives.
 - [x] Step 116: flex grow and shrink factors.
-- [ ] Step 117: absolute positioning and inset style primitive.
+- [x] Step 117: absolute positioning and inset style primitive.
 - [ ] Step 118: layer/elevation style primitive mapped onto deterministic z order.
 
 Acceptance at the end of Band C:
@@ -165,8 +168,9 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 117
 
-This is the practical remaining sequence after Step 116. Steps 89-116 are kept
-as completed foundation; the active remaining queue is Steps 117-128.
+This is the practical remaining sequence after Step 116. Steps 89-117 are kept
+as completed foundation once Step 117 is merged and post-merge verified; the
+active remaining queue after that merge is Steps 118-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -225,7 +229,7 @@ of single-target-only.
 - [x] Step 114: make hidden overflow constrain hit testing.
 - [x] Step 115: add flex alignment and justification primitives.
 - [x] Step 116: add flex grow and shrink factors.
-- [ ] Step 117: add absolute positioning and inset style.
+- [x] Step 117: add absolute positioning and inset style.
 - [ ] Step 118: add layer/elevation mapped to deterministic z order.
 
 Exit check: event records can explain target and ancestor paths, bubbling can
@@ -259,16 +263,20 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 117 from a fresh feature worktree:
+Finish Step 117 from the existing feature worktree:
 
 ```powershell
-git worktree add .worktrees/absolute-position-insets -b codex/absolute-position-insets master
 cd .worktrees/absolute-position-insets
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
+xmake f -c -m debug -P .
+xmake test -P .
+wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui/.worktrees/absolute-position-insets && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
+git add include/cgpui/ui/style.hpp include/cgpui/ui/element.hpp tests/ui/style_test.cpp tests/ui/element_test.cpp tests/header_cleanliness/ui_header_cleanliness.cpp task_plan.md progress.md findings.md docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md
+git commit -m "feat: add absolute positioning insets"
 ```
 
-Add RED coverage for absolute positioning and inset style primitives before
-implementing the smallest GREEN change.
+After Step 117 merges and post-merge verification passes, start Step 118 in a
+fresh `.worktrees/layer-elevation-z-order` worktree.
 
 ## Step Details
 
@@ -616,9 +624,9 @@ Status: complete on `master` at `2806a4a`.
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for position mode and inset edges.
-- [ ] Keep default layout unchanged and only apply absolute positioning when explicitly authored.
-- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for position mode and inset edges.
+- [x] Keep default layout unchanged and only apply absolute positioning when explicitly authored.
+- [x] Targeted test command: `xmake test -P . style_test/default element_test/default ui_header_cleanliness/default`.
 
 ### Step 118: Layer/Elevation Style Primitive
 
