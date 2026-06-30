@@ -4,10 +4,11 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 126-128 remainder intact inside the
-current 89-128 execution queue, then use Steps 129-168 to deepen
-context/entity ergonomics, keyed element reconciliation, reusable widgets,
-text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
+**Architecture:** Keep the Step 126 merge closeout and active Steps 127-128
+remainder inside the current 89-128 execution queue, then use Steps 129-168 to
+deepen context/entity ergonomics, keyed element reconciliation, reusable
+widgets, text/font rendering, diagnostics, and platform-backed Win32/Wayland
+behavior.
 Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and
 macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
@@ -33,8 +34,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 125 is merged on `master` at
   `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
   1/1, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Steps 126-128 remain the active implementation gate before this follow-on
-  plan. They are covered by the detailed execution plan in
+- Step 126 is implemented and feature-worktree verified in
+  `.worktrees/wayland-clipboard-skeleton`; it still needs merge, post-merge
+  verification, and docs closeout before Step 127 starts.
+- Steps 127-128 remain the active implementation gate before this follow-on
+  plan after Step 126 merges. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -75,6 +79,29 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   full debug, and clean `master` status.
 - The effective distance through Step 168 is 43 implementation slices plus the
   post-Step-128 verification gate and four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 126 GREEN
+
+- Step 126, Wayland system clipboard backend skeleton for text copy, cut, and
+  paste, is implemented and feature-worktree verified in
+  `.worktrees/wayland-clipboard-skeleton`.
+- RED failed on missing Linux `WaylandClipboard`, `WaylandClipboardSupport`,
+  and `WaylandClipboardOptions` APIs. GREEN adds a Linux-only Wayland
+  clipboard skeleton with `unsupported`, `no_seat`, and `available` support
+  states, keeps memory fallback read/write behavior for graceful unsupported
+  and no-seat runtime copy/cut/paste, and makes Linux
+  `create_platform_clipboard()` return the Wayland skeleton.
+- Feature-worktree verification passed: targeted clipboard test 1/1 on Windows
+  and WSL Arch Linux, Windows full debug 29/29, and WSL Arch Linux full debug
+  26/26.
+- Step 126 still needs feature commit, fast-forward merge to `master`,
+  post-merge targeted/Windows/WSL verification, docs closeout, and cleanup.
+- After the Step 126 merge, the gate to Step 129 is 2 implementation slices:
+  Steps 127-128, followed by post-Step-128 targeted verification, Windows full
+  debug, WSL Arch full debug, and clean `master` status.
+- The effective distance through Step 168 after the Step 126 merge is 42
+  implementation slices plus the post-Step-128 verification gate and four band
+  checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
@@ -483,13 +510,15 @@ Do not begin Step 129 until all of these are true:
   post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 125 Win32 system clipboard backend has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 126-128 have landed Wayland clipboard hooks, IME geometry,
+- [ ] Step 126 Wayland clipboard skeleton is feature-worktree verified and
+  still needs merge plus post-merge verification on `master`.
+- [ ] Steps 127-128 have landed IME geometry,
   and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-3 implementation steps, Steps 126-128, plus post-Step-128 Windows/WSL
-verification.
+Step 126 merge/post-merge verification plus 2 implementation steps, Steps
+127-128, then post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 
@@ -554,13 +583,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 126 before starting Step 129:
+For the current pre-back-40 state, finish Step 126 before starting Step 127 or
+Step 129:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/wayland-clipboard-skeleton -b codex/wayland-clipboard-skeleton master
-cd .worktrees/wayland-clipboard-skeleton
+git merge --ff-only codex/wayland-clipboard-skeleton
 xmake test -P . clipboard_test/default
 ```
 

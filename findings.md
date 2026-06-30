@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Wayland Clipboard Skeleton
+
+- Step 126 keeps Wayland clipboard work deliberately skeletal: Linux now has a
+  public `WaylandClipboard` implementation with observable `unsupported`,
+  `no_seat`, and `available` support states, but it does not implement full
+  Wayland data-device transfer yet.
+- `WaylandClipboard` uses a `MemoryClipboard` fallback for all current support
+  states, preserving runtime copy/cut/paste behavior when the compositor lacks
+  data-device support or no seat is available.
+- Linux `create_platform_clipboard()` now returns `WaylandClipboard` instead
+  of `MemoryClipboard`, giving future data-device work a platform-specific
+  backend boundary without changing the shared `Clipboard` interface.
+- Step 126 intentionally does not wire `wl_data_device_manager` discovery into
+  `WaylandApplication`; that belongs in later platform-depth work once the
+  skeleton contract is pinned.
+
 ## 2026-07-01 Win32 System Clipboard Backend Merged
 
 - Step 125 is merged on `master` at

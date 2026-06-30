@@ -18,6 +18,9 @@
   `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
   1/1, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
+- Step 126 is implemented and feature-worktree verified in
+  `.worktrees/wayland-clipboard-skeleton`; it still needs feature commit,
+  merge, post-merge verification, and docs closeout.
 - Step 124 is merged on `master` at
   `74ad787 feat: apply platform cursors`; post-merge targeted tests passed on
   Windows for built targets 2/2, Windows full debug passed 29/29, and WSL Arch
@@ -35,8 +38,8 @@
 - Step 123, text caret and selection paint metadata, is merged and post-merge
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
-- Step 126, Wayland system clipboard backend skeleton for text copy, cut, and
-  paste, is the next implementation slice.
+- Step 127, IME composition/candidate rectangle data from the focused text
+  element, is the next implementation slice after the Step 126 merge closeout.
 
 ## File Map
 
@@ -168,7 +171,7 @@ Purpose: replace placeholder rendering and memory-only platform behaviors with c
 - [x] Step 123: text element emits caret and selection paint metadata.
 - [x] Step 124: platform cursor application for Win32 and Wayland.
 - [x] Step 125: Win32 system clipboard backend for text copy, cut, and paste.
-- [ ] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
+- [x] Step 126: Wayland system clipboard backend skeleton for text copy, cut, and paste.
 - [ ] Step 127: IME composition/candidate rectangle data from the focused text element.
 - [ ] Step 128: GPUI-like demo rewrite using the public prelude and new authoring API.
 
@@ -263,7 +266,7 @@ leaving macOS/Metal for a later parity track.
 - [x] Step 124: apply runtime cursor state through Win32 and Wayland platform
   hooks.
 - [x] Step 125: add a Win32 system clipboard backend for UTF-8 text.
-- [ ] Step 126: add a Wayland clipboard backend skeleton with graceful
+- [x] Step 126: add a Wayland clipboard backend skeleton with graceful
   unsupported behavior.
 - [ ] Step 127: expose IME candidate/composition rectangle data from the
   focused text element.
@@ -277,19 +280,20 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 126 from a fresh feature worktree:
+Finish Step 126 by committing the feature worktree, fast-forward merging it to
+`master`, running post-merge targeted/Windows/WSL verification, and doing docs
+closeout. Then start Step 127 from a fresh feature worktree:
 
 ```powershell
 git checkout master
 git status --short --branch
-git worktree add .worktrees/wayland-clipboard-skeleton -b codex/wayland-clipboard-skeleton master
-cd .worktrees/wayland-clipboard-skeleton
-xmake test -P . clipboard_test/default
+git worktree add .worktrees/ime-candidate-rect -b codex/ime-candidate-rect master
+cd .worktrees/ime-candidate-rect
+xmake test -P . window_runtime_test/default win32_text_input_test/default ui_header_cleanliness/default
 ```
 
-Step 126 should add a Wayland clipboard backend skeleton with graceful
-unsupported/no-seat behavior while preserving runtime copy/cut/paste through
-the shared `Clipboard` interface.
+Step 127 should expose IME composition/candidate rectangle data from the
+focused text element without wiring platform IME placement yet.
 
 ## Step Details
 
@@ -828,12 +832,18 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 **Files:**
 - Modify: `include/cgpui/platform/clipboard.hpp`
 - Modify: `src/platform/clipboard.cpp`
-- Modify: `src/platform/linux/wayland_application.cpp`
 - Modify: `tests/platform/clipboard_test.cpp`
 
-- [ ] Add RED tests for constructing a Wayland clipboard backend skeleton and exercising graceful unsupported/no-seat behavior.
-- [ ] Preserve runtime copy/cut/paste behavior through the shared `Clipboard` interface.
-- [ ] Targeted test command: `xmake test -P . clipboard_test/default`.
+- [x] Add RED tests for constructing a Wayland clipboard backend skeleton and exercising graceful unsupported/no-seat behavior.
+- [x] Preserve runtime copy/cut/paste behavior through the shared `Clipboard` interface.
+- [x] Targeted test command passed 1/1 on WSL Arch Linux after a forced rebuild:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-skeleton -- bash -lc 'XMAKE_ROOT=y xmake -r -y -P . clipboard_test && XMAKE_ROOT=y xmake test -y -P . clipboard_test/default'`.
+- [x] Targeted test command passed 1/1 on Windows after a forced rebuild:
+  `xmake -r -P . clipboard_test; xmake test -P . clipboard_test/default`.
+- [x] Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 127: IME Candidate Rectangle Data
 

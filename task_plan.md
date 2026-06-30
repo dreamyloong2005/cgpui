@@ -99,19 +99,20 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff after Step 125: Steps 89-125 are merged and post-merge
-verified on Windows and WSL Arch Linux. Step 129 remains gated behind
-completion and Windows/WSL verification of Steps 126-128, plus the
-post-Step-128 exit verification.
+pre-back-40 handoff after Step 126 GREEN: Steps 89-125 are merged and
+post-merge verified on Windows and WSL Arch Linux, and Step 126 is implemented
+and feature-worktree verified. Step 129 remains gated behind completion and
+Windows/WSL verification of Steps 127-128, plus the post-Step-128 exit
+verification.
 
-After the Step 125 merge, the effective distance to Step 129 is 3
-implementation steps, Steps 126-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 is 43 implementation
+After the Step 126 merge, the effective distance to Step 129 is 2
+implementation steps, Steps 127-128, plus post-Step-128 targeted, Windows, and
+WSL verification. The effective distance through Step 168 is 42 implementation
 steps plus those verification gates and the four follow-on band checkpoint
 reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 126-128 queue unless the plan is explicitly reprioritized.
+the current Step 127-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -250,7 +251,7 @@ the current Step 126-128 queue unless the plan is explicitly reprioritized.
 123. [x] Text element emits caret and selection paint metadata.
 124. [x] Platform cursor application for Win32 and Wayland.
 125. [x] Win32 system clipboard backend for text copy, cut, and paste.
-126. [ ] Wayland system clipboard backend skeleton for text copy, cut, and paste.
+126. [x] Wayland system clipboard backend skeleton for text copy, cut, and paste.
 127. [ ] IME composition/candidate rectangle data from the focused text element.
 128. [ ] GPUI-like demo rewrite using the public prelude and new authoring API.
 129. [ ] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
@@ -420,6 +421,19 @@ passed 29/29, and WSL Arch Linux full debug passed 26/26. Post-merge targeted
 tests passed 1/1, Windows full debug passed 29/29, and WSL Arch Linux full
 debug passed 26/26. Step 126, Wayland system clipboard backend skeleton for
 text copy, cut, and paste, is the next implementation slice.
+
+Step 126, Wayland system clipboard backend skeleton for text copy, cut, and
+paste, is implemented in `.worktrees/wayland-clipboard-skeleton`. RED failed as
+expected on missing Linux `WaylandClipboard`, `WaylandClipboardSupport`, and
+`WaylandClipboardOptions` APIs. GREEN adds a Linux-only Wayland clipboard
+skeleton that reports `unsupported`, `no_seat`, or `available` support states,
+keeps graceful memory fallback read/write behavior for unsupported/no-seat
+runtime copy/cut/paste, and makes Linux `create_platform_clipboard()` return
+the Wayland skeleton instead of `MemoryClipboard`. Feature-worktree targeted
+tests passed 1/1 on Windows and WSL Arch Linux, Windows full debug passed
+29/29, and WSL Arch Linux full debug passed 26/26. Step 126 still needs
+feature commit, merge, post-merge verification, and docs closeout before Step
+127 starts.
 
 ## Risks
 

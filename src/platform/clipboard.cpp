@@ -156,9 +156,34 @@ bool MemoryClipboard::write_text(std::string_view text) {
   return true;
 }
 
+#if defined(__linux__)
+WaylandClipboard::WaylandClipboard() = default;
+
+WaylandClipboard::WaylandClipboard(WaylandClipboardOptions options)
+    : support_(
+          !options.data_device_manager_available
+              ? WaylandClipboardSupport::unsupported
+              : (options.seat_available ? WaylandClipboardSupport::available
+                                        : WaylandClipboardSupport::no_seat)) {}
+
+std::optional<std::string> WaylandClipboard::read_text() const {
+  return fallback_.read_text();
+}
+
+bool WaylandClipboard::write_text(std::string_view text) {
+  return fallback_.write_text(text);
+}
+
+WaylandClipboardSupport WaylandClipboard::support() const {
+  return support_;
+}
+#endif
+
 std::unique_ptr<Clipboard> create_platform_clipboard() {
 #if defined(_WIN32)
   return std::make_unique<Win32Clipboard>();
+#elif defined(__linux__)
+  return std::make_unique<WaylandClipboard>();
 #else
   return std::make_unique<MemoryClipboard>();
 #endif

@@ -245,5 +245,61 @@ int main() {
     return result;
   }
 #endif
+#if defined(__linux__)
+  {
+    cgpui::WaylandClipboard clipboard;
+    if (clipboard.support() != cgpui::WaylandClipboardSupport::unsupported) {
+      return 15;
+    }
+    if (!clipboard.write_text("wayland fallback \xE4\xB8\xAD")) {
+      return 16;
+    }
+    const auto text = clipboard.read_text();
+    if (!text || *text != std::string_view{"wayland fallback \xE4\xB8\xAD"}) {
+      return 17;
+    }
+  }
+  {
+    cgpui::WaylandClipboard clipboard(cgpui::WaylandClipboardOptions{
+        .data_device_manager_available = true,
+        .seat_available = false});
+    if (clipboard.support() != cgpui::WaylandClipboardSupport::no_seat) {
+      return 18;
+    }
+    if (!clipboard.write_text("wayland no seat")) {
+      return 19;
+    }
+    const auto text = clipboard.read_text();
+    if (!text || *text != std::string_view{"wayland no seat"}) {
+      return 20;
+    }
+  }
+  {
+    cgpui::WaylandClipboard clipboard(cgpui::WaylandClipboardOptions{
+        .data_device_manager_available = true,
+        .seat_available = true});
+    if (clipboard.support() != cgpui::WaylandClipboardSupport::available) {
+      return 21;
+    }
+    if (!clipboard.write_text("wayland available")) {
+      return 22;
+    }
+    const auto text = clipboard.read_text();
+    if (!text || *text != std::string_view{"wayland available"}) {
+      return 23;
+    }
+  }
+  {
+    const auto clipboard = cgpui::create_platform_clipboard();
+    const auto* wayland =
+        dynamic_cast<const cgpui::WaylandClipboard*>(clipboard.get());
+    if (wayland == nullptr) {
+      return 24;
+    }
+    if (wayland->support() != cgpui::WaylandClipboardSupport::unsupported) {
+      return 25;
+    }
+  }
+#endif
   return 0;
 }

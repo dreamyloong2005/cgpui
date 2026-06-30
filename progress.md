@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 126 Wayland Clipboard Skeleton
+
+- Started Step 126 in `.worktrees/wayland-clipboard-skeleton` on
+  `codex/wayland-clipboard-skeleton` from `master` at
+  `8dcfac3 docs: mark step 125 merged`.
+- Verified baseline targeted tests before edits:
+  Windows `xmake test -P . clipboard_test/default` passed 1/1, and WSL Arch
+  Linux `XMAKE_ROOT=y xmake test -y -P . clipboard_test/default` passed 1/1.
+- Added RED Linux coverage in `tests/platform/clipboard_test.cpp` for
+  `WaylandClipboard`, `WaylandClipboardSupport`, `WaylandClipboardOptions`,
+  graceful unsupported/no-seat fallback read/write behavior, and Linux
+  `create_platform_clipboard()` returning the Wayland skeleton. RED failed as
+  expected on missing Wayland clipboard APIs.
+- Implemented Step 126 in `include/cgpui/platform/clipboard.hpp` and
+  `src/platform/clipboard.cpp`: Linux now exposes a `WaylandClipboard`
+  skeleton with `unsupported`, `no_seat`, and `available` support states, keeps
+  memory fallback text read/write behavior for the current skeleton, and makes
+  Linux `create_platform_clipboard()` return `WaylandClipboard`.
+- Verified targeted tests after GREEN:
+  WSL Arch Linux forced rebuild plus `clipboard_test/default` passed 1/1, and
+  Windows forced rebuild plus `clipboard_test/default` passed 1/1.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
+  `findings.md`, and this progress log so Step 126 is recorded as implemented
+  and feature-worktree verified. Step 126 still needs commit, merge,
+  post-merge verification, docs closeout, and cleanup before Step 127 begins.
+
 ## 2026-07-01 Step 125 Post-Merge
 
 - Fast-forward merged Step 125 to `master` at
