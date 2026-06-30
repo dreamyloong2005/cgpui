@@ -1,15 +1,19 @@
-# CGPUI GPUI-Core 60-Step Plan
+# CGPUI GPUI-Core 128-Step Plan
 
 ## Goal
 
-Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like API. Each step must be implemented as a small, verified slice that keeps `master` buildable.
+Track small, verified implementation slices toward a Windows/Linux
+GPUI-core-like API. Windows and Linux stay on Vulkan, Linux stays on Wayland,
+and macOS/Cocoa + Metal remains an explicit readiness boundary until the
+Windows/Linux core API is stable enough for parity work.
 
 ## Current Baseline
 
 - `master` starts at `779e62c feat: add pointer capture owner`.
 - Windows and Linux use Vulkan.
 - Linux platform target is Wayland.
-- macOS/Metal is intentionally outside this 20-step goal except for not breaking existing source guards.
+- Step 88 adds the explicit macOS/Cocoa + Metal target boundary without making
+  macOS parity part of the active Windows/Linux implementation track.
 
 ## Definition Of Done For This 20-Step Goal
 
@@ -33,6 +37,21 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 - Windows full debug test suite passes after each merge.
 - Linux/WSL full debug test suite passes for slices that touch shared UI, platform, renderer, or build surfaces.
 - `git status --short --branch` on `master` has no tracked/staged changes from the work, aside from the pre-existing untracked `.vscode/`.
+
+## Definition Of Done For The 128-Step Goal
+
+- Steps 1-88 remain implemented and verified on `master`.
+- Steps 89-128 below are implemented, committed, merged to `master`, and verified.
+- Each implementation step follows the existing RED/GREEN pattern with a
+  targeted test that fails for the expected missing API or behavior before the
+  implementation lands.
+- Windows full debug test suite passes after each merge.
+- Linux/WSL full debug test suite passes for slices that touch shared UI,
+  platform, renderer, or build surfaces.
+- macOS-specific code remains source-isolated behind macOS build guards until
+  a dedicated Mac parity run begins.
+- `git status --short --branch` on `master` has no tracked/staged changes from
+  the work, aside from the pre-existing untracked `.vscode/`.
 
 ## Steps
 
@@ -124,11 +143,51 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 86. [x] ViewContext event route access helper.
 87. [x] ViewContext input state access helper.
 88. [x] Mac readiness audit and desktop target mapping.
+89. [ ] Public `AnyElement` alias and minimal into-element authoring convention.
+90. [ ] Free authoring factories for `div()`, `h_flex()`, `v_flex()`, `v_stack()`, and `text(...)`.
+91. [ ] Element builder child overloads for builders, `AnyElement`, and element ownership.
+92. [ ] Style unit and color helpers: `px`, `rgb`, `rgba`, and edge constructors.
+93. [ ] Element builder fluent style shortcuts for size, spacing, background, border, radius, and gap.
+94. [ ] Pointer handler shortcuts for down, up, move, and click authoring paths.
+95. [ ] Focus, hover, and disabled style-state overlay primitives.
+96. [ ] GPUI-like `View::render(ViewContext&)` hook skeleton while preserving the current view contract.
+97. [ ] Runtime render pass installs the root view's rendered element tree.
+98. [ ] ViewContext render invalidation helper and after-render observability.
+99. [ ] Public `Model<T>`/`Entity<T>` authoring aliases over typed entity ids.
+100. [ ] ViewContext model helpers for create, read, update, and remove.
+101. [ ] Weak entity/view handle primitives with soft-fail upgrade.
+102. [ ] ViewContext observe/subscribe callback helper for model changes.
+103. [ ] Model update notification automatically invalidates subscribed views.
+104. [ ] Public `AppContext` wrapper over the app runner setup phase.
+105. [ ] `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
+106. [ ] Runtime root view lifecycle storage for app-opened windows.
+107. [ ] View registry skeleton for multiple view ids beyond the root.
+108. [ ] Child-view element placeholder that embeds another view's rendered output.
+109. [ ] Event route carries element and view ancestry metadata.
+110. [ ] Event propagation phases: target handling then ancestor bubbling before view fallback.
+111. [ ] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
+112. [ ] Scroll element binding helper backed by `ScrollState`.
+113. [ ] Wheel and trackpad scroll routing into bound scroll state.
+114. [ ] Hidden overflow participates in hit testing, not only paint clip metadata.
+115. [ ] Flex alignment and justification primitives.
+116. [ ] Flex grow and shrink factors for child layout.
+117. [ ] Absolute positioning and inset style primitive.
+118. [ ] Layer/elevation style primitive mapped onto deterministic z order.
+119. [ ] Rounded-rect paint command that preserves border radius metadata.
+120. [ ] Vulkan renderer honors clip rect metadata for solid rectangles.
+121. [ ] Text paint command separates text drawing from placeholder rectangles.
+122. [ ] Font descriptor and basic font-size style primitives.
+123. [ ] Text element emits caret and selection paint metadata.
+124. [ ] Platform cursor application for Win32 and Wayland.
+125. [ ] Win32 system clipboard backend for text copy, cut, and paste.
+126. [ ] Wayland system clipboard backend skeleton for text copy, cut, and paste.
+127. [ ] IME composition/candidate rectangle data from the focused text element.
+128. [ ] GPUI-like demo rewrite using the public prelude and new authoring API.
 
 ## Active Step
 
-Step 88 complete; continue Windows/Linux API work with macOS/Cocoa + Metal
-kept as an explicit target boundary.
+Steps 89-128 are planned. Next implementation step is Step 89:
+Public `AnyElement` alias and minimal into-element authoring convention.
 
 ## Risks
 
@@ -137,3 +196,7 @@ kept as an explicit target boundary.
 - Keep each step small enough for Windows and WSL verification.
 - Keep macOS readiness as a boundary/audit track until the Windows/Linux core
   API surface is stable enough to justify Metal parity work.
+- Do not overfit authoring helpers to the current demo; each helper should be
+  general enough to survive later view/model lifecycle work.
+- Keep renderer work command-driven and platform-neutral first, then teach the
+  Vulkan backend to consume the new commands.

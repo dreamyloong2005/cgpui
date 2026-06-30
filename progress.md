@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 128-Step Planning
+
+- Planned the next 40 implementation steps after Step 88, covering Steps
+  89-128 in `task_plan.md`.
+- Sequenced the plan around four milestone bands: GPUI-like authoring
+  ergonomics, view/model/app lifecycle, event/layout/render depth, and
+  Windows/Linux platform integration hardening.
+- Kept Mac work as an explicit readiness boundary instead of full parity in
+  this planning window, so the active track still optimizes for the
+  Windows/Linux Vulkan + Wayland goal.
+- Set Step 89 as the next implementation slice:
+  Public `AnyElement` alias and minimal into-element authoring convention.
+
 ## 2026-06-30 Mac Readiness
 
 - Started Step 88: Mac readiness audit and desktop target mapping.

@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 128-Step Planning
+
+- The next highest-leverage path toward a GPUI-like core API is authoring
+  ergonomics first: `AnyElement`, free element factories, child conversion, and
+  fluent style shortcuts make later demos and tests express the intended public
+  surface instead of the current lower-level builder plumbing.
+- View/model/app lifecycle should follow once authoring helpers exist, because
+  `View::render(ViewContext&)`, model update invalidation, and app window
+  opening all need a stable element-returning convention.
+- Renderer and platform work should remain command- and abstraction-driven:
+  add paint/text/clip/cursor commands at the UI/runtime boundary before
+  teaching Vulkan, Win32, or Wayland to consume them.
+- Full macOS parity is still not part of Steps 89-128; each new API should stay
+  Mac-neutral and avoid introducing fresh Vulkan/Win32/Wayland assumptions into
+  public core headers.
+
 ## 2026-06-30 Mac Readiness Audit
 
 - The repository already has macOS source slots:
