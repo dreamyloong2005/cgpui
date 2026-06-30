@@ -943,6 +943,10 @@ std::optional<EventRoute> WindowRuntimeContext::current_event_route() const {
   return event_route;
 }
 
+ViewInputState WindowRuntimeContext::input_state() const {
+  return input;
+}
+
 bool WindowRuntimeContext::is_view_id_allocated(ViewId view_id) const {
   return runtime.is_view_id_allocated(view_id);
 }

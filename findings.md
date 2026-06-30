@@ -822,3 +822,13 @@
 - The helper is valid in both view event handlers and after-event callbacks
   because `WindowRuntime::context()` already snapshots `current_event_route_`
   into the context object for both paths.
+
+## 2026-06-30 ViewContext Input State Helper
+
+- `ViewContext::input_state()` should mirror the existing `input` snapshot
+  field, preserving the event-time view of focus, pointer, hover, and cursor
+  state instead of querying mutable runtime state later.
+- Returning the snapshot by value keeps the helper simple and avoids exposing a
+  mutable alias into the context object.
+- The helper is intentionally additive: existing direct `context.input` access
+  remains available while author code gains a clearer accessor spelling.

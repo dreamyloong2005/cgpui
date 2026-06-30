@@ -122,11 +122,11 @@ Reach the first 40 implementation steps toward a Windows/Linux GPUI-core-like AP
 84. [x] ViewContext focused text model mutation helper.
 85. [x] Public prelude header for core authoring APIs.
 86. [x] ViewContext event route access helper.
-87. [ ] ViewContext input state access helper.
+87. [x] ViewContext input state access helper.
 
 ## Active Step
 
-Step 87: ViewContext input state access helper.
+Steps 68-87 complete; ready for final verification and next planning.
 
 ## Risks
 

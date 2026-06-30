@@ -170,6 +170,22 @@ class RecordingView final : public cgpui::View {
         context.input.keyboard_focus_element_owner.has_value();
     last_keyboard_focus_element_owner =
         context.input.keyboard_focus_element_owner;
+    saw_input_state_helper = true;
+    input_state_helper = context.input_state();
+    input_state_helper_matches_field =
+        input_state_helper.focused == context.input.focused &&
+        input_state_helper.pointer_captured == context.input.pointer_captured &&
+        input_state_helper.pointer_capture_owner ==
+            context.input.pointer_capture_owner &&
+        input_state_helper.keyboard_focused == context.input.keyboard_focused &&
+        input_state_helper.keyboard_focus_owner ==
+            context.input.keyboard_focus_owner &&
+        input_state_helper.keyboard_focus_element_owner ==
+            context.input.keyboard_focus_element_owner &&
+        input_state_helper.hovered_element_id == context.input.hovered_element_id &&
+        input_state_helper.cursor_shape == context.input.cursor_shape &&
+        equal(input_state_helper.pointer_position,
+              context.input.pointer_position);
 
     if (std::holds_alternative<cgpui::WindowFocused>(event)) {
       focus_count += 1;
@@ -623,6 +639,8 @@ class RecordingView final : public cgpui::View {
   bool last_keyboard_focus_owner_present = false;
   bool last_keyboard_focus_owner_matches_view = false;
   bool last_keyboard_focus_element_owner_present = false;
+  bool saw_input_state_helper = false;
+  bool input_state_helper_matches_field = false;
   bool second_key_saw_keyboard_focus = false;
   bool second_key_saw_keyboard_focus_owner = false;
   bool second_key_saw_keyboard_focus_element_owner = false;
@@ -702,6 +720,7 @@ class RecordingView final : public cgpui::View {
   cgpui::EventRoute last_event_route{};
   cgpui::EventRoute current_event_route_helper{};
   cgpui::EventDispatchRecord last_event_dispatch{};
+  cgpui::ViewInputState input_state_helper{};
   std::optional<cgpui::ElementId> last_route_element_id;
   std::optional<cgpui::ElementId> last_hovered_element_id;
   std::optional<cgpui::ElementId> second_pointer_move_hovered_element_id;
@@ -1433,6 +1452,65 @@ int test_view_context_current_event_route_helper_matches_route_field() {
       callback_helper_route.event_kind != cgpui::EventKind::pointer_moved ||
       callback_helper_route.target_view_id != fixture.view.last_view_id) {
     return 114;
+  }
+
+  return 0;
+}
+
+int test_view_context_input_state_helper_matches_input_snapshot() {
+  RuntimeFixture fixture;
+  event_route_fixture = &fixture;
+  fixture.app.on_run = &dispatch_event_route_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  cgpui::ViewInputState callback_input{};
+  bool callback_saw_input_state = false;
+  bool callback_input_matched_context = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::ViewContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        callback_input = context.input_state();
+        callback_saw_input_state = true;
+        callback_input_matched_context =
+            callback_input.focused == context.input.focused &&
+            callback_input.pointer_captured == context.input.pointer_captured &&
+            callback_input.pointer_capture_owner ==
+                context.input.pointer_capture_owner &&
+            callback_input.keyboard_focused ==
+                context.input.keyboard_focused &&
+            callback_input.keyboard_focus_owner ==
+                context.input.keyboard_focus_owner &&
+            callback_input.keyboard_focus_element_owner ==
+                context.input.keyboard_focus_element_owner &&
+            callback_input.hovered_element_id ==
+                context.input.hovered_element_id &&
+            callback_input.cursor_shape == context.input.cursor_shape &&
+            equal(callback_input.pointer_position,
+                  context.input.pointer_position) &&
+            record.event_kind == cgpui::EventKind::pointer_moved;
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  event_route_fixture = nullptr;
+
+  if (result != 0) {
+    return 115;
+  }
+  if (!fixture.view.saw_input_state_helper ||
+      !fixture.view.input_state_helper_matches_field ||
+      !equal(fixture.view.input_state_helper.pointer_position,
+             cgpui::Point{21.0F, 22.0F})) {
+    return 116;
+  }
+  if (!callback_saw_input_state || !callback_input_matched_context ||
+      !equal(callback_input.pointer_position, cgpui::Point{21.0F, 22.0F})) {
+    return 117;
   }
 
   return 0;
@@ -4051,6 +4129,11 @@ int main() {
   }
   if (const int result =
           test_view_context_current_event_route_helper_matches_route_field();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_view_context_input_state_helper_matches_input_snapshot();
       result != 0) {
     return result;
   }

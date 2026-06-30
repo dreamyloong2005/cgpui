@@ -1221,3 +1221,19 @@
 - Verified WSL Arch Linux full debug tests:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 25/25.
+
+- Started Step 87: ViewContext input state access helper.
+- Added RED `window_runtime_test` coverage for `ViewContext::input_state()`
+  mirroring the existing `input` snapshot during view event handling and
+  after-event callbacks; the test failed to compile because the helper did not
+  exist.
+- Implemented Step 87 in `codex/view-context-input-state-helper`: added
+  `WindowRuntimeContext::input_state()` as a thin snapshot accessor over the
+  existing public input field.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 28/28.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 25/25.
