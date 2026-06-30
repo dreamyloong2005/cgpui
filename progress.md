@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 117 Post-Merge
+
+- Committed Step 117 as `210c85d feat: add absolute positioning insets` from
+  `.worktrees/absolute-position-insets` on `codex/absolute-position-insets`.
+- Fast-forward merged Step 117 to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default style_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Removed `.worktrees/absolute-position-insets` and deleted
+  `codex/absolute-position-insets`.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan after merge so the current active implementation step is Step
+  118: layer/elevation style primitive mapped onto deterministic z order.
+
 ## 2026-06-30 Step 117 Absolute Positioning And Insets
 
 - Continued Step 117 in `.worktrees/absolute-position-insets` on

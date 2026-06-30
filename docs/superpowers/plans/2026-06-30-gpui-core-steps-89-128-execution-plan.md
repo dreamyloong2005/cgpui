@@ -12,17 +12,14 @@
 
 ## Current State
 
-- Steps 89-116 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-117 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `bbce440 docs: refresh back forty planning after step
-  116`; the Step 116 feature commit is
-  `2806a4a feat: add flex grow shrink layout`.
-- Step 116 post-merge verification passed: targeted tests 3/3, Windows full
+- `master` includes `210c85d feat: add absolute positioning insets`.
+- Step 117 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 117, absolute positioning and inset style primitive, is implemented and
-  feature-worktree verified in `.worktrees/absolute-position-insets` on branch
-  `codex/absolute-position-insets`. The next action is Step 117 commit, merge,
-  post-merge verification, cleanup, and then Step 118.
+- Step 118, layer/elevation style primitive, is the next active implementation
+  slice. Start it from a fresh `.worktrees/layer-elevation-z-order` worktree
+  on branch `codex/layer-elevation-z-order`.
 
 ## File Map
 
@@ -168,9 +165,8 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 117
 
-This is the practical remaining sequence after Step 116. Steps 89-117 are kept
-as completed foundation once Step 117 is merged and post-merge verified; the
-active remaining queue after that merge is Steps 118-128.
+This is the practical remaining sequence after Step 117. Steps 89-117 are kept
+as completed foundation; the active remaining queue is Steps 118-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -263,20 +259,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 117 from the existing feature worktree:
+Start Step 118 from a fresh feature worktree:
 
 ```powershell
-cd .worktrees/absolute-position-insets
+git worktree add .worktrees/layer-elevation-z-order -b codex/layer-elevation-z-order master
+cd .worktrees/layer-elevation-z-order
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
-xmake f -c -m debug -P .
-xmake test -P .
-wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui/.worktrees/absolute-position-insets && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
-git add include/cgpui/ui/style.hpp include/cgpui/ui/element.hpp tests/ui/style_test.cpp tests/ui/element_test.cpp tests/header_cleanliness/ui_header_cleanliness.cpp task_plan.md progress.md findings.md docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md
-git commit -m "feat: add absolute positioning insets"
 ```
 
-After Step 117 merges and post-merge verification passes, start Step 118 in a
-fresh `.worktrees/layer-elevation-z-order` worktree.
+Add RED coverage for layer/elevation style metadata and deterministic paint or
+layout ordering before implementing the smallest GREEN change.
 
 ## Step Details
 

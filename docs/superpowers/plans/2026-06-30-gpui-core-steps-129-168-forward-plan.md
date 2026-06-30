@@ -17,17 +17,15 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-116 are complete on `master` through the planning closeout
-  `bbce440 docs: refresh back forty planning after step 116`; the Step 116
-  feature commit is `2806a4a feat: add flex grow shrink layout`.
-- Step 116 post-merge verification passed: targeted tests 3/3, Windows full
+- Steps 89-117 are complete on `master` through
+  `210c85d feat: add absolute positioning insets`.
+- Step 117 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 117 is implemented and feature-worktree verified in
-  `.worktrees/absolute-position-insets` on branch
-  `codex/absolute-position-insets`. Continue that worktree through commit,
-  merge, post-merge verification, and cleanup; do not recreate Step 117 or
-  start Step 129 early.
-- Steps 117-128 remain the active gate before this follow-on plan. They are
+- Step 118, layer/elevation style primitive mapped onto deterministic z order,
+  is the next active implementation slice. Start it from a fresh
+  `.worktrees/layer-elevation-z-order` worktree on branch
+  `codex/layer-elevation-z-order`.
+- Steps 118-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
@@ -39,11 +37,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`bbce440 docs: refresh back forty planning after step 116`. It is the
-execution plan for Steps
-129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is to commit, merge, post-merge verify, and clean up the
-existing Step 117 worktree, unless the roadmap is explicitly reprioritized.
+`210c85d feat: add absolute positioning insets`. It is the execution plan for
+Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
+implementation action is Step 118, layer/elevation style primitive, unless the
+roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 117-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -55,11 +52,11 @@ existing Step 117 worktree, unless the roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- From the current `master` state, the effective distance to Step 129 is Step
-  117 merge/post-merge verification plus 11 implementation steps, Steps
-  118-128, and post-Step-128 targeted, Windows, and WSL verification. The
-  effective distance through Step 168 is that same pre-back-40 gate plus 40
-  follow-on implementation steps and the four band checkpoint reviews.
+- From the current `master` state, the effective distance to Step 129 is 11
+  implementation steps, Steps 118-128, plus post-Step-128 targeted, Windows,
+  and WSL verification. The effective distance through Step 168 is 51
+  implementation steps plus the post-Step-128 verification and the four band
+  checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -224,16 +221,15 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 112 scroll element binding has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
-- [ ] Steps 117-118 have landed the remaining planned layout primitives. Step
-  117 is feature-worktree verified but still requires commit, merge,
-  post-merge verification, and cleanup; Step 116 flex grow/shrink is already
-  merged and post-merge verified.
+- [x] Step 117 absolute positioning/insets has landed on `master` and is
+  post-merge verified on Windows and WSL Arch Linux.
+- [ ] Step 118 has landed the remaining planned layer/elevation primitive.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count from the current `master` state:
-Step 117 merge/post-merge verification plus 11 implementation steps, Steps
-118-128, plus post-Step-128 Windows/WSL verification.
+11 implementation steps, Steps 118-128, plus post-Step-128 Windows/WSL
+verification.
 
 ## Back-40 Execution Strategy
 
@@ -298,15 +294,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish Step 117 instead of starting Step
+For the current pre-back-40 state, start Step 118 instead of starting Step
 129:
 
 ```powershell
-cd .worktrees/absolute-position-insets
+git worktree add .worktrees/layer-elevation-z-order -b codex/layer-elevation-z-order master
+cd .worktrees/layer-elevation-z-order
 xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
-xmake f -c -m debug -P .
-xmake test -P .
-wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui/.worktrees/absolute-position-insets && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
 ```
 
 ## Post-Step-128 Planning Contract

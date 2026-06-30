@@ -1,5 +1,15 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Absolute Positioning And Insets Merged
+
+- After Step 117 merged, the remaining pre-back-40 gate is Steps 118-128 plus
+  post-Step-128 targeted, Windows full debug, and WSL Arch full debug
+  verification.
+- Step 118 should build on Step 117's layout substrate by adding
+  layer/elevation ordering as deterministic metadata first. Avoid changing
+  absolute child sizing or adding right/bottom anchoring unless Step 118 tests
+  explicitly require it.
+
 ## 2026-06-30 Absolute Positioning And Insets
 
 - Position and inset need to live on the final `Element`, not only on `Style`,
