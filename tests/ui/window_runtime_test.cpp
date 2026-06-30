@@ -340,6 +340,7 @@ class RecordingView final : public cgpui::View {
               model.value = 99;
             });
         removed_model = context.remove_model(model_id);
+        invalidation_after_model_remove = context.runtime.invalidation_state();
         removed_model_again = context.remove_model(model_id);
         missing_model_after_remove = context.read_model(model_id) == nullptr;
       }
@@ -806,6 +807,7 @@ class RecordingView final : public cgpui::View {
   cgpui::InvalidationState after_clear_invalidation{};
   cgpui::InvalidationState invalidation_after_subscribed_notify{};
   cgpui::InvalidationState invalidation_after_model_update{};
+  cgpui::InvalidationState invalidation_after_model_remove{};
   cgpui::InvalidationState view_context_initial_invalidation{};
   cgpui::InvalidationState view_context_after_layout_request_invalidation{};
   cgpui::InvalidationState view_context_after_clear_invalidation{};
@@ -3394,7 +3396,8 @@ int test_runtime_tracks_view_model_subscriptions() {
       fixture.view.notified_missing_entity) {
     return 190;
   }
-  if (!fixture.view.invalidation_after_subscribed_notify.layout ||
+  if (!fixture.view.invalidation_after_subscribed_notify.render ||
+      !fixture.view.invalidation_after_subscribed_notify.layout ||
       !fixture.view.invalidation_after_subscribed_notify.paint) {
     return 191;
   }
@@ -3445,7 +3448,8 @@ int test_view_context_model_helpers_create_read_update_and_remove() {
       fixture.view.update_missing_model) {
     return 256;
   }
-  if (!fixture.view.invalidation_after_model_update.layout ||
+  if (!fixture.view.invalidation_after_model_update.render ||
+      !fixture.view.invalidation_after_model_update.layout ||
       !fixture.view.invalidation_after_model_update.paint) {
     return 257;
   }
@@ -3454,9 +3458,14 @@ int test_view_context_model_helpers_create_read_update_and_remove() {
       !fixture.view.missing_model_after_remove) {
     return 258;
   }
+  if (!fixture.view.invalidation_after_model_remove.render ||
+      !fixture.view.invalidation_after_model_remove.layout ||
+      !fixture.view.invalidation_after_model_remove.paint) {
+    return 259;
+  }
   if (fixture.window.request_redraw_count != 1 ||
       fixture.renderer.begin_frame_count != 1) {
-    return 259;
+    return 260;
   }
 
   return 0;

@@ -1179,3 +1179,17 @@
   existing layout invalidation behavior, while Step 103 can formalize the
   model-driven subscribed-view invalidation contract without changing the
   observer callback shape.
+
+## 2026-06-30 Model Update Invalidates Subscribed Views
+
+- Once `View::render(ViewContext&)` is the GPUI-like element-tree authoring
+  entry point, model/entity notifications for subscribed views need render
+  invalidation, not only layout/paint invalidation. Otherwise a model update
+  can schedule a frame without rebuilding the rendered element tree.
+- `request_render()` is the narrowest existing runtime primitive for this
+  contract because it already sets render, layout, and paint invalidation and
+  schedules redraw. Reusing it keeps Step 103 small and avoids introducing a
+  separate subscribed-view invalidation queue before the view registry lands.
+- Observer callbacks remain part of `notify_entity_changed(...)`; Step 103
+  changes the invalidation level after a match, while preserving Step 102's
+  callback timing and missing-model soft-fail behavior.

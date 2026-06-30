@@ -12,18 +12,18 @@
 
 ## Current State
 
-- Steps 89-101 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-102 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 102 is implemented and feature-worktree verified in
-  `codex/model-observe-subscribe-helper`, but still needs planning-log updates,
-  a final targeted run after docs changes, commit, fast-forward merge to
-  `master`, post-merge verification, and worktree/branch cleanup.
-- `master` is at the Step 101 feature merge while Step 102 remains in its
+- Step 103 is implemented and feature-worktree verified in
+  `codex/model-update-invalidates-subscribed-views`, but still needs full
+  Windows/WSL verification, commit, fast-forward merge to `master`, post-merge
+  verification, and worktree/branch cleanup.
+- `master` is at the Step 102 feature merge while Step 103 remains in its
   feature worktree.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation slice after merging Step 102 is Step 103:
-  model update notification automatically invalidates subscribed views.
+- The next implementation slice after merging Step 103 is Step 104:
+  public `AppContext` wrapper over the app runner setup phase.
 
 ## File Map
 
@@ -108,7 +108,7 @@ Purpose: introduce the GPUI-style model and app shell needed for real applicatio
 - [x] Step 100: `ViewContext` model helpers for create, read, update, and remove.
 - [x] Step 101: weak entity/view handle primitives with soft-fail upgrade.
 - [x] Step 102: observe/subscribe callback helper for model changes.
-- [ ] Step 103: model update notification invalidates subscribed views.
+- [x] Step 103: model update notification invalidates subscribed views.
 - [ ] Step 104: public `AppContext` wrapper over app setup.
 - [ ] Step 105: `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 - [ ] Step 106: runtime root view lifecycle storage for app-opened windows.
@@ -200,7 +200,7 @@ storage before nested view/event work.
 - [x] Step 100: add `ViewContext` helpers for model create/read/update/remove.
 - [x] Step 101: add weak entity/view handles with soft-fail upgrade.
 - [x] Step 102: add model observe/subscribe callbacks.
-- [ ] Step 103: make model updates notify observers and invalidate subscribed
+- [x] Step 103: make model updates notify observers and invalidate subscribed
   views.
 - [ ] Step 104: expose an `AppContext` setup wrapper.
 - [ ] Step 105: add `WindowOptions` and `AppContext::open_window(...)`
@@ -263,23 +263,22 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 102's current feature worktree first: update planning logs, run the
-targeted Step 102 tests one more time, commit, fast-forward merge to `master`,
-rerun targeted/Windows/WSL verification on `master`, then clean up
-`.worktrees/model-observe-subscribe-helper` and
-`codex/model-observe-subscribe-helper`.
+Finish Step 103's current feature worktree first: run Windows full debug and
+WSL full debug verification, commit, fast-forward merge to `master`, rerun
+targeted/Windows/WSL verification on `master`, then clean up
+`.worktrees/model-update-invalidates-subscribed-views` and
+`codex/model-update-invalidates-subscribed-views`.
 
-Then start Step 103 in an isolated worktree:
+Then start Step 104 in an isolated worktree:
 
 ```powershell
-git worktree add .worktrees/model-update-invalidates-subscribed-views -b codex/model-update-invalidates-subscribed-views master
-xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/app-context-wrapper -b codex/app-context-wrapper master
+xmake test -P . app_runner_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
 ```
 
-Add RED tests proving `update_model(...)` and `remove_model(...)` invalidate
-subscribed views automatically after observer notification. Preserve Step
-102's observer callback behavior, then follow the standard per-step
-verification/merge workflow above.
+Add RED tests for setup callbacks receiving `AppContext` while preserving the
+existing app runner setup path or adding a source-compatible overload, then
+follow the standard per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -436,14 +435,17 @@ Status: implemented and feature-worktree verified in
 
 ### Step 103: Model Update Invalidates Subscribed Views
 
+Status: implemented and feature-worktree targeted-test verified in
+`codex/model-update-invalidates-subscribed-views`; not yet merged to `master`.
+
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests proving `update_model(...)` triggers observers and layout/paint/render invalidation for subscribed views.
-- [ ] Wire update notification to existing invalidation and redraw scheduling.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests proving `update_model(...)` and `remove_model(...)` trigger render/layout/paint invalidation for subscribed views.
+- [x] Wire update notification to render invalidation and existing redraw scheduling.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
 
 ### Step 104: AppContext Wrapper
 

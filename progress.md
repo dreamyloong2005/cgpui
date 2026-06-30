@@ -1615,6 +1615,33 @@
   `xmake test -P . window_runtime_test/default ui_header_cleanliness/default
   prelude_header_cleanliness/default` passed 3/3.
 
+## 2026-06-30 Step 103 Model Update Invalidates Subscribed Views
+
+- Merged Step 102 to `master` at `36e4445`, verified post-merge targeted tests
+  passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
+- Removed `.worktrees/model-observe-subscribe-helper` and deleted
+  `codex/model-observe-subscribe-helper`.
+- Started Step 103 in `codex/model-update-invalidates-subscribed-views` from
+  `master` at `36e4445`.
+- Baseline targeted tests passed:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED `window_runtime_test` coverage requiring subscribed model
+  `update_model(...)` and `remove_model(...)` notifications to produce
+  render/layout/paint invalidation; the RED run failed as expected because the
+  existing notification path only requested layout/paint invalidation.
+- Implemented Step 103 in `src/ui/ui.cpp` by changing matched entity/model
+  notifications from `request_layout()` to `request_render()`, preserving
+  observer callbacks and redraw scheduling while ensuring `View::render(...)`
+  is invalidated.
+- Updated the existing subscription invalidation coverage so direct
+  `notify_entity_changed(...)` also expects render/layout/paint invalidation
+  for subscribed entities.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+
 - Started Step 99: Public `Model<T>`/`Entity<T>` authoring aliases over typed
   entity ids.
 - Verified baseline targeted tests before edits:

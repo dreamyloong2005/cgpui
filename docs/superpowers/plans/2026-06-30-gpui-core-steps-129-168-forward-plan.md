@@ -17,14 +17,13 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-101 are complete on `master`.
-- Step 102 is active in `codex/model-observe-subscribe-helper` at
-  `.worktrees/model-observe-subscribe-helper`. Its RED/GREEN implementation
-  and feature-worktree Windows/WSL verification are complete, but the branch
-  still needs planning-log updates, a final targeted run after those docs
-  changes, commit, fast-forward merge to `master`, post-merge verification,
-  and worktree/branch cleanup.
-- Steps 103-128 remain covered by the detailed execution plan in
+- Steps 89-102 are complete on `master`.
+- Step 103 is active in `codex/model-update-invalidates-subscribed-views` at
+  `.worktrees/model-update-invalidates-subscribed-views`. Its RED/GREEN
+  implementation and targeted verification are complete, but the branch still
+  needs full Windows/WSL verification, commit, fast-forward merge to `master`,
+  post-merge verification, and worktree/branch cleanup.
+- Steps 104-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -108,9 +107,9 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-101 are complete on `master`; Step 102 is
-  implemented and verified in its feature worktree but not merged; Steps
-  103-108 remain.
+  Current partial status: Steps 99-102 are complete on `master`; Step 103 is
+  implemented and targeted-test verified in its feature worktree but not
+  merged; Steps 104-108 remain.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
@@ -150,11 +149,11 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, the next worktree after Step 102 cleanup is
-Step 103, not Step 129:
+For the current pre-back-40 state, the next worktree after Step 103 cleanup is
+Step 104, not Step 129:
 
 ```powershell
-git worktree add .worktrees/model-update-invalidates-subscribed-views -b codex/model-update-invalidates-subscribed-views master
+git worktree add .worktrees/app-context-wrapper -b codex/app-context-wrapper master
 ```
 
 ## Post-Step-128 Planning Contract

@@ -976,7 +976,7 @@ bool WindowRuntime::notify_entity_changed(
     }
   }
   if (notified) {
-    request_layout();
+    request_render();
   }
   return notified;
 }
