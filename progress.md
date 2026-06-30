@@ -606,6 +606,21 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 79: Element builder disabled convenience helper.
+- Added RED `element_test` coverage for `ElementBuilder::disabled()` disabling
+  a built element and composing with focusable/click wrappers without allowing
+  disabled click handling; the test failed because the helper did not exist.
+- Implemented `ElementBuilder::disabled()` as a convenience for
+  `enabled(false)`, reusing the existing enabled propagation through wrapper
+  elements.
+- Verified targeted tests: `xmake test -P . element_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 78: Element builder key handler helper.
 - Added RED `element_test` coverage for `ElementBuilder::on_key(...)` running
   only on `KeyboardKey`, passing the key and target element id into the handler,

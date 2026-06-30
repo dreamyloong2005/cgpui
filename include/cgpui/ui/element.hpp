@@ -641,6 +641,11 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder disabled() && {
+    enabled_ = false;
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder focusable() && {
     focusable_ = true;
     return std::move(*this);

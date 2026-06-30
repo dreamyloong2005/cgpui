@@ -1577,6 +1577,44 @@ int test_element_builder_applies_enabled_state_to_built_element() {
   return 0;
 }
 
+int test_element_builder_disabled_helper_disables_built_element() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box().disabled().build();
+
+  return element != nullptr && !element->enabled() ? 0 : 179;
+}
+
+int test_element_builder_disabled_helper_composes_with_wrappers() {
+  int click_count = 0;
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .focusable()
+          .on_click([&](const cgpui::ElementEventContext&) {
+            click_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .disabled()
+          .build();
+
+  const cgpui::EventResult result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+
+  if (element->enabled()) {
+    return 180;
+  }
+  if (!element->focusable()) {
+    return 181;
+  }
+  if (click_count != 0) {
+    return 182;
+  }
+  return !result.consumed && !result.cancelled ? 0 : 183;
+}
+
 int test_element_builder_focusable_helper_marks_built_element_focusable() {
   std::unique_ptr<cgpui::Element> element =
       cgpui::ElementBuilder::box().focusable().build();
@@ -2063,6 +2101,16 @@ int main() {
   }
   if (const int result =
           test_element_builder_applies_enabled_state_to_built_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_disabled_helper_disables_built_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_disabled_helper_composes_with_wrappers();
       result != 0) {
     return result;
   }

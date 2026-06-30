@@ -754,3 +754,9 @@
   element event context so author code does not need to inspect the variant.
 - Key and click handlers should remain behavior wrappers inside focusability,
   preserving `focusable()` visibility when helpers are composed.
+
+## 2026-06-30 Element Builder Disabled Helper
+
+- `ElementBuilder::disabled()` is pure authoring sugar over `enabled(false)`;
+  keeping it as a flag flip lets the existing wrapper enabled propagation
+  handle composed elements consistently.
