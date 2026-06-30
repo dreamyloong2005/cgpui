@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 112 Closeout
+
+- The后 40 步 are Steps 129-168 and remain a post-Step-128 follow-on queue, not
+  the active branch queue while Step 113-128 are still incomplete.
+- Current `master` is anchored at `ed948a7 docs: mark step 112 merged`; Step
+  113 already has a worktree at `.worktrees/scroll-routing` on
+  `codex/scroll-routing`, so the correct next action is to continue that
+  worktree's RED/GREEN cycle.
+- Step 129 is 16 implementation steps away: Steps 113-128 plus post-Step-128
+  targeted, Windows full debug, and WSL Arch full debug verification. Step 168
+  is 56 implementation steps away from current `master`, plus the four band
+  checkpoint reviews.
+- The back-40 band order remains context/entity/global/async first, keyed
+  reconciliation/widgets/style cascade second, text/font/renderer diagnostics
+  third, and Windows/Wayland platform closure plus the parity audit last.
+
+
 ## 2026-06-30 Focus Traversal
 
 - Step 111 can reuse `ElementTree::enabled_preorder_ids()` as the traversal

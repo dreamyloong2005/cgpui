@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 112 Closeout
+
+- Refreshed `task_plan.md` and
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the follow-on plan to the actual current `master` state:
+  `ed948a7 docs: mark step 112 merged`; the Step 112 feature commit remains
+  `7b5f564 feat: add scroll element binding`.
+- Recorded that Step 113 is already open in `.worktrees/scroll-routing` on
+  `codex/scroll-routing`, so future work should continue that worktree instead
+  of recreating it or starting Step 129.
+- Kept the后 40 步 as Steps 129-168 and preserved the gate: do not start Step
+  129 until Steps 113-128 are complete, merged, and verified on Windows and WSL
+  Arch Linux.
+- The remaining distance is 16 implementation steps to Step 129, Steps
+  113-128, plus post-Step-128 targeted, Windows full debug, and WSL Arch full
+  debug verification. The distance through Step 168 is 56 implementation
+  steps, Steps 113-168, plus checkpoint reviews after Steps 138, 148, 158, and
+  168.
+
+
 ## 2026-06-30 Step 111 Focus Traversal
 
 - Continued Step 111 in `.worktrees/focus-traversal` on

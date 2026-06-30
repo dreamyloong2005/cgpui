@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 112-128 remainder intact inside the
+**Architecture:** Keep the active Steps 113-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -18,9 +18,13 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-112 are complete on `master` through
-  `7b5f564 feat: add scroll element binding`.
+  `7b5f564 feat: add scroll element binding`, with the docs closeout at
+  `ed948a7 docs: mark step 112 merged`.
 - Step 112 was post-merge verified on Windows and WSL Arch Linux, and its
   feature worktree/branch have been cleaned up.
+- Step 113 is already open in `.worktrees/scroll-routing` on
+  `codex/scroll-routing`; its baseline targeted verification passed before
+  RED coverage is added.
 - Steps 113-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -33,12 +37,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`7b5f564 feat: add scroll element binding`. It is the execution plan for Steps
+`ed948a7 docs: mark step 112 merged`. It is the execution plan for Steps
 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is starting Step 113 unless the roadmap is explicitly
-reprioritized.
+implementation action is continuing the already-created Step 113 worktree
+unless the roadmap is explicitly reprioritized.
 
-- Finish the current gate first: Steps 112-128 close scroll, layout depth,
+- Finish the current gate first: Steps 113-128 close scroll, layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
   demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
@@ -228,13 +232,12 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 113 instead of starting Step
-129:
+For the current pre-back-40 state, continue the existing Step 113 worktree
+instead of starting Step 129:
 
 ```powershell
-git worktree add .worktrees/scroll-routing -b codex/scroll-routing master
+git -C .worktrees/scroll-routing status --short --branch
 xmake test -P . window_runtime_test/default scroll_test/default ui_header_cleanliness/default
-git status --short --branch
 ```
 
 ## Post-Step-128 Planning Contract
