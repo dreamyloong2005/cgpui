@@ -1577,6 +1577,69 @@ int test_element_builder_applies_enabled_state_to_built_element() {
   return 0;
 }
 
+int test_element_builder_click_handler_runs_on_pointer_press() {
+  int click_count = 0;
+  cgpui::ElementId clicked_element_id{};
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .on_click([&](const cgpui::ElementEventContext& context) {
+            click_count += 1;
+            clicked_element_id = context.target_element_id;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{35});
+
+  const cgpui::EventResult press_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+  const cgpui::EventResult release_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+
+  if (click_count != 1 || clicked_element_id != cgpui::ElementId{35}) {
+    return 160;
+  }
+  if (!press_result.consumed || press_result.cancelled) {
+    return 161;
+  }
+  return !release_result.consumed && !release_result.cancelled ? 0 : 162;
+}
+
+int test_element_builder_click_handler_respects_disabled_state() {
+  int click_count = 0;
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .enabled(false)
+          .on_click([&](const cgpui::ElementEventContext&) {
+            click_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  element->assign_id(cgpui::ElementId{36});
+
+  const cgpui::EventResult result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = element->id()});
+
+  if (element->enabled()) {
+    return 163;
+  }
+  if (click_count != 0) {
+    return 164;
+  }
+  return !result.consumed && !result.cancelled ? 0 : 165;
+}
+
 int test_styled_element_forwards_events_to_child() {
   auto child = std::make_unique<EventCountingElement>();
   EventCountingElement* child_ptr = child.get();
@@ -1884,6 +1947,16 @@ int main() {
   }
   if (const int result =
           test_element_builder_applies_enabled_state_to_built_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_click_handler_runs_on_pointer_press();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_click_handler_respects_disabled_state();
       result != 0) {
     return result;
   }

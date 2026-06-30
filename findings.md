@@ -725,3 +725,15 @@
   `PointerCaptureOwner` tagged owner.
 - The overloads are intentionally additive: existing `PointerCaptureOwner`
   calls remain available for view-level capture and explicit owner matching.
+
+## 2026-06-30 Element Builder Click Handler
+
+- Builder-level click handling can be implemented as an opt-in wrapper element,
+  preserving existing dynamic-cast expectations for elements built without a
+  click handler.
+- The wrapper should preserve child layout, paint, and hit-test behavior, while
+  consuming pointer-press handling through the attached handler before falling
+  back to the child for other events.
+- Wrapper elements created by builder helpers must mirror the builder's
+  enabled state on the wrapper itself, not only on the wrapped child, because
+  direct event dispatch sees the outer element first.

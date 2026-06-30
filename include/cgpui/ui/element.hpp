@@ -8,10 +8,12 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 namespace cgpui {
@@ -48,6 +50,8 @@ struct ElementEventContext {
 struct ElementFocusContext {
   ElementId element_id;
 };
+
+using ClickHandler = std::function<EventResult(const ElementEventContext&)>;
 
 class Element {
  public:
@@ -417,6 +421,67 @@ class TextElement : public Element {
   TextModel* model_ = nullptr;
 };
 
+class ClickElement : public Element {
+ public:
+  ClickElement(std::unique_ptr<Element> child, ClickHandler handler)
+      : child_(std::move(child)),
+        handler_(std::move(handler)) {}
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    if (child_) {
+      const LayoutOutput output = child_->layout(input);
+      child_->set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      set_layout_bounds(Rect{
+          .origin = output.origin,
+          .size = output.size,
+      });
+      return output;
+    }
+    return Element::layout(input);
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override {
+    if (child_) {
+      child_->paint(paint_list);
+    }
+  }
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    if (!enabled()) {
+      return EventResult::unhandled();
+    }
+    if (const auto* pointer_button = std::get_if<PointerButton>(&event);
+        pointer_button != nullptr && pointer_button->pressed && handler_) {
+      return handler_(context);
+    }
+    return child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
+  }
+
+ private:
+  std::unique_ptr<Element> child_;
+  ClickHandler handler_;
+};
+
 class ElementBuilder {
  public:
   [[nodiscard]] static ElementBuilder box() {
@@ -454,6 +519,11 @@ class ElementBuilder {
 
   [[nodiscard]] ElementBuilder enabled(bool value) && {
     enabled_ = value;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder on_click(ClickHandler handler) && {
+    click_handler_ = std::move(handler);
     return std::move(*this);
   }
 
@@ -510,6 +580,12 @@ class ElementBuilder {
   [[nodiscard]] std::unique_ptr<Element> finish(
       std::unique_ptr<Element> element) const {
     element->set_enabled(enabled_);
+    if (click_handler_) {
+      auto click_element =
+          std::make_unique<ClickElement>(std::move(element), click_handler_);
+      click_element->set_enabled(enabled_);
+      return click_element;
+    }
     return element;
   }
 
@@ -518,6 +594,7 @@ class ElementBuilder {
   Size size_;
   TextModel* text_model_ = nullptr;
   bool enabled_ = true;
+  ClickHandler click_handler_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 
