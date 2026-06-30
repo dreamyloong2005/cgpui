@@ -14,7 +14,8 @@
 
 - Steps 89-117 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `210c85d feat: add absolute positioning insets`.
+- `master` is at `c3b6ecb docs: mark step 117 merged`; the Step 117 feature
+  commit is `210c85d feat: add absolute positioning insets`.
 - Step 117 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 118, layer/elevation style primitive, is the next active implementation

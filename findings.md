@@ -1,5 +1,20 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Back-40 Planning After Step 117 Docs Closeout
+
+- The后 40 步 remain Steps 129-168 and should not preempt the active Step
+  118-128 queue.
+- The current planning anchor is `c3b6ecb docs: mark step 117 merged`; use
+  `210c85d feat: add absolute positioning insets` only as the Step 117 feature
+  commit reference.
+- The remaining route to Step 129 is 11 implementation steps, Steps 118-128,
+  plus post-Step-128 targeted verification, Windows full debug, WSL Arch full
+  debug, and a clean tracked/staged worktree.
+- The back-40 plan now explicitly records Steps 115 and 116 as gate-complete
+  alongside Step 117. This matters because Steps 139-148 widget work and
+  Steps 149-158 rendering work depend on the full flex/alignment/grow/shrink/
+  absolute/layer layout substrate being complete before Step 129 starts.
+
 ## 2026-06-30 Absolute Positioning And Insets Merged
 
 - After Step 117 merged, the remaining pre-back-40 gate is Steps 118-128 plus

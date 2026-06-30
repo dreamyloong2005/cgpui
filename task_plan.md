@@ -99,7 +99,8 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `210c85d feat: add absolute positioning insets`:
+pre-back-40 handoff state at `c3b6ecb docs: mark step 117 merged`; the Step
+117 feature commit remains `210c85d feat: add absolute positioning insets`.
 Steps 89-117 are merged and post-merge verified on Windows and WSL Arch Linux,
 and Step 129 remains gated behind completion and Windows/WSL verification of
 Steps 118-128.
@@ -323,7 +324,8 @@ have been removed.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, Step 129 start
-packet, and band checkpoints after Steps 138, 148, 158, and 168. Step 129
+packet, band checkpoints after Steps 138, 148, 158, and 168, and an execution
+gate that records Steps 115-117 as merged and post-merge verified. Step 129
 remains gated behind completion plus Windows/WSL verification of Steps
 118-128.
 

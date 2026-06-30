@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 117-128 remainder intact inside the
+**Architecture:** Keep the active Steps 118-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -18,6 +18,7 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-117 are complete on `master` through
+  `c3b6ecb docs: mark step 117 merged`; the Step 117 feature commit is
   `210c85d feat: add absolute positioning insets`.
 - Step 117 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
@@ -37,12 +38,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`210c85d feat: add absolute positioning insets`. It is the execution plan for
+`c3b6ecb docs: mark step 117 merged`. It is the execution plan for
 Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
 implementation action is Step 118, layer/elevation style primitive, unless the
 roadmap is explicitly reprioritized.
 
-- Finish the current gate first: Steps 117-128 close layout depth,
+- Finish the current gate first: Steps 118-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
   demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
@@ -171,7 +172,7 @@ Keep these out of Steps 129-168 unless the roadmap is explicitly rewritten:
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 117-128 are still incomplete:
+second active branch while Steps 118-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -221,6 +222,8 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 112 scroll element binding has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
+- [x] Step 115 flex alignment/justification has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
+- [x] Step 116 flex grow/shrink has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 117 absolute positioning/insets has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
 - [ ] Step 118 has landed the remaining planned layer/elevation primitive.

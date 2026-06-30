@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Back-40 Planning After Step 117 Docs Closeout
+
+- Refreshed the post-Step-128 follow-on plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Anchored the plan to the actual current `master` head:
+  `c3b6ecb docs: mark step 117 merged`; the Step 117 feature commit remains
+  `210c85d feat: add absolute positioning insets`.
+- Corrected the active gate wording from Steps 117-128 to Steps 118-128, since
+  Step 117 has already been merged and post-merge verified on Windows and WSL
+  Arch Linux.
+- Added explicit Step 115 and Step 116 completed gate entries in the follow-on
+  plan so the transition into Step 129 accurately records the full layout
+  depth already landed on `master`.
+- Updated `task_plan.md` and the 89-128 execution plan with the same current
+  state. Step 118 remains the next implementation action; Step 129 stays
+  gated behind Steps 118-128 plus post-Step-128 Windows and WSL verification.
+
 ## 2026-06-30 Step 117 Post-Merge
 
 - Committed Step 117 as `210c85d feat: add absolute positioning insets` from
