@@ -12,15 +12,12 @@
 
 ## Current State
 
-- Steps 89-103 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-104 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 104 is implemented and verified in `codex/app-context-wrapper` at
-  `.worktrees/app-context-wrapper`; it still needs commit, fast-forward merge
-  to `master`, post-merge verification, and worktree/branch cleanup.
-- `master` is at `4c27127 docs: refresh post-128 planning after step 103`.
+- `master` is at `8c8dc90 feat: add app context setup wrapper`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- The next implementation slice after merging Step 104 is Step 105:
+- The next implementation slice is Step 105:
   `WindowOptions` builder and `AppContext::open_window(...)` skeleton.
 
 ## File Map
@@ -261,11 +258,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 104's current feature worktree first: commit, fast-forward merge
-to `master`, rerun targeted/Windows/WSL verification on `master`, then clean
-up `.worktrees/app-context-wrapper` and `codex/app-context-wrapper`.
-
-Then start Step 105 in an isolated worktree:
+Start Step 105 in an isolated worktree:
 
 ```powershell
 git worktree add .worktrees/window-options-open-window -b codex/window-options-open-window master
@@ -443,8 +436,7 @@ Status: complete on `master` after the Step 103 merge.
 
 ### Step 104: AppContext Wrapper
 
-Status: implemented and feature-worktree verified in
-`codex/app-context-wrapper`; not yet merged to `master`.
+Status: complete on `master` after the Step 104 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`

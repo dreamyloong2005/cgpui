@@ -17,12 +17,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-103 are complete on `master` at
-  `5949c84 feat: render-invalidate subscribed model changes` and were
+- Steps 89-104 are complete on `master` at
+  `8c8dc90 feat: add app context setup wrapper` and were
   post-merge verified on Windows and WSL Arch Linux.
-- Step 104 is implemented and verified in `codex/app-context-wrapper` at
-  `.worktrees/app-context-wrapper`; it still needs commit, fast-forward merge
-  to `master`, post-merge verification, and worktree/branch cleanup.
 - Steps 105-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
@@ -107,8 +104,7 @@ Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-103 are complete on `master`; Step 104 is
-  implemented and feature-worktree verified but not yet merged; Steps 105-108
+  Current partial status: Steps 99-104 are complete on `master`; Steps 105-108
   remain.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
@@ -149,12 +145,10 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish and merge the existing Step 104
-worktree instead of starting Step 129:
+For the current pre-back-40 state, start Step 105 instead of starting Step 129:
 
 ```powershell
-cd .worktrees/app-context-wrapper
-git status --short --branch
+git worktree add .worktrees/window-options-open-window -b codex/window-options-open-window master
 ```
 
 ## Post-Step-128 Planning Contract

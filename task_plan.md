@@ -101,7 +101,7 @@ RED test intent, targeted commands, and Windows/WSL verification matrix for
 all 40 follow-on steps.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current active Step 104 unless the plan is explicitly reprioritized.
+the current active Step 105 unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -290,8 +290,8 @@ Before Step 92 starts, finish the Step 91 post-merge WSL full debug run on
 
 ## Active Step
 
-Step 104 is complete in the active feature worktree. Next implementation step
-after merging Step 104 is Step 105:
+Step 104 is complete, merged to `master`, and post-merge verified on Windows
+and WSL Arch Linux. Next implementation step is Step 105:
 `WindowOptions` builder and `AppContext::open_window(...)` helper skeleton.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168, but Step 129 remains
