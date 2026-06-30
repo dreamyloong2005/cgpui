@@ -12,16 +12,15 @@
 
 ## Current State
 
-- Steps 89-113 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-114 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `2251d44 docs: mark step 113 merged`; the Step 113
-  behavior commit is `7a2ef39 feat: route scroll events to scroll state`.
-- The Step 113 worktree `.worktrees/scroll-routing` and branch
-  `codex/scroll-routing` have been cleaned up.
-- Step 114 is implemented and feature-worktree verified in
-  `.worktrees/hidden-overflow-hit-testing` on
-  `codex/hidden-overflow-hit-testing`; after merge, the next implementation
-  slice is Step 115: flex alignment and justification primitives.
+- `master` includes `d78a017 feat: clip hidden overflow hit testing`; the Step
+  113 behavior commit remains `7a2ef39 feat: route scroll events to scroll
+  state`.
+- The Step 114 worktree `.worktrees/hidden-overflow-hit-testing` has been
+  deregistered and its branch `codex/hidden-overflow-hit-testing` deleted.
+- The next implementation slice is Step 115: flex alignment and justification
+  primitives.
 
 ## File Map
 
@@ -167,9 +166,8 @@ Acceptance at the end of Band D:
 
 ## Remaining Execution Queue From Step 115
 
-This is the practical remaining sequence after Step 114. Steps 89-113 are kept
-as completed foundation, and Step 114 is implemented and feature-worktree
-verified; the active remaining queue after merge is Steps 115-128.
+This is the practical remaining sequence after Step 114. Steps 89-114 are kept
+as completed foundation; the active remaining queue is Steps 115-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -262,18 +260,15 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Commit, fast-forward merge, post-merge verify, and clean up Step 114 from the
-existing isolated worktree:
+Start Step 115 in a fresh isolated worktree:
 
 ```powershell
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
-git checkout master
-git merge --ff-only codex/hidden-overflow-hit-testing
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
+git worktree add .worktrees/flex-alignment-justification -b codex/flex-alignment-justification master
+xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
-After the post-merge Windows and WSL verification passes, start Step 115 in a
-fresh `codex/flex-alignment-justification` worktree.
+Add RED tests for `AlignItems`, `JustifyContent`, and row/column child origin
+behavior, then follow the standard per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -571,9 +566,8 @@ Status: complete on `master` after the Step 109 merge.
 
 ### Step 114: Hidden Overflow Hit Testing
 
-Status: implemented and feature-worktree verified in
-`.worktrees/hidden-overflow-hit-testing` on
-`codex/hidden-overflow-hit-testing`; merge and post-merge verification remain.
+Status: complete on `master` at
+`d78a017 feat: clip hidden overflow hit testing`.
 
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`

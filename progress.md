@@ -1,5 +1,29 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 114 Post-Merge
+
+- Committed Step 114 as
+  `d78a017 feat: clip hidden overflow hit testing` from
+  `.worktrees/hidden-overflow-hit-testing` on
+  `codex/hidden-overflow-hit-testing`.
+- Fast-forward merged Step 114 to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P . && xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- `git worktree remove` deregistered the Step 114 worktree, and
+  `codex/hidden-overflow-hit-testing` was deleted. A Windows file handle still
+  temporarily holds the now-empty `.worktrees/hidden-overflow-hit-testing`
+  directory, so it remains as an empty local cleanup residue outside Git's
+  worktree list.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan after merge so the current active implementation step is Step
+  115: flex alignment and justification primitives.
+
 ## 2026-06-30 Step 114 Hidden Overflow Hit Testing
 
 - Continued Step 114 in `.worktrees/hidden-overflow-hit-testing` on

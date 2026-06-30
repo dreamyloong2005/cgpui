@@ -99,18 +99,15 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff state at `2251d44 docs: mark step 113 merged`, with the
-Step 113 behavior commit at `7a2ef39 feat: route scroll events to scroll
-state`: Steps 89-113 are merged and post-merge verified on Windows and WSL Arch
-Linux, Step 114 is implemented and feature-worktree verified in
-`.worktrees/hidden-overflow-hit-testing`, and Step 129 remains gated behind
-completion and Windows/WSL verification of Steps 115-128 after Step 114 merges.
+pre-back-40 handoff state at `d78a017 feat: clip hidden overflow hit testing`:
+Steps 89-114 are merged and post-merge verified on Windows and WSL Arch Linux,
+and Step 129 remains gated behind completion and Windows/WSL verification of
+Steps 115-128.
 
-After the Step 114 feature branch merges, the effective distance to Step 129 is
-14 implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows,
-and WSL verification. The effective distance through Step 168 is 54
-implementation steps, Steps 115-168, plus the four follow-on band checkpoint
-reviews.
+From the current `master` state, the effective distance to Step 129 is 14
+implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows, and
+WSL verification. The effective distance through Step 168 is 54 implementation
+steps, Steps 115-168, plus the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current Step 114-128 queue unless the plan is explicitly reprioritized.
@@ -298,19 +295,15 @@ the current Step 114-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 114, hidden overflow participates in hit testing, is implemented and
-verified in `.worktrees/hidden-overflow-hit-testing` on
-`codex/hidden-overflow-hit-testing`. The RED targeted run failed as expected in
-`element_test/default` and `window_runtime_test/default`; after GREEN, targeted
-tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
-debug passed 26/26. The next action is to commit Step 114, fast-forward merge
-it to `master`, run post-merge verification, clean up the worktree/branch, and
-then start Step 115: flex alignment and justification primitives.
+Step 114, hidden overflow participates in hit testing, is merged to `master`
+with behavior commit `d78a017 feat: clip hidden overflow hit testing`,
+post-merge targeted tests passed 3/3, Windows full debug passed 29/29, and WSL
+Arch Linux full debug passed 26/26. The next implementation step is Step 115:
+flex alignment and justification primitives.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated
-behind completion and Windows/WSL verification of Steps 115-128 after Step 114
-merges.
+behind completion and Windows/WSL verification of Steps 115-128.
 
 ## Risks
 

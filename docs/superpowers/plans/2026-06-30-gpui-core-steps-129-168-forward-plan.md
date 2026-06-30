@@ -17,17 +17,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-113 are complete on `master` through
-  `2251d44 docs: mark step 113 merged`.
-- Step 113's behavior commit is
-  `7a2ef39 feat: route scroll events to scroll state`; it was post-merge
-  verified on Windows and WSL Arch Linux, and its feature worktree/branch have
-  been cleaned up.
-- Step 114 is implemented and feature-worktree verified in
-  `.worktrees/hidden-overflow-hit-testing` on
-  `codex/hidden-overflow-hit-testing`; after Step 114 merges, Steps 115-128
-  remain the active gate before this follow-on plan. They are covered by the
-  detailed execution plan in
+- Steps 89-114 are complete on `master` through
+  `d78a017 feat: clip hidden overflow hit testing`.
+- Step 114 was post-merge verified on Windows and WSL Arch Linux, and its
+  feature branch `codex/hidden-overflow-hit-testing` has been deleted.
+- Steps 115-128 remain the active gate before this follow-on plan. They are
+  covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -38,13 +33,12 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`2251d44 docs: mark step 113 merged`. It is the execution plan for Steps
-129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is merging and post-merge verifying Step 114 unless the
-roadmap is explicitly reprioritized.
+`d78a017 feat: clip hidden overflow hit testing`. It is the execution plan for
+Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
+implementation action is starting Step 115 unless the roadmap is explicitly
+reprioritized.
 
-- Finish the current gate first: Step 114 is implemented and awaiting merge;
-  Steps 115-128 close layout depth,
+- Finish the current gate first: Steps 115-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
   demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
@@ -54,9 +48,9 @@ roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- After the Step 114 feature branch merges, the effective distance to Step 129
-  is 14 implementation steps, Steps 115-128, plus post-Step-128 targeted,
-  Windows, and WSL verification. The effective distance through Step 168 is 54
+- From the current `master` state, the effective distance to Step 129 is 14
+  implementation steps, Steps 115-128, plus post-Step-128 targeted, Windows,
+  and WSL verification. The effective distance through Step 168 is 54
   implementation steps, Steps 115-168, plus the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
@@ -115,8 +109,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 115-128 are still incomplete after Step 114
-merges:
+second active branch while Steps 115-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -165,13 +158,13 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 111 focus traversal has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 112 scroll element binding has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
-- [ ] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
+- [x] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [ ] Steps 115-118 have landed the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count after the Step 114 merge: 14 steps,
-Steps 115-128, plus post-Step-128 Windows/WSL verification.
+Remaining pre-back-40 implementation count from the current `master` state: 14
+steps, Steps 115-128, plus post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 
@@ -236,13 +229,11 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish Step 114 merge and post-merge
-verification instead of starting Step 129:
+For the current pre-back-40 state, start Step 115 instead of starting Step 129:
 
 ```powershell
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default
-git checkout master
-git merge --ff-only codex/hidden-overflow-hit-testing
+git worktree add .worktrees/flex-alignment-justification -b codex/flex-alignment-justification master
+xmake test -P . style_test/default element_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract
