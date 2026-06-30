@@ -717,3 +717,11 @@
 - Keeping the long `request_keyboard_focus(ElementId)` APIs alongside the short
   helpers preserves compatibility while giving author code a more GPUI-like
   spelling for common element focus flows.
+
+## 2026-06-30 ViewContext Pointer Capture Element Helpers
+
+- Element pointer capture should be authorable with an `ElementId` overload on
+  `ViewContext`, while the runtime continues storing the existing
+  `PointerCaptureOwner` tagged owner.
+- The overloads are intentionally additive: existing `PointerCaptureOwner`
+  calls remain available for view-level capture and explicit owner matching.

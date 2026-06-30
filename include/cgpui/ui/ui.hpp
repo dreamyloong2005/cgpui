@@ -209,7 +209,9 @@ struct WindowRuntimeContext {
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   void capture_pointer(PointerCaptureOwner owner) const;
+  void capture_pointer(ElementId element_id) const;
   void release_pointer(PointerCaptureOwner owner) const;
+  void release_pointer(ElementId element_id) const;
   void request_keyboard_focus() const;
   void request_keyboard_focus(ViewId view_id) const;
   void request_keyboard_focus(ElementId element_id) const;

@@ -603,6 +603,23 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 75: ViewContext pointer capture element helpers.
+- Added RED `window_runtime_test` coverage for capturing and releasing pointer
+  ownership by passing an `ElementId` directly to `ViewContext::capture_pointer`
+  and `release_pointer`; the test failed to compile because only
+  `PointerCaptureOwner` overloads existed.
+- Implemented Step 75 in `codex/view-context-pointer-capture-element-helpers`:
+  added `WindowRuntimeContext::capture_pointer(ElementId)` and
+  `release_pointer(ElementId)` overloads that wrap
+  `PointerCaptureOwner::element`.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 64: Element enabled/disabled state primitive.
 - Added RED `element_test` coverage for default-enabled elements that can be
   toggled and for `ElementBuilder::enabled(...)` applying state to built

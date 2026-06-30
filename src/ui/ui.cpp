@@ -921,8 +921,16 @@ void WindowRuntimeContext::capture_pointer(PointerCaptureOwner owner) const {
   runtime.capture_pointer(owner);
 }
 
+void WindowRuntimeContext::capture_pointer(ElementId element_id) const {
+  runtime.capture_pointer(PointerCaptureOwner::element(element_id));
+}
+
 void WindowRuntimeContext::release_pointer(PointerCaptureOwner owner) const {
   runtime.release_pointer(owner);
+}
+
+void WindowRuntimeContext::release_pointer(ElementId element_id) const {
+  runtime.release_pointer(PointerCaptureOwner::element(element_id));
 }
 
 void WindowRuntimeContext::request_keyboard_focus() const {
