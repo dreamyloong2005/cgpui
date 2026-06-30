@@ -96,6 +96,9 @@ Detailed execution plan:
 
 Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
+That plan now includes the post-Step-128 entry contract, branch slugs, first
+RED test intent, targeted commands, and Windows/WSL verification matrix for
+all 40 follow-on steps.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current active Step 98 unless the plan is explicitly reprioritized.

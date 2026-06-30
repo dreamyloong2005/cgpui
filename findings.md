@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Steps 129-168 Execution Matrix
+
+- The follow-on 40 steps should start only after Step 128 has a clean
+  post-merge Windows and WSL baseline; otherwise context/widget/platform work
+  will sit on top of unstable render, model, routing, text, or demo surfaces.
+- The useful next level of planning detail is operational rather than more
+  conceptual: each step now has a branch slug, first RED test intent, and
+  targeted command so the existing RED/GREEN/merge cadence can continue
+  without re-deciding the shape of the step every turn.
+- All Steps 129-168 should keep WSL Arch full debug in the per-step definition
+  of done, including Win32-looking steps, because these slices almost always
+  introduce shared public headers, runtime contracts, or platform-neutral event
+  data consumed by the Linux/Wayland path.
+- The dependency order should stay banded: context/entity/global/async before
+  widgets, keyed/lifecycle/style/focus/widgets before renderer text depth,
+  renderer/text/diagnostics before platform completion and the final parity
+  audit.
+
 ## 2026-06-30 Runtime Render Pass
 
 - The narrow Step 97 integration point is `WindowRuntime::handle_redraw()`:

@@ -62,6 +62,108 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
+## Post-Step-128 Planning Contract
+
+When Step 128 is merged, do this before starting Step 129:
+
+- [ ] Confirm `master` contains the Step 128 merge and that `git status --short --branch` reports no tracked or staged changes.
+- [ ] Run the Step 128 exit verification on `master`:
+  `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`.
+- [ ] Run Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [ ] Run WSL Arch full debug on `master`:
+  `wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [ ] Update `task_plan.md` so Step 128 is complete and Step 129 is the active step.
+- [ ] Start Step 129 from a fresh worktree:
+  `git worktree add .worktrees/context-authoring-alias -b codex/context-authoring-alias master`.
+
+Keep these 40 steps sequential by default. A later step may be split if its RED
+test reveals a larger dependency, but do not combine adjacent steps just
+because they touch the same files. The point of this queue is to preserve the
+small RED/GREEN/merge cadence that has kept the Windows and WSL suites stable.
+
+## Step-by-Step Execution Matrix
+
+This matrix is the operational queue for the follow-on 40 steps. The detailed
+notes below remain the source of file-level scope; this table pins down the
+branch names, first RED test intent, and targeted verification command.
+
+| Step | Branch slug | First RED test intent | Targeted verification |
+| --- | --- | --- | --- |
+| 129 | `context-authoring-alias` | `test_context_alias_exposes_view_context_helpers` compiles `Context<T>` and calls existing context helpers. | `xmake test -P . window_runtime_test/default prelude_header_cleanliness/default` |
+| 130 | `entity-handle-convenience` | `test_entity_handle_read_update_and_downgrade` covers handle read/update/weak conversion. | `xmake test -P . entity_store_test/default window_runtime_test/default` |
+| 131 | `global-app-state-registry` | `test_app_context_global_state_helpers` stores, reads, and updates typed globals. | `xmake test -P . app_runner_test/default window_runtime_test/default` |
+| 132 | `scoped-action-registry` | `test_scoped_actions_resolve_in_specificity_order` verifies app/window/view/focused-element action precedence. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 133 | `subscription-token-lifetime` | `test_subscription_token_disconnects_on_release` proves dropped tokens stop observer callbacks. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 134 | `deferred-callback-queue` | `test_defer_runs_after_current_event_before_redraw` verifies FIFO post-event work. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 135 | `runtime-timer-api` | `test_one_shot_and_repeating_timers_tick_deterministically` drives fake timer ticks. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 136 | `async-task-completion` | `test_async_task_completion_dispatches_on_runtime_queue` injects completion and observes main-thread callback. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 137 | `runtime-update-batching` | `test_model_and_global_updates_coalesce_one_redraw` counts redraw scheduling across a batch. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 138 | `runtime-diagnostics-snapshot` | `test_diagnostics_reports_entities_subscriptions_invalidations_and_frames` snapshots runtime state. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 139 | `keyed-element-identity` | `test_keyed_children_preserve_ids_across_reorder` proves keyed reconciliation beats index matching. | `xmake test -P . element_test/default ui_header_cleanliness/default` |
+| 140 | `element-lifecycle-hooks` | `test_element_lifecycle_mount_update_unmount` records lifecycle callbacks during reconciliation. | `xmake test -P . element_test/default ui_header_cleanliness/default` |
+| 141 | `element-state-storage` | `test_element_state_survives_keyed_reconcile` stores typed state by element id. | `xmake test -P . element_test/default window_runtime_test/default` |
+| 142 | `style-classes-theme-tokens` | `test_style_classes_and_theme_tokens_are_public_vocabulary` covers ids and token lookup. | `xmake test -P . style_test/default prelude_header_cleanliness/default` |
+| 143 | `style-cascade-resolution` | `test_style_cascade_merges_base_class_state_and_inline` fixes cascade order. | `xmake test -P . style_test/default element_test/default` |
+| 144 | `focus-handle-primitive` | `test_focus_handle_requests_releases_and_queries_focus` wraps current focus APIs. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 145 | `button-widget-primitive` | `test_button_widget_focus_click_action_and_disabled_state` composes public primitives into a button. | `xmake test -P . element_test/default window_runtime_test/default` |
+| 146 | `label-widget-primitive` | `test_label_widget_emits_text_paint_with_style` verifies label text command metadata. | `xmake test -P . element_test/default ui_header_cleanliness/default` |
+| 147 | `text-input-widget-primitive` | `test_text_input_widget_integrates_focus_edit_clipboard_and_ime_geometry` exercises the full text input path. | `xmake test -P . element_test/default window_runtime_test/default text_model_test/default` |
+| 148 | `scrollable-list-container` | `test_scrollable_list_uses_keys_scroll_offset_and_clip_metadata` covers list viewport behavior. | `xmake test -P . element_test/default scroll_test/default` |
+| 149 | `font-database-skeleton` | `test_font_database_descriptor_and_fake_discovery` keeps discovery deterministic. | `xmake test -P . text_model_test/default win32_text_input_test/default` |
+| 150 | `text-shaping-runs` | `test_text_shaping_run_fallback_metrics_are_deterministic` creates shaping metadata without HarfBuzz. | `xmake test -P . text_model_test/default element_test/default` |
+| 151 | `glyph-cache-interface` | `test_glyph_cache_records_hits_misses_and_text_metadata` defines renderer-facing cache contracts. | `xmake test -P . element_test/default vulkan_solid_rect_test/default` |
+| 152 | `vulkan-text-draw-path` | `test_vulkan_accepts_text_draw_commands_with_cached_glyphs` routes text commands through Vulkan test doubles. | `xmake test -P . vulkan_solid_rect_test/default` |
+| 153 | `opacity-transform-metadata` | `test_opacity_and_transform_reach_paint_commands` propagates style metadata. | `xmake test -P . style_test/default element_test/default` |
+| 154 | `renderer-command-batching` | `test_renderer_batches_by_clip_opacity_transform_and_kind` verifies stable batching keys. | `xmake test -P . vulkan_solid_rect_test/default` |
+| 155 | `frame-statistics-diagnostics` | `test_frame_statistics_report_render_layout_paint_and_command_counts` extends diagnostics. | `xmake test -P . window_runtime_test/default` |
+| 156 | `hidpi-scale-propagation` | `test_hidpi_scale_flows_to_layout_text_and_renderer_resize` keeps logical pixels stable. | `xmake test -P . layout_test/default window_runtime_test/default` |
+| 157 | `paint-command-snapshots` | `test_demo_and_widgets_emit_stable_paint_snapshots` adds deterministic command serializers. | `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default` |
+| 158 | `renderer-unsupported-diagnostics` | `test_unsupported_renderer_commands_record_explicit_diagnostics` prevents silent drops. | `xmake test -P . vulkan_solid_rect_test/default` |
+| 159 | `multi-window-runtime-registry` | `test_multi_window_registry_owns_independent_runtime_records` covers per-window roots/renderers. | `xmake test -P . app_runner_test/default` |
+| 160 | `window-lifecycle-events` | `test_window_lifecycle_events_update_dispatch_records` covers activate/focus/minimize/restore/close. | `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` |
+| 161 | `win32-ime-placement` | `test_win32_ime_placement_uses_focused_text_geometry` wires candidate geometry to Win32 hooks. | `xmake test -P . win32_text_input_test/default window_runtime_test/default` |
+| 162 | `wayland-text-input-ime` | `test_wayland_text_input_skeleton_consumes_focused_geometry` keeps unsupported behavior graceful. | `xmake test -P . wayland_keyboard_test/default window_runtime_test/default` |
+| 163 | `win32-drag-drop-skeleton` | `test_win32_drag_drop_events_have_text_and_file_payload_shapes` defines Win32 DnD events. | `xmake test -P . win32_input_event_test/default` |
+| 164 | `wayland-data-device-dnd` | `test_wayland_data_device_drag_drop_events_soft_fail_without_data` defines Wayland DnD events. | `xmake test -P . wayland_pointer_button_test/default` |
+| 165 | `platform-event-loop-wakeup` | `test_runtime_async_timer_and_defer_request_platform_wakeup` bridges runtime queues to platforms. | `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_keyboard_test/default` |
+| 166 | `accessibility-tree-skeleton` | `test_accessibility_tree_reports_roles_names_and_focus_state` exposes platform-neutral a11y snapshots. | `xmake test -P . element_test/default window_runtime_test/default` |
+| 167 | `windows-linux-demo-smoke` | `test_demo_smoke_covers_window_input_text_clipboard_redraw_and_close` validates the public demo path. | `xmake test -P . hello_window_lifetime_test/default` |
+| 168 | `gpui-core-api-parity-audit` | `test_gpui_core_api_parity_audit_lists_completed_partial_missing_and_deferred` closes the milestone. | `xmake test -P . desktop_target_readiness_test/default` |
+
+## Verification Matrix
+
+Use targeted tests before every commit. After each feature branch goes GREEN,
+run the full platform matrix before merging and again on `master` after the
+fast-forward merge:
+
+- Windows full debug is mandatory for every step:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- WSL Arch full debug is mandatory for every step because all 40 follow-on
+  steps touch shared public APIs, UI/runtime behavior, renderer command
+  contracts, or Win32/Wayland platform boundaries.
+- Platform-specific steps still run their opposite-platform smoke coverage when
+  a shared header changes. For example, Step 161 is Win32 IME placement, but it
+  still needs WSL full debug because the focused-text geometry API is shared.
+- If a platform target is not available in the current xmake configuration, log
+  the skipped target and reason in `progress.md`, then run the full suite that
+  is available. Do not mark the step complete until the skipped target is
+  either restored or explicitly accepted as a temporary environment issue.
+
+## Dependency Notes
+
+- Steps 129-138 must land before widget work because widgets need stable
+  context, entity/global state, scoped action, subscription, deferred, timer,
+  async, batching, and diagnostics APIs.
+- Steps 139-148 must land before the renderer/text deepening band because text
+  commands and snapshots need keyed state, lifecycle hooks, style cascade,
+  focus handles, and real widgets to produce representative command streams.
+- Steps 149-158 must land before platform completion because IME placement,
+  accessibility, smoke tests, and API parity need text geometry, glyph metadata,
+  renderer diagnostics, HiDPI scale, and unsupported-command reporting.
+- Steps 159-168 close the Windows/Linux loop. Keep macOS/Metal as a handoff
+  boundary in Step 168; do not pull it into the active verification definition.
+
 ## Milestone Bands
 
 ### Band E: Context, Entity, Global State, and Async, Steps 129-138

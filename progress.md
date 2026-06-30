@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Steps 129-168 Execution Matrix Refresh
+
+- Expanded
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  from a forward roadmap into an execution-ready plan for the follow-on 40
+  steps after Step 128.
+- Added the post-Step-128 entry contract: confirm Step 128 on `master`, run
+  targeted Step 128 exit verification, Windows full debug, WSL Arch full debug,
+  update the active step to Step 129, and create the first follow-on worktree
+  `codex/context-authoring-alias`.
+- Added a Step 129-168 execution matrix with branch slugs, first RED test
+  intents, and targeted verification commands for every follow-on step.
+- Added the verification matrix requiring Windows full debug and WSL Arch full
+  debug for each follow-on step, with explicit logging requirements for any
+  temporary environment skip.
+- Kept the active implementation step unchanged: Step 98 remains next.
+
 ## 2026-06-30 Step 97 Runtime Render Pass
 
 - Started Step 97 in `codex/runtime-render-pass` from `master` at `b17d261`.
