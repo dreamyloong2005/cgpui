@@ -237,7 +237,7 @@ the current Step 111-128 queue unless the plan is explicitly reprioritized.
 108. [x] Child-view element placeholder that embeds another view's rendered output.
 109. [x] Event route carries element and view ancestry metadata.
 110. [x] Event propagation phases: target handling then ancestor bubbling before view fallback.
-111. [ ] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
+111. [x] Focus traversal over enabled focusable elements with Tab and Shift+Tab actions.
 112. [ ] Scroll element binding helper backed by `ScrollState`.
 113. [ ] Wheel and trackpad scroll routing into bound scroll state.
 114. [ ] Hidden overflow participates in hit testing, not only paint clip metadata.
@@ -298,13 +298,11 @@ the current Step 111-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 110 is merged to `master` at `10f2dd3 feat: add event propagation phases`,
-with docs closeout at `d52ce80 docs: mark step 110 merged`. It is post-merge
-verified on Windows and WSL Arch Linux and cleaned up. Step 111, focus
-traversal over enabled focusable elements with Tab and Shift+Tab actions, is
-already open in `.worktrees/focus-traversal` on branch `codex/focus-traversal`
-and should be finished, committed, merged, and post-merge verified before Step
-112 starts.
+Step 111, focus traversal over enabled focusable elements with Tab and
+Shift+Tab actions, is implemented in `.worktrees/focus-traversal` on branch
+`codex/focus-traversal` and targeted-verified in the feature worktree. Finish
+full Windows/WSL verification, commit, fast-forward merge, and post-merge
+verification before starting Step 112.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated

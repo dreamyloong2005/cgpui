@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Focus Traversal
+
+- Step 111 can reuse `ElementTree::enabled_preorder_ids()` as the traversal
+  source. That keeps disabled descendants out of traversal before checking
+  `Element::focusable()`, so disabled focusable-looking elements do not receive
+  Tab focus.
+- Focus traversal belongs in the keyboard-key pre-dispatch path: after a
+  successful traversal, the current event route should be retargeted to
+  `keyboard_focus_element_owner_` and ancestry refreshed so key bindings,
+  routed element handlers, view fallback, and after-event callbacks all see the
+  updated focused element.
+- Shift+Tab can share the same traversal helper as Tab by passing a reverse
+  flag. With no current focus, forward traversal chooses the first enabled
+  focusable element and reverse traversal chooses the last one; with current
+  focus, both directions wrap.
+- The helper should ignore Tab variants with control, alt, or super modifiers
+  so future app/window shortcuts can still bind those chords. Shift remains the
+  reverse traversal selector.
+
 ## 2026-06-30 Back-40 Planning With Step 111 Active
 
 - The后 40 步 still mean Steps 129-168, and they remain a post-Step-128

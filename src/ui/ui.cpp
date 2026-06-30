@@ -62,6 +62,12 @@ bool is_focus_activation_event(const PlatformEvent& event) {
          button->pressed;
 }
 
+bool is_focus_traversal_key(const KeyboardKey& key) {
+  constexpr std::uint32_t tab_key_code = 9;
+  return key.key_code == tab_key_code && key.action == KeyAction::pressed &&
+         !key.modifiers.control && !key.modifiers.alt && !key.modifiers.super;
+}
+
 bool modifiers_equal(KeyboardModifiers lhs, KeyboardModifiers rhs) {
   return lhs.shift == rhs.shift && lhs.control == rhs.control &&
          lhs.alt == rhs.alt && lhs.super == rhs.super;
@@ -591,6 +597,11 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
       }
     }
     if (const auto* key = std::get_if<KeyboardKey>(&event); key != nullptr) {
+      if (is_focus_traversal_key(*key) &&
+          focus_next_element(key->modifiers.shift)) {
+        current_event_route_->target_element_id = keyboard_focus_element_owner_;
+        refresh_route_ancestry(*current_event_route_);
+      }
       for (const KeyBinding& binding : key_bindings_) {
         if (binding.key_code == key->key_code &&
             binding.action == key->action &&
@@ -784,6 +795,50 @@ std::optional<ViewId> WindowRuntime::child_view_target_for(
     return {};
   }
   return child_view->view_id();
+}
+
+bool WindowRuntime::focus_next_element(bool reverse) {
+  if (owned_element_tree_ == nullptr) {
+    return false;
+  }
+
+  std::vector<ElementId> focusable_ids;
+  for (ElementId element_id : owned_element_tree_->enabled_preorder_ids()) {
+    const Element* element = routed_element(element_id);
+    if (element != nullptr && element->focusable()) {
+      focusable_ids.push_back(element_id);
+    }
+  }
+  if (focusable_ids.empty()) {
+    return false;
+  }
+
+  std::size_t next_index = reverse ? focusable_ids.size() - 1 : 0;
+  if (keyboard_focus_element_owner_.has_value()) {
+    const auto current = std::find(
+        focusable_ids.begin(),
+        focusable_ids.end(),
+        *keyboard_focus_element_owner_);
+    if (current != focusable_ids.end()) {
+      const std::size_t current_index =
+          static_cast<std::size_t>(current - focusable_ids.begin());
+      if (reverse) {
+        next_index = current_index == 0 ? focusable_ids.size() - 1
+                                        : current_index - 1;
+      } else {
+        next_index = current_index + 1 == focusable_ids.size()
+                         ? 0
+                         : current_index + 1;
+      }
+    }
+  }
+
+  request_keyboard_focus(focusable_ids[next_index]);
+  if (Element* element = routed_element(focusable_ids[next_index]);
+      element != nullptr) {
+    element->focus(ElementFocusContext{.element_id = focusable_ids[next_index]});
+  }
+  return true;
 }
 
 EventResult WindowRuntime::dispatch_routed_element_event(

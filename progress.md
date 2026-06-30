@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 111 Focus Traversal
+
+- Continued Step 111 in `.worktrees/focus-traversal` on
+  `codex/focus-traversal`, rebased onto `master` at
+  `3acd694 docs: refresh back forty plan for step 111`.
+- The prior RED run had failed as expected in `window_runtime_test/default`
+  because the first Tab key did not focus the first enabled focusable element;
+  `element_test/default` and `ui_header_cleanliness/default` passed in that RED
+  run.
+- Implemented focus traversal in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  Tab and Shift+Tab are detected from pressed `KeyboardKey` events without
+  control/alt/super modifiers, traverse `ElementTree::enabled_preorder_ids()`,
+  filter to live `Element::focusable()` elements, wrap forward or backward,
+  request keyboard focus on the selected element, and refresh route ancestry so
+  event callbacks observe the new focus target.
+- Added `window_runtime_test` coverage for forward Tab traversal over enabled
+  focusable elements, disabled-element skipping, wraparound, and Shift+Tab
+  reverse traversal.
+- Verified feature-worktree targeted tests after rebasing onto the docs refresh:
+  `xmake test -P . window_runtime_test/default element_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168 follow-on
+  plan so Step 111 is marked implemented and feature-worktree targeted
+  verified. Commit, merge, post-merge verification, and cleanup remain before
+  Step 112 starts.
+
 ## 2026-06-30 Back-40 Planning After Step 111 Worktree Start
 
 - Refreshed `task_plan.md`,

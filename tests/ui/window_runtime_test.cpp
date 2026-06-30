@@ -3214,6 +3214,7 @@ int test_hover_tracks_hit_element_while_pointer_is_captured() {
 }
 
 RuntimeFixture* click_focus_fixture = nullptr;
+RuntimeFixture* focus_traversal_fixture = nullptr;
 
 void dispatch_click_focus_sequence() {
   auto& callback = click_focus_fixture->window.callback;
@@ -3224,6 +3225,24 @@ void dispatch_click_focus_sequence() {
   callback(cgpui::KeyboardKey{
       .key_code = 65,
       .action = cgpui::KeyAction::pressed});
+}
+
+void dispatch_focus_traversal_sequence() {
+  auto& callback = focus_traversal_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 9,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 9,
+      .action = cgpui::KeyAction::pressed});
+}
+
+void dispatch_reverse_focus_traversal_sequence() {
+  auto& callback = focus_traversal_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 9,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.shift = true}});
 }
 
 int test_runtime_clicks_request_focus_for_focusable_elements() {
@@ -3276,6 +3295,131 @@ int test_runtime_clicks_request_focus_for_focusable_elements() {
   if (!keyboard_route_after_focus.has_value() ||
       *keyboard_route_after_focus != root_id) {
     return 221;
+  }
+  return 0;
+}
+
+int test_runtime_tabs_focus_forward_over_enabled_focusable_elements() {
+  RuntimeFixture fixture;
+  focus_traversal_fixture = &fixture;
+  fixture.app.on_run = &dispatch_focus_traversal_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 100.0F, .height = 100.0F}));
+  const cgpui::ElementId first_id = tree->append_child(
+      root_id,
+      std::make_unique<RuntimeFocusableElement>(
+          cgpui::Size{.width = 20.0F, .height = 20.0F}));
+  auto disabled = std::make_unique<RuntimeFocusableElement>(
+      cgpui::Size{.width = 20.0F, .height = 20.0F});
+  disabled->set_enabled(false);
+  const cgpui::ElementId disabled_id =
+      tree->append_child(root_id, std::move(disabled));
+  const cgpui::ElementId second_id = tree->append_child(
+      root_id,
+      std::make_unique<RuntimeFocusableElement>(
+          cgpui::Size{.width = 20.0F, .height = 20.0F}));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> focus_after_first_tab;
+  std::optional<cgpui::ElementId> focus_after_second_tab;
+  int tab_count = 0;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::keyboard_key) {
+          return;
+        }
+        tab_count += 1;
+        if (tab_count == 1) {
+          focus_after_first_tab = context.input.keyboard_focus_element_owner;
+        } else if (tab_count == 2) {
+          focus_after_second_tab = context.input.keyboard_focus_element_owner;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  focus_traversal_fixture = nullptr;
+
+  if (result != 0) {
+    return 360;
+  }
+  if (first_id.value == 0 || disabled_id.value == 0 || second_id.value == 0) {
+    return 361;
+  }
+  if (!focus_after_first_tab.has_value() ||
+      *focus_after_first_tab != first_id) {
+    return 362;
+  }
+  if (!focus_after_second_tab.has_value() ||
+      *focus_after_second_tab != second_id ||
+      *focus_after_second_tab == disabled_id) {
+    return 363;
+  }
+  return 0;
+}
+
+int test_runtime_shift_tab_focuses_previous_enabled_focusable_element() {
+  RuntimeFixture fixture;
+  focus_traversal_fixture = &fixture;
+  fixture.app.on_run = &dispatch_reverse_focus_traversal_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 100.0F, .height = 100.0F}));
+  const cgpui::ElementId first_id = tree->append_child(
+      root_id,
+      std::make_unique<RuntimeFocusableElement>(
+          cgpui::Size{.width = 20.0F, .height = 20.0F}));
+  const cgpui::ElementId second_id = tree->append_child(
+      root_id,
+      std::make_unique<RuntimeFocusableElement>(
+          cgpui::Size{.width = 20.0F, .height = 20.0F}));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.request_keyboard_focus(first_id);
+
+  std::optional<cgpui::ElementId> focus_after_shift_tab;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::keyboard_key) {
+          focus_after_shift_tab = context.input.keyboard_focus_element_owner;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  focus_traversal_fixture = nullptr;
+
+  if (result != 0) {
+    return 364;
+  }
+  if (first_id.value == 0 || second_id.value == 0) {
+    return 365;
+  }
+  if (!focus_after_shift_tab.has_value() ||
+      *focus_after_shift_tab != second_id) {
+    return 366;
   }
   return 0;
 }
@@ -5380,6 +5524,16 @@ int main() {
   }
   if (const int result =
           test_runtime_clicks_request_focus_for_focusable_elements();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_tabs_focus_forward_over_enabled_focusable_elements();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_shift_tab_focuses_previous_enabled_focusable_element();
       result != 0) {
     return result;
   }

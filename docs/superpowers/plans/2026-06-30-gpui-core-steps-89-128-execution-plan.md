@@ -18,9 +18,10 @@
   commit is `10f2dd3 feat: add event propagation phases`.
 - The Step 110 worktree `.worktrees/event-propagation-phases` and branch
   `codex/event-propagation-phases` have been cleaned up.
-- Step 111 is active in `.worktrees/focus-traversal` on
-  `codex/focus-traversal`: focus traversal over enabled focusable elements with
-  Tab and Shift+Tab actions.
+- Step 111 is implemented and targeted-verified in `.worktrees/focus-traversal`
+  on `codex/focus-traversal`: focus traversal over enabled focusable elements
+  with Tab and Shift+Tab actions. It still needs feature-worktree full
+  Windows/WSL verification, commit, merge, post-merge verification, and cleanup.
 
 ## File Map
 
@@ -125,7 +126,7 @@ Purpose: turn the element tree from a hit-test target into a richer interactive 
 
 - [x] Step 109: event route carries element and view ancestry metadata.
 - [x] Step 110: target handling and ancestor bubbling before view fallback.
-- [ ] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
+- [x] Step 111: Tab and Shift+Tab focus traversal over enabled focusable elements.
 - [ ] Step 112: scroll element binding helper backed by `ScrollState`.
 - [ ] Step 113: wheel and trackpad scroll routing into bound scroll state.
 - [ ] Step 114: hidden overflow participates in hit testing.
@@ -219,7 +220,7 @@ of single-target-only.
 - [x] Step 109: attach element and view ancestry metadata to event routes.
 - [x] Step 110: implement target handling, ancestor bubbling, and view fallback
   propagation phases.
-- [ ] Step 111: add Tab and Shift+Tab focus traversal over enabled focusable
+- [x] Step 111: add Tab and Shift+Tab focus traversal over enabled focusable
   elements.
 - [ ] Step 112: add a scroll-element binding helper backed by `ScrollState`.
 - [ ] Step 113: route wheel/trackpad scroll events into bound scroll state.
@@ -267,9 +268,9 @@ cd .worktrees/focus-traversal
 xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Step 111 already has an active branch. Finish its docs update, targeted
-verification, commit, fast-forward merge, post-merge Windows/WSL verification,
-and cleanup before starting Step 112.
+Step 111 has passed feature-worktree targeted verification. Finish
+feature-worktree Windows/WSL full verification, commit, fast-forward merge,
+post-merge verification, and cleanup before starting Step 112.
 
 ## Step Details
 
@@ -537,9 +538,9 @@ Status: complete on `master` after the Step 109 merge.
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for Tab and Shift+Tab over enabled focusable elements in traversal order.
-- [ ] Implement traversal over `ElementTree::enabled_preorder_ids()` plus `Element::focusable()`.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for Tab and Shift+Tab over enabled focusable elements in traversal order.
+- [x] Implement traversal over `ElementTree::enabled_preorder_ids()` plus `Element::focusable()`.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default`.
 
 ### Step 112: Scroll Element Binding Helper
 
