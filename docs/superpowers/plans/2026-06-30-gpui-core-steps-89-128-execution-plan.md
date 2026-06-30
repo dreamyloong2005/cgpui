@@ -12,11 +12,12 @@
 
 ## Current State
 
-- Steps 89-124 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-125 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 125 is implemented and feature-worktree verified in
-  `.worktrees/win32-system-clipboard`; it still needs feature commit, merge,
-  post-merge verification, and docs closeout.
+- Step 125 is merged on `master` at
+  `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
+  1/1, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26.
 - Step 124 is merged on `master` at
   `74ad787 feat: apply platform cursors`; post-merge targeted tests passed on
   Windows for built targets 2/2, Windows full debug passed 29/29, and WSL Arch
@@ -35,7 +36,7 @@
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
 - Step 126, Wayland system clipboard backend skeleton for text copy, cut, and
-  paste, is the next implementation slice after the Step 125 merge closeout.
+  paste, is the next implementation slice.
 
 ## File Map
 
@@ -276,9 +277,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 125 by committing the feature worktree, fast-forward merging it to
-`master`, running post-merge targeted/Windows/WSL verification, and doing docs
-closeout. Then start Step 126 from a fresh feature worktree:
+Start Step 126 from a fresh feature worktree:
 
 ```powershell
 git checkout master
@@ -815,6 +814,14 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] WSL Arch full debug passed 26/26:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-system-clipboard -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `389b9fb feat: add win32 system clipboard`.
+- [x] Post-merge targeted test passed 1/1:
+  `xmake test -P . clipboard_test/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 126: Wayland System Clipboard Backend Skeleton
 

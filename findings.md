@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Win32 System Clipboard Backend Merged
+
+- Step 125 is merged on `master` at
+  `389b9fb feat: add win32 system clipboard` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The remaining pre-back-40 gate is Steps 126-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch Linux full debug verification.
+- Step 126 should start from `.worktrees/wayland-clipboard-skeleton` on
+  `codex/wayland-clipboard-skeleton` and add a Wayland clipboard backend
+  skeleton with graceful unsupported/no-seat behavior while preserving the
+  shared `Clipboard` interface.
+
 ## 2026-07-01 Win32 System Clipboard Backend
 
 - Step 125 keeps `MemoryClipboard` as the deterministic test/runtime fixture

@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 125 Post-Merge
+
+- Fast-forward merged Step 125 to `master` at
+  `389b9fb feat: add win32 system clipboard`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . clipboard_test/default` passed 1/1.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 89-128 execution plan, the 129-168 forward
+  plan, and `findings.md` so Step 125 is marked merged and post-merge
+  verified. Step 126, Wayland system clipboard backend skeleton for text copy,
+  cut, and paste, is the next implementation slice.
+- Verified the Step 125 docs closeout with `git diff --check` and re-ran the
+  targeted clipboard test on `master`: `xmake test -P . clipboard_test/default`
+  passed 1/1.
+
 ## 2026-07-01 Step 123 Post-Merge
 
 - Fast-forward merged Step 123 to `master` at

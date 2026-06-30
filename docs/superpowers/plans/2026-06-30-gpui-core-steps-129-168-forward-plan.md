@@ -30,8 +30,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 124 post-merge verification passed: targeted Windows tests for built
   targets 2/2, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 125 is implemented and feature-worktree verified; it still needs merge,
-  post-merge verification, and docs closeout before Step 126 starts.
+- Step 125 is merged on `master` at
+  `389b9fb feat: add win32 system clipboard`; post-merge targeted tests passed
+  1/1, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Steps 126-128 remain the active implementation gate before this follow-on
   plan. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
@@ -59,7 +60,25 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   implementation slices plus the post-Step-128 verification gate and four band
   checkpoint reviews.
 
+## 2026-07-01 Back-40 Planning After Step 125 Merge
+
+- Step 125, Win32 system clipboard backend for text copy, cut, and paste, is
+  merged on `master` at `389b9fb feat: add win32 system clipboard`.
+- RED failed on Win32 system clipboard interop after a forced test rebuild;
+  GREEN adds a `CF_UNICODETEXT`-backed UTF-8 Win32 clipboard while preserving
+  deterministic `MemoryClipboard` behavior for runtime tests and non-Windows
+  fallback.
+- Post-merge verification passed: targeted Windows clipboard test 1/1,
+  Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- The gate to Step 129 is now 3 implementation slices: Steps 126-128,
+  followed by post-Step-128 targeted verification, Windows full debug, WSL Arch
+  full debug, and clean `master` status.
+- The effective distance through Step 168 is 43 implementation slices plus the
+  post-Step-128 verification gate and four band checkpoint reviews.
+
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
+
+Historical snapshot, superseded by the Step 125 merge refresh above.
 
 - Step 125, Win32 system clipboard backend for text copy, cut, and paste, is
   implemented and feature-worktree verified in `.worktrees/win32-system-clipboard`.
@@ -460,6 +479,10 @@ Do not begin Step 129 until all of these are true:
   on Windows and WSL Arch Linux.
 - [x] Step 123 caret/selection command metadata has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
+- [x] Step 124 platform cursor application has landed on `master` and is
+  post-merge verified on Windows and WSL Arch Linux.
+- [x] Step 125 Win32 system clipboard backend has landed on `master` and is
+  post-merge verified on Windows and WSL Arch Linux.
 - [ ] Steps 126-128 have landed Wayland clipboard hooks, IME geometry,
   and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
@@ -531,13 +554,13 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish Step 125 before starting Step 126 or
-Step 129:
+For the current pre-back-40 state, start Step 126 before starting Step 129:
 
 ```powershell
 git checkout master
 git status --short --branch
-git merge --ff-only codex/win32-system-clipboard
+git worktree add .worktrees/wayland-clipboard-skeleton -b codex/wayland-clipboard-skeleton master
+cd .worktrees/wayland-clipboard-skeleton
 xmake test -P . clipboard_test/default
 ```
 
