@@ -22,10 +22,9 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   post-merge verified on Windows and WSL Arch Linux.
 - Steps 108-128 remain covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 107 is implemented in `.worktrees/view-registry-skeleton` and
-  feature-worktree verified on Windows and WSL Arch Linux.
-- Step 108 is the next active implementation step after Step 107 is committed,
-  merged, post-merge verified, and cleaned up.
+- Step 107 is implemented, merged to `master`, post-merge verified on Windows
+  and WSL Arch Linux, and its feature worktree/branch have been cleaned up.
+- Step 108 is the active implementation step.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -202,8 +201,7 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 108 instead of starting Step 129
-after Step 107 is merged and post-merge verified:
+For the current pre-back-40 state, start Step 108 instead of starting Step 129:
 
 ```powershell
 git worktree add .worktrees/child-view-placeholder -b codex/child-view-placeholder master

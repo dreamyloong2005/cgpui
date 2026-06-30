@@ -17,10 +17,10 @@
 - `master` is at `a9b1b96 feat: store app opened window root views`.
 - The main worktree has no tracked/staged changes; the only known untracked
   local item is `.vscode/`.
-- Step 107 is implemented in `.worktrees/view-registry-skeleton` and
-  feature-worktree verified on Windows and WSL Arch Linux.
-- The next implementation slice after merging Step 107 is Step 108:
-  child-view element placeholder that embeds another view's rendered output.
+- Step 107 is implemented, merged to `master`, post-merge verified on Windows
+  and WSL Arch Linux, and its feature worktree/branch have been cleaned up.
+- The active implementation slice is Step 108: child-view element placeholder
+  that embeds another view's rendered output.
 
 ## File Map
 
@@ -260,8 +260,7 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-After Step 107 is committed, merged, and post-merge verified, start Step 108
-in an isolated worktree:
+Start Step 108 in an isolated worktree:
 
 ```powershell
 git worktree add .worktrees/child-view-placeholder -b codex/child-view-placeholder master
@@ -480,8 +479,7 @@ Status: complete on `master` after the Step 106 merge.
 
 ### Step 107: View Registry Skeleton
 
-Status: implemented and feature-worktree verified; commit, merge, and
-post-merge verification still need to finish before Step 108 starts.
+Status: complete on `master` after the Step 107 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`

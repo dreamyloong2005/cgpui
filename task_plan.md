@@ -99,10 +99,9 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It also records the current
-pre-back-40 handoff state: Step 107 is implemented and feature-worktree
-verified, Step 108 is the next active implementation step after merge, and
-Step 129 remains gated behind completion and Windows/WSL verification of Steps
-108-128.
+pre-back-40 handoff state: Step 107 is merged and post-merge verified, Step
+108 is the active implementation step, and Step 129 remains gated behind
+completion and Windows/WSL verification of Steps 108-128.
 
 These steps are intentionally queued after Step 128. They should not preempt
 the current active Step 108 unless the plan is explicitly reprioritized.
@@ -290,10 +289,10 @@ the current active Step 108 unless the plan is explicitly reprioritized.
 
 ## Active Step
 
-Step 107 is implemented in `.worktrees/view-registry-skeleton` and
-feature-worktree verified on Windows and WSL Arch Linux. After merging Step
-107 to `master`, the next implementation step is Step 108: child-view element
-placeholder that embeds another view's rendered output.
+Step 107 is merged to `master`, post-merge verified on Windows and WSL Arch
+Linux, and its feature worktree/branch have been cleaned up. The active
+implementation step is Step 108: child-view element placeholder that embeds
+another view's rendered output.
 
 The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 band checkpoints after Steps 138, 148, 158, and 168. Step 129 remains gated

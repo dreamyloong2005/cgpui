@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 107 Post-Merge
+
+- Committed Step 107 as `00b7b32 feat: add view registry skeleton` from
+  `.worktrees/view-registry-skeleton` on `codex/view-registry-skeleton`.
+- Fast-forward merged Step 107 to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Removed `.worktrees/view-registry-skeleton` and deleted
+  `codex/view-registry-skeleton`.
+- Refreshed `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan after merge so the current active implementation step is Step
+  108: child-view element placeholder that embeds another view's rendered
+  output.
+
 ## 2026-06-30 Step 107 View Registry Skeleton
 
 - Continued Step 107 in `.worktrees/view-registry-skeleton` on
