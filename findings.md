@@ -17,6 +17,10 @@
   `ViewId` can be referenced by an installed placeholder element while
   `WindowRuntime::find_view(...)` still resolves the view. It should not call
   the child view's `render(...)` yet.
+- After the Step 108 merge, Step 109 is the right next slice because the
+  placeholder now gives event routing a concrete element marker that can carry
+  both `ElementId` ancestry and child `ViewId` metadata without needing nested
+  rendering first.
 
 ## 2026-06-30 Back-40 Planning While Step 108 Active
 

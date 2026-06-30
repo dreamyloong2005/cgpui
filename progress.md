@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 108 Post-Merge
+
+- Committed Step 108 as `71c94bb feat: add child view placeholder` from
+  `.worktrees/child-view-placeholder` on `codex/child-view-placeholder`.
+- Fast-forward merged Step 108 to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default window_runtime_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed
+  4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Step 109 is now the next implementation slice: event route carries element
+  and view ancestry metadata.
+
 ## 2026-06-30 Step 108 Child-View Placeholder
 
 - Continued Step 108 in `.worktrees/child-view-placeholder` on

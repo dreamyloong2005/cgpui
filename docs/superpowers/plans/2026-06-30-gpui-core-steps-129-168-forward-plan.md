@@ -17,16 +17,14 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-107 are complete on `master` through
-  `87f3b9c docs: refresh back forty planning for step 108`, and Step 107 was
-  post-merge verified on Windows and WSL Arch Linux.
-- Steps 108-128 remain the active gate before this follow-on plan. They are
+- Steps 89-108 are complete on `master` through
+  `71c94bb feat: add child view placeholder`, and Step 108 was post-merge
+  verified on Windows and WSL Arch Linux.
+- Steps 109-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- Step 108 is implemented and feature-worktree verified in
-  `.worktrees/child-view-placeholder` on branch
-  `codex/child-view-placeholder`; it still needs commit, fast-forward merge,
-  post-merge verification, and cleanup before Step 109 starts.
+- Step 109 is the active implementation step: event route carries element and
+  view ancestry metadata.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
   roadmap is explicitly reprioritized.
@@ -37,12 +35,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 The user asked to plan the "后40步" while Step 108 was active. This document is
 therefore the execution plan for Steps 129-168, not a new active branch queue.
-The next action remains finishing the Step 108 merge workflow unless the
-roadmap is explicitly reprioritized.
+The next action is Step 109 unless the roadmap is explicitly reprioritized.
 
-- Finish the current gate first: Steps 108-128 close child-view placeholders,
-  ancestry/propgation, focus, scroll, layout depth, render command metadata,
-  cursor/clipboard/IME hooks, and the public-prelude demo rewrite.
+- Finish the current gate first: Steps 109-128 close ancestry/propagation,
+  focus, scroll, layout depth, render command metadata, cursor/clipboard/IME
+  hooks, and the public-prelude demo rewrite.
 - Then run Steps 129-168 as four 10-step bands: context/entity/async,
   keyed widgets/style cascade, text/font/renderer diagnostics, and
   Windows/Wayland platform closure plus the parity audit.
@@ -107,7 +104,7 @@ application through the public prelude.
 ## Back-40 Planning Commitments
 
 These commitments make the back-40 plan executable without turning it into a
-second active branch while Step 108-128 are still incomplete:
+second active branch while Step 109-128 are still incomplete:
 
 - Step 129 is a gate transition, not today's next branch. It starts only after
   Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
@@ -150,18 +147,14 @@ must have these properties:
 Do not begin Step 129 until all of these are true:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
-- [ ] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
-  Current partial status: Steps 99-107 are complete on `master`; Step 108 is
-  implemented and feature-worktree verified, but remains incomplete for the
-  gate until it is merged and post-merge verified.
+- [x] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
 - [ ] Steps 109-118 have landed ancestry-aware routing, bubbling, focus traversal, scroll routing, overflow-aware hit testing, and the planned layout primitives.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count after the Step 108 feature merge:
-20 steps, Steps 109-128. Step 108 still counts as gate-incomplete until its
-commit, fast-forward merge, post-merge Windows/WSL verification, and cleanup
-are complete.
+Remaining pre-back-40 implementation count from the current state: 20 steps,
+Steps 109-128. Finishing those steps plus post-Step-128 Windows/WSL
+verification is the planned route into Step 129.
 
 ## Back-40 Execution Strategy
 
@@ -226,12 +219,11 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, finish the existing Step 108 worktree
-instead of starting Step 129 or recreating the branch:
+For the current pre-back-40 state, start Step 109 instead of starting Step 129:
 
 ```powershell
-cd .worktrees/child-view-placeholder
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
+git worktree add .worktrees/event-route-ancestry -b codex/event-route-ancestry master
+xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
 ## Post-Step-128 Planning Contract

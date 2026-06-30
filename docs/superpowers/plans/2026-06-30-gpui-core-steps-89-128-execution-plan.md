@@ -12,17 +12,14 @@
 
 ## Current State
 
-- Steps 89-107 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-108 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` is at `87f3b9c docs: refresh back forty planning for step 108`.
+- `master` includes `71c94bb feat: add child view placeholder`.
 - The main worktree has no tracked/staged content changes from Step 108; the
   known local-only untracked item is `.vscode/`.
-- Step 108 is implemented in `.worktrees/child-view-placeholder` on
-  `codex/child-view-placeholder` and feature-worktree verified on Windows and
-  WSL Arch Linux. It still needs final docs verification, commit,
-  fast-forward merge, post-merge verification, and cleanup.
-- The next implementation slice after Step 108 merges is Step 109: event route
-  carries element and view ancestry metadata.
+- Step 108 is post-merge verified on Windows and WSL Arch Linux.
+- The active implementation slice is Step 109: event route carries element and
+  view ancestry metadata.
 
 ## File Map
 
@@ -262,18 +259,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish the Step 108 merge workflow from the existing feature worktree:
+Start Step 109 in an isolated worktree:
 
 ```powershell
-cd .worktrees/child-view-placeholder
-xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default
-git commit -m "feat: add child view placeholder"
-git checkout master
-git merge --ff-only codex/child-view-placeholder
+git worktree add .worktrees/event-route-ancestry -b codex/event-route-ancestry master
+xmake test -P . window_runtime_test/default element_test/default ui_header_cleanliness/default
 ```
 
-Then run the standard post-merge targeted, Windows full debug, and WSL Arch
-full debug verification before removing the feature worktree and branch.
+Add RED tests for route element ancestry and view ancestry arrays using the
+installed element tree parent links and child-view placeholder metadata, then
+follow the standard per-step verification/merge workflow above.
 
 ## Step Details
 
@@ -496,9 +491,7 @@ Status: complete on `master` after the Step 107 merge.
 
 ### Step 108: Child-View Element Placeholder
 
-Status: implemented and feature-worktree verified in
-`.worktrees/child-view-placeholder`; pending commit, merge, post-merge
-verification, and cleanup.
+Status: complete on `master` after the Step 108 merge.
 
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`
