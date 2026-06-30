@@ -445,7 +445,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         current_event_route_->target_element_id.has_value()) {
       if (Element* element =
               routed_element(*current_event_route_->target_element_id);
-          element != nullptr && element->focusable()) {
+          element != nullptr && element->enabled() && element->focusable()) {
         request_keyboard_focus(*current_event_route_->target_element_id);
         element->focus(ElementFocusContext{
             .element_id = *current_event_route_->target_element_id,

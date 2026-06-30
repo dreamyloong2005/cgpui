@@ -766,3 +766,9 @@
 - `enabled_preorder_ids()` filters by each node's current `enabled()` state at
   push time but still traverses descendants, which makes it a general enabled
   query rather than a disabled-subtree pruning policy.
+
+## 2026-06-30 Disabled Focus Activation
+
+- Disabled elements remain routable and observable through hit testing, but
+  runtime click-to-focus activation should use the same interaction gate as
+  element event dispatch: the element must be both enabled and focusable.

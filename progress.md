@@ -621,6 +621,25 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
   passed 24/24.
 
+- Started Step 81: Runtime skips disabled elements for focus activation.
+- Added RED `window_runtime_test` coverage for a disabled but focusable routed
+  element remaining hit-testable while refusing click-to-focus activation; the
+  test is expected to fail until runtime focus activation also checks enabled
+  state.
+- Confirmed RED with `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default`: `window_runtime_test/default` failed, and a
+  direct run surfaced return code 282 from the new disabled focus assertion.
+- Implemented the runtime focus activation gate by requiring routed elements to
+  be both enabled and focusable before requesting keyboard focus or invoking the
+  focus hook.
+- Verified targeted tests: `xmake test -P . window_runtime_test/default
+  ui_header_cleanliness/default` passed 2/2.
+- Verified Windows full debug tests: `xmake f -c -m debug -P .; xmake test -P .`
+  passed 27/27.
+- Verified WSL Arch Linux full debug tests:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 24/24.
+
 - Started Step 79: Element builder disabled convenience helper.
 - Added RED `element_test` coverage for `ElementBuilder::disabled()` disabling
   a built element and composing with focusable/click wrappers without allowing

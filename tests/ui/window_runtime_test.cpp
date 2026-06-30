@@ -2349,6 +2349,65 @@ int test_runtime_clicks_request_focus_for_focusable_elements() {
   return 0;
 }
 
+int test_runtime_does_not_focus_disabled_focusable_elements() {
+  RuntimeFixture fixture;
+  click_focus_fixture = &fixture;
+  fixture.app.on_run = &dispatch_click_focus_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<RuntimeFocusableElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  root->set_enabled(false);
+  RuntimeFocusableElement* root_ptr = root.get();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> route_after_click;
+  std::optional<cgpui::ElementId> focus_owner_after_click;
+  std::optional<cgpui::ElementId> keyboard_route_after_click;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_button) {
+          route_after_click = record.route.target_element_id;
+          focus_owner_after_click = context.input.keyboard_focus_element_owner;
+        } else if (record.event_kind == cgpui::EventKind::keyboard_key) {
+          keyboard_route_after_click = record.route.target_element_id;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = true});
+  click_focus_fixture = nullptr;
+
+  if (result != 0) {
+    return 280;
+  }
+  if (root_id.value == 0 || !route_after_click.has_value() ||
+      *route_after_click != root_id) {
+    return 281;
+  }
+  if (root_ptr->focus_count != 0 ||
+      root_ptr->last_focused_element_id.value != 0) {
+    return 282;
+  }
+  if (focus_owner_after_click.has_value()) {
+    return 283;
+  }
+  if (keyboard_route_after_click.has_value()) {
+    return 284;
+  }
+  return 0;
+}
+
 RuntimeFixture* keyboard_focus_fixture = nullptr;
 
 void dispatch_keyboard_focus_sequence() {
@@ -3787,6 +3846,11 @@ int main() {
   }
   if (const int result =
           test_runtime_clicks_request_focus_for_focusable_elements();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_does_not_focus_disabled_focusable_elements();
       result != 0) {
     return result;
   }
