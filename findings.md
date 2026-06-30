@@ -1,5 +1,16 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Text Caret And Selection Paint Metadata Merged
+
+- Step 123 is merged on `master` at
+  `b0b9e00 feat: add text caret selection paint` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The remaining pre-back-40 gate is Steps 124-128 plus the post-Step-128
+  targeted, Windows full debug, and WSL Arch full debug verification.
+- Step 124 should connect runtime cursor state to Win32 and Wayland platform
+  hooks while keeping clipboard, IME geometry, and cursor theme depth out of
+  scope.
+
 ## 2026-07-01 Text Caret And Selection Paint Metadata
 
 - Step 123 is implemented in `.worktrees/text-caret-selection-paint` on

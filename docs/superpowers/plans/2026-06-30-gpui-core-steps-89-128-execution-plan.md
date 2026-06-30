@@ -12,10 +12,10 @@
 
 ## Current State
 
-- Steps 89-122 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-123 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `58561b1 feat: add font size style`; Step 121's behavior
-  commit is `cf180f4 feat: add text paint command`.
+- `master` includes `b0b9e00 feat: add text caret selection paint`; Step 122's
+  behavior commit is `58561b1 feat: add font size style`.
 - Step 120 post-merge verification passed: targeted tests 4/4, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121, text paint command separates text drawing from placeholder
@@ -24,12 +24,9 @@
 - Step 122, font descriptor and basic font-size style primitives, is merged and
   post-merge verified: targeted tests 3/3, Windows full debug 29/29, and WSL
   Arch Linux full debug 26/26.
-- Step 123, text caret and selection paint metadata, is implemented in
-  `.worktrees/text-caret-selection-paint` on
-  `codex/text-caret-selection-paint` and feature-worktree verified: targeted
-  tests 3/3, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-  It still needs commit, merge, post-merge verification, docs closeout, and
-  cleanup before Step 124 begins.
+- Step 123, text caret and selection paint metadata, is merged and post-merge
+  verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
+  full debug 26/26.
 
 ## File Map
 
@@ -270,21 +267,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 123 merge and post-merge verification from the feature worktree:
+Start Step 124 from a fresh feature worktree:
 
 ```powershell
 git checkout master
-git merge --ff-only codex/text-caret-selection-paint
-xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default
-xmake f -c -m debug -P .
-xmake test -P .
-wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
+git status --short --branch
+git worktree add .worktrees/platform-cursor-application -b codex/platform-cursor-application master
+cd .worktrees/platform-cursor-application
+xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default
 ```
 
-After Step 123 docs closeout and cleanup, start Step 124 in a fresh
-`.worktrees/platform-cursor-application` worktree. Step 124 should apply
-runtime cursor state through Win32 and Wayland platform hooks without expanding
-into clipboard, IME, or cursor theme loading beyond testable hooks.
+Step 124 should apply runtime cursor state through Win32 and Wayland platform
+hooks without expanding into clipboard, IME, or cursor theme loading beyond
+testable hooks.
 
 ## Step Details
 
@@ -750,7 +745,13 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] Feature-worktree WSL Arch full debug passed 26/26:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
-- [ ] Commit, merge, post-merge verify, docs closeout, and cleanup.
+- [x] Merged to `master` at `b0b9e00 feat: add text caret selection paint`.
+- [x] Post-merge targeted tests passed 3/3:
+  `xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`.
 
 ### Step 124: Platform Cursor Application
 

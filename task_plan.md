@@ -99,23 +99,18 @@ Detailed follow-on plan:
 That plan now includes the post-Step-128 entry contract, branch slugs, first
 RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff after Step 123 feature-worktree verification: Steps 89-122
-are merged, docs-closed, and post-merge verified on Windows and WSL Arch
-Linux; Step 123 is implemented in `codex/text-caret-selection-paint` and has
-passed targeted, Windows full debug, and WSL Arch Linux full debug verification
-before merge. Step 129 remains gated behind Step 123 merge/post-merge
-verification, completion and Windows/WSL verification of Steps 124-128, plus
-the post-Step-128 exit verification.
+pre-back-40 handoff after Step 123: Steps 89-123 are merged, docs-closed or in
+docs closeout, and post-merge verified on Windows and WSL Arch Linux. Step 129
+remains gated behind completion and Windows/WSL verification of Steps 124-128,
+plus the post-Step-128 exit verification.
 
-After Step 123 merges, the effective distance to Step 129 becomes 5
-implementation steps, Steps 124-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 becomes 45
-implementation steps plus those verification gates and the four follow-on band
-checkpoint reviews.
+The effective distance to Step 129 is 5 implementation steps, Steps 124-128,
+plus post-Step-128 targeted, Windows, and WSL verification. The effective
+distance through Step 168 is 45 implementation steps plus those verification
+gates and the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 123 merge and Step 124-128 queue unless the plan is explicitly
-reprioritized.
+the current Step 124-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -329,10 +324,9 @@ The post-Step-128 back-40 plan is ready as Steps 129-168 and now has explicit
 completion targets, non-goals, branch/test/verification matrix, per-step exit
 artifacts, explicit keep-out-of-scope notes, Step 129 start packet, band
 checkpoints after Steps 138, 148, 158, and 168, and an execution gate that
-records Steps 115-122 as merged and post-merge verified. Step 123 is
-implemented and feature-worktree verified, but Step 129 remains gated behind
-Step 123 merge/post-merge verification, completion plus Windows/WSL
-verification of Steps 124-128, and the post-Step-128 exit verification.
+records Steps 115-123 as merged and post-merge verified. Step 129 remains
+gated behind completion plus Windows/WSL verification of Steps 124-128 and the
+post-Step-128 exit verification.
 
 Step 118, layer/elevation style primitive mapped onto deterministic z order,
 is merged on `master` at `9dfc2e7 feat: add layer elevation z order`. RED
@@ -385,9 +379,9 @@ targeted tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux
 full debug passed 26/26. Step 123, text element caret and selection paint
 metadata, is the next implementation slice.
 
-Step 123, text element caret and selection paint metadata, is implemented in
-`.worktrees/text-caret-selection-paint` on
-`codex/text-caret-selection-paint`. RED failed as expected on missing
+Step 123, text element caret and selection paint metadata, is merged on
+`master` at `b0b9e00 feat: add text caret selection paint`. RED failed as
+expected on missing
 `PaintCommandKind::text_selection`, `PaintCommandKind::text_caret`,
 `TextSelectionPaint`, `TextCaretPaint`, `PaintCommand` payloads, and
 `PaintList::fill_text_selection(...)`/`fill_text_caret(...)`. GREEN adds
@@ -395,8 +389,10 @@ metadata-only text selection and caret paint commands, deterministic
 font-size-derived byte-offset geometry, caret emission for empty bound text
 models, and renderer skipping for text-class commands. Feature-worktree
 targeted tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux
-full debug passed 26/26. Step 123 still needs commit, merge, post-merge
-verification, docs closeout, and cleanup before Step 124 begins.
+full debug passed 26/26. Post-merge targeted tests passed 3/3, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 124,
+platform cursor application for Win32 and Wayland, is the next implementation
+slice.
 
 ## Risks
 

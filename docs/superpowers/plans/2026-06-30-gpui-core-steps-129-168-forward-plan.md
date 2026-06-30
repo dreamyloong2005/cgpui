@@ -17,10 +17,8 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-122 are complete on `master`; the Step 122 behavior commit is
-  `58561b1 feat: add font size style`. Step 121's docs closeout is
-  `dc010b6 docs: mark step 121 merged`, and its behavior commit is
-  `cf180f4 feat: add text paint command`.
+- Steps 89-123 are complete on `master`; the Step 123 behavior commit is
+  `b0b9e00 feat: add text caret selection paint`.
 - Step 120 post-merge verification passed before the docs closeout: targeted
   tests 4/4, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121 post-merge verification passed: targeted tests 3/3, Windows full
@@ -28,13 +26,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   committed on `master`.
 - Step 122 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 123 is implemented in `.worktrees/text-caret-selection-paint` on
-  `codex/text-caret-selection-paint` and feature-worktree verified: targeted
-  tests 3/3, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
-  It still needs commit, merge, post-merge verification, docs closeout, and
-  cleanup.
-- Step 123 merge plus Steps 124-128 remain the active implementation gate
-  before this follow-on plan. They are covered by the detailed execution plan in
+- Step 123 post-merge verification passed: targeted tests 3/3, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Steps 124-128 remain the active implementation gate before this follow-on
+  plan. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -422,16 +417,15 @@ Do not begin Step 129 until all of these are true:
   post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 122 font metadata has landed on `master` and is post-merge verified
   on Windows and WSL Arch Linux.
-- [ ] Step 123 caret/selection command metadata has landed on `master` and is
-  post-merge verified on Windows and WSL Arch Linux. It is currently
-  implemented and feature-worktree verified, pending merge/post-merge closeout.
+- [x] Step 123 caret/selection command metadata has landed on `master` and is
+  post-merge verified on Windows and WSL Arch Linux.
 - [ ] Steps 124-128 have landed Win32/Wayland cursor and clipboard hooks, IME
   geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-5 implementation steps after Step 123 merges, Steps 124-128, plus
-post-Step-128 Windows/WSL verification.
+5 implementation steps, Steps 124-128, plus post-Step-128 Windows/WSL
+verification.
 
 ## Back-40 Execution Strategy
 
@@ -496,13 +490,14 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, merge Step 123 instead of starting Step 129:
+For the current pre-back-40 state, start Step 124 instead of starting Step 129:
 
 ```powershell
 git checkout master
 git status --short --branch
-git merge --ff-only codex/text-caret-selection-paint
-xmake test -P . element_test/default text_model_test/default ui_header_cleanliness/default
+git worktree add .worktrees/platform-cursor-application -b codex/platform-cursor-application master
+cd .worktrees/platform-cursor-application
+xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_pointer_button_test/default
 ```
 
 ## Post-Step-128 Planning Contract
