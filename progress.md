@@ -1,5 +1,58 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 116 Flex Grow And Shrink
+
+- Continued Step 116 in `.worktrees/flex-grow-shrink` on
+  `codex/flex-grow-shrink` from `master` at
+  `bc7b1fc docs: plan back forty after step 115`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default style_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Added RED coverage in `style_test`, `element_test`, and
+  `ui_header_cleanliness` for public `Style::flex_grow`,
+  `Style::flex_shrink`, `StyleOverlay` fields and setters, overlay
+  resolution, builder `.flex_grow(...)`/`.flex_shrink(...)`, `Element`
+  accessors, row grow allocation, and column shrink allocation.
+- Verified the RED build failed as expected on missing `flex_grow` and
+  `flex_shrink` style, overlay, builder, and element APIs.
+- Implemented Step 116 in `include/cgpui/ui/style.hpp` and
+  `include/cgpui/ui/element.hpp`: style and overlays now store flex grow and
+  shrink factors, builders propagate factors to final wrapper elements, and
+  flex layout distributes positive main-axis free space by grow weights and
+  constrained overflow by shrink weights.
+- Verified targeted tests:
+  `xmake test -P . element_test/default style_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- During the column shrink test, explicitly set both constrained width and
+  height because `.max_size = {.height = 42.0F}` leaves width at zero in the
+  current aggregate and would collapse output width for unrelated reasons.
+
+## 2026-06-30 Back-40 Planning Hardening During Step 116
+
+- Refined the post-Step-128 follow-on plan at
+  `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`
+  after the user asked to plan the "后40步".
+- Kept the back 40 scoped as Steps 129-168 and preserved the gate: Step 129
+  must not start until Step 128 is merged and Windows/WSL verified on a clean
+  `master`.
+- Added a Back-40 Completion Target covering public context/entity/global
+  APIs, reusable keyed widgets, text/glyph/render metadata, Win32/Wayland
+  platform hooks, and the Step 168 parity audit document.
+- Added explicit Back-40 Non-Goals: no macOS/Metal parity work, no Vulkan or
+  xmake replacement, no full text shaping stack before deterministic shaping
+  contracts, no separate widget framework, and no combining adjacent steps just
+  to reduce commits.
+- Added checkpoint logging rules for Steps 138, 148, 158, and 168, plus an
+  exact Step 129 start packet with preflight verification commands, worktree
+  creation, first RED test targets, and expected RED failure.
+- No implementation code changed for this planning hardening beyond the
+  existing Step 116 worktree edits.
+
 ## 2026-06-30 Step 115 Flex Alignment And Justification
 
 - Continued Step 115 in `.worktrees/flex-alignment-justification` on

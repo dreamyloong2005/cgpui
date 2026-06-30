@@ -4,7 +4,7 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Steps 116-128 remainder intact inside the
+**Architecture:** Keep the active Steps 117-128 remainder intact inside the
 current 89-128 execution queue, then use Steps 129-168 to deepen
 context/entity ergonomics, keyed element reconciliation, reusable widgets,
 text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
@@ -18,14 +18,14 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## Current State
 
 - Steps 89-115 are complete on `master` through
-  `c443592 feat: add flex alignment justification`.
-- Step 115 was post-merge verified on Windows and WSL Arch Linux: targeted
-  tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
-  debug passed 26/26. Its worktree
-  `.worktrees/flex-alignment-justification` has been removed and branch
-  `codex/flex-alignment-justification` has been deleted.
-- Steps 116-128 remain the active gate before this follow-on plan. They are
-  covered by the detailed execution plan in
+  `bc7b1fc docs: plan back forty after step 115`.
+- Step 116 is implemented and feature-worktree verified in
+  `.worktrees/flex-grow-shrink` on branch `codex/flex-grow-shrink`. RED
+  failed as expected on missing flex grow/shrink APIs, targeted tests passed
+  3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26. Merge and post-merge verification remain.
+- Steps 116-128 remain the active gate before this follow-on plan until Step
+  116 is merged. They are covered by the detailed execution plan in
   `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
 - This document is the follow-on plan for the next 40 steps after Step 128.
   Do not execute Step 129 until Step 128 is merged and verified unless the
@@ -36,10 +36,10 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 ## 2026-06-30 Back-40 Planning Refresh
 
 This refresh is anchored at `master` HEAD
-`c443592 feat: add flex alignment justification`. It is the execution plan for
+`bc7b1fc docs: plan back forty after step 115`. It is the execution plan for
 Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is Step 116, flex grow and shrink factors for child
-layout, unless the roadmap is explicitly reprioritized.
+implementation action is committing, merging, post-merge verifying, and
+cleaning up Step 116 unless the roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 116-128 close layout depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -51,11 +51,12 @@ layout, unless the roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- From the current `master` state, the effective distance to Step 129 is 13
-  implementation steps, Steps 116-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. The effective distance through Step 168 is 53
-  implementation steps plus the post-Step-128 verification and the four band
-  checkpoint reviews.
+- From the current feature-worktree state, the effective distance to Step 129
+  is 13 implementation steps until Step 116 is merged. After Step 116 merges,
+  it becomes 12 implementation steps, Steps 117-128, plus post-Step-128
+  targeted, Windows, and WSL verification. The effective distance through Step
+  168 becomes 52 implementation steps after Step 116 merges, plus the
+  post-Step-128 verification and the four band checkpoint reviews.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
   implemented, partial, missing, and Mac/Metal-deferred areas with a
   Windows/Linux completion lens.
@@ -109,6 +110,46 @@ application through the public prelude.
   runtime storage, window lifecycle events, Win32 and Wayland IME/DnD hooks,
   platform wakeups, accessibility snapshots, demo smoke tests, and the final
   GPUI-core API parity audit.
+
+## Back-40 Completion Target
+
+After Step 168, the Windows/Linux track should be able to support a small
+GPUI-like app without reaching through private runtime plumbing:
+
+- App code uses `cgpui/cgpui.hpp`, `Context<T>`-shaped APIs, entities,
+  globals, scoped actions, subscriptions, deferred work, timers, async
+  completions, and diagnostics from public headers.
+- UI code composes keyed elements and reusable button, label, text input, and
+  scrollable list widgets with style classes, theme tokens, style states, and
+  focus handles.
+- Paint output carries enough deterministic metadata for text, glyphs,
+  opacity, transforms, clips, HiDPI scale, batching, and unsupported-command
+  diagnostics that the Vulkan backend can evolve without changing public UI
+  APIs again.
+- Win32 and Wayland expose the platform hooks needed by the active API:
+  multi-window records, lifecycle events, IME geometry, drag/drop skeletons,
+  wakeups, accessibility snapshots, clipboard/cursor continuity, and demo smoke
+  coverage.
+- `docs/gpui-core-api-parity.md` is the truth source for what is implemented,
+  partial, missing, and Mac/Metal-deferred. Step 168 closes this milestone by
+  making the remaining gaps explicit, not by claiming full upstream GPUI
+  parity.
+
+## Back-40 Non-Goals
+
+Keep these out of Steps 129-168 unless the roadmap is explicitly rewritten:
+
+- Do not start macOS/Cocoa + Metal parity work. Only document Mac boundaries in
+  the Step 168 audit.
+- Do not replace Vulkan, the current xmake setup, or the existing Win32/Wayland
+  platform split.
+- Do not pull in a full text shaping stack or OS font fallback policy before
+  the deterministic shaping/glyph-cache contracts exist.
+- Do not turn widget primitives into a separate framework. They should remain
+  examples of what the public element, style, context, and action APIs can
+  express.
+- Do not combine adjacent steps to save commits. The small RED/GREEN cadence is
+  part of the safety model for keeping Windows and WSL verification green.
 
 ## Back-40 Planning Commitments
 
@@ -164,12 +205,13 @@ Do not begin Step 129 until all of these are true:
 - [x] Step 113 wheel/trackpad scroll routing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 114 overflow-aware hit testing has landed on `master` and is post-merge verified on Windows and WSL Arch Linux.
 - [ ] Steps 116-118 have landed the remaining planned layout primitives. Step
-  115 flex alignment/justification is already merged and post-merge verified.
+  116 is feature-worktree verified and pending merge/post-merge verification.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count from the current `master` state:
-13 steps, Steps 116-128, plus post-Step-128 Windows/WSL verification.
+Remaining pre-back-40 implementation count from the current feature-worktree
+state: 13 steps until Step 116 merges, then 12 steps, Steps 117-128, plus
+post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 
@@ -234,13 +276,15 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 116 instead of starting Step
-129:
+For the current pre-back-40 state, finish Step 116 merge and post-merge
+verification instead of starting Step 129:
 
 ```powershell
-git worktree add .worktrees/flex-grow-shrink -b codex/flex-grow-shrink master
 cd .worktrees/flex-grow-shrink
 xmake test -P . element_test/default style_test/default ui_header_cleanliness/default
+git commit -m "feat: add flex grow shrink layout"
+cd ..\..
+git merge --ff-only codex/flex-grow-shrink
 ```
 
 ## Post-Step-128 Planning Contract
@@ -266,6 +310,11 @@ Run these checkpoint reviews in addition to the per-step verification matrix:
 - After Step 148: confirm button, label, text input, and scrollable list are implemented from public element/context/style APIs and survive keyed reconciliation.
 - After Step 158: confirm demo/widget paint command streams include text, glyph metadata, opacity/transform, HiDPI scale, batching diagnostics, and unsupported-command diagnostics.
 - After Step 168: confirm `docs/gpui-core-api-parity.md` separates implemented, partial, missing, and Mac/Metal-deferred areas, and that Windows plus WSL verification passed after the final merge.
+
+Each checkpoint should leave a short entry in `progress.md` and `findings.md`
+before the next band starts. If a checkpoint finds an API shape that is too
+thin for the next band, add a small follow-up step to this document rather than
+silently expanding the next implementation branch.
 
 Keep these 40 steps sequential by default. A later step may be split if its RED
 test reveals a larger dependency, but do not combine adjacent steps just
@@ -373,6 +422,33 @@ fast-forward merge:
   renderer diagnostics, HiDPI scale, and unsupported-command reporting.
 - Steps 159-168 close the Windows/Linux loop. Keep macOS/Metal as a handoff
   boundary in Step 168; do not pull it into the active verification definition.
+
+## Step 129 Start Packet
+
+When the Step 128 exit contract is satisfied, begin the back 40 with this
+exact setup:
+
+```powershell
+git status --short --branch
+xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default
+xmake f -c -m debug -P .
+xmake test -P .
+wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
+git worktree add .worktrees/context-authoring-alias -b codex/context-authoring-alias master
+```
+
+Then add the Step 129 RED tests before touching implementation code:
+
+- `tests/header_cleanliness/prelude_header_cleanliness.cpp` should compile a
+  small authoring snippet that names `Context<SomeView>`.
+- `tests/ui/window_runtime_test.cpp` should verify the alias can call existing
+  context helpers without losing `ViewContext` behavior.
+- Expected RED failure: `cgpui::Context<T>` is not declared or cannot call the
+  existing context helper surface.
+
+Do not reuse the Step 128 worktree for Step 129. The back-40 queue should start
+from a verified `master` so later parity claims are anchored to the public
+Step 128 demo state.
 
 ## Milestone Bands
 

@@ -799,6 +799,101 @@ int test_flex_row_align_items_positions_children_on_cross_axis() {
              : 245;
 }
 
+int test_element_builder_flex_grow_and_shrink_shortcuts_apply_to_children() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .child(cgpui::div()
+                                         .size(10.0F, 4.0F)
+                                         .flex_grow(2.0F)
+                                         .flex_shrink(3.0F))
+                              .child(cgpui::div()
+                                         .size(20.0F, 4.0F)
+                                         .flex_grow(1.0F)
+                                         .flex_shrink(1.0F)));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr || flex->children().size() != 2) {
+    return 251;
+  }
+
+  const cgpui::Element& first = *flex->children()[0];
+  const cgpui::Element& second = *flex->children()[1];
+  if (first.flex_grow() != 2.0F || first.flex_shrink() != 3.0F ||
+      second.flex_grow() != 1.0F || second.flex_shrink() != 1.0F) {
+    return 252;
+  }
+  return 0;
+}
+
+int test_flex_row_grow_expands_children_on_main_axis() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::h_flex()
+                              .gap(4.0F)
+                              .child(cgpui::div()
+                                         .size(10.0F, 5.0F)
+                                         .flex_grow(1.0F))
+                              .child(cgpui::div()
+                                         .size(20.0F, 5.0F)
+                                         .flex_grow(2.0F)));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr) {
+    return 253;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{
+      .constraints = {.min_size = {.width = 64.0F}},
+  });
+  if (output.size.width != 64.0F || output.size.height != 5.0F) {
+    return 254;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      flex->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  return first_bounds.has_value() && second_bounds.has_value() &&
+                 first_bounds->origin.x == 0.0F &&
+                 first_bounds->size.width == 20.0F &&
+                 second_bounds->origin.x == 24.0F &&
+                 second_bounds->size.width == 40.0F
+             ? 0
+             : 255;
+}
+
+int test_flex_column_shrink_reduces_children_on_main_axis() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::v_flex()
+                              .gap(2.0F)
+                              .child(cgpui::div()
+                                         .size(4.0F, 30.0F)
+                                         .flex_shrink(1.0F))
+                              .child(cgpui::div()
+                                         .size(4.0F, 20.0F)
+                                         .flex_shrink(3.0F)));
+  auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (flex == nullptr) {
+    return 256;
+  }
+
+  const cgpui::LayoutOutput output = flex->layout(cgpui::LayoutInput{
+      .constraints = {.max_size = {.width = 100.0F, .height = 42.0F}},
+  });
+  if (output.size.width != 4.0F || output.size.height != 42.0F) {
+    return 257;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      flex->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      flex->children()[1]->layout_bounds();
+  return first_bounds.has_value() && second_bounds.has_value() &&
+                 first_bounds->origin.y == 0.0F &&
+                 first_bounds->size.height == 27.5F &&
+                 second_bounds->origin.y == 29.5F &&
+                 second_bounds->size.height == 12.5F
+             ? 0
+             : 258;
+}
+
 int test_flex_column_lays_out_children_top_to_bottom() {
   cgpui::FlexElement flex(cgpui::FlexDirection::column);
   flex.append_child(
@@ -2753,6 +2848,19 @@ int main() {
   }
   if (const int result =
           test_flex_row_align_items_positions_children_on_cross_axis();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_flex_grow_and_shrink_shortcuts_apply_to_children();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_flex_row_grow_expands_children_on_main_axis();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_flex_column_shrink_reduces_children_on_main_axis();
       result != 0) {
     return result;
   }

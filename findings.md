@@ -1,5 +1,40 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Flex Grow And Shrink
+
+- Flex grow and shrink factors need to live on `Element`, not only on
+  `Style`, because the parent `FlexElement` reads each final child element
+  during layout.
+- Builder-created behavior wrappers must copy the flex factors onto the
+  outermost wrapper (`ClickElement`, `PointerElement`, `KeyElement`, and
+  `FocusableElement`). Otherwise the parent flex container would see zero
+  factors when a child has handlers or focusability.
+- Default grow/shrink factors remain `0.0F`, preserving previous flex layout
+  for existing children unless authors explicitly opt in.
+- Shrink tests that constrain only height must still provide a nonzero max
+  width when using aggregate `Size` initialization, because omitted width
+  fields default to zero and can collapse output width before shrink behavior
+  is evaluated.
+
+## 2026-06-30 Back-40 Planning Hardening
+
+- The后 40 步 should be treated as an execution-ready continuation of the
+  current Step 128 gate, not as a separate roadmap. The useful completion
+  target is a practical Windows/Linux GPUI-core foundation with public
+  context/entity/global APIs, reusable keyed widgets, deterministic
+  text/render metadata, platform hooks, and an explicit parity audit.
+- Step 168 remains an audit milestone rather than a full GPUI parity claim.
+  The audit should be the authoritative place for implemented, partial,
+  missing, and Mac/Metal-deferred areas.
+- The back-40 non-goals are important safety rails: do not begin macOS/Metal
+  parity, do not replace Vulkan/xmake, do not require a full shaping stack
+  before deterministic text contracts exist, do not create a separate widget
+  framework, and do not combine small steps to reduce commit count.
+- Step 129 should start from a verified `master` with a fresh
+  `.worktrees/context-authoring-alias` worktree. Its first RED should be a
+  public `Context<T>` authoring alias compile failure plus a runtime test that
+  proves the alias preserves existing `ViewContext` helper behavior.
+
 ## 2026-06-30 Flex Alignment And Justification
 
 - Flex alignment and justification can stay entirely in shared style/element

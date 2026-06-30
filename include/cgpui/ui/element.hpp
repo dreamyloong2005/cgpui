@@ -111,6 +111,22 @@ class Element {
     enabled_ = enabled;
   }
 
+  [[nodiscard]] float flex_grow() const {
+    return flex_grow_;
+  }
+
+  void set_flex_grow(float value) {
+    flex_grow_ = value;
+  }
+
+  [[nodiscard]] float flex_shrink() const {
+    return flex_shrink_;
+  }
+
+  void set_flex_shrink(float value) {
+    flex_shrink_ = value;
+  }
+
   [[nodiscard]] virtual bool focusable() const {
     return false;
   }
@@ -142,6 +158,8 @@ class Element {
  private:
   ElementId id_;
   bool enabled_ = true;
+  float flex_grow_ = 0.0F;
+  float flex_shrink_ = 0.0F;
   mutable std::optional<Rect> layout_bounds_;
 };
 
@@ -288,6 +306,8 @@ class FlexElement : public Element {
     std::vector<Size> child_sizes;
     child_sizes.reserve(children_.size());
     Size content_size;
+    float total_flex_grow = 0.0F;
+    float total_flex_shrink = 0.0F;
     std::size_t child_index = 0;
     for (const auto& child : children_) {
       if (child_index > 0) {
@@ -299,6 +319,8 @@ class FlexElement : public Element {
       }
       const LayoutOutput child_output = child->layout(LayoutInput{});
       child_sizes.push_back(child_output.size);
+      total_flex_grow += std::max(0.0F, child->flex_grow());
+      total_flex_shrink += std::max(0.0F, child->flex_shrink());
 
       if (direction_ == FlexDirection::row) {
         content_size.width += child_output.size.width;
@@ -324,7 +346,37 @@ class FlexElement : public Element {
     const float output_main = row ? output.size.width : output.size.height;
     const float output_cross = row ? output.size.height : output.size.width;
     const float content_main = row ? content_size.width : content_size.height;
-    const float free_space = std::max(0.0F, output_main - content_main);
+    const float positive_free_space = std::max(0.0F, output_main - content_main);
+    const float overflow_space = std::max(0.0F, content_main - output_main);
+    for (std::size_t index = 0; index < child_sizes.size(); ++index) {
+      Size& child_size = child_sizes[index];
+      float child_main = row ? child_size.width : child_size.height;
+      if (positive_free_space > 0.0F && total_flex_grow > 0.0F) {
+        child_main +=
+            positive_free_space *
+            (std::max(0.0F, children_[index]->flex_grow()) / total_flex_grow);
+      } else if (overflow_space > 0.0F && total_flex_shrink > 0.0F) {
+        child_main -=
+            overflow_space *
+            (std::max(0.0F, children_[index]->flex_shrink()) /
+             total_flex_shrink);
+        child_main = std::max(0.0F, child_main);
+      }
+      if (row) {
+        child_size.width = child_main;
+      } else {
+        child_size.height = child_main;
+      }
+    }
+
+    float laid_out_main = 0.0F;
+    for (std::size_t index = 0; index < child_sizes.size(); ++index) {
+      laid_out_main += row ? child_sizes[index].width : child_sizes[index].height;
+      if (index + 1 < child_sizes.size()) {
+        laid_out_main += gap_;
+      }
+    }
+    const float free_space = std::max(0.0F, output_main - laid_out_main);
     float main_offset = 0.0F;
     float extra_gap = 0.0F;
     if (justify_content_ == JustifyContent::center) {
@@ -1003,6 +1055,16 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder flex_grow(float value) && {
+    style_state_.base = style_state_.base.with_flex_grow(value);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder flex_shrink(float value) && {
+    style_state_.base = style_state_.base.with_flex_shrink(value);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder enabled(bool value) && {
     enabled_ = value;
     return std::move(*this);
@@ -1112,10 +1174,14 @@ class ElementBuilder {
   [[nodiscard]] std::unique_ptr<Element> finish(
       std::unique_ptr<Element> element) const {
     element->set_enabled(enabled_);
+    element->set_flex_grow(style_state_.base.flex_grow);
+    element->set_flex_shrink(style_state_.base.flex_shrink);
     if (click_handler_) {
       auto click_element =
           std::make_unique<ClickElement>(std::move(element), click_handler_);
       click_element->set_enabled(enabled_);
+      click_element->set_flex_grow(style_state_.base.flex_grow);
+      click_element->set_flex_shrink(style_state_.base.flex_shrink);
       element = std::move(click_element);
     }
     if (pointer_down_handler_ || pointer_up_handler_ || pointer_move_handler_) {
@@ -1125,18 +1191,24 @@ class ElementBuilder {
           pointer_up_handler_,
           pointer_move_handler_);
       pointer_element->set_enabled(enabled_);
+      pointer_element->set_flex_grow(style_state_.base.flex_grow);
+      pointer_element->set_flex_shrink(style_state_.base.flex_shrink);
       element = std::move(pointer_element);
     }
     if (key_handler_) {
       auto key_element =
           std::make_unique<KeyElement>(std::move(element), key_handler_);
       key_element->set_enabled(enabled_);
+      key_element->set_flex_grow(style_state_.base.flex_grow);
+      key_element->set_flex_shrink(style_state_.base.flex_shrink);
       element = std::move(key_element);
     }
     if (focusable_) {
       auto focusable_element =
           std::make_unique<FocusableElement>(std::move(element));
       focusable_element->set_enabled(enabled_);
+      focusable_element->set_flex_grow(style_state_.base.flex_grow);
+      focusable_element->set_flex_shrink(style_state_.base.flex_shrink);
       element = std::move(focusable_element);
     }
     return element;

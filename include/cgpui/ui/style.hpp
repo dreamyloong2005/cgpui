@@ -150,6 +150,8 @@ struct Style {
   float gap = 0.0F;
   AlignItems align_items = AlignItems::start;
   JustifyContent justify_content = JustifyContent::start;
+  float flex_grow = 0.0F;
+  float flex_shrink = 0.0F;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -230,6 +232,18 @@ struct Style {
     return style;
   }
 
+  [[nodiscard]] constexpr Style with_flex_grow(float value) const {
+    Style style = *this;
+    style.flex_grow = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_flex_shrink(float value) const {
+    Style style = *this;
+    style.flex_shrink = value;
+    return style;
+  }
+
   [[nodiscard]] constexpr Style with_clip_rect(Rect rect) const {
     Style style = *this;
     style.clip_rect = rect;
@@ -252,6 +266,8 @@ struct StyleOverlay {
   std::optional<float> gap;
   std::optional<AlignItems> align_items;
   std::optional<JustifyContent> justify_content;
+  std::optional<float> flex_grow;
+  std::optional<float> flex_shrink;
 
   [[nodiscard]] constexpr StyleOverlay with_background_color(
       Color color) const {
@@ -337,6 +353,18 @@ struct StyleOverlay {
     return overlay;
   }
 
+  [[nodiscard]] constexpr StyleOverlay with_flex_grow(float value) const {
+    StyleOverlay overlay = *this;
+    overlay.flex_grow = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_flex_shrink(float value) const {
+    StyleOverlay overlay = *this;
+    overlay.flex_shrink = value;
+    return overlay;
+  }
+
   [[nodiscard]] constexpr StyleOverlay with_clip_rect(Rect rect) const {
     StyleOverlay overlay = *this;
     overlay.clip_rect = rect;
@@ -401,6 +429,12 @@ struct StyleStateFlags {
   }
   if (overlay.justify_content.has_value()) {
     style.justify_content = *overlay.justify_content;
+  }
+  if (overlay.flex_grow.has_value()) {
+    style.flex_grow = *overlay.flex_grow;
+  }
+  if (overlay.flex_shrink.has_value()) {
+    style.flex_shrink = *overlay.flex_shrink;
   }
   return style;
 }

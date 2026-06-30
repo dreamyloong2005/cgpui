@@ -147,7 +147,10 @@ int main() {
       cgpui::into_element(cgpui::h_flex()
                               .align_items(cgpui::AlignItems::center)
                               .justify_content(cgpui::JustifyContent::end)
-                              .child(cgpui::div().size(1.0F, 1.0F)));
+                              .child(cgpui::div()
+                                         .size(1.0F, 1.0F)
+                                         .flex_grow(1.0F)
+                                         .flex_shrink(2.0F)));
   const auto* flex = dynamic_cast<const cgpui::FlexElement*>(flex_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
@@ -186,6 +189,8 @@ int main() {
                   flex != nullptr &&
                   flex->align_items() == cgpui::AlignItems::center &&
                   flex->justify_content() == cgpui::JustifyContent::end &&
+                  flex->children()[0]->flex_grow() == 1.0F &&
+                  flex->children()[0]->flex_shrink() == 2.0F &&
                   scroll_model.offset().x == 0.0F
               ? 0
               : 1;

@@ -14,14 +14,13 @@
 
 - Steps 89-115 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `c443592 feat: add flex alignment justification`. The
-  Step 115 worktree `.worktrees/flex-alignment-justification` has been
-  removed and its branch `codex/flex-alignment-justification` deleted.
-- Step 115 post-merge verification passed: targeted tests 3/3, Windows full
-  debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 116, flex grow and shrink factors for child layout, is the next active
-  implementation slice. Use `.worktrees/flex-grow-shrink` on branch
-  `codex/flex-grow-shrink`.
+- `master` includes `bc7b1fc docs: plan back forty after step 115`.
+- Step 116 is implemented and feature-worktree verified in
+  `.worktrees/flex-grow-shrink` on `codex/flex-grow-shrink`. RED failed as
+  expected on missing flex grow/shrink APIs, targeted tests passed 3/3,
+  Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+  The next action is to commit, merge, post-merge verify, and clean up Step
+  116.
 
 ## File Map
 
@@ -261,17 +260,19 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 116 from a fresh feature worktree:
+Finish Step 116 merge and post-merge verification from the existing feature
+worktree:
 
 ```powershell
-git worktree add .worktrees/flex-grow-shrink -b codex/flex-grow-shrink master
 cd .worktrees/flex-grow-shrink
 xmake test -P . element_test/default style_test/default ui_header_cleanliness/default
+git commit -m "feat: add flex grow shrink layout"
+cd ..\..
+git merge --ff-only codex/flex-grow-shrink
 ```
 
-Add RED coverage for child flex grow/shrink factors and confirm it fails for
-the expected missing API or behavior before implementing the smallest GREEN
-change.
+After post-merge Windows and WSL verification, Step 117 is the next
+implementation slice.
 
 ## Step Details
 
@@ -600,14 +601,17 @@ passed 26/26.
 
 ### Step 116: Flex Grow and Shrink
 
+Status: implemented and verified in `.worktrees/flex-grow-shrink`; merge and
+post-merge verification remain.
+
 **Files:**
 - Modify: `include/cgpui/ui/style.hpp`
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for child flex grow/shrink factors affecting main-axis allocation.
-- [ ] Store flex item data on elements or builder-created wrappers without changing default zero-grow behavior.
-- [ ] Targeted test command: `xmake test -P . element_test/default style_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for child flex grow/shrink factors affecting main-axis allocation.
+- [x] Store flex item data on elements or builder-created wrappers without changing default zero-grow behavior.
+- [x] Targeted test command: `xmake test -P . element_test/default style_test/default ui_header_cleanliness/default`.
 
 ### Step 117: Absolute Positioning and Insets
 
