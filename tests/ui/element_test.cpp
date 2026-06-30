@@ -1448,6 +1448,9 @@ int test_styled_element_paints_background_rect_from_layout_bounds() {
   if (commands.size() != 1) {
     return 63;
   }
+  if (commands[0].kind != cgpui::PaintCommandKind::solid_rect) {
+    return 269;
+  }
 
   const cgpui::SolidRect& rect = commands[0].solid_rect;
   if (rect.rect.origin.x != 0.0F || rect.rect.origin.y != 0.0F ||
@@ -1456,8 +1459,60 @@ int test_styled_element_paints_background_rect_from_layout_bounds() {
   }
   return rect.color.r == color.r && rect.color.g == color.g &&
                  rect.color.b == color.b && rect.color.a == color.a
+              ? 0
+              : 65;
+}
+
+int test_styled_element_paints_rounded_background_rect_metadata() {
+  const cgpui::Color color{
+      .r = 0.9F,
+      .g = 0.4F,
+      .b = 0.2F,
+      .a = 1.0F,
+  };
+  const cgpui::BorderRadii radius =
+      cgpui::BorderRadii::corners(4.0F, 5.0F, 6.0F, 7.0F);
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(color)
+                     .with_border_radius(radius)
+                     .with_preferred_size(
+                         cgpui::Size{.width = 44.0F, .height = 22.0F}))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 44.0F || output.size.height != 22.0F) {
+    return 270;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1) {
+    return 271;
+  }
+  if (commands[0].kind != cgpui::PaintCommandKind::rounded_rect) {
+    return 272;
+  }
+
+  const cgpui::RoundedRect& rounded = commands[0].rounded_rect;
+  if (rounded.rect.origin.x != 0.0F || rounded.rect.origin.y != 0.0F ||
+      rounded.rect.size.width != 44.0F ||
+      rounded.rect.size.height != 22.0F) {
+    return 273;
+  }
+  if (rounded.color.r != color.r || rounded.color.g != color.g ||
+      rounded.color.b != color.b || rounded.color.a != color.a) {
+    return 274;
+  }
+  return rounded.radius.top_left == 4.0F &&
+                 rounded.radius.top_right == 5.0F &&
+                 rounded.radius.bottom_right == 6.0F &&
+                 rounded.radius.bottom_left == 7.0F
              ? 0
-             : 65;
+             : 275;
 }
 
 int test_styled_element_without_background_paints_nothing() {
@@ -1567,22 +1622,32 @@ int test_paint_list_attaches_current_clip_to_commands() {
       cgpui::Rect{.size = {.width = 20.0F, .height = 10.0F}},
       cgpui::Color{.g = 0.2F, .a = 1.0F});
   paint_list.pop_clip();
+  paint_list.push_clip(clip);
+  paint_list.fill_rounded_rect(
+      cgpui::Rect{.size = {.width = 25.0F, .height = 12.0F}},
+      cgpui::Color{.r = 0.4F, .a = 1.0F},
+      cgpui::BorderRadii::all(3.0F));
+  paint_list.pop_clip();
   paint_list.fill_rect(
       cgpui::Rect{.size = {.width = 30.0F, .height = 10.0F}},
       cgpui::Color{.b = 0.3F, .a = 1.0F});
 
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 3) {
+  if (commands.size() != 4) {
     return 127;
   }
-  if (commands[0].clip_rect.has_value() || commands[2].clip_rect.has_value()) {
+  if (commands[0].clip_rect.has_value() || commands[3].clip_rect.has_value()) {
     return 128;
   }
-  return commands[1].clip_rect.has_value() &&
+  return commands[1].kind == cgpui::PaintCommandKind::solid_rect &&
+                 commands[2].kind == cgpui::PaintCommandKind::rounded_rect &&
+                 commands[1].clip_rect.has_value() &&
+                 commands[2].clip_rect.has_value() &&
                  commands[1].clip_rect->origin.x == 2.0F &&
-                 commands[1].clip_rect->origin.y == 3.0F &&
+                 commands[2].clip_rect->origin.y == 3.0F &&
+                 commands[2].rounded_rect.radius.top_left == 3.0F &&
                  commands[1].clip_rect->size.width == 40.0F &&
-                 commands[1].clip_rect->size.height == 20.0F
+                 commands[2].clip_rect->size.height == 20.0F
              ? 0
              : 129;
 }
@@ -3148,6 +3213,11 @@ int main() {
   }
   if (const int result =
           test_styled_element_paints_background_rect_from_layout_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_paints_rounded_background_rect_metadata();
       result != 0) {
     return result;
   }

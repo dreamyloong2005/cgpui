@@ -14,12 +14,13 @@
 
 - Steps 89-118 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
-- `master` includes `9dfc2e7 feat: add layer elevation z order`.
+- `master` includes `4038376 docs: refresh back forty plan after step 118`.
 - Step 118 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
-- Step 119, rounded-rect paint command, is the next active implementation
-  slice. Start it from a fresh `.worktrees/rounded-rect-paint-command`
-  worktree on branch `codex/rounded-rect-paint-command`.
+- Step 119, rounded-rect paint command, is implemented and feature-worktree
+  verified in `.worktrees/rounded-rect-paint-command` on branch
+  `codex/rounded-rect-paint-command`. Step 120 becomes the next implementation
+  slice after Step 119 is merged and post-merge verified.
 
 ## File Map
 
@@ -144,7 +145,7 @@ Acceptance at the end of Band C:
 
 Purpose: replace placeholder rendering and memory-only platform behaviors with command and backend surfaces that Windows/Linux can actually consume.
 
-- [ ] Step 119: rounded-rect paint command preserves border radius metadata.
+- [x] Step 119: rounded-rect paint command preserves border radius metadata.
 - [ ] Step 120: Vulkan honors clip rect metadata for solid rectangles.
 - [ ] Step 121: text paint command separates text drawing from placeholder rectangles.
 - [ ] Step 122: font descriptor and basic font-size style primitives.
@@ -163,10 +164,11 @@ Acceptance at the end of Band D:
 - Clipboard operations are no longer limited to memory-only tests on Windows; Wayland has a protocol-shaped skeleton.
 - The demo exercises the public prelude instead of low-level runtime setup.
 
-## Remaining Execution Queue From Step 118
+## Remaining Execution Queue From Step 119
 
-This is the practical remaining sequence after Step 118. Steps 89-118 are kept
-as completed foundation; the active remaining queue is Steps 119-128.
+This is the practical remaining sequence after Step 119. Steps 89-119 are kept
+as completed foundation after Step 119 is merged and post-merge verified; the
+active remaining queue is Steps 120-128.
 
 ### Checkpoint 1: Finish Authoring Entry, Steps 93-98
 
@@ -237,7 +239,7 @@ minimum controls for app-like UI.
 Goal: harden the renderer/platform surface for Windows and Wayland/Vulkan while
 leaving macOS/Metal for a later parity track.
 
-- [ ] Step 119: add rounded-rect paint commands with border-radius metadata.
+- [x] Step 119: add rounded-rect paint commands with border-radius metadata.
 - [ ] Step 120: make Vulkan honor clip rect metadata for solid rectangles.
 - [ ] Step 121: add text paint commands instead of placeholder rectangles.
 - [ ] Step 122: add font descriptors and basic font-size style.
@@ -259,16 +261,18 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Start Step 119 from a fresh feature worktree:
+After Step 119 is committed, merged, and post-merge verified, start Step 120
+from a fresh feature worktree:
 
 ```powershell
-git worktree add .worktrees/rounded-rect-paint-command -b codex/rounded-rect-paint-command master
-cd .worktrees/rounded-rect-paint-command
-xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default
+git worktree add .worktrees/vulkan-clip-rect-metadata -b codex/vulkan-clip-rect-metadata master
+cd .worktrees/vulkan-clip-rect-metadata
+xmake test -P . vulkan_solid_rect_test/default
 ```
 
-Step 119 should add RED coverage for rounded-rect paint command metadata before
-teaching backend code to consume it.
+Step 120 should add RED coverage for Vulkan consuming `PaintCommand::clip_rect`
+metadata for solid rectangles. It should not change rounded-rect drawing
+behavior yet.
 
 ## Step Details
 
@@ -638,6 +642,14 @@ Arch Linux full debug passed 26/26.
 
 ### Step 119: Rounded-Rect Paint Command
 
+Status: implemented and feature-worktree verified in
+`.worktrees/rounded-rect-paint-command` on
+`codex/rounded-rect-paint-command`. RED failed as expected on missing
+`PaintCommandKind`, `RoundedRect`, `PaintCommand::kind`,
+`PaintCommand::rounded_rect`, and `PaintList::fill_rounded_rect(...)`.
+Feature-worktree targeted tests passed 3/3, Windows full debug passed 29/29,
+and WSL Arch Linux full debug passed 26/26.
+
 **Files:**
 - Modify: `include/cgpui/renderer/renderer.hpp`
 - Modify: `include/cgpui/ui/ui.hpp`
@@ -646,9 +658,9 @@ Arch Linux full debug passed 26/26.
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED tests for paint commands carrying border radius metadata without losing existing solid rect behavior.
-- [ ] Extend command data before teaching Vulkan new drawing behavior.
-- [ ] Targeted test command: `xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for paint commands carrying border radius metadata without losing existing solid rect behavior.
+- [x] Extend command data before teaching Vulkan new drawing behavior.
+- [x] Targeted test command: `xmake test -P . element_test/default render_view_test/default ui_header_cleanliness/default`.
 
 ### Step 120: Vulkan Clip Rect Metadata
 

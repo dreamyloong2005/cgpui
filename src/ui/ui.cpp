@@ -127,7 +127,24 @@ void PaintList::pop_clip() {
 
 void PaintList::fill_rect(Rect rect, Color color) {
   commands_.push_back(PaintCommand{
+      .kind = PaintCommandKind::solid_rect,
       .solid_rect = SolidRect{.rect = rect, .color = color},
+      .rounded_rect = RoundedRect{},
+      .clip_rect = clip_stack_.empty()
+                       ? std::optional<Rect>{}
+                       : std::optional<Rect>{clip_stack_.back()}});
+}
+
+void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
+  commands_.push_back(PaintCommand{
+      .kind = PaintCommandKind::rounded_rect,
+      .solid_rect = SolidRect{.rect = rect, .color = color},
+      .rounded_rect =
+          RoundedRect{
+              .rect = rect,
+              .color = color,
+              .radius = radius,
+          },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
                        : std::optional<Rect>{clip_stack_.back()}});
@@ -177,7 +194,16 @@ void StyledElement::paint(PaintList& paint_list) const {
                              : *bounds);
   }
   if (bounds.has_value() && base_style.background_color.has_value()) {
-    paint_list.fill_rect(*bounds, *base_style.background_color);
+    const BorderRadii radius = base_style.border_radius;
+    if (radius.top_left > 0.0F || radius.top_right > 0.0F ||
+        radius.bottom_right > 0.0F || radius.bottom_left > 0.0F) {
+      paint_list.fill_rounded_rect(
+          *bounds,
+          *base_style.background_color,
+          radius);
+    } else {
+      paint_list.fill_rect(*bounds, *base_style.background_color);
+    }
   }
   if (bounds.has_value() && base_style.border_color.has_value()) {
     const Rect rect = *bounds;

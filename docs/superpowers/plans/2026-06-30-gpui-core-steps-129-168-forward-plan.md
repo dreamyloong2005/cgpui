@@ -23,8 +23,8 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 118 post-merge verification passed: targeted tests 3/3, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 119, rounded-rect paint command preserving border radius metadata, is
-  the next active implementation slice. Start it from a fresh
-  `.worktrees/rounded-rect-paint-command` worktree on branch
+  implemented and feature-worktree verified in
+  `.worktrees/rounded-rect-paint-command` on branch
   `codex/rounded-rect-paint-command`.
 - Steps 119-128 remain the active gate before this follow-on plan. They are
   covered by the detailed execution plan in
@@ -41,8 +41,8 @@ This refresh is anchored at `master` HEAD
 `c0d38c7 docs: mark step 118 merged`. The Step 118 behavior commit is
 `9dfc2e7 feat: add layer elevation z order`. This is the execution plan for
 Steps 129-168 after the Step 128 gate, not a new active branch queue. The next
-implementation action is Step 119, rounded-rect paint command, unless the
-roadmap is explicitly reprioritized.
+implementation action after Step 119 is merged and post-merge verified is Step
+120, Vulkan clip rect metadata, unless the roadmap is explicitly reprioritized.
 
 - Finish the current gate first: Steps 119-128 close render command depth,
   render command metadata, cursor/clipboard/IME hooks, and the public-prelude
@@ -54,11 +54,11 @@ roadmap is explicitly reprioritized.
   implementation, targeted tests, Windows full debug, WSL Arch full debug,
   docs/progress update, commit, fast-forward merge, post-merge verification,
   and cleanup.
-- From the current `master` state, the effective distance to Step 129 is 10
-  implementation steps, Steps 119-128, plus post-Step-128 targeted, Windows,
-  and WSL verification. The effective distance through Step 168 is 50
-  implementation steps plus the post-Step-128 verification and the four band
-  checkpoint reviews.
+- After Step 119 merges, the effective distance to Step 129 is 9 implementation
+  steps, Steps 120-128, plus Step 119 post-merge verification and the
+  post-Step-128 targeted, Windows, and WSL verification. The effective distance
+  through Step 168 is 49 implementation steps plus those verification gates and
+  the four band checkpoint reviews.
 - The main worktree currently has no tracked or staged changes; `.vscode/`
   remains the known local-only untracked item.
 - Step 168 is a milestone audit, not a parity victory lap. It should document
@@ -231,12 +231,15 @@ Do not begin Step 129 until all of these are true:
   post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 118 layer/elevation ordering has landed on `master` and is
   post-merge verified on Windows and WSL Arch Linux.
+- [ ] Step 119 rounded-rect command metadata is implemented and
+  feature-worktree verified; it still needs merge and post-merge Windows/WSL
+  verification on `master`.
 - [ ] Steps 119-128 have landed rounded/text/caret/selection command metadata, Vulkan clip handling, Win32/Wayland cursor and clipboard hooks, IME geometry, and the public-prelude demo rewrite.
 - [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
 
-Remaining pre-back-40 implementation count from the current `master` state:
-10 implementation steps, Steps 119-128, plus post-Step-128 Windows/WSL
-verification.
+Remaining pre-back-40 implementation count after Step 119 merges:
+9 implementation steps, Steps 120-128, plus Step 119 post-merge verification
+and post-Step-128 Windows/WSL verification.
 
 ## Back-40 Execution Strategy
 

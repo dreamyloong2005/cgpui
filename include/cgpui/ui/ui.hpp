@@ -36,8 +36,21 @@ template <typename T>
 using ModelObserver =
     std::function<void(const WindowRuntimeContext&, Model<T>)>;
 
+enum class PaintCommandKind {
+  solid_rect,
+  rounded_rect,
+};
+
+struct RoundedRect {
+  Rect rect;
+  Color color;
+  BorderRadii radius;
+};
+
 struct PaintCommand {
+  PaintCommandKind kind = PaintCommandKind::solid_rect;
   SolidRect solid_rect;
+  RoundedRect rounded_rect;
   std::optional<Rect> clip_rect;
 };
 
@@ -47,6 +60,7 @@ class PaintList {
   void push_clip(Rect rect);
   void pop_clip();
   void fill_rect(Rect rect, Color color);
+  void fill_rounded_rect(Rect rect, Color color, BorderRadii radius);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
  private:

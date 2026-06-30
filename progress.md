@@ -1,5 +1,38 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-06-30 Step 119 Rounded-Rect Paint Command
+
+- Started Step 119 in `.worktrees/rounded-rect-paint-command` on
+  `codex/rounded-rect-paint-command` from `master` at
+  `4038376 docs: refresh back forty plan after step 118`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default render_view_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Added RED coverage in `element_test` and `ui_header_cleanliness` for public
+  `PaintCommandKind`, `RoundedRect`, `PaintCommand::kind`,
+  `PaintCommand::rounded_rect`, `PaintList::fill_rounded_rect(...)`, rounded
+  background metadata, and clip metadata propagation for rounded commands.
+- Verified the RED build failed as expected on missing `PaintCommandKind`,
+  `RoundedRect`, `PaintCommand::kind`, `PaintCommand::rounded_rect`, and
+  `PaintList::fill_rounded_rect(...)` APIs.
+- Implemented Step 119 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  paint commands now distinguish `solid_rect` and `rounded_rect`, rounded
+  commands preserve `BorderRadii` metadata, styled backgrounds with nonzero
+  border radii emit rounded commands, and the existing renderer path keeps a
+  solid-rect fallback for source compatibility until later backend work.
+- Verified targeted tests:
+  `xmake test -P . element_test/default render_view_test/default
+  ui_header_cleanliness/default` passed 3/3.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .`
+  passed 26/26.
+- Updated `task_plan.md`, the 89-128 execution plan, and the 129-168
+  follow-on plan so Step 119 is marked implemented and feature-worktree
+  verified. Step 120 becomes the next implementation slice after Step 119
+  merge and post-merge verification.
+
 ## 2026-06-30 Back-40 Planning After Step 118 Docs Closeout
 
 - Refreshed the post-Step-128 back-40 planning document after the user asked to

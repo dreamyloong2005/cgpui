@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-06-30 Rounded-Rect Paint Command
+
+- Step 119 keeps rounded rectangles as paint-list command metadata first. The
+  Vulkan backend still receives the `solid_rect` fallback carried by each
+  command; actual rounded drawing is intentionally left for later renderer
+  work.
+- Nonzero `Style::border_radius` on a styled background emits
+  `PaintCommandKind::rounded_rect` with a `RoundedRect` payload preserving all
+  four corner radii. Zero radius preserves the existing
+  `PaintCommandKind::solid_rect` background behavior.
+- `PaintList::fill_rounded_rect(...)` attaches the same active clip metadata as
+  `fill_rect(...)`, so Step 120 can focus on Vulkan clip consumption without
+  revisiting command storage.
+- The next renderer slice should teach Vulkan to honor `PaintCommand::clip_rect`
+  for solid rectangles. It should not implement real rounded-rect rasterization
+  yet unless the plan is explicitly changed.
+
 ## 2026-06-30 Back-40 Planning After Step 118 Docs Closeout
 
 - The后 40 步 are Steps 129-168 and remain gated behind completion of Steps

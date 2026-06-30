@@ -17,6 +17,10 @@ class TestView final : public cgpui::View {
     paint_list.fill_rect(
         cgpui::Rect{.origin = {10.0F, 10.0F}, .size = {20.0F, 20.0F}},
         cgpui::Color{.r = 1.0F, .g = 0.0F, .b = 0.0F, .a = 1.0F});
+    paint_list.fill_rounded_rect(
+        cgpui::Rect{.origin = {1.0F, 2.0F}, .size = {3.0F, 4.0F}},
+        cgpui::Color{.r = 0.0F, .g = 1.0F, .b = 0.0F, .a = 1.0F},
+        cgpui::BorderRadii::all(2.0F));
   }
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
@@ -170,7 +174,14 @@ int main() {
   scroll_model.set_viewport_size(cgpui::Size{10.0F, 10.0F});
   text_model.insert_text("x");
   view.paint(paint_list, cgpui::Size{100.0F, 100.0F});
-  return paint_list.commands().size() == 1 && text_model.text() == "x" &&
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 2) {
+    return 1;
+  }
+  const cgpui::RoundedRect& rounded = commands[1].rounded_rect;
+  return commands[0].kind == cgpui::PaintCommandKind::solid_rect &&
+                 commands[1].kind == cgpui::PaintCommandKind::rounded_rect &&
+                 rounded.radius.top_left == 2.0F && text_model.text() == "x" &&
                  render_record.sequence == 1 &&
                  render_record.root_element_id.has_value() &&
                  event_route.element_ancestry.size() == 1 &&

@@ -101,18 +101,19 @@ RED test intent, targeted commands, checkpoint exits, and Windows/WSL
 verification matrix for all 40 follow-on steps. It records the current
 pre-back-40 handoff state at `c0d38c7 docs: mark step 118 merged`; the Step
 118 feature commit is `9dfc2e7 feat: add layer elevation z order`.
-Steps 89-118 are merged and post-merge verified on Windows and WSL Arch Linux,
-and Step 129 remains gated behind completion and Windows/WSL verification of
-Steps 119-128.
+Steps 89-118 are merged and post-merge verified on Windows and WSL Arch Linux.
+Step 119 is implemented and feature-worktree verified; Step 129 remains gated
+behind completion and Windows/WSL verification of Steps 120-128 plus Step 119
+post-merge verification.
 
-From the current `master` state, the effective distance to Step 129 is 10
-implementation steps, Steps 119-128, plus post-Step-128 targeted, Windows, and
-WSL verification. The effective distance through Step 168 is 50 implementation
-steps plus the post-Step-128 verification and the four follow-on band
-checkpoint reviews.
+After Step 119 merges, the effective distance to Step 129 is 9 implementation
+steps, Steps 120-128, plus Step 119 post-merge verification and the
+post-Step-128 targeted, Windows, and WSL verification. The effective distance
+through Step 168 is 49 implementation steps plus those verification gates and
+the four follow-on band checkpoint reviews.
 
 These steps are intentionally queued after Step 128. They should not preempt
-the current Step 119-128 queue unless the plan is explicitly reprioritized.
+the current Step 120-128 queue unless the plan is explicitly reprioritized.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -244,7 +245,7 @@ the current Step 119-128 queue unless the plan is explicitly reprioritized.
 116. [x] Flex grow and shrink factors for child layout.
 117. [x] Absolute positioning and inset style primitive.
 118. [x] Layer/elevation style primitive mapped onto deterministic z order.
-119. [ ] Rounded-rect paint command that preserves border radius metadata.
+119. [x] Rounded-rect paint command that preserves border radius metadata.
 120. [ ] Vulkan renderer honors clip rect metadata for solid rectangles.
 121. [ ] Text paint command separates text drawing from placeholder rectangles.
 122. [ ] Font descriptor and basic font-size style primitives.
@@ -339,9 +340,15 @@ passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug
 passed 26/26.
 
 Step 119, rounded-rect paint command that preserves border radius metadata, is
-now the active implementation step. Start it from a fresh
-`.worktrees/rounded-rect-paint-command` worktree on branch
-`codex/rounded-rect-paint-command`.
+implemented and feature-worktree verified in
+`.worktrees/rounded-rect-paint-command` on
+`codex/rounded-rect-paint-command`. RED failed as expected on missing
+`PaintCommandKind`, `RoundedRect`, `PaintCommand::kind`,
+`PaintCommand::rounded_rect`, and `PaintList::fill_rounded_rect(...)`.
+Feature-worktree targeted tests passed 3/3, Windows full debug passed 29/29,
+and WSL Arch Linux full debug passed 26/26. After Step 119 is merged and
+post-merge verified, Step 120, Vulkan clip rect metadata for solid rectangles,
+is the next implementation slice.
 
 ## Risks
 
