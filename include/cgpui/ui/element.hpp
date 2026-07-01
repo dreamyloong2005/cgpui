@@ -1306,6 +1306,117 @@ class ScrollElement : public Element {
   std::unique_ptr<Element> child_;
 };
 
+class ScrollableListElement : public Element {
+ public:
+  ScrollableListElement(
+      ScrollState& state,
+      Style style,
+      std::vector<AnyElement> items,
+      float gap = 0.0F)
+      : state_(&state),
+        style_(std::move(style)) {
+    content_.set_gap(gap);
+    for (auto& item : items) {
+      content_.append_child(std::move(item));
+    }
+  }
+
+  [[nodiscard]] ScrollState* state() {
+    return state_;
+  }
+
+  [[nodiscard]] const ScrollState* state() const {
+    return state_;
+  }
+
+  [[nodiscard]] VerticalStackElement& content() {
+    return content_;
+  }
+
+  [[nodiscard]] const VerticalStackElement& content() const {
+    return content_;
+  }
+
+  [[nodiscard]] std::size_t item_count() const {
+    return content_.children().size();
+  }
+
+  [[nodiscard]] const Style& style() const {
+    return style_;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const LayoutOutput content_output = content_.layout(LayoutInput{});
+    Size preferred = style_.preferred_size;
+    if (preferred.width == 0.0F) {
+      preferred.width = content_output.size.width;
+    }
+    if (preferred.height == 0.0F) {
+      preferred.height = content_output.size.height;
+    }
+
+    const LayoutOutput output{
+        .size = constrain_size(preferred, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+
+    Point offset;
+    if (state_ != nullptr) {
+      state_->set_viewport_size(output.size);
+      state_->set_content_size(content_output.size);
+      offset = state_->offset();
+    }
+
+    content_.set_layout_bounds(Rect{
+        .origin = {.x = -offset.x, .y = -offset.y},
+        .size = content_output.size,
+    });
+    for (const auto& child : content_.children()) {
+      if (const std::optional<Rect> bounds = child->layout_bounds();
+          bounds.has_value()) {
+        child->set_layout_bounds(Rect{
+            .origin = {.x = bounds->origin.x - offset.x,
+                       .y = bounds->origin.y - offset.y},
+            .size = bounds->size,
+        });
+      }
+    }
+
+    return output;
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    return Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override;
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    if (!enabled()) {
+      return EventResult::unhandled();
+    }
+    return content_.handle_event(event, context);
+  }
+
+  [[nodiscard]] int z_index() const override {
+    return style_.z_index;
+  }
+
+  [[nodiscard]] int layer() const override {
+    return style_.layer;
+  }
+
+ private:
+  ScrollState* state_ = nullptr;
+  Style style_;
+  mutable VerticalStackElement content_;
+};
+
 class ElementBuilder {
  public:
   [[nodiscard]] static ElementBuilder box() {
@@ -1925,6 +2036,114 @@ class ButtonBuilder {
 
 [[nodiscard]] inline ButtonBuilder button(std::string_view action_name) {
   return ButtonBuilder(std::string(action_name));
+}
+
+class ScrollableListBuilder {
+ public:
+  explicit ScrollableListBuilder(ScrollState& state) : state_(&state) {}
+
+  [[nodiscard]] ScrollableListBuilder style(Style style) && {
+    style_ = std::move(style);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder size(Size size) && {
+    style_ = style_.with_preferred_size(size);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder size(float width, float height) && {
+    return std::move(*this).size(Size{.width = width, .height = height});
+  }
+
+  [[nodiscard]] ScrollableListBuilder gap(float value) && {
+    gap_ = value;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder key(ElementKey key) && {
+    key_ = std::move(key);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder key(std::string_view value) && {
+    key_ = ElementKey{.value = std::string(value)};
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder enabled(bool value) && {
+    enabled_ = value;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder disabled() && {
+    enabled_ = false;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder item(
+      ElementKey key,
+      AnyElement child) && {
+    if (child) {
+      child->set_key(std::move(key));
+      items_.push_back(std::move(child));
+    }
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ScrollableListBuilder item(
+      std::string_view key,
+      AnyElement child) && {
+    return std::move(*this).item(
+        ElementKey{.value = std::string(key)},
+        std::move(child));
+  }
+
+  [[nodiscard]] ScrollableListBuilder item(
+      std::string_view key,
+      ElementBuilder child) && {
+    return std::move(*this).item(key, into_element(std::move(child)));
+  }
+
+  template <typename T>
+    requires std::derived_from<T, Element> && (!std::same_as<T, Element>)
+  [[nodiscard]] ScrollableListBuilder item(
+      std::string_view key,
+      std::unique_ptr<T> child) && {
+    return std::move(*this).item(
+        key,
+        std::unique_ptr<Element>(std::move(child)));
+  }
+
+  [[nodiscard]] AnyElement build() && {
+    auto element = std::make_unique<ScrollableListElement>(
+        *state_,
+        style_,
+        std::move(items_),
+        gap_);
+    element->set_enabled(enabled_);
+    element->set_key(key_);
+    element->set_flex_grow(style_.flex_grow);
+    element->set_flex_shrink(style_.flex_shrink);
+    element->set_position(style_.position);
+    element->set_inset(style_.inset);
+    element->set_z_index(style_.z_index);
+    element->set_layer(style_.layer);
+    return element;
+  }
+
+ private:
+  ScrollState* state_ = nullptr;
+  Style style_;
+  float gap_ = 0.0F;
+  std::optional<ElementKey> key_;
+  bool enabled_ = true;
+  std::vector<AnyElement> items_;
+};
+
+[[nodiscard]] inline ScrollableListBuilder scrollable_list(
+    ScrollState& state) {
+  return ScrollableListBuilder(state);
 }
 
 [[nodiscard]] inline AnyElement scroll(ScrollState& state, AnyElement child) {

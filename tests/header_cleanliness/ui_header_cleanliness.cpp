@@ -337,6 +337,15 @@ int main() {
       cgpui::div().size(cgpui::Size{7.0F, 8.0F}));
   const auto* scroll =
       dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
+  cgpui::ScrollState list_scroll_state;
+  cgpui::AnyElement list_element =
+      cgpui::scrollable_list(list_scroll_state)
+          .size(12.0F, 9.0F)
+          .item("first", cgpui::div().size(12.0F, 4.0F))
+          .item("second", cgpui::div().size(12.0F, 4.0F))
+          .build();
+  const auto* list =
+      dynamic_cast<const cgpui::ScrollableListElement*>(list_element.get());
   cgpui::AnyElement button_element =
       cgpui::button("header.accept")
           .style(cgpui::Style{}.with_preferred_size(
@@ -410,6 +419,9 @@ int main() {
                   styled->style().foreground_color.has_value() &&
                   styled->style().foreground_color->a == 0.5F &&
                   scroll != nullptr && scroll->state() == &scroll_state &&
+                  list != nullptr && list->state() == &list_scroll_state &&
+                  list->item_count() == 2 &&
+                  list->content().children()[0]->key().has_value() &&
                   flex != nullptr &&
                   flex->align_items() == cgpui::AlignItems::center &&
                   flex->justify_content() == cgpui::JustifyContent::end &&

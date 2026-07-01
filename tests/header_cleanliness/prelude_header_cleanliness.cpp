@@ -73,6 +73,14 @@ int main() {
       cgpui::scroll(scroll_state, cgpui::div().size(6.0F, 7.0F));
   const auto* scroll =
       dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
+  cgpui::ScrollState list_scroll_state;
+  cgpui::AnyElement list_element =
+      cgpui::scrollable_list(list_scroll_state)
+          .size(10.0F, 8.0F)
+          .item("row", cgpui::div().size(10.0F, 4.0F))
+          .build();
+  const auto* list =
+      dynamic_cast<const cgpui::ScrollableListElement*>(list_element.get());
   cgpui::AnyElement label_element =
       cgpui::label("Prelude Label")
           .foreground(cgpui::rgb(220, 230, 240))
@@ -118,6 +126,8 @@ int main() {
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
                  scroll != nullptr && scroll->state() == &scroll_state &&
+                 list != nullptr && list->state() == &list_scroll_state &&
+                 list->item_count() == 1 &&
                  label != nullptr && label->text() == "Prelude Label" &&
                  label->font_size() == 12.0F &&
                  text_input != nullptr && text_input->model() == &model &&

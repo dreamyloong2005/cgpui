@@ -3743,6 +3743,74 @@ int test_scroll_element_binds_state_and_preserves_child_layout() {
              : 228;
 }
 
+int test_scrollable_list_container_keys_clip_and_scroll_offset() {
+  cgpui::ScrollState state;
+  cgpui::AnyElement element =
+      cgpui::scrollable_list(state)
+          .size(40.0F, 30.0F)
+          .item("alpha",
+                cgpui::div()
+                    .size(40.0F, 20.0F)
+                    .background(cgpui::rgb(10, 20, 30)))
+          .item("beta",
+                cgpui::div()
+                    .size(40.0F, 20.0F)
+                    .background(cgpui::rgb(40, 50, 60)))
+          .build();
+
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr || list->state() != &state || list->item_count() != 2) {
+    return 365;
+  }
+  if (list->content().children()[0]->key()->value != "alpha" ||
+      list->content().children()[1]->key()->value != "beta") {
+    return 366;
+  }
+
+  const cgpui::LayoutOutput first_layout = list->layout(cgpui::LayoutInput{});
+  if (first_layout.size.width != 40.0F || first_layout.size.height != 30.0F ||
+      state.viewport_size().height != 30.0F ||
+      state.content_size().height != 40.0F) {
+    return 367;
+  }
+
+  state.set_offset(cgpui::Point{.x = 0.0F, .y = 10.0F});
+  const cgpui::LayoutOutput scrolled_layout = list->layout(cgpui::LayoutInput{});
+  if (scrolled_layout.size.width != 40.0F ||
+      scrolled_layout.size.height != 30.0F ||
+      state.offset().y != 10.0F) {
+    return 368;
+  }
+
+  const std::optional<cgpui::Rect> alpha_bounds =
+      list->content().children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> beta_bounds =
+      list->content().children()[1]->layout_bounds();
+  if (!alpha_bounds.has_value() || !beta_bounds.has_value() ||
+      alpha_bounds->origin.y != -10.0F || beta_bounds->origin.y != 10.0F) {
+    return 369;
+  }
+
+  cgpui::PaintList paint_list;
+  list->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 2 ||
+      commands[0].kind != cgpui::PaintCommandKind::solid_rect ||
+      commands[1].kind != cgpui::PaintCommandKind::solid_rect) {
+    return 370;
+  }
+  if (!commands[0].clip_rect.has_value() ||
+      !commands[1].clip_rect.has_value() ||
+      commands[0].clip_rect->size.width != 40.0F ||
+      commands[0].clip_rect->size.height != 30.0F ||
+      commands[0].solid_rect.rect.origin.y != -10.0F ||
+      commands[1].solid_rect.rect.origin.y != 10.0F) {
+    return 371;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -4270,6 +4338,11 @@ int main() {
   }
   if (const int result =
           test_scroll_element_binds_state_and_preserves_child_layout();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scrollable_list_container_keys_clip_and_scroll_offset();
       result != 0) {
     return result;
   }

@@ -390,6 +390,21 @@ void ButtonElement::paint(PaintList& paint_list) const {
   }
 }
 
+void ScrollableListElement::paint(PaintList& paint_list) const {
+  const std::optional<Rect> bounds = layout_bounds();
+  if (bounds.has_value()) {
+    paint_list.push_clip(*bounds);
+  }
+  for (const auto& child : content_.children()) {
+    if (child) {
+      child->paint(paint_list);
+    }
+  }
+  if (bounds.has_value()) {
+    paint_list.pop_clip();
+  }
+}
+
 void LabelElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   if (!bounds.has_value() || text().empty()) {
