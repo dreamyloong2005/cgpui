@@ -2306,6 +2306,59 @@ int test_label_widget_paints_text_without_editing_metadata() {
              : 358;
 }
 
+int test_text_input_widget_is_focusable_editable_text_element() {
+  cgpui::TextModel model("input");
+  cgpui::AnyElement element =
+      cgpui::text_input(model)
+          .foreground(cgpui::rgb(30, 60, 90))
+          .font(cgpui::FontDescriptor{.family = "Input"})
+          .font_size(18.0F)
+          .key("primary-input")
+          .build();
+
+  const auto* input =
+      dynamic_cast<const cgpui::TextInputElement*>(element.get());
+  if (input == nullptr || input->model() != &model ||
+      input->text() != "input") {
+    return 359;
+  }
+  if (!input->focusable() || !input->key().has_value() ||
+      input->key()->value != "primary-input") {
+    return 360;
+  }
+  if (input->font().family != "Input" || input->font_size() != 18.0F ||
+      !input->style().foreground_color.has_value()) {
+    return 361;
+  }
+
+  model.set_selection(1, 4);
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 45.0F || output.size.height != 18.0F) {
+    return 362;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 3 ||
+      commands[0].kind != cgpui::PaintCommandKind::text_selection ||
+      commands[1].kind != cgpui::PaintCommandKind::text ||
+      commands[2].kind != cgpui::PaintCommandKind::text_caret) {
+    return 363;
+  }
+
+  const cgpui::TextSelectionPaint& selection = commands[0].text_selection;
+  const cgpui::TextPaint& text = commands[1].text;
+  const cgpui::TextCaretPaint& caret = commands[2].text_caret;
+  return selection.range.start == 1 && selection.range.end == 4 &&
+                 selection.rect.size.width == 27.0F &&
+                 text.content == "input" && text.font.family == "Input" &&
+                 text.font_size == 18.0F && caret.byte_offset == 4 &&
+                 caret.rect.origin.x == 36.0F
+             ? 0
+             : 364;
+}
+
 int test_child_view_element_references_view_and_lays_out_placeholder() {
   cgpui::ChildViewElement element(
       cgpui::ViewId{42},
@@ -4011,6 +4064,11 @@ int main() {
   }
   if (const int result =
           test_label_widget_paints_text_without_editing_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_input_widget_is_focusable_editable_text_element();
       result != 0) {
     return result;
   }

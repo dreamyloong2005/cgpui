@@ -738,6 +738,35 @@ class TextElement : public Element {
   Style style_;
 };
 
+class TextInputElement : public TextElement {
+ public:
+  explicit TextInputElement(TextModel& model, Style style = {})
+      : TextElement(&model, std::move(style)) {}
+
+  [[nodiscard]] bool focusable() const override {
+    return true;
+  }
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    (void)context;
+    if (!enabled()) {
+      return EventResult::unhandled();
+    }
+    if (std::holds_alternative<TextInput>(event) ||
+        std::holds_alternative<ImeComposition>(event)) {
+      return EventResult::consumed_event();
+    }
+    if (const auto* pointer = std::get_if<PointerButton>(&event);
+        pointer != nullptr && pointer->pressed &&
+        pointer->button == MouseButton::left) {
+      return EventResult::consumed_event();
+    }
+    return EventResult::unhandled();
+  }
+};
+
 class LabelElement : public Element {
  public:
   explicit LabelElement(std::string text, Style style = {})
@@ -1664,6 +1693,74 @@ class ElementBuilder {
 
 [[nodiscard]] inline ElementBuilder child_view(ViewId view_id) {
   return ElementBuilder::child_view(view_id);
+}
+
+class TextInputBuilder {
+ public:
+  explicit TextInputBuilder(TextModel& model) : model_(&model) {}
+
+  [[nodiscard]] TextInputBuilder style(Style style) && {
+    style_ = std::move(style);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder foreground(Color color) && {
+    style_ = style_.with_foreground_color(color);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder font(FontDescriptor descriptor) && {
+    style_ = style_.with_font(std::move(descriptor));
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder font_size(float value) && {
+    style_ = style_.with_font_size(value);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder key(ElementKey key) && {
+    key_ = std::move(key);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder key(std::string_view value) && {
+    key_ = ElementKey{.value = std::string(value)};
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder enabled(bool value) && {
+    enabled_ = value;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] TextInputBuilder disabled() && {
+    enabled_ = false;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] AnyElement build() && {
+    auto element = std::make_unique<TextInputElement>(*model_, style_);
+    element->set_enabled(enabled_);
+    element->set_key(key_);
+    element->set_flex_grow(element->style().flex_grow);
+    element->set_flex_shrink(element->style().flex_shrink);
+    element->set_position(element->style().position);
+    element->set_inset(element->style().inset);
+    element->set_z_index(element->style().z_index);
+    element->set_layer(element->style().layer);
+    return element;
+  }
+
+ private:
+  TextModel* model_ = nullptr;
+  Style style_;
+  std::optional<ElementKey> key_;
+  bool enabled_ = true;
+};
+
+[[nodiscard]] inline TextInputBuilder text_input(TextModel& model) {
+  return TextInputBuilder(model);
 }
 
 class LabelBuilder {

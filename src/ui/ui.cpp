@@ -834,14 +834,12 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
         }
       }
       if (keyboard_focus_element_owner_.has_value()) {
-        const auto model =
-            text_models_.find(keyboard_focus_element_owner_->value);
-        if (model != text_models_.end() && model->second != nullptr) {
+        if (TextModel* model = focused_text_model(); model != nullptr) {
           for (const TextEditBinding& binding : text_edit_bindings_) {
             if (binding.key_code == key->key_code &&
                 binding.action == key->action &&
                 modifiers_equal(binding.modifiers, key->modifiers)) {
-              (void)model->second->apply_edit_action(binding.edit_action);
+              (void)model->apply_edit_action(binding.edit_action);
               break;
             }
           }
@@ -850,27 +848,23 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     }
     if (const auto* text = std::get_if<TextInput>(&event);
         text != nullptr && keyboard_focus_element_owner_.has_value()) {
-      const auto model =
-          text_models_.find(keyboard_focus_element_owner_->value);
-      if (model != text_models_.end() && model->second != nullptr) {
-        model->second->insert_text(text->text);
+      if (TextModel* model = focused_text_model(); model != nullptr) {
+        model->insert_text(text->text);
       }
     }
     if (const auto* composition = std::get_if<ImeComposition>(&event);
         composition != nullptr && keyboard_focus_element_owner_.has_value()) {
-      const auto model =
-          text_models_.find(keyboard_focus_element_owner_->value);
-      if (model != text_models_.end() && model->second != nullptr) {
+      if (TextModel* model = focused_text_model(); model != nullptr) {
         switch (composition->phase) {
           case ImeCompositionPhase::update:
-            model->second->set_composition_text(composition->text);
+            model->set_composition_text(composition->text);
             break;
           case ImeCompositionPhase::commit:
-            model->second->set_composition_text(composition->text);
-            model->second->commit_composition();
+            model->set_composition_text(composition->text);
+            model->commit_composition();
             break;
           case ImeCompositionPhase::cancel:
-            model->second->cancel_composition();
+            model->cancel_composition();
             break;
         }
       }
@@ -1454,10 +1448,13 @@ TextModel* WindowRuntime::focused_text_model() {
   }
 
   const auto model = text_models_.find(keyboard_focus_element_owner_->value);
-  if (model == text_models_.end()) {
-    return nullptr;
+  if (model != text_models_.end()) {
+    return model->second;
   }
-  return model->second;
+
+  auto* input = dynamic_cast<TextInputElement*>(
+      routed_element(*keyboard_focus_element_owner_));
+  return input == nullptr ? nullptr : input->model();
 }
 
 const TextModel* WindowRuntime::focused_text_model() const {
@@ -1466,19 +1463,18 @@ const TextModel* WindowRuntime::focused_text_model() const {
   }
 
   const auto model = text_models_.find(keyboard_focus_element_owner_->value);
-  if (model == text_models_.end()) {
-    return nullptr;
+  if (model != text_models_.end()) {
+    return model->second;
   }
-  return model->second;
+
+  const auto* input = dynamic_cast<const TextInputElement*>(
+      routed_element(*keyboard_focus_element_owner_));
+  return input == nullptr ? nullptr : input->model();
 }
 
 std::optional<ImeCandidateRect> WindowRuntime::focused_text_ime_rect() const {
-  if (!keyboard_focus_element_owner_.has_value()) {
-    return {};
-  }
-
-  const auto model = text_models_.find(keyboard_focus_element_owner_->value);
-  if (model == text_models_.end() || model->second == nullptr) {
+  const TextModel* model = focused_text_model();
+  if (!keyboard_focus_element_owner_.has_value() || model == nullptr) {
     return {};
   }
 
@@ -1493,7 +1489,7 @@ std::optional<ImeCandidateRect> WindowRuntime::focused_text_ime_rect() const {
     return {};
   }
 
-  const std::size_t byte_offset = model->second->cursor();
+  const std::size_t byte_offset = model->cursor();
   return ImeCandidateRect{
       .element_id = *keyboard_focus_element_owner_,
       .rect =

@@ -322,6 +322,15 @@ int main() {
           .build();
   const auto* label =
       dynamic_cast<const cgpui::LabelElement*>(label_element.get());
+  cgpui::AnyElement text_input_element =
+      cgpui::text_input(text_model)
+          .foreground(cgpui::rgb(230, 235, 240))
+          .font(cgpui::FontDescriptor{.family = "Input"})
+          .font_size(16.0F)
+          .key("header-input")
+          .build();
+  const auto* text_input =
+      dynamic_cast<const cgpui::TextInputElement*>(text_input_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
       scroll_state,
@@ -419,6 +428,12 @@ int main() {
                   label->font_size() == 13.0F &&
                   label_element->key().has_value() &&
                   label_element->key()->value == "header-label" &&
+                  text_input != nullptr &&
+                  text_input->model() == &text_model &&
+                  text_input->focusable() &&
+                  text_input->font().family == "Input" &&
+                  text_input_element->key().has_value() &&
+                  text_input_element->key()->value == "header-input" &&
                   button != nullptr &&
                   button->action_name() == "header.accept" &&
                   button->focusable() &&

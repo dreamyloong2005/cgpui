@@ -6379,6 +6379,109 @@ int test_runtime_routes_text_input_to_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* text_input_widget_fixture = nullptr;
+
+void dispatch_text_input_widget_sequence() {
+  auto& callback = text_input_widget_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::TextInput{.text = "!"});
+  callback(cgpui::KeyboardKey{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.shift = true}});
+}
+
+int test_runtime_routes_text_input_widget_without_manual_binding() {
+  RuntimeFixture fixture;
+  text_input_widget_fixture = &fixture;
+  fixture.app.on_run = &dispatch_text_input_widget_sequence;
+
+  cgpui::TextModel model("abcd");
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId input_id =
+      tree->set_root(cgpui::text_input(model)
+                         .font(cgpui::FontDescriptor{.family = "Input"})
+                         .font_size(20.0F)
+                         .key("runtime-input")
+                         .build());
+  cgpui::TextInputElement* input =
+      tree->find_as<cgpui::TextInputElement>(input_id);
+  if (input == nullptr || !input->focusable() ||
+      input->model() != &model) {
+    return 310;
+  }
+
+  fixture.view.focused_keyboard_element_id = input_id;
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::MemoryClipboard clipboard;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_clipboard(&clipboard);
+  runtime.set_element_tree(std::move(tree));
+  runtime.bind_text_edit_action(cgpui::TextEditBinding{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed,
+      .edit_action = cgpui::TextEditAction::move_previous});
+  runtime.bind_text_edit_action(cgpui::TextEditBinding{
+      .key_code = 37,
+      .action = cgpui::KeyAction::pressed,
+      .modifiers = {.shift = true},
+      .edit_action = cgpui::TextEditAction::extend_previous});
+
+  bool copied = false;
+  bool cut = false;
+  bool pasted = false;
+  std::optional<cgpui::ImeCandidateRect> ime_rect;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.sequence == 4) {
+          copied = context.runtime.copy_selection_to_clipboard();
+          cut = context.runtime.cut_selection_to_clipboard();
+          pasted = context.runtime.paste_clipboard_text();
+          ime_rect = context.runtime.focused_text_ime_rect();
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  text_input_widget_fixture = nullptr;
+
+  if (result != 0) {
+    return 311;
+  }
+  if (runtime.focused_text_model() != &model) {
+    return 312;
+  }
+  if (!copied || !cut || !pasted) {
+    return 313;
+  }
+  const std::optional<std::string> clipboard_text = clipboard.read_text();
+  if (!clipboard_text.has_value() || *clipboard_text != "d") {
+    return 314;
+  }
+  if (model.text() != "abcd!" || model.cursor() != 4 ||
+      !model.selection().collapsed) {
+    return 315;
+  }
+  if (!ime_rect.has_value() || ime_rect->element_id != input_id ||
+      ime_rect->byte_offset != 4 || ime_rect->rect.origin.x != 40.0F ||
+      ime_rect->rect.size.height != 20.0F) {
+    return 316;
+  }
+
+  return 0;
+}
+
 int test_runtime_reports_focused_text_model() {
   RuntimeFixture fixture;
 
@@ -7494,6 +7597,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_text_input_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_routes_text_input_widget_without_manual_binding();
       result != 0) {
     return result;
   }

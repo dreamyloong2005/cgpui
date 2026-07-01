@@ -80,6 +80,13 @@ int main() {
           .build();
   const auto* label =
       dynamic_cast<const cgpui::LabelElement*>(label_element.get());
+  cgpui::AnyElement text_input_element =
+      cgpui::text_input(model)
+          .foreground(cgpui::rgb(235, 240, 245))
+          .font_size(15.0F)
+          .build();
+  const auto* text_input =
+      dynamic_cast<const cgpui::TextInputElement*>(text_input_element.get());
   cgpui::AnyElement button_element =
       cgpui::button("prelude.accept")
           .style(cgpui::Style{}.with_preferred_size(
@@ -113,6 +120,9 @@ int main() {
                  scroll != nullptr && scroll->state() == &scroll_state &&
                  label != nullptr && label->text() == "Prelude Label" &&
                  label->font_size() == 12.0F &&
+                 text_input != nullptr && text_input->model() == &model &&
+                 text_input->focusable() &&
+                 text_input->font_size() == 15.0F &&
                  button != nullptr &&
                  button->action_name() == "prelude.accept" &&
                  button->focusable() && button->child() != nullptr &&
