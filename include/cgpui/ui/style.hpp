@@ -264,6 +264,8 @@ struct Style {
   Position position = Position::relative;
   EdgeSizes inset;
   float font_size = 16.0F;
+  float opacity = 1.0F;
+  AffineTransform transform;
 
   [[nodiscard]] constexpr Style with_background_color(Color color) const {
     Style style = *this;
@@ -391,6 +393,19 @@ struct Style {
     style.clip_rect = rect;
     return style;
   }
+
+  [[nodiscard]] constexpr Style with_opacity(float value) const {
+    Style style = *this;
+    style.opacity = value;
+    return style;
+  }
+
+  [[nodiscard]] constexpr Style with_transform(
+      AffineTransform value) const {
+    Style style = *this;
+    style.transform = value;
+    return style;
+  }
 };
 
 struct StyleOverlay {
@@ -415,6 +430,8 @@ struct StyleOverlay {
   std::optional<EdgeSizes> inset;
   std::optional<FontDescriptor> font;
   std::optional<float> font_size;
+  std::optional<float> opacity;
+  std::optional<AffineTransform> transform;
 
   [[nodiscard]] constexpr StyleOverlay with_background_color(
       Color color) const {
@@ -547,6 +564,19 @@ struct StyleOverlay {
     overlay.clip_rect = rect;
     return overlay;
   }
+
+  [[nodiscard]] constexpr StyleOverlay with_opacity(float value) const {
+    StyleOverlay overlay = *this;
+    overlay.opacity = value;
+    return overlay;
+  }
+
+  [[nodiscard]] constexpr StyleOverlay with_transform(
+      AffineTransform value) const {
+    StyleOverlay overlay = *this;
+    overlay.transform = value;
+    return overlay;
+  }
 };
 
 struct StyleState {
@@ -664,6 +694,12 @@ namespace detail {
   if (style.font_size != defaults.font_size) {
     overlay.font_size = style.font_size;
   }
+  if (style.opacity != defaults.opacity) {
+    overlay.opacity = style.opacity;
+  }
+  if (style.transform != defaults.transform) {
+    overlay.transform = style.transform;
+  }
   return overlay;
 }
 
@@ -734,6 +770,12 @@ namespace detail {
   }
   if (overlay.font_size.has_value()) {
     style.font_size = *overlay.font_size;
+  }
+  if (overlay.opacity.has_value()) {
+    style.opacity = *overlay.opacity;
+  }
+  if (overlay.transform.has_value()) {
+    style.transform = *overlay.transform;
   }
   return style;
 }

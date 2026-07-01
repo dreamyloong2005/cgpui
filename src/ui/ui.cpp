@@ -98,6 +98,22 @@ void apply_pointer_capture_owner_to_route(
   }
 }
 
+PaintMetadata compose_paint_metadata(
+    PaintMetadata parent,
+    PaintMetadata child) {
+  return PaintMetadata{
+      .opacity = parent.opacity * child.opacity,
+      .transform = compose(parent.transform, child.transform),
+  };
+}
+
+PaintMetadata paint_metadata_for_style(const Style& style) {
+  return PaintMetadata{
+      .opacity = style.opacity,
+      .transform = style.transform,
+  };
+}
+
 ElementId hit_test_runtime_element_root(
     const ElementTree* tree,
     const Element* root,
@@ -222,6 +238,7 @@ bool TaskHandle::complete() const {
 void PaintList::clear() {
   commands_.clear();
   clip_stack_.clear();
+  metadata_stack_.clear();
 }
 
 void PaintList::push_clip(Rect rect) {
@@ -234,6 +251,19 @@ void PaintList::pop_clip() {
   }
 }
 
+void PaintList::push_metadata(PaintMetadata metadata) {
+  if (!metadata_stack_.empty()) {
+    metadata = compose_paint_metadata(metadata_stack_.back(), metadata);
+  }
+  metadata_stack_.push_back(metadata);
+}
+
+void PaintList::pop_metadata() {
+  if (!metadata_stack_.empty()) {
+    metadata_stack_.pop_back();
+  }
+}
+
 void PaintList::fill_rect(Rect rect, Color color) {
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::solid_rect,
@@ -241,7 +271,9 @@ void PaintList::fill_rect(Rect rect, Color color) {
       .rounded_rect = RoundedRect{},
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
-                       : std::optional<Rect>{clip_stack_.back()}});
+                       : std::optional<Rect>{clip_stack_.back()},
+      .metadata = metadata_stack_.empty() ? PaintMetadata{}
+                                          : metadata_stack_.back()});
 }
 
 void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
@@ -256,7 +288,9 @@ void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
           },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
-                       : std::optional<Rect>{clip_stack_.back()}});
+                       : std::optional<Rect>{clip_stack_.back()},
+      .metadata = metadata_stack_.empty() ? PaintMetadata{}
+                                          : metadata_stack_.back()});
 }
 
 void PaintList::fill_text(
@@ -280,7 +314,9 @@ void PaintList::fill_text(
           },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
-                       : std::optional<Rect>{clip_stack_.back()}});
+                       : std::optional<Rect>{clip_stack_.back()},
+      .metadata = metadata_stack_.empty() ? PaintMetadata{}
+                                          : metadata_stack_.back()});
 }
 
 void PaintList::fill_text_selection(
@@ -299,7 +335,9 @@ void PaintList::fill_text_selection(
           },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
-                       : std::optional<Rect>{clip_stack_.back()}});
+                       : std::optional<Rect>{clip_stack_.back()},
+      .metadata = metadata_stack_.empty() ? PaintMetadata{}
+                                          : metadata_stack_.back()});
 }
 
 void PaintList::fill_text_caret(
@@ -318,7 +356,9 @@ void PaintList::fill_text_caret(
           },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}
-                       : std::optional<Rect>{clip_stack_.back()}});
+                       : std::optional<Rect>{clip_stack_.back()},
+      .metadata = metadata_stack_.empty() ? PaintMetadata{}
+                                          : metadata_stack_.back()});
 }
 
 std::span<const PaintCommand> PaintList::commands() const {
@@ -357,6 +397,7 @@ AppOpenedWindow AppContext::open_window(
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
+  paint_list.push_metadata(paint_metadata_for_style(base_style));
   const bool uses_hidden_overflow_clip =
       bounds.has_value() && base_style.overflow == Overflow::hidden;
   if (uses_hidden_overflow_clip) {
@@ -371,11 +412,13 @@ void StyledElement::paint(PaintList& paint_list) const {
   if (uses_hidden_overflow_clip) {
     paint_list.pop_clip();
   }
+  paint_list.pop_metadata();
 }
 
 void ButtonElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style_state_.base;
+  paint_list.push_metadata(paint_metadata_for_style(base_style));
   const bool uses_hidden_overflow_clip =
       bounds.has_value() && base_style.overflow == Overflow::hidden;
   if (uses_hidden_overflow_clip) {
@@ -390,10 +433,12 @@ void ButtonElement::paint(PaintList& paint_list) const {
   if (uses_hidden_overflow_clip) {
     paint_list.pop_clip();
   }
+  paint_list.pop_metadata();
 }
 
 void ScrollableListElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
+  paint_list.push_metadata(paint_metadata_for_style(style_));
   if (bounds.has_value()) {
     paint_list.push_clip(*bounds);
   }
@@ -405,6 +450,7 @@ void ScrollableListElement::paint(PaintList& paint_list) const {
   if (bounds.has_value()) {
     paint_list.pop_clip();
   }
+  paint_list.pop_metadata();
 }
 
 void LabelElement::paint(PaintList& paint_list) const {
@@ -414,7 +460,9 @@ void LabelElement::paint(PaintList& paint_list) const {
   }
   const Color text_color = style().foreground_color.value_or(
       Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
+  paint_list.push_metadata(paint_metadata_for_style(style()));
   paint_list.fill_text(*bounds, text_color, text(), style().font, font_size());
+  paint_list.pop_metadata();
 }
 
 void TextElement::paint(PaintList& paint_list) const {
@@ -425,6 +473,7 @@ void TextElement::paint(PaintList& paint_list) const {
   const Style& text_style = style();
   const Color text_color = text_style.foreground_color.value_or(
       Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
+  paint_list.push_metadata(paint_metadata_for_style(text_style));
   const float font_size_value = text_style.font_size;
   const float glyph_width_value = glyph_width();
   const TextSelectionRange selection = model_->selection();
@@ -471,6 +520,7 @@ void TextElement::paint(PaintList& paint_list) const {
       text_color,
       model_->cursor(),
       font_size_value);
+  paint_list.pop_metadata();
 }
 
 Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
@@ -505,11 +555,13 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
           .font_size = text.font_size,
           .glyphs = text.glyphs,
           .clip_rect = command.clip_rect,
+          .metadata = command.metadata,
       });
       continue;
     }
     SolidRect rect = command.solid_rect;
     rect.clip_rect = command.clip_rect;
+    rect.metadata = command.metadata;
     (*frame)->draw_rect(rect);
   }
 

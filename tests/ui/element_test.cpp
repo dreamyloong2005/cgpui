@@ -12,6 +12,13 @@
 
 namespace {
 
+bool same_transform(cgpui::AffineTransform lhs, cgpui::AffineTransform rhs) {
+  return lhs.scale_x == rhs.scale_x && lhs.skew_y == rhs.skew_y &&
+         lhs.skew_x == rhs.skew_x && lhs.scale_y == rhs.scale_y &&
+         lhs.translate_x == rhs.translate_x &&
+         lhs.translate_y == rhs.translate_y;
+}
+
 class TestElement final : public cgpui::Element {};
 
 class NamedElement final : public cgpui::Element {
@@ -2131,6 +2138,55 @@ int test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata() {
              : 134;
 }
 
+int test_styled_element_paint_metadata_composes_opacity_transform_in_order() {
+  const cgpui::Color parent_color{.r = 0.1F, .g = 0.0F, .b = 0.0F, .a = 1.0F};
+  const cgpui::Color child_color{.r = 0.0F, .g = 0.2F, .b = 0.0F, .a = 1.0F};
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .style(cgpui::Style{}
+                     .with_background_color(parent_color)
+                     .with_opacity(0.8F)
+                     .with_transform(
+                         cgpui::AffineTransform::translation(2.0F, 3.0F)))
+          .child(cgpui::ElementBuilder::box()
+                     .style(cgpui::Style{}
+                                .with_background_color(child_color)
+                                .with_preferred_size(
+                                    cgpui::Size{.width = 8.0F, .height = 6.0F})
+                                .with_opacity(0.5F)
+                                .with_transform(
+                                    cgpui::AffineTransform::translation(
+                                        4.0F,
+                                        5.0F))))
+          .build();
+
+  (void)element->layout(cgpui::LayoutInput{});
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 2) {
+    return 393;
+  }
+  if (commands[0].kind != cgpui::PaintCommandKind::solid_rect ||
+      commands[1].kind != cgpui::PaintCommandKind::solid_rect ||
+      commands[0].solid_rect.color.r != parent_color.r ||
+      commands[1].solid_rect.color.g != child_color.g) {
+    return 394;
+  }
+  if (commands[0].metadata.opacity != 0.8F ||
+      !same_transform(
+          commands[0].metadata.transform,
+          cgpui::AffineTransform::translation(2.0F, 3.0F))) {
+    return 395;
+  }
+  return commands[1].metadata.opacity == 0.4F &&
+                 same_transform(
+                     commands[1].metadata.transform,
+                     cgpui::AffineTransform::translation(6.0F, 8.0F))
+             ? 0
+             : 396;
+}
+
 int test_styled_element_hidden_overflow_clips_hit_testing_to_bounds() {
   auto child = std::make_unique<cgpui::FixedSizeElement>(
       cgpui::Size{.width = 50.0F, .height = 30.0F});
@@ -4161,6 +4217,11 @@ int main() {
   }
   if (const int result =
           test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_paint_metadata_composes_opacity_transform_in_order();
       result != 0) {
     return result;
   }

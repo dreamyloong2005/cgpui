@@ -15,6 +15,10 @@ struct TestModel {
 class TestView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.push_metadata(cgpui::PaintMetadata{
+        .opacity = 0.75F,
+        .transform = cgpui::AffineTransform::translation(1.0F, 2.0F),
+    });
     paint_list.fill_rect(
         cgpui::Rect{.origin = {10.0F, 10.0F}, .size = {20.0F, 20.0F}},
         cgpui::Color{.r = 1.0F, .g = 0.0F, .b = 0.0F, .a = 1.0F});
@@ -38,6 +42,7 @@ class TestView final : public cgpui::View {
         cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
         3,
         18.0F);
+    paint_list.pop_metadata();
   }
 
   cgpui::AnyElement render(cgpui::ViewContext& context) override {
@@ -186,13 +191,19 @@ int main() {
                          .with_justify_content(cgpui::JustifyContent::end)
                          .with_layer(2)
                          .with_font(cgpui::FontDescriptor{.family = "Inter"})
-                         .with_font_size(15.0F);
+                         .with_font_size(15.0F)
+                         .with_opacity(0.8F)
+                         .with_transform(
+                             cgpui::AffineTransform::translation(2.0F, 3.0F));
   style_state.hover =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(64, 64, 64))
           .with_justify_content(cgpui::JustifyContent::space_between)
           .with_font(cgpui::FontDescriptor{.family = "Hover"})
-          .with_font_size(17.0F);
+          .with_font_size(17.0F)
+          .with_opacity(0.6F)
+          .with_transform(
+              cgpui::AffineTransform::translation(4.0F, 5.0F));
   const cgpui::Style resolved = cgpui::resolved_style(
       style_state,
       cgpui::StyleStateFlags{.hovered = true});

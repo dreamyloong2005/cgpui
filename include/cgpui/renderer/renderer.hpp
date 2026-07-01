@@ -52,10 +52,20 @@ struct RenderSurfaceDescriptor {
   DpiScale scale;
 };
 
+struct PaintMetadata {
+  float opacity = 1.0F;
+  AffineTransform transform;
+
+  friend bool operator==(
+      const PaintMetadata&,
+      const PaintMetadata&) = default;
+};
+
 struct SolidRect {
   Rect rect;
   Color color;
   std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
 };
 
 struct TextDraw {
@@ -67,6 +77,7 @@ struct TextDraw {
   float font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
   std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
 };
 
 struct GlyphAtlasEntry {

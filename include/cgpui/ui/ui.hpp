@@ -99,6 +99,7 @@ struct PaintCommand {
   TextSelectionPaint text_selection;
   TextCaretPaint text_caret;
   std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
 };
 
 class PaintList {
@@ -106,6 +107,8 @@ class PaintList {
   void clear();
   void push_clip(Rect rect);
   void pop_clip();
+  void push_metadata(PaintMetadata metadata);
+  void pop_metadata();
   void fill_rect(Rect rect, Color color);
   void fill_rounded_rect(Rect rect, Color color, BorderRadii radius);
   void fill_text(
@@ -129,6 +132,7 @@ class PaintList {
  private:
   std::vector<PaintCommand> commands_;
   std::vector<Rect> clip_stack_;
+  std::vector<PaintMetadata> metadata_stack_;
 };
 
 class View {

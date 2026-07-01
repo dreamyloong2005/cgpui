@@ -10,6 +10,13 @@ bool same(float lhs, float rhs) {
   return lhs == rhs;
 }
 
+bool same_transform(cgpui::AffineTransform lhs, cgpui::AffineTransform rhs) {
+  return lhs.scale_x == rhs.scale_x && lhs.skew_y == rhs.skew_y &&
+         lhs.skew_x == rhs.skew_x && lhs.scale_y == rhs.scale_y &&
+         lhs.translate_x == rhs.translate_x &&
+         lhs.translate_y == rhs.translate_y;
+}
+
 int test_edge_sizes_default_to_zero() {
   const cgpui::EdgeSizes edges;
   if (!same(edges.top, 0.0F) || !same(edges.right, 0.0F) ||
@@ -173,6 +180,10 @@ int test_style_defaults_are_empty() {
       !same(style.inset.top, 0.0F) || !same(style.inset.left, 0.0F)) {
     return 56;
   }
+  if (!same(style.opacity, 1.0F) ||
+      !same_transform(style.transform, cgpui::AffineTransform::identity())) {
+    return 78;
+  }
   return 0;
 }
 
@@ -206,6 +217,8 @@ int test_style_builder_methods_store_values() {
           .with_inset(cgpui::edges(9.0F, 10.0F, 11.0F, 12.0F))
           .with_font(cgpui::FontDescriptor{.family = "Inter"})
           .with_font_size(20.0F)
+          .with_opacity(0.5F)
+          .with_transform(cgpui::AffineTransform::translation(6.0F, 7.0F))
           .with_clip_rect(cgpui::Rect{
               .origin = {.x = 3.0F, .y = 4.0F},
               .size = {.width = 50.0F, .height = 60.0F},
@@ -279,6 +292,12 @@ int test_style_builder_methods_store_values() {
   if (style.font.family != "Inter" || !same(style.font_size, 20.0F)) {
     return 62;
   }
+  if (!same(style.opacity, 0.5F) ||
+      !same_transform(
+          style.transform,
+          cgpui::AffineTransform::translation(6.0F, 7.0F))) {
+    return 79;
+  }
   if (!style.clip_rect.has_value() ||
       !same(style.clip_rect->origin.x, 3.0F) ||
       !same(style.clip_rect->origin.y, 4.0F) ||
@@ -305,6 +324,7 @@ int test_style_overlay_defaults_to_no_overrides() {
       overlay.flex_grow.has_value() || overlay.flex_shrink.has_value() ||
       overlay.position.has_value() || overlay.inset.has_value() ||
       overlay.font.has_value() || overlay.font_size.has_value() ||
+      overlay.opacity.has_value() || overlay.transform.has_value() ||
       overlay.clip_rect.has_value()) {
     return 37;
   }
@@ -331,6 +351,8 @@ int test_style_overlay_defaults_to_no_overrides() {
           .with_inset(cgpui::edges(13.0F))
           .with_font(cgpui::FontDescriptor{.family = "Serif"})
           .with_font_size(18.0F)
+          .with_opacity(0.25F)
+          .with_transform(cgpui::AffineTransform::translation(9.0F, 10.0F))
           .with_clip_rect(cgpui::Rect{
               .origin = {.x = 7.0F, .y = 8.0F},
               .size = {.width = 9.0F, .height = 10.0F},
@@ -385,6 +407,13 @@ int test_style_overlay_defaults_to_no_overrides() {
       !authored.font_size.has_value() || *authored.font_size != 18.0F) {
     return 63;
   }
+  if (!authored.opacity.has_value() || *authored.opacity != 0.25F ||
+      !authored.transform.has_value() ||
+      !same_transform(
+          *authored.transform,
+          cgpui::AffineTransform::translation(9.0F, 10.0F))) {
+    return 80;
+  }
   return authored.clip_rect.has_value() &&
                  authored.clip_rect->origin.x == 7.0F &&
                  authored.clip_rect->size.height == 10.0F
@@ -409,7 +438,10 @@ int test_style_state_resolves_hover_focus_disabled_order() {
                    .with_position(cgpui::Position::relative)
                    .with_inset(cgpui::edges(1.0F))
                    .with_font(cgpui::FontDescriptor{.family = "Base"})
-                   .with_font_size(14.0F);
+                   .with_font_size(14.0F)
+                   .with_opacity(0.9F)
+                   .with_transform(
+                       cgpui::AffineTransform::translation(2.0F, 3.0F));
   state.hover =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(30, 30, 30))
@@ -419,7 +451,8 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_flex_grow(2.0F)
           .with_layer(2)
           .with_position(cgpui::Position::absolute)
-          .with_font_size(18.0F);
+          .with_font_size(18.0F)
+          .with_opacity(0.7F);
   state.focus =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(40, 40, 40))
@@ -428,14 +461,17 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_flex_shrink(3.0F)
           .with_layer(3)
           .with_inset(cgpui::edges(4.0F))
-          .with_font(cgpui::FontDescriptor{.family = "Focus"});
+          .with_font(cgpui::FontDescriptor{.family = "Focus"})
+          .with_transform(
+              cgpui::AffineTransform::translation(5.0F, 6.0F));
   state.disabled =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(60, 60, 60))
           .with_border_width(cgpui::edges(3.0F))
           .with_layer(4)
           .with_align_items(cgpui::AlignItems::end)
-          .with_font_size(12.0F);
+          .with_font_size(12.0F)
+          .with_opacity(0.25F);
 
   const cgpui::Style hover =
       cgpui::resolved_style(state, cgpui::StyleStateFlags{.hovered = true});
@@ -449,7 +485,11 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       hover.layer != 2 ||
       hover.position != cgpui::Position::absolute ||
       hover.inset.left != 1.0F ||
-      hover.font.family != "Base" || hover.font_size != 18.0F) {
+      hover.font.family != "Base" || hover.font_size != 18.0F ||
+      hover.opacity != 0.7F ||
+      !same_transform(
+          hover.transform,
+          cgpui::AffineTransform::translation(2.0F, 3.0F))) {
     return 44;
   }
 
@@ -467,7 +507,11 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       focused.layer != 3 ||
       focused.position != cgpui::Position::absolute ||
       focused.inset.left != 4.0F ||
-      focused.font.family != "Focus" || focused.font_size != 18.0F) {
+      focused.font.family != "Focus" || focused.font_size != 18.0F ||
+      focused.opacity != 0.7F ||
+      !same_transform(
+          focused.transform,
+          cgpui::AffineTransform::translation(5.0F, 6.0F))) {
     return 45;
   }
 
@@ -490,7 +534,11 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       disabled.layer != 4 ||
       disabled.position != cgpui::Position::absolute ||
       disabled.inset.left != 4.0F ||
-      disabled.font.family != "Focus" || disabled.font_size != 12.0F) {
+      disabled.font.family != "Focus" || disabled.font_size != 12.0F ||
+      disabled.opacity != 0.25F ||
+      !same_transform(
+          disabled.transform,
+          cgpui::AffineTransform::translation(5.0F, 6.0F))) {
     return 46;
   }
 
@@ -577,17 +625,22 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
           .base = cgpui::Style{}
                       .with_background_color(cgpui::rgb(20, 20, 20))
                       .with_padding(cgpui::edges(6.0F))
-                      .with_gap(2.0F),
+                      .with_gap(2.0F)
+                      .with_opacity(0.8F),
           .hover = cgpui::StyleOverlay{}
                        .with_background_color(cgpui::rgb(30, 30, 30))
-                       .with_gap(4.0F),
+                       .with_gap(4.0F)
+                       .with_transform(
+                           cgpui::AffineTransform::translation(2.0F, 3.0F)),
       });
   cascade.set_class_style(
       accent_class,
       cgpui::StyleState{
           .base = cgpui::Style{}
                       .with_foreground_color(cgpui::rgb(80, 90, 100))
-                      .with_padding(cgpui::edges(8.0F)),
+                      .with_padding(cgpui::edges(8.0F))
+                      .with_transform(
+                          cgpui::AffineTransform::translation(4.0F, 5.0F)),
           .focus = cgpui::StyleOverlay{}
                        .with_background_color(cgpui::rgb(40, 40, 40))
                        .with_border_width(cgpui::edges(3.0F)),
@@ -608,7 +661,8 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
   const cgpui::StyleOverlay inline_style =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(200, 10, 10))
-          .with_padding(cgpui::edges(12.0F));
+          .with_padding(cgpui::edges(12.0F))
+          .with_opacity(0.6F);
 
   const cgpui::Style resolved = cgpui::resolved_style(
       cascade,
@@ -633,6 +687,12 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
       resolved.preferred_size.height != 20.0F) {
     return 76;
   }
+  if (resolved.opacity != 0.6F ||
+      !same_transform(
+          resolved.transform,
+          cgpui::AffineTransform::translation(4.0F, 5.0F))) {
+    return 81;
+  }
 
   const cgpui::StyleState* accent_rule = cascade.class_style(accent_class);
   return accent_rule != nullptr &&
@@ -656,6 +716,10 @@ static_assert(std::same_as<decltype(cgpui::Style{}.inset), cgpui::EdgeSizes>);
 static_assert(std::same_as<decltype(cgpui::FontDescriptor{}.family), std::string>);
 static_assert(std::same_as<decltype(cgpui::Style{}.font), cgpui::FontDescriptor>);
 static_assert(std::same_as<decltype(cgpui::Style{}.font_size), float>);
+static_assert(std::same_as<decltype(cgpui::Style{}.opacity), float>);
+static_assert(std::same_as<
+              decltype(cgpui::Style{}.transform),
+              cgpui::AffineTransform>);
 static_assert(
     std::same_as<decltype(cgpui::Style{}.align_items), cgpui::AlignItems>);
 static_assert(std::same_as<

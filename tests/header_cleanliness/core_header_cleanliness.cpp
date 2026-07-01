@@ -30,6 +30,14 @@ int main() {
   cgpui::MemoryClipboard clipboard;
   (void)clipboard.write_text("x");
 
+  const cgpui::AffineTransform transform = cgpui::compose(
+      cgpui::AffineTransform::translation(1.0F, 2.0F),
+      cgpui::AffineTransform::translation(3.0F, 4.0F));
+  const cgpui::PaintMetadata paint_metadata{
+      .opacity = 0.5F,
+      .transform = transform,
+  };
+
   cgpui::GlyphCache glyph_cache;
   const cgpui::GlyphAtlasKey glyph_key{
       .font_family = "Header",
@@ -58,8 +66,9 @@ int main() {
                   .origin = {},
                   .advance = 9.0F,
               },
-          },
+      },
       .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
+      .metadata = paint_metadata,
   };
 
   cgpui::Win32SurfaceHandle win32_surface;
@@ -70,6 +79,7 @@ int main() {
                  glyph_cache.lookup_count() == 1 &&
                  glyph_cache.entries().size() == 1 &&
                  text_draw.glyphs.size() == 1 &&
+                 text_draw.metadata.transform.translate_x == 4.0F &&
                  text_draw.clip_rect.has_value()
              ? 0
              : 1;

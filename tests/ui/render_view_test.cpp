@@ -2,6 +2,15 @@
 
 #include <memory>
 
+namespace {
+
+bool same_transform(cgpui::AffineTransform lhs, cgpui::AffineTransform rhs) {
+  return lhs.scale_x == rhs.scale_x && lhs.skew_y == rhs.skew_y &&
+         lhs.skew_x == rhs.skew_x && lhs.scale_y == rhs.scale_y &&
+         lhs.translate_x == rhs.translate_x &&
+         lhs.translate_y == rhs.translate_y;
+}
+
 class RecordingFrame final : public cgpui::RenderFrame {
  public:
   void clear(cgpui::Color) override { clear_count += 1; }
@@ -81,13 +90,20 @@ class EmptyView final : public cgpui::View {
 class TextOnlyView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.push_metadata(cgpui::PaintMetadata{
+        .opacity = 0.5F,
+        .transform = cgpui::AffineTransform::translation(3.0F, 4.0F),
+    });
     paint_list.fill_text(
         cgpui::Rect{.origin = {2.0F, 4.0F},
                     .size = {.width = 24.0F, .height = 16.0F}},
         cgpui::Color{.r = 0.8F, .g = 0.9F, .b = 1.0F, .a = 1.0F},
         "abc");
+    paint_list.pop_metadata();
   }
 };
+
+} // namespace
 
 int main() {
   {
@@ -122,6 +138,12 @@ int main() {
   }
   if (frame.last_text.content != "abc" || frame.last_text.glyphs.size() != 3) {
     return 6;
+  }
+  if (frame.last_text.metadata.opacity != 0.5F ||
+      !same_transform(
+          frame.last_text.metadata.transform,
+          cgpui::AffineTransform::translation(3.0F, 4.0F))) {
+    return 8;
   }
 
   return frame.last_text.glyphs[2].key.byte_offset == 2 &&
