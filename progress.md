@@ -1,5 +1,55 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 149 Font Database Skeleton
+
+- Started Step 149 in `.worktrees/font-database-skeleton` on
+  `codex/font-database-skeleton` from `master` at
+  `b632920 docs: mark step 148 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . text_model_test/default win32_text_input_test/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for public
+  `FontDatabase`, `FontFaceDescriptor`, `FontSource`, family resolution,
+  duplicate suppression, and deterministic `discover_test_fonts(...)`.
+  Added Win32 coverage in `tests/platform/win32_text_input_test.cpp` for a
+  platform discovery hook that gracefully allows an empty result. RED failed
+  as expected on missing font database and platform discovery APIs.
+- GREEN adds the platform-neutral font database and deterministic test
+  discovery helper in `include/cgpui/ui/text.hpp`, a low-coupling
+  `PlatformApplication::discover_fonts()` hook declared without including the
+  text header from `platform.hpp`, an out-of-line default empty implementation
+  in `src/platform/empty.cpp`, and empty Win32/Wayland overrides.
+- Added architecture coverage in `tests/architecture/win32_window_source_test.cpp`
+  and `tests/architecture/wayland_window_source_test.cpp` so the Win32 and
+  Wayland discovery skeletons remain visible.
+- Verified targeted GREEN tests:
+  `xmake test -P . text_model_test/default win32_text_input_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 7/7.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/font-database-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . text_model_test/default win32_text_input_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 7/7. `git diff --check` reported only expected CRLF warnings.
+- Committed Step 149 as
+  `b415784 feat: add font database skeleton` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . text_model_test/default win32_text_input_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 7/7.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 149 is marked merged and post-merge verified. Step 150, text shaping
+  run abstraction with deterministic fallback metrics before full shaping, is
+  the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 148 Scrollable List Container
 
 - Continued Step 148 in `.worktrees/scrollable-list-container` on

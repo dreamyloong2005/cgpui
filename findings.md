@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Font Database Skeleton
+
+- Step 149 introduces the font API as platform-neutral descriptors and an
+  in-memory `FontDatabase`, not as real system font enumeration yet.
+  `FontFaceDescriptor` currently carries `FontDescriptor`, PostScript name,
+  source, and optional path.
+- `FontDatabase::add_face(...)` ignores empty families and suppresses exact
+  duplicate face descriptors. `resolve(...)` matches by family, while an empty
+  request family soft-falls back to the first available face.
+- `discover_test_fonts(...)` is the deterministic fake discovery route for
+  tests and later shaping work. It preserves fixture order through the same
+  database insertion rules used by platform discoveries.
+- `PlatformApplication::discover_fonts()` is declared with only a forward
+  declaration of `FontDatabase` in `platform.hpp`; the default empty
+  implementation lives out-of-line in `src/platform/empty.cpp`. This avoids
+  making every platform header consumer include UI text definitions.
+- Win32 and Wayland now override `discover_fonts()` but intentionally return
+  empty databases. Real DirectWrite/fontconfig-style discovery remains a later
+  depth step; Step 150 can consume these descriptors for deterministic fallback
+  shaping without depending on real platform font enumeration.
+
 ## 2026-07-01 Scrollable List Container
 
 - Step 148 keeps the scrollable list as a public reusable widget built on

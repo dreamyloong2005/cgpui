@@ -105,8 +105,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `447b74c feat: add scrollable list container`; post-merge targeted tests
   passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 149 is merged on `master` at
+  `b415784 feat: add font database skeleton`; post-merge targeted tests
+  passed 7/7, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 149 is the next implementation slice after Step 148 docs closeout
+  128. Step 150 is the next implementation slice after Step 149 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -385,6 +389,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   Win32 and Linux, is the next implementation slice after docs closeout and
   cleanup.
 - The effective distance through Step 168 is 20 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 149 Merge
+
+- Step 149, font database abstraction and platform font discovery skeleton for
+  Win32 and Linux, is merged on `master` at
+  `b415784 feat: add font database skeleton`.
+- RED failed as expected on missing `FontDatabase`, `FontFaceDescriptor`,
+  `FontSource`, `discover_test_fonts(...)`, and
+  `PlatformApplication::discover_fonts()` APIs. GREEN adds a platform-neutral
+  font database, deterministic test discovery helper, a low-coupling
+  `PlatformApplication` discovery hook, and gracefully empty Win32/Wayland
+  discovery overrides.
+- Post-merge verification passed: targeted tests 7/7, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 150, text shaping run abstraction with deterministic fallback metrics
+  before full shaping, is the next implementation slice after docs closeout
+  and cleanup.
+- The effective distance through Step 168 is 19 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
@@ -1418,7 +1441,7 @@ Exit check: the public prelude can express common app UI controls through reusab
 
 Purpose: turn text and renderer output from metadata/placeholder paths into backend-ready command streams.
 
-- [ ] Step 149: font database abstraction and platform font discovery skeleton for Win32 and Linux.
+- [x] Step 149: font database abstraction and platform font discovery skeleton for Win32 and Linux.
 - [ ] Step 150: text shaping run abstraction with deterministic fallback metrics before full shaping.
 - [ ] Step 151: glyph atlas/cache interface shared by text elements and Vulkan renderer.
 - [ ] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
@@ -1862,9 +1885,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/text_model_test.cpp`
 - Modify: `tests/platform/win32_text_input_test.cpp`
 
-- [ ] Add RED tests for platform-neutral font descriptors and deterministic fake font discovery.
-- [ ] Add Win32/Linux discovery skeletons with graceful empty-result behavior in tests.
-- [ ] Targeted test command: `xmake test -P . text_model_test/default win32_text_input_test/default`.
+- [x] Add RED tests for platform-neutral font descriptors and deterministic fake font discovery.
+- [x] Add Win32/Linux discovery skeletons with graceful empty-result behavior in tests.
+- [x] Targeted test command: `xmake test -P . text_model_test/default win32_text_input_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default` passed 7/7.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted tests passed 7/7.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 150: Text Shaping Run Abstraction
 
