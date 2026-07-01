@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Renderer Command Batching
+
+- Step 154 keeps batching diagnostic-only. `RendererCommandBatchKey` is the
+  shared public key shape over `RendererPrimitiveKind`, optional clip rect, and
+  `PaintMetadata`; it does not describe a GPU pipeline state object yet.
+- `vulkan_build_renderer_command_batches(...)` groups commands in stable
+  submitted order, first solid rectangles and then text draws, and only merges
+  adjacent commands with identical primitive kind, clip rect, opacity, and
+  transform metadata. It deliberately does not reorder commands to chase larger
+  batches because paint order is still authoritative.
+- `VulkanRendererState::present_frame(...)` records the latest command batches
+  after consuming text glyph cache metadata and before command-buffer recording.
+  The current Vulkan path still only clears solid rectangles; text and batching
+  remain diagnostic surfaces for later frame statistics and renderer-depth
+  steps.
+- Step 155 should extend diagnostics with frame timing and layout/paint/render
+  counters using these command-batch records as renderer-facing evidence, while
+  keeping real timing optional/deterministic for tests.
+
 ## 2026-07-01 Font Database Skeleton
 
 - Step 149 introduces the font API as platform-neutral descriptors and an

@@ -1,5 +1,52 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 154 Renderer Command Batching
+
+- Cleaned up the merged Step 153 worktree
+  `.worktrees/opacity-transform-metadata` and deleted
+  `codex/opacity-transform-metadata`.
+- Started Step 154 in `.worktrees/renderer-command-batching` on
+  `codex/renderer-command-batching` from `master` at
+  `e5eb550 docs: mark step 153 merged`.
+- Verified baseline targeted test before edits:
+  `xmake test -P . vulkan_solid_rect_test/default` passed 1/1.
+- Added RED coverage in `tests/renderer/vulkan_solid_rect_test.cpp` for
+  stable renderer batching keys by clip rect, opacity, transform, and
+  primitive kind. RED failed as expected on missing `RendererCommandBatch`,
+  `RendererPrimitiveKind`, and
+  `vulkan_build_renderer_command_batches(...)` APIs.
+- GREEN adds public renderer batch key/record types in
+  `include/cgpui/renderer/renderer.hpp`, a Vulkan diagnostic helper in
+  `src/renderer/vulkan/vulkan_renderer.cpp`, and public header-cleanliness
+  coverage for the batch record surface.
+- Verified targeted GREEN tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-command-batching -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Committed Step 154 as
+  `8f4a39e feat: add renderer command batching diagnostics` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log so
+  Step 154 is marked merged and post-merge verified. Step 155, frame timing and
+  paint/layout/render statistics exposed through diagnostics, is the next
+  implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 149 Font Database Skeleton
 
 - Started Step 149 in `.worktrees/font-database-skeleton` on

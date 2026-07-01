@@ -125,11 +125,35 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `8bf2270 feat: add opacity transform paint metadata`; post-merge targeted
   tests passed 5/5, Windows full debug passed 29/29, and WSL Arch Linux full
   debug passed 26/26.
+- Step 154 is merged on `master` at
+  `8f4a39e feat: add renderer command batching diagnostics`; post-merge
+  targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch
+  Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 154 is the next implementation slice after Step 153 docs closeout
+  128. Step 155 is the next implementation slice after Step 154 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
+
+## 2026-07-01 Back-40 Planning After Step 154 Merge
+
+- Step 154, renderer command batching by clip, opacity, transform, and
+  primitive kind, is merged on `master` at
+  `8f4a39e feat: add renderer command batching diagnostics`.
+- RED failed as expected on missing `RendererCommandBatch`,
+  `RendererPrimitiveKind`, and
+  `vulkan_build_renderer_command_batches(...)` APIs.
+- GREEN adds public renderer batch key/record types and a Vulkan diagnostic
+  helper that groups adjacent solid-rect and text commands by primitive kind,
+  clip rect, and paint metadata without reordering commands or optimizing GPU
+  submission.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 155, frame timing and paint/layout/render statistics exposed through
+  diagnostics, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 14 follow-on implementation
+  slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
 
@@ -1479,7 +1503,7 @@ Purpose: turn text and renderer output from metadata/placeholder paths into back
 - [x] Step 151: glyph atlas/cache interface shared by text elements and Vulkan renderer.
 - [x] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
 - [x] Step 153: opacity and transform paint metadata with deterministic command ordering.
-- [ ] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
+- [x] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
 - [ ] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
 - [ ] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
 - [ ] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
@@ -2017,9 +2041,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED tests for stable batching keys by clip, opacity, transform, and primitive kind.
-- [ ] Implement command grouping diagnostics before optimizing GPU paths.
-- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+- [x] Add RED tests for stable batching keys by clip, opacity, transform, and primitive kind.
+- [x] Implement command grouping diagnostics before optimizing GPU paths.
+- [x] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 155: Frame Statistics Diagnostics
 

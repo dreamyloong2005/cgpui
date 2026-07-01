@@ -269,6 +269,18 @@ parent/child metadata composition. The effective distance through Step 168 is
 15 remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
+Step 154, renderer command batching by clip, opacity, transform, and primitive
+kind, is merged on `master` at
+`8f4a39e feat: add renderer command batching diagnostics` and post-merge
+verified on Windows and WSL Arch Linux. RED failed as expected on missing
+`RendererCommandBatch`, `RendererPrimitiveKind`, and
+`vulkan_build_renderer_command_batches(...)` APIs. GREEN adds renderer-facing
+batch keys over primitive kind, clip rect, and paint metadata, plus a Vulkan
+diagnostic helper that groups adjacent rect/text commands without reordering or
+optimizing GPU submission. The effective distance through Step 168 is 14
+remaining follow-on implementation steps plus the four follow-on band
+checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -434,7 +446,7 @@ checkpoint reviews.
 151. [x] Glyph atlas/cache interface shared by text elements and Vulkan renderer.
 152. [x] Vulkan text draw path consumes text paint commands through cached glyph metadata.
 153. [x] Opacity and transform paint metadata with deterministic command ordering.
-154. [ ] Renderer command batching by clip, opacity, transform, and primitive kind.
+154. [x] Renderer command batching by clip, opacity, transform, and primitive kind.
 155. [ ] Frame timing and paint/layout/render statistics exposed through diagnostics.
 156. [ ] HiDPI scale propagation into layout, text metrics, and renderer resources.
 157. [ ] Snapshot tests for paint command streams emitted by the demo and widgets.
@@ -452,13 +464,13 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 153, opacity and transform paint metadata with
-deterministic command ordering, is merged on `master` at
-`8bf2270 feat: add opacity transform paint metadata` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted tests passed 5/5, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 154,
-renderer command batching by clip, opacity, transform, and primitive kind, is
-the next implementation slice after docs closeout and cleanup.
+Current handoff: Step 154, renderer command batching by clip, opacity,
+transform, and primitive kind, is merged on `master` at
+`8f4a39e feat: add renderer command batching diagnostics` and post-merge
+verified on Windows and WSL Arch Linux. Post-merge targeted tests passed 2/2,
+Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+Step 155, frame timing and paint/layout/render statistics exposed through
+diagnostics, is the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
