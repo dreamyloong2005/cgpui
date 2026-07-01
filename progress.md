@@ -1,5 +1,56 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Step 168 GPUI-Core API Parity Audit
+
+- Continued after interruption with `master` at
+  `d49dfc8 docs: mark step 167 merged` and only the expected untracked
+  `.vscode/` in the main worktree.
+- Started Step 168 in `.worktrees/gpui-core-api-parity-audit` on
+  `codex/gpui-core-api-parity-audit` from `master`.
+- Verified baseline targeted architecture test before edits:
+  `xmake test -P . desktop_target_readiness_test/default` passed 1/1.
+- Added RED coverage in
+  `tests/architecture/desktop_target_readiness_test.cpp` requiring
+  `docs/gpui-core-api-parity.md` to contain the parity audit title,
+  Windows/Linux scope, explicit non-full-upstream-parity statement,
+  Implemented/Partial/Missing/Mac-deferred sections, core public API names,
+  Win32/Wayland/Vulkan/Metal target names, and a next milestone.
+- RED failed as expected because `docs/gpui-core-api-parity.md` did not exist;
+  the xmake test failed 0/1 and the direct test binary returned exit code 30.
+- GREEN adds `docs/gpui-core-api-parity.md` with implemented, partial, missing,
+  and Mac/Metal-deferred API areas, an explicit Windows/Linux-only completion
+  lens, a "not full upstream GPUI parity" boundary, and the next depth
+  milestone.
+- Verified feature-worktree targeted tests:
+  Windows `xmake test -P . desktop_target_readiness_test/default` passed 1/1,
+  and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/gpui-core-api-parity-audit -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . desktop_target_readiness_test/default'`
+  passed 1/1.
+- `git diff --check` exited 0 with only expected CRLF warnings in the feature
+  worktree and produced no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/gpui-core-api-parity-audit -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Committed Step 168 as
+  `c16689e docs: add gpui core api parity audit` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted readiness tests:
+  Windows `xmake test -P . desktop_target_readiness_test/default` passed 1/1,
+  and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . desktop_target_readiness_test/default'`
+  passed 1/1.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 168 and the 129-168 Windows/Linux follow-on goal are
+  marked complete. Remaining GPUI parity work is now documented as depth work
+  and Mac/Metal handoff work, not hidden in the completion claim.
+
 ## 2026-07-02 Step 167 Windows/Linux Demo Smoke Flows
 
 - Continued after interruption with `master` at

@@ -175,9 +175,10 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `1c7f665 feat: add platform event loop wakeup`; post-merge targeted
   coverage passed 6/6 on Windows and 5/5 on WSL Arch Linux, Windows full debug
   passed 29/29, and WSL Arch Linux full debug passed 26/26.
-- This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 168 is the next implementation slice after Step 167 docs closeout
-  and cleanup.
+- This document records the completed 40-step follow-on plan after Step 128.
+  Step 168 is merged and post-merge verified on Windows and WSL Arch Linux;
+  the remaining GPUI parity work is documented as depth work and Mac/Metal
+  handoff boundaries, not hidden in the active completion claim.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -481,6 +482,31 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   closeout and cleanup.
 - The effective distance through Step 168 is 1 follow-on implementation slice
   plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 168 Merge
+
+- Step 168, GPUI-core API parity audit document with remaining gaps and Mac
+  parity handoff boundaries, is merged on `master` at
+  `c16689e docs: add gpui core api parity audit`.
+- RED failed as expected after `desktop_target_readiness_test/default`
+  required `docs/gpui-core-api-parity.md`; the direct test binary returned
+  exit code 30 for the missing audit document before GREEN.
+- GREEN adds `docs/gpui-core-api-parity.md`, separating implemented, partial,
+  missing, and Mac/Metal-deferred areas. The document explicitly states the
+  Windows/Linux scope, names Win32/Wayland + Vulkan as active targets, keeps
+  macOS/Cocoa + Metal as a handoff boundary, and says this is not full
+  upstream GPUI parity.
+- Post-merge verification passed: Windows targeted readiness test 1/1, WSL
+  Arch Linux targeted readiness test 1/1, `git diff --check` no output,
+  Windows full debug 30/30, and WSL Arch Linux full debug 27/27.
+- Band H exit check is satisfied for the Windows/Linux track: Windows and
+  Wayland have platform hooks for the public core API, the demo is smoke-tested
+  on both active targets, and remaining GPUI parity gaps are explicitly
+  documented.
+- The Step 129-168 follow-on goal is complete. The next milestone should be a
+  depth pass over Vulkan text rendering, Wayland protocol payload handling,
+  native accessibility adapters, and native multi-window creation, or a
+  separate macOS/Cocoa + Metal parity track.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
 
@@ -1851,7 +1877,7 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 - [x] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
 - [x] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 - [x] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
-- [ ] Step 168: GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
+- [x] Step 168: GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
 Exit check: Windows and Wayland have the platform hooks needed by the public core API, the demo is smoke-tested on both active targets, and the remaining GPUI parity gaps are explicitly documented.
 
@@ -2654,9 +2680,15 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `task_plan.md`
 - Modify: `findings.md`
 
-- [ ] Add RED architecture coverage requiring the parity audit document to list implemented, partial, missing, and Mac-deferred API areas.
-- [ ] Write the audit with a Windows/Linux-only completion lens and a separate Mac parity handoff section.
-- [ ] Targeted test command: `xmake test -P . desktop_target_readiness_test/default`.
+- [x] Add RED architecture coverage requiring the parity audit document to list implemented, partial, missing, and Mac-deferred API areas.
+- [x] Write the audit with a Windows/Linux-only completion lens and a separate Mac parity handoff section.
+- [x] Targeted test command: `xmake test -P . desktop_target_readiness_test/default`.
+- [x] RED failed as expected on missing `docs/gpui-core-api-parity.md`; direct binary verification returned exit code 30.
+- [x] GREEN created `docs/gpui-core-api-parity.md` and extended `desktop_target_readiness_test/default` to guard the audit's required headings, public API names, platform target names, and next milestone.
+- [x] Feature-worktree targeted tests passed on Windows 1/1 and WSL Arch Linux 1/1.
+- [x] Feature-worktree full debug passed: Windows 30/30 and WSL Arch Linux 27/27.
+- [x] Fast-forward merged to `master` at `c16689e docs: add gpui core api parity audit`.
+- [x] Post-merge verification passed: Windows targeted readiness 1/1, WSL targeted readiness 1/1, `git diff --check` no output, Windows full debug 30/30, and WSL Arch Linux full debug 27/27.
 
 ## Risk Controls
 

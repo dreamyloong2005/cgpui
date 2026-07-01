@@ -431,6 +431,17 @@ clipboard paste/copy, redraw, and close after the second frame, plus
 effective distance through Step 168 is 1 remaining follow-on implementation
 slice plus the final Band H checkpoint review.
 
+Step 168, GPUI-core API parity audit document with remaining gaps and Mac
+parity handoff boundaries, is merged on `master` at
+`c16689e docs: add gpui core api parity audit` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`docs/gpui-core-api-parity.md`; direct binary verification returned exit code
+30 for the missing audit document. GREEN adds
+`docs/gpui-core-api-parity.md`, separating implemented, partial, missing, and
+Mac/Metal-deferred areas with an explicit Windows/Linux completion lens and
+an explicit "not full upstream GPUI parity" boundary. The Step 129-168
+follow-on goal is now complete on the Windows/Linux track.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -610,19 +621,20 @@ slice plus the final Band H checkpoint review.
 165. [x] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
 166. [x] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 167. [x] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
-168. [ ] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
+168. [x] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
 ## Active Step
 
-Current handoff: Step 167, Windows/Linux demo smoke tests covering window,
-input, text, clipboard, redraw, and close flows, is merged on `master` at
-`c83996b test: add windows linux demo smoke flows` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted demo smoke coverage passed 5/5
-on Windows and 5/5 on WSL Arch Linux, `git diff --check` produced no output,
+Current handoff: Step 168, GPUI-core API parity audit document with remaining
+gaps and Mac parity handoff boundaries, is merged on `master` at
+`c16689e docs: add gpui core api parity audit` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted readiness coverage passed 1/1
+on Windows and 1/1 on WSL Arch Linux, `git diff --check` produced no output,
 Windows full debug passed 30/30, and WSL Arch Linux full debug passed 27/27.
-Step 168, GPUI-core API parity audit document with remaining gaps and Mac
-parity handoff boundaries, is the next implementation slice after docs
-closeout and cleanup.
+The 168-step Windows/Linux follow-on goal is complete. The next milestone
+should be a depth pass over Vulkan text rendering, Wayland protocol payload
+handling, native accessibility adapters, and native multi-window creation, or a
+separate macOS/Cocoa + Metal parity track if that becomes the priority.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

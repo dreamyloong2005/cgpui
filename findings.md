@@ -1,5 +1,30 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 GPUI-Core API Parity Audit
+
+- Step 168 adds `docs/gpui-core-api-parity.md` as the Windows/Linux truth
+  source for current GPUI-core-like parity. It deliberately separates
+  Implemented, Partial, Missing, and Mac/Metal Deferred areas instead of
+  claiming full upstream GPUI parity.
+- Implemented areas now include the public prelude, `Context<T>`, `Entity<T>`,
+  `WindowOptions`, entity/global/action/subscription/defer/timer/async
+  runtime APIs, keyed element behavior, lifecycle/state storage, reusable
+  widgets (`button`, `label`, `text_input`, `scrollable_list`), style/layout
+  primitives, text/glyph metadata, renderer diagnostics, Win32/Wayland platform
+  hooks, and Windows/Linux demo smoke coverage.
+- Partial areas are explicit: Vulkan text still needs real glyph
+  raster/upload/draw, accessibility is snapshot-level without UIA/AT-SPI,
+  Wayland clipboard/drag/drop/IME are skeletons, Win32 drag/drop is not full
+  OLE shell integration, multi-window is registry-level, frame timings are not
+  a real profiler, and platform font discovery is still skeletal.
+- Missing areas are now named for the next depth pass: full animation,
+  theming, asset/image pipelines, rich text editing, native menus/dialogs,
+  production accessibility bridges, full Vulkan drawing for remaining
+  primitives, virtualization, and threaded async/cancellation.
+- Mac remains a separate parity handoff. The audit keeps macOS/Cocoa + Metal
+  outside the Windows/Linux completion claim and requires a Mac host plus Cocoa
+  platform adapters and Metal renderer parity before any Mac parity claim.
+
 ## 2026-07-02 Accessibility Tree Skeleton
 
 - Step 166 adds a platform-neutral accessibility snapshot, not Windows UIA or
