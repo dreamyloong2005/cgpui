@@ -178,6 +178,16 @@ metadata shared with styled elements. The effective distance through Step 168
 is 23 remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
+Step 146, label widget primitive using text style and text paint commands, is
+merged on `master` at `ca63320 feat: add label widget primitive` and
+post-merge verified on Windows and WSL Arch Linux. RED failed as expected on
+missing `cgpui::label` and `LabelElement` APIs. GREEN adds an owned-text
+`LabelElement`, fluent `LabelBuilder`, public `label(...)`, text style
+shortcuts, key/disabled builder support, and paint behavior that emits a text
+command without caret or selection metadata. The effective distance through
+Step 168 is 22 remaining follow-on implementation steps plus the four
+follow-on band checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -335,7 +345,7 @@ checkpoint reviews.
 143. [x] Style cascade resolution combining base, class, state, and inline styles.
 144. [x] `FocusHandle` primitive with request, release, contains, and focused queries.
 145. [x] Button widget primitive built from public element, focus, style, and action APIs.
-146. [ ] Label widget primitive using text style and text paint commands.
+146. [x] Label widget primitive using text style and text paint commands.
 147. [ ] Text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
 148. [ ] Scrollable list container with stable item keys and viewport clipping metadata.
 149. [ ] Font database abstraction and platform font discovery skeleton for Win32 and Linux.
@@ -361,13 +371,13 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 145, button widget primitive built from public element,
-focus, style, and action APIs, is merged on `master` at
-`da62f61 feat: add button widget primitive` and post-merge verified on Windows
-and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 146, label
-widget primitive using text style and text paint commands, is the next
-implementation slice after docs closeout and cleanup.
+Current handoff: Step 146, label widget primitive using text style and text
+paint commands, is merged on `master` at
+`ca63320 feat: add label widget primitive` and post-merge verified on Windows
+and WSL Arch Linux. Post-merge targeted tests passed 3/3, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 147, text input
+widget primitive integrating focus, text model, selection, clipboard, and IME
+geometry, is the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

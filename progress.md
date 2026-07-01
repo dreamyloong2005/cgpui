@@ -1,5 +1,53 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 146 Label Widget Primitive
+
+- Started Step 146 in `.worktrees/label-widget-primitive` on
+  `codex/label-widget-primitive` from `master` at
+  `9e0a607 docs: mark step 145 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/element_test.cpp`,
+  `tests/header_cleanliness/ui_header_cleanliness.cpp`, and
+  `tests/header_cleanliness/prelude_header_cleanliness.cpp` for public
+  `cgpui::label(...)`, `LabelElement`, text style shortcuts, key/disabled
+  builder support, and paint behavior that emits text metadata without
+  editing metadata. RED failed as expected on missing `cgpui::label` and
+  `cgpui::LabelElement`.
+- GREEN adds an owned-text `LabelElement`, fluent `LabelBuilder`, public
+  `label(std::string_view)`, `.foreground(...)`, `.font(...)`,
+  `.font_size(...)`, `.key(...)`, `.enabled(...)`, and `.disabled()` support,
+  plus text-command painting that uses style text fields and omits caret and
+  selection commands.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 3/3.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/label-widget-primitive -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 3/3.
+- Committed Step 146 as
+  `ca63320 feat: add label widget primitive` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 146 is marked merged and post-merge verified. Step 147, text input
+  widget primitive integrating focus, text model, selection, clipboard, and IME
+  geometry, is the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 144 FocusHandle Primitive
 
 - Continued Step 144 in `.worktrees/focus-handle-primitive` on

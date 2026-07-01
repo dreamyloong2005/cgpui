@@ -93,8 +93,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `da62f61 feat: add button widget primitive`; post-merge targeted tests passed
   4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
+- Step 146 is merged on `master` at
+  `ca63320 feat: add label widget primitive`; post-merge targeted tests passed
+  3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 146 is the next implementation slice after Step 145 docs closeout
+  128. Step 147 is the next implementation slice after Step 146 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -320,6 +324,22 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 146, label widget primitive using text style and text paint commands,
   is the next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 23 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 146 Merge
+
+- Step 146, label widget primitive using text style and text paint commands,
+  is merged on `master` at `ca63320 feat: add label widget primitive`.
+- RED failed as expected on missing `cgpui::label` and `LabelElement` APIs.
+  GREEN adds an owned-text `LabelElement`, fluent `LabelBuilder`, public
+  `label(...)`, text style shortcuts, key/disabled builder support, and paint
+  behavior that emits one text command without caret or selection metadata.
+- Post-merge verification passed: targeted tests 3/3, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 147, text input widget primitive integrating focus, text model,
+  selection, clipboard, and IME geometry, is the next implementation slice
+  after docs closeout and cleanup.
+- The effective distance through Step 168 is 22 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
@@ -1343,7 +1363,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 143: style cascade resolution combining base, class, state, and inline styles.
 - [x] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
 - [x] Step 145: button widget primitive built from public element, focus, style, and action APIs.
-- [ ] Step 146: label widget primitive using text style and text paint commands.
+- [x] Step 146: label widget primitive using text style and text paint commands.
 - [ ] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
 - [ ] Step 148: scrollable list container with stable item keys and viewport clipping metadata.
 
@@ -1745,9 +1765,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for a label widget emitting text paint commands with foreground/font style.
-- [ ] Implement the label as a thin text element helper with style support.
-- [ ] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for a label widget emitting text paint commands with foreground/font style.
+- [x] Implement the label as a thin text element helper with style support.
+- [x] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default` passed 3/3.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted tests passed 3/3.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 147: Text Input Widget Primitive
 

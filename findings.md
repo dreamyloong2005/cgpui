@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Label Widget Primitive
+
+- Step 146 keeps `LabelElement` as a read-only text widget over owned
+  `std::string` content, not as a bound `TextModel` or editable text control.
+- `label(...)` emits a single `PaintCommandKind::text` command when it has
+  non-empty text and layout bounds. It deliberately omits
+  `text_selection` and `text_caret` commands so label paint output cannot be
+  confused with editable text input metadata.
+- Label text styling uses the same `Style` fields as other text paths:
+  foreground color, `FontDescriptor`, and font size. Missing foreground falls
+  back to the current default label text color rather than adding theme or
+  cascade lookup in this slice.
+- The builder supports `.key(...)`, `.enabled(...)`, and `.disabled()` so label
+  widgets fit keyed reconciliation and disabled subtree conventions, even
+  though labels do not handle input directly.
+- Step 147 should introduce an editable text input widget by composing the
+  existing focus, text model, selection, clipboard, key-edit, and IME geometry
+  surfaces. It should not retrofit editability into `LabelElement`.
+
 ## 2026-07-01 FocusHandle Primitive
 
 - Step 144 keeps `FocusHandle` deliberately thin: it stores only an
