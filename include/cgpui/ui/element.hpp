@@ -67,6 +67,7 @@ struct EventResult {
 
 struct ElementEventContext {
   ElementId target_element_id;
+  std::function<EventResult(std::string_view)> dispatch_action;
 };
 
 struct ElementFocusContext {
@@ -1029,6 +1030,123 @@ class KeyElement : public Element {
   KeyHandler handler_;
 };
 
+class ButtonElement : public Element {
+ public:
+  ButtonElement(
+      std::string action_name,
+      StyleState style_state,
+      ClickHandler click_handler = {},
+      std::unique_ptr<Element> child = {})
+      : action_name_(std::move(action_name)),
+        style_state_(style_state),
+        click_handler_(std::move(click_handler)),
+        child_(std::move(child)) {}
+
+  [[nodiscard]] std::string_view action_name() const {
+    return action_name_;
+  }
+
+  [[nodiscard]] const StyleState& style_state() const {
+    return style_state_;
+  }
+
+  [[nodiscard]] Element* child() {
+    return child_.get();
+  }
+
+  [[nodiscard]] const Element* child() const {
+    return child_.get();
+  }
+
+  [[nodiscard]] bool focusable() const override {
+    return true;
+  }
+
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    Size content_size = style_state_.base.preferred_size;
+    if (child_) {
+      const LayoutOutput child_output = child_->layout(input);
+      content_size = child_output.size;
+      child_->set_layout_bounds(Rect{
+          .origin =
+              {
+                  .x = style_state_.base.margin.left +
+                       style_state_.base.padding.left,
+                  .y = style_state_.base.margin.top +
+                       style_state_.base.padding.top,
+              },
+          .size = child_output.size,
+      });
+    }
+    const Size preferred{
+        .width = content_size.width + style_state_.base.padding.left +
+                 style_state_.base.padding.right +
+                 style_state_.base.margin.left +
+                 style_state_.base.margin.right,
+        .height = content_size.height + style_state_.base.padding.top +
+                  style_state_.base.padding.bottom +
+                  style_state_.base.margin.top +
+                  style_state_.base.margin.bottom,
+    };
+    const LayoutOutput output{
+        .size = constrain_size(preferred, input.constraints),
+    };
+    set_layout_bounds(Rect{
+        .origin = output.origin,
+        .size = output.size,
+    });
+    return output;
+  }
+
+  [[nodiscard]] ElementId hit_test(Point point) const override {
+    const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
+    return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  }
+
+  void paint(PaintList& paint_list) const override;
+
+  [[nodiscard]] EventResult handle_event(
+      const PlatformEvent& event,
+      const ElementEventContext& context) override {
+    if (!enabled()) {
+      return EventResult::unhandled();
+    }
+    const auto* pointer_button = std::get_if<PointerButton>(&event);
+    if (pointer_button == nullptr || !pointer_button->pressed ||
+        pointer_button->button != MouseButton::left) {
+      return child_ == nullptr || !child_->enabled()
+                 ? EventResult::unhandled()
+                 : child_->handle_event(event, context);
+    }
+
+    EventResult result = EventResult::unhandled();
+    if (click_handler_) {
+      result = click_handler_(context);
+      if (result.consumed || result.cancelled) {
+        return result;
+      }
+    }
+    if (!action_name_.empty() && context.dispatch_action) {
+      result = context.dispatch_action(action_name_);
+    }
+    return result;
+  }
+
+  [[nodiscard]] int z_index() const override {
+    return style_state_.base.z_index;
+  }
+
+  [[nodiscard]] int layer() const override {
+    return style_state_.base.layer;
+  }
+
+ private:
+  std::string action_name_;
+  StyleState style_state_;
+  ClickHandler click_handler_;
+  std::unique_ptr<Element> child_;
+};
+
 class ScrollElement : public Element {
  public:
   ScrollElement(ScrollState& state, std::unique_ptr<Element> child)
@@ -1490,6 +1608,101 @@ class ElementBuilder {
 
 [[nodiscard]] inline ElementBuilder child_view(ViewId view_id) {
   return ElementBuilder::child_view(view_id);
+}
+
+class ButtonBuilder {
+ public:
+  explicit ButtonBuilder(std::string action_name)
+      : action_name_(std::move(action_name)) {}
+
+  [[nodiscard]] ButtonBuilder style(Style style) && {
+    style_state_.base = style;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder hover_style(StyleOverlay overlay) && {
+    style_state_.hover = overlay;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder focus_style(StyleOverlay overlay) && {
+    style_state_.focus = overlay;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder disabled_style(StyleOverlay overlay) && {
+    style_state_.disabled = overlay;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder child(std::unique_ptr<Element> child) && {
+    child_ = std::move(child);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder child(ElementBuilder child) && {
+    return std::move(*this).child(into_element(std::move(child)));
+  }
+
+  template <typename T>
+    requires std::derived_from<T, Element> && (!std::same_as<T, Element>)
+  [[nodiscard]] ButtonBuilder child(std::unique_ptr<T> child) && {
+    return std::move(*this).child(std::unique_ptr<Element>(std::move(child)));
+  }
+
+  [[nodiscard]] ButtonBuilder on_click(ClickHandler handler) && {
+    click_handler_ = std::move(handler);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder enabled(bool value) && {
+    enabled_ = value;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder disabled() && {
+    enabled_ = false;
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder key(ElementKey key) && {
+    key_ = std::move(key);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ButtonBuilder key(std::string_view value) && {
+    key_ = ElementKey{.value = std::string(value)};
+    return std::move(*this);
+  }
+
+  [[nodiscard]] AnyElement build() && {
+    auto element = std::make_unique<ButtonElement>(
+        std::move(action_name_),
+        style_state_,
+        std::move(click_handler_),
+        std::move(child_));
+    element->set_enabled(enabled_);
+    element->set_key(key_);
+    element->set_flex_grow(style_state_.base.flex_grow);
+    element->set_flex_shrink(style_state_.base.flex_shrink);
+    element->set_position(style_state_.base.position);
+    element->set_inset(style_state_.base.inset);
+    element->set_z_index(style_state_.base.z_index);
+    element->set_layer(style_state_.base.layer);
+    return element;
+  }
+
+ private:
+  std::string action_name_;
+  StyleState style_state_;
+  ClickHandler click_handler_;
+  std::unique_ptr<Element> child_;
+  std::optional<ElementKey> key_;
+  bool enabled_ = true;
+};
+
+[[nodiscard]] inline ButtonBuilder button(std::string_view action_name) {
+  return ButtonBuilder(std::string(action_name));
 }
 
 [[nodiscard]] inline AnyElement scroll(ScrollState& state, AnyElement child) {

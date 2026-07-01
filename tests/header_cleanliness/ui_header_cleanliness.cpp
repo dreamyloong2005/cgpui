@@ -319,6 +319,18 @@ int main() {
       cgpui::div().size(cgpui::Size{7.0F, 8.0F}));
   const auto* scroll =
       dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
+  cgpui::AnyElement button_element =
+      cgpui::button("header.accept")
+          .style(cgpui::Style{}.with_preferred_size(
+              cgpui::Size{12.0F, 5.0F}))
+          .on_click([](const cgpui::ElementEventContext& event_context) {
+            return event_context.dispatch_action
+                       ? event_context.dispatch_action("header.click")
+                       : cgpui::EventResult::unhandled();
+          })
+          .build();
+  const auto* button =
+      dynamic_cast<const cgpui::ButtonElement*>(button_element.get());
   const auto* pointer =
       dynamic_cast<const cgpui::PointerElement*>(element.get());
   const auto* styled = pointer == nullptr
@@ -393,6 +405,9 @@ int main() {
                   built_text != nullptr &&
                   built_text->font().family == "Text" &&
                   built_text->font_size() == 19.0F &&
+                  button != nullptr &&
+                  button->action_name() == "header.accept" &&
+                  button->focusable() &&
                   scroll_model.offset().x == 0.0F
               ? 0
               : 1;

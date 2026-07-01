@@ -3287,6 +3287,139 @@ int test_element_builder_click_handler_respects_disabled_state() {
   return !result.consumed && !result.cancelled ? 0 : 165;
 }
 
+int test_button_widget_composes_click_focus_disabled_and_style_state() {
+  int click_count = 0;
+  cgpui::AnyElement element =
+      cgpui::button("dialog.accept")
+          .on_click([&](const cgpui::ElementEventContext& context) {
+            click_count += static_cast<int>(context.target_element_id.value);
+            return cgpui::EventResult::unhandled();
+          })
+          .style(cgpui::Style{}
+                     .with_background_color(cgpui::rgb(30, 40, 50))
+                     .with_padding(cgpui::edges(6.0F)))
+          .hover_style(cgpui::StyleOverlay{}.with_background_color(
+              cgpui::rgb(40, 50, 60)))
+          .focus_style(cgpui::StyleOverlay{}.with_border_width(
+              cgpui::edges(2.0F)))
+          .disabled_style(cgpui::StyleOverlay{}.with_foreground_color(
+              cgpui::rgb(120, 120, 120)))
+          .child(cgpui::div().size(10.0F, 6.0F))
+          .build();
+  element->assign_id(cgpui::ElementId{39});
+
+  auto* button = dynamic_cast<cgpui::ButtonElement*>(element.get());
+  if (button == nullptr) {
+    return 340;
+  }
+  if (!button->focusable() || !button->enabled() ||
+      button->action_name() != "dialog.accept") {
+    return 341;
+  }
+  if (button->child() == nullptr) {
+    return 342;
+  }
+
+  const cgpui::Style resolved = cgpui::resolved_style(
+      button->style_state(),
+      cgpui::StyleStateFlags{.hovered = true, .focused = true});
+  if (!resolved.background_color.has_value() ||
+      resolved.background_color->r != 40.0F / 255.0F ||
+      resolved.border_width.left != 2.0F ||
+      resolved.padding.left != 6.0F) {
+    return 343;
+  }
+
+  const cgpui::EventResult result = button->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = button->id()});
+  if (click_count != 39 || result.consumed || result.cancelled) {
+    return 344;
+  }
+
+  button->set_enabled(false);
+  const cgpui::EventResult disabled_result = button->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      cgpui::ElementEventContext{.target_element_id = button->id()});
+  if (click_count != 39 || disabled_result.consumed ||
+      disabled_result.cancelled) {
+    return 345;
+  }
+
+  const cgpui::Style disabled_style = cgpui::resolved_style(
+      button->style_state(),
+      cgpui::StyleStateFlags{.disabled = true});
+  return disabled_style.foreground_color.has_value() &&
+                 disabled_style.foreground_color->r == 120.0F / 255.0F
+             ? 0
+             : 346;
+}
+
+int test_button_widget_paints_style_box_before_child() {
+  const cgpui::Color background{.r = 0.1F, .g = 0.2F, .b = 0.3F, .a = 1.0F};
+  const cgpui::Color border{.r = 0.4F, .g = 0.5F, .b = 0.6F, .a = 1.0F};
+  const cgpui::Color child_color{
+      .r = 0.7F,
+      .g = 0.8F,
+      .b = 0.9F,
+      .a = 1.0F,
+  };
+  cgpui::AnyElement element =
+      cgpui::button("dialog.paint")
+          .style(cgpui::Style{}
+                     .with_padding(cgpui::edges(3.0F))
+                     .with_background_color(background)
+                     .with_border_color(border)
+                     .with_border_width(cgpui::edges(2.0F))
+                     .with_border_radius(cgpui::BorderRadii::all(5.0F)))
+          .child(cgpui::div()
+                     .size(cgpui::Size{.width = 8.0F, .height = 6.0F})
+                     .background(child_color))
+          .build();
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 14.0F || output.size.height != 12.0F) {
+    return 347;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 6) {
+    return 348;
+  }
+  if (commands[0].kind != cgpui::PaintCommandKind::rounded_rect) {
+    return 349;
+  }
+
+  const cgpui::RoundedRect& rounded = commands[0].rounded_rect;
+  if (rounded.rect.origin.x != 0.0F || rounded.rect.origin.y != 0.0F ||
+      rounded.rect.size.width != 14.0F ||
+      rounded.rect.size.height != 12.0F || rounded.color.r != background.r ||
+      rounded.radius.top_left != 5.0F) {
+    return 350;
+  }
+  if (commands[1].solid_rect.color.r != border.r ||
+      commands[4].solid_rect.color.b != border.b) {
+    return 351;
+  }
+
+  const cgpui::SolidRect& child_rect = commands[5].solid_rect;
+  return child_rect.color.r == child_color.r &&
+                 child_rect.rect.origin.x == 3.0F &&
+                 child_rect.rect.origin.y == 3.0F &&
+                 child_rect.rect.size.width == 8.0F &&
+                 child_rect.rect.size.height == 6.0F
+             ? 0
+             : 352;
+}
+
 int test_element_builder_pointer_handlers_route_concrete_events() {
   int down_count = 0;
   int up_count = 0;
@@ -3996,6 +4129,15 @@ int main() {
   }
   if (const int result =
           test_element_builder_click_handler_respects_disabled_state();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_button_widget_composes_click_focus_disabled_and_style_state();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_button_widget_paints_style_box_before_child();
       result != 0) {
     return result;
   }

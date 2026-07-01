@@ -108,6 +108,72 @@ ElementId hit_test_runtime_element_root(
   return root == nullptr ? ElementId{} : root->hit_test(point);
 }
 
+void paint_styled_box_base(
+    PaintList& paint_list,
+    const std::optional<Rect>& bounds,
+    const Style& style) {
+  if (bounds.has_value() && style.background_color.has_value()) {
+    const BorderRadii radius = style.border_radius;
+    if (radius.top_left > 0.0F || radius.top_right > 0.0F ||
+        radius.bottom_right > 0.0F || radius.bottom_left > 0.0F) {
+      paint_list.fill_rounded_rect(*bounds, *style.background_color, radius);
+    } else {
+      paint_list.fill_rect(*bounds, *style.background_color);
+    }
+  }
+  if (bounds.has_value() && style.border_color.has_value()) {
+    const Rect rect = *bounds;
+    const Color color = *style.border_color;
+    const float top = style.border_width.top;
+    const float right = style.border_width.right;
+    const float bottom = style.border_width.bottom;
+    const float left = style.border_width.left;
+    const float vertical_side_height =
+        std::max(0.0F, rect.size.height - top - bottom);
+
+    if (top > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin = rect.origin,
+              .size = {.width = rect.size.width, .height = top},
+          },
+          color);
+    }
+    if (right > 0.0F && vertical_side_height > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin =
+                  {
+                      .x = rect.origin.x + rect.size.width - right,
+                      .y = rect.origin.y + top,
+                  },
+              .size = {.width = right, .height = vertical_side_height},
+          },
+          color);
+    }
+    if (bottom > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin =
+                  {
+                      .x = rect.origin.x,
+                      .y = rect.origin.y + rect.size.height - bottom,
+                  },
+              .size = {.width = rect.size.width, .height = bottom},
+          },
+          color);
+    }
+    if (left > 0.0F && vertical_side_height > 0.0F) {
+      paint_list.fill_rect(
+          Rect{
+              .origin = {.x = rect.origin.x, .y = rect.origin.y + top},
+              .size = {.width = left, .height = vertical_side_height},
+          },
+          color);
+    }
+  }
+}
+
 } // namespace
 
 Subscription::~Subscription() {
@@ -296,70 +362,27 @@ void StyledElement::paint(PaintList& paint_list) const {
                              ? *base_style.clip_rect
                              : *bounds);
   }
-  if (bounds.has_value() && base_style.background_color.has_value()) {
-    const BorderRadii radius = base_style.border_radius;
-    if (radius.top_left > 0.0F || radius.top_right > 0.0F ||
-        radius.bottom_right > 0.0F || radius.bottom_left > 0.0F) {
-      paint_list.fill_rounded_rect(
-          *bounds,
-          *base_style.background_color,
-          radius);
-    } else {
-      paint_list.fill_rect(*bounds, *base_style.background_color);
-    }
-  }
-  if (bounds.has_value() && base_style.border_color.has_value()) {
-    const Rect rect = *bounds;
-    const Color color = *base_style.border_color;
-    const float top = base_style.border_width.top;
-    const float right = base_style.border_width.right;
-    const float bottom = base_style.border_width.bottom;
-    const float left = base_style.border_width.left;
-    const float vertical_side_height =
-        std::max(0.0F, rect.size.height - top - bottom);
-
-    if (top > 0.0F) {
-      paint_list.fill_rect(
-          Rect{
-              .origin = rect.origin,
-              .size = {.width = rect.size.width, .height = top},
-          },
-          color);
-    }
-    if (right > 0.0F && vertical_side_height > 0.0F) {
-      paint_list.fill_rect(
-          Rect{
-              .origin =
-                  {
-                      .x = rect.origin.x + rect.size.width - right,
-                      .y = rect.origin.y + top,
-                  },
-              .size = {.width = right, .height = vertical_side_height},
-          },
-          color);
-    }
-    if (bottom > 0.0F) {
-      paint_list.fill_rect(
-          Rect{
-              .origin =
-                  {
-                      .x = rect.origin.x,
-                      .y = rect.origin.y + rect.size.height - bottom,
-                  },
-              .size = {.width = rect.size.width, .height = bottom},
-          },
-          color);
-    }
-    if (left > 0.0F && vertical_side_height > 0.0F) {
-      paint_list.fill_rect(
-          Rect{
-              .origin = {.x = rect.origin.x, .y = rect.origin.y + top},
-              .size = {.width = left, .height = vertical_side_height},
-          },
-          color);
-    }
-  }
+  paint_styled_box_base(paint_list, bounds, base_style);
   if (child_ != nullptr) {
+    child_->paint(paint_list);
+  }
+  if (uses_hidden_overflow_clip) {
+    paint_list.pop_clip();
+  }
+}
+
+void ButtonElement::paint(PaintList& paint_list) const {
+  const std::optional<Rect> bounds = layout_bounds();
+  const Style& base_style = style_state_.base;
+  const bool uses_hidden_overflow_clip =
+      bounds.has_value() && base_style.overflow == Overflow::hidden;
+  if (uses_hidden_overflow_clip) {
+    paint_list.push_clip(base_style.clip_rect.has_value()
+                             ? *base_style.clip_rect
+                             : *bounds);
+  }
+  paint_styled_box_base(paint_list, bounds, base_style);
+  if (child_) {
     child_->paint(paint_list);
   }
   if (uses_hidden_overflow_clip) {
@@ -1078,6 +1101,12 @@ EventResult WindowRuntime::dispatch_routed_element_event(
 
   const ElementEventContext context{
       .target_element_id = *route.target_element_id,
+      .dispatch_action =
+          [this](std::string_view action_name) {
+            const ActionDispatchResult dispatch =
+                dispatch_action(std::string(action_name));
+            return dispatch.result;
+          },
   };
   const std::span<const ElementId> ancestry(route.element_ancestry);
   const auto route_ids =

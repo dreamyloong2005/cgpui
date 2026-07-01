@@ -3740,6 +3740,78 @@ int test_runtime_clicks_request_focus_for_focusable_elements() {
   return 0;
 }
 
+int test_runtime_clicks_button_widget_focus_and_dispatch_action() {
+  RuntimeFixture fixture;
+  click_focus_fixture = &fixture;
+  fixture.app.on_run = &dispatch_click_focus_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  cgpui::AnyElement button =
+      cgpui::button("dialog.accept")
+          .style(cgpui::Style{}.with_preferred_size(
+              cgpui::Size{.width = 40.0F, .height = 20.0F}))
+          .build();
+  const cgpui::ElementId button_id = tree->set_root(std::move(button));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  int action_count = 0;
+  runtime.register_view_action(
+      cgpui::ViewId{1},
+      "dialog.accept",
+      [&](const cgpui::WindowRuntimeContext& context) {
+        action_count += 1;
+        return context.input.keyboard_focus_element_owner == button_id
+                   ? cgpui::EventResult::consumed_event()
+                   : cgpui::EventResult::cancelled_event();
+      });
+
+  std::optional<cgpui::ElementId> focus_owner_after_click;
+  std::optional<cgpui::ActionDispatchResult> action_after_click;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_button) {
+          focus_owner_after_click = context.input.keyboard_focus_element_owner;
+          action_after_click = context.last_action_dispatch();
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = true});
+  click_focus_fixture = nullptr;
+
+  if (result != 0) {
+    return 389;
+  }
+  if (button_id.value == 0 || !focus_owner_after_click.has_value() ||
+      *focus_owner_after_click != button_id) {
+    return 390;
+  }
+  if (action_count != 1 || !action_after_click.has_value() ||
+      action_after_click->name != "dialog.accept" ||
+      !action_after_click->handled || !action_after_click->scope.has_value() ||
+      *action_after_click->scope != cgpui::ActionScope::view ||
+      !action_after_click->view_id.has_value() ||
+      *action_after_click->view_id != cgpui::ViewId{1} ||
+      !action_after_click->result.consumed ||
+      action_after_click->result.cancelled) {
+    return 391;
+  }
+  if (fixture.view.keyboard_key_count != 1 ||
+      fixture.view.last_route_element_id != button_id) {
+    return 392;
+  }
+  return 0;
+}
+
 int test_runtime_tabs_focus_forward_over_enabled_focusable_elements() {
   RuntimeFixture fixture;
   focus_traversal_fixture = &fixture;
@@ -7248,6 +7320,11 @@ int main() {
   }
   if (const int result =
           test_runtime_clicks_request_focus_for_focusable_elements();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_clicks_button_widget_focus_and_dispatch_action();
       result != 0) {
     return result;
   }

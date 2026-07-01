@@ -73,6 +73,18 @@ int main() {
       cgpui::scroll(scroll_state, cgpui::div().size(6.0F, 7.0F));
   const auto* scroll =
       dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
+  cgpui::AnyElement button_element =
+      cgpui::button("prelude.accept")
+          .style(cgpui::Style{}.with_preferred_size(
+              cgpui::Size{14.0F, 6.0F}))
+          .focus_style(cgpui::StyleOverlay{}.with_border_width(
+              cgpui::edges(1.0F)))
+          .disabled_style(cgpui::StyleOverlay{}.with_foreground_color(
+              cgpui::rgb(128, 128, 128)))
+          .child(cgpui::div().size(2.0F, 2.0F))
+          .build();
+  const auto* button =
+      dynamic_cast<const cgpui::ButtonElement*>(button_element.get());
   const cgpui::StyleClassId class_id = cgpui::style_class("prelude.card");
   cgpui::StyleClasses classes;
   classes.add(class_id);
@@ -92,6 +104,9 @@ int main() {
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
                  scroll != nullptr && scroll->state() == &scroll_state &&
+                 button != nullptr &&
+                 button->action_name() == "prelude.accept" &&
+                 button->focusable() && button->child() != nullptr &&
                  classes.contains(class_id) && accent_color.has_value() &&
                  accent_color->b == 3.0F / 255.0F &&
                  gap_spacing.has_value() && *gap_spacing == 4.0F
