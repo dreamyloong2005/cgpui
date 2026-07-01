@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Global App State Registry
+
+- Step 131 keeps global state runtime-owned and typed by `std::type_index`,
+  mirroring the existing entity-store pattern without introducing a separate
+  app object or ownership layer.
+- `AppContext` and `ViewContext` expose the same `set_global`, `global`, and
+  `update_global` spelling, so setup-time globals are visible to frame/event
+  context code through one shared runtime store.
+- Missing global reads return `nullptr`, and missing global updates return
+  `false`. Global updates do not schedule redraw yet; Step 137 owns update
+  batching and redraw coalescing for model/global changes.
+
 ## 2026-07-01 Entity Handle Convenience API Merged
 
 - Step 130 is merged on `master` at

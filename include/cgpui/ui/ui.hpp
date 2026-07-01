@@ -161,6 +161,15 @@ struct AppContext {
   [[nodiscard]] AppOpenedWindow open_window(
       WindowOptions options,
       std::unique_ptr<View> root_view) const;
+
+  template <typename T>
+  void set_global(T global_value) const;
+
+  template <typename T>
+  [[nodiscard]] const T* global() const;
+
+  template <typename T, typename Update>
+  bool update_global(Update&& update) const;
 };
 
 class WeakView {
@@ -364,6 +373,15 @@ struct WindowRuntimeContext {
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
 
+  template <typename T>
+  void set_global(T global_value) const;
+
+  template <typename T>
+  [[nodiscard]] const T* global() const;
+
+  template <typename T, typename Update>
+  bool update_global(Update&& update) const;
+
   template <typename T, typename... Args>
   Model<T> new_model(Args&&... args) const;
 
@@ -494,6 +512,18 @@ class WindowRuntime {
   Result<void> resize_surface(Size size, DpiScale scale);
 
   template <typename T>
+  void set_global(T global_value);
+
+  template <typename T>
+  [[nodiscard]] const T* global() const;
+
+  template <typename T>
+  [[nodiscard]] T* global();
+
+  template <typename T, typename Update>
+  bool update_global(Update&& update);
+
+  template <typename T>
   EntityId<T> insert_entity(T entity);
 
   template <typename T, typename... Args>
@@ -591,6 +621,7 @@ class WindowRuntime {
   int event_dispatch_sequence_ = 0;
   int render_sequence_ = 0;
   int frame_index_ = 0;
+  std::unordered_map<std::type_index, std::any> globals_;
   std::unordered_map<std::type_index, std::any> entity_stores_;
   std::unordered_map<std::string, ActionHandler> action_handlers_;
   std::vector<KeyBinding> key_bindings_;
@@ -616,6 +647,36 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size);
     View& view,
     AppRendererFactory renderer_factory,
     AppRunnerOptions options = {});
+
+template <typename T>
+void AppContext::set_global(T global_value) const {
+  runtime.set_global<T>(std::move(global_value));
+}
+
+template <typename T>
+const T* AppContext::global() const {
+  return runtime.global<T>();
+}
+
+template <typename T, typename Update>
+bool AppContext::update_global(Update&& update) const {
+  return runtime.update_global<T>(std::forward<Update>(update));
+}
+
+template <typename T>
+void WindowRuntimeContext::set_global(T global_value) const {
+  runtime.set_global<T>(std::move(global_value));
+}
+
+template <typename T>
+const T* WindowRuntimeContext::global() const {
+  return runtime.global<T>();
+}
+
+template <typename T, typename Update>
+bool WindowRuntimeContext::update_global(Update&& update) const {
+  return runtime.update_global<T>(std::forward<Update>(update));
+}
 
 template <typename T>
 EntityId<T> WindowRuntimeContext::insert_entity(T entity) const {
@@ -786,6 +847,39 @@ void WindowRuntime::subscribe_view_to_entity(
 template <typename T>
 bool WindowRuntime::notify_entity_changed(EntityId<T> entity_id) {
   return notify_entity_changed(std::type_index(typeid(T)), entity_id.value);
+}
+
+template <typename T>
+void WindowRuntime::set_global(T global_value) {
+  globals_[std::type_index(typeid(T))] = std::move(global_value);
+}
+
+template <typename T>
+const T* WindowRuntime::global() const {
+  const auto entry = globals_.find(std::type_index(typeid(T)));
+  if (entry == globals_.end()) {
+    return nullptr;
+  }
+  return &std::any_cast<const T&>(entry->second);
+}
+
+template <typename T>
+T* WindowRuntime::global() {
+  auto entry = globals_.find(std::type_index(typeid(T)));
+  if (entry == globals_.end()) {
+    return nullptr;
+  }
+  return &std::any_cast<T&>(entry->second);
+}
+
+template <typename T, typename Update>
+bool WindowRuntime::update_global(Update&& update) {
+  T* stored_global = global<T>();
+  if (stored_global == nullptr) {
+    return false;
+  }
+  std::forward<Update>(update)(*stored_global);
+  return true;
 }
 
 template <typename T>

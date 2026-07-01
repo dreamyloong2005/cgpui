@@ -19,6 +19,14 @@ struct RuntimeEntity {
   int value = 0;
 };
 
+struct RuntimeGlobal {
+  int value = 0;
+};
+
+struct MissingRuntimeGlobal {
+  int value = 0;
+};
+
 bool equal(cgpui::Size lhs, cgpui::Size rhs) {
   return lhs.width == rhs.width && lhs.height == rhs.height;
 }
@@ -442,6 +450,35 @@ class RecordingView final : public cgpui::View {
         weak_model = entity_handle.downgrade();
         upgraded_removed_weak_model = author_context.upgrade_entity(weak_model);
       }
+      if (exercise_global_state_helpers && keyboard_key_count == 1) {
+        const cgpui::Context<RecordingView>& author_context = context;
+        global_missing_before_set =
+            author_context.global<RuntimeGlobal>() == nullptr;
+        global_missing_update =
+            author_context.update_global<MissingRuntimeGlobal>(
+                [](MissingRuntimeGlobal& global) {
+                  global.value = 9;
+                });
+        author_context.set_global(RuntimeGlobal{.value = 12});
+        const RuntimeGlobal* first_global =
+            author_context.global<RuntimeGlobal>();
+        global_first_read_value =
+            first_global == nullptr ? -1 : first_global->value;
+        global_update =
+            author_context.update_global<RuntimeGlobal>(
+                [](RuntimeGlobal& global) {
+                  global.value += 30;
+                });
+        const RuntimeGlobal* updated_global =
+            author_context.global<RuntimeGlobal>();
+        global_updated_value =
+            updated_global == nullptr ? -1 : updated_global->value;
+        author_context.set_global(RuntimeGlobal{.value = 77});
+        const RuntimeGlobal* replaced_global =
+            author_context.global<RuntimeGlobal>();
+        global_replaced_value =
+            replaced_global == nullptr ? -1 : replaced_global->value;
+      }
       if (exercise_weak_entity_and_view_handles && keyboard_key_count == 1) {
         model_id = context.new_model<RuntimeEntity>(41);
         weak_model = cgpui::WeakEntity<RuntimeEntity>(model_id);
@@ -743,6 +780,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_context_model_helpers = false;
   bool exercise_view_context_model_observe_helper = false;
   bool exercise_entity_handle_helpers = false;
+  bool exercise_global_state_helpers = false;
   bool exercise_weak_entity_and_view_handles = false;
   bool exercise_view_identity_allocation = false;
   bool exercise_action_dispatch = false;
@@ -848,6 +886,12 @@ class RecordingView final : public cgpui::View {
   bool entity_handle_update = false;
   bool entity_handle_missing_update = true;
   bool entity_handle_missing_read = false;
+  bool global_missing_before_set = false;
+  bool global_update = false;
+  bool global_missing_update = true;
+  int global_first_read_value = -1;
+  int global_updated_value = -1;
+  int global_replaced_value = -1;
   std::size_t subscriptions_after_subscribe = 0;
   cgpui::EntityId<RuntimeEntity> entity_id{};
   cgpui::EntityId<RuntimeEntity> inserted_entity_id{};
@@ -4383,6 +4427,55 @@ int test_entity_handle_read_update_and_downgrade() {
   return 0;
 }
 
+RuntimeFixture* global_state_fixture = nullptr;
+
+void dispatch_global_state_sequence() {
+  auto& callback = global_state_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 71,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_view_context_global_state_helpers() {
+  RuntimeFixture fixture;
+  global_state_fixture = &fixture;
+  fixture.app.on_run = &dispatch_global_state_sequence;
+  fixture.view.exercise_global_state_helpers = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  global_state_fixture = nullptr;
+
+  if (result != 0) {
+    return 284;
+  }
+  if (!fixture.view.global_missing_before_set ||
+      fixture.view.global_missing_update) {
+    return 285;
+  }
+  if (fixture.view.global_first_read_value != 12 ||
+      !fixture.view.global_update ||
+      fixture.view.global_updated_value != 42) {
+    return 286;
+  }
+  if (fixture.view.global_replaced_value != 77) {
+    return 287;
+  }
+  if (fixture.window.request_redraw_count != 0 ||
+      fixture.renderer.begin_frame_count != 0) {
+    return 288;
+  }
+  return 0;
+}
+
 RuntimeFixture* view_identity_fixture = nullptr;
 
 void dispatch_view_identity_sequence() {
@@ -6102,6 +6195,10 @@ int main() {
     return result;
   }
   if (const int result = test_entity_handle_read_update_and_downgrade();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_view_context_global_state_helpers();
       result != 0) {
     return result;
   }

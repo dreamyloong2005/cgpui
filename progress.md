@@ -1,5 +1,31 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 131 Global App State Registry
+
+- Started Step 131 in `.worktrees/global-app-state-registry` on
+  `codex/global-app-state-registry` from `master` at
+  `4869124 docs: mark step 130 merged`.
+- Added RED coverage in `tests/ui/app_runner_test.cpp` and
+  `tests/ui/window_runtime_test.cpp` for typed `set_global`, `global`, and
+  `update_global` helpers on `AppContext` and `ViewContext`, shared app/view
+  visibility, replacement semantics, and missing-global soft-fail behavior.
+  RED failed as expected on missing global helper APIs.
+- Implemented Step 131 in `include/cgpui/ui/ui.hpp`: `WindowRuntime` now owns
+  a `std::type_index` keyed `std::any` global registry, while `AppContext` and
+  `WindowRuntimeContext` expose thin typed helper forwarding without adding a
+  second app ownership layer.
+- Verified targeted tests after GREEN:
+  `xmake test -P . app_runner_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/global-app-state-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 131 is implemented and feature-worktree verified. It still needs
+  feature commit, fast-forward merge to `master`, post-merge targeted/Windows/
+  WSL verification, docs closeout, and cleanup before Step 132 begins.
+
 ## 2026-07-01 Step 130 Post-Merge
 
 - Fast-forward merged Step 130 to `master` at

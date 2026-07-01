@@ -45,8 +45,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 130 is merged on `master` at
   `57e103a feat: add entity handle convenience` and post-merge verified on
   Windows and WSL Arch Linux.
+- Step 131 is implemented and feature-worktree verified in
+  `.worktrees/global-app-state-registry` on
+  `codex/global-app-state-registry`.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 131 is the next implementation slice after Step 130 cleanup.
+  128. Step 132 is the next implementation slice after the Step 131 merge and
+  post-merge verification.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -246,6 +250,23 @@ Historical snapshot, superseded by the Step 128 merge refresh below.
 - Step 131, global app state registry with typed `set_global`, `global`, and
   `update_global` helpers, is the next implementation slice after the Step 130
   docs closeout and cleanup.
+
+## 2026-07-01 Step 131 Global App State Registry
+
+- Step 131 is implemented and feature-worktree verified in
+  `.worktrees/global-app-state-registry` on
+  `codex/global-app-state-registry`.
+- RED failed as expected on missing typed `set_global`, `global`, and
+  `update_global` helpers from `AppContext` and `ViewContext` coverage.
+- GREEN adds a runtime-owned `std::type_index` keyed `std::any` global store
+  plus thin context helper forwarding. Missing global reads return `nullptr`,
+  missing updates return `false`, and replacement through `set_global` is
+  explicit.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 132, scoped action registry for app, window, view, and focused element
+  actions, is the next implementation slice after the Step 131 merge and
+  post-merge verification.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
@@ -952,7 +973,7 @@ Purpose: make the model/context side feel closer to GPUI authoring instead of di
 
 - [x] Step 129: public `Context<T>` authoring alias over `ViewContext` for view/model code.
 - [x] Step 130: entity handle API with `read`, `update`, and `downgrade` convenience methods.
-- [ ] Step 131: global app state registry with typed `set_global`, `global`, and `update_global` helpers.
+- [x] Step 131: global app state registry with typed `set_global`, `global`, and `update_global` helpers.
 - [ ] Step 132: scoped action registry for app, window, view, and focused element actions.
 - [ ] Step 133: subscription ownership token that disconnects observers on drop/removal.
 - [ ] Step 134: deferred callback queue for `cx.defer(...)` style post-event work.
@@ -1081,9 +1102,17 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/app_runner_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for typed `set_global`, `global`, and `update_global` helpers.
-- [ ] Store globals by `std::type_index` and keep missing globals as soft-fail lookups.
-- [ ] Targeted test command: `xmake test -P . app_runner_test/default window_runtime_test/default`.
+- [x] Add RED tests for typed `set_global`, `global`, and `update_global` helpers.
+- [x] Store globals by `std::type_index` and keep missing globals as soft-fail lookups.
+- [x] Targeted test command: `xmake test -P . app_runner_test/default window_runtime_test/default`.
+- [x] RED failed as expected on missing `AppContext`/`ViewContext` global helpers.
+- [x] GREEN added the runtime-owned typed global registry and thin context helper forwarding.
+- [x] Targeted tests passed 2/2:
+  `xmake test -P . app_runner_test/default window_runtime_test/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/global-app-state-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 132: Scoped Action Registry
 

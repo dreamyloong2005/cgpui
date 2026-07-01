@@ -69,6 +69,14 @@ class TestView final : public cgpui::View {
   int paint_count = 0;
 };
 
+struct AppSettings {
+  int launch_count = 0;
+};
+
+struct MissingAppSettings {
+  int value = 0;
+};
+
 class LifetimeView final : public cgpui::View {
  public:
   explicit LifetimeView(bool& destroyed) : destroyed_(destroyed) {}
@@ -400,6 +408,86 @@ int test_window_options_and_app_context_open_window_skeleton() {
   return 0;
 }
 
+int test_app_context_global_state_helpers() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  bool setup_called = false;
+  bool after_frame_called = false;
+  bool set_global = false;
+  bool updated_global = false;
+  bool missing_global_update = true;
+  int setup_read_value = -1;
+  int after_frame_read_value = -1;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                context.set_global(AppSettings{.launch_count = 1});
+                set_global = context.global<AppSettings>() != nullptr;
+                updated_global =
+                    context.update_global<AppSettings>(
+                        [](AppSettings& settings) {
+                          settings.launch_count += 4;
+                        });
+                const AppSettings* settings =
+                    context.global<AppSettings>();
+                setup_read_value =
+                    settings == nullptr ? -1 : settings->launch_count;
+                missing_global_update =
+                    context.update_global<MissingAppSettings>(
+                        [](MissingAppSettings& settings) {
+                          settings.value = 42;
+                        });
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext& frame_context) {
+                      after_frame_called = true;
+                      const AppSettings* after_frame_settings =
+                          frame_context.global<AppSettings>();
+                      after_frame_read_value =
+                          after_frame_settings == nullptr
+                              ? -1
+                              : after_frame_settings->launch_count;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 27;
+  }
+  if (!setup_called || !after_frame_called || !set_global) {
+    return 28;
+  }
+  if (!updated_global || missing_global_update) {
+    return 29;
+  }
+  if (setup_read_value != 5 || after_frame_read_value != 5) {
+    return 30;
+  }
+  if (application.create_window_count != 1 ||
+      renderer_begin_frame_count != 1 ||
+      frame.present_count != 1) {
+    return 31;
+  }
+  return 0;
+}
+
 int test_app_opened_window_keeps_root_view_alive_until_run_app_returns() {
   FakeWindow window(cgpui::WindowState{
       .framebuffer_size = {.width = 320.0F, .height = 240.0F},
@@ -497,6 +585,10 @@ int main() {
   }
   if (const int result =
           test_window_options_and_app_context_open_window_skeleton();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_app_context_global_state_helpers();
       result != 0) {
     return result;
   }

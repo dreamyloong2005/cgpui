@@ -101,9 +101,9 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 130 is now merged and post-merge verified. Step 131 is the next
-implementation slice. The effective distance through Step 168 is 38 remaining
-follow-on implementation steps plus the four follow-on band checkpoint reviews.
+Step 131 is now implemented and feature-worktree verified. After Step 131 is
+merged, the effective distance through Step 168 will be 37 remaining follow-on
+implementation steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -247,7 +247,7 @@ follow-on implementation steps plus the four follow-on band checkpoint reviews.
 128. [x] GPUI-like demo rewrite using the public prelude and new authoring API.
 129. [x] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
 130. [x] Entity handle API with `read`, `update`, and `downgrade` convenience methods.
-131. [ ] Global app state registry with typed `set_global`, `global`, and `update_global` helpers.
+131. [x] Global app state registry with typed `set_global`, `global`, and `update_global` helpers.
 132. [ ] Scoped action registry for app, window, view, and focused element actions.
 133. [ ] Subscription ownership token that disconnects observers on drop/removal.
 134. [ ] Deferred callback queue for `cx.defer(...)` style post-event work.
@@ -288,16 +288,16 @@ follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 130, entity handle API with `read`, `update`, and
-`downgrade` convenience methods, is merged on `master` at
-`57e103a feat: add entity handle convenience` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing
-`cgpui::EntityHandle<T>`; GREEN adds the lightweight typed id wrapper over
-existing entity/context helpers. Post-merge targeted tests passed 2/2, Windows
-full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 131,
-global app state registry with typed `set_global`, `global`, and
-`update_global` helpers, is the next implementation slice after this docs
-closeout and cleanup.
+Current handoff: Step 131, global app state registry with typed `set_global`,
+`global`, and `update_global` helpers, is implemented and feature-worktree
+verified in `.worktrees/global-app-state-registry` on
+`codex/global-app-state-registry`. RED failed as expected on missing
+`AppContext`/`ViewContext` global helper APIs; GREEN adds a runtime-owned
+typed global store and thin context helper forwarding. Targeted tests passed
+2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. Step 131 still needs feature commit, fast-forward merge, post-merge
+targeted/Windows/WSL verification, docs closeout, and cleanup before Step 132
+begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
