@@ -54,9 +54,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 135 is merged on `master` at
   `9d4765d feat: add runtime timer api` and post-merge verified on Windows and
   WSL Arch Linux.
+- Step 136 is implemented in `.worktrees/async-task-completion` on
+  `codex/async-task-completion` from `master` at
+  `cc98ff2 docs: mark step 135 merged` and feature-worktree verified on
+  Windows and WSL Arch Linux.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 136 is the next implementation slice after the Step 135 docs
-  closeout and cleanup.
+  128. Step 136 still needs feature commit, fast-forward merge, post-merge
+  verification, docs closeout, and cleanup before Step 137 begins.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -986,7 +990,7 @@ Purpose: make the model/context side feel closer to GPUI authoring instead of di
 - [x] Step 133: subscription ownership token that disconnects observers on drop/removal.
 - [x] Step 134: deferred callback queue for `cx.defer(...)` style post-event work.
 - [x] Step 135: timer API for one-shot and repeating callbacks through the runtime loop.
-- [ ] Step 136: async task handle skeleton with main-thread completion dispatch.
+- [x] Step 136: async task handle skeleton with main-thread completion dispatch.
 - [ ] Step 137: runtime update batching so multiple model/global changes coalesce redraws.
 - [ ] Step 138: public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 
@@ -1226,9 +1230,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for spawning a task handle and delivering completion back through the runtime main-thread queue.
-- [ ] Implement a minimal task/completion abstraction with deterministic test injection.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for spawning a task handle and delivering completion back through the runtime main-thread queue.
+- [x] Implement a minimal task/completion abstraction with deterministic test injection.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 137: Runtime Update Batching
 

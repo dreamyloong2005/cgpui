@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Async Task Completion Skeleton
+
+- Step 136 keeps async work deterministic and runtime-local: `TaskId`,
+  `TaskHandle`, `TaskCompletionCallback`, `spawn_task(...)`,
+  `complete_task(...)`, and `drain_task_completions()` define the public
+  skeleton without adding a thread pool, coroutine runtime, or platform wakeup
+  integration yet.
+- Completion injection is explicit in tests: `complete_task(id)` marks a task
+  queued and inactive, but does not run the callback until
+  `drain_task_completions()` executes on the runtime thread while the window
+  and renderer are live.
+- Completion callbacks drain FIFO, see a normal `WindowRuntimeContext`, and
+  share the same redraw deferral discipline as deferred callbacks and timers.
+  Duplicate completion of an already completed task soft-fails.
+- Step 136 intentionally does not implement cancellation, background
+  scheduling, thread safety, or platform event-loop wakeups. Those remain out
+  of scope until later runtime/platform slices.
+
 ## 2026-07-01 Timer API
 
 - Step 135 keeps timers deterministic and runtime-local: `TimerId`,

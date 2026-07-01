@@ -38,6 +38,8 @@ using ActionHandler =
 using FocusedTextModelMutation = std::function<void(TextModel&)>;
 using DeferredCallback = std::function<void(const WindowRuntimeContext&)>;
 using TimerCallback = std::function<void(const WindowRuntimeContext&)>;
+using TaskCompletionCallback =
+    std::function<void(const WindowRuntimeContext&)>;
 
 template <typename T>
 using ModelObserver =
@@ -154,6 +156,32 @@ struct TimerId {
   std::uint64_t value = 0;
 
   friend bool operator==(const TimerId&, const TimerId&) = default;
+};
+
+struct TaskId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(const TaskId&, const TaskId&) = default;
+};
+
+class TaskHandle {
+ public:
+  TaskHandle() = default;
+
+  [[nodiscard]] TaskId id() const {
+    return id_;
+  }
+
+  [[nodiscard]] bool active() const;
+  [[nodiscard]] bool complete() const;
+
+ private:
+  friend class WindowRuntime;
+
+  TaskHandle(WindowRuntime& runtime, TaskId id) : runtime_(&runtime), id_(id) {}
+
+  WindowRuntime* runtime_ = nullptr;
+  TaskId id_{};
 };
 
 class Subscription {
@@ -443,6 +471,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] TimerId schedule_repeating_timer(
       std::uint64_t interval_ms,
       TimerCallback callback) const;
+  [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
 
@@ -598,6 +627,9 @@ class WindowRuntime {
       TimerCallback callback);
   [[nodiscard]] bool cancel_timer(TimerId id);
   void advance_time(std::uint64_t delta_ms);
+  [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
+  [[nodiscard]] bool complete_task(TaskId id);
+  void drain_task_completions();
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
@@ -656,6 +688,8 @@ class WindowRuntime {
   bool notify_entity_changed(EntityId<T> entity_id);
 
  private:
+  friend class TaskHandle;
+
   void handle_event(const PlatformEvent& event);
   void handle_resize(const WindowResized& event);
   void handle_redraw();
@@ -663,6 +697,8 @@ class WindowRuntime {
   void flush_deferred_redraw_request();
   void drain_deferred_callbacks();
   void fire_due_timers();
+  [[nodiscard]] bool task_active(TaskId id) const;
+  [[nodiscard]] bool task_complete(TaskId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
   void fail_and_quit(Error error);
   void refresh_route_ancestry(EventRoute& route) const;
@@ -702,6 +738,13 @@ class WindowRuntime {
     std::uint64_t interval_ms = 0;
     bool repeating = false;
     TimerCallback callback;
+  };
+
+  struct RuntimeTask {
+    TaskId id;
+    TaskCompletionCallback callback;
+    bool queued = false;
+    bool completed = false;
   };
 
   PlatformApplication& application_;
@@ -761,6 +804,10 @@ class WindowRuntime {
   std::uint64_t next_timer_id_ = 1;
   std::uint64_t current_time_ms_ = 0;
   bool firing_timers_ = false;
+  std::vector<RuntimeTask> tasks_;
+  std::vector<TaskId> task_completion_queue_;
+  std::uint64_t next_task_id_ = 1;
+  bool draining_task_completions_ = false;
   std::vector<AppOpenedWindow> app_opened_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;

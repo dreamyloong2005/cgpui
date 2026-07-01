@@ -101,11 +101,13 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 135 is merged on `master` at
-`9d4765d feat: add runtime timer api` and post-merge verified on Windows and
-WSL Arch Linux. Step 136 is the next implementation slice. The effective
-distance through Step 168 is 33 remaining follow-on implementation steps plus
-the four follow-on band checkpoint reviews.
+Step 136 is implemented in `.worktrees/async-task-completion` on
+`codex/async-task-completion` from `master` at
+`cc98ff2 docs: mark step 135 merged` and feature-worktree verified on Windows
+and WSL Arch Linux. Step 136 still needs feature commit, fast-forward merge,
+post-merge verification, docs closeout, and cleanup. The effective distance
+through Step 168 is 32 remaining follow-on implementation steps plus the four
+follow-on band checkpoint reviews after Step 136 merges.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -254,7 +256,7 @@ the four follow-on band checkpoint reviews.
 133. [x] Subscription ownership token that disconnects observers on drop/removal.
 134. [x] Deferred callback queue for `cx.defer(...)` style post-event work.
 135. [x] Timer API for one-shot and repeating callbacks through the runtime loop.
-136. [ ] Async task handle skeleton with main-thread completion dispatch.
+136. [x] Async task handle skeleton with main-thread completion dispatch.
 137. [ ] Runtime update batching so multiple model/global changes coalesce redraws.
 138. [ ] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 139. [ ] Keyed element identity and keyed reconciliation beyond parent-local index matching.
@@ -290,18 +292,20 @@ the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 135, timer API for one-shot and repeating callbacks
-through the runtime loop, is merged on `master` at
-`9d4765d feat: add runtime timer api` and post-merge verified on Windows and
-WSL Arch Linux. RED failed as expected on missing `TimerId`,
-`schedule_timer(...)`, `schedule_repeating_timer(...)`, and `cancel_timer(...)`.
-GREEN adds public `TimerId`, `TimerCallback`, context and runtime timer
-registration helpers, deterministic `advance_time(...)` test ticks,
-cancellation, one-shot removal, repeating rescheduling, and redraw deferral
-while timer callbacks fire. Post-merge targeted tests passed 2/2, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 136, async
-task handle skeleton with main-thread completion dispatch, is the next
-implementation slice after this docs closeout and cleanup.
+Current handoff: Step 136, async task handle skeleton with main-thread
+completion dispatch, is implemented in `.worktrees/async-task-completion` on
+`codex/async-task-completion` from `master` at
+`cc98ff2 docs: mark step 135 merged`. RED failed as expected on missing
+`TaskHandle`, `TaskId`, `spawn_task(...)`, `complete_task(...)`, and
+`drain_task_completions()`. GREEN adds public `TaskId`, `TaskHandle`,
+`TaskCompletionCallback`, context/runtime `spawn_task(...)`, deterministic
+completion injection through `complete_task(...)`, FIFO main-thread draining
+through `drain_task_completions()`, active/complete handle queries, duplicate
+completion soft-fail, and redraw deferral while completions drain. Targeted
+tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
+debug passed 26/26. Step 136 still needs feature commit, fast-forward merge to
+`master`, post-merge verification, docs closeout, and cleanup before Step 137
+begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

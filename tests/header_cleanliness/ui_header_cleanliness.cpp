@@ -72,6 +72,15 @@ class TestView final : public cgpui::View {
         });
     (void)context.runtime.cancel_timer(timer_id);
     (void)context.runtime.cancel_timer(repeating_timer_id);
+    cgpui::TaskHandle task = context.spawn_task(
+        [](const cgpui::ViewContext& completion_context) {
+          completion_context.request_render();
+        });
+    const cgpui::TaskId task_id = task.id();
+    (void)task.active();
+    (void)task.complete();
+    (void)context.runtime.complete_task(task_id);
+    context.runtime.drain_task_completions();
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {

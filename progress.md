@@ -1,5 +1,37 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 136 Async Task Handle Skeleton
+
+- Started Step 136 in `.worktrees/async-task-completion` on
+  `codex/async-task-completion` from `master` at
+  `cc98ff2 docs: mark step 135 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public `TaskId`,
+  `TaskHandle`, context/runtime `spawn_task(...)`, runtime
+  `complete_task(...)`, deterministic `drain_task_completions()`, FIFO
+  completion order, active/complete handle state, duplicate completion
+  soft-fail, and redraw deferral while completion callbacks drain. RED failed
+  as expected on missing async task APIs.
+- Implemented Step 136 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  added public `TaskCompletionCallback`, `TaskId`, `TaskHandle`, runtime-owned
+  task records, explicit completion injection, FIFO completion queue draining,
+  handle state queries, and redraw deferral while task completions drain.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/async-task-completion -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 136 is recorded as implemented and feature-worktree
+  verified. Step 136 still needs feature commit, fast-forward merge,
+  post-merge verification, docs closeout, and cleanup before Step 137 begins.
+
 ## 2026-07-01 Step 135 Timer API
 
 - Started Step 135 in `.worktrees/runtime-timer-api` on

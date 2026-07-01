@@ -145,6 +145,14 @@ bool Subscription::release() {
   return runtime->remove_subscription(id);
 }
 
+bool TaskHandle::active() const {
+  return runtime_ != nullptr && runtime_->task_active(id_);
+}
+
+bool TaskHandle::complete() const {
+  return runtime_ != nullptr && runtime_->task_complete(id_);
+}
+
 void PaintList::clear() {
   commands_.clear();
   clip_stack_.clear();
@@ -541,6 +549,7 @@ int WindowRuntime::run(
   subscription_query_buffer_.clear();
   dispatching_view_event_ = false;
   firing_timers_ = false;
+  draining_task_completions_ = false;
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
   event_dispatch_sequence_ = 0;
@@ -1556,6 +1565,73 @@ void WindowRuntime::advance_time(std::uint64_t delta_ms) {
   flush_deferred_redraw_request();
 }
 
+TaskHandle WindowRuntime::spawn_task(TaskCompletionCallback callback) {
+  if (!callback) {
+    return {};
+  }
+
+  const TaskId id{next_task_id_++};
+  tasks_.push_back(RuntimeTask{
+      .id = id,
+      .callback = std::move(callback),
+      .queued = false,
+      .completed = false,
+  });
+  return TaskHandle(*this, id);
+}
+
+bool WindowRuntime::complete_task(TaskId id) {
+  if (id.value == 0) {
+    return false;
+  }
+
+  const auto task = std::find_if(
+      tasks_.begin(),
+      tasks_.end(),
+      [id](const RuntimeTask& task) {
+        return task.id == id;
+      });
+  if (task == tasks_.end() || task->queued || task->completed) {
+    return false;
+  }
+
+  task->queued = true;
+  task_completion_queue_.push_back(id);
+  return true;
+}
+
+void WindowRuntime::drain_task_completions() {
+  if (draining_task_completions_ || should_quit_) {
+    return;
+  }
+
+  draining_task_completions_ = true;
+  while (!task_completion_queue_.empty() && !should_quit_) {
+    std::vector<TaskId> queued;
+    queued.swap(task_completion_queue_);
+    for (const TaskId id : queued) {
+      const auto task = std::find_if(
+          tasks_.begin(),
+          tasks_.end(),
+          [id](const RuntimeTask& task) {
+            return task.id == id;
+          });
+      if (task == tasks_.end() || task->completed) {
+        continue;
+      }
+
+      TaskCompletionCallback callback = task->callback;
+      task->queued = false;
+      task->completed = true;
+      if (callback) {
+        callback(context());
+      }
+    }
+  }
+  draining_task_completions_ = false;
+  flush_deferred_redraw_request();
+}
+
 void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
 }
@@ -1611,7 +1687,8 @@ void WindowRuntime::schedule_redraw() {
     return;
   }
   redraw_scheduled_ = true;
-  if (dispatching_view_event_ || draining_deferred_callbacks_ || firing_timers_) {
+  if (dispatching_view_event_ || draining_deferred_callbacks_ || firing_timers_ ||
+      draining_task_completions_) {
     deferred_redraw_request_ = true;
     return;
   }
@@ -1668,6 +1745,34 @@ void WindowRuntime::fire_due_timers() {
     }
   }
   firing_timers_ = false;
+}
+
+bool WindowRuntime::task_active(TaskId id) const {
+  if (id.value == 0) {
+    return false;
+  }
+
+  const auto task = std::find_if(
+      tasks_.begin(),
+      tasks_.end(),
+      [id](const RuntimeTask& task) {
+        return task.id == id;
+      });
+  return task != tasks_.end() && !task->queued && !task->completed;
+}
+
+bool WindowRuntime::task_complete(TaskId id) const {
+  if (id.value == 0) {
+    return false;
+  }
+
+  const auto task = std::find_if(
+      tasks_.begin(),
+      tasks_.end(),
+      [id](const RuntimeTask& task) {
+        return task.id == id;
+      });
+  return task != tasks_.end() && task->completed;
 }
 
 void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
@@ -1939,6 +2044,11 @@ TimerId WindowRuntimeContext::schedule_repeating_timer(
     std::uint64_t interval_ms,
     TimerCallback callback) const {
   return runtime.schedule_repeating_timer(interval_ms, std::move(callback));
+}
+
+TaskHandle WindowRuntimeContext::spawn_task(
+    TaskCompletionCallback callback) const {
+  return runtime.spawn_task(std::move(callback));
 }
 
 void WindowRuntimeContext::clear_invalidation() const {

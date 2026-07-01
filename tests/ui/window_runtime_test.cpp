@@ -5311,6 +5311,9 @@ RuntimeFixture* deferred_callback_fixture = nullptr;
 class TimerApiView;
 TimerApiView* timer_api_view = nullptr;
 cgpui::WindowRuntime* timer_api_runtime = nullptr;
+class AsyncTaskApiView;
+AsyncTaskApiView* async_task_api_view = nullptr;
+cgpui::WindowRuntime* async_task_api_runtime = nullptr;
 
 void dispatch_deferred_callback_sequence() {
   auto& callback = deferred_callback_fixture->window.callback;
@@ -5520,6 +5523,99 @@ int test_one_shot_and_repeating_timers_tick_deterministically() {
       fixture.renderer.begin_frame_count != 1 ||
       view.paint_count != 1) {
     return 377;
+  }
+
+  return 0;
+}
+
+class AsyncTaskApiView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {
+    paint_count += 1;
+  }
+
+  int completion_order = 0;
+  int first_completion_order = 0;
+  int second_completion_order = 0;
+  int paint_count = 0;
+  bool first_saw_no_prior_invalidation = false;
+  bool second_saw_first_invalidation = false;
+};
+
+void dispatch_async_task_completion_sequence() {
+  const cgpui::TaskHandle first = async_task_api_runtime->spawn_task(
+      [](const cgpui::WindowRuntimeContext& context) {
+        async_task_api_view->first_completion_order =
+            ++async_task_api_view->completion_order;
+        async_task_api_view->first_saw_no_prior_invalidation =
+            !context.runtime.invalidation_state().render;
+        context.request_render();
+      });
+  const cgpui::TaskHandle second = async_task_api_runtime->spawn_task(
+      [](const cgpui::WindowRuntimeContext& context) {
+        async_task_api_view->second_completion_order =
+            ++async_task_api_view->completion_order;
+        async_task_api_view->second_saw_first_invalidation =
+            context.runtime.invalidation_state().render;
+      });
+
+  if (first.id().value == 0 || second.id().value == 0 ||
+      first.id() == second.id() || !first.active() || !second.active()) {
+    return;
+  }
+  if (!async_task_api_runtime->complete_task(first.id()) ||
+      !async_task_api_runtime->complete_task(second.id())) {
+    return;
+  }
+  if (async_task_api_view->completion_order != 0 || first.active() ||
+      second.active()) {
+    return;
+  }
+
+  async_task_api_runtime->drain_task_completions();
+  if (!first.complete() || !second.complete()) {
+    return;
+  }
+  if (async_task_api_runtime->complete_task(first.id())) {
+    return;
+  }
+}
+
+int test_async_task_completion_dispatches_on_runtime_queue() {
+  RuntimeFixture fixture;
+  AsyncTaskApiView view;
+  async_task_api_view = &view;
+  fixture.app.on_run = &dispatch_async_task_completion_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  async_task_api_runtime = &runtime;
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  async_task_api_view = nullptr;
+  async_task_api_runtime = nullptr;
+  if (result != 0) {
+    return 378;
+  }
+
+  if (view.completion_order != 2 || view.first_completion_order != 1 ||
+      view.second_completion_order != 2) {
+    return 379;
+  }
+  if (!view.first_saw_no_prior_invalidation ||
+      !view.second_saw_first_invalidation) {
+    return 380;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1 ||
+      view.paint_count != 1) {
+    return 381;
   }
 
   return 0;
@@ -6876,6 +6972,11 @@ int main() {
   }
   if (const int result =
           test_one_shot_and_repeating_timers_tick_deterministically();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_async_task_completion_dispatches_on_runtime_queue();
       result != 0) {
     return result;
   }
