@@ -1,6 +1,8 @@
 #include "cgpui/ui/text.hpp"
 
+#include <span>
 #include <string_view>
+#include <vector>
 
 namespace {
 
@@ -204,6 +206,72 @@ int test_text_model_tracks_ime_composition() {
              : 33;
 }
 
+int test_font_database_registers_and_resolves_faces() {
+  cgpui::FontDatabase database;
+  if (!database.empty() || database.face_count() != 0 ||
+      !database.faces().empty()) {
+    return 34;
+  }
+
+  const cgpui::FontFaceDescriptor face{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "fixtures/Inter-Regular.ttf",
+  };
+  database.add_face(face);
+  database.add_face(face);
+
+  if (database.empty() || database.face_count() != 1) {
+    return 35;
+  }
+  const cgpui::FontFaceDescriptor* resolved =
+      database.resolve(cgpui::FontDescriptor{.family = "Inter"});
+  if (resolved == nullptr || resolved->postscript_name != "Inter-Regular" ||
+      resolved->source != cgpui::FontSource::test ||
+      resolved->path != "fixtures/Inter-Regular.ttf") {
+    return 36;
+  }
+  if (database.resolve(cgpui::FontDescriptor{.family = "Missing"}) != nullptr) {
+    return 37;
+  }
+
+  return 0;
+}
+
+int test_fake_font_discovery_is_deterministic() {
+  const std::vector<cgpui::FontFaceDescriptor> fixtures{
+      cgpui::FontFaceDescriptor{
+          .font = cgpui::FontDescriptor{.family = "Zed Sans"},
+          .postscript_name = "ZedSans-Regular",
+          .source = cgpui::FontSource::test,
+          .path = "zed-sans.ttf",
+      },
+      cgpui::FontFaceDescriptor{
+          .font = cgpui::FontDescriptor{.family = "Zed Mono"},
+          .postscript_name = "ZedMono-Regular",
+          .source = cgpui::FontSource::test,
+          .path = "zed-mono.ttf",
+      },
+  };
+
+  const cgpui::FontDatabase database =
+      cgpui::discover_test_fonts(std::span<const cgpui::FontFaceDescriptor>(
+          fixtures.data(),
+          fixtures.size()));
+  if (database.face_count() != fixtures.size()) {
+    return 38;
+  }
+  if (database.faces()[0].font.family != "Zed Sans" ||
+      database.faces()[1].font.family != "Zed Mono") {
+    return 39;
+  }
+  return database.resolve(cgpui::FontDescriptor{.family = "Zed Mono"}) !=
+                 nullptr
+             ? 0
+             : 40;
+}
+
 } // namespace
 
 int main() {
@@ -237,6 +305,14 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_tracks_ime_composition();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_font_database_registers_and_resolves_faces();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_fake_font_discovery_is_deterministic();
       result != 0) {
     return result;
   }

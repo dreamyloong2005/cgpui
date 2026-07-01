@@ -1,4 +1,5 @@
 #include "cgpui/platform/platform.hpp"
+#include "cgpui/ui/text.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -399,6 +400,10 @@ class Win32Application final : public PlatformApplication {
   void quit() override {
     running_ = false;
     PostQuitMessage(0);
+  }
+
+  [[nodiscard]] FontDatabase discover_fonts() const override {
+    return {};
   }
 
  private:

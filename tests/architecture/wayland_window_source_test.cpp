@@ -146,6 +146,10 @@ int main() {
   if (!contains(text, "TextInput{")) {
     return 61;
   }
+  if (!contains(text, "discover_fonts() const override") ||
+      !contains(text, "FontDatabase")) {
+    return 62;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

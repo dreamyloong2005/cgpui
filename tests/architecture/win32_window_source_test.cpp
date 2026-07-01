@@ -135,6 +135,10 @@ int main() {
   if (!contains(win32_text, "GetKeyState(VK_SHIFT)")) {
     return 46;
   }
+  if (!contains(win32_text, "discover_fonts() const override") ||
+      !contains(win32_text, "FontDatabase")) {
+    return 51;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {

@@ -1,4 +1,5 @@
 #include "cgpui/platform/platform.hpp"
+#include "cgpui/ui/text.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -68,6 +69,16 @@ int main() {
   }
   if (!text_received) {
     return 6;
+  }
+
+  const cgpui::FontDatabase fonts = (*app)->discover_fonts();
+  if (fonts.face_count() > 0) {
+    for (const cgpui::FontFaceDescriptor& face : fonts.faces()) {
+      if (face.source != cgpui::FontSource::platform ||
+          face.font.family.empty()) {
+        return 7;
+      }
+    }
   }
 
   return 0;

@@ -12,6 +12,8 @@
 
 namespace cgpui {
 
+class FontDatabase;
+
 class PlatformWindow {
  public:
   virtual ~PlatformWindow() = default;
@@ -33,6 +35,7 @@ class PlatformApplication {
   virtual Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) = 0;
+  [[nodiscard]] virtual FontDatabase discover_fonts() const;
 
   virtual int run() = 0;
   virtual void quit() = 0;

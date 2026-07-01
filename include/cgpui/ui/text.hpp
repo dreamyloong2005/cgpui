@@ -2,11 +2,83 @@
 
 #include <cstddef>
 #include <algorithm>
+#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
+
+#include "cgpui/ui/style.hpp"
 
 namespace cgpui {
+
+enum class FontSource {
+  platform,
+  test,
+};
+
+struct FontFaceDescriptor {
+  FontDescriptor font;
+  std::string postscript_name;
+  FontSource source = FontSource::platform;
+  std::string path;
+
+  friend bool operator==(
+      const FontFaceDescriptor&,
+      const FontFaceDescriptor&) = default;
+};
+
+class FontDatabase {
+ public:
+  [[nodiscard]] bool empty() const {
+    return faces_.empty();
+  }
+
+  [[nodiscard]] std::size_t face_count() const {
+    return faces_.size();
+  }
+
+  [[nodiscard]] std::span<const FontFaceDescriptor> faces() const {
+    return faces_;
+  }
+
+  void add_face(FontFaceDescriptor face) {
+    if (face.font.family.empty()) {
+      return;
+    }
+    for (const auto& existing : faces_) {
+      if (existing == face) {
+        return;
+      }
+    }
+    faces_.push_back(std::move(face));
+  }
+
+  [[nodiscard]] const FontFaceDescriptor* resolve(
+      const FontDescriptor& descriptor) const {
+    if (descriptor.family.empty()) {
+      return faces_.empty() ? nullptr : &faces_.front();
+    }
+    for (const auto& face : faces_) {
+      if (face.font.family == descriptor.family) {
+        return &face;
+      }
+    }
+    return nullptr;
+  }
+
+ private:
+  std::vector<FontFaceDescriptor> faces_;
+};
+
+[[nodiscard]] inline FontDatabase discover_test_fonts(
+    std::span<const FontFaceDescriptor> faces) {
+  FontDatabase database;
+  for (const auto& face : faces) {
+    database.add_face(face);
+  }
+  return database;
+}
 
 struct TextSelectionRange {
   std::size_t start = 0;

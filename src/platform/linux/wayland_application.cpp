@@ -1,4 +1,5 @@
 #include "cgpui/platform/platform.hpp"
+#include "cgpui/ui/text.hpp"
 
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
@@ -617,6 +618,10 @@ class WaylandApplication final : public PlatformApplication {
   }
 
   void quit() override { running_ = false; }
+
+  [[nodiscard]] FontDatabase discover_fonts() const override {
+    return {};
+  }
 
  private:
   static void handle_global(
