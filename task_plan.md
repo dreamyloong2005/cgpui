@@ -101,13 +101,11 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 136 is implemented in `.worktrees/async-task-completion` on
-`codex/async-task-completion` from `master` at
-`cc98ff2 docs: mark step 135 merged` and feature-worktree verified on Windows
-and WSL Arch Linux. Step 136 still needs feature commit, fast-forward merge,
-post-merge verification, docs closeout, and cleanup. The effective distance
-through Step 168 is 32 remaining follow-on implementation steps plus the four
-follow-on band checkpoint reviews after Step 136 merges.
+Step 136 is merged on `master` at
+`e957c6e feat: add async task completion skeleton` and post-merge verified on
+Windows and WSL Arch Linux. Step 137 is the next implementation slice. The
+effective distance through Step 168 is 32 remaining follow-on implementation
+steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -293,19 +291,19 @@ follow-on band checkpoint reviews after Step 136 merges.
 ## Active Step
 
 Current handoff: Step 136, async task handle skeleton with main-thread
-completion dispatch, is implemented in `.worktrees/async-task-completion` on
-`codex/async-task-completion` from `master` at
-`cc98ff2 docs: mark step 135 merged`. RED failed as expected on missing
-`TaskHandle`, `TaskId`, `spawn_task(...)`, `complete_task(...)`, and
+completion dispatch, is merged on `master` at
+`e957c6e feat: add async task completion skeleton` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `TaskHandle`,
+`TaskId`, `spawn_task(...)`, `complete_task(...)`, and
 `drain_task_completions()`. GREEN adds public `TaskId`, `TaskHandle`,
 `TaskCompletionCallback`, context/runtime `spawn_task(...)`, deterministic
 completion injection through `complete_task(...)`, FIFO main-thread draining
 through `drain_task_completions()`, active/complete handle queries, duplicate
-completion soft-fail, and redraw deferral while completions drain. Targeted
-tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
-debug passed 26/26. Step 136 still needs feature commit, fast-forward merge to
-`master`, post-merge verification, docs closeout, and cleanup before Step 137
-begins.
+completion soft-fail, and redraw deferral while completions drain. Post-merge
+targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux
+full debug passed 26/26. Step 137, runtime update batching so multiple
+model/global changes coalesce redraws, is the next implementation slice after
+this docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

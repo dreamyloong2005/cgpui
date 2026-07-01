@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Async Task Completion Skeleton Merged
+
+- Step 136 is merged on `master` at
+  `e957c6e feat: add async task completion skeleton` and post-merge verified
+  on Windows and WSL Arch Linux.
+- Step 137 should add runtime update batching on top of the existing
+  model/global update and redraw scheduling paths without changing the Step
+  136 deterministic completion queue or adding platform wakeups early.
+
 ## 2026-07-01 Async Task Completion Skeleton
 
 - Step 136 keeps async work deterministic and runtime-local: `TaskId`,

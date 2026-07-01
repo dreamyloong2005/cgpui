@@ -54,13 +54,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 135 is merged on `master` at
   `9d4765d feat: add runtime timer api` and post-merge verified on Windows and
   WSL Arch Linux.
-- Step 136 is implemented in `.worktrees/async-task-completion` on
-  `codex/async-task-completion` from `master` at
-  `cc98ff2 docs: mark step 135 merged` and feature-worktree verified on
-  Windows and WSL Arch Linux.
+- Step 136 is merged on `master` at
+  `e957c6e feat: add async task completion skeleton` and post-merge verified
+  on Windows and WSL Arch Linux.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 136 still needs feature commit, fast-forward merge, post-merge
-  verification, docs closeout, and cleanup before Step 137 begins.
+  128. Step 137 is the next implementation slice after the Step 136 docs
+  closeout and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -1235,6 +1234,9 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - [x] Feature-worktree Windows full debug verification passed 29/29.
 - [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 137: Runtime Update Batching
 
