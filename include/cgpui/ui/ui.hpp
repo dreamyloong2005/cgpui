@@ -68,6 +68,8 @@ struct TextPaint {
   std::string content;
   std::size_t byte_length = 0;
   float font_size = 16.0F;
+  DpiScale scale;
+  float device_font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
 };
 
@@ -105,6 +107,8 @@ struct PaintCommand {
 class PaintList {
  public:
   void clear();
+  void set_scale(DpiScale scale);
+  [[nodiscard]] DpiScale scale() const;
   void push_clip(Rect rect);
   void pop_clip();
   void push_metadata(PaintMetadata metadata);
@@ -133,6 +137,7 @@ class PaintList {
   std::vector<PaintCommand> commands_;
   std::vector<Rect> clip_stack_;
   std::vector<PaintMetadata> metadata_stack_;
+  DpiScale scale_;
 };
 
 class View {
@@ -476,6 +481,7 @@ struct WindowRuntimeContext {
   Renderer& renderer;
   ViewId view_id;
   Size viewport_size;
+  DpiScale scale;
   ViewInputState input;
   std::optional<EventRoute> event_route;
   EventResult last_event_result;
@@ -854,7 +860,9 @@ class WindowRuntime {
   WindowRuntimeErrorCallback error_callback_;
   PlatformWindow* window_ = nullptr;
   Renderer* renderer_ = nullptr;
+  Size framebuffer_size_{};
   Size viewport_size_{};
+  DpiScale scale_{};
   ViewInputState input_{};
   std::optional<PointerCaptureOwner> pointer_capture_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
@@ -923,6 +931,12 @@ Result<void> render_view(
     Renderer& renderer,
     View& view,
     Size viewport_size,
+    FrameStatistics* statistics = nullptr);
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
     FrameStatistics* statistics = nullptr);
 [[nodiscard]] int run_app(
     PlatformApplication& application,

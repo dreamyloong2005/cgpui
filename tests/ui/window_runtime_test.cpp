@@ -173,6 +173,7 @@ class RecordingView final : public cgpui::View {
     }
     last_view_id = context.view_id;
     last_event_viewport_size = context.viewport_size;
+    last_event_scale = context.scale;
     last_event_frame_index = context.frame_index;
     last_input_focused = context.input.focused;
     last_input_pointer_position = context.input.pointer_position;
@@ -1097,6 +1098,7 @@ class RecordingView final : public cgpui::View {
   cgpui::ViewId last_view_id{};
   cgpui::Size last_viewport_size{};
   cgpui::Size last_event_viewport_size{};
+  cgpui::DpiScale last_event_scale{};
   cgpui::Point last_input_pointer_position{};
   cgpui::Point pointer_move_event_position{};
   cgpui::Point pointer_button_event_position{};
@@ -1309,6 +1311,41 @@ class RuntimeRenderView final : public cgpui::View {
   cgpui::Size last_paint_viewport_size{};
 };
 
+class HidpiRuntimeView final : public cgpui::View {
+ public:
+  cgpui::AnyElement render(cgpui::ViewContext& context) override {
+    render_count += 1;
+    render_viewport_size = context.viewport_size;
+    render_scale = context.scale;
+    return cgpui::into_element(cgpui::text(model_)
+                                   .font(cgpui::FontDescriptor{
+                                       .family = "HiDPI"})
+                                   .font_size(20.0F));
+  }
+
+  void paint(cgpui::PaintList& paint_list, cgpui::Size viewport_size) override {
+    paint_count += 1;
+    paint_viewport_size = viewport_size;
+    paint_list.fill_text(
+        cgpui::Rect{
+            .origin = {.x = 2.0F, .y = 3.0F},
+            .size = {.width = 20.0F, .height = 20.0F}},
+        cgpui::Color{.r = 0.9F, .g = 0.9F, .b = 0.9F, .a = 1.0F},
+        "AB",
+        cgpui::FontDescriptor{.family = "HiDPI"},
+        20.0F);
+  }
+
+  int render_count = 0;
+  int paint_count = 0;
+  cgpui::Size render_viewport_size{};
+  cgpui::Size paint_viewport_size{};
+  cgpui::DpiScale render_scale{};
+
+ private:
+  cgpui::TextModel model_{"AB"};
+};
+
 class RenderInvalidationView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList&, cgpui::Size) override { paint_count += 1; }
@@ -1394,6 +1431,7 @@ int test_view_render_hook_defaults_empty_and_can_be_overridden() {
       .renderer = fixture.renderer,
       .view_id = cgpui::ViewId{9},
       .viewport_size = cgpui::Size{123.0F, 45.0F},
+      .scale = cgpui::DpiScale{1.0F},
       .input = {},
       .event_route = {},
       .last_event_result = {},
@@ -1657,11 +1695,86 @@ int test_resize_updates_renderer_and_viewport() {
       !equal(fixture.renderer.last_resize_scale, cgpui::DpiScale{2.0F})) {
     return 12;
   }
-  if (!equal(fixture.view.last_viewport_size, cgpui::Size{320.0F, 240.0F})) {
+  if (!equal(fixture.view.last_viewport_size, cgpui::Size{160.0F, 120.0F})) {
     return 13;
   }
   if (fixture.renderer.begin_frame_count != 2 || fixture.view.paint_count != 2) {
     return 14;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* hidpi_scale_fixture = nullptr;
+
+void dispatch_hidpi_scale_sequence() {
+  hidpi_scale_fixture->window.dispatch_resize(
+      cgpui::Size{320.0F, 240.0F},
+      cgpui::DpiScale{2.0F});
+  hidpi_scale_fixture->window.request_redraw();
+}
+
+int test_hidpi_scale_flows_to_layout_text_and_renderer_resize() {
+  RuntimeFixture fixture;
+  HidpiRuntimeView view;
+  hidpi_scale_fixture = &fixture;
+  fixture.app.on_run = &dispatch_hidpi_scale_sequence;
+
+  cgpui::DpiScale descriptor_scale{};
+  cgpui::Size descriptor_framebuffer_size{};
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor& descriptor) {
+        descriptor_scale = descriptor.scale;
+        descriptor_framebuffer_size = descriptor.framebuffer_size;
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{
+      .title = "HiDPI Runtime Test",
+      .size = {640.0F, 480.0F}});
+  hidpi_scale_fixture = nullptr;
+
+  if (result != 0) {
+    return 402;
+  }
+  if (!equal(descriptor_framebuffer_size, cgpui::Size{640.0F, 480.0F}) ||
+      !equal(descriptor_scale, cgpui::DpiScale{1.0F})) {
+    return 403;
+  }
+  if (fixture.renderer.resize_count != 1 ||
+      !equal(fixture.renderer.last_resize_size, cgpui::Size{320.0F, 240.0F}) ||
+      !equal(fixture.renderer.last_resize_scale, cgpui::DpiScale{2.0F})) {
+    return 404;
+  }
+  if (view.render_count != 2 || view.paint_count != 2) {
+    return 405;
+  }
+  if (!equal(view.render_viewport_size, cgpui::Size{160.0F, 120.0F}) ||
+      !equal(view.paint_viewport_size, cgpui::Size{160.0F, 120.0F}) ||
+      !equal(view.render_scale, cgpui::DpiScale{2.0F})) {
+    return 406;
+  }
+  const cgpui::Element* root = runtime.element_root();
+  if (root == nullptr || !root->layout_bounds().has_value()) {
+    return 407;
+  }
+  const cgpui::Rect root_bounds = *root->layout_bounds();
+  if (root_bounds.size.width != 20.0F ||
+      root_bounds.size.height != 20.0F) {
+    return 408;
+  }
+  if (fixture.frame.text_draw_count != 2 ||
+      !equal(fixture.frame.last_text.scale, cgpui::DpiScale{2.0F}) ||
+      fixture.frame.last_text.font_size != 20.0F ||
+      fixture.frame.last_text.device_font_size != 40.0F ||
+      fixture.frame.last_text.glyphs.size() != 2 ||
+      fixture.frame.last_text.glyphs[0].advance != 10.0F ||
+      fixture.frame.last_text.glyphs[0].device_advance != 20.0F ||
+      fixture.frame.last_text.glyphs[0].key.scale != 2.0F ||
+      fixture.frame.last_text.glyphs[0].key.device_font_size != 40.0F) {
+    return 409;
   }
 
   return 0;
@@ -7384,6 +7497,11 @@ int main() {
     return result;
   }
   if (const int result = test_resize_updates_renderer_and_viewport();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_hidpi_scale_flows_to_layout_text_and_renderer_resize();
       result != 0) {
     return result;
   }

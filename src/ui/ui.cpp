@@ -239,6 +239,15 @@ void PaintList::clear() {
   commands_.clear();
   clip_stack_.clear();
   metadata_stack_.clear();
+  scale_ = {};
+}
+
+void PaintList::set_scale(DpiScale scale) {
+  scale_ = scale;
+}
+
+DpiScale PaintList::scale() const {
+  return scale_;
 }
 
 void PaintList::push_clip(Rect rect) {
@@ -299,7 +308,7 @@ void PaintList::fill_text(
     std::string_view text,
     FontDescriptor font,
     float font_size) {
-  const TextShapeRun shape_run = shape_text(text, font, font_size);
+  const TextShapeRun shape_run = shape_text(text, font, font_size, scale_);
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::text,
       .text =
@@ -310,6 +319,8 @@ void PaintList::fill_text(
               .content = std::string(text),
               .byte_length = text.size(),
               .font_size = font_size,
+              .scale = scale_,
+              .device_font_size = shape_run.device_font_size,
               .glyphs = text_glyph_paint_metadata(shape_run, bounds.origin),
           },
       .clip_rect = clip_stack_.empty()
@@ -528,6 +539,15 @@ Result<void> render_view(
     View& view,
     Size viewport_size,
     FrameStatistics* statistics) {
+  return render_view(renderer, view, viewport_size, DpiScale{}, statistics);
+}
+
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    FrameStatistics* statistics) {
   if (statistics != nullptr) {
     statistics->begin_frame_count += 1;
   }
@@ -548,6 +568,7 @@ Result<void> render_view(
   }
 
   PaintList paint_list;
+  paint_list.set_scale(scale);
   view.paint(paint_list, viewport_size);
   if (statistics != nullptr) {
     statistics->paint_pass_count += 1;
@@ -570,6 +591,8 @@ Result<void> render_view(
           .content = text.content,
           .byte_length = text.byte_length,
           .font_size = text.font_size,
+          .scale = text.scale,
+          .device_font_size = text.device_font_size,
           .glyphs = text.glyphs,
           .clip_rect = command.clip_rect,
           .metadata = command.metadata,
@@ -676,7 +699,9 @@ int WindowRuntime::run(
   failed_ = false;
   window_ = nullptr;
   renderer_ = nullptr;
+  framebuffer_size_ = descriptor.size;
   viewport_size_ = descriptor.size;
+  scale_ = {};
   input_ = {};
   pointer_capture_owner_.reset();
   keyboard_focus_owner_.reset();
@@ -716,7 +741,9 @@ int WindowRuntime::run(
   std::unique_ptr<PlatformWindow> window = std::move(*window_result);
   window_ = window.get();
   const WindowState window_state = window_->state();
-  viewport_size_ = window_state.framebuffer_size;
+  framebuffer_size_ = window_state.framebuffer_size;
+  scale_ = window_state.scale;
+  viewport_size_ = to_logical_pixels(framebuffer_size_, scale_);
 
   auto renderer_result = renderer_factory_(RenderSurfaceDescriptor{
       .native_surface = window_->native_surface(),
@@ -1050,6 +1077,7 @@ void WindowRuntime::handle_redraw() {
             {
                 .max_size = viewport_size_,
             },
+        .scale = scale_,
     });
     frame_statistics.layout_pass_count += 1;
   }
@@ -1058,6 +1086,7 @@ void WindowRuntime::handle_redraw() {
       *renderer_,
       view_,
       viewport_size_,
+      scale_,
       &frame_statistics);
   if (!result) {
     fail_and_quit(result.error());
@@ -1293,6 +1322,7 @@ WindowRuntimeContext WindowRuntime::context() {
       .renderer = *renderer_,
       .view_id = root_view_id_,
       .viewport_size = viewport_size_,
+      .scale = scale_,
       .input = input,
       .event_route = current_event_route_,
       .last_event_result = last_event_result_,
@@ -2071,7 +2101,9 @@ bool WindowRuntime::notify_entity_changed(
 }
 
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
-  viewport_size_ = size;
+  framebuffer_size_ = size;
+  scale_ = scale;
+  viewport_size_ = to_logical_pixels(framebuffer_size_, scale_);
   if (renderer_ == nullptr) {
     return {};
   }

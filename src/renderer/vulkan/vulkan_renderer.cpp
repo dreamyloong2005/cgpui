@@ -1313,14 +1313,14 @@ void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache) {
         .key = glyph.key,
         .atlas_bounds =
             Rect{
-                .origin = glyph.origin,
+                .origin = glyph.device_origin,
                 .size =
                     Size{
-                        .width = glyph.advance,
-                        .height = text.font_size,
+                        .width = glyph.device_advance,
+                        .height = text.device_font_size,
                     },
             },
-        .advance = glyph.advance,
+        .advance = glyph.device_advance,
     });
   }
 }

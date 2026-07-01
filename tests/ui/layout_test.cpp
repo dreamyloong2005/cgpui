@@ -42,6 +42,48 @@ int test_layout_input_stores_constraints() {
   return 0;
 }
 
+int test_layout_input_carries_scale_and_converts_logical_device_pixels() {
+  const cgpui::LayoutInput input{
+      .constraints =
+          {
+              .min_size = {.width = 10.0F, .height = 20.0F},
+              .max_size = {.width = 100.0F, .height = 200.0F},
+          },
+      .scale = cgpui::DpiScale{2.0F},
+  };
+
+  if (!same(input.scale.value, 2.0F)) {
+    return 8;
+  }
+
+  const cgpui::Size logical = cgpui::to_logical_pixels(
+      cgpui::Size{.width = 320.0F, .height = 240.0F},
+      input.scale);
+  if (!same(logical.width, 160.0F) || !same(logical.height, 120.0F)) {
+    return 9;
+  }
+
+  const cgpui::Size device = cgpui::to_device_pixels(
+      cgpui::Size{.width = 160.0F, .height = 120.0F},
+      input.scale);
+  if (!same(device.width, 320.0F) || !same(device.height, 240.0F)) {
+    return 10;
+  }
+
+  const cgpui::Rect device_rect = cgpui::to_device_pixels(
+      cgpui::Rect{
+          .origin = {.x = 4.0F, .y = 6.0F},
+          .size = {.width = 8.0F, .height = 10.0F},
+      },
+      input.scale);
+  return same(device_rect.origin.x, 8.0F) &&
+                 same(device_rect.origin.y, 12.0F) &&
+                 same(device_rect.size.width, 16.0F) &&
+                 same(device_rect.size.height, 20.0F)
+             ? 0
+             : 11;
+}
+
 int test_constrain_size_clamps_each_axis_between_min_and_max() {
   const cgpui::LayoutConstraints constraints{
       .min_size = {.width = 10.0F, .height = 20.0F},
@@ -96,6 +138,11 @@ int main() {
     return result;
   }
   if (const int result = test_layout_input_stores_constraints(); result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_layout_input_carries_scale_and_converts_logical_device_pixels();
+      result != 0) {
     return result;
   }
   if (const int result =

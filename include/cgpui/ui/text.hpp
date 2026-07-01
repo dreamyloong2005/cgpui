@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/style.hpp"
 
 namespace cgpui {
@@ -90,10 +91,14 @@ struct TextShapeRun {
   std::string text;
   FontDescriptor font;
   float font_size = 16.0F;
+  DpiScale scale;
   std::vector<TextGlyphRun> glyphs;
   std::size_t byte_length = 0;
   float total_advance = 0.0F;
   float line_height = 16.0F;
+  float device_font_size = 16.0F;
+  float device_total_advance = 0.0F;
+  float device_line_height = 16.0F;
 
   [[nodiscard]] std::size_t glyph_count() const {
     return glyphs.size();
@@ -103,6 +108,8 @@ struct TextShapeRun {
 struct GlyphAtlasKey {
   std::string font_family;
   float font_size = 16.0F;
+  float scale = 1.0F;
+  float device_font_size = 16.0F;
   std::size_t glyph_index = 0;
   std::size_t byte_offset = 0;
   std::size_t byte_length = 0;
@@ -114,6 +121,8 @@ struct TextGlyphPaint {
   GlyphAtlasKey key;
   Point origin;
   float advance = 0.0F;
+  Point device_origin;
+  float device_advance = 0.0F;
 };
 
 [[nodiscard]] inline bool is_utf8_continuation_byte(char value) {
@@ -123,13 +132,18 @@ struct TextGlyphPaint {
 [[nodiscard]] inline TextShapeRun shape_text(
     std::string_view text,
     FontDescriptor font = {},
-    float font_size = 16.0F) {
+    float font_size = 16.0F,
+    DpiScale scale = {}) {
+  const float scale_value = normalized_scale(scale);
   TextShapeRun run{
       .text = std::string(text),
       .font = std::move(font),
       .font_size = font_size,
+      .scale = scale,
       .byte_length = text.size(),
       .line_height = font_size,
+      .device_font_size = font_size * scale_value,
+      .device_line_height = font_size * scale_value,
   };
   const float fallback_advance = font_size * 0.5F;
   std::size_t byte_offset = 0;
@@ -145,6 +159,7 @@ struct TextGlyphPaint {
         .advance = fallback_advance,
     });
     run.total_advance += fallback_advance;
+    run.device_total_advance += fallback_advance * scale_value;
     byte_offset += byte_length;
   }
   return run;
@@ -158,17 +173,22 @@ struct TextGlyphPaint {
   float x = origin.x;
   for (std::size_t index = 0; index < run.glyphs.size(); ++index) {
     const TextGlyphRun& glyph = run.glyphs[index];
+    const Point logical_origin{.x = x, .y = origin.y};
     glyphs.push_back(TextGlyphPaint{
         .key =
             GlyphAtlasKey{
                 .font_family = run.font.family,
                 .font_size = run.font_size,
+                .scale = normalized_scale(run.scale),
+                .device_font_size = run.device_font_size,
                 .glyph_index = index,
                 .byte_offset = glyph.byte_offset,
                 .byte_length = glyph.byte_length,
             },
-        .origin = Point{.x = x, .y = origin.y},
+        .origin = logical_origin,
         .advance = glyph.advance,
+        .device_origin = to_device_pixels(logical_origin, run.scale),
+        .device_advance = glyph.advance * normalized_scale(run.scale),
     });
     x += glyph.advance;
   }

@@ -75,6 +75,8 @@ struct TextDraw {
   std::string content;
   std::size_t byte_length = 0;
   float font_size = 16.0F;
+  DpiScale scale;
+  float device_font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
   std::optional<Rect> clip_rect;
   PaintMetadata metadata;

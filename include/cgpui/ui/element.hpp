@@ -292,7 +292,8 @@ class VerticalStackElement : public Element {
     Size content_size;
     std::size_t relative_child_index = 0;
     for (const auto& child : children_) {
-      const LayoutOutput child_output = child->layout(LayoutInput{});
+      const LayoutOutput child_output =
+          child->layout(LayoutInput{.scale = input.scale});
       if (child->position() == Position::absolute) {
         continue;
       }
@@ -319,7 +320,8 @@ class VerticalStackElement : public Element {
       if (child->position() != Position::absolute) {
         continue;
       }
-      const LayoutOutput child_output = child->layout(LayoutInput{});
+      const LayoutOutput child_output =
+          child->layout(LayoutInput{.scale = input.scale});
       child->set_layout_bounds(Rect{
           .origin = absolute_origin(output.size, child->inset()),
           .size = child_output.size,
@@ -408,7 +410,8 @@ class FlexElement : public Element {
     for (std::size_t child_index = 0; child_index < children_.size();
          ++child_index) {
       const auto& child = children_[child_index];
-      const LayoutOutput child_output = child->layout(LayoutInput{});
+      const LayoutOutput child_output =
+          child->layout(LayoutInput{.scale = input.scale});
       child_sizes.push_back(child_output.size);
       if (child->position() == Position::absolute) {
         continue;
@@ -722,7 +725,8 @@ class TextElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const TextShapeRun run = shape_run();
+    const TextShapeRun run =
+        shape_text(text(), font(), font_size(), input.scale);
     const Size preferred{
         .width = run.total_advance,
         .height = run.line_height,
@@ -805,7 +809,8 @@ class LabelElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const TextShapeRun run = shape_run();
+    const TextShapeRun run =
+        shape_text(text_, font(), font_size(), input.scale);
     const Size preferred{
         .width = run.total_advance,
         .height = run.line_height,
@@ -1276,7 +1281,8 @@ class ScrollElement : public Element {
       return output;
     }
 
-    const LayoutOutput child_output = child_->layout(LayoutInput{});
+    const LayoutOutput child_output =
+        child_->layout(LayoutInput{.scale = input.scale});
     child_->set_layout_bounds(Rect{
         .origin = child_output.origin,
         .size = child_output.size,
@@ -1358,7 +1364,8 @@ class ScrollableListElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const LayoutOutput content_output = content_.layout(LayoutInput{});
+    const LayoutOutput content_output =
+        content_.layout(LayoutInput{.scale = input.scale});
     Size preferred = style_.preferred_size;
     if (preferred.width == 0.0F) {
       preferred.width = content_output.size.width;
