@@ -418,6 +418,19 @@ low-coupling platform update placeholder for future Windows UIA / Linux AT-SPI
 adapters. The effective distance through Step 168 is 2 remaining follow-on
 implementation steps plus the final Band H checkpoint review.
 
+Step 167, Windows/Linux demo smoke tests covering window, input, text,
+clipboard, redraw, and close flows, is merged on `master` at
+`c83996b test: add windows linux demo smoke flows` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`CGPUI_DEMO_SMOKE_FLOW`, a bounded full-flow demo smoke marker, clipboard/text
+runtime coverage in the demo, and platform-specific xmake smoke tests. GREEN
+adds a deterministic `CGPUI_DEMO_SMOKE_FLOW` path to `examples/hello_window`
+that binds a memory clipboard, exercises text input, focused text mutation,
+clipboard paste/copy, redraw, and close after the second frame, plus
+`windows_demo_smoke_flow` and `linux_demo_smoke_flow` test entries. The
+effective distance through Step 168 is 1 remaining follow-on implementation
+slice plus the final Band H checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -596,19 +609,19 @@ implementation steps plus the final Band H checkpoint review.
 164. [x] Wayland data-device drag-and-drop text/file event skeleton.
 165. [x] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
 166. [x] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
-167. [ ] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
+167. [x] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 168. [ ] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
 ## Active Step
 
-Current handoff: Step 166, accessibility tree skeleton for labels, buttons,
-text inputs, and focus state, is merged on `master` at
-`57bb3aa feat: add accessibility tree skeleton` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted/header coverage passed 4/4 on
-Windows and 4/4 on WSL Arch Linux, `git diff --check` produced no output,
-Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
-Step 167, Windows/Linux demo smoke tests covering window, input, text,
-clipboard, and redraw flows, is the next implementation slice after docs
+Current handoff: Step 167, Windows/Linux demo smoke tests covering window,
+input, text, clipboard, redraw, and close flows, is merged on `master` at
+`c83996b test: add windows linux demo smoke flows` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted demo smoke coverage passed 5/5
+on Windows and 5/5 on WSL Arch Linux, `git diff --check` produced no output,
+Windows full debug passed 30/30, and WSL Arch Linux full debug passed 27/27.
+Step 168, GPUI-core API parity audit document with remaining gaps and Mac
+parity handoff boundaries, is the next implementation slice after docs
 closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`

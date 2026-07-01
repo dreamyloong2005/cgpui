@@ -2903,3 +2903,22 @@
   no-op for source compatibility.
 - Step 166 can now focus on platform-neutral accessibility snapshots without
   needing to revisit runtime wakeup plumbing.
+
+## 2026-07-02 Windows/Linux Demo Smoke Flows
+
+- Step 167 keeps demo smoke coverage deterministic and bounded through
+  environment variables rather than introducing broad desktop UI automation.
+  `CGPUI_DEMO_SMOKE_FLOW` runs inside the existing hello-window runtime
+  callbacks and exits by requesting close on the second frame.
+- The full-flow smoke deliberately uses the public demo/runtime surface:
+  `cgpui::MemoryClipboard`, a `cgpui::TextInput` event object, focused text
+  mutation, runtime clipboard paste/copy helpers, `context.request_render()`,
+  and `context.window.request_close()`. It does not add private platform hooks
+  or a separate test-only demo binary.
+- Existing demo smoke controls remain intact:
+  `CGPUI_EXIT_AFTER_FIRST_FRAME`, `CGPUI_RESIZE_AFTER_FIRST_FRAME`,
+  `CGPUI_CLOSE_AFTER_FIRST_FRAME`, `CGPUI_DEMO_INJECT_TEXT`, and
+  `CGPUI_DEMO_PAINT_SNAPSHOT_SMOKE` still cover their narrower paths.
+- The `hello_window` xmake target now has one additional platform smoke test on
+  each active target: `windows_demo_smoke_flow` and `linux_demo_smoke_flow`.
+  This raises full-suite counts to Windows 30/30 and WSL Arch Linux 27/27.

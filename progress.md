@@ -1,5 +1,61 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Step 167 Windows/Linux Demo Smoke Flows
+
+- Continued after interruption with `master` at
+  `181f0ce docs: mark step 166 merged` and only the expected untracked
+  `.vscode/` in the main worktree.
+- Started Step 167 in `.worktrees/windows-linux-demo-smoke` on
+  `codex/windows-linux-demo-smoke` from `master`.
+- Verified baseline targeted architecture test before edits:
+  `xmake test -P . hello_window_lifetime_test/default` passed 1/1.
+- Added RED coverage in
+  `tests/architecture/hello_window_lifetime_test.cpp` requiring
+  `CGPUI_DEMO_SMOKE_FLOW`, demo-side memory clipboard/text/clipboard/redraw
+  smoke coverage, and platform-specific xmake demo smoke tests. RED failed as
+  expected at return code 52 before the demo smoke flow existed.
+- GREEN adds a bounded `CGPUI_DEMO_SMOKE_FLOW` path in
+  `examples/hello_window/main.cpp`: after the first frame it binds a
+  `cgpui::MemoryClipboard`, constructs a `cgpui::TextInput` event object,
+  exercises focused text mutation, clipboard paste/copy helpers, requests a
+  redraw, then closes after the second frame and validates all smoke flags
+  before returning.
+- Added `windows_demo_smoke_flow` and `linux_demo_smoke_flow` tests to the
+  `hello_window` xmake target while preserving first-frame, resize,
+  close-after-first-frame, injected-text, and paint-snapshot smoke controls.
+- Verified feature-worktree targeted tests on Windows:
+  `xmake test -P . hello_window_lifetime_test/default hello_window/windows_demo_smoke_flow hello_window/windows_first_frame hello_window/windows_resize_after_first_frame hello_window/windows_close_after_first_frame`
+  passed 5/5.
+- Verified feature-worktree targeted tests on WSL Arch Linux:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/windows-linux-demo-smoke -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . hello_window_lifetime_test/default hello_window/linux_demo_smoke_flow hello_window/linux_first_frame hello_window/linux_resize_after_first_frame hello_window/linux_close_after_first_frame'`
+  passed 5/5.
+- `git diff --check` exited 0 with only expected CRLF warnings in the feature
+  worktree and produced no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/windows-linux-demo-smoke -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Committed Step 167 as
+  `c83996b test: add windows linux demo smoke flows` and fast-forward merged
+  it to `master`.
+- Verified post-merge targeted demo smoke tests:
+  Windows
+  `xmake test -P . hello_window_lifetime_test/default hello_window/windows_demo_smoke_flow hello_window/windows_first_frame hello_window/windows_resize_after_first_frame hello_window/windows_close_after_first_frame`
+  passed 5/5, and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . hello_window_lifetime_test/default hello_window/linux_demo_smoke_flow hello_window/linux_first_frame hello_window/linux_resize_after_first_frame hello_window/linux_close_after_first_frame'`
+  passed 5/5.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 167 is marked merged and post-merge verified. Step 168,
+  GPUI-core API parity audit document with remaining gaps and Mac parity
+  handoff boundaries, is the next implementation slice after docs closeout and
+  cleanup.
+
 ## 2026-07-02 Step 166 Accessibility Tree Skeleton
 
 - Continued after interruption with Step 166 started in

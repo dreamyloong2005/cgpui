@@ -176,7 +176,7 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   coverage passed 6/6 on Windows and 5/5 on WSL Arch Linux, Windows full debug
   passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 167 is the next implementation slice after Step 166 docs closeout
+  128. Step 168 is the next implementation slice after Step 167 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -456,6 +456,31 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   closeout and cleanup.
 - The effective distance through Step 168 is 2 follow-on implementation
   slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 167 Merge
+
+- Step 167, Windows/Linux demo smoke tests covering window, input, text,
+  clipboard, redraw, and close flows, is merged on `master` at
+  `c83996b test: add windows linux demo smoke flows`.
+- RED failed as expected on missing `CGPUI_DEMO_SMOKE_FLOW`, a full-flow demo
+  smoke marker, demo clipboard/text runtime coverage, and platform-specific
+  xmake smoke tests.
+- GREEN adds a bounded `CGPUI_DEMO_SMOKE_FLOW` path to
+  `examples/hello_window` that binds a memory clipboard, exercises a
+  `TextInput` event object, focused text mutation, clipboard paste/copy,
+  redraw, and second-frame close, while keeping the existing first-frame,
+  resize, close, and paint-snapshot smoke controls intact.
+- The `hello_window` target now includes `windows_demo_smoke_flow` and
+  `linux_demo_smoke_flow` tests alongside the existing platform demo smoke
+  tests.
+- Post-merge verification passed: Windows targeted demo smoke tests 5/5, WSL
+  Arch Linux targeted demo smoke tests 5/5, `git diff --check` no output,
+  Windows full debug 30/30, and WSL Arch Linux full debug 27/27.
+- Step 168, GPUI-core API parity audit document with remaining gaps and Mac
+  parity handoff boundaries, is the next implementation slice after docs
+  closeout and cleanup.
+- The effective distance through Step 168 is 1 follow-on implementation slice
+  plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
 
@@ -1825,7 +1850,7 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 - [x] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
 - [x] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
 - [x] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
-- [ ] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
+- [x] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 - [ ] Step 168: GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
 Exit check: Windows and Wayland have the platform hooks needed by the public core API, the demo is smoke-tested on both active targets, and the remaining GPUI parity gaps are explicitly documented.
@@ -2609,9 +2634,18 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/architecture/hello_window_lifetime_test.cpp`
 - Modify: `xmake.lua`
 
-- [ ] Add RED smoke coverage for demo startup, input, text, clipboard, redraw, and close paths on Windows and Linux.
-- [ ] Keep smoke tests bounded with existing first-frame and close-after-first-frame environment controls.
-- [ ] Targeted test command: `xmake test -P . hello_window_lifetime_test/default`.
+- [x] Add RED smoke coverage for demo startup, input, text, clipboard, redraw, and close paths on Windows and Linux.
+- [x] Keep smoke tests bounded with existing first-frame and close-after-first-frame environment controls.
+- [x] Targeted test command: `xmake test -P . hello_window_lifetime_test/default`.
+- [x] Fast-forward merged to `master` at
+  `c83996b test: add windows linux demo smoke flows`.
+- [x] Post-merge targeted demo smoke verification passed 5/5 on Windows:
+  `xmake test -P . hello_window_lifetime_test/default hello_window/windows_demo_smoke_flow hello_window/windows_first_frame hello_window/windows_resize_after_first_frame hello_window/windows_close_after_first_frame`.
+- [x] Post-merge targeted demo smoke verification passed 5/5 on WSL Arch
+  Linux:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . hello_window_lifetime_test/default hello_window/linux_demo_smoke_flow hello_window/linux_first_frame hello_window/linux_resize_after_first_frame hello_window/linux_close_after_first_frame'`.
+- [x] Post-merge full debug verification passed: Windows full debug 30/30 and
+  WSL Arch Linux full debug 27/27.
 
 ### Step 168: GPUI-Core API Parity Audit
 
