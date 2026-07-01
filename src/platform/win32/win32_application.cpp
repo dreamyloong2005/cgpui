@@ -4,6 +4,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
+#include <imm.h>
 
 #include <cstdint>
 #include <memory>
@@ -140,6 +141,12 @@ class Win32Window final : public PlatformWindow {
     }
   }
 
+  void set_ime_text_input_placement(
+      std::optional<ImeTextInputPlacement> placement) override {
+    state_.ime_text_input_placement = placement;
+    apply_ime_text_input_placement();
+  }
+
   void update_size() {
     const auto dpi = static_cast<float>(GetDpiForWindow(hwnd_));
     update_size_for_dpi(dpi);
@@ -227,7 +234,48 @@ class Win32Window final : public PlatformWindow {
 
   void focus_changed(bool focused) { callback_(WindowFocused{.focused = focused}); }
 
+  void ime_start_composition() { apply_ime_text_input_placement(); }
+
  private:
+  void apply_ime_text_input_placement() {
+    if (hwnd_ == nullptr || !state_.ime_text_input_placement.has_value()) {
+      return;
+    }
+
+    const ImeTextInputPlacement& placement =
+        *state_.ime_text_input_placement;
+    const POINT point{
+        .x = static_cast<LONG>(placement.rect.origin.x),
+        .y = static_cast<LONG>(placement.rect.origin.y),
+    };
+    const auto height = static_cast<LONG>(placement.rect.size.height);
+    const RECT area{
+        .left = point.x,
+        .top = point.y,
+        .right = point.x + static_cast<LONG>(placement.rect.size.width),
+        .bottom = point.y + height,
+    };
+
+    HIMC context = ImmGetContext(hwnd_);
+    if (context == nullptr) {
+      return;
+    }
+
+    COMPOSITIONFORM composition{};
+    composition.dwStyle = CFS_POINT;
+    composition.ptCurrentPos = point;
+    ImmSetCompositionWindow(context, &composition);
+
+    CANDIDATEFORM candidate{};
+    candidate.dwIndex = 0;
+    candidate.dwStyle = CFS_EXCLUDE;
+    candidate.ptCurrentPos = point;
+    candidate.rcArea = area;
+    ImmSetCandidateWindow(context, &candidate);
+
+    ImmReleaseContext(hwnd_, context);
+  }
+
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
   HCURSOR current_cursor_ = nullptr;
@@ -266,6 +314,11 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
         window->focus_changed(false);
       }
       return 0;
+    case WM_IME_STARTCOMPOSITION:
+      if (window != nullptr) {
+        window->ime_start_composition();
+      }
+      return DefWindowProcW(hwnd, message, wparam, lparam);
     case WM_CLOSE:
       if (window != nullptr) {
         window->close_requested();

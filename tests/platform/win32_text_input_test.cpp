@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -69,6 +70,34 @@ int main() {
   }
   if (!text_received) {
     return 6;
+  }
+
+  (*window)->set_ime_text_input_placement(cgpui::ImeTextInputPlacement{
+      .rect =
+          cgpui::Rect{
+              .origin = {.x = 24.0F, .y = 36.0F},
+              .size = {.width = 2.0F, .height = 18.0F}},
+      .byte_offset = 3});
+  const cgpui::WindowState placed_state = (*window)->state();
+  if (!placed_state.ime_text_input_placement.has_value() ||
+      placed_state.ime_text_input_placement->byte_offset != 3 ||
+      placed_state.ime_text_input_placement->rect.origin.x != 24.0F ||
+      placed_state.ime_text_input_placement->rect.origin.y != 36.0F ||
+      placed_state.ime_text_input_placement->rect.size.width != 2.0F ||
+      placed_state.ime_text_input_placement->rect.size.height != 18.0F) {
+    return 8;
+  }
+
+  SendMessageW(hwnd, WM_IME_STARTCOMPOSITION, 0, 0);
+  const cgpui::WindowState ime_started_state = (*window)->state();
+  if (!ime_started_state.ime_text_input_placement.has_value() ||
+      ime_started_state.ime_text_input_placement->byte_offset != 3) {
+    return 9;
+  }
+
+  (*window)->set_ime_text_input_placement(std::nullopt);
+  if ((*window)->state().ime_text_input_placement.has_value()) {
+    return 10;
   }
 
   const cgpui::FontDatabase fonts = (*app)->discover_fonts();

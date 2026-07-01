@@ -10,6 +10,7 @@
 #include <expected>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -351,6 +352,11 @@ class WaylandWindow final : public PlatformWindow {
 
   void set_cursor(CursorShape cursor_shape) override {
     cursor_shape_ = cursor_shape;
+  }
+
+  void set_ime_text_input_placement(
+      std::optional<ImeTextInputPlacement> placement) override {
+    state_.ime_text_input_placement = placement;
   }
 
   [[nodiscard]] CursorShape cursor_shape() const {
@@ -1157,6 +1163,11 @@ class WaylandApplication final : public PlatformApplication {
 
     void set_cursor(CursorShape cursor_shape) override {
       app_.set_window_cursor(*window_, cursor_shape);
+    }
+
+    void set_ime_text_input_placement(
+        std::optional<ImeTextInputPlacement> placement) override {
+      window_->set_ime_text_input_placement(placement);
     }
 
    private:

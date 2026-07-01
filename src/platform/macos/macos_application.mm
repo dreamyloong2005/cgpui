@@ -5,6 +5,7 @@
 
 #include <expected>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -88,10 +89,18 @@ class MacOSWindow final : public PlatformWindow {
     (void)cursor_shape;
   }
 
+  void set_ime_text_input_placement(
+      std::optional<ImeTextInputPlacement> placement) override {
+    state_.ime_text_input_placement = placement;
+  }
+
   void refresh_state() {
     const bool close_requested = state_.close_requested;
+    const std::optional<ImeTextInputPlacement> ime_text_input_placement =
+        state_.ime_text_input_placement;
     state_ = make_window_state(window_);
     state_.close_requested = close_requested;
+    state_.ime_text_input_placement = ime_text_input_placement;
     [layer_ setContentsScale:[window_ backingScaleFactor]];
     [layer_ setDrawableSize:CGSizeMake(state_.framebuffer_size.width,
                                        state_.framebuffer_size.height)];

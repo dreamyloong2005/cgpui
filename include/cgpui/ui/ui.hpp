@@ -833,6 +833,7 @@ class WindowRuntime {
   [[nodiscard]] bool task_active(TaskId id) const;
   [[nodiscard]] bool task_complete(TaskId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
+  void apply_focused_text_ime_placement();
   void fail_and_quit(Error error);
   [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
   [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
@@ -939,6 +940,7 @@ class WindowRuntime {
   std::unordered_map<std::uint64_t, TextModel*> text_models_;
   Clipboard* clipboard_ = nullptr;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
+  std::optional<ImeTextInputPlacement> applied_ime_text_input_placement_;
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
   std::uint64_t next_subscription_id_ = 1;

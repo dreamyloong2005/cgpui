@@ -3,6 +3,7 @@
 
 #include <expected>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 namespace {
@@ -129,6 +130,9 @@ class FakeWindow final : public cgpui::PlatformWindow {
     last_cursor_shape = cursor_shape;
   }
 
+  void set_ime_text_input_placement(
+      std::optional<cgpui::ImeTextInputPlacement>) override {}
+
   cgpui::PlatformEventCallback callback;
   int request_redraw_count = 0;
   int request_close_count = 0;
@@ -189,6 +193,10 @@ class FakeApplication final : public cgpui::PlatformApplication {
     }
     void set_cursor(cgpui::CursorShape cursor_shape) override {
       window_.set_cursor(cursor_shape);
+    }
+    void set_ime_text_input_placement(
+        std::optional<cgpui::ImeTextInputPlacement> placement) override {
+      window_.set_ime_text_input_placement(placement);
     }
 
    private:

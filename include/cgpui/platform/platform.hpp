@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 namespace cgpui {
@@ -24,6 +25,8 @@ class PlatformWindow {
   virtual void request_close() = 0;
   virtual void set_title(std::string_view title) = 0;
   virtual void set_cursor(CursorShape cursor_shape) = 0;
+  virtual void set_ime_text_input_placement(
+      std::optional<ImeTextInputPlacement> placement) = 0;
 };
 
 using PlatformEventCallback = std::function<void(const PlatformEvent&)>;

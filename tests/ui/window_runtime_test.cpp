@@ -1179,6 +1179,13 @@ class FakeWindow final : public cgpui::PlatformWindow {
     last_cursor_shape = cursor_shape;
   }
 
+  void set_ime_text_input_placement(
+      std::optional<cgpui::ImeTextInputPlacement> placement) override {
+    ime_placement_count += 1;
+    last_ime_placement = placement;
+    ime_placement_history.push_back(placement);
+  }
+
   void dispatch_resize(cgpui::Size size, cgpui::DpiScale scale) {
     state_.framebuffer_size = size;
     state_.scale = scale;
@@ -1191,7 +1198,11 @@ class FakeWindow final : public cgpui::PlatformWindow {
   int request_redraw_count = 0;
   int request_close_count = 0;
   int set_cursor_count = 0;
+  int ime_placement_count = 0;
   cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
+  std::optional<cgpui::ImeTextInputPlacement> last_ime_placement;
+  std::vector<std::optional<cgpui::ImeTextInputPlacement>>
+      ime_placement_history;
   std::string_view last_title;
 
  private:
@@ -1246,6 +1257,10 @@ class FakeApplication final : public cgpui::PlatformApplication {
     }
     void set_cursor(cgpui::CursorShape cursor_shape) override {
       window_.set_cursor(cursor_shape);
+    }
+    void set_ime_text_input_placement(
+        std::optional<cgpui::ImeTextInputPlacement> placement) override {
+      window_.set_ime_text_input_placement(placement);
     }
 
    private:
@@ -6959,6 +6974,74 @@ int test_runtime_omits_focused_text_ime_rect_without_focus_or_layout() {
   return 0;
 }
 
+int test_runtime_applies_focused_text_ime_rect_to_platform_window() {
+  RuntimeFixture fixture;
+  ime_rect_fixture = &fixture;
+  fixture.app.on_run = &dispatch_focused_text_ime_rect_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{1};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model("abcd");
+  model.set_selection(3, 3);
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId text_id =
+      tree->set_root(std::make_unique<cgpui::TextElement>(
+          &model,
+          cgpui::Style{}.with_font_size(20.0F)));
+  cgpui::TextElement* text_element = tree->find_as<cgpui::TextElement>(text_id);
+  if (text_element == nullptr) {
+    return 317;
+  }
+  text_element->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 10.0F, .y = 12.0F},
+      .size = {.width = 40.0F, .height = 20.0F}});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(text_id, &model);
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.sequence == 2) {
+          context.runtime.release_keyboard_focus(text_id);
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  ime_rect_fixture = nullptr;
+
+  if (result != 0) {
+    return 318;
+  }
+  std::optional<cgpui::ImeTextInputPlacement> applied_placement;
+  for (const auto& placement : fixture.window.ime_placement_history) {
+    if (placement.has_value()) {
+      applied_placement = placement;
+    }
+  }
+  if (fixture.window.ime_placement_count < 2 || !applied_placement.has_value()) {
+    return 319;
+  }
+  const cgpui::ImeTextInputPlacement placement =
+      *applied_placement;
+  if (placement.byte_offset != 3 || placement.rect.origin.x != 30.0F ||
+      placement.rect.origin.y != 0.0F || placement.rect.size.width != 1.0F ||
+      placement.rect.size.height != 20.0F) {
+    return 320;
+  }
+
+  if (fixture.window.last_ime_placement.has_value()) {
+    return 321;
+  }
+
+  return 0;
+}
+
 int test_view_context_binds_text_model_to_element() {
   RuntimeFixture fixture;
   text_input_routing_fixture = &fixture;
@@ -7940,6 +8023,11 @@ int main() {
   }
   if (const int result =
           test_runtime_omits_focused_text_ime_rect_without_focus_or_layout();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_applies_focused_text_ime_rect_to_platform_window();
       result != 0) {
     return result;
   }

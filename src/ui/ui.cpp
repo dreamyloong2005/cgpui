@@ -85,6 +85,24 @@ bool modifiers_equal(KeyboardModifiers lhs, KeyboardModifiers rhs) {
          lhs.alt == rhs.alt && lhs.super == rhs.super;
 }
 
+bool rect_equal(Rect lhs, Rect rhs) {
+  return lhs.origin.x == rhs.origin.x && lhs.origin.y == rhs.origin.y &&
+         lhs.size.width == rhs.size.width && lhs.size.height == rhs.size.height;
+}
+
+bool ime_text_input_placement_equal(
+    const std::optional<ImeTextInputPlacement>& lhs,
+    const std::optional<ImeTextInputPlacement>& rhs) {
+  if (lhs.has_value() != rhs.has_value()) {
+    return false;
+  }
+  if (!lhs.has_value()) {
+    return true;
+  }
+  return lhs->byte_offset == rhs->byte_offset &&
+         rect_equal(lhs->rect, rhs->rect);
+}
+
 bool is_valid_pointer_capture_owner(const PointerCaptureOwner& owner) {
   if (const ViewId* view_id = owner.view_id(); view_id != nullptr) {
     return view_id->value != 0;
@@ -758,6 +776,7 @@ int WindowRuntime::run(
   event_dispatch_sequence_ = 0;
   render_sequence_ = 0;
   frame_index_ = 0;
+  applied_ime_text_input_placement_.reset();
 
   auto window_result = application_.create_window(
       descriptor,
@@ -1141,6 +1160,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     if (after_event_callback_) {
       after_event_callback_(context(), *last_event_dispatch_);
     }
+    apply_focused_text_ime_placement();
     drain_deferred_callbacks();
     flush_deferred_redraw_request();
   }
@@ -1203,6 +1223,7 @@ void WindowRuntime::handle_redraw() {
     });
     frame_statistics.layout_pass_count += 1;
   }
+  apply_focused_text_ime_placement();
 
   auto result = render_view(
       *renderer_,
@@ -1507,11 +1528,13 @@ void WindowRuntime::set_error_callback(WindowRuntimeErrorCallback callback) {
 void WindowRuntime::set_element_root(const Element* element) {
   owned_element_tree_.reset();
   element_root_ = element;
+  apply_focused_text_ime_placement();
 }
 
 void WindowRuntime::set_element_tree(std::unique_ptr<ElementTree> tree) {
   owned_element_tree_ = std::move(tree);
   element_root_ = nullptr;
+  apply_focused_text_ime_placement();
 }
 
 const ElementTree* WindowRuntime::element_tree() const {
@@ -1583,11 +1606,13 @@ void WindowRuntime::request_keyboard_focus() {
 
 void WindowRuntime::request_keyboard_focus(ViewId view_id) {
   keyboard_focus_owner_ = view_id;
+  apply_focused_text_ime_placement();
 }
 
 void WindowRuntime::request_keyboard_focus(ElementId element_id) {
   if (element_id.value != 0) {
     keyboard_focus_element_owner_ = element_id;
+    apply_focused_text_ime_placement();
   }
 }
 
@@ -1598,12 +1623,14 @@ void WindowRuntime::release_keyboard_focus() {
 void WindowRuntime::release_keyboard_focus(ViewId view_id) {
   if (keyboard_focus_owner_ == view_id) {
     keyboard_focus_owner_.reset();
+    apply_focused_text_ime_placement();
   }
 }
 
 void WindowRuntime::release_keyboard_focus(ElementId element_id) {
   if (keyboard_focus_element_owner_ == element_id) {
     keyboard_focus_element_owner_.reset();
+    apply_focused_text_ime_placement();
   }
 }
 
@@ -2206,6 +2233,29 @@ void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
   }
   applied_cursor_shape_ = cursor_shape;
   window_->set_cursor(cursor_shape);
+}
+
+void WindowRuntime::apply_focused_text_ime_placement() {
+  std::optional<ImeTextInputPlacement> placement;
+  if (const std::optional<ImeCandidateRect> candidate =
+          focused_text_ime_rect();
+      candidate.has_value()) {
+    placement = ImeTextInputPlacement{
+        .rect = candidate->rect,
+        .byte_offset = candidate->byte_offset,
+    };
+  }
+
+  if (ime_text_input_placement_equal(
+          applied_ime_text_input_placement_,
+          placement)) {
+    return;
+  }
+
+  applied_ime_text_input_placement_ = placement;
+  if (window_ != nullptr) {
+    window_->set_ime_text_input_placement(placement);
+  }
 }
 
 ViewId WindowRuntime::allocate_view_id() {
