@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 128 Post-Merge
+
+- Confirmed Step 128 is already fast-forward merged on `master` at
+  `4026899 feat: rewrite demo with public prelude`; the feature branch
+  `codex/public-prelude-demo-rewrite` points at the same commit.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Steps 89-128 are now implemented, merged, and post-merge verified on Windows
+  and WSL Arch Linux. Step 129, public `Context<T>` authoring alias over
+  `ViewContext`, is the next implementation slice after this docs closeout and
+  cleanup.
+
 ## 2026-07-01 Step 128 Public Prelude Demo Rewrite
 
 - Continued Step 128 in `.worktrees/public-prelude-demo-rewrite` on
@@ -39,8 +57,9 @@
   passed 26/26.
 - Updated `task_plan.md`, the 89-128 execution plan, the 129-168 forward plan,
   `findings.md`, and this progress log so Step 128 is recorded as implemented
-  and feature-worktree verified. Step 128 still needs feature commit, merge,
-  post-merge verification, docs closeout, and cleanup before Step 129 begins.
+  and feature-worktree verified. At that point, Step 128 still needed feature
+  commit, merge, post-merge verification, docs closeout, and cleanup before
+  Step 129 could begin.
 
 ## 2026-07-01 Step 127 Post-Merge
 

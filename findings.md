@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Public Prelude Demo Rewrite Merged
+
+- Step 128 is merged on `master` at
+  `4026899 feat: rewrite demo with public prelude` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The 128-step gate is complete: targeted architecture/prelude tests passed
+  2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26 after the merge.
+- Step 129 can now start from a fresh `context-authoring-alias` worktree. It
+  should add the public `Context<T>` authoring alias over `ViewContext` without
+  changing runtime ownership or starting the later entity handle/global-state
+  steps early.
+
 ## 2026-07-01 Public Prelude Demo Rewrite
 
 - Step 128 rewrites `examples/hello_window` around the public prelude and

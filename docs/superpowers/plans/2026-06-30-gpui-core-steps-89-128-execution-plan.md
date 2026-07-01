@@ -12,8 +12,12 @@
 
 ## Current State
 
-- Steps 89-127 are implemented, merged to `master`, and post-merge verified on
+- Steps 89-128 are implemented, merged to `master`, and post-merge verified on
   Windows and WSL Arch Linux.
+- Step 128 is merged on `master` at
+  `4026899 feat: rewrite demo with public prelude`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - Step 127 is merged on `master` at
   `80aadae feat: add focused text ime rect`; post-merge targeted tests passed
   3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
@@ -44,10 +48,8 @@
   verified: targeted tests 3/3, Windows full debug 29/29, and WSL Arch Linux
   full debug 26/26.
 - Step 128, GPUI-like demo rewrite using the public prelude and new authoring
-  API, is implemented and feature-worktree verified in
-  `.worktrees/public-prelude-demo-rewrite`: targeted architecture/prelude tests
-  passed 2/2, Windows hello-window smoke tests passed 3/3, Windows full debug
-  passed 29/29, and WSL Arch Linux full debug passed 26/26.
+  API, is complete and post-merge verified. The 129-168 follow-on plan is now
+  the active execution queue.
 
 ## File Map
 
@@ -288,25 +290,16 @@ cursor/clipboard integration points; the demo uses the public GPUI-like API.
 
 ## Current Recommended Next Step
 
-Finish Step 128 merge and post-merge verification from the feature worktree:
+Step 128 is complete. Continue with the follow-on plan by starting Step 129
+from a fresh worktree:
 
 ```powershell
-git checkout master
 git status --short --branch
-cd .worktrees/public-prelude-demo-rewrite
-xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default
-git add examples/hello_window/main.cpp README.md tests/architecture/hello_window_lifetime_test.cpp task_plan.md findings.md progress.md docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md
-git commit -m "feat: rewrite demo with public prelude"
-git checkout master
-git merge --ff-only codex/public-prelude-demo-rewrite
+git worktree add .worktrees/context-authoring-alias -b codex/context-authoring-alias master
 ```
 
-Step 128 now rewrites the demo around the public prelude, `run_app`,
-`AppContext`, `View::render`, free factories, builder shortcuts, and
-text/model interactions while preserving the Windows/Linux Vulkan startup and
-lifecycle smoke paths. Step 129 must still wait for the Step 128 feature
-commit, merge, post-merge targeted/Windows/WSL verification, docs closeout,
-and cleanup.
+Step 129 should add the public `Context<T>` authoring alias over `ViewContext`
+with RED coverage in `window_runtime_test` and `prelude_header_cleanliness`.
 
 ## Step Details
 
@@ -901,6 +894,14 @@ debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - [x] Windows hello-window smoke tests passed 3/3: `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default hello_window/windows_first_frame hello_window/windows_resize_after_first_frame hello_window/windows_close_after_first_frame`.
 - [x] Feature-worktree Windows full debug passed 29/29: `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] Feature-worktree WSL Arch full debug passed 26/26: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/public-prelude-demo-rewrite -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `4026899 feat: rewrite demo with public prelude`.
+- [x] Post-merge targeted tests passed 2/2:
+  `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ## Risk Controls
 

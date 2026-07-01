@@ -4,12 +4,11 @@
 
 **Goal:** Plan the next 40 Windows/Linux GPUI-core slices after Step 128, moving from near-core API coverage toward a practical GPUI-like application framework.
 
-**Architecture:** Keep the active Step 128 merge/verification gate inside the
-current 89-128 execution queue, then use Steps 129-168 to deepen
-context/entity ergonomics, keyed element reconciliation, reusable widgets,
-text/font rendering, diagnostics, and platform-backed Win32/Wayland behavior.
-Windows and Linux continue to use Vulkan, Linux stays Wayland-first, and
-macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
+**Architecture:** Steps 89-128 are complete and verified, so Steps 129-168 now
+deepen context/entity ergonomics, keyed element reconciliation, reusable
+widgets, text/font rendering, diagnostics, and platform-backed Win32/Wayland
+behavior. Windows and Linux continue to use Vulkan, Linux stays Wayland-first,
+and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 **Tech Stack:** C++23, xmake, public header-cleanliness tests, deterministic UI/runtime tests, Win32/Vulkan, Wayland/Vulkan, WSL Arch Linux verification, and feature-worktree RED/GREEN execution.
 
@@ -17,8 +16,8 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 
 ## Current State
 
-- Steps 89-124 are complete on `master`; the Step 124 behavior commit is
-  `74ad787 feat: apply platform cursors`.
+- Steps 89-128 are complete on `master`; the Step 128 behavior commit is
+  `4026899 feat: rewrite demo with public prelude`.
 - Step 120 post-merge verification passed before the docs closeout: targeted
   tests 4/4, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 121 post-merge verification passed: targeted tests 3/3, Windows full
@@ -37,15 +36,11 @@ macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `ab464d5 feat: add wayland clipboard skeleton`; post-merge targeted tests
   passed 1/1, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 - Step 127 is merged and post-merge verified on Windows and WSL Arch Linux.
-- Step 128 is implemented and feature-worktree verified in
-  `.worktrees/public-prelude-demo-rewrite`, but Step 129 remains gated behind
-  the Step 128 feature commit, merge, post-merge targeted/Windows/WSL
-  verification, docs closeout, and clean `master` status. Step 128 is covered
-  by the detailed execution plan in
-  `docs/superpowers/plans/2026-06-30-gpui-core-steps-89-128-execution-plan.md`.
-- This document is the follow-on plan for the next 40 steps after Step 128.
-  Do not execute Step 129 until Step 128 is merged and verified unless the
-  roadmap is explicitly reprioritized.
+- Step 128 is merged and post-merge verified on Windows and WSL Arch Linux:
+  targeted architecture/prelude tests passed 2/2, Windows full debug passed
+  29/29, and WSL Arch Linux full debug passed 26/26.
+- This document is the active follow-on plan for the next 40 steps after Step
+  128. Step 129 can begin from a fresh `context-authoring-alias` worktree.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -172,6 +167,8 @@ Historical snapshot, superseded by the Step 127 merge refresh below.
 
 ## 2026-07-01 Back-40 Planning After Step 128 GREEN
 
+Historical snapshot, superseded by the Step 128 merge refresh below.
+
 - Step 128, GPUI-like demo rewrite using the public prelude and new authoring
   API, is implemented and feature-worktree verified in
   `.worktrees/public-prelude-demo-rewrite` on
@@ -187,12 +184,26 @@ Historical snapshot, superseded by the Step 127 merge refresh below.
 - Feature-worktree verification passed: targeted architecture/prelude tests
   2/2, Windows hello-window smoke tests 3/3, Windows full debug 29/29, and WSL
   Arch Linux full debug 26/26.
-- The gate to Step 129 is now the Step 128 feature commit, fast-forward merge,
-  post-merge targeted verification, Windows full debug, WSL Arch full debug,
-  docs closeout, cleanup, and clean `master` status.
+- At this historical point, the gate to Step 129 was the Step 128 feature
+  commit, fast-forward merge, post-merge targeted verification, Windows full
+  debug, WSL Arch full debug, docs closeout, cleanup, and clean `master`
+  status.
 - The effective distance through Step 168 is 40 follow-on implementation
-  slices plus the Step 128 merge/post-merge verification gate and four band
-  checkpoint reviews.
+  slices plus the then-pending Step 128 merge/post-merge verification gate and
+  four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 128 Merge
+
+- Step 128, GPUI-like demo rewrite using the public prelude and new authoring
+  API, is merged on `master` at
+  `4026899 feat: rewrite demo with public prelude`.
+- Post-merge verification passed: targeted architecture/prelude tests 2/2,
+  Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- The Step 129 gate is open. The next implementation slice is Step 129,
+  public `Context<T>` authoring alias over `ViewContext`, starting from a
+  fresh `.worktrees/context-authoring-alias` worktree.
+- The effective distance through Step 168 is 40 follow-on implementation
+  slices plus four band checkpoint reviews after Steps 138, 148, 158, and 168.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
@@ -530,12 +541,12 @@ Keep these out of Steps 129-168 unless the roadmap is explicitly rewritten:
 
 ## Back-40 Planning Commitments
 
-These commitments make the back-40 plan executable without turning it into a
-second active branch while Steps 121-128 are still incomplete:
+These commitments make the back-40 plan executable now that the Step 128 gate
+is complete:
 
-- Step 129 is a gate transition, not today's next branch. It starts only after
-  Step 128 is merged, Windows full debug passes, WSL Arch full debug passes,
-  and the main worktree has no tracked or staged changes.
+- Step 129 starts from a verified `master`: Step 128 is merged, Windows full
+  debug passed, WSL Arch full debug passed, and the main worktree has no
+  tracked or staged changes.
 - Steps 129-168 stay sequential by default. If a step proves too large, split
   it into a prep step and a behavior step only after updating this plan and
   `task_plan.md`; do not silently combine neighboring steps.
@@ -571,7 +582,7 @@ must have these properties:
 
 ## Execution Gate From The Current State
 
-Do not begin Step 129 until all of these are true:
+The Step 129 entry gate is satisfied:
 
 - [x] Steps 96-98 have landed `View::render(ViewContext&)`, runtime render-tree installation, and render invalidation observability.
 - [x] Steps 99-108 have landed model aliases/helpers, weak handles, observation, `AppContext`, `WindowOptions`, root-view lifecycle storage, the view registry, and child-view placeholders.
@@ -605,12 +616,13 @@ Do not begin Step 129 until all of these are true:
   post-merge verified on Windows and WSL Arch Linux.
 - [x] Step 127 IME geometry has landed on `master` and is post-merge verified
   on Windows and WSL Arch Linux.
-- [ ] Step 128 has landed the public-prelude demo rewrite.
-- [ ] Windows full debug and WSL Arch full debug verification pass on `master` after Step 128, with no tracked/staged changes left behind.
+- [x] Step 128 has landed the public-prelude demo rewrite.
+- [x] Windows full debug and WSL Arch full debug verification pass on `master`
+  after Step 128, with no tracked/staged changes left behind.
 
 Remaining pre-back-40 implementation count:
-1 implementation step remains: Step 128, plus post-Step-128 Windows/WSL
-verification.
+0 implementation steps remain before Step 129. The follow-on queue is now
+active.
 
 ## Back-40 Execution Strategy
 
@@ -675,28 +687,21 @@ For every step:
 - [ ] Commit, fast-forward merge to `master`, re-run targeted and full verification on `master`.
 - [ ] Remove the feature worktree and delete the branch.
 
-For the current pre-back-40 state, start Step 128 before starting Step 129:
-
-```powershell
-git checkout master
-git status --short --branch
-git worktree add .worktrees/public-prelude-demo-rewrite -b codex/public-prelude-demo-rewrite master
-cd .worktrees/public-prelude-demo-rewrite
-xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default
-```
+The current pre-back-40 gate is satisfied. Start Step 129 from a fresh
+worktree after confirming `master` is clean for tracked/staged files.
 
 ## Post-Step-128 Planning Contract
 
-When Step 128 is merged, do this before starting Step 129:
+The Step 128 contract is satisfied:
 
-- [ ] Confirm `master` contains the Step 128 merge and that `git status --short --branch` reports no tracked or staged changes.
-- [ ] Run the Step 128 exit verification on `master`:
+- [x] Confirm `master` contains the Step 128 merge and that `git status --short --branch` reports no tracked or staged changes.
+- [x] Run the Step 128 exit verification on `master`:
   `xmake test -P . hello_window_lifetime_test/default prelude_header_cleanliness/default`.
-- [ ] Run Windows full debug on `master`:
+- [x] Run Windows full debug on `master`:
   `xmake f -c -m debug -P .; xmake test -P .`.
-- [ ] Run WSL Arch full debug on `master`:
+- [x] Run WSL Arch full debug on `master`:
   `wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
-- [ ] Update `task_plan.md` so Step 128 is complete and Step 129 is the active step.
+- [x] Update `task_plan.md` so Step 128 is complete and Step 129 is the active step.
 - [ ] Start Step 129 from a fresh worktree:
   `git worktree add .worktrees/context-authoring-alias -b codex/context-authoring-alias master`.
 

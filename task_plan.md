@@ -96,22 +96,14 @@ Detailed execution plan:
 
 Detailed follow-on plan:
 `docs/superpowers/plans/2026-06-30-gpui-core-steps-129-168-forward-plan.md`.
-That plan now includes the post-Step-128 entry contract, branch slugs, first
-RED test intent, targeted commands, checkpoint exits, and Windows/WSL
-verification matrix for all 40 follow-on steps. It records the current
-pre-back-40 handoff after Step 128 GREEN: Steps 89-127 are merged and
-post-merge verified on Windows and WSL Arch Linux, and Step 128 is implemented
-and feature-worktree verified. Step 129 remains gated behind the Step 128
-feature commit, merge, post-merge targeted/Windows/WSL verification, and clean
-`master` status.
+That plan now includes branch slugs, first RED test intent, targeted commands,
+checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
+steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
+`master` and post-merge verified on Windows and WSL Arch Linux.
 
-After Step 128 feature-worktree verification, the effective distance to Step
-129 is the Step 128 merge/post-merge verification gate. The effective distance
-through Step 168 is 40 follow-on implementation steps plus that gate and the
-four follow-on band checkpoint reviews.
-
-These steps are intentionally queued after Step 128. They should not preempt
-the current Step 127-128 queue unless the plan is explicitly reprioritized.
+Step 129 is now the next implementation slice. The effective distance through
+Step 168 is 40 follow-on implementation steps plus the four follow-on band
+checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -296,6 +288,13 @@ the current Step 127-128 queue unless the plan is explicitly reprioritized.
 
 ## Active Step
 
+Current handoff: Step 128 is merged on `master` at
+`4026899 feat: rewrite demo with public prelude` and post-merge verified on
+Windows and WSL Arch Linux. Steps 89-128 are complete for the Windows/Linux
+track. Step 129, public `Context<T>` authoring alias over `ViewContext`, is the
+next implementation slice and should start from
+`.worktrees/context-authoring-alias` on `codex/context-authoring-alias`.
+
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
 on missing `AlignItems`/`JustifyContent` API, feature-worktree targeted tests
@@ -449,10 +448,9 @@ GPUI-like demo rewrite using the public prelude and new authoring API, is the
 next implementation slice.
 
 Step 128, GPUI-like demo rewrite using the public prelude and new authoring
-API, is implemented and feature-worktree verified in
-`.worktrees/public-prelude-demo-rewrite` on
-`codex/public-prelude-demo-rewrite`. RED failed as expected after the
-architecture test began requiring `cgpui/cgpui.hpp`, `run_app`,
+API, is merged on `master` at
+`4026899 feat: rewrite demo with public prelude`. RED failed as expected after
+the architecture test began requiring `cgpui/cgpui.hpp`, `run_app`,
 `AppRunnerOptions`, `AppContext`, `View::render(ViewContext&)`, public element
 factories, fluent builder shortcuts, and `ViewContext` model/text helpers
 while rejecting manual `WindowRuntime`/`ElementTree` demo setup. GREEN rewrites
@@ -460,8 +458,10 @@ while rejecting manual `WindowRuntime`/`ElementTree` demo setup. GREEN rewrites
 first-frame, resize, close, and injected-text smoke env vars, and updates
 README foundation wording. Feature-worktree targeted tests passed 2/2, Windows
 hello-window smoke tests passed 3/3, Windows full debug passed 29/29, and WSL
-Arch Linux full debug passed 26/26. Step 128 still needs feature commit, merge,
-post-merge verification, docs closeout, and cleanup before Step 129 begins.
+Arch Linux full debug passed 26/26. Post-merge targeted tests passed 2/2,
+Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+Step 129, public `Context<T>` authoring alias over `ViewContext`, is the next
+implementation slice.
 
 ## Risks
 
