@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 FocusHandle Primitive
+
+- Step 144 keeps `FocusHandle` deliberately thin: it stores only an
+  `ElementId` and forwards request/release to the existing
+  `WindowRuntime::request_keyboard_focus(ElementId)` and
+  `release_keyboard_focus(ElementId)` owner semantics.
+- `FocusHandle::contains(...)` and `focused(...)` query the current
+  `ViewInputState::keyboard_focus_element_owner`; for this primitive slice the
+  two spellings are equivalent. The duplicate naming matches the GPUI-like API
+  shape while leaving room for richer containment/focus scopes later.
+- `WindowRuntime::input_state()` is now a public snapshot helper so handles and
+  later widgets can query focus without requiring an event-time
+  `WindowRuntimeContext`.
+- Step 144 intentionally does not add focus rings, focus scopes, tab-order
+  changes, platform focus adapters, or accessibility focus integration. Those
+  remain later widget/platform/accessibility slices.
+
 ## 2026-07-01 Async Task Completion Skeleton Merged
 
 - Step 136 is merged on `master` at

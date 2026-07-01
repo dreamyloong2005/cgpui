@@ -419,6 +419,30 @@ struct ViewInputState {
   Point pointer_position{};
 };
 
+class FocusHandle {
+ public:
+  constexpr FocusHandle() = default;
+  explicit constexpr FocusHandle(ElementId id) : id_(id) {}
+
+  [[nodiscard]] constexpr ElementId id() const { return id_; }
+  [[nodiscard]] constexpr bool empty() const { return id_.value == 0; }
+
+  void request(WindowRuntime& runtime) const;
+  void request(const WindowRuntimeContext& context) const;
+  void release(WindowRuntime& runtime) const;
+  void release(const WindowRuntimeContext& context) const;
+
+  [[nodiscard]] bool contains(const ViewInputState& input) const;
+  [[nodiscard]] bool contains(const WindowRuntime& runtime) const;
+  [[nodiscard]] bool contains(const WindowRuntimeContext& context) const;
+  [[nodiscard]] bool focused(const ViewInputState& input) const;
+  [[nodiscard]] bool focused(const WindowRuntime& runtime) const;
+  [[nodiscard]] bool focused(const WindowRuntimeContext& context) const;
+
+ private:
+  ElementId id_{};
+};
+
 struct WindowRuntimeContext {
   WindowRuntime& runtime;
   PlatformApplication& application;
@@ -449,6 +473,7 @@ struct WindowRuntimeContext {
   void release_keyboard_focus(ViewId view_id) const;
   void release_keyboard_focus(ElementId element_id) const;
   void blur(ElementId element_id) const;
+  [[nodiscard]] FocusHandle focus_handle(ElementId element_id) const;
   void set_element_tree(std::unique_ptr<ElementTree> tree) const;
 
   template <typename T>
@@ -633,6 +658,8 @@ class WindowRuntime {
   void release_keyboard_focus();
   void release_keyboard_focus(ViewId view_id);
   void release_keyboard_focus(ElementId element_id);
+  [[nodiscard]] FocusHandle focus_handle(ElementId element_id) const;
+  [[nodiscard]] ViewInputState input_state() const;
   void register_action(std::string name, ActionHandler handler);
   void register_app_action(std::string name, ActionHandler handler);
   void register_window_action(std::string name, ActionHandler handler);

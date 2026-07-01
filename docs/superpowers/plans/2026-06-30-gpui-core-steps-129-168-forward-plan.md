@@ -81,9 +81,19 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `1493c91 feat: add style classes theme tokens`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
-- This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 143 is the next implementation slice after Step 142 docs closeout
+- Step 143 is merged on `master` at
+  `2ab43a7 feat: add style cascade resolution`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
+- Step 144 is implemented and feature-worktree verified in
+  `.worktrees/focus-handle-primitive` on `codex/focus-handle-primitive`;
+  targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch
+  Linux full debug passed 26/26. It still needs fresh targeted verification,
+  feature commit, fast-forward merge, post-merge verification, docs closeout,
   and cleanup.
+- This document is the active follow-on plan for the next 40 steps after Step
+  128. Step 145 is the next implementation slice after Step 144 merge,
+  closeout, and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -256,6 +266,29 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   cleanup.
 - The effective distance through Step 168 is 25 follow-on implementation
   slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 144 GREEN
+
+- Step 144, `FocusHandle` primitive with request, release, contains, and
+  focused queries, is implemented and feature-worktree verified in
+  `.worktrees/focus-handle-primitive` on
+  `codex/focus-handle-primitive`.
+- RED failed as expected on missing `cgpui::FocusHandle`,
+  `WindowRuntime::focus_handle(...)`, and
+  `WindowRuntimeContext::focus_handle(...)`. GREEN adds a lightweight
+  `ElementId` handle over existing keyboard-focus owner semantics, runtime and
+  context factories, request/release forwarding, current-focus queries over
+  runtime/context/input snapshots, and a public `WindowRuntime::input_state()`
+  snapshot.
+- Targeted verification passed 2/2:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- Feature-worktree verification passed: Windows full debug 29/29 and WSL Arch
+  Linux full debug 26/26.
+- Step 144 still needs a fresh pre-commit targeted check, feature commit,
+  fast-forward merge to `master`, post-merge verification, docs closeout, and
+  cleanup.
+- After the Step 144 merge, the effective distance through Step 168 will be
+  24 follow-on implementation slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
@@ -1637,12 +1670,15 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 
 **Files:**
 - Modify: `include/cgpui/ui/ui.hpp`
-- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for focus handles requesting/releasing focus and querying current focus.
-- [ ] Implement handle storage over existing element focus owner data.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for focus handles requesting/releasing focus and querying current focus.
+- [x] Implement handle storage over existing element focus owner data.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 145: Button Widget Primitive
 

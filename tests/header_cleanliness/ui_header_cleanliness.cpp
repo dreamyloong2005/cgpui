@@ -94,6 +94,14 @@ class TestView final : public cgpui::View {
         context.runtime.diagnostics_snapshot();
     (void)context_diagnostics.entity_count;
     (void)runtime_diagnostics.last_render_record;
+    const cgpui::FocusHandle focus_handle =
+        context.focus_handle(cgpui::ElementId{4});
+    focus_handle.request(context);
+    (void)focus_handle.id();
+    (void)focus_handle.empty();
+    (void)focus_handle.contains(context);
+    (void)focus_handle.focused(context.input_state());
+    focus_handle.release(context.runtime);
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {

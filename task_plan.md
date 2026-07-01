@@ -146,6 +146,29 @@ token ids, and typed color/spacing token storage with missing-token soft
 failure. The effective distance through Step 168 is 26 remaining follow-on
 implementation steps plus the four follow-on band checkpoint reviews.
 
+Step 143, style cascade resolution combining base, class, state, and inline
+styles, is merged on `master` at
+`2ab43a7 feat: add style cascade resolution` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `StyleCascade`,
+class/inline builder APIs, and styled-element resolved-style APIs. GREEN adds
+deterministic `StyleCascade` resolution plus `StyledElement` storage for
+classes and inline overlays, while leaving runtime layout/paint cascade
+installation for a later slice. The effective distance through Step 168 is 25
+remaining follow-on implementation steps plus the four follow-on band
+checkpoint reviews.
+
+Step 144, `FocusHandle` primitive with request, release, contains, and focused
+queries, is implemented and feature-worktree verified in
+`.worktrees/focus-handle-primitive` on `codex/focus-handle-primitive`. RED
+failed as expected on missing `FocusHandle` and `focus_handle(...)` APIs.
+GREEN adds a lightweight element-id focus handle, runtime/context
+`focus_handle(...)` factories, focus request/release forwarding, and query
+helpers over `ViewInputState` plus a public runtime input snapshot. Feature
+worktree targeted tests passed 2/2, Windows full debug passed 29/29, and WSL
+Arch Linux full debug passed 26/26. Step 144 still needs a fresh pre-commit
+targeted check, feature commit, fast-forward merge, post-merge verification,
+docs closeout, and cleanup before Step 145 begins.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -329,17 +352,20 @@ implementation steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 143, style cascade resolution combining base, class,
-state, and inline styles, is merged on `master` at
-`2ab43a7 feat: add style cascade resolution` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing `StyleCascade`,
-class/inline builder APIs, and styled-element resolved-style APIs. GREEN adds
-deterministic `StyleCascade` resolution plus `StyledElement` storage for
-classes and inline overlays, while leaving runtime layout/paint cascade
-installation for a later slice. Post-merge targeted tests passed 2/2, Windows
-full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 144,
-`FocusHandle` primitive with request, release, contains, and focused queries,
-is the next implementation slice after this docs closeout and cleanup.
+Current handoff: Step 144, `FocusHandle` primitive with request, release,
+contains, and focused queries, is implemented and feature-worktree verified in
+`.worktrees/focus-handle-primitive` on `codex/focus-handle-primitive`. RED
+failed as expected on missing `cgpui::FocusHandle`,
+`WindowRuntime::focus_handle(...)`, and
+`WindowRuntimeContext::focus_handle(...)`. GREEN adds a lightweight `ElementId`
+handle over existing keyboard-focus owner semantics, runtime/context
+factories, request/release forwarding, `contains(...)` and `focused(...)`
+queries over runtime/context/input snapshots, and a public
+`WindowRuntime::input_state()` snapshot. Feature-worktree targeted tests
+passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+passed 26/26. Step 144 still needs fresh targeted verification, feature
+commit, fast-forward merge to `master`, post-merge verification, docs
+closeout, and cleanup before Step 145 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -741,6 +741,39 @@ class RecordingView final : public cgpui::View {
           context.blur(focused_keyboard_element_id);
         }
       }
+      if (exercise_view_context_focus_handle) {
+        const cgpui::FocusHandle focus_handle =
+            context.focus_handle(focused_keyboard_element_id);
+        const cgpui::FocusHandle other_handle =
+            context.focus_handle(cgpui::ElementId{
+                focused_keyboard_element_id.value + 1});
+        if (keyboard_key_count == 1) {
+          view_context_focus_handle_id = focus_handle.id();
+          view_context_focus_handle_empty =
+              context.focus_handle(cgpui::ElementId{}).empty();
+          view_context_focus_handle_contains_before =
+              focus_handle.contains(context);
+          view_context_focus_handle_focused_before =
+              focus_handle.focused(context.input_state());
+          focus_handle.request(context);
+        } else if (keyboard_key_count == 2) {
+          view_context_focus_handle_contains_after_request =
+              focus_handle.contains(context);
+          view_context_focus_handle_focused_after_request =
+              focus_handle.focused(context.input_state());
+          view_context_focus_handle_other_contains =
+              other_handle.contains(context.input_state());
+          other_handle.release(context.runtime);
+        } else if (keyboard_key_count == 3) {
+          view_context_focus_handle_still_focused_after_wrong_release =
+              focus_handle.focused(context);
+          focus_handle.release(context);
+        } else if (keyboard_key_count == 4) {
+          view_context_focus_handle_released =
+              !focus_handle.contains(context) &&
+              !focus_handle.focused(context.input_state());
+        }
+      }
       if (exercise_view_context_convenience && keyboard_key_count == 1) {
         const cgpui::ViewContext& view_context = context;
         view_context_convenience_same_alias_type =
@@ -854,6 +887,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_context_element_tree_installation = false;
   bool exercise_view_context_cursor_binding = false;
   bool exercise_view_context_focus_element_helpers = false;
+  bool exercise_view_context_focus_handle = false;
   bool exercise_view_context_pointer_capture_helpers = false;
   bool exercise_view_context_ime_rect = false;
   bool capture_on_first_pointer_move = false;
@@ -1011,6 +1045,14 @@ class RecordingView final : public cgpui::View {
   bool view_context_mutated_focused_text = false;
   bool view_context_skipped_missing_focused_text = true;
   bool view_context_ime_rect_present = false;
+  bool view_context_focus_handle_empty = false;
+  bool view_context_focus_handle_contains_before = true;
+  bool view_context_focus_handle_focused_before = true;
+  bool view_context_focus_handle_contains_after_request = false;
+  bool view_context_focus_handle_focused_after_request = false;
+  bool view_context_focus_handle_other_contains = true;
+  bool view_context_focus_handle_still_focused_after_wrong_release = false;
+  bool view_context_focus_handle_released = false;
   cgpui::ImeCandidateRect view_context_ime_rect{};
   int weak_model_read_value = -1;
   std::optional<cgpui::Model<RuntimeEntity>> upgraded_weak_model;
@@ -1023,6 +1065,7 @@ class RecordingView final : public cgpui::View {
   cgpui::ViewId third_allocated_view_id{};
   cgpui::ElementId captured_pointer_element_id{};
   cgpui::ElementId focused_keyboard_element_id{21};
+  cgpui::ElementId view_context_focus_handle_id{};
   cgpui::ElementId view_context_cursor_element_id{};
   cgpui::EventRoute last_event_route{};
   cgpui::EventRoute current_event_route_helper{};
@@ -4188,6 +4231,111 @@ int test_keyboard_focus_routes_to_owner_element() {
   return 0;
 }
 
+int test_focus_handle_requests_releases_and_queries_focus() {
+  RuntimeFixture fixture;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const cgpui::ElementId first_id{31};
+  const cgpui::ElementId second_id{32};
+  const cgpui::FocusHandle first = runtime.focus_handle(first_id);
+  const cgpui::FocusHandle second = runtime.focus_handle(second_id);
+  const cgpui::FocusHandle empty = runtime.focus_handle(cgpui::ElementId{});
+
+  if (first.id() != first_id || first.empty() || !empty.empty()) {
+    return 393;
+  }
+  if (first.contains(runtime) || first.focused(runtime) ||
+      first.contains(runtime.input_state())) {
+    return 394;
+  }
+
+  first.request(runtime);
+  const cgpui::ViewInputState focused_input = runtime.input_state();
+  if (!first.contains(focused_input) || !first.focused(focused_input) ||
+      !first.contains(runtime) || !first.focused(runtime) ||
+      second.contains(focused_input) || second.focused(focused_input)) {
+    return 395;
+  }
+
+  second.release(runtime);
+  if (!first.focused(runtime.input_state())) {
+    return 396;
+  }
+
+  second.request(runtime);
+  if (first.focused(runtime) || !second.focused(runtime)) {
+    return 397;
+  }
+
+  first.release(runtime);
+  if (!second.focused(runtime)) {
+    return 398;
+  }
+
+  second.release(runtime);
+  if (first.focused(runtime.input_state()) ||
+      second.focused(runtime.input_state())) {
+    return 399;
+  }
+
+  empty.request(runtime);
+  if (empty.focused(runtime) || runtime.input_state().keyboard_focused) {
+    return 400;
+  }
+
+  return 0;
+}
+
+int test_view_context_focus_handle_requests_releases_and_queries_focus() {
+  RuntimeFixture fixture;
+  keyboard_focus_fixture = &fixture;
+  fixture.app.on_run = &dispatch_keyboard_focus_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{33};
+  fixture.view.exercise_view_context_focus_handle = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  keyboard_focus_fixture = nullptr;
+
+  if (result != 0) {
+    return 401;
+  }
+  if (fixture.view.view_context_focus_handle_id != cgpui::ElementId{33} ||
+      !fixture.view.view_context_focus_handle_empty) {
+    return 402;
+  }
+  if (fixture.view.view_context_focus_handle_contains_before ||
+      fixture.view.view_context_focus_handle_focused_before) {
+    return 403;
+  }
+  if (!fixture.view.view_context_focus_handle_contains_after_request ||
+      !fixture.view.view_context_focus_handle_focused_after_request ||
+      fixture.view.view_context_focus_handle_other_contains) {
+    return 404;
+  }
+  if (!fixture.view.view_context_focus_handle_still_focused_after_wrong_release ||
+      !fixture.view.third_key_saw_keyboard_focus_element_owner) {
+    return 405;
+  }
+  if (!fixture.view.view_context_focus_handle_released ||
+      fixture.view.last_keyboard_focus_element_owner_present) {
+    return 406;
+  }
+
+  return 0;
+}
+
 int test_view_context_focuses_and_blurs_element() {
   RuntimeFixture fixture;
   keyboard_focus_fixture = &fixture;
@@ -7137,6 +7285,16 @@ int main() {
     return result;
   }
   if (const int result = test_keyboard_focus_routes_to_owner_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_focus_handle_requests_releases_and_queries_focus();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_view_context_focus_handle_requests_releases_and_queries_focus();
       result != 0) {
     return result;
   }

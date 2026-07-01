@@ -1126,15 +1126,7 @@ const Element* WindowRuntime::routed_element(ElementId element_id) const {
 }
 
 WindowRuntimeContext WindowRuntime::context() {
-  ViewInputState input = input_;
-  input.pointer_capture_owner = pointer_capture_owner_;
-  input.pointer_captured = pointer_capture_owner_.has_value();
-  input.keyboard_focus_owner = keyboard_focus_owner_;
-  input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
-  input.hovered_element_id = hovered_element_id_;
-  input.cursor_shape = cursor_shape_;
-  input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
-                           keyboard_focus_element_owner_.has_value();
+  ViewInputState input = input_state();
 
   return WindowRuntimeContext{
       .runtime = *this,
@@ -1207,6 +1199,46 @@ void WindowRuntime::release_pointer(PointerCaptureOwner owner) {
   }
 }
 
+void FocusHandle::request(WindowRuntime& runtime) const {
+  runtime.request_keyboard_focus(id_);
+}
+
+void FocusHandle::request(const WindowRuntimeContext& context) const {
+  context.runtime.request_keyboard_focus(id_);
+}
+
+void FocusHandle::release(WindowRuntime& runtime) const {
+  runtime.release_keyboard_focus(id_);
+}
+
+void FocusHandle::release(const WindowRuntimeContext& context) const {
+  context.runtime.release_keyboard_focus(id_);
+}
+
+bool FocusHandle::contains(const ViewInputState& input) const {
+  return id_.value != 0 && input.keyboard_focus_element_owner == id_;
+}
+
+bool FocusHandle::contains(const WindowRuntime& runtime) const {
+  return contains(runtime.input_state());
+}
+
+bool FocusHandle::contains(const WindowRuntimeContext& context) const {
+  return contains(context.input_state());
+}
+
+bool FocusHandle::focused(const ViewInputState& input) const {
+  return contains(input);
+}
+
+bool FocusHandle::focused(const WindowRuntime& runtime) const {
+  return contains(runtime);
+}
+
+bool FocusHandle::focused(const WindowRuntimeContext& context) const {
+  return contains(context);
+}
+
 void WindowRuntime::request_keyboard_focus() {
   request_keyboard_focus(root_view_id_);
 }
@@ -1235,6 +1267,23 @@ void WindowRuntime::release_keyboard_focus(ElementId element_id) {
   if (keyboard_focus_element_owner_ == element_id) {
     keyboard_focus_element_owner_.reset();
   }
+}
+
+FocusHandle WindowRuntime::focus_handle(ElementId element_id) const {
+  return FocusHandle(element_id);
+}
+
+ViewInputState WindowRuntime::input_state() const {
+  ViewInputState input = input_;
+  input.pointer_capture_owner = pointer_capture_owner_;
+  input.pointer_captured = pointer_capture_owner_.has_value();
+  input.keyboard_focus_owner = keyboard_focus_owner_;
+  input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
+  input.hovered_element_id = hovered_element_id_;
+  input.cursor_shape = cursor_shape_;
+  input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
+                           keyboard_focus_element_owner_.has_value();
+  return input;
 }
 
 void WindowRuntime::register_action(std::string name, ActionHandler handler) {
@@ -1939,6 +1988,10 @@ void WindowRuntimeContext::release_keyboard_focus(ElementId element_id) const {
 
 void WindowRuntimeContext::blur(ElementId element_id) const {
   runtime.release_keyboard_focus(element_id);
+}
+
+FocusHandle WindowRuntimeContext::focus_handle(ElementId element_id) const {
+  return runtime.focus_handle(element_id);
 }
 
 void WindowRuntimeContext::set_element_tree(

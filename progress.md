@@ -1,5 +1,41 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 144 FocusHandle Primitive
+
+- Continued Step 144 in `.worktrees/focus-handle-primitive` on
+  `codex/focus-handle-primitive` from `master` at
+  `c71477b docs: mark step 143 merged`.
+- Re-verified the baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `FocusHandle`, `WindowRuntime::focus_handle(...)`,
+  `WindowRuntimeContext::focus_handle(...)`, handle id/empty queries,
+  request/release behavior, wrong-handle release soft-fail, and
+  `contains(...)` / `focused(...)` over runtime/context/input snapshots. RED
+  failed as expected on missing `cgpui::FocusHandle` and `focus_handle(...)`
+  APIs.
+- GREEN adds `FocusHandle` in `include/cgpui/ui/ui.hpp`, runtime/context
+  focus-handle factories, request/release forwarding to the existing element
+  keyboard-focus owner APIs, current-focus queries over `ViewInputState`, and
+  a public `WindowRuntime::input_state()` snapshot reused by
+  `WindowRuntime::context()`.
+- Verified targeted GREEN tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/focus-handle-primitive -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 144 is recorded as implemented and feature-worktree
+  verified. Step 144 still needs a fresh pre-commit targeted check, feature
+  commit, fast-forward merge, post-merge verification, docs closeout, and
+  cleanup before Step 145 begins.
+
 ## 2026-07-01 Step 136 Async Task Handle Skeleton
 
 - Started Step 136 in `.worktrees/async-task-completion` on
