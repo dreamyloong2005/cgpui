@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Entity Handle Convenience API Merged
+
+- Step 130 is merged on `master` at
+  `57e103a feat: add entity handle convenience` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The next Step 131 global registry should reuse the existing context/runtime
+  capability style: typed helpers over one runtime-owned store, soft-fail
+  missing lookups, and no new app ownership layer.
+
 ## 2026-07-01 Entity Handle Convenience API
 
 - Step 130 keeps `EntityHandle<T>` as a lightweight typed id wrapper, not a new

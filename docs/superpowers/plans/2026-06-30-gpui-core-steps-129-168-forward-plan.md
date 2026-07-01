@@ -39,8 +39,14 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 128 is merged and post-merge verified on Windows and WSL Arch Linux:
   targeted architecture/prelude tests passed 2/2, Windows full debug passed
   29/29, and WSL Arch Linux full debug passed 26/26.
+- Step 129 is merged on `master` at
+  `d1576fe feat: add context authoring alias` and post-merge verified on
+  Windows and WSL Arch Linux.
+- Step 130 is merged on `master` at
+  `57e103a feat: add entity handle convenience` and post-merge verified on
+  Windows and WSL Arch Linux.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 129 can begin from a fresh `context-authoring-alias` worktree.
+  128. Step 131 is the next implementation slice after Step 130 cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -225,9 +231,9 @@ Historical snapshot, superseded by the Step 128 merge refresh below.
 
 ## 2026-07-01 Step 130 Entity Handle Convenience API
 
-- Step 130 is implemented and feature-worktree verified in
-  `.worktrees/entity-handle-convenience` on
-  `codex/entity-handle-convenience`.
+- Step 130 is merged on `master` at
+  `57e103a feat: add entity handle convenience` and post-merge verified on
+  Windows and WSL Arch Linux.
 - RED failed as expected on missing public `cgpui::EntityHandle<T>` from core
   entity and runtime context-helper coverage.
 - GREEN adds a lightweight `EntityHandle<T>` typed id wrapper with `id()`,
@@ -235,9 +241,11 @@ Historical snapshot, superseded by the Step 128 merge refresh below.
   entity/context APIs.
 - Feature-worktree verification passed: targeted tests 2/2, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
 - Step 131, global app state registry with typed `set_global`, `global`, and
   `update_global` helpers, is the next implementation slice after the Step 130
-  merge and post-merge verification.
+  docs closeout and cleanup.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
@@ -1045,9 +1053,9 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/core/entity_store_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for an entity handle that stores a typed id and supports `read(cx)`, `update(cx, fn)`, and `downgrade()`.
-- [ ] Implement handle helpers over the existing entity store/context APIs.
-- [ ] Targeted test command: `xmake test -P . entity_store_test/default window_runtime_test/default`.
+- [x] Add RED tests for an entity handle that stores a typed id and supports `read(cx)`, `update(cx, fn)`, and `downgrade()`.
+- [x] Implement handle helpers over the existing entity store/context APIs.
+- [x] Targeted test command: `xmake test -P . entity_store_test/default window_runtime_test/default`.
 - [x] RED failed as expected on missing `cgpui::EntityHandle<T>`.
 - [x] GREEN added the lightweight handle over existing entity/context APIs.
 - [x] Targeted tests passed 2/2:
@@ -1056,6 +1064,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] Feature-worktree WSL Arch full debug passed 26/26:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/entity-handle-convenience -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `57e103a feat: add entity handle convenience`.
+- [x] Post-merge targeted tests passed 2/2:
+  `xmake test -P . entity_store_test/default window_runtime_test/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 131: Global App State Registry
 

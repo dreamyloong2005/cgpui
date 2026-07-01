@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 130 Post-Merge
+
+- Fast-forward merged Step 130 to `master` at
+  `57e103a feat: add entity handle convenience`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . entity_store_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 131, global app state registry with typed `set_global`, `global`, and
+  `update_global` helpers, is the next implementation slice after this docs
+  closeout and cleanup.
+
 ## 2026-07-01 Step 130 Entity Handle Convenience API
 
 - Started Step 130 in `.worktrees/entity-handle-convenience` on
@@ -22,9 +38,8 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/entity-handle-convenience -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 26/26.
-- Step 130 is implemented and feature-worktree verified. It still needs
-  feature commit, fast-forward merge to `master`, post-merge targeted/Windows/
-  WSL verification, docs closeout, and cleanup before Step 131 begins.
+- Step 130 was implemented and feature-worktree verified, then merged and
+  post-merge verified in the Step 130 closeout.
 
 ## 2026-07-01 Step 129 Post-Merge
 

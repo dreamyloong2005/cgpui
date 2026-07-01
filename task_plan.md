@@ -101,9 +101,9 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 129 is now the next implementation slice. The effective distance through
-Step 168 is 40 follow-on implementation steps plus the four follow-on band
-checkpoint reviews.
+Step 130 is now merged and post-merge verified. Step 131 is the next
+implementation slice. The effective distance through Step 168 is 38 remaining
+follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -289,14 +289,15 @@ checkpoint reviews.
 ## Active Step
 
 Current handoff: Step 130, entity handle API with `read`, `update`, and
-`downgrade` convenience methods, is implemented and feature-worktree verified
-in `.worktrees/entity-handle-convenience` on
-`codex/entity-handle-convenience`. RED failed as expected on missing
+`downgrade` convenience methods, is merged on `master` at
+`57e103a feat: add entity handle convenience` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
 `cgpui::EntityHandle<T>`; GREEN adds the lightweight typed id wrapper over
-existing entity/context helpers. Targeted tests passed 2/2, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 130 still needs
-feature commit, fast-forward merge, post-merge targeted/Windows/WSL
-verification, docs closeout, and cleanup before Step 131 begins.
+existing entity/context helpers. Post-merge targeted tests passed 2/2, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 131,
+global app state registry with typed `set_global`, `global`, and
+`update_global` helpers, is the next implementation slice after this docs
+closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
