@@ -65,14 +65,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `7e88e81 feat: add runtime diagnostics snapshot`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
-- Step 139 is implemented and feature-worktree verified in
-  `.worktrees/keyed-element-identity` on `codex/keyed-element-identity`.
-  RED failed as expected on missing keyed element APIs; GREEN adds optional
-  `ElementKey` metadata, builder `.key(...)`, wrapper key propagation, and
-  parent-local keyed child reconciliation.
+- Step 139 is merged on `master` at
+  `8695bb1 feat: add keyed element identity`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 139 still needs feature commit, fast-forward merge, post-merge
-  verification, docs closeout, and cleanup before Step 140 begins.
+  128. Step 140 is the next implementation slice after Step 139 docs closeout
+  and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -97,6 +96,18 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   cleanup.
 - After the Step 139 merge, the effective distance through Step 168 will be
   29 follow-on implementation slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 139 Merge
+
+- Step 139 is merged on `master` at
+  `8695bb1 feat: add keyed element identity`.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 140, element lifecycle hooks for mount, update, and unmount
+  notifications, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 29 follow-on implementation
+  slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
@@ -1399,6 +1410,9 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
 - [x] Feature-worktree Windows full debug verification passed 29/29 after a transient `clipboard_test/default` retry.
 - [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 140: Element Lifecycle Hooks
 
