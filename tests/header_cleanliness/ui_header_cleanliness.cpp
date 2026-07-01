@@ -387,6 +387,9 @@ int main() {
                  rounded.radius.top_left == 2.0F && text_model.text() == "x" &&
                  text.content == "header" && text.byte_length == 6 &&
                  text.font.family == "Header" && text.font_size == 18.0F &&
+                 text.glyphs.size() == 6 &&
+                 text.glyphs[0].key.font_family == "Header" &&
+                 text.glyphs[0].advance == 9.0F &&
                  shape_run.glyph_count() == 2 &&
                  shape_run.total_advance == 18.0F &&
                  selection.range.start == 1 && selection.range.end == 3 &&

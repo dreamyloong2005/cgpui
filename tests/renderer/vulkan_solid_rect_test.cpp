@@ -138,9 +138,55 @@ bool is_dark_clear_color(COLORREF color) {
          green <= red + 25;
 }
 
+int test_glyph_cache_records_lookup_miss_and_hit() {
+  cgpui::GlyphCache cache;
+  const cgpui::GlyphAtlasKey key{
+      .font_family = "Inter",
+      .font_size = 20.0F,
+      .glyph_index = 1,
+      .byte_offset = 1,
+      .byte_length = 3,
+  };
+
+  const cgpui::GlyphCacheLookup miss = cache.lookup(key);
+  if (miss.hit || miss.entry.has_value() || cache.lookup_count() != 1) {
+    return 6;
+  }
+  if (cache.lookups()[0].key != key || cache.lookups()[0].hit) {
+    return 7;
+  }
+
+  cache.store(cgpui::GlyphAtlasEntry{
+      .key = key,
+      .atlas_bounds =
+          cgpui::Rect{
+              .origin = {.x = 8.0F, .y = 16.0F},
+              .size = {.width = 10.0F, .height = 20.0F},
+          },
+      .advance = 10.0F,
+  });
+
+  const cgpui::GlyphCacheLookup hit = cache.lookup(key);
+  if (!hit.hit || !hit.entry.has_value() || cache.lookup_count() != 2) {
+    return 8;
+  }
+
+  return hit.entry->atlas_bounds.origin.x == 8.0F &&
+                 hit.entry->advance == 10.0F &&
+                 cache.lookups()[1].hit &&
+                 cache.entries().size() == 1
+             ? 0
+             : 9;
+}
+
 } // namespace
 
 int main() {
+  if (const int result = test_glyph_cache_records_lookup_miss_and_hit();
+      result != 0) {
+    return result;
+  }
+
   SetProcessDPIAware();
   VisibleWindow window;
   if (!window.valid()) {

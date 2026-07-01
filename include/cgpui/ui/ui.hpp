@@ -68,6 +68,7 @@ struct TextPaint {
   std::string content;
   std::size_t byte_length = 0;
   float font_size = 16.0F;
+  std::vector<TextGlyphPaint> glyphs;
 };
 
 struct TextSelectionPaint {

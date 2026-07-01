@@ -100,6 +100,22 @@ struct TextShapeRun {
   }
 };
 
+struct GlyphAtlasKey {
+  std::string font_family;
+  float font_size = 16.0F;
+  std::size_t glyph_index = 0;
+  std::size_t byte_offset = 0;
+  std::size_t byte_length = 0;
+
+  friend bool operator==(const GlyphAtlasKey&, const GlyphAtlasKey&) = default;
+};
+
+struct TextGlyphPaint {
+  GlyphAtlasKey key;
+  Point origin;
+  float advance = 0.0F;
+};
+
 [[nodiscard]] inline bool is_utf8_continuation_byte(char value) {
   return (static_cast<unsigned char>(value) & 0xC0U) == 0x80U;
 }
@@ -132,6 +148,31 @@ struct TextShapeRun {
     byte_offset += byte_length;
   }
   return run;
+}
+
+[[nodiscard]] inline std::vector<TextGlyphPaint> text_glyph_paint_metadata(
+    const TextShapeRun& run,
+    Point origin = {}) {
+  std::vector<TextGlyphPaint> glyphs;
+  glyphs.reserve(run.glyphs.size());
+  float x = origin.x;
+  for (std::size_t index = 0; index < run.glyphs.size(); ++index) {
+    const TextGlyphRun& glyph = run.glyphs[index];
+    glyphs.push_back(TextGlyphPaint{
+        .key =
+            GlyphAtlasKey{
+                .font_family = run.font.family,
+                .font_size = run.font_size,
+                .glyph_index = index,
+                .byte_offset = glyph.byte_offset,
+                .byte_length = glyph.byte_length,
+            },
+        .origin = Point{.x = x, .y = origin.y},
+        .advance = glyph.advance,
+    });
+    x += glyph.advance;
+  }
+  return glyphs;
 }
 
 struct TextSelectionRange {

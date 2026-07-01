@@ -265,16 +265,18 @@ void PaintList::fill_text(
     std::string_view text,
     FontDescriptor font,
     float font_size) {
+  const TextShapeRun shape_run = shape_text(text, font, font_size);
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::text,
       .text =
           TextPaint{
               .bounds = bounds,
               .color = color,
-              .font = std::move(font),
+              .font = shape_run.font,
               .content = std::string(text),
               .byte_length = text.size(),
               .font_size = font_size,
+              .glyphs = text_glyph_paint_metadata(shape_run, bounds.origin),
           },
       .clip_rect = clip_stack_.empty()
                        ? std::optional<Rect>{}

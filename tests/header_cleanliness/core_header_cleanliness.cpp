@@ -30,9 +30,28 @@ int main() {
   cgpui::MemoryClipboard clipboard;
   (void)clipboard.write_text("x");
 
+  cgpui::GlyphCache glyph_cache;
+  const cgpui::GlyphAtlasKey glyph_key{
+      .font_family = "Header",
+      .font_size = 18.0F,
+      .glyph_index = 0,
+      .byte_offset = 0,
+      .byte_length = 1,
+  };
+  const cgpui::GlyphCacheLookup glyph_lookup = glyph_cache.lookup(glyph_key);
+  glyph_cache.store(cgpui::GlyphAtlasEntry{
+      .key = glyph_key,
+      .atlas_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
+      .advance = 9.0F,
+  });
+
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
   (void)surface;
 
-  return state.framebuffer_size.width > 0.0F ? 0 : 1;
+  return state.framebuffer_size.width > 0.0F && !glyph_lookup.hit &&
+                 glyph_cache.lookup_count() == 1 &&
+                 glyph_cache.entries().size() == 1
+             ? 0
+             : 1;
 }

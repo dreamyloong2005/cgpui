@@ -2459,6 +2459,47 @@ int test_text_element_paints_text_command_from_layout_bounds() {
              : 144;
 }
 
+int test_text_element_text_paint_includes_glyph_metadata_for_cache() {
+  cgpui::TextModel model("A\xE4\xB8\xAD");
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_font(cgpui::FontDescriptor{.family = "CacheFont"})
+          .with_font_size(20.0F));
+  (void)element.layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 2 ||
+      commands[0].kind != cgpui::PaintCommandKind::text) {
+    return 402;
+  }
+
+  const cgpui::TextPaint& text = commands[0].text;
+  if (text.glyphs.size() != 2) {
+    return 403;
+  }
+
+  const cgpui::TextGlyphPaint& first = text.glyphs[0];
+  const cgpui::TextGlyphPaint& second = text.glyphs[1];
+  if (first.key.font_family != "CacheFont" || first.key.font_size != 20.0F ||
+      first.key.glyph_index != 0 || first.key.byte_offset != 0 ||
+      first.key.byte_length != 1 || first.origin.x != 0.0F ||
+      first.advance != 10.0F) {
+    return 404;
+  }
+  return second.key.font_family == "CacheFont" &&
+                 second.key.font_size == 20.0F &&
+                 second.key.glyph_index == 1 &&
+                 second.key.byte_offset == 1 &&
+                 second.key.byte_length == 3 &&
+                 second.origin.x == 10.0F &&
+                 second.advance == 10.0F
+             ? 0
+             : 405;
+}
+
 int test_text_element_paints_caret_and_selection_metadata() {
   cgpui::TextModel model("abcd");
   model.set_selection(1, 3);
@@ -4170,6 +4211,11 @@ int main() {
   }
   if (const int result =
           test_text_element_paints_text_command_from_layout_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_text_paint_includes_glyph_metadata_for_cache();
       result != 0) {
     return result;
   }
