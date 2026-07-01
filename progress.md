@@ -3656,3 +3656,21 @@
   verified. Step 137 still needs a fresh targeted check, feature commit,
   fast-forward merge, post-merge verification, docs closeout, and cleanup
   before Step 138 begins.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Committed Step 137 as
+  `c046d0d feat: add runtime update batching` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log so
+  Step 137 is marked merged and post-merge verified. Step 138, public
+  diagnostics snapshot for entities, subscriptions, invalidations, and frames,
+  is the next implementation slice after docs closeout and cleanup.

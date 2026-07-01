@@ -101,13 +101,11 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 136 is merged on `master` at
-`e957c6e feat: add async task completion skeleton` and post-merge verified on
-Windows and WSL Arch Linux. Step 137 is implemented and feature-worktree
-verified; it still needs commit, fast-forward merge, post-merge verification,
-docs closeout, and cleanup before Step 138 begins. The effective distance
-through Step 168 after the Step 137 merge is 31 remaining follow-on
-implementation steps plus the four follow-on band checkpoint reviews.
+Step 137 is merged on `master` at
+`c046d0d feat: add runtime update batching` and post-merge verified on Windows
+and WSL Arch Linux. Step 138 is the next implementation slice. The effective
+distance through Step 168 is 31 remaining follow-on implementation steps plus
+the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -293,16 +291,18 @@ implementation steps plus the four follow-on band checkpoint reviews.
 ## Active Step
 
 Current handoff: Step 137, runtime update batching so multiple model/global
-changes coalesce redraws, is implemented in `.worktrees/runtime-update-batching`
-on `codex/runtime-update-batching`. RED failed as expected on missing
+changes coalesce redraws, is merged on `master` at
+`c046d0d feat: add runtime update batching` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing
 `WindowRuntimeContext::batch_updates(...)` and
 `WindowRuntime::batch_updates(...)`. GREEN adds public `UpdateBatchCallback`,
 context/runtime `batch_updates(...)`, an update-batch depth guard, redraw
 deferral until the outermost batch exits, and render invalidation for
-`set_global(...)` / `update_global(...)`. Feature-worktree targeted tests passed
-2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
-26/26. Step 137 still needs commit, fast-forward merge to `master`, post-merge
-verification, docs closeout, and cleanup before Step 138 begins.
+`set_global(...)` / `update_global(...)`. Post-merge targeted tests passed 2/2,
+Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+Step 138, public diagnostics snapshot for entities, subscriptions,
+invalidations, and frames, is the next implementation slice after this docs
+closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

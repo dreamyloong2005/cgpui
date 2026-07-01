@@ -57,13 +57,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 136 is merged on `master` at
   `e957c6e feat: add async task completion skeleton` and post-merge verified
   on Windows and WSL Arch Linux.
-- Step 137 is implemented in `.worktrees/runtime-update-batching` on
-  `codex/runtime-update-batching` and feature-worktree verified: targeted
-  tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
-  debug passed 26/26.
+- Step 137 is merged on `master` at
+  `c046d0d feat: add runtime update batching`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 137 still needs commit, fast-forward merge, post-merge
-  verification, docs closeout, and cleanup before Step 138 begins.
+  128. Step 138 is the next implementation slice after the Step 137 docs
+  closeout and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -84,6 +84,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   post-merge targeted/Windows/WSL verification, docs closeout, and cleanup.
 - After the Step 137 merge, the effective distance through Step 168 will be
   31 follow-on implementation slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 137 Merge
+
+- Step 137, runtime update batching so multiple model/global changes coalesce
+  redraws, is merged on `master` at
+  `c046d0d feat: add runtime update batching`.
+- RED failed as expected on missing
+  `WindowRuntimeContext::batch_updates(...)` and
+  `WindowRuntime::batch_updates(...)`. GREEN adds public
+  `UpdateBatchCallback`, context/runtime `batch_updates(...)`, an
+  update-batch depth guard, redraw deferral until the outermost batch exits,
+  and render invalidation for `set_global(...)` / `update_global(...)`.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 138, public diagnostics snapshot for entities, subscriptions,
+  invalidations, and frames, is the next implementation slice after docs
+  closeout and cleanup.
+- The effective distance through Step 168 is 31 follow-on implementation
+  slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 124 Merge
 
@@ -1256,6 +1275,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - [x] Feature-worktree Windows full debug verification passed 29/29.
 - [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `c046d0d feat: add runtime update batching`.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 - [x] Post-merge targeted verification passed 2/2.
 - [x] Post-merge Windows full debug verification passed 29/29.
 - [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
