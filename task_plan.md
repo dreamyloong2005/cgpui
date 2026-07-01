@@ -167,6 +167,17 @@ forwarding, and query helpers over `ViewInputState` plus a public runtime
 input snapshot. The effective distance through Step 168 is 24 remaining
 follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
+Step 145, button widget primitive built from public element, focus, style, and
+action APIs, is merged on `master` at
+`da62f61 feat: add button widget primitive` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing `cgpui::button`,
+`ButtonElement`, and button/runtime action dispatch behavior. GREEN adds
+`ButtonElement`, fluent `ButtonBuilder`, public `button(...)`, style-state
+metadata, disabled/focusable/click/action behavior, and button style-box paint
+metadata shared with styled elements. The effective distance through Step 168
+is 23 remaining follow-on implementation steps plus the four follow-on band
+checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -323,7 +334,7 @@ follow-on implementation steps plus the four follow-on band checkpoint reviews.
 142. [x] Style class and theme token primitives for reusable design vocabulary.
 143. [x] Style cascade resolution combining base, class, state, and inline styles.
 144. [x] `FocusHandle` primitive with request, release, contains, and focused queries.
-145. [ ] Button widget primitive built from public element, focus, style, and action APIs.
+145. [x] Button widget primitive built from public element, focus, style, and action APIs.
 146. [ ] Label widget primitive using text style and text paint commands.
 147. [ ] Text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
 148. [ ] Scrollable list container with stable item keys and viewport clipping metadata.
@@ -350,13 +361,13 @@ follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 144, `FocusHandle` primitive with request, release,
-contains, and focused queries, is merged on `master` at
-`874ef1f feat: add focus handle primitive` and post-merge verified on Windows
-and WSL Arch Linux. Post-merge targeted tests passed 2/2, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 145, button
-widget primitive built from public element, focus, style, and action APIs, is
-the next implementation slice after docs closeout and cleanup.
+Current handoff: Step 145, button widget primitive built from public element,
+focus, style, and action APIs, is merged on `master` at
+`da62f61 feat: add button widget primitive` and post-merge verified on Windows
+and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 146, label
+widget primitive using text style and text paint commands, is the next
+implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

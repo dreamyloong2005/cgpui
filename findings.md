@@ -2465,3 +2465,26 @@
   focusable/disabled/click/action behavior, existing style-state overlays, and
   element builders. It should not introduce private runtime hooks unless a
   missing general primitive first becomes explicit in RED coverage.
+
+## 2026-07-01 Button Widget Primitive
+
+- Step 145 keeps the button primitive as a public reusable element/widget
+  surface, not a new runtime event special case. `ButtonElement` is focusable,
+  honors `enabled()`, runs an optional local click handler first, and then
+  dispatches its action name through the general `ElementEventContext`
+  `dispatch_action` callback wired to `WindowRuntime::dispatch_action(...)`.
+- Button layout intentionally follows the same child-plus-padding/margin
+  semantics as `StyledElement`: when a child is present, the child layout size
+  becomes the content size. `preferred_size` remains the no-child base content
+  size path rather than a forced outer-box override.
+- Button paint now shares the styled-box background, border, border-radius, and
+  overflow-clip command generation path with `StyledElement`, then paints its
+  child afterward. This makes the button a visible widget primitive instead of
+  only an event/action wrapper.
+- The button stores hover/focus/disabled `StyleState` metadata and exposes it
+  for authoring/tests, but normal paint still uses the local base style. A
+  later slice that installs cascade/state flags into runtime traversal should
+  teach widgets to resolve hovered/focused/disabled styles at layout/paint time.
+- Step 146 can build `label(...)` as a thin text-widget helper over the
+  existing `TextElement`, text style fields, and text paint command metadata;
+  it should include header cleanliness coverage for the public widget helper.

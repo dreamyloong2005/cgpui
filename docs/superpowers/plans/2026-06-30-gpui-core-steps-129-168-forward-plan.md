@@ -89,8 +89,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `874ef1f feat: add focus handle primitive`; post-merge targeted tests passed
   2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
+- Step 145 is merged on `master` at
+  `da62f61 feat: add button widget primitive`; post-merge targeted tests passed
+  4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 145 is the next implementation slice after Step 144 docs closeout
+  128. Step 146 is the next implementation slice after Step 145 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -299,6 +303,23 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   and action APIs, is the next implementation slice after docs closeout and
   cleanup.
 - The effective distance through Step 168 is 24 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 145 Merge
+
+- Step 145, button widget primitive built from public element, focus, style,
+  and action APIs, is merged on `master` at
+  `da62f61 feat: add button widget primitive`.
+- RED failed as expected on missing `cgpui::button`, `ButtonElement`, and
+  runtime button action dispatch behavior. GREEN adds `ButtonElement`,
+  `ButtonBuilder`, public `button(...)`, disabled/focusable/click/action
+  behavior, style-state metadata, and styled-box paint reuse for button
+  background, border, radius, overflow clip, and child paint ordering.
+- Post-merge verification passed: targeted tests 4/4, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 146, label widget primitive using text style and text paint commands,
+  is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 23 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
@@ -1321,7 +1342,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 142: style class and theme token primitives for reusable design vocabulary.
 - [x] Step 143: style cascade resolution combining base, class, state, and inline styles.
 - [x] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
-- [ ] Step 145: button widget primitive built from public element, focus, style, and action APIs.
+- [x] Step 145: button widget primitive built from public element, focus, style, and action APIs.
 - [ ] Step 146: label widget primitive using text style and text paint commands.
 - [ ] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
 - [ ] Step 148: scrollable list container with stable item keys and viewport clipping metadata.
@@ -1700,12 +1721,23 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`
+- Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
+- Modify: `tests/header_cleanliness/prelude_header_cleanliness.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for a button widget invoking an action/click handler, exposing focusability, disabled state, and style states.
-- [ ] Build the widget from existing element wrappers and public builder APIs.
-- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default`.
+- [x] Add RED tests for a button widget invoking an action/click handler, exposing focusability, disabled state, and style states.
+- [x] Build the widget from existing element wrappers and public builder APIs.
+- [x] Add paint coverage for button background, border, radius, and child paint ordering through shared styled-box paint semantics.
+- [x] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default` passed 4/4.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `da62f61 feat: add button widget primitive`.
+- [x] Post-merge targeted verification passed 4/4.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 146: Label Widget Primitive
 

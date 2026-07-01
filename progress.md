@@ -4056,3 +4056,60 @@
   so Step 144 is marked merged and post-merge verified. Step 145, button
   widget primitive built from public element, focus, style, and action APIs,
   is the next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 145 Button Widget Primitive
+
+- Continued Step 145 in `.worktrees/button-widget-primitive` on
+  `codex/button-widget-primitive` from `master` at
+  `2ff17b2 docs: mark step 144 merged`.
+- Baseline targeted tests had already passed before edits:
+  `xmake test -P . element_test/default window_runtime_test/default` passed
+  2/2.
+- Added RED coverage in `tests/ui/element_test.cpp`,
+  `tests/ui/window_runtime_test.cpp`,
+  `tests/header_cleanliness/prelude_header_cleanliness.cpp`, and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `cgpui::button(...)`, `ButtonElement`, style-state metadata, disabled and
+  focusable behavior, local click handlers, runtime action dispatch, and
+  header exposure. RED failed as expected on missing `button` and
+  `ButtonElement` APIs.
+- Added additional RED/GREEN coverage for button style-box paint metadata:
+  background, border, border radius, and child paint ordering. The first draft
+  of this paint test exposed that button/styled layout follows the existing
+  child-plus-padding semantics when a child is present, rather than treating
+  `preferred_size` as a forced outer size.
+- GREEN adds `ButtonElement`, fluent `ButtonBuilder`, public `button(...)`,
+  disabled/focusable/click/action behavior, and runtime
+  `ElementEventContext::dispatch_action` forwarding through
+  `WindowRuntime::dispatch_action(...)`.
+- Button paint now reuses the styled-box base paint helper for background,
+  border, radius, overflow clip metadata, and child paint ordering. Normal
+  paint still uses the local base style until a later slice installs cascade
+  context/state flags into traversal.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/button-widget-primitive -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4. `git diff --check` reported only expected CRLF warnings.
+- Committed Step 145 as
+  `da62f61 feat: add button widget primitive` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 145 is marked merged and post-merge verified. Step 146, label widget
+  primitive using text style and text paint commands, is the next
+  implementation slice after docs closeout and cleanup.
