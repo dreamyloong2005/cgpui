@@ -3785,3 +3785,41 @@
   so Step 139 is marked merged and post-merge verified. Step 140, element
   lifecycle hooks for mount, update, and unmount notifications, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 140 Element Lifecycle Hooks
+
+- Started Step 140 in `.worktrees/element-lifecycle-hooks` on
+  `codex/element-lifecycle-hooks` from `master` at
+  `e4a8479 docs: mark step 139 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage for public `ElementLifecycleContext`,
+  `Element::on_mount(...)`, `Element::on_update(...)`, and
+  `Element::on_unmount(...)`. The tests cover root mount/update, keyed child
+  mount/update/unmount, and full `set_root(...)` replacement unmounting the
+  old root subtree.
+- The first RED attempt appeared to pass because the patch was accidentally
+  applied to the main worktree rather than the Step 140 feature worktree.
+  Restored the main worktree to only the known untracked `.vscode/`, migrated
+  the RED patch to `.worktrees/element-lifecycle-hooks`, and reran with a clean
+  debug configuration.
+- RED failed as expected on missing `cgpui::ElementLifecycleContext` and
+  lifecycle hook APIs.
+- GREEN adds public no-op lifecycle hooks on `Element`, dispatches mount for
+  new root/child ids, update for root/index/keyed replacement with preserved
+  ids, unmount before subtree pruning, and `set_root(...)` teardown of the
+  previous root subtree before replacing it.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/element-lifecycle-hooks -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 140 is recorded as implemented and feature-worktree
+  verified. Step 140 still needs a fresh pre-commit targeted check, feature
+  commit, fast-forward merge, post-merge verification, docs closeout, and
+  cleanup before Step 141 begins.

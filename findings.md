@@ -2359,3 +2359,22 @@
   transient `clipboard_test/default` failure; an immediate targeted rerun
   passed 1/1 and the Windows full debug rerun passed 29/29. No Step 139 code
   touches clipboard paths.
+
+## 2026-07-01 Element Lifecycle Hooks
+
+- Step 140 keeps lifecycle callbacks on the element reconciliation boundary:
+  `on_mount(...)` fires when a fresh `ElementId` is allocated, `on_update(...)`
+  fires when a new element payload reuses an existing `ElementId`, and
+  `on_unmount(...)` fires before a node is pruned from the tree.
+- Reused keyed children receive `on_update(...)` on the replacement element
+  instead of unmounting the previous payload. This preserves the element-id
+  continuity that Step 141 will use for per-element state storage.
+- `set_root(...)` must unmount the previous root subtree before clearing
+  `nodes_`; otherwise full root replacement skips lifecycle teardown for the
+  old root and descendants.
+- The first RED check initially appeared to pass because the RED patch was
+  accidentally applied to the main worktree instead of the Step 140 feature
+  worktree. The main worktree was restored to only the known untracked
+  `.vscode/`, and the RED patch was reapplied to
+  `.worktrees/element-lifecycle-hooks` before validating the expected missing
+  API failure.

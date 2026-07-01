@@ -68,6 +68,11 @@ struct ElementFocusContext {
   ElementId element_id;
 };
 
+struct ElementLifecycleContext {
+  ElementId element_id;
+  std::optional<ElementId> parent_element_id;
+};
+
 using ClickHandler = std::function<EventResult(const ElementEventContext&)>;
 using PointerButtonHandler =
     std::function<EventResult(const PointerButton&, const ElementEventContext&)>;
@@ -180,6 +185,18 @@ class Element {
   }
 
   virtual void focus(const ElementFocusContext& context) {
+    (void)context;
+  }
+
+  virtual void on_mount(const ElementLifecycleContext& context) {
+    (void)context;
+  }
+
+  virtual void on_update(const ElementLifecycleContext& context) {
+    (void)context;
+  }
+
+  virtual void on_unmount(const ElementLifecycleContext& context) {
     (void)context;
   }
 
@@ -1434,6 +1451,9 @@ class ElementBuilder {
 class ElementTree {
  public:
   [[nodiscard]] ElementId set_root(std::unique_ptr<Element> element) {
+    if (root_id_.value != 0) {
+      remove_subtree(root_id_);
+    }
     nodes_.clear();
     root_id_ = {};
     if (!element) {
@@ -1442,6 +1462,10 @@ class ElementTree {
 
     const ElementId id = allocate_id();
     element->assign_id(id);
+    element->on_mount(ElementLifecycleContext{
+        .element_id = id,
+        .parent_element_id = std::nullopt,
+    });
     nodes_.push_back(Node{
         .element = std::move(element),
         .id = id,
@@ -1460,6 +1484,10 @@ class ElementTree {
 
     const ElementId id = allocate_id();
     element->assign_id(id);
+    element->on_mount(ElementLifecycleContext{
+        .element_id = id,
+        .parent_element_id = parent,
+    });
     nodes_.push_back(Node{
         .element = std::move(element),
         .id = id,
@@ -1484,6 +1512,10 @@ class ElementTree {
     }
 
     element->assign_id(root_id_);
+    element->on_update(ElementLifecycleContext{
+        .element_id = root_id_,
+        .parent_element_id = std::nullopt,
+    });
     root_node->element = std::move(element);
     return root_id_;
   }
@@ -1511,6 +1543,10 @@ class ElementTree {
     }
 
     element->assign_id(child_id);
+    element->on_update(ElementLifecycleContext{
+        .element_id = child_id,
+        .parent_element_id = parent,
+    });
     child_node->element = std::move(element);
     child_node->parent = parent;
     return child_id;
@@ -1550,6 +1586,10 @@ class ElementTree {
       if (child_id.value == 0) {
         child_id = allocate_id();
         element->assign_id(child_id);
+        element->on_mount(ElementLifecycleContext{
+            .element_id = child_id,
+            .parent_element_id = parent,
+        });
         nodes_.push_back(Node{
             .element = std::move(element),
             .id = child_id,
@@ -1560,6 +1600,10 @@ class ElementTree {
         if (child_node == nullptr) {
           child_id = allocate_id();
           element->assign_id(child_id);
+          element->on_mount(ElementLifecycleContext{
+              .element_id = child_id,
+              .parent_element_id = parent,
+          });
           nodes_.push_back(Node{
               .element = std::move(element),
               .id = child_id,
@@ -1567,6 +1611,10 @@ class ElementTree {
           });
         } else {
           element->assign_id(child_id);
+          element->on_update(ElementLifecycleContext{
+              .element_id = child_id,
+              .parent_element_id = parent,
+          });
           child_node->element = std::move(element);
           child_node->parent = parent;
         }
@@ -1743,6 +1791,13 @@ class ElementTree {
     const std::vector<ElementId> children = node->children;
     for (ElementId child_id : children) {
       remove_subtree(child_id);
+    }
+    node = find_node(id);
+    if (node != nullptr) {
+      node->element->on_unmount(ElementLifecycleContext{
+          .element_id = id,
+          .parent_element_id = node->parent,
+      });
     }
     nodes_.erase(
         std::remove_if(

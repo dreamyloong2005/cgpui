@@ -144,6 +144,10 @@ int main() {
   keyed_children.push_back(cgpui::into_element(cgpui::div().key("second")));
   const std::vector<cgpui::ElementId> keyed_child_ids =
       element_tree.reconcile_children(header_root_id, std::move(keyed_children));
+  cgpui::ElementLifecycleContext lifecycle_context{
+      .element_id = header_root_id,
+      .parent_element_id = std::nullopt,
+  };
   cgpui::RenderRecord render_record{
       .sequence = 1,
       .view_id = cgpui::ViewId{1},
@@ -339,6 +343,8 @@ int main() {
                  keyed_child_ids.size() == 2 &&
                  keyed_child_ids[0].value != 0 &&
                  element_tree.children(header_root_id).size() == 2 &&
+                 lifecycle_context.element_id == header_root_id &&
+                 !lifecycle_context.parent_element_id.has_value() &&
                  ime_rect.element_id == cgpui::ElementId{2} &&
                  ime_rect.rect.size.height == 18.0F &&
                  render_record.sequence == 1 &&

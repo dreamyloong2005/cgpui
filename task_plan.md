@@ -114,6 +114,17 @@ existing unkeyed call sites. The effective distance through Step 168 is 29
 remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
+Step 140, element lifecycle hooks for mount, update, and unmount
+notifications, is implemented and targeted GREEN in
+`.worktrees/element-lifecycle-hooks` on `codex/element-lifecycle-hooks`. RED
+failed as expected on missing `ElementLifecycleContext` and lifecycle hook
+APIs. GREEN adds no-op `Element::on_mount(...)`, `on_update(...)`, and
+`on_unmount(...)` hooks plus mount/update/unmount dispatch from root, index
+child, keyed child, subtree removal, and `set_root(...)` replacement paths.
+Step 140 still needs feature-worktree Windows/WSL full verification, feature
+commit, fast-forward merge, post-merge verification, docs closeout, and
+cleanup.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -297,20 +308,16 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 139, keyed element identity and keyed reconciliation
-beyond parent-local index matching, is merged on `master` at
-`8695bb1 feat: add keyed element identity` and post-merge verified on Windows
-and WSL Arch Linux. RED failed as expected on missing `ElementKey`,
-`Element::key()`, `ElementBuilder::key(...)`, and
-`ElementTree::reconcile_children(...)`. GREEN adds optional stable
-`ElementKey` metadata, public builder `.key(...)` overloads, key propagation
-to event/focus wrapper elements, and `ElementTree::reconcile_children(...)`
-for parent-local keyed reorder/insert/remove while preserving existing
-`reconcile_child(...)` index matching for unkeyed paths. Post-merge targeted
-tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
-debug passed 26/26. Step 140, element lifecycle hooks for mount, update, and
-unmount notifications, is the next implementation slice after this docs
-closeout and cleanup.
+Current handoff: Step 140, element lifecycle hooks for mount, update, and
+unmount notifications, is implemented and targeted GREEN in
+`.worktrees/element-lifecycle-hooks` on `codex/element-lifecycle-hooks`. RED
+failed as expected on missing `ElementLifecycleContext` and lifecycle hook
+APIs. GREEN adds public no-op lifecycle hooks on `Element` and dispatches
+mount/update/unmount from root, index child, keyed child, subtree removal, and
+`set_root(...)` replacement paths. Targeted tests passed 2/2. Step 140 still
+needs feature-worktree Windows/WSL full verification, feature commit,
+fast-forward merge, post-merge verification, docs closeout, and cleanup before
+Step 141 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

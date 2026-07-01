@@ -69,9 +69,14 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `8695bb1 feat: add keyed element identity`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 140 is implemented and targeted GREEN in
+  `.worktrees/element-lifecycle-hooks` on `codex/element-lifecycle-hooks`.
+  RED failed as expected on missing lifecycle context/hook APIs; GREEN adds
+  public no-op element lifecycle hooks and reconciliation-time dispatch.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 140 is the next implementation slice after Step 139 docs closeout
-  and cleanup.
+  128. Step 140 still needs feature-worktree Windows/WSL full verification,
+  feature commit, fast-forward merge, post-merge verification, docs closeout,
+  and cleanup before Step 141 begins.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -108,6 +113,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   cleanup.
 - The effective distance through Step 168 is 29 follow-on implementation
   slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 140 GREEN
+
+- Step 140, element lifecycle hooks for mount, update, and unmount
+  notifications, is implemented and targeted GREEN in
+  `.worktrees/element-lifecycle-hooks` on `codex/element-lifecycle-hooks`.
+- RED failed as expected on missing `ElementLifecycleContext` and
+  `Element::on_mount(...)` / `on_update(...)` / `on_unmount(...)` APIs.
+  GREEN adds no-op public hooks and dispatches mount/update/unmount from
+  `set_root(...)`, `reconcile_root(...)`, `append_child(...)`,
+  `reconcile_child(...)`, `reconcile_children(...)`, and subtree removal.
+- Targeted verification passed 2/2:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 140 still needs a fresh pre-commit targeted check, feature commit,
+  fast-forward merge to `master`, post-merge verification, docs closeout, and
+  cleanup.
+- After the Step 140 merge, the effective distance through Step 168 will be
+  28 follow-on implementation slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
@@ -1420,9 +1445,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for mount, update, and unmount callbacks during root and keyed child reconciliation.
-- [ ] Implement lifecycle hooks with no-op defaults on `Element`.
-- [ ] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for mount, update, and unmount callbacks during root and keyed child reconciliation.
+- [x] Implement lifecycle hooks with no-op defaults on `Element`.
+- [x] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 141: Element State Storage
 

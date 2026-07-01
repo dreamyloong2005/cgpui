@@ -58,6 +58,39 @@ class FocusableCountingElement final : public cgpui::Element {
   cgpui::ElementId last_focused_element_id;
 };
 
+struct LifecycleCounters {
+  int mounts = 0;
+  int updates = 0;
+  int unmounts = 0;
+  cgpui::ElementId last_mounted;
+  cgpui::ElementId last_updated;
+  cgpui::ElementId last_unmounted;
+};
+
+class LifecycleCountingElement final : public cgpui::Element {
+ public:
+  explicit LifecycleCountingElement(LifecycleCounters& counters)
+      : counters_(&counters) {}
+
+  void on_mount(const cgpui::ElementLifecycleContext& context) override {
+    counters_->mounts += 1;
+    counters_->last_mounted = context.element_id;
+  }
+
+  void on_update(const cgpui::ElementLifecycleContext& context) override {
+    counters_->updates += 1;
+    counters_->last_updated = context.element_id;
+  }
+
+  void on_unmount(const cgpui::ElementLifecycleContext& context) override {
+    counters_->unmounts += 1;
+    counters_->last_unmounted = context.element_id;
+  }
+
+ private:
+  LifecycleCounters* counters_ = nullptr;
+};
+
 static_assert(std::same_as<decltype(cgpui::ElementId{}.value), std::uint64_t>);
 static_assert(std::equality_comparable<cgpui::ElementId>);
 static_assert(std::equality_comparable<cgpui::ElementKey>);
@@ -1384,6 +1417,120 @@ int test_keyed_children_preserve_ids_across_reorder_insert_and_removal() {
                  *tree.parent(gamma_child_id) == gamma_id
              ? 0
              : 241;
+}
+
+int test_element_lifecycle_root_mount_and_update_callbacks() {
+  cgpui::ElementTree tree;
+  LifecycleCounters first;
+  const cgpui::ElementId root_id =
+      tree.reconcile_root(std::make_unique<LifecycleCountingElement>(first));
+  if (root_id.value == 0 || first.mounts != 1 || first.updates != 0 ||
+      first.unmounts != 0 || first.last_mounted != root_id) {
+    return 242;
+  }
+
+  LifecycleCounters second;
+  const cgpui::ElementId reconciled_root_id =
+      tree.reconcile_root(std::make_unique<LifecycleCountingElement>(second));
+  if (reconciled_root_id != root_id) {
+    return 243;
+  }
+  if (first.unmounts != 0 || second.mounts != 0 || second.updates != 1 ||
+      second.unmounts != 0 || second.last_updated != root_id) {
+    return 244;
+  }
+  return 0;
+}
+
+int test_element_lifecycle_keyed_children_mount_update_and_unmount() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.reconcile_root(std::make_unique<NamedElement>(1));
+
+  LifecycleCounters alpha_first;
+  LifecycleCounters beta_first;
+  std::vector<cgpui::AnyElement> first_pass;
+  auto alpha = std::make_unique<LifecycleCountingElement>(alpha_first);
+  alpha->set_key(cgpui::ElementKey{.value = "alpha"});
+  first_pass.push_back(std::move(alpha));
+  auto beta = std::make_unique<LifecycleCountingElement>(beta_first);
+  beta->set_key(cgpui::ElementKey{.value = "beta"});
+  first_pass.push_back(std::move(beta));
+
+  const std::vector<cgpui::ElementId> first_ids =
+      tree.reconcile_children(root_id, std::move(first_pass));
+  if (first_ids.size() != 2 || alpha_first.mounts != 1 ||
+      beta_first.mounts != 1 || alpha_first.updates != 0 ||
+      beta_first.updates != 0 || alpha_first.last_mounted != first_ids[0] ||
+      beta_first.last_mounted != first_ids[1]) {
+    return 245;
+  }
+
+  const cgpui::ElementId alpha_id = first_ids[0];
+  const cgpui::ElementId beta_id = first_ids[1];
+  LifecycleCounters alpha_second;
+  LifecycleCounters gamma_second;
+  std::vector<cgpui::AnyElement> second_pass;
+  auto retained_alpha =
+      std::make_unique<LifecycleCountingElement>(alpha_second);
+  retained_alpha->set_key(cgpui::ElementKey{.value = "alpha"});
+  second_pass.push_back(std::move(retained_alpha));
+  auto gamma = std::make_unique<LifecycleCountingElement>(gamma_second);
+  gamma->set_key(cgpui::ElementKey{.value = "gamma"});
+  second_pass.push_back(std::move(gamma));
+
+  const std::vector<cgpui::ElementId> second_ids =
+      tree.reconcile_children(root_id, std::move(second_pass));
+  if (second_ids.size() != 2 || second_ids[0] != alpha_id ||
+      second_ids[1].value == 0 || second_ids[1] == beta_id) {
+    return 246;
+  }
+  if (alpha_first.unmounts != 0 || beta_first.unmounts != 1 ||
+      beta_first.last_unmounted != beta_id) {
+    return 247;
+  }
+  if (alpha_second.mounts != 0 || alpha_second.updates != 1 ||
+      alpha_second.unmounts != 0 || alpha_second.last_updated != alpha_id) {
+    return 248;
+  }
+  if (gamma_second.mounts != 1 || gamma_second.updates != 0 ||
+      gamma_second.unmounts != 0 ||
+      gamma_second.last_mounted != second_ids[1]) {
+    return 249;
+  }
+  return 0;
+}
+
+int test_element_lifecycle_set_root_unmounts_previous_tree() {
+  cgpui::ElementTree tree;
+  LifecycleCounters root_first;
+  LifecycleCounters child_first;
+  const cgpui::ElementId root_id =
+      tree.set_root(std::make_unique<LifecycleCountingElement>(root_first));
+  const cgpui::ElementId child_id =
+      tree.append_child(root_id, std::make_unique<LifecycleCountingElement>(
+                                     child_first));
+  if (root_first.mounts != 1 || child_first.mounts != 1 ||
+      root_first.last_mounted != root_id ||
+      child_first.last_mounted != child_id) {
+    return 250;
+  }
+
+  LifecycleCounters root_second;
+  const cgpui::ElementId second_root_id =
+      tree.set_root(std::make_unique<LifecycleCountingElement>(root_second));
+  if (second_root_id.value == 0 || second_root_id == root_id) {
+    return 251;
+  }
+  if (child_first.unmounts != 1 || child_first.last_unmounted != child_id ||
+      root_first.unmounts != 1 || root_first.last_unmounted != root_id) {
+    return 252;
+  }
+  if (root_second.mounts != 1 || root_second.updates != 0 ||
+      root_second.last_mounted != second_root_id) {
+    return 253;
+  }
+  return 0;
 }
 
 int test_element_tree_reconcile_rejects_unknown_parent() {
@@ -3423,6 +3570,21 @@ int main() {
   }
   if (const int result =
           test_keyed_children_preserve_ids_across_reorder_insert_and_removal();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_lifecycle_root_mount_and_update_callbacks();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_lifecycle_keyed_children_mount_update_and_unmount();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_lifecycle_set_root_unmounts_previous_tree();
       result != 0) {
     return result;
   }
