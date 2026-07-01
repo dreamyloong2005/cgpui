@@ -1,5 +1,48 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 155 Frame Statistics Diagnostics
+
+- Cleaned up the merged Step 154 worktree
+  `.worktrees/renderer-command-batching` and deleted
+  `codex/renderer-command-batching`.
+- Started Step 155 in `.worktrees/frame-statistics-diagnostics` on
+  `codex/frame-statistics-diagnostics` from `master` at
+  `63a9f75 docs: mark step 154 merged`.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and public header
+  cleanliness coverage for the frame-statistics diagnostic surface. RED failed
+  as expected on missing `RuntimeDiagnosticsSnapshot::last_frame_statistics`,
+  `cgpui::FrameStatistics`, and `RenderRecord::statistics`.
+- GREEN adds `FrameStatistics` to `include/cgpui/ui/ui.hpp`, stores the latest
+  statistics in `RenderRecord` and `RuntimeDiagnosticsSnapshot`, accepts an
+  optional statistics output from `render_view(...)`, and populates
+  deterministic layout, paint, render, command, primitive, clear, and present
+  counters from `WindowRuntime::handle_redraw()`.
+- Verified targeted GREEN tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29 after retrying the
+  known transient clipboard access and Vulkan clipped-sample checks.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/frame-statistics-diagnostics -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 155 as
+  `12f5cb3 feat: add frame statistics diagnostics` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 155 is marked merged and post-merge verified. Step 156,
+  HiDPI scale propagation into layout, text metrics, and renderer resources, is
+  the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 154 Renderer Command Batching
 
 - Cleaned up the merged Step 153 worktree

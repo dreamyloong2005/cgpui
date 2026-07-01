@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Frame Statistics Diagnostics
+
+- Step 155 keeps frame timing deterministic for tests: `FrameStatistics`
+  exposes timing fields, but the current runtime-populated timings remain zero
+  until a later real profiler/timer integration is added.
+- The first useful statistics layer is structural rather than temporal:
+  layout, paint, and render pass counts; emitted, submitted, and skipped
+  command counts; primitive counts; and begin/clear/present counters are
+  derived from the actual render record and command stream.
+- `render_view(...)` accepts an optional statistics output pointer, preserving
+  old call sites while letting `WindowRuntime::handle_redraw()` store the same
+  frame record in `last_render_record_` and diagnostics. This keeps
+  diagnostics observable without turning every render helper into a profiling
+  API.
+- Step 156 should thread HiDPI scale through layout, text metrics, and
+  renderer resize metadata while keeping authored dimensions in logical pixels.
+
 ## 2026-07-01 Renderer Command Batching
 
 - Step 154 keeps batching diagnostic-only. `RendererCommandBatchKey` is the

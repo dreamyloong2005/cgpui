@@ -447,7 +447,7 @@ checkpoint reviews.
 152. [x] Vulkan text draw path consumes text paint commands through cached glyph metadata.
 153. [x] Opacity and transform paint metadata with deterministic command ordering.
 154. [x] Renderer command batching by clip, opacity, transform, and primitive kind.
-155. [ ] Frame timing and paint/layout/render statistics exposed through diagnostics.
+155. [x] Frame timing and paint/layout/render statistics exposed through diagnostics.
 156. [ ] HiDPI scale propagation into layout, text metrics, and renderer resources.
 157. [ ] Snapshot tests for paint command streams emitted by the demo and widgets.
 158. [ ] Renderer fallback path for unsupported commands with explicit diagnostics.
@@ -464,13 +464,13 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 154, renderer command batching by clip, opacity,
-transform, and primitive kind, is merged on `master` at
-`8f4a39e feat: add renderer command batching diagnostics` and post-merge
-verified on Windows and WSL Arch Linux. Post-merge targeted tests passed 2/2,
-Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
-Step 155, frame timing and paint/layout/render statistics exposed through
-diagnostics, is the next implementation slice after docs closeout and cleanup.
+Current handoff: Step 155, frame timing and paint/layout/render statistics
+exposed through diagnostics, is merged on `master` at
+`12f5cb3 feat: add frame statistics diagnostics` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted tests passed 2/2, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 156,
+HiDPI scale propagation into layout, text metrics, and renderer resources, is
+the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -129,8 +129,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `8f4a39e feat: add renderer command batching diagnostics`; post-merge
   targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch
   Linux full debug passed 26/26.
+- Step 155 is merged on `master` at
+  `12f5cb3 feat: add frame statistics diagnostics`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 155 is the next implementation slice after Step 154 docs closeout
+  128. Step 156 is the next implementation slice after Step 155 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -153,6 +157,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   diagnostics, is the next implementation slice after docs closeout and
   cleanup.
 - The effective distance through Step 168 is 14 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 155 Merge
+
+- Step 155, frame timing and paint/layout/render statistics exposed through
+  diagnostics, is merged on `master` at
+  `12f5cb3 feat: add frame statistics diagnostics`.
+- RED failed as expected on missing
+  `RuntimeDiagnosticsSnapshot::last_frame_statistics`, `cgpui::FrameStatistics`,
+  and `RenderRecord::statistics`.
+- GREEN adds deterministic frame counters for render, layout, paint, emitted
+  commands, submitted/skipped commands, primitive counts, begin frame, clear,
+  and present, while leaving timing fields stable at zero until real profiler
+  integration is introduced.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 156, HiDPI scale propagation into layout, text metrics, and renderer
+  resources, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 13 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1504,7 +1527,7 @@ Purpose: turn text and renderer output from metadata/placeholder paths into back
 - [x] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
 - [x] Step 153: opacity and transform paint metadata with deterministic command ordering.
 - [x] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
-- [ ] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
+- [x] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
 - [ ] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
 - [ ] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
 - [ ] Step 158: renderer fallback path for unsupported commands with explicit diagnostics.
@@ -2057,9 +2080,9 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for layout, paint, render, command count, and frame timing fields.
-- [ ] Populate deterministic counters in tests and leave real timing optional.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default`.
+- [x] Add RED tests for layout, paint, render, command count, and frame timing fields.
+- [x] Populate deterministic counters in tests and leave real timing optional.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default`.
 
 ### Step 156: HiDPI Scale Propagation
 
