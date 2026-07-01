@@ -7,6 +7,7 @@
 #include <concepts>
 #include <memory>
 #include <span>
+#include <string>
 #include <vector>
 
 namespace {
@@ -89,6 +90,19 @@ class LifecycleCountingElement final : public cgpui::Element {
 
  private:
   LifecycleCounters* counters_ = nullptr;
+};
+
+struct WidgetState {
+  WidgetState(int value, std::string name)
+      : value(value),
+        name(std::move(name)) {}
+
+  int value = 0;
+  std::string name;
+};
+
+struct AlternateWidgetState {
+  int value = 0;
 };
 
 static_assert(std::same_as<decltype(cgpui::ElementId{}.value), std::uint64_t>);
@@ -1530,6 +1544,85 @@ int test_element_lifecycle_set_root_unmounts_previous_tree() {
       root_second.last_mounted != second_root_id) {
     return 253;
   }
+  return 0;
+}
+
+int test_element_tree_state_survives_keyed_reconcile_and_prunes_removed_nodes() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.reconcile_root(std::make_unique<NamedElement>(1));
+
+  std::vector<cgpui::AnyElement> first_pass;
+  first_pass.push_back(cgpui::into_element(cgpui::div().key("alpha")));
+  first_pass.push_back(cgpui::into_element(cgpui::div().key("beta")));
+  const std::vector<cgpui::ElementId> first_ids =
+      tree.reconcile_children(root_id, std::move(first_pass));
+  if (first_ids.size() != 2) {
+    return 254;
+  }
+
+  const cgpui::ElementId alpha_id = first_ids[0];
+  const cgpui::ElementId beta_id = first_ids[1];
+  WidgetState* alpha_state =
+      tree.state_or_init<WidgetState>(alpha_id, 7, std::string{"alpha"});
+  WidgetState* beta_state =
+      tree.emplace_state<WidgetState>(beta_id, 3, std::string{"beta"});
+  if (alpha_state == nullptr || beta_state == nullptr ||
+      alpha_state->value != 7 || beta_state->name != "beta") {
+    return 255;
+  }
+
+  alpha_state->value = 8;
+  if (tree.state<AlternateWidgetState>(alpha_id) != nullptr ||
+      tree.state<WidgetState>(cgpui::ElementId{999}) != nullptr ||
+      tree.state_or_init<WidgetState>(
+          cgpui::ElementId{999},
+          1,
+          std::string{"missing"}) != nullptr ||
+      tree.emplace_state<WidgetState>(
+          cgpui::ElementId{999},
+          1,
+          std::string{"missing"}) != nullptr) {
+    return 256;
+  }
+
+  std::vector<cgpui::AnyElement> second_pass;
+  second_pass.push_back(cgpui::into_element(cgpui::div().key("gamma")));
+  second_pass.push_back(cgpui::into_element(cgpui::div().key("alpha")));
+  const std::vector<cgpui::ElementId> second_ids =
+      tree.reconcile_children(root_id, std::move(second_pass));
+  if (second_ids.size() != 2 || second_ids[1] != alpha_id ||
+      second_ids[0] == beta_id) {
+    return 257;
+  }
+
+  const WidgetState* retained_alpha_state =
+      static_cast<const cgpui::ElementTree&>(tree).state<WidgetState>(alpha_id);
+  if (retained_alpha_state == nullptr || retained_alpha_state->value != 8 ||
+      retained_alpha_state->name != "alpha") {
+    return 258;
+  }
+
+  WidgetState* existing_alpha_state =
+      tree.state_or_init<WidgetState>(alpha_id, 99, std::string{"ignored"});
+  if (existing_alpha_state != retained_alpha_state ||
+      existing_alpha_state->value != 8 ||
+      existing_alpha_state->name != "alpha") {
+    return 259;
+  }
+
+  if (tree.state<WidgetState>(beta_id) != nullptr ||
+      tree.state<AlternateWidgetState>(alpha_id) != nullptr) {
+    return 260;
+  }
+
+  WidgetState* replaced_alpha_state =
+      tree.emplace_state<WidgetState>(alpha_id, 42, std::string{"replaced"});
+  if (replaced_alpha_state == nullptr || replaced_alpha_state->value != 42 ||
+      replaced_alpha_state->name != "replaced") {
+    return 261;
+  }
+
   return 0;
 }
 
@@ -3585,6 +3678,11 @@ int main() {
   }
   if (const int result =
           test_element_lifecycle_set_root_unmounts_previous_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_tree_state_survives_keyed_reconcile_and_prunes_removed_nodes();
       result != 0) {
     return result;
   }

@@ -3841,3 +3841,31 @@
   so Step 140 is marked merged and post-merge verified. Step 141, element
   state storage keyed by element id for reusable widgets, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 141 Element State Storage
+
+- Continued Step 141 in `.worktrees/element-state-storage` on
+  `codex/element-state-storage` from `master` at
+  `e9d49e6 docs: mark step 140 merged`.
+- Re-verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default window_runtime_test/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/element_test.cpp` for
+  `ElementTree::state<T>(...)`, `state_or_init<T>(...)`, and
+  `emplace_state<T>(...)`, proving typed state survives keyed reconciliation,
+  removed nodes prune their state, and missing/wrong-type lookups soft-fail.
+  Added runtime coverage in `tests/ui/window_runtime_test.cpp` for accessing
+  installed-tree element state through both `WindowRuntime` and
+  `WindowRuntimeContext`.
+- RED failed as expected on missing `ElementTree` element-state APIs.
+- GREEN adds per-node type-indexed `std::any` state storage to `ElementTree`,
+  public soft-fail state lookup/init/replace helpers, and runtime/context
+  forwarding for owned element trees without extending raw element-root paths.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/element-state-storage -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.

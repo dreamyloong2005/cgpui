@@ -27,6 +27,12 @@ struct MissingRuntimeGlobal {
   int value = 0;
 };
 
+struct RuntimeElementState {
+  explicit RuntimeElementState(int value) : value(value) {}
+
+  int value = 0;
+};
+
 bool equal(cgpui::Size lhs, cgpui::Size rhs) {
   return lhs.width == rhs.width && lhs.height == rhs.height;
 }
@@ -2303,6 +2309,79 @@ int test_runtime_owns_installed_element_tree() {
   return runtime.element_tree() == nullptr && runtime.element_root() == nullptr
       ? 0
       : 204;
+}
+
+RuntimeFixture* runtime_element_state_fixture = nullptr;
+
+void dispatch_runtime_element_state_sequence() {
+  auto& callback = runtime_element_state_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_exposes_element_state_for_installed_tree() {
+  RuntimeFixture fixture;
+  runtime_element_state_fixture = &fixture;
+  fixture.app.on_run = &dispatch_runtime_element_state_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 40.0F, .height = 20.0F}));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  bool missing_before_init = false;
+  bool context_initialized = false;
+  bool runtime_read_after_context_mutation = false;
+  bool wrong_type_soft_failed = false;
+  bool missing_element_soft_failed = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord&) {
+        missing_before_init =
+            context.element_state<RuntimeElementState>(root_id) == nullptr;
+        RuntimeElementState* state =
+            context.element_state_or_init<RuntimeElementState>(root_id, 11);
+        context_initialized = state != nullptr && state->value == 11;
+        if (state != nullptr) {
+          state->value = 17;
+        }
+        RuntimeElementState* runtime_state =
+            context.runtime.element_state<RuntimeElementState>(root_id);
+        runtime_read_after_context_mutation =
+            runtime_state != nullptr && runtime_state->value == 17;
+        wrong_type_soft_failed =
+            context.element_state<RuntimeEntity>(root_id) == nullptr;
+        missing_element_soft_failed =
+            context.element_state_or_init<RuntimeElementState>(
+                cgpui::ElementId{root_id.value + 1000},
+                5) == nullptr;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  runtime_element_state_fixture = nullptr;
+
+  if (result != 0) {
+    return 301;
+  }
+  const RuntimeElementState* retained_state =
+      runtime.element_state<RuntimeElementState>(root_id);
+  if (!missing_before_init || !context_initialized ||
+      !runtime_read_after_context_mutation || !wrong_type_soft_failed ||
+      !missing_element_soft_failed) {
+    return 302;
+  }
+  return retained_state != nullptr && retained_state->value == 17 ? 0 : 303;
 }
 
 RuntimeFixture* runtime_layout_owned_tree_fixture = nullptr;
@@ -6924,6 +7003,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_owns_installed_element_tree();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_exposes_element_state_for_installed_tree();
       result != 0) {
     return result;
   }

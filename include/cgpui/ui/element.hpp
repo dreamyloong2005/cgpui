@@ -6,6 +6,7 @@
 #include "cgpui/ui/style.hpp"
 #include "cgpui/ui/text.hpp"
 
+#include <any>
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
@@ -16,6 +17,10 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -1654,6 +1659,51 @@ class ElementTree {
   }
 
   template <typename T>
+  [[nodiscard]] T* state(ElementId id) {
+    Node* node = find_node(id);
+    if (node == nullptr) {
+      return nullptr;
+    }
+    const auto entry = node->states.find(std::type_index(typeid(T)));
+    if (entry == node->states.end()) {
+      return nullptr;
+    }
+    return std::any_cast<T>(&entry->second);
+  }
+
+  template <typename T>
+  [[nodiscard]] const T* state(ElementId id) const {
+    const Node* node = find_node(id);
+    if (node == nullptr) {
+      return nullptr;
+    }
+    const auto entry = node->states.find(std::type_index(typeid(T)));
+    if (entry == node->states.end()) {
+      return nullptr;
+    }
+    return std::any_cast<T>(&entry->second);
+  }
+
+  template <typename T, typename... Args>
+  T* emplace_state(ElementId id, Args&&... args) {
+    Node* node = find_node(id);
+    if (node == nullptr) {
+      return nullptr;
+    }
+    std::any& stored = node->states[std::type_index(typeid(T))];
+    stored.emplace<T>(std::forward<Args>(args)...);
+    return std::any_cast<T>(&stored);
+  }
+
+  template <typename T, typename... Args>
+  T* state_or_init(ElementId id, Args&&... args) {
+    if (T* existing = state<T>(id); existing != nullptr) {
+      return existing;
+    }
+    return emplace_state<T>(id, std::forward<Args>(args)...);
+  }
+
+  template <typename T>
   [[nodiscard]] T* find_as(ElementId id) {
     return dynamic_cast<T*>(get(id));
   }
@@ -1713,6 +1763,7 @@ class ElementTree {
     ElementId id;
     std::optional<ElementId> parent;
     std::vector<ElementId> children;
+    std::unordered_map<std::type_index, std::any> states;
   };
 
   [[nodiscard]] ElementId allocate_id() {

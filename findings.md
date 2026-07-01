@@ -2378,3 +2378,21 @@
   `.vscode/`, and the RED patch was reapplied to
   `.worktrees/element-lifecycle-hooks` before validating the expected missing
   API failure.
+
+## 2026-07-01 Element State Storage
+
+- Step 141 stores reusable-widget state on `ElementTree::Node`, keyed by
+  `std::type_index` with `std::any` payloads. This makes state follow the
+  stable `ElementId` rather than the replaceable `Element` payload used during
+  keyed reconciliation.
+- `ElementTree::state<T>(...)` soft-fails with `nullptr` for missing element
+  ids, missing state, and wrong types. `state_or_init<T>(...)` creates state
+  only for live nodes, while `emplace_state<T>(...)` explicitly replaces the
+  state for that element/type pair.
+- Removed element subtrees drop their state naturally because `remove_subtree`
+  erases the owning node after lifecycle unmount. Reused keyed children retain
+  their state across `reconcile_children(...)` updates and reorders.
+- `WindowRuntime` and `WindowRuntimeContext` forward element-state access only
+  when the runtime owns an installed `ElementTree`; legacy raw
+  `set_element_root(...)` paths intentionally soft-fail until they migrate to
+  tree ownership.

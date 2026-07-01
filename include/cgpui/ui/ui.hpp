@@ -450,6 +450,20 @@ struct WindowRuntimeContext {
   void release_keyboard_focus(ElementId element_id) const;
   void blur(ElementId element_id) const;
   void set_element_tree(std::unique_ptr<ElementTree> tree) const;
+
+  template <typename T>
+  [[nodiscard]] T* element_state(ElementId element_id) const;
+
+  template <typename T, typename... Args>
+  [[nodiscard]] T* emplace_element_state(
+      ElementId element_id,
+      Args&&... args) const;
+
+  template <typename T, typename... Args>
+  [[nodiscard]] T* element_state_or_init(
+      ElementId element_id,
+      Args&&... args) const;
+
   void register_action(std::string name, ActionHandler handler) const;
   void register_app_action(std::string name, ActionHandler handler) const;
   void register_window_action(std::string name, ActionHandler handler) const;
@@ -598,6 +612,19 @@ class WindowRuntime {
   void set_element_tree(std::unique_ptr<ElementTree> tree);
   [[nodiscard]] const ElementTree* element_tree() const;
   [[nodiscard]] const Element* element_root() const;
+
+  template <typename T>
+  [[nodiscard]] T* element_state(ElementId element_id);
+
+  template <typename T>
+  [[nodiscard]] const T* element_state(ElementId element_id) const;
+
+  template <typename T, typename... Args>
+  [[nodiscard]] T* emplace_element_state(ElementId element_id, Args&&... args);
+
+  template <typename T, typename... Args>
+  [[nodiscard]] T* element_state_or_init(ElementId element_id, Args&&... args);
+
   void capture_pointer(PointerCaptureOwner owner);
   void release_pointer(PointerCaptureOwner owner);
   void request_keyboard_focus();
@@ -876,6 +903,29 @@ bool WindowRuntimeContext::update_global(Update&& update) const {
 }
 
 template <typename T>
+T* WindowRuntimeContext::element_state(ElementId element_id) const {
+  return runtime.element_state<T>(element_id);
+}
+
+template <typename T, typename... Args>
+T* WindowRuntimeContext::emplace_element_state(
+    ElementId element_id,
+    Args&&... args) const {
+  return runtime.emplace_element_state<T>(
+      element_id,
+      std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+T* WindowRuntimeContext::element_state_or_init(
+    ElementId element_id,
+    Args&&... args) const {
+  return runtime.element_state_or_init<T>(
+      element_id,
+      std::forward<Args>(args)...);
+}
+
+template <typename T>
 EntityId<T> WindowRuntimeContext::insert_entity(T entity) const {
   return runtime.insert_entity<T>(std::move(entity));
 }
@@ -1121,6 +1171,44 @@ bool WindowRuntime::update_global(Update&& update) {
   std::forward<Update>(update)(*stored_global);
   request_render();
   return true;
+}
+
+template <typename T>
+T* WindowRuntime::element_state(ElementId element_id) {
+  if (owned_element_tree_ == nullptr) {
+    return nullptr;
+  }
+  return owned_element_tree_->state<T>(element_id);
+}
+
+template <typename T>
+const T* WindowRuntime::element_state(ElementId element_id) const {
+  if (owned_element_tree_ == nullptr) {
+    return nullptr;
+  }
+  return owned_element_tree_->state<T>(element_id);
+}
+
+template <typename T, typename... Args>
+T* WindowRuntime::emplace_element_state(ElementId element_id, Args&&... args) {
+  if (owned_element_tree_ == nullptr) {
+    return nullptr;
+  }
+  return owned_element_tree_->emplace_state<T>(
+      element_id,
+      std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+T* WindowRuntime::element_state_or_init(
+    ElementId element_id,
+    Args&&... args) {
+  if (owned_element_tree_ == nullptr) {
+    return nullptr;
+  }
+  return owned_element_tree_->state_or_init<T>(
+      element_id,
+      std::forward<Args>(args)...);
 }
 
 template <typename T>

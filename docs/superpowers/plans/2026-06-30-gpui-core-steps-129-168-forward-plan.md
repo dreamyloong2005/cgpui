@@ -144,6 +144,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The effective distance through Step 168 is 28 follow-on implementation
   slices plus the four band checkpoint reviews.
 
+## 2026-07-01 Back-40 Planning After Step 141 GREEN
+
+- Step 141, element state storage keyed by element id for reusable widgets, is
+  implemented and feature-worktree verified in
+  `.worktrees/element-state-storage` on `codex/element-state-storage`.
+- RED failed as expected on missing `ElementTree::state<T>(...)`,
+  `state_or_init<T>(...)`, and `emplace_state<T>(...)` APIs. GREEN adds
+  per-node type-indexed `std::any` state storage, soft-fail lookup/init/
+  replace helpers, and `WindowRuntime`/`WindowRuntimeContext` forwarding for
+  runtime-owned element trees.
+- Targeted verification passed 2/2:
+  `xmake test -P . element_test/default window_runtime_test/default`.
+- Feature-worktree verification passed: Windows full debug 29/29 and WSL Arch
+  Linux full debug 26/26.
+- Step 141 still needs a fresh pre-commit targeted check, feature commit,
+  fast-forward merge to `master`, post-merge verification, docs closeout, and
+  cleanup.
+- After the Step 141 merge, the effective distance through Step 168 will be
+  27 follow-on implementation slices plus the four band checkpoint reviews.
+
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
 - Step 138, public diagnostics snapshot for entities, subscriptions,
@@ -1472,9 +1492,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for state storage keyed by element id and preserved across keyed reconciliation.
-- [ ] Implement a type-indexed state bag with soft-fail lookup.
-- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default`.
+- [x] Add RED tests for state storage keyed by element id and preserved across keyed reconciliation.
+- [x] Implement a type-indexed state bag with soft-fail lookup.
+- [x] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 142: Style Classes and Theme Tokens
 
