@@ -550,6 +550,7 @@ int WindowRuntime::run(
   dispatching_view_event_ = false;
   firing_timers_ = false;
   draining_task_completions_ = false;
+  update_batch_depth_ = 0;
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
   event_dispatch_sequence_ = 0;
@@ -1632,6 +1633,19 @@ void WindowRuntime::drain_task_completions() {
   flush_deferred_redraw_request();
 }
 
+void WindowRuntime::batch_updates(UpdateBatchCallback callback) {
+  if (!callback || should_quit_) {
+    return;
+  }
+
+  update_batch_depth_ += 1;
+  callback(context());
+  update_batch_depth_ -= 1;
+  if (update_batch_depth_ == 0) {
+    flush_deferred_redraw_request();
+  }
+}
+
 void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
 }
@@ -1688,7 +1702,7 @@ void WindowRuntime::schedule_redraw() {
   }
   redraw_scheduled_ = true;
   if (dispatching_view_event_ || draining_deferred_callbacks_ || firing_timers_ ||
-      draining_task_completions_) {
+      draining_task_completions_ || update_batch_depth_ > 0) {
     deferred_redraw_request_ = true;
     return;
   }
@@ -2049,6 +2063,11 @@ TimerId WindowRuntimeContext::schedule_repeating_timer(
 TaskHandle WindowRuntimeContext::spawn_task(
     TaskCompletionCallback callback) const {
   return runtime.spawn_task(std::move(callback));
+}
+
+void WindowRuntimeContext::batch_updates(
+    UpdateBatchCallback callback) const {
+  runtime.batch_updates(std::move(callback));
 }
 
 void WindowRuntimeContext::clear_invalidation() const {

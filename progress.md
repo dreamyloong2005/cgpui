@@ -3621,3 +3621,38 @@
   progress log so Step 133 is marked merged and post-merge verified. Step 134,
   deferred callback queue for `cx.defer(...)` style post-event work, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 137 Runtime Update Batching
+
+- Continued Step 137 in `.worktrees/runtime-update-batching` on
+  `codex/runtime-update-batching` from `master` at
+  `cd66f6a docs: mark step 136 merged`.
+- Baseline targeted tests before edits had already passed:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- RED coverage had already failed as expected on missing
+  `WindowRuntimeContext::batch_updates(...)` and
+  `WindowRuntime::batch_updates(...)`.
+- GREEN adds public `UpdateBatchCallback`, context/runtime
+  `batch_updates(...)`, runtime `update_batch_depth_`, redraw deferral while a
+  batch is active, outermost-batch flush through the existing deferred redraw
+  path, and render invalidation for `set_global(...)` /
+  `update_global(...)`.
+- Added/updated tests so header cleanliness compiles context/runtime
+  `batch_updates(...)`, a runtime test proves model/global updates inside a
+  batch request no redraw during the callback and exactly one redraw after the
+  batch exits, and the global-state helper test now expects global mutation to
+  schedule a redraw.
+- Verified targeted GREEN tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/runtime-update-batching -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 137 is recorded as implemented and feature-worktree
+  verified. Step 137 still needs a fresh targeted check, feature commit,
+  fast-forward merge, post-merge verification, docs closeout, and cleanup
+  before Step 138 begins.

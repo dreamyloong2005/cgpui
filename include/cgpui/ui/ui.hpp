@@ -40,6 +40,8 @@ using DeferredCallback = std::function<void(const WindowRuntimeContext&)>;
 using TimerCallback = std::function<void(const WindowRuntimeContext&)>;
 using TaskCompletionCallback =
     std::function<void(const WindowRuntimeContext&)>;
+using UpdateBatchCallback =
+    std::function<void(const WindowRuntimeContext&)>;
 
 template <typename T>
 using ModelObserver =
@@ -472,6 +474,7 @@ struct WindowRuntimeContext {
       std::uint64_t interval_ms,
       TimerCallback callback) const;
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
+  void batch_updates(UpdateBatchCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
 
@@ -630,6 +633,7 @@ class WindowRuntime {
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
+  void batch_updates(UpdateBatchCallback callback);
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
@@ -808,6 +812,7 @@ class WindowRuntime {
   std::vector<TaskId> task_completion_queue_;
   std::uint64_t next_task_id_ = 1;
   bool draining_task_completions_ = false;
+  int update_batch_depth_ = 0;
   std::vector<AppOpenedWindow> app_opened_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
@@ -1064,6 +1069,7 @@ bool WindowRuntime::notify_entity_changed(EntityId<T> entity_id) {
 template <typename T>
 void WindowRuntime::set_global(T global_value) {
   globals_[std::type_index(typeid(T))] = std::move(global_value);
+  request_render();
 }
 
 template <typename T>
@@ -1091,6 +1097,7 @@ bool WindowRuntime::update_global(Update&& update) {
     return false;
   }
   std::forward<Update>(update)(*stored_global);
+  request_render();
   return true;
 }
 

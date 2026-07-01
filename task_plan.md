@@ -103,9 +103,11 @@ steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 
 Step 136 is merged on `master` at
 `e957c6e feat: add async task completion skeleton` and post-merge verified on
-Windows and WSL Arch Linux. Step 137 is the next implementation slice. The
-effective distance through Step 168 is 32 remaining follow-on implementation
-steps plus the four follow-on band checkpoint reviews.
+Windows and WSL Arch Linux. Step 137 is implemented and feature-worktree
+verified; it still needs commit, fast-forward merge, post-merge verification,
+docs closeout, and cleanup before Step 138 begins. The effective distance
+through Step 168 after the Step 137 merge is 31 remaining follow-on
+implementation steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -255,7 +257,7 @@ steps plus the four follow-on band checkpoint reviews.
 134. [x] Deferred callback queue for `cx.defer(...)` style post-event work.
 135. [x] Timer API for one-shot and repeating callbacks through the runtime loop.
 136. [x] Async task handle skeleton with main-thread completion dispatch.
-137. [ ] Runtime update batching so multiple model/global changes coalesce redraws.
+137. [x] Runtime update batching so multiple model/global changes coalesce redraws.
 138. [ ] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 139. [ ] Keyed element identity and keyed reconciliation beyond parent-local index matching.
 140. [ ] Element lifecycle hooks for mount, update, and unmount notifications.
@@ -290,20 +292,17 @@ steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 136, async task handle skeleton with main-thread
-completion dispatch, is merged on `master` at
-`e957c6e feat: add async task completion skeleton` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing `TaskHandle`,
-`TaskId`, `spawn_task(...)`, `complete_task(...)`, and
-`drain_task_completions()`. GREEN adds public `TaskId`, `TaskHandle`,
-`TaskCompletionCallback`, context/runtime `spawn_task(...)`, deterministic
-completion injection through `complete_task(...)`, FIFO main-thread draining
-through `drain_task_completions()`, active/complete handle queries, duplicate
-completion soft-fail, and redraw deferral while completions drain. Post-merge
-targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux
-full debug passed 26/26. Step 137, runtime update batching so multiple
-model/global changes coalesce redraws, is the next implementation slice after
-this docs closeout and cleanup.
+Current handoff: Step 137, runtime update batching so multiple model/global
+changes coalesce redraws, is implemented in `.worktrees/runtime-update-batching`
+on `codex/runtime-update-batching`. RED failed as expected on missing
+`WindowRuntimeContext::batch_updates(...)` and
+`WindowRuntime::batch_updates(...)`. GREEN adds public `UpdateBatchCallback`,
+context/runtime `batch_updates(...)`, an update-batch depth guard, redraw
+deferral until the outermost batch exits, and render invalidation for
+`set_global(...)` / `update_global(...)`. Feature-worktree targeted tests passed
+2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. Step 137 still needs commit, fast-forward merge to `master`, post-merge
+verification, docs closeout, and cleanup before Step 138 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

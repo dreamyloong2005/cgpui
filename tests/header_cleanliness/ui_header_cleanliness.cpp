@@ -81,6 +81,12 @@ class TestView final : public cgpui::View {
     (void)task.complete();
     (void)context.runtime.complete_task(task_id);
     context.runtime.drain_task_completions();
+    context.batch_updates([](const cgpui::ViewContext& batch_context) {
+      batch_context.request_render();
+    });
+    context.runtime.batch_updates([](const cgpui::ViewContext& batch_context) {
+      batch_context.request_layout();
+    });
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {

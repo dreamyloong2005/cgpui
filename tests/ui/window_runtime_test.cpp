@@ -4590,8 +4590,8 @@ int test_view_context_global_state_helpers() {
   if (fixture.view.global_replaced_value != 77) {
     return 287;
   }
-  if (fixture.window.request_redraw_count != 0 ||
-      fixture.renderer.begin_frame_count != 0) {
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1) {
     return 288;
   }
   return 0;
@@ -5736,6 +5736,84 @@ int test_runtime_schedules_redraw_for_invalidation_requests() {
       runtime.invalidation_state().paint || after_frame_invalidation.layout ||
       after_frame_invalidation.paint) {
     return 187;
+  }
+
+  return 0;
+}
+
+struct BatchedRuntimeGlobal {
+  int value = 0;
+};
+
+RuntimeFixture* update_batch_fixture = nullptr;
+cgpui::WindowRuntime* update_batch_runtime = nullptr;
+int update_batch_redraws_during_callback = -1;
+bool update_batch_model_update = false;
+bool update_batch_global_update = false;
+bool update_batch_saw_render_invalidation = false;
+
+void dispatch_update_batch_sequence() {
+  auto& runtime = *update_batch_runtime;
+  runtime.batch_updates(
+      [&](const cgpui::ViewContext& batch_context) {
+        const cgpui::Model<RuntimeEntity> model =
+            batch_context.new_model<RuntimeEntity>(10);
+        batch_context.subscribe_view_to_entity(batch_context.view_id, model);
+        update_batch_model_update = batch_context.update_model(
+            model,
+            [](RuntimeEntity& entity) {
+              entity.value += 5;
+            });
+        batch_context.set_global(BatchedRuntimeGlobal{.value = 7});
+        update_batch_global_update =
+            batch_context.update_global<BatchedRuntimeGlobal>(
+                [](BatchedRuntimeGlobal& global) {
+                  global.value += 3;
+                });
+        update_batch_saw_render_invalidation =
+            batch_context.runtime.invalidation_state().render;
+        update_batch_redraws_during_callback =
+            update_batch_fixture->window.request_redraw_count;
+      });
+}
+
+int test_runtime_batches_model_and_global_update_redraws() {
+  RuntimeFixture fixture;
+  update_batch_fixture = &fixture;
+  fixture.app.on_run = &dispatch_update_batch_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  update_batch_runtime = &runtime;
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  update_batch_runtime = nullptr;
+  update_batch_fixture = nullptr;
+  if (result != 0) {
+    return 382;
+  }
+  if (!update_batch_model_update || !update_batch_global_update) {
+    return 383;
+  }
+  const BatchedRuntimeGlobal* global =
+      runtime.global<BatchedRuntimeGlobal>();
+  if (global == nullptr || global->value != 10) {
+    return 384;
+  }
+  if (!update_batch_saw_render_invalidation ||
+      update_batch_redraws_during_callback != 0) {
+    return 385;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1 ||
+      fixture.view.paint_count != 1) {
+    return 386;
   }
 
   return 0;
@@ -6987,6 +7065,11 @@ int main() {
   }
   if (const int result =
           test_runtime_schedules_redraw_for_invalidation_requests();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_batches_model_and_global_update_redraws();
       result != 0) {
     return result;
   }

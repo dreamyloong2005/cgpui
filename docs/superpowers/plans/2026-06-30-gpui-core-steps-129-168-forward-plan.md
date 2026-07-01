@@ -57,11 +57,33 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 136 is merged on `master` at
   `e957c6e feat: add async task completion skeleton` and post-merge verified
   on Windows and WSL Arch Linux.
+- Step 137 is implemented in `.worktrees/runtime-update-batching` on
+  `codex/runtime-update-batching` and feature-worktree verified: targeted
+  tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 137 is the next implementation slice after the Step 136 docs
-  closeout and cleanup.
+  128. Step 137 still needs commit, fast-forward merge, post-merge
+  verification, docs closeout, and cleanup before Step 138 begins.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
+
+## 2026-07-01 Back-40 Planning After Step 137 GREEN
+
+- Step 137, runtime update batching so multiple model/global changes coalesce
+  redraws, is implemented and feature-worktree verified in
+  `.worktrees/runtime-update-batching` on `codex/runtime-update-batching`.
+- RED failed as expected on missing
+  `WindowRuntimeContext::batch_updates(...)` and
+  `WindowRuntime::batch_updates(...)`. GREEN adds public
+  `UpdateBatchCallback`, context/runtime `batch_updates(...)`, an
+  update-batch depth guard, redraw deferral until the outermost batch exits,
+  and render invalidation for `set_global(...)` / `update_global(...)`.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 137 still needs feature commit, fast-forward merge to `master`,
+  post-merge targeted/Windows/WSL verification, docs closeout, and cleanup.
+- After the Step 137 merge, the effective distance through Step 168 will be
+  31 follow-on implementation slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 124 Merge
 
@@ -990,7 +1012,7 @@ Purpose: make the model/context side feel closer to GPUI authoring instead of di
 - [x] Step 134: deferred callback queue for `cx.defer(...)` style post-event work.
 - [x] Step 135: timer API for one-shot and repeating callbacks through the runtime loop.
 - [x] Step 136: async task handle skeleton with main-thread completion dispatch.
-- [ ] Step 137: runtime update batching so multiple model/global changes coalesce redraws.
+- [x] Step 137: runtime update batching so multiple model/global changes coalesce redraws.
 - [ ] Step 138: public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 
 Exit check: author code can use context-shaped APIs for entities, globals, actions, subscriptions, deferred work, timers, and async completions, with deterministic diagnostics and redraw batching.
@@ -1245,9 +1267,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests proving multiple model/global updates coalesce into one scheduled redraw.
-- [ ] Implement an update batch guard or queue flush around existing invalidation scheduling.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests proving multiple model/global updates coalesce into one scheduled redraw.
+- [x] Implement an update batch guard or queue flush around existing invalidation scheduling.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 138: Public Diagnostics Snapshot
 

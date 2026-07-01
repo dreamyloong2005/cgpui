@@ -2301,3 +2301,22 @@
 - The Wayland test compositor must count `set_cursor` requests, not merely
   record a boolean, because pointer enter can apply the default cursor before
   the explicit `PlatformWindow::set_cursor(text)` call.
+
+## 2026-07-01 Runtime Update Batching
+
+- Step 137 keeps update batching inside `WindowRuntime` rather than changing
+  model observer ordering. `batch_updates(...)` increments a runtime-local
+  depth counter and flushes deferred redraw requests only when the outermost
+  batch exits.
+- `schedule_redraw()` already had deferral hooks for event dispatch, deferred
+  callbacks, timers, and task completions. Extending that single deferral path
+  to `update_batch_depth_ > 0` preserves existing redraw semantics while
+  allowing model/global changes inside a batch to coalesce.
+- Typed global updates were previously state-only in runtime tests. Step 137
+  makes `set_global(...)` and `update_global(...)` request render invalidation
+  so batched global changes participate in the same redraw coalescing behavior
+  as model updates.
+- The public surface is deliberately narrow: `UpdateBatchCallback`,
+  `WindowRuntimeContext::batch_updates(...)`, and
+  `WindowRuntime::batch_updates(...)`. It does not introduce transaction
+  rollback, observer reordering, or cross-thread mutation.
