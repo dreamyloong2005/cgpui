@@ -49,6 +49,14 @@ class TestView final : public cgpui::View {
     (void)context.observe_model(
         model,
         [](const cgpui::ViewContext&, cgpui::Model<TestModel>) {});
+    cgpui::Subscription subscription =
+        context.observe_model_subscription(
+            model,
+            [](const cgpui::ViewContext&, cgpui::Model<TestModel>) {});
+    const cgpui::SubscriptionId subscription_id = subscription.id();
+    (void)subscription.connected();
+    (void)context.runtime.remove_subscription(subscription_id);
+    (void)subscription.release();
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {

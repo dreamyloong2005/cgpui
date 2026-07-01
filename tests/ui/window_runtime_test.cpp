@@ -419,6 +419,58 @@ class RecordingView final : public cgpui::View {
               model.value = 99;
             });
       }
+      if (exercise_subscription_ownership_token &&
+          keyboard_key_count == 1) {
+        model_id = context.new_model<RuntimeEntity>(100);
+        {
+          cgpui::Subscription subscription =
+              context.observe_model_subscription(
+                  model_id,
+                  [this](const cgpui::ViewContext&,
+                         cgpui::Model<RuntimeEntity>) {
+                    model_observer_count += 1;
+                  });
+          observed_model = subscription.connected();
+          owned_subscription_id = subscription.id();
+          subscription_id_was_valid = owned_subscription_id.value != 0;
+          updated_model = context.update_model(
+              model_id,
+              [](RuntimeEntity& model) {
+                model.value = 101;
+              });
+          observer_count_after_update = model_observer_count;
+        }
+        notified_after_token_drop = context.update_model(
+            model_id,
+            [](RuntimeEntity& model) {
+              model.value = 102;
+            });
+        observer_count_after_drop = model_observer_count;
+
+        cgpui::Subscription removed_subscription =
+            context.observe_model_subscription(
+                model_id,
+                [this](const cgpui::ViewContext&,
+                       cgpui::Model<RuntimeEntity>) {
+                  model_observer_count += 1;
+                });
+        removed_subscription_id = removed_subscription.id();
+        removed_subscription_disconnect =
+            context.runtime.remove_subscription(removed_subscription.id());
+        removed_subscription_duplicate_disconnect =
+            context.runtime.remove_subscription(removed_subscription.id());
+        removed_subscription_release_after_remove =
+            removed_subscription.release();
+        notified_after_remove = context.update_model(
+            model_id,
+            [](RuntimeEntity& model) {
+              model.value = 103;
+            });
+        observer_count_after_remove = model_observer_count;
+        missing_subscription_release =
+            !context.runtime.remove_subscription(cgpui::SubscriptionId{
+                removed_subscription_id.value + 100});
+      }
       if (exercise_entity_handle_helpers && keyboard_key_count == 1) {
         const cgpui::Context<RecordingView>& author_context = context;
         entity_handle =
@@ -779,6 +831,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_model_subscriptions = false;
   bool exercise_view_context_model_helpers = false;
   bool exercise_view_context_model_observe_helper = false;
+  bool exercise_subscription_ownership_token = false;
   bool exercise_entity_handle_helpers = false;
   bool exercise_global_state_helpers = false;
   bool exercise_weak_entity_and_view_handles = false;
@@ -879,6 +932,7 @@ class RecordingView final : public cgpui::View {
   int model_observer_last_value = -1;
   int observer_count_after_update = 0;
   int observer_count_after_remove = 0;
+  int observer_count_after_drop = 0;
   int observer_value_after_update = -1;
   int observer_value_after_remove = -1;
   int entity_handle_read_value = -1;
@@ -889,6 +943,13 @@ class RecordingView final : public cgpui::View {
   bool global_missing_before_set = false;
   bool global_update = false;
   bool global_missing_update = true;
+  bool subscription_id_was_valid = false;
+  bool notified_after_token_drop = true;
+  bool removed_subscription_disconnect = false;
+  bool removed_subscription_duplicate_disconnect = true;
+  bool removed_subscription_release_after_remove = true;
+  bool notified_after_remove = true;
+  bool missing_subscription_release = false;
   int global_first_read_value = -1;
   int global_updated_value = -1;
   int global_replaced_value = -1;
@@ -898,6 +959,8 @@ class RecordingView final : public cgpui::View {
   cgpui::EntityId<RuntimeEntity> emplaced_entity_id{};
   cgpui::EntityHandle<RuntimeEntity> entity_handle{};
   cgpui::Model<RuntimeEntity> model_id{};
+  cgpui::SubscriptionId owned_subscription_id{};
+  cgpui::SubscriptionId removed_subscription_id{};
   cgpui::WeakEntity<RuntimeEntity> weak_model{};
   cgpui::WeakView weak_view{};
   bool root_view_id_was_allocated = false;
@@ -4314,6 +4377,64 @@ int test_view_context_observes_model_changes() {
   return 0;
 }
 
+RuntimeFixture* subscription_ownership_fixture = nullptr;
+
+void dispatch_subscription_ownership_sequence() {
+  auto& callback = subscription_ownership_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 83,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_subscription_token_disconnects_observers_on_drop_and_removal() {
+  RuntimeFixture fixture;
+  subscription_ownership_fixture = &fixture;
+  fixture.app.on_run = &dispatch_subscription_ownership_sequence;
+  fixture.view.exercise_subscription_ownership_token = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  subscription_ownership_fixture = nullptr;
+
+  if (result != 0) {
+    return 273;
+  }
+  if (!fixture.view.observed_model ||
+      !fixture.view.subscription_id_was_valid ||
+      fixture.view.owned_subscription_id.value == 0) {
+    return 274;
+  }
+  if (!fixture.view.updated_model ||
+      fixture.view.observer_count_after_update != 1) {
+    return 275;
+  }
+  if (fixture.view.notified_after_token_drop ||
+      fixture.view.observer_count_after_drop != 1) {
+    return 276;
+  }
+  if (fixture.view.removed_subscription_id.value == 0 ||
+      !fixture.view.removed_subscription_disconnect ||
+      fixture.view.removed_subscription_duplicate_disconnect ||
+      fixture.view.removed_subscription_release_after_remove ||
+      !fixture.view.missing_subscription_release) {
+    return 277;
+  }
+  if (fixture.view.notified_after_remove ||
+      fixture.view.observer_count_after_remove != 1) {
+    return 278;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* weak_handle_fixture = nullptr;
 
 void dispatch_weak_handle_sequence() {
@@ -6471,6 +6592,11 @@ int main() {
     return result;
   }
   if (const int result = test_view_context_observes_model_changes();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_subscription_token_disconnects_observers_on_drop_and_removal();
       result != 0) {
     return result;
   }

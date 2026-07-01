@@ -140,6 +140,42 @@ struct WindowRuntimeOptions {
 
 class WindowRuntime;
 
+struct SubscriptionId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(
+      const SubscriptionId&,
+      const SubscriptionId&) = default;
+};
+
+class Subscription {
+ public:
+  Subscription() = default;
+  ~Subscription();
+
+  Subscription(const Subscription&) = delete;
+  Subscription& operator=(const Subscription&) = delete;
+
+  Subscription(Subscription&& other) noexcept;
+  Subscription& operator=(Subscription&& other) noexcept;
+
+  [[nodiscard]] SubscriptionId id() const {
+    return id_;
+  }
+
+  [[nodiscard]] bool connected() const;
+  [[nodiscard]] bool release();
+
+ private:
+  friend class WindowRuntime;
+
+  Subscription(WindowRuntime& runtime, SubscriptionId id)
+      : runtime_(&runtime), id_(id) {}
+
+  WindowRuntime* runtime_ = nullptr;
+  SubscriptionId id_{};
+};
+
 struct WindowOptions {
   WindowDescriptor descriptor;
 
@@ -316,6 +352,7 @@ struct EntitySubscription {
 };
 
 struct EntityObserver {
+  SubscriptionId subscription_id;
   std::type_index entity_type{typeid(void)};
   std::uint64_t entity_id_value = 0;
   std::function<void(const WindowRuntimeContext&, std::uint64_t)> callback;
@@ -418,6 +455,11 @@ struct WindowRuntimeContext {
 
   template <typename T, typename Observer>
   bool observe_model(Model<T> model, Observer&& observer) const;
+
+  template <typename T, typename Observer>
+  [[nodiscard]] Subscription observe_model_subscription(
+      Model<T> model,
+      Observer&& observer) const;
 
   template <typename T>
   bool remove_model(Model<T> model) const;
@@ -537,6 +579,8 @@ class WindowRuntime {
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
   [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
       ViewId view_id) const;
+  [[nodiscard]] bool subscription_connected(SubscriptionId id) const;
+  [[nodiscard]] bool remove_subscription(SubscriptionId id);
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
@@ -572,6 +616,11 @@ class WindowRuntime {
 
   template <typename T, typename Observer>
   bool observe_model(EntityId<T> entity_id, Observer&& observer);
+
+  template <typename T, typename Observer>
+  [[nodiscard]] Subscription observe_model_subscription(
+      EntityId<T> entity_id,
+      Observer&& observer);
 
   template <typename T>
   bool remove_entity(EntityId<T> id);
@@ -672,6 +721,7 @@ class WindowRuntime {
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
+  std::uint64_t next_subscription_id_ = 1;
   std::vector<AppOpenedWindow> app_opened_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
@@ -777,6 +827,15 @@ bool WindowRuntimeContext::observe_model(
   return runtime.observe_model(model, std::forward<Observer>(observer));
 }
 
+template <typename T, typename Observer>
+Subscription WindowRuntimeContext::observe_model_subscription(
+    Model<T> model,
+    Observer&& observer) const {
+  return runtime.observe_model_subscription(
+      model,
+      std::forward<Observer>(observer));
+}
+
 template <typename T>
 bool WindowRuntimeContext::remove_model(Model<T> model) const {
   return runtime.remove_entity(model);
@@ -836,6 +895,7 @@ bool WindowRuntime::observe_model(
   }
 
   entity_observers_.push_back(EntityObserver{
+      .subscription_id = {},
       .entity_type = std::type_index(typeid(T)),
       .entity_id_value = entity_id.value,
       .callback =
@@ -846,6 +906,30 @@ bool WindowRuntime::observe_model(
           },
   });
   return true;
+}
+
+template <typename T, typename Observer>
+Subscription WindowRuntime::observe_model_subscription(
+    EntityId<T> entity_id,
+    Observer&& observer) {
+  ModelObserver<T> observer_fn{std::forward<Observer>(observer)};
+  if (!observer_fn || read_entity(entity_id) == nullptr) {
+    return {};
+  }
+
+  const SubscriptionId subscription_id{next_subscription_id_++};
+  entity_observers_.push_back(EntityObserver{
+      .subscription_id = subscription_id,
+      .entity_type = std::type_index(typeid(T)),
+      .entity_id_value = entity_id.value,
+      .callback =
+          [observer = std::move(observer_fn)](
+              const WindowRuntimeContext& context,
+              std::uint64_t entity_id_value) {
+            observer(context, Model<T>{entity_id_value});
+          },
+  });
+  return Subscription(*this, subscription_id);
 }
 
 template <typename T>

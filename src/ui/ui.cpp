@@ -110,6 +110,41 @@ ElementId hit_test_runtime_element_root(
 
 } // namespace
 
+Subscription::~Subscription() {
+  (void)release();
+}
+
+Subscription::Subscription(Subscription&& other) noexcept
+    : runtime_(std::exchange(other.runtime_, nullptr)),
+      id_(std::exchange(other.id_, {})) {}
+
+Subscription& Subscription::operator=(Subscription&& other) noexcept {
+  if (this == &other) {
+    return *this;
+  }
+
+  (void)release();
+  runtime_ = std::exchange(other.runtime_, nullptr);
+  id_ = std::exchange(other.id_, {});
+  return *this;
+}
+
+bool Subscription::connected() const {
+  return runtime_ != nullptr && runtime_->subscription_connected(id_);
+}
+
+bool Subscription::release() {
+  if (runtime_ == nullptr) {
+    return false;
+  }
+
+  WindowRuntime* runtime = runtime_;
+  const SubscriptionId id = id_;
+  runtime_ = nullptr;
+  id_ = {};
+  return runtime->remove_subscription(id);
+}
+
 void PaintList::clear() {
   commands_.clear();
   clip_stack_.clear();
@@ -1476,6 +1511,33 @@ std::span<const EntitySubscription> WindowRuntime::subscriptions_for_view(
     }
   }
   return subscription_query_buffer_;
+}
+
+bool WindowRuntime::subscription_connected(SubscriptionId id) const {
+  if (id.value == 0) {
+    return false;
+  }
+
+  for (const EntityObserver& observer : entity_observers_) {
+    if (observer.subscription_id == id && observer.callback) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool WindowRuntime::remove_subscription(SubscriptionId id) {
+  if (id.value == 0) {
+    return false;
+  }
+
+  for (EntityObserver& observer : entity_observers_) {
+    if (observer.subscription_id == id && observer.callback) {
+      observer.callback = {};
+      return true;
+    }
+  }
+  return false;
 }
 
 void WindowRuntime::schedule_redraw() {

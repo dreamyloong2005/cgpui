@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Subscription Ownership Token
+
+- Step 133 adds an explicit owned-observer path instead of changing the legacy
+  `observe_model(...) -> bool` API. The legacy API remains a permanent
+  observer registration so existing Step 102/132 behavior and demo authoring
+  code do not silently disconnect at the end of an expression.
+- `Subscription` is a move-only RAII token over `SubscriptionId`; dropping the
+  token calls `release()`, and explicit `WindowRuntime::remove_subscription`
+  clears the observer callback. Releasing/removing an already disconnected or
+  unknown subscription soft-fails with `false`.
+- Owned observer removal tombstones the callback rather than erasing the vector
+  entry. This keeps notification iteration stable if a subscription is removed
+  while callbacks are being processed.
+- `subscriptions_for_view(...)` is intentionally unchanged. Step 133 owns
+  observer lifetime tokens, not automatic view dependency tracking, reactive
+  dependency inference, deferred callbacks, timers, or async completions.
+
 ## 2026-07-01 Scoped Action Registry Merged
 
 - Step 132 is merged on `master` at

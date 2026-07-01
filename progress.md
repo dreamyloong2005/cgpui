@@ -3425,3 +3425,37 @@
   `findings.md`, and this progress log so Step 125 is recorded as implemented
   and feature-worktree verified. Step 125 still needs commit, merge,
   post-merge verification, docs closeout, and cleanup before Step 126 begins.
+
+## 2026-07-01 Step 133 Subscription Ownership Token
+
+- Started Step 133 in `.worktrees/subscription-ownership-token` on
+  `codex/subscription-ownership-token` from `master` at
+  `508275f docs: mark step 132 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage for an owned subscription token:
+  `test_subscription_token_disconnects_observers_on_drop_and_removal` verifies
+  token ids, drop disconnect, explicit `remove_subscription(...)`, duplicate
+  removal soft-fail, and release-after-remove soft-fail. Header cleanliness now
+  compiles `Subscription`, `SubscriptionId`,
+  `observe_model_subscription(...)`, and `remove_subscription(...)`.
+- RED failed as expected on missing `cgpui::Subscription`,
+  `cgpui::SubscriptionId`, `WindowRuntimeContext::observe_model_subscription`,
+  and `WindowRuntime::remove_subscription`.
+- Implemented Step 133 with a move-only RAII `Subscription` token, monotonic
+  `SubscriptionId`, owned `observe_model_subscription(...)` helper, runtime
+  `subscription_connected(...)`, and soft-fail `remove_subscription(...)`.
+  Existing `observe_model(...) -> bool` remains a permanent observer path.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/subscription-ownership-token -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 133 is recorded as implemented and feature-worktree
+  verified. Step 133 still needs commit, merge, post-merge verification, docs
+  closeout, and cleanup before Step 134 begins.

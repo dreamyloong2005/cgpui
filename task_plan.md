@@ -101,9 +101,12 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 132 is now merged and post-merge verified. Step 133 is the next
-implementation slice. The effective distance through Step 168 is 36 remaining
-follow-on implementation steps plus the four follow-on band checkpoint reviews.
+Step 133 is implemented in the `codex/subscription-ownership-token` feature
+worktree and verified on Windows and WSL Arch Linux. It still needs
+merge, post-merge verification, docs closeout, and cleanup before Step 134
+begins. The effective distance through Step 168 is 35 remaining follow-on
+implementation steps plus the four follow-on band checkpoint reviews after
+Step 133 merges.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -249,7 +252,7 @@ follow-on implementation steps plus the four follow-on band checkpoint reviews.
 130. [x] Entity handle API with `read`, `update`, and `downgrade` convenience methods.
 131. [x] Global app state registry with typed `set_global`, `global`, and `update_global` helpers.
 132. [x] Scoped action registry for app, window, view, and focused element actions.
-133. [ ] Subscription ownership token that disconnects observers on drop/removal.
+133. [x] Subscription ownership token that disconnects observers on drop/removal.
 134. [ ] Deferred callback queue for `cx.defer(...)` style post-event work.
 135. [ ] Timer API for one-shot and repeating callbacks through the runtime loop.
 136. [ ] Async task handle skeleton with main-thread completion dispatch.
@@ -288,18 +291,18 @@ follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 132, scoped action registry for app, window, view, and
-focused element actions, is merged on `master` at
-`7de89c7 feat: add scoped action registry` and post-merge verified on Windows
-and WSL Arch Linux. RED failed as expected on missing `ActionScope`, scoped
-action registration APIs, and scope/owner metadata in `ActionDispatchResult`;
-GREEN adds app/window/view and focused-element scoped registries, preserves
-legacy `register_action(...)` as app/global scope, and dispatches in
-focused-element, view, window, app order. Post-merge targeted tests passed 2/2,
-Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
-Step 133, subscription ownership token that disconnects observers on
-drop/removal, is the next implementation slice after this docs closeout and
-cleanup.
+Current handoff: Step 133, subscription ownership token that disconnects
+observers on drop/removal, is implemented in
+`.worktrees/subscription-ownership-token` on
+`codex/subscription-ownership-token`. RED failed as expected on missing
+`Subscription`, `SubscriptionId`, owned observe, and removal APIs. GREEN adds
+a move-only `Subscription` token, monotonic `SubscriptionId`, explicit
+`observe_model_subscription(...)`, runtime `subscription_connected(...)`, and
+soft-fail `remove_subscription(...)` while preserving legacy
+`observe_model(...) -> bool` as a permanent observer path. Feature-worktree
+targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux
+full debug passed 26/26. Step 133 still needs merge, post-merge
+verification, docs closeout, and cleanup before Step 134 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -51,9 +51,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 132 is merged on `master` at
   `7de89c7 feat: add scoped action registry` and post-merge verified on
   Windows and WSL Arch Linux.
+- Step 133 is implemented in `.worktrees/subscription-ownership-token` on
+  `codex/subscription-ownership-token`; targeted tests passed 2/2, Windows
+  full debug passed 29/29, and WSL Arch Linux full debug passed 26/26 in the
+  feature worktree.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 133 is the next implementation slice after Step 132 docs closeout
-  and cleanup.
+  128. Step 133 still needs merge, post-merge verification, docs
+  closeout, and cleanup before Step 134 begins.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -980,7 +984,7 @@ Purpose: make the model/context side feel closer to GPUI authoring instead of di
 - [x] Step 130: entity handle API with `read`, `update`, and `downgrade` convenience methods.
 - [x] Step 131: global app state registry with typed `set_global`, `global`, and `update_global` helpers.
 - [x] Step 132: scoped action registry for app, window, view, and focused element actions.
-- [ ] Step 133: subscription ownership token that disconnects observers on drop/removal.
+- [x] Step 133: subscription ownership token that disconnects observers on drop/removal.
 - [ ] Step 134: deferred callback queue for `cx.defer(...)` style post-event work.
 - [ ] Step 135: timer API for one-shot and repeating callbacks through the runtime loop.
 - [ ] Step 136: async task handle skeleton with main-thread completion dispatch.
@@ -1158,9 +1162,13 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for a subscription token that disconnects observer callbacks when released or removed.
-- [ ] Implement token ids and soft-fail removal without changing existing subscription query behavior.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for a subscription token that disconnects observer callbacks when released or removed.
+- [x] Implement token ids and soft-fail removal without changing existing subscription query behavior.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/subscription-ownership-token -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 134: Deferred Callback Queue
 
