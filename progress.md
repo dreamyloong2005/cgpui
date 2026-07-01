@@ -1,5 +1,55 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 147 Text Input Widget Primitive
+
+- Started Step 147 in `.worktrees/text-input-widget-primitive` on
+  `codex/text-input-widget-primitive` from `master` at
+  `8e6cfa0 docs: mark step 146 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default window_runtime_test/default text_model_test/default`
+  passed 3/3.
+- Added RED coverage in `tests/ui/element_test.cpp`,
+  `tests/ui/window_runtime_test.cpp`,
+  `tests/header_cleanliness/ui_header_cleanliness.cpp`, and
+  `tests/header_cleanliness/prelude_header_cleanliness.cpp` for public
+  `cgpui::text_input(...)`, `TextInputElement`, focusable text input paint
+  metadata, header/prelude exposure, runtime text-input routing without manual
+  `bind_text_model(...)`, key edit bindings, clipboard copy/cut/paste, and IME
+  candidate geometry. RED failed as expected on missing `cgpui::text_input`
+  and `TextInputElement`.
+- GREEN adds `TextInputElement` as a focusable `TextElement`-backed widget,
+  fluent `TextInputBuilder`, public `text_input(TextModel&)`, text style,
+  key, enabled, and disabled builder support, and runtime focused-text fallback
+  that discovers the focused installed `TextInputElement` model when no manual
+  text-model binding exists.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default window_runtime_test/default text_model_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 5/5.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-input-widget-primitive -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . element_test/default window_runtime_test/default text_model_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 5/5.
+- Committed Step 147 as
+  `e3f122b feat: add text input widget primitive` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default window_runtime_test/default text_model_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 5/5.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 147 is marked merged and post-merge verified. Step 148, scrollable
+  list container with stable item keys and viewport clipping metadata, is the
+  next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 146 Label Widget Primitive
 
 - Started Step 146 in `.worktrees/label-widget-primitive` on

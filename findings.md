@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Text Input Widget Primitive
+
+- Step 147 adds `TextInputElement` as a focusable widget backed by an existing
+  `TextModel`; it reuses `TextElement` layout and caret/selection/text paint
+  metadata instead of adding a second editable text rendering path.
+- `text_input(model)` returns a fluent `TextInputBuilder` with text style,
+  key, enabled, and disabled support. The widget is intentionally model-backed
+  by reference, so ownership remains with the caller/runtime authoring code.
+- `WindowRuntime::focused_text_model()` now preserves explicit
+  `bind_text_model(...)` behavior first, then falls back to the focused
+  installed `TextInputElement` model. This lets text input widgets receive text
+  input, text edit bindings, clipboard copy/cut/paste, and IME geometry without
+  requiring authors to manually bind the model to the element id.
+- `TextInputElement::handle_event(...)` consumes text input, IME composition,
+  and left pointer press events after runtime routing has applied the shared
+  edit behavior. It does not introduce a private widget-specific editor loop.
+- Step 148 should build the scrollable list container on top of the existing
+  `ScrollState`, `ScrollElement`, keyed reconciliation, and viewport clip
+  metadata rather than expanding text-input behavior further.
+
 ## 2026-07-01 Label Widget Primitive
 
 - Step 146 keeps `LabelElement` as a read-only text widget over owned

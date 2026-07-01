@@ -97,8 +97,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `ca63320 feat: add label widget primitive`; post-merge targeted tests passed
   3/3, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
+- Step 147 is merged on `master` at
+  `e3f122b feat: add text input widget primitive`; post-merge targeted tests
+  passed 5/5, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 147 is the next implementation slice after Step 146 docs closeout
+  128. Step 148 is the next implementation slice after Step 147 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -340,6 +344,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   selection, clipboard, and IME geometry, is the next implementation slice
   after docs closeout and cleanup.
 - The effective distance through Step 168 is 22 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 147 Merge
+
+- Step 147, text input widget primitive integrating focus, text model,
+  selection, clipboard, and IME geometry, is merged on `master` at
+  `e3f122b feat: add text input widget primitive`.
+- RED failed as expected on missing `cgpui::text_input` and
+  `TextInputElement` APIs. GREEN adds a focusable `TextInputElement`, fluent
+  `TextInputBuilder`, public `text_input(...)`, text style/key/disabled
+  builder support, and runtime focused-text fallback through installed text
+  input elements so text input, edit bindings, clipboard helpers, and IME
+  geometry work without manual `bind_text_model(...)`.
+- Post-merge verification passed: targeted tests 5/5, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 148, scrollable list container with stable item keys and viewport
+  clipping metadata, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 21 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
@@ -1364,7 +1387,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
 - [x] Step 145: button widget primitive built from public element, focus, style, and action APIs.
 - [x] Step 146: label widget primitive using text style and text paint commands.
-- [ ] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
+- [x] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
 - [ ] Step 148: scrollable list container with stable item keys and viewport clipping metadata.
 
 Exit check: the public prelude can express common app UI controls through reusable widgets, keyed state, style classes/themes, and focus handles.
@@ -1782,9 +1805,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for focused text input handling selection, clipboard, key edits, and IME geometry.
-- [ ] Compose the widget from `TextModel`, focus handle, text element, and runtime text helpers.
-- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default text_model_test/default`.
+- [x] Add RED tests for focused text input handling selection, clipboard, key edits, and IME geometry.
+- [x] Compose the widget from `TextModel`, focusable text element behavior, and runtime text helpers.
+- [x] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default text_model_test/default ui_header_cleanliness/default prelude_header_cleanliness/default` passed 5/5.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted tests passed 5/5.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 148: Scrollable List Container
 
