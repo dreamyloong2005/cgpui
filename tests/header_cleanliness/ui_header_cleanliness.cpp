@@ -99,6 +99,7 @@ class TestView final : public cgpui::View {
         context.runtime.diagnostics_snapshot();
     (void)context_diagnostics.entity_count;
     (void)runtime_diagnostics.last_render_record;
+    (void)runtime_diagnostics.last_frame_statistics;
     const cgpui::FocusHandle focus_handle =
         context.focus_handle(cgpui::ElementId{4});
     focus_handle.request(context);
@@ -165,11 +166,26 @@ int main() {
       .element_id = header_root_id,
       .parent_element_id = std::nullopt,
   };
+  cgpui::FrameStatistics frame_statistics{
+      .frame_index = 1,
+      .render_pass_count = 1,
+      .layout_pass_count = 1,
+      .paint_pass_count = 1,
+      .paint_command_count = 5,
+      .submitted_command_count = 3,
+      .skipped_command_count = 2,
+      .solid_rect_command_count = 2,
+      .text_command_count = 1,
+      .begin_frame_count = 1,
+      .clear_count = 1,
+      .present_count = 1,
+  };
   cgpui::RenderRecord render_record{
       .sequence = 1,
       .view_id = cgpui::ViewId{1},
       .viewport_size = cgpui::Size{3.0F, 4.0F},
       .root_element_id = cgpui::ElementId{2},
+      .statistics = frame_statistics,
   };
   cgpui::EventRoute event_route{
       .target_view_id = cgpui::ViewId{1},
@@ -412,6 +428,9 @@ int main() {
                  element_tree.children(header_root_id).size() == 2 &&
                  lifecycle_context.element_id == header_root_id &&
                  !lifecycle_context.parent_element_id.has_value() &&
+                 frame_statistics.paint_command_count == 5 &&
+                 render_record.statistics.has_value() &&
+                 render_record.statistics->submitted_command_count == 3 &&
                  ime_rect.element_id == cgpui::ElementId{2} &&
                  ime_rect.rect.size.height == 18.0F &&
                  render_record.sequence == 1 &&

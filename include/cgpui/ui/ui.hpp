@@ -381,11 +381,31 @@ struct InvalidationState {
   bool paint = false;
 };
 
+struct FrameStatistics {
+  int frame_index = 0;
+  std::size_t render_pass_count = 0;
+  std::size_t layout_pass_count = 0;
+  std::size_t paint_pass_count = 0;
+  std::size_t paint_command_count = 0;
+  std::size_t submitted_command_count = 0;
+  std::size_t skipped_command_count = 0;
+  std::size_t solid_rect_command_count = 0;
+  std::size_t text_command_count = 0;
+  std::size_t begin_frame_count = 0;
+  std::size_t clear_count = 0;
+  std::size_t present_count = 0;
+  double frame_time_ms = 0.0;
+  double render_time_ms = 0.0;
+  double layout_time_ms = 0.0;
+  double paint_time_ms = 0.0;
+};
+
 struct RenderRecord {
   int sequence = 0;
   ViewId view_id;
   Size viewport_size;
   std::optional<ElementId> root_element_id;
+  std::optional<FrameStatistics> statistics;
 };
 
 struct RuntimeDiagnosticsSnapshot {
@@ -397,6 +417,7 @@ struct RuntimeDiagnosticsSnapshot {
   InvalidationState invalidation;
   int frame_index = 0;
   std::optional<RenderRecord> last_render_record;
+  std::optional<FrameStatistics> last_frame_statistics;
 };
 
 struct EntitySubscription {
@@ -843,6 +864,7 @@ class WindowRuntime {
   CursorShape applied_cursor_shape_ = CursorShape::default_arrow;
   EventResult last_event_result_{};
   std::optional<RenderRecord> last_render_record_;
+  std::optional<FrameStatistics> last_frame_statistics_;
   std::optional<EventDispatchRecord> last_event_dispatch_;
   std::optional<ActionDispatchResult> last_action_dispatch_;
   std::optional<EventRoute> current_event_route_;
@@ -897,7 +919,11 @@ class WindowRuntime {
   bool failed_ = false;
 };
 
-Result<void> render_view(Renderer& renderer, View& view, Size viewport_size);
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    FrameStatistics* statistics = nullptr);
 [[nodiscard]] int run_app(
     PlatformApplication& application,
     View& view,

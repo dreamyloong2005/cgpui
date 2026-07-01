@@ -57,6 +57,11 @@ class RecordingFrame final : public cgpui::RenderFrame {
     last_rect = rect;
   }
 
+  void draw_text(const cgpui::TextDraw& text) override {
+    text_draw_count += 1;
+    last_text = text;
+  }
+
   cgpui::Result<void> present() override {
     present_count += 1;
     return {};
@@ -64,9 +69,11 @@ class RecordingFrame final : public cgpui::RenderFrame {
 
   int clear_count = 0;
   int draw_count = 0;
+  int text_draw_count = 0;
   int present_count = 0;
   cgpui::Color last_clear{};
   cgpui::SolidRect last_rect{};
+  cgpui::TextDraw last_text{};
 };
 
 class RecordingRenderer final : public cgpui::Renderer {
@@ -105,6 +112,9 @@ class RecordingRenderer final : public cgpui::Renderer {
     void clear(cgpui::Color color) override { frame_.clear(color); }
     void draw_rect(const cgpui::SolidRect& rect) override {
       frame_.draw_rect(rect);
+    }
+    void draw_text(const cgpui::TextDraw& text) override {
+      frame_.draw_text(text);
     }
     cgpui::Result<void> present() override { return frame_.present(); }
 
@@ -6208,6 +6218,102 @@ int test_runtime_reports_public_diagnostics_snapshot() {
   return 0;
 }
 
+class FrameStatisticsView final : public cgpui::View {
+ public:
+  cgpui::AnyElement render(cgpui::ViewContext&) override {
+    render_count += 1;
+    return cgpui::into_element(cgpui::div().size(20.0F, 12.0F));
+  }
+
+  void paint(cgpui::PaintList& paint_list, cgpui::Size viewport_size) override {
+    paint_count += 1;
+    last_viewport_size = viewport_size;
+    paint_list.fill_rect(
+        cgpui::Rect{.origin = {1.0F, 2.0F}, .size = {3.0F, 4.0F}},
+        cgpui::Color{.r = 0.2F, .g = 0.4F, .b = 0.6F, .a = 1.0F});
+    paint_list.fill_text(
+        cgpui::Rect{.origin = {5.0F, 6.0F}, .size = {24.0F, 16.0F}},
+        cgpui::Color{.r = 0.8F, .g = 0.9F, .b = 1.0F, .a = 1.0F},
+        "abc");
+    paint_list.fill_text_selection(
+        cgpui::Rect{.origin = {5.0F, 6.0F}, .size = {8.0F, 16.0F}},
+        cgpui::Color{.r = 0.1F, .g = 0.3F, .b = 0.7F, .a = 1.0F},
+        cgpui::TextSelectionRange{.start = 0, .end = 1, .collapsed = false});
+    paint_list.fill_text_caret(
+        cgpui::Rect{.origin = {13.0F, 6.0F}, .size = {1.0F, 16.0F}},
+        cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+        2,
+        16.0F);
+  }
+
+  int render_count = 0;
+  int paint_count = 0;
+  cgpui::Size last_viewport_size{};
+};
+
+int test_frame_statistics_report_render_layout_paint_and_command_counts() {
+  FakeWindow window{cgpui::WindowState{
+      .framebuffer_size = {640.0F, 480.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false}};
+  FakeApplication app{window};
+  RecordingFrame frame;
+  RecordingRenderer renderer{frame};
+  FrameStatisticsView view;
+  app.on_run = +[] {};
+
+  cgpui::WindowRuntime runtime(
+      app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  if (result != 0) {
+    return 394;
+  }
+
+  const cgpui::RuntimeDiagnosticsSnapshot diagnostics =
+      runtime.diagnostics_snapshot();
+  if (!diagnostics.last_frame_statistics.has_value()) {
+    return 395;
+  }
+  const cgpui::FrameStatistics& statistics =
+      *diagnostics.last_frame_statistics;
+  if (statistics.frame_index != 1 || statistics.render_pass_count != 1 ||
+      statistics.layout_pass_count != 1 || statistics.paint_pass_count != 1) {
+    return 396;
+  }
+  if (statistics.paint_command_count != 4 ||
+      statistics.submitted_command_count != 2 ||
+      statistics.skipped_command_count != 2 ||
+      statistics.solid_rect_command_count != 1 ||
+      statistics.text_command_count != 1) {
+    return 397;
+  }
+  if (statistics.begin_frame_count != 1 || statistics.clear_count != 1 ||
+      statistics.present_count != 1) {
+    return 398;
+  }
+  if (statistics.frame_time_ms != 0.0 || statistics.render_time_ms != 0.0 ||
+      statistics.layout_time_ms != 0.0 || statistics.paint_time_ms != 0.0) {
+    return 399;
+  }
+  if (!diagnostics.last_render_record.has_value() ||
+      !diagnostics.last_render_record->statistics.has_value() ||
+      diagnostics.last_render_record->statistics->paint_command_count != 4) {
+    return 400;
+  }
+  if (view.render_count != 1 || view.paint_count != 1 ||
+      frame.draw_count != 1 || frame.text_draw_count != 1 ||
+      frame.clear_count != 1 || frame.present_count != 1) {
+    return 401;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* key_binding_fixture = nullptr;
 
 void dispatch_key_binding_sequence() {
@@ -7586,6 +7692,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_reports_public_diagnostics_snapshot();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_frame_statistics_report_render_layout_paint_and_command_counts();
       result != 0) {
     return result;
   }

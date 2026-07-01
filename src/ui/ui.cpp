@@ -523,7 +523,14 @@ void TextElement::paint(PaintList& paint_list) const {
   paint_list.pop_metadata();
 }
 
-Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    FrameStatistics* statistics) {
+  if (statistics != nullptr) {
+    statistics->begin_frame_count += 1;
+  }
   auto frame = renderer.begin_frame();
   if (!frame) {
     return std::unexpected(frame.error());
@@ -536,12 +543,22 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   }
 
   (*frame)->clear(Color{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F});
+  if (statistics != nullptr) {
+    statistics->clear_count += 1;
+  }
 
   PaintList paint_list;
   view.paint(paint_list, viewport_size);
+  if (statistics != nullptr) {
+    statistics->paint_pass_count += 1;
+    statistics->paint_command_count = paint_list.commands().size();
+  }
   for (const auto& command : paint_list.commands()) {
     if (command.kind == PaintCommandKind::text_selection ||
         command.kind == PaintCommandKind::text_caret) {
+      if (statistics != nullptr) {
+        statistics->skipped_command_count += 1;
+      }
       continue;
     }
     if (command.kind == PaintCommandKind::text) {
@@ -557,15 +574,27 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
           .clip_rect = command.clip_rect,
           .metadata = command.metadata,
       });
+      if (statistics != nullptr) {
+        statistics->submitted_command_count += 1;
+        statistics->text_command_count += 1;
+      }
       continue;
     }
     SolidRect rect = command.solid_rect;
     rect.clip_rect = command.clip_rect;
     rect.metadata = command.metadata;
     (*frame)->draw_rect(rect);
+    if (statistics != nullptr) {
+      statistics->submitted_command_count += 1;
+      statistics->solid_rect_command_count += 1;
+    }
   }
 
-  return (*frame)->present();
+  auto result = (*frame)->present();
+  if (result && statistics != nullptr) {
+    statistics->present_count += 1;
+  }
+  return result;
 }
 
 int run_app(
@@ -657,6 +686,7 @@ int WindowRuntime::run(
   applied_cursor_shape_ = CursorShape::default_arrow;
   last_event_result_ = EventResult::unhandled();
   last_render_record_.reset();
+  last_frame_statistics_.reset();
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
   current_event_route_.reset();
@@ -992,6 +1022,9 @@ void WindowRuntime::handle_redraw() {
     return;
   }
 
+  FrameStatistics frame_statistics;
+  frame_statistics.render_pass_count = 1;
+
   ViewContext render_context = context();
   AnyElement rendered = view_.render(render_context);
   std::optional<ElementId> rendered_root_id;
@@ -1018,9 +1051,14 @@ void WindowRuntime::handle_redraw() {
                 .max_size = viewport_size_,
             },
     });
+    frame_statistics.layout_pass_count += 1;
   }
 
-  auto result = render_view(*renderer_, view_, viewport_size_);
+  auto result = render_view(
+      *renderer_,
+      view_,
+      viewport_size_,
+      &frame_statistics);
   if (!result) {
     fail_and_quit(result.error());
     return;
@@ -1030,6 +1068,11 @@ void WindowRuntime::handle_redraw() {
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
   frame_index_ += 1;
+  frame_statistics.frame_index = frame_index_;
+  if (last_render_record_.has_value()) {
+    last_render_record_->statistics = frame_statistics;
+  }
+  last_frame_statistics_ = frame_statistics;
   if (after_frame_callback_) {
     after_frame_callback_(context());
   }
@@ -1842,6 +1885,7 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .invalidation = invalidation_state_,
       .frame_index = frame_index_,
       .last_render_record = last_render_record_,
+      .last_frame_statistics = last_frame_statistics_,
   };
 }
 
