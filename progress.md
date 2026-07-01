@@ -36,6 +36,20 @@
   progress log so Step 135 is recorded as implemented and feature-worktree
   verified. Step 135 still needs feature commit, fast-forward merge,
   post-merge verification, docs closeout, and cleanup before Step 136 begins.
+- Committed Step 135 as `9d4765d feat: add runtime timer api` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log so
+  Step 135 is marked merged and post-merge verified. Step 136, async task
+  handle skeleton with main-thread completion dispatch, is the next
+  implementation slice after docs closeout and cleanup.
 
 ## 2026-07-01 Step 134 Deferred Callback Queue
 

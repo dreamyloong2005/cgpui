@@ -51,13 +51,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 132 is merged on `master` at
   `7de89c7 feat: add scoped action registry` and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 135 is implemented in `.worktrees/runtime-timer-api` on
-  `codex/runtime-timer-api` from `master` at
-  `707e846 docs: mark step 134 merged` and feature-worktree verified on
-  Windows and WSL Arch Linux.
+- Step 135 is merged on `master` at
+  `9d4765d feat: add runtime timer api` and post-merge verified on Windows and
+  WSL Arch Linux.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 135 still needs feature commit, fast-forward merge, post-merge
-  verification, docs closeout, and cleanup before Step 136 begins.
+  128. Step 136 is the next implementation slice after the Step 135 docs
+  closeout and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -1211,6 +1210,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] Feature-worktree WSL Arch Linux full debug passed 26/26:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/runtime-timer-api -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `9d4765d feat: add runtime timer api`.
+- [x] Post-merge targeted tests passed 2/2:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 136: Async Task Handle Skeleton
 
