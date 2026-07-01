@@ -339,7 +339,11 @@ class PointerCaptureOwner {
 
 enum class EventKind {
   unknown,
+  window_activated,
   window_focused,
+  window_minimized,
+  window_restored,
+  window_close_requested,
   pointer_moved,
   pointer_button,
   pointer_scrolled,
@@ -845,6 +849,7 @@ class WindowRuntime {
   [[nodiscard]] bool focus_next_element(bool reverse);
   [[nodiscard]] std::optional<ViewId> action_dispatch_view_id() const;
   [[nodiscard]] ScrollState* scroll_state_for_route(const EventRoute& route);
+  void record_lifecycle_event(const PlatformEvent& event);
   [[nodiscard]] EventResult dispatch_routed_element_event(
       const PlatformEvent& event,
       const EventRoute& route);

@@ -10,8 +10,20 @@ namespace cgpui {
 namespace {
 
 EventKind event_kind_for(const PlatformEvent& event) {
+  if (std::holds_alternative<WindowActivated>(event)) {
+    return EventKind::window_activated;
+  }
   if (std::holds_alternative<WindowFocused>(event)) {
     return EventKind::window_focused;
+  }
+  if (std::holds_alternative<WindowMinimized>(event)) {
+    return EventKind::window_minimized;
+  }
+  if (std::holds_alternative<WindowRestored>(event)) {
+    return EventKind::window_restored;
+  }
+  if (std::holds_alternative<WindowCloseRequested>(event)) {
+    return EventKind::window_close_requested;
   }
   if (std::holds_alternative<PointerMoved>(event)) {
     return EventKind::pointer_moved;
@@ -940,11 +952,32 @@ bool WindowRuntime::remove_view(ViewId view_id) {
 void WindowRuntime::handle_event(const PlatformEvent& event) {
   if (std::holds_alternative<WindowCloseRequested>(event)) {
     should_quit_ = true;
+    if (window_ != nullptr && renderer_ != nullptr) {
+      record_lifecycle_event(event);
+    }
     if (close_requested_callback_ && window_ != nullptr &&
         renderer_ != nullptr) {
       close_requested_callback_(context());
     }
     application_.quit();
+    return;
+  }
+
+  if (std::holds_alternative<WindowActivated>(event) ||
+      std::holds_alternative<WindowMinimized>(event) ||
+      std::holds_alternative<WindowRestored>(event)) {
+    if (window_ != nullptr && renderer_ != nullptr) {
+      if (const auto* activated = std::get_if<WindowActivated>(&event);
+          activated != nullptr) {
+        input_.focused = activated->active;
+      } else if (const auto* minimized = std::get_if<WindowMinimized>(&event);
+                 minimized != nullptr) {
+        input_.focused = !minimized->minimized;
+      } else {
+        input_.focused = false;
+      }
+      record_lifecycle_event(event);
+    }
     return;
   }
 
@@ -1111,6 +1144,22 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     drain_deferred_callbacks();
     flush_deferred_redraw_request();
   }
+}
+
+void WindowRuntime::record_lifecycle_event(const PlatformEvent& event) {
+  current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
+  last_event_result_ = EventResult::unhandled();
+  last_event_dispatch_ = EventDispatchRecord{
+      .sequence = ++event_dispatch_sequence_,
+      .view_id = current_event_route_->target_view_id,
+      .event_kind = current_event_route_->event_kind,
+      .route = *current_event_route_,
+      .result = last_event_result_};
+  if (after_event_callback_) {
+    after_event_callback_(context(), *last_event_dispatch_);
+  }
+  drain_deferred_callbacks();
+  flush_deferred_redraw_request();
 }
 
 void WindowRuntime::handle_resize(const WindowResized& event) {

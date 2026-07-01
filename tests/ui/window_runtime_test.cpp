@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <utility>
 #include <variant>
+#include <vector>
 
 namespace {
 
@@ -1806,6 +1807,96 @@ int test_close_request_quits_application() {
   }
   if (fixture.app.quit_count != 1) {
     return 21;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* lifecycle_fixture = nullptr;
+
+void dispatch_window_lifecycle_events() {
+  auto& callback = lifecycle_fixture->window.callback;
+  callback(cgpui::WindowActivated{.active = true});
+  callback(cgpui::WindowFocused{.focused = true});
+  callback(cgpui::WindowMinimized{.minimized = true});
+  callback(cgpui::WindowRestored{});
+  callback(cgpui::WindowCloseRequested{});
+}
+
+int test_window_lifecycle_events_update_dispatch_records() {
+  RuntimeFixture fixture;
+  lifecycle_fixture = &fixture;
+  fixture.app.on_run = &dispatch_window_lifecycle_events;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  std::vector<cgpui::EventDispatchRecord> records;
+  std::vector<cgpui::ViewInputState> input_snapshots;
+  bool close_callback_called = false;
+  bool close_callback_saw_last_dispatch = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        records.push_back(record);
+        input_snapshots.push_back(context.input);
+      });
+  runtime.set_close_requested_callback(
+      [&](const cgpui::WindowRuntimeContext& context) {
+        close_callback_called = true;
+        close_callback_saw_last_dispatch =
+            context.last_event_dispatch.has_value() &&
+            context.last_event_dispatch->event_kind ==
+                cgpui::EventKind::window_close_requested;
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{},
+                                 {.request_initial_redraw = false});
+  lifecycle_fixture = nullptr;
+
+  if (result != 0) {
+    return 203;
+  }
+  if (fixture.app.quit_count != 1 || !close_callback_called ||
+      !close_callback_saw_last_dispatch) {
+    return 204;
+  }
+  if (records.size() != 5 || input_snapshots.size() != records.size()) {
+    return 205;
+  }
+
+  const std::vector<cgpui::EventKind> expected_kinds{
+      cgpui::EventKind::window_activated,
+      cgpui::EventKind::window_focused,
+      cgpui::EventKind::window_minimized,
+      cgpui::EventKind::window_restored,
+      cgpui::EventKind::window_close_requested};
+  for (std::size_t index = 0; index < expected_kinds.size(); ++index) {
+    const cgpui::EventDispatchRecord& record = records[index];
+    if (record.sequence != static_cast<int>(index + 1) ||
+        record.view_id != cgpui::ViewId{1} ||
+        record.event_kind != expected_kinds[index] ||
+        record.route.target_view_id != cgpui::ViewId{1} ||
+        record.route.event_kind != expected_kinds[index] ||
+        record.result.consumed || record.result.cancelled) {
+      return 206;
+    }
+  }
+  if (!input_snapshots[0].focused || !input_snapshots[1].focused ||
+      input_snapshots[2].focused || input_snapshots[3].focused ||
+      input_snapshots[4].focused) {
+    return 207;
+  }
+  if (fixture.view.event_count != 1 || fixture.view.focus_count != 1 ||
+      !fixture.view.focus_event_saw_focused) {
+    return 208;
+  }
+  if (records.back().event_kind != cgpui::EventKind::window_close_requested) {
+    return 209;
   }
 
   return 0;
@@ -7506,6 +7597,11 @@ int main() {
     return result;
   }
   if (const int result = test_close_request_quits_application(); result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_window_lifecycle_events_update_dispatch_records();
+      result != 0) {
     return result;
   }
   if (const int result = test_render_failure_quits_and_returns_failure();
