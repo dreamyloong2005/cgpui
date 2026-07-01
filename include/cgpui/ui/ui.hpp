@@ -570,6 +570,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] bool mutate_focused_text_model(
       FocusedTextModelMutation mutation) const;
   [[nodiscard]] std::optional<ImeCandidateRect> focused_text_ime_rect() const;
+  [[nodiscard]] AccessibilityTreeSnapshot accessibility_snapshot() const;
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape) const;
   [[nodiscard]] bool paste_clipboard_text() const;
   [[nodiscard]] bool copy_selection_to_clipboard() const;
@@ -745,6 +746,7 @@ class WindowRuntime {
   [[nodiscard]] TextModel* focused_text_model();
   [[nodiscard]] const TextModel* focused_text_model() const;
   [[nodiscard]] std::optional<ImeCandidateRect> focused_text_ime_rect() const;
+  [[nodiscard]] AccessibilityTreeSnapshot accessibility_snapshot() const;
   void set_clipboard(Clipboard* clipboard);
   [[nodiscard]] bool paste_clipboard_text();
   [[nodiscard]] bool copy_selection_to_clipboard();

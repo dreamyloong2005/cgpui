@@ -162,6 +162,12 @@ int main() {
   keyed_children.push_back(cgpui::into_element(cgpui::div().key("second")));
   const std::vector<cgpui::ElementId> keyed_child_ids =
       element_tree.reconcile_children(header_root_id, std::move(keyed_children));
+  const cgpui::AccessibilityTreeSnapshot accessibility_snapshot =
+      element_tree.accessibility_snapshot(cgpui::AccessibilitySnapshotOptions{
+          .focused_element_id = header_root_id,
+      });
+  const cgpui::AccessibilityNode* accessibility_root =
+      accessibility_snapshot.node(header_root_id);
   cgpui::ElementLifecycleContext lifecycle_context{
       .element_id = header_root_id,
       .parent_element_id = std::nullopt,
@@ -425,6 +431,11 @@ int main() {
                  ime_rect.byte_offset == 3 &&
                  keyed_child_ids.size() == 2 &&
                  keyed_child_ids[0].value != 0 &&
+                 accessibility_snapshot.root_element_id == header_root_id &&
+                 accessibility_root != nullptr &&
+                 accessibility_root->role ==
+                     cgpui::AccessibilityRole::generic &&
+                 accessibility_root->focused &&
                  element_tree.children(header_root_id).size() == 2 &&
                  lifecycle_context.element_id == header_root_id &&
                  !lifecycle_context.parent_element_id.has_value() &&

@@ -115,6 +115,10 @@ int main() {
       .supported_command_count = 1,
       .unsupported_command_count = 1,
   };
+  cgpui::PlatformAccessibilityTreeUpdate accessibility_update{
+      .root_element_id = 2,
+      .node_count = 3,
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -131,7 +135,9 @@ int main() {
                  batch.command_count == 1 &&
                  batch.command_indices.size() == 1 &&
                  report.command_count() == 2 &&
-                 report.unsupported_commands[0].message == "text_caret"
+                 report.unsupported_commands[0].message == "text_caret" &&
+                 accessibility_update.root_element_id == 2 &&
+                 accessibility_update.node_count == 3
              ? 0
              : 1;
 }

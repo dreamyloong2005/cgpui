@@ -7261,6 +7261,53 @@ int test_runtime_omits_focused_text_ime_rect_without_focus_or_layout() {
   return 0;
 }
 
+int test_runtime_accessibility_snapshot_uses_keyboard_focus_owner() {
+  RuntimeFixture fixture;
+  cgpui::TextModel model("query");
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(cgpui::into_element(cgpui::v_stack()));
+  const cgpui::ElementId label_id =
+      tree->append_child(root_id, cgpui::label("Search").build());
+  const cgpui::ElementId input_id =
+      tree->append_child(root_id, cgpui::text_input(model).build());
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  cgpui::AccessibilityTreeSnapshot snapshot = runtime.accessibility_snapshot();
+  const cgpui::AccessibilityNode* initial_input = snapshot.node(input_id);
+  if (snapshot.root_element_id != root_id || snapshot.nodes.size() != 3 ||
+      initial_input == nullptr || initial_input->focused) {
+    return 322;
+  }
+
+  runtime.request_keyboard_focus(input_id);
+  snapshot = runtime.accessibility_snapshot();
+  const cgpui::AccessibilityNode* label = snapshot.node(label_id);
+  const cgpui::AccessibilityNode* input = snapshot.node(input_id);
+  if (label == nullptr || input == nullptr) {
+    return 323;
+  }
+  if (label->role != cgpui::AccessibilityRole::label ||
+      label->name != "Search" || label->focused) {
+    return 324;
+  }
+  if (input->role != cgpui::AccessibilityRole::text_input ||
+      input->name != "query" || input->text != "query" ||
+      !input->focusable || !input->focused) {
+    return 325;
+  }
+
+  return 0;
+}
+
 int test_runtime_applies_focused_text_ime_rect_to_platform_window() {
   RuntimeFixture fixture;
   ime_rect_fixture = &fixture;
@@ -8025,6 +8072,11 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_lays_out_owned_element_tree_on_redraw();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_accessibility_snapshot_uses_keyboard_focus_owner();
       result != 0) {
     return result;
   }

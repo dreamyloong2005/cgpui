@@ -3182,6 +3182,78 @@ int test_element_tree_reports_enabled_preorder_ids() {
   return ids == expected ? 0 : 184;
 }
 
+int test_accessibility_tree_reports_roles_names_and_focus_state() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.set_root(cgpui::into_element(cgpui::v_stack()));
+  const cgpui::ElementId label_id =
+      tree.append_child(root_id, cgpui::label("Name").build());
+  const cgpui::ElementId button_id = tree.append_child(
+      root_id,
+      cgpui::button("dialog.save")
+          .child(cgpui::label("Save").build())
+          .build());
+  cgpui::TextModel input_model("Ada");
+  const cgpui::ElementId input_id =
+      tree.append_child(root_id, cgpui::text_input(input_model).build());
+
+  (void)tree.layout_root(cgpui::LayoutInput{});
+  tree.get(label_id)->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 32.0F, .height = 16.0F}});
+  tree.get(button_id)->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 0.0F, .y = 18.0F},
+      .size = {.width = 48.0F, .height = 20.0F}});
+  tree.get(input_id)->set_layout_bounds(cgpui::Rect{
+      .origin = {.x = 0.0F, .y = 40.0F},
+      .size = {.width = 64.0F, .height = 20.0F}});
+
+  const cgpui::AccessibilityTreeSnapshot snapshot =
+      tree.accessibility_snapshot(cgpui::AccessibilitySnapshotOptions{
+          .focused_element_id = input_id,
+      });
+
+  if (snapshot.root_element_id != root_id || snapshot.nodes.size() != 4) {
+    return 285;
+  }
+
+  const cgpui::AccessibilityNode* root = snapshot.node(root_id);
+  const cgpui::AccessibilityNode* label = snapshot.node(label_id);
+  const cgpui::AccessibilityNode* button = snapshot.node(button_id);
+  const cgpui::AccessibilityNode* input = snapshot.node(input_id);
+  if (root == nullptr || label == nullptr || button == nullptr ||
+      input == nullptr) {
+    return 286;
+  }
+
+  if (root->role != cgpui::AccessibilityRole::generic ||
+      root->parent_element_id.has_value() || root->children.size() != 3 ||
+      root->children[0] != label_id || root->children[1] != button_id ||
+      root->children[2] != input_id) {
+    return 287;
+  }
+  if (label->role != cgpui::AccessibilityRole::label ||
+      label->name != "Name" || label->text != "Name" ||
+      label->parent_element_id != root_id || label->focusable ||
+      label->focused || !label->enabled || !label->bounds.has_value()) {
+    return 288;
+  }
+  if (button->role != cgpui::AccessibilityRole::button ||
+      button->name != "Save" || button->text != "" ||
+      button->parent_element_id != root_id || !button->focusable ||
+      button->focused || !button->enabled || !button->bounds.has_value()) {
+    return 289;
+  }
+  if (input->role != cgpui::AccessibilityRole::text_input ||
+      input->name != "Ada" || input->text != "Ada" ||
+      input->parent_element_id != root_id || !input->focusable ||
+      !input->focused || !input->enabled || !input->bounds.has_value()) {
+    return 290;
+  }
+
+  return 0;
+}
+
 int test_element_tree_enabled_preorder_ids_handles_empty_tree() {
   cgpui::ElementTree tree;
   return tree.enabled_preorder_ids().empty() ? 0 : 185;
@@ -4406,6 +4478,11 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_reports_enabled_preorder_ids();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_accessibility_tree_reports_roles_names_and_focus_state();
       result != 0) {
     return result;
   }

@@ -6,6 +6,8 @@
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/target.hpp"
 
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -14,6 +16,11 @@
 namespace cgpui {
 
 class FontDatabase;
+
+struct PlatformAccessibilityTreeUpdate {
+  std::uint64_t root_element_id = 0;
+  std::size_t node_count = 0;
+};
 
 class PlatformWindow {
  public:
@@ -27,6 +34,8 @@ class PlatformWindow {
   virtual void set_cursor(CursorShape cursor_shape) = 0;
   virtual void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) = 0;
+  virtual void update_accessibility_tree(
+      PlatformAccessibilityTreeUpdate update);
 };
 
 using PlatformEventCallback = std::function<void(const PlatformEvent&)>;

@@ -1881,6 +1881,16 @@ std::optional<ImeCandidateRect> WindowRuntime::focused_text_ime_rect() const {
   };
 }
 
+AccessibilityTreeSnapshot WindowRuntime::accessibility_snapshot() const {
+  if (owned_element_tree_ == nullptr) {
+    return {};
+  }
+  return owned_element_tree_->accessibility_snapshot(
+      AccessibilitySnapshotOptions{
+          .focused_element_id = keyboard_focus_element_owner_,
+      });
+}
+
 void WindowRuntime::set_clipboard(Clipboard* clipboard) {
   clipboard_ = clipboard;
 }
@@ -2545,6 +2555,11 @@ bool WindowRuntimeContext::mutate_focused_text_model(
 std::optional<ImeCandidateRect> WindowRuntimeContext::focused_text_ime_rect()
     const {
   return runtime.focused_text_ime_rect();
+}
+
+AccessibilityTreeSnapshot WindowRuntimeContext::accessibility_snapshot()
+    const {
+  return runtime.accessibility_snapshot();
 }
 
 void WindowRuntimeContext::set_element_cursor(

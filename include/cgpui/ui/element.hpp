@@ -48,6 +48,46 @@ struct ElementKey {
   friend bool operator==(const ElementKey&, const ElementKey&) = default;
 };
 
+enum class AccessibilityRole {
+  generic,
+  label,
+  button,
+  text,
+  text_input,
+};
+
+struct AccessibilitySnapshotOptions {
+  std::optional<ElementId> focused_element_id;
+};
+
+struct AccessibilityNode {
+  ElementId element_id;
+  std::optional<ElementId> parent_element_id;
+  AccessibilityRole role = AccessibilityRole::generic;
+  std::string name;
+  std::string text;
+  bool enabled = true;
+  bool focusable = false;
+  bool focused = false;
+  std::optional<Rect> bounds;
+  std::vector<ElementId> children;
+};
+
+struct AccessibilityTreeSnapshot {
+  ElementId root_element_id;
+  std::vector<AccessibilityNode> nodes;
+
+  [[nodiscard]] const AccessibilityNode* node(ElementId element_id) const {
+    const auto it = std::find_if(
+        nodes.begin(),
+        nodes.end(),
+        [element_id](const AccessibilityNode& candidate) {
+          return candidate.element_id == element_id;
+        });
+    return it == nodes.end() ? nullptr : &*it;
+  }
+};
+
 struct EventResult {
   bool consumed = false;
   bool cancelled = false;
@@ -188,6 +228,18 @@ class Element {
 
   [[nodiscard]] virtual bool focusable() const {
     return false;
+  }
+
+  [[nodiscard]] virtual AccessibilityRole accessibility_role() const {
+    return AccessibilityRole::generic;
+  }
+
+  [[nodiscard]] virtual std::string accessibility_name() const {
+    return {};
+  }
+
+  [[nodiscard]] virtual std::string accessibility_text() const {
+    return {};
   }
 
   virtual void focus(const ElementFocusContext& context) {
@@ -724,6 +776,18 @@ class TextElement : public Element {
     return shape_text(text(), font(), font_size());
   }
 
+  [[nodiscard]] AccessibilityRole accessibility_role() const override {
+    return AccessibilityRole::text;
+  }
+
+  [[nodiscard]] std::string accessibility_name() const override {
+    return std::string(text());
+  }
+
+  [[nodiscard]] std::string accessibility_text() const override {
+    return std::string(text());
+  }
+
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
     const TextShapeRun run =
         shape_text(text(), font(), font_size(), input.scale);
@@ -755,6 +819,10 @@ class TextInputElement : public TextElement {
 
   [[nodiscard]] bool focusable() const override {
     return true;
+  }
+
+  [[nodiscard]] AccessibilityRole accessibility_role() const override {
+    return AccessibilityRole::text_input;
   }
 
   [[nodiscard]] EventResult handle_event(
@@ -806,6 +874,18 @@ class LabelElement : public Element {
 
   [[nodiscard]] TextShapeRun shape_run() const {
     return shape_text(text_, font(), font_size());
+  }
+
+  [[nodiscard]] AccessibilityRole accessibility_role() const override {
+    return AccessibilityRole::label;
+  }
+
+  [[nodiscard]] std::string accessibility_name() const override {
+    return std::string(text_);
+  }
+
+  [[nodiscard]] std::string accessibility_text() const override {
+    return std::string(text_);
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
@@ -1162,6 +1242,24 @@ class ButtonElement : public Element {
 
   [[nodiscard]] bool focusable() const override {
     return true;
+  }
+
+  [[nodiscard]] AccessibilityRole accessibility_role() const override {
+    return AccessibilityRole::button;
+  }
+
+  [[nodiscard]] std::string accessibility_name() const override {
+    if (child_) {
+      std::string child_name = child_->accessibility_name();
+      if (!child_name.empty()) {
+        return child_name;
+      }
+      std::string child_text = child_->accessibility_text();
+      if (!child_text.empty()) {
+        return child_text;
+      }
+    }
+    return action_name_;
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
@@ -2473,6 +2571,15 @@ class ElementTree {
     return ids;
   }
 
+  [[nodiscard]] AccessibilityTreeSnapshot accessibility_snapshot(
+      AccessibilitySnapshotOptions options = {}) const {
+    AccessibilityTreeSnapshot snapshot{
+        .root_element_id = root_id_,
+    };
+    append_accessibility_nodes(root_id_, options, snapshot.nodes);
+    return snapshot;
+  }
+
   void paint(PaintList& paint_list) const {
     paint_subtree(root_id_, paint_list);
   }
@@ -2605,6 +2712,34 @@ class ElementTree {
     }
     for (ElementId child_id : node->children) {
       append_enabled_preorder_ids(child_id, ids);
+    }
+  }
+
+  void append_accessibility_nodes(
+      ElementId id,
+      const AccessibilitySnapshotOptions& options,
+      std::vector<AccessibilityNode>& nodes) const {
+    const Node* node = find_node(id);
+    if (node == nullptr) {
+      return;
+    }
+
+    const Element& element = *node->element;
+    nodes.push_back(AccessibilityNode{
+        .element_id = id,
+        .parent_element_id = node->parent,
+        .role = element.accessibility_role(),
+        .name = element.accessibility_name(),
+        .text = element.accessibility_text(),
+        .enabled = element.enabled(),
+        .focusable = element.focusable(),
+        .focused = options.focused_element_id == id,
+        .bounds = element.layout_bounds(),
+        .children = node->children,
+    });
+
+    for (ElementId child_id : node->children) {
+      append_accessibility_nodes(child_id, options, nodes);
     }
   }
 
