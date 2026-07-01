@@ -4901,3 +4901,46 @@
   progress log so Step 162 is marked merged and post-merge verified. Step 163,
   Win32 drag-and-drop text/file event skeleton, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 163 Win32 Drag-and-Drop Skeleton
+
+- Continued Step 163 in `.worktrees/win32-drag-drop-skeleton` on
+  `codex/win32-drag-drop-skeleton` from `master` at
+  `562774a docs: mark step 162 merged`.
+- Baseline targeted test had already passed before edits:
+  `xmake test -P . win32_input_event_test/default` passed 1/1.
+- RED coverage in `tests/platform/win32_input_event_test.cpp`,
+  `tests/ui/window_runtime_test.cpp`, and
+  `tests/header_cleanliness/core_header_cleanliness.cpp` failed as expected on
+  missing `DragDropPayload`, `DragDropPayloadKind`, `DragEntered`,
+  `DragUpdated`, `DragDropped`, `DragExited`, and drag `EventKind` APIs.
+- GREEN adds public text/file drag payload and event structs, runtime
+  drag-enter/update/drop/exit event-kind mapping plus hit routing by drag
+  position, and Win32 deterministic `RegisterWindowMessageW` hooks that
+  translate UTF-16 text and file path payloads for tests.
+- Verified targeted GREEN tests:
+  `xmake test -P . win32_input_event_test/default` passed 1/1.
+- Verified expanded targeted/header/source coverage:
+  `xmake test -P . win32_input_event_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default win32_window_source_test/default`
+  passed 5/5.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-drag-drop-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 163 as `0d90edd feat: add win32 drag drop skeleton` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted/header/source tests:
+  `xmake test -P . win32_input_event_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default win32_window_source_test/default`
+  passed 5/5.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 163 is marked merged and post-merge verified. Step 164,
+  Wayland data-device drag-and-drop text/file event skeleton, is the next
+  implementation slice after docs closeout and cleanup.

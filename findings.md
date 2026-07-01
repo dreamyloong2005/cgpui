@@ -2813,3 +2813,21 @@
   geometry. A future full Wayland text-input slice should replace only the
   internals of `WaylandTextInput` with protocol binding, enter/leave, content
   type, surrounding text, and cursor-rect requests.
+
+## 2026-07-02 Win32 Drag-and-Drop Skeleton
+
+- Step 163 defines platform-neutral drag/drop event shapes in the core event
+  surface: `DragDropPayloadKind`, `DragDropPayload`, `DragEntered`,
+  `DragUpdated`, `DragDropped`, and `DragExited`. Payloads are intentionally
+  narrow for now: either text, files, or empty/none.
+- Runtime routing treats drag/drop events as pointer-positioned events for
+  hit-testing and `input.pointer_position` updates, but it does not update
+  hover cursor state. This keeps DnD routing observable without merging drag
+  state into the existing pointer hover state machine.
+- Win32 currently uses deterministic `RegisterWindowMessageW` test hooks to
+  translate UTF-16 text and file paths into public drag/drop events. This is a
+  skeleton and does not yet claim real `IDropTarget`, shell/OLE data-object
+  parsing, drag effects, or file-manager integration.
+- Step 164 should reuse the public event shapes for Wayland data-device work
+  and add Wayland-specific graceful no-data behavior without changing the
+  Win32 test hook surface.

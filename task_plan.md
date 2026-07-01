@@ -368,6 +368,18 @@ support metadata for the existing IMM path. The effective distance through
 Step 168 is 6 remaining follow-on implementation steps plus the final Band H
 checkpoint review.
 
+Step 163, Win32 drag-and-drop text/file event skeleton, is merged on `master`
+at `0d90edd feat: add win32 drag drop skeleton` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`DragDropPayload`, `DragDropPayloadKind`, `DragEntered`, `DragUpdated`,
+`DragDropped`, `DragExited`, drag `EventKind` values, and Win32 drag/drop
+skeleton hooks. GREEN adds public text/file drag payload and event shapes,
+runtime event-kind mapping plus hit routing by drag position, and Win32
+deterministic `RegisterWindowMessageW` test hooks that translate text and file
+payloads without claiming real shell drag/drop integration yet. The effective
+distance through Step 168 is 5 remaining follow-on implementation steps plus
+the final Band H checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -542,7 +554,7 @@ checkpoint review.
 160. [x] Window activation, focus, minimize, restore, and close lifecycle events.
 161. [x] Win32 IME composition window placement wired to focused text geometry.
 162. [x] Wayland text-input/IME protocol skeleton wired to focused text geometry.
-163. [ ] Win32 drag-and-drop text/file event skeleton.
+163. [x] Win32 drag-and-drop text/file event skeleton.
 164. [ ] Wayland data-device drag-and-drop text/file event skeleton.
 165. [ ] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
 166. [ ] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
@@ -551,14 +563,13 @@ checkpoint review.
 
 ## Active Step
 
-Current handoff: Step 162, Wayland text-input/IME protocol skeleton wired to
-focused text geometry, is merged on `master` at
-`23eb6e3 feat: add wayland ime skeleton` and post-merge verified on Windows
-and WSL Arch Linux. Post-merge targeted/header tests passed 4/4 on Windows and
-WSL Arch Linux, `git diff --check` produced no output, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 163, Win32
-drag-and-drop text/file event skeleton, is the next implementation slice after
-docs closeout and cleanup.
+Current handoff: Step 163, Win32 drag-and-drop text/file event skeleton, is
+merged on `master` at `0d90edd feat: add win32 drag drop skeleton` and
+post-merge verified on Windows and WSL Arch Linux. Post-merge targeted/header
+tests passed 5/5, `git diff --check` produced no output, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 164, Wayland
+data-device drag-and-drop text/file event skeleton, is the next implementation
+slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

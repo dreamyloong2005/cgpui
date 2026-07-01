@@ -162,8 +162,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `23eb6e3 feat: add wayland ime skeleton`; post-merge targeted/header tests
   passed 4/4 on Windows and WSL Arch Linux, Windows full debug passed 29/29,
   and WSL Arch Linux full debug passed 26/26.
+- Step 163 is merged on `master` at
+  `0d90edd feat: add win32 drag drop skeleton`; post-merge targeted/header
+  tests passed 5/5, `git diff --check` produced no output, Windows full debug
+  passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 163 is the next implementation slice after Step 162 docs closeout
+  128. Step 164 is the next implementation slice after Step 163 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -347,6 +351,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 163, Win32 drag-and-drop text/file event skeleton, is the next
   implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 6 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 163 Merge
+
+- Step 163, Win32 drag-and-drop text/file event skeleton, is merged on
+  `master` at `0d90edd feat: add win32 drag drop skeleton`.
+- RED failed as expected on missing `DragDropPayload`,
+  `DragDropPayloadKind`, `DragEntered`, `DragUpdated`, `DragDropped`,
+  `DragExited`, drag `EventKind` values, and Win32 drag/drop source hooks.
+- GREEN adds public text/file drag payload and event shapes, runtime
+  drag-enter/update/drop/exit event-kind mapping, hit routing by drag
+  position, and deterministic Win32 `RegisterWindowMessageW` test hooks for
+  text and file payload translation.
+- Post-merge verification passed: targeted/header/source tests 5/5,
+  `git diff --check` with no output, Windows full debug 29/29, and WSL Arch
+  Linux full debug 26/26.
+- Step 164, Wayland data-device drag-and-drop text/file event skeleton, is the
+  next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 5 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1713,7 +1736,7 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 - [x] Step 160: window activation, focus, minimize, restore, and close lifecycle events.
 - [x] Step 161: Win32 IME composition window placement wired to focused text geometry.
 - [x] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
-- [ ] Step 163: Win32 drag-and-drop text/file event skeleton.
+- [x] Step 163: Win32 drag-and-drop text/file event skeleton.
 - [ ] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
 - [ ] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
 - [ ] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
@@ -2420,12 +2443,23 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 
 **Files:**
 - Modify: `include/cgpui/core/events.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/architecture/win32_window_source_test.cpp`
+- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 - Modify: `tests/platform/win32_input_event_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for text/file drag-enter, drag-over, drop, and leave event shapes.
-- [ ] Implement Win32 skeleton event translation with deterministic test hooks.
-- [ ] Targeted test command: `xmake test -P . win32_input_event_test/default`.
+- [x] Add RED tests for text/file drag-enter, drag-over, drop, and leave event shapes.
+- [x] Implement Win32 skeleton event translation with deterministic test hooks.
+- [x] Targeted test command:
+  `xmake test -P . win32_input_event_test/default`.
+- [x] Expanded targeted/header/source command:
+  `xmake test -P . win32_input_event_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default win32_window_source_test/default`.
+- [x] Post-merge verification passed: targeted/header/source tests 5/5,
+  `git diff --check` with no output, Windows full debug 29/29, and WSL Arch
+  Linux full debug 26/26.
 
 ### Step 164: Wayland Data-Device Drag-and-Drop Skeleton
 
