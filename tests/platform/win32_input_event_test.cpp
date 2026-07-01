@@ -5,6 +5,7 @@
 #include <windowsx.h>
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <variant>
 
@@ -12,6 +13,14 @@ namespace {
 
 constexpr cgpui::Point expected_position{31.0F, 47.0F};
 constexpr std::uint32_t expected_key = 'A';
+
+struct Win32DragDropTestPayload {
+  float x = 0.0F;
+  float y = 0.0F;
+  const wchar_t* text = nullptr;
+  const wchar_t* const* files = nullptr;
+  std::size_t file_count = 0;
+};
 
 bool point_equals(cgpui::Point lhs, cgpui::Point rhs) {
   return std::fabs(lhs.x - rhs.x) < 0.01F && std::fabs(lhs.y - rhs.y) < 0.01F;
@@ -48,6 +57,10 @@ int main() {
   bool scrolled = false;
   bool key_pressed = false;
   bool key_released = false;
+  bool drag_entered = false;
+  bool drag_updated = false;
+  bool drag_dropped = false;
+  bool drag_exited = false;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Win32 Input Event Test",
@@ -72,6 +85,32 @@ int main() {
             key != nullptr && key->key_code == expected_key) {
           key_pressed = key_pressed || key->action == cgpui::KeyAction::pressed;
           key_released = key_released || key->action == cgpui::KeyAction::released;
+        }
+        if (const auto* drag = std::get_if<cgpui::DragEntered>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_entered =
+              drag->payload.kind == cgpui::DragDropPayloadKind::text &&
+              drag->payload.text == "Dragged text" && drag->payload.files.empty();
+        }
+        if (const auto* drag = std::get_if<cgpui::DragUpdated>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_updated =
+              drag->payload.kind == cgpui::DragDropPayloadKind::text &&
+              drag->payload.text == "Dragged text" && drag->payload.files.empty();
+        }
+        if (const auto* drag = std::get_if<cgpui::DragDropped>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_dropped =
+              drag->payload.kind == cgpui::DragDropPayloadKind::files &&
+              drag->payload.text.empty() && drag->payload.files.size() == 2 &&
+              drag->payload.files[0] == "C:\\Temp\\first.txt" &&
+              drag->payload.files[1] == "C:\\Temp\\second.cpp";
+        }
+        if (const auto* drag = std::get_if<cgpui::DragExited>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_exited =
+              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
+              drag->payload.text.empty() && drag->payload.files.empty();
         }
       });
   if (!window) {
@@ -115,6 +154,53 @@ int main() {
       screen_point_lparam(hwnd, expected_position));
   SendMessageW(hwnd, WM_KEYDOWN, expected_key, 0);
   SendMessageW(hwnd, WM_KEYUP, expected_key, 0);
+  const UINT drag_enter_message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragEnter");
+  const UINT drag_update_message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragUpdate");
+  const UINT drag_drop_message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragDrop");
+  const UINT drag_exit_message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragExit");
+  const Win32DragDropTestPayload text_payload{
+      .x = expected_position.x,
+      .y = expected_position.y,
+      .text = L"Dragged text",
+  };
+  const wchar_t* file_paths[] = {
+      L"C:\\Temp\\first.txt",
+      L"C:\\Temp\\second.cpp",
+  };
+  const Win32DragDropTestPayload file_payload{
+      .x = expected_position.x,
+      .y = expected_position.y,
+      .files = file_paths,
+      .file_count = 2,
+  };
+  const Win32DragDropTestPayload empty_payload{
+      .x = expected_position.x,
+      .y = expected_position.y,
+  };
+  SendMessageW(
+      hwnd,
+      drag_enter_message,
+      0,
+      reinterpret_cast<LPARAM>(&text_payload));
+  SendMessageW(
+      hwnd,
+      drag_update_message,
+      0,
+      reinterpret_cast<LPARAM>(&text_payload));
+  SendMessageW(
+      hwnd,
+      drag_drop_message,
+      0,
+      reinterpret_cast<LPARAM>(&file_payload));
+  SendMessageW(
+      hwnd,
+      drag_exit_message,
+      0,
+      reinterpret_cast<LPARAM>(&empty_payload));
 
   if (!moved) {
     return 5;
@@ -127,6 +213,18 @@ int main() {
   }
   if (!key_pressed || !key_released) {
     return 8;
+  }
+  if (!drag_entered) {
+    return 12;
+  }
+  if (!drag_updated) {
+    return 13;
+  }
+  if (!drag_dropped) {
+    return 14;
+  }
+  if (!drag_exited) {
+    return 15;
   }
 
   return 0;

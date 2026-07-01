@@ -1121,12 +1121,23 @@ class RuntimeEventElement final : public cgpui::FixedSizeElement {
     last_target_element_id = context.target_element_id;
     saw_pointer_event =
         saw_pointer_event || std::holds_alternative<cgpui::PointerMoved>(event);
+    saw_drag_event =
+        saw_drag_event || std::holds_alternative<cgpui::DragEntered>(event) ||
+        std::holds_alternative<cgpui::DragUpdated>(event) ||
+        std::holds_alternative<cgpui::DragDropped>(event) ||
+        std::holds_alternative<cgpui::DragExited>(event);
+    if (const auto* dropped = std::get_if<cgpui::DragDropped>(&event);
+        dropped != nullptr) {
+      last_drag_payload = dropped->payload;
+    }
     return result;
   }
 
   int event_count = 0;
   bool saw_pointer_event = false;
+  bool saw_drag_event = false;
   cgpui::ElementId last_target_element_id;
+  cgpui::DragDropPayload last_drag_payload;
   cgpui::EventResult result = cgpui::EventResult::unhandled();
 };
 
@@ -2238,6 +2249,34 @@ int test_event_router_routes_events_to_root_view() {
           .key_code = 13,
           .action = cgpui::KeyAction::pressed},
       root_view_id);
+  const cgpui::DragDropPayload text_payload{
+      .kind = cgpui::DragDropPayloadKind::text,
+      .text = "Dragged text",
+  };
+  const cgpui::DragDropPayload file_payload{
+      .kind = cgpui::DragDropPayloadKind::files,
+      .files = {"C:\\Temp\\first.txt", "C:\\Temp\\second.cpp"},
+  };
+  const auto drag_enter_route = cgpui::EventRouter::route_to_root(
+      cgpui::DragEntered{
+          .position = {3.0F, 4.0F},
+          .payload = text_payload},
+      root_view_id);
+  const auto drag_update_route = cgpui::EventRouter::route_to_root(
+      cgpui::DragUpdated{
+          .position = {5.0F, 6.0F},
+          .payload = text_payload},
+      root_view_id);
+  const auto drag_drop_route = cgpui::EventRouter::route_to_root(
+      cgpui::DragDropped{
+          .position = {7.0F, 8.0F},
+          .payload = file_payload},
+      root_view_id);
+  const auto drag_exit_route = cgpui::EventRouter::route_to_root(
+      cgpui::DragExited{
+          .position = {9.0F, 10.0F},
+          .payload = {}},
+      root_view_id);
 
   if (pointer_route.target_view_id != root_view_id ||
       pointer_route.event_kind != cgpui::EventKind::pointer_moved) {
@@ -2246,6 +2285,22 @@ int test_event_router_routes_events_to_root_view() {
   if (key_route.target_view_id != root_view_id ||
       key_route.event_kind != cgpui::EventKind::keyboard_key) {
     return 107;
+  }
+  if (drag_enter_route.target_view_id != root_view_id ||
+      drag_enter_route.event_kind != cgpui::EventKind::drag_entered) {
+    return 130;
+  }
+  if (drag_update_route.target_view_id != root_view_id ||
+      drag_update_route.event_kind != cgpui::EventKind::drag_updated) {
+    return 131;
+  }
+  if (drag_drop_route.target_view_id != root_view_id ||
+      drag_drop_route.event_kind != cgpui::EventKind::drag_dropped) {
+    return 132;
+  }
+  if (drag_exit_route.target_view_id != root_view_id ||
+      drag_exit_route.event_kind != cgpui::EventKind::drag_exited) {
+    return 133;
   }
 
   return 0;
@@ -2708,6 +2763,109 @@ int test_runtime_lays_out_owned_element_tree_on_redraw() {
   }
   if (!routed_element_id.has_value() || *routed_element_id != root_id) {
     return 208;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* runtime_drag_drop_fixture = nullptr;
+
+void dispatch_runtime_drag_drop_sequence() {
+  auto& callback = runtime_drag_drop_fixture->window.callback;
+  callback(cgpui::DragEntered{
+      .position = {5.0F, 5.0F},
+      .payload =
+          cgpui::DragDropPayload{
+              .kind = cgpui::DragDropPayloadKind::text,
+              .text = "Dragged text",
+          },
+  });
+  callback(cgpui::DragUpdated{
+      .position = {6.0F, 5.0F},
+      .payload =
+          cgpui::DragDropPayload{
+              .kind = cgpui::DragDropPayloadKind::text,
+              .text = "Dragged text",
+          },
+  });
+  callback(cgpui::DragDropped{
+      .position = {7.0F, 5.0F},
+      .payload =
+          cgpui::DragDropPayload{
+              .kind = cgpui::DragDropPayloadKind::files,
+              .files = {"C:\\Temp\\first.txt", "C:\\Temp\\second.cpp"},
+          },
+  });
+  callback(cgpui::DragExited{
+      .position = {8.0F, 5.0F},
+      .payload = {},
+  });
+}
+
+int test_runtime_routes_drag_drop_events_to_hit_element() {
+  RuntimeFixture fixture;
+  runtime_drag_drop_fixture = &fixture;
+  fixture.app.on_run = &dispatch_runtime_drag_drop_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<RuntimeEventElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  RuntimeEventElement* root_ptr = root.get();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::vector<cgpui::EventDispatchRecord> records;
+  std::vector<cgpui::Point> pointer_positions;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        records.push_back(record);
+        pointer_positions.push_back(context.input.pointer_position);
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  runtime_drag_drop_fixture = nullptr;
+
+  if (result != 0) {
+    return 214;
+  }
+  if (records.size() != 4 || root_ptr->event_count != 4 ||
+      !root_ptr->saw_drag_event) {
+    return 215;
+  }
+  const std::vector<cgpui::EventKind> expected_kinds{
+      cgpui::EventKind::drag_entered,
+      cgpui::EventKind::drag_updated,
+      cgpui::EventKind::drag_dropped,
+      cgpui::EventKind::drag_exited,
+  };
+  for (std::size_t index = 0; index < expected_kinds.size(); ++index) {
+    if (records[index].event_kind != expected_kinds[index] ||
+        records[index].route.event_kind != expected_kinds[index] ||
+        !records[index].route.target_element_id.has_value() ||
+        *records[index].route.target_element_id != root_id) {
+      return 216;
+    }
+  }
+  if (pointer_positions.size() != 4 ||
+      !equal(pointer_positions.back(), cgpui::Point{8.0F, 5.0F})) {
+    return 217;
+  }
+  if (root_ptr->last_drag_payload.kind != cgpui::DragDropPayloadKind::files ||
+      root_ptr->last_drag_payload.files.size() != 2 ||
+      root_ptr->last_drag_payload.files[0] != "C:\\Temp\\first.txt" ||
+      root_ptr->last_drag_payload.files[1] != "C:\\Temp\\second.cpp") {
+    return 218;
   }
 
   return 0;
@@ -7738,6 +7896,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_lays_out_owned_element_tree_on_redraw();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_routes_drag_drop_events_to_hit_element();
       result != 0) {
     return result;
   }

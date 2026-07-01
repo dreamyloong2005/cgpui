@@ -6,6 +6,7 @@
 #include <windowsx.h>
 #include <imm.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -61,6 +62,69 @@ std::string utf8_from_utf16(std::wstring_view value) {
       nullptr,
       nullptr);
   return result;
+}
+
+struct Win32TestDragDropPayload {
+  float x = 0.0F;
+  float y = 0.0F;
+  const wchar_t* text = nullptr;
+  const wchar_t* const* files = nullptr;
+  std::size_t file_count = 0;
+};
+
+UINT test_drag_enter_message() {
+  static const UINT message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragEnter");
+  return message;
+}
+
+UINT test_drag_update_message() {
+  static const UINT message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragUpdate");
+  return message;
+}
+
+UINT test_drag_drop_message() {
+  static const UINT message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragDrop");
+  return message;
+}
+
+UINT test_drag_exit_message() {
+  static const UINT message =
+      RegisterWindowMessageW(L"CGPUI.Win32.TestDragExit");
+  return message;
+}
+
+DragDropPayload drag_payload_from_test_hook(
+    const Win32TestDragDropPayload* payload) {
+  if (payload == nullptr) {
+    return {};
+  }
+
+  DragDropPayload result;
+  if (payload->files != nullptr && payload->file_count > 0) {
+    result.kind = DragDropPayloadKind::files;
+    result.files.reserve(payload->file_count);
+    for (std::size_t index = 0; index < payload->file_count; ++index) {
+      if (payload->files[index] != nullptr) {
+        result.files.push_back(utf8_from_utf16(payload->files[index]));
+      }
+    }
+    return result;
+  }
+  if (payload->text != nullptr && payload->text[0] != L'\0') {
+    result.kind = DragDropPayloadKind::text;
+    result.text = utf8_from_utf16(payload->text);
+  }
+  return result;
+}
+
+Point drag_position_from_test_hook(const Win32TestDragDropPayload* payload) {
+  if (payload == nullptr) {
+    return {};
+  }
+  return Point{.x = payload->x, .y = payload->y};
 }
 
 KeyboardModifiers current_modifiers() {
@@ -236,6 +300,30 @@ class Win32Window final : public PlatformWindow {
 
   void ime_start_composition() { apply_ime_text_input_placement(); }
 
+  void drag_entered(const Win32TestDragDropPayload* payload) {
+    callback_(DragEntered{
+        .position = drag_position_from_test_hook(payload),
+        .payload = drag_payload_from_test_hook(payload)});
+  }
+
+  void drag_updated(const Win32TestDragDropPayload* payload) {
+    callback_(DragUpdated{
+        .position = drag_position_from_test_hook(payload),
+        .payload = drag_payload_from_test_hook(payload)});
+  }
+
+  void drag_dropped(const Win32TestDragDropPayload* payload) {
+    callback_(DragDropped{
+        .position = drag_position_from_test_hook(payload),
+        .payload = drag_payload_from_test_hook(payload)});
+  }
+
+  void drag_exited(const Win32TestDragDropPayload* payload) {
+    callback_(DragExited{
+        .position = drag_position_from_test_hook(payload),
+        .payload = {}});
+  }
+
  private:
   void apply_ime_text_input_placement() {
     if (hwnd_ == nullptr || !state_.ime_text_input_placement.has_value()) {
@@ -285,6 +373,33 @@ class Win32Window final : public PlatformWindow {
 
 LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   auto* window = reinterpret_cast<Win32Window*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+  const auto* drag_payload =
+      reinterpret_cast<const Win32TestDragDropPayload*>(lparam);
+
+  if (message == test_drag_enter_message()) {
+    if (window != nullptr) {
+      window->drag_entered(drag_payload);
+    }
+    return 0;
+  }
+  if (message == test_drag_update_message()) {
+    if (window != nullptr) {
+      window->drag_updated(drag_payload);
+    }
+    return 0;
+  }
+  if (message == test_drag_drop_message()) {
+    if (window != nullptr) {
+      window->drag_dropped(drag_payload);
+    }
+    return 0;
+  }
+  if (message == test_drag_exit_message()) {
+    if (window != nullptr) {
+      window->drag_exited(drag_payload);
+    }
+    return 0;
+  }
 
   switch (message) {
     case WM_NCCREATE: {

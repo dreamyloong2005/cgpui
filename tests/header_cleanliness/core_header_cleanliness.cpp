@@ -19,6 +19,15 @@ int main() {
       .phase = cgpui::ImeCompositionPhase::update,
       .text = "x"};
   (void)ime_event;
+  cgpui::DragDropPayload drag_payload{
+      .kind = cgpui::DragDropPayloadKind::files,
+      .text = {},
+      .files = {"C:\\Temp\\first.txt"},
+  };
+  cgpui::PlatformEvent drag_event = cgpui::DragEntered{
+      .position = {1.0F, 2.0F},
+      .payload = drag_payload};
+  (void)drag_event;
 
   cgpui::EntityStore<int> entities;
   const cgpui::Entity<int> entity_id = entities.insert(1);

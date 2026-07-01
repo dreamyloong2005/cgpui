@@ -135,6 +135,23 @@ int main() {
   if (!contains(win32_text, "GetKeyState(VK_SHIFT)")) {
     return 46;
   }
+  if (!contains(win32_text, "Win32TestDragDropPayload") ||
+      !contains(win32_text, "DragDropPayloadKind::text") ||
+      !contains(win32_text, "DragDropPayloadKind::files")) {
+    return 52;
+  }
+  if (!contains(win32_text, "DragEntered{") ||
+      !contains(win32_text, "DragUpdated{") ||
+      !contains(win32_text, "DragDropped{") ||
+      !contains(win32_text, "DragExited{")) {
+    return 53;
+  }
+  if (!contains(win32_text, "CGPUI.Win32.TestDragEnter") ||
+      !contains(win32_text, "CGPUI.Win32.TestDragUpdate") ||
+      !contains(win32_text, "CGPUI.Win32.TestDragDrop") ||
+      !contains(win32_text, "CGPUI.Win32.TestDragExit")) {
+    return 54;
+  }
   if (!contains(win32_text, "discover_fonts() const override") ||
       !contains(win32_text, "FontDatabase")) {
     return 51;

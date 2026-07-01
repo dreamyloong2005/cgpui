@@ -34,6 +34,18 @@ EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<PointerScrolled>(event)) {
     return EventKind::pointer_scrolled;
   }
+  if (std::holds_alternative<DragEntered>(event)) {
+    return EventKind::drag_entered;
+  }
+  if (std::holds_alternative<DragUpdated>(event)) {
+    return EventKind::drag_updated;
+  }
+  if (std::holds_alternative<DragDropped>(event)) {
+    return EventKind::drag_dropped;
+  }
+  if (std::holds_alternative<DragExited>(event)) {
+    return EventKind::drag_exited;
+  }
   if (std::holds_alternative<KeyboardKey>(event)) {
     return EventKind::keyboard_key;
   }
@@ -58,6 +70,22 @@ std::optional<Point> pointer_position_for(const PlatformEvent& event) {
   if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
       scrolled != nullptr) {
     return scrolled->position;
+  }
+  if (const auto* drag_entered = std::get_if<DragEntered>(&event);
+      drag_entered != nullptr) {
+    return drag_entered->position;
+  }
+  if (const auto* drag_updated = std::get_if<DragUpdated>(&event);
+      drag_updated != nullptr) {
+    return drag_updated->position;
+  }
+  if (const auto* drag_dropped = std::get_if<DragDropped>(&event);
+      drag_dropped != nullptr) {
+    return drag_dropped->position;
+  }
+  if (const auto* drag_exited = std::get_if<DragExited>(&event);
+      drag_exited != nullptr) {
+    return drag_exited->position;
   }
   return {};
 }
@@ -1024,6 +1052,14 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     } else if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
                scrolled != nullptr) {
       input_.pointer_position = scrolled->position;
+    } else if (const std::optional<Point> drag_position =
+                   pointer_position_for(event);
+               drag_position.has_value() &&
+               (std::holds_alternative<DragEntered>(event) ||
+                std::holds_alternative<DragUpdated>(event) ||
+                std::holds_alternative<DragDropped>(event) ||
+                std::holds_alternative<DragExited>(event))) {
+      input_.pointer_position = *drag_position;
     }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
     std::optional<ElementId> hit_element_id;

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace cgpui {
 
@@ -75,6 +76,38 @@ struct PointerScrolled {
   Point position;
 };
 
+enum class DragDropPayloadKind {
+  none,
+  text,
+  files,
+};
+
+struct DragDropPayload {
+  DragDropPayloadKind kind = DragDropPayloadKind::none;
+  std::string text;
+  std::vector<std::string> files;
+};
+
+struct DragEntered {
+  Point position;
+  DragDropPayload payload;
+};
+
+struct DragUpdated {
+  Point position;
+  DragDropPayload payload;
+};
+
+struct DragDropped {
+  Point position;
+  DragDropPayload payload;
+};
+
+struct DragExited {
+  Point position;
+  DragDropPayload payload;
+};
+
 struct KeyboardKey {
   std::uint32_t key_code = 0;
   KeyAction action = KeyAction::pressed;
@@ -109,6 +142,10 @@ using PlatformEvent = std::variant<
     PointerMoved,
     PointerButton,
     PointerScrolled,
+    DragEntered,
+    DragUpdated,
+    DragDropped,
+    DragExited,
     KeyboardKey,
     TextInput,
     ImeComposition>;
