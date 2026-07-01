@@ -301,6 +301,78 @@ int test_renderer_batches_by_clip_opacity_transform_and_kind() {
              : 17;
 }
 
+int test_renderer_reports_unsupported_commands_without_dropping_supported() {
+  const cgpui::PaintMetadata metadata{
+      .opacity = 0.75F,
+      .transform = cgpui::AffineTransform::translation(4.0F, 2.0F),
+  };
+  const cgpui::Rect clip{
+      .origin = {.x = 1.0F, .y = 2.0F},
+      .size = {.width = 30.0F, .height = 40.0F},
+  };
+
+  const std::vector<cgpui::RendererCommandStreamItem> commands{
+      cgpui::RendererCommandStreamItem{
+          .primitive_kind = cgpui::RendererPrimitiveKind::solid_rect,
+          .command_index = 0,
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+      cgpui::RendererCommandStreamItem{
+          .primitive_kind = cgpui::RendererPrimitiveKind::rounded_rect,
+          .command_index = 1,
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+      cgpui::RendererCommandStreamItem{
+          .primitive_kind = cgpui::RendererPrimitiveKind::text,
+          .command_index = 2,
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+      cgpui::RendererCommandStreamItem{
+          .primitive_kind = cgpui::RendererPrimitiveKind::text_caret,
+          .command_index = 3,
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+  };
+
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(commands);
+  if (report.supported_command_count != 2 ||
+      report.unsupported_command_count != 2 ||
+      report.command_count() != commands.size()) {
+    return 18;
+  }
+  if (report.batches.size() != 2 ||
+      report.batches[0].key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::solid_rect ||
+      report.batches[0].command_indices[0] != 0 ||
+      report.batches[1].key.primitive_kind != cgpui::RendererPrimitiveKind::text ||
+      report.batches[1].command_indices[0] != 2) {
+    return 19;
+  }
+  if (report.unsupported_commands.size() != 2 ||
+      report.unsupported_commands[0].primitive_kind !=
+          cgpui::RendererPrimitiveKind::rounded_rect ||
+      report.unsupported_commands[0].command_index != 1 ||
+      report.unsupported_commands[0].reason !=
+          cgpui::RendererUnsupportedCommandReason::unsupported_primitive ||
+      report.unsupported_commands[0].message.find("rounded_rect") ==
+          std::string::npos) {
+    return 20;
+  }
+
+  return report.unsupported_commands[1].primitive_kind ==
+                 cgpui::RendererPrimitiveKind::text_caret &&
+                 report.unsupported_commands[1].command_index == 3 &&
+                 report.unsupported_commands[1].message.find("text_caret") !=
+                     std::string::npos
+             ? 0
+             : 21;
+}
+
 } // namespace
 
 int main() {
@@ -314,6 +386,11 @@ int main() {
   }
   if (const int result =
           test_renderer_batches_by_clip_opacity_transform_and_kind();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_renderer_reports_unsupported_commands_without_dropping_supported();
       result != 0) {
     return result;
   }

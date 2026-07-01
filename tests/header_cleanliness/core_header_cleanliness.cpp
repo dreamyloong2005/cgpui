@@ -80,6 +80,29 @@ int main() {
       .command_count = 1,
       .command_indices = {0},
   };
+  const cgpui::RendererCommandStreamItem unsupported_command{
+      .primitive_kind = cgpui::RendererPrimitiveKind::text_caret,
+      .command_index = 7,
+      .clip_rect = cgpui::Rect{.size = {2.0F, 18.0F}},
+      .metadata = paint_metadata,
+  };
+  cgpui::RendererCommandReport report{
+      .batches = {batch},
+      .unsupported_commands =
+          {
+              cgpui::RendererUnsupportedCommandDiagnostic{
+                  .primitive_kind = unsupported_command.primitive_kind,
+                  .command_index = unsupported_command.command_index,
+                  .reason = cgpui::RendererUnsupportedCommandReason::
+                      unsupported_primitive,
+                  .message = std::string(
+                      cgpui::renderer_primitive_kind_name(
+                          unsupported_command.primitive_kind)),
+              },
+          },
+      .supported_command_count = 1,
+      .unsupported_command_count = 1,
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -93,7 +116,10 @@ int main() {
                  text_draw.clip_rect.has_value() &&
                  batch.key.primitive_kind ==
                      cgpui::RendererPrimitiveKind::text &&
-                 batch.command_count == 1 && batch.command_indices.size() == 1
+                 batch.command_count == 1 &&
+                 batch.command_indices.size() == 1 &&
+                 report.command_count() == 2 &&
+                 report.unsupported_commands[0].message == "text_caret"
              ? 0
              : 1;
 }

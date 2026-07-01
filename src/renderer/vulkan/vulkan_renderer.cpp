@@ -126,6 +126,26 @@ void append_command_batch(
   batch.command_indices.push_back(command_index);
 }
 
+[[nodiscard]] bool is_vulkan_supported_renderer_primitive(
+    RendererPrimitiveKind primitive_kind) {
+  return primitive_kind == RendererPrimitiveKind::solid_rect ||
+         primitive_kind == RendererPrimitiveKind::text;
+}
+
+[[nodiscard]] RendererUnsupportedCommandDiagnostic
+make_unsupported_renderer_command_diagnostic(
+    const RendererCommandStreamItem& command) {
+  std::string message = "Vulkan renderer does not support ";
+  message += renderer_primitive_kind_name(command.primitive_kind);
+  message += " commands yet";
+  return RendererUnsupportedCommandDiagnostic{
+      .primitive_kind = command.primitive_kind,
+      .command_index = command.command_index,
+      .reason = RendererUnsupportedCommandReason::unsupported_primitive,
+      .message = std::move(message),
+  };
+}
+
 class VulkanRendererState;
 
 class VulkanFrame final : public RenderFrame {
@@ -1328,34 +1348,57 @@ void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache) {
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
     std::span<const TextDraw> text_draws) {
-  std::vector<RendererCommandBatch> batches;
-  batches.reserve(rects.size() + text_draws.size());
+  std::vector<RendererCommandStreamItem> commands;
+  commands.reserve(rects.size() + text_draws.size());
 
   for (std::size_t index = 0; index < rects.size(); ++index) {
     const SolidRect& rect = rects[index];
-    append_command_batch(
-        batches,
-        RendererCommandBatchKey{
-            .primitive_kind = RendererPrimitiveKind::solid_rect,
-            .clip_rect = rect.clip_rect,
-            .metadata = rect.metadata,
-        },
-        index);
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::solid_rect,
+        .command_index = index,
+        .clip_rect = rect.clip_rect,
+        .metadata = rect.metadata,
+    });
   }
 
   for (std::size_t index = 0; index < text_draws.size(); ++index) {
     const TextDraw& text_draw = text_draws[index];
-    append_command_batch(
-        batches,
-        RendererCommandBatchKey{
-            .primitive_kind = RendererPrimitiveKind::text,
-            .clip_rect = text_draw.clip_rect,
-            .metadata = text_draw.metadata,
-        },
-        index);
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::text,
+        .command_index = index,
+        .clip_rect = text_draw.clip_rect,
+        .metadata = text_draw.metadata,
+    });
   }
 
-  return batches;
+  return vulkan_build_renderer_command_report(commands).batches;
+}
+
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const RendererCommandStreamItem> commands) {
+  RendererCommandReport report;
+  report.batches.reserve(commands.size());
+
+  for (const RendererCommandStreamItem& command : commands) {
+    if (!is_vulkan_supported_renderer_primitive(command.primitive_kind)) {
+      report.unsupported_commands.push_back(
+          make_unsupported_renderer_command_diagnostic(command));
+      report.unsupported_command_count += 1;
+      continue;
+    }
+
+    append_command_batch(
+        report.batches,
+        RendererCommandBatchKey{
+            .primitive_kind = command.primitive_kind,
+            .clip_rect = command.clip_rect,
+            .metadata = command.metadata,
+        },
+        command.command_index);
+    report.supported_command_count += 1;
+  }
+
+  return report;
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(

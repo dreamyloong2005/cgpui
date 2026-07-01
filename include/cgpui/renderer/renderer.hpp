@@ -6,6 +6,7 @@
 #include "cgpui/platform/target.hpp"
 #include "cgpui/ui/text.hpp"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <span>
@@ -84,8 +85,29 @@ struct TextDraw {
 
 enum class RendererPrimitiveKind {
   solid_rect,
+  rounded_rect,
   text,
+  text_selection,
+  text_caret,
 };
+
+[[nodiscard]] constexpr std::string_view renderer_primitive_kind_name(
+    RendererPrimitiveKind kind) {
+  switch (kind) {
+    case RendererPrimitiveKind::solid_rect:
+      return "solid_rect";
+    case RendererPrimitiveKind::rounded_rect:
+      return "rounded_rect";
+    case RendererPrimitiveKind::text:
+      return "text";
+    case RendererPrimitiveKind::text_selection:
+      return "text_selection";
+    case RendererPrimitiveKind::text_caret:
+      return "text_caret";
+  }
+
+  return "unknown";
+}
 
 struct RendererCommandBatchKey {
   RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::solid_rect;
@@ -97,6 +119,36 @@ struct RendererCommandBatch {
   RendererCommandBatchKey key;
   std::size_t command_count = 0;
   std::vector<std::size_t> command_indices;
+};
+
+struct RendererCommandStreamItem {
+  RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::solid_rect;
+  std::size_t command_index = 0;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+};
+
+enum class RendererUnsupportedCommandReason {
+  unsupported_primitive,
+};
+
+struct RendererUnsupportedCommandDiagnostic {
+  RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::solid_rect;
+  std::size_t command_index = 0;
+  RendererUnsupportedCommandReason reason =
+      RendererUnsupportedCommandReason::unsupported_primitive;
+  std::string message;
+};
+
+struct RendererCommandReport {
+  std::vector<RendererCommandBatch> batches;
+  std::vector<RendererUnsupportedCommandDiagnostic> unsupported_commands;
+  std::size_t supported_command_count = 0;
+  std::size_t unsupported_command_count = 0;
+
+  [[nodiscard]] std::size_t command_count() const {
+    return supported_command_count + unsupported_command_count;
+  }
 };
 
 struct GlyphAtlasEntry {
@@ -181,6 +233,8 @@ class Renderer {
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor);
 void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const RendererCommandStreamItem> commands);
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
     std::span<const TextDraw> text_draws);
