@@ -3869,3 +3869,21 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/element-state-storage -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . element_test/default window_runtime_test/default`
+  passed 2/2. `git diff --check` reported only expected CRLF warnings.
+- Committed Step 141 as
+  `10415c6 feat: add element state storage` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 141 is marked merged and post-merge verified. Step 142, style class
+  and theme token primitives for reusable design vocabulary, is the next
+  implementation slice after docs closeout and cleanup.

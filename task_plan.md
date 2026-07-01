@@ -125,6 +125,16 @@ removal, and `set_root(...)` replacement paths. The effective distance through
 Step 168 is 28 remaining follow-on implementation steps plus the four
 follow-on band checkpoint reviews.
 
+Step 141, element state storage keyed by element id for reusable widgets, is
+merged on `master` at `10415c6 feat: add element state storage` and
+post-merge verified on Windows and WSL Arch Linux. RED failed as expected on
+missing `ElementTree::state<T>(...)`, `state_or_init<T>(...)`, and
+`emplace_state<T>(...)` APIs. GREEN adds per-node type-indexed state storage,
+soft-fail lookup/init/replace helpers, and `WindowRuntime` /
+`WindowRuntimeContext` forwarding for runtime-owned element trees. The
+effective distance through Step 168 is 27 remaining follow-on implementation
+steps plus the four follow-on band checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -277,7 +287,7 @@ follow-on band checkpoint reviews.
 138. [x] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 139. [x] Keyed element identity and keyed reconciliation beyond parent-local index matching.
 140. [x] Element lifecycle hooks for mount, update, and unmount notifications.
-141. [ ] Element state storage keyed by element id for reusable widgets.
+141. [x] Element state storage keyed by element id for reusable widgets.
 142. [ ] Style class and theme token primitives for reusable design vocabulary.
 143. [ ] Style cascade resolution combining base, class, state, and inline styles.
 144. [ ] `FocusHandle` primitive with request, release, contains, and focused queries.
@@ -308,17 +318,17 @@ follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 140, element lifecycle hooks for mount, update, and
-unmount notifications, is merged on `master` at
-`a179f5a feat: add element lifecycle hooks` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing
-`ElementLifecycleContext` and lifecycle hook APIs. GREEN adds public no-op
-lifecycle hooks on `Element` and dispatches mount/update/unmount from root,
-index child, keyed child, subtree removal, and `set_root(...)` replacement
-paths. Post-merge targeted tests passed 2/2, Windows full debug passed 29/29,
-and WSL Arch Linux full debug passed 26/26. Step 141, element state storage
-keyed by element id for reusable widgets, is the next implementation slice
-after this docs closeout and cleanup.
+Current handoff: Step 141, element state storage keyed by element id for
+reusable widgets, is merged on `master` at
+`10415c6 feat: add element state storage` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing
+`ElementTree::state<T>(...)`, `state_or_init<T>(...)`, and
+`emplace_state<T>(...)` APIs. GREEN adds per-node type-indexed state storage,
+soft-fail lookup/init/replace helpers, and runtime/context forwarding for
+owned element trees. Post-merge targeted tests passed 2/2, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 142, style
+class and theme token primitives for reusable design vocabulary, is the next
+implementation slice after this docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
