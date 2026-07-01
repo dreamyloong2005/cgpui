@@ -146,8 +146,16 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   tests passed 4/4, Windows full debug passed 29/29 after a transient
   `win32_text_input_test/default` rerun, and WSL Arch Linux full debug passed
   26/26.
+- Step 159 is merged on `master` at
+  `7d515bb feat: add multi-window runtime registry`; post-merge targeted tests
+  passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
+- Step 160 is merged on `master` at
+  `13a99ae feat: add window lifecycle events`; post-merge targeted/header
+  tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 159 is the next implementation slice after Step 158 docs closeout
+  128. Step 161 is the next implementation slice after Step 160 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -272,6 +280,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 160, window activation, focus, minimize, restore, and close lifecycle
   events, is the next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 9 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 160 Merge
+
+- Step 160, window activation, focus, minimize, restore, and close lifecycle
+  events, is merged on `master` at
+  `13a99ae feat: add window lifecycle events`.
+- RED failed as expected on missing `WindowActivated`, `WindowMinimized`,
+  `WindowRestored`, and lifecycle `EventKind` values.
+- GREEN adds public lifecycle event structs and `PlatformEvent` alternatives,
+  maps lifecycle `EventKind` values, and records activate/minimize/restore/close
+  on the existing root route with `EventDispatchRecord` plus after-event
+  callback observability. Existing `WindowFocused` still dispatches to the view,
+  and close requests still call the close callback and quit the application.
+- Post-merge verification passed: targeted/header tests 3/3, `git diff
+  --check` with no output, Windows full debug 29/29, and WSL Arch Linux full
+  debug 26/26.
+- Step 161, Win32 IME composition window placement wired to focused text
+  geometry, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 8 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1635,7 +1663,7 @@ Exit check: text, opacity, transform, batching, HiDPI scale, and renderer diagno
 Purpose: connect the public API to Windows/Wayland runtime behavior and close the Windows/Linux parity loop.
 
 - [x] Step 159: multi-window runtime registry with per-window root view and renderer ownership.
-- [ ] Step 160: window activation, focus, minimize, restore, and close lifecycle events.
+- [x] Step 160: window activation, focus, minimize, restore, and close lifecycle events.
 - [ ] Step 161: Win32 IME composition window placement wired to focused text geometry.
 - [ ] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
 - [ ] Step 163: Win32 drag-and-drop text/file event skeleton.
@@ -2263,13 +2291,22 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 
 **Files:**
 - Modify: `include/cgpui/core/events.hpp`
-- Modify: `include/cgpui/platform/platform.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for activation, focus, minimize, restore, and close lifecycle events.
-- [ ] Route lifecycle events through existing dispatch records and callbacks.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for activation, focus, minimize, restore, and close lifecycle events.
+- [x] Route lifecycle events through existing dispatch records and callbacks.
+- [x] Targeted/expanded test command passed 3/3:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/window-lifecycle-events -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `13a99ae feat: add window lifecycle events`.
+- [x] Post-merge targeted/header tests passed 3/3, Windows full debug passed
+  29/29, and WSL Arch Linux full debug passed 26/26.
 
 ### Step 161: Win32 IME Placement
 

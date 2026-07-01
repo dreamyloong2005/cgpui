@@ -4764,3 +4764,46 @@
   Step 153 is marked merged and post-merge verified. Step 154, renderer command
   batching by clip, opacity, transform, and primitive kind, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 160 Window Lifecycle Events
+
+- Continued Step 160 in `.worktrees/window-lifecycle-events` on
+  `codex/window-lifecycle-events` from `master` at
+  `d55e81d docs: mark step 159 merged`.
+- Baseline targeted tests passed before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- RED coverage in `tests/ui/window_runtime_test.cpp` failed as expected on
+  missing `WindowActivated`, `WindowMinimized`, `WindowRestored`, and lifecycle
+  `EventKind` values.
+- GREEN adds public lifecycle event structs, `PlatformEvent` alternatives,
+  lifecycle `EventKind` mapping, and root-route dispatch records plus
+  after-event callback observability for activate/minimize/restore/close while
+  preserving existing focus dispatch and close-request quit behavior.
+- Verified targeted/expanded GREEN tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/window-lifecycle-events -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3.
+- Committed Step 160 as `13a99ae feat: add window lifecycle events` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted/header tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 160 is marked merged and post-merge verified. Step 161,
+  Win32 IME composition window placement wired to focused text geometry, is the
+  next implementation slice after docs closeout and cleanup.

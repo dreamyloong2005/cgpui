@@ -333,6 +333,18 @@ view ids plus explicit window/renderer/root-view ownership metadata. The
 effective distance through Step 168 is 9 remaining follow-on implementation
 steps plus the final Band H checkpoint review.
 
+Step 160, window activation, focus, minimize, restore, and close lifecycle
+events, is merged on `master` at
+`13a99ae feat: add window lifecycle events` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing `WindowActivated`,
+`WindowMinimized`, `WindowRestored`, and lifecycle `EventKind` values. GREEN
+adds public lifecycle event structs, variant/event-kind mapping, and root-route
+dispatch records plus after-event callback observability for
+activate/minimize/restore/close while preserving the existing focused-event
+view dispatch and close-request quit behavior. The effective distance through
+Step 168 is 8 remaining follow-on implementation steps plus the final Band H
+checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -504,7 +516,7 @@ steps plus the final Band H checkpoint review.
 157. [x] Snapshot tests for paint command streams emitted by the demo and widgets.
 158. [x] Renderer fallback path for unsupported commands with explicit diagnostics.
 159. [x] Multi-window runtime registry with per-window root view and renderer ownership.
-160. [ ] Window activation, focus, minimize, restore, and close lifecycle events.
+160. [x] Window activation, focus, minimize, restore, and close lifecycle events.
 161. [ ] Win32 IME composition window placement wired to focused text geometry.
 162. [ ] Wayland text-input/IME protocol skeleton wired to focused text geometry.
 163. [ ] Win32 drag-and-drop text/file event skeleton.
@@ -516,14 +528,14 @@ steps plus the final Band H checkpoint review.
 
 ## Active Step
 
-Current handoff: Step 159, multi-window runtime registry with per-window root
-view and renderer ownership, is merged on `master` at
-`7d515bb feat: add multi-window runtime registry` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted/expanded tests passed 4/4,
+Current handoff: Step 160, window activation, focus, minimize, restore, and
+close lifecycle events, is merged on `master` at
+`13a99ae feat: add window lifecycle events` and post-merge verified on Windows
+and WSL Arch Linux. Post-merge targeted/header tests passed 3/3,
 `git diff --check` produced no output, Windows full debug passed 29/29, and
-WSL Arch Linux full debug passed 26/26. Step 160, window activation, focus,
-minimize, restore, and close lifecycle events, is the next implementation
-slice after docs closeout and cleanup.
+WSL Arch Linux full debug passed 26/26. Step 161, Win32 IME composition window
+placement wired to focused text geometry, is the next implementation slice
+after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

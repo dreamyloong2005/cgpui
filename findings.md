@@ -2758,3 +2758,20 @@
 - Step 154 can use `PaintMetadata` directly when defining batching keys by clip,
   opacity, transform, and primitive kind; it should remain diagnostic grouping,
   not GPU optimization.
+
+## 2026-07-02 Window Lifecycle Events
+
+- Step 160 treats activation, minimize, restore, and close as lifecycle
+  observability events on the existing root route. They produce
+  `EventDispatchRecord` values and after-event callbacks, but they do not force
+  view fallback handling the way input events do.
+- `WindowFocused` intentionally stays on the existing view-dispatch path so
+  prior focus behavior and view-level focus handling remain source-compatible.
+- Close requests now record the close lifecycle event before invoking the close
+  callback and `PlatformApplication::quit()`. This lets the close callback see
+  `context.last_event_dispatch` for `window_close_requested` while preserving
+  the existing quit semantics.
+- Minimize/restore update the lightweight `ViewInputState::focused` snapshot
+  only enough for lifecycle callbacks to observe focus loss. They do not yet
+  model platform window state, visibility, occlusion, or renderer suspension;
+  those should remain separate future platform/runtime decisions if needed.
