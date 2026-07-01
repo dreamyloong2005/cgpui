@@ -25,6 +25,10 @@ class WaylandTestCompositor {
   void request_pointer_move(std::int32_t x, std::int32_t y);
   void request_pointer_button(std::uint32_t button, bool pressed);
   void request_pointer_scroll(float delta_x, float delta_y);
+  void request_drag_enter(std::int32_t x, std::int32_t y);
+  void request_drag_motion(std::int32_t x, std::int32_t y);
+  void request_drag_drop();
+  void request_drag_leave();
   void request_keyboard_modifiers(
       bool shift,
       bool control,
@@ -39,6 +43,10 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_pointer_move_sent() const;
   [[nodiscard]] bool wait_for_pointer_button_sent() const;
   [[nodiscard]] bool wait_for_pointer_scroll_sent() const;
+  [[nodiscard]] bool wait_for_drag_enter_sent() const;
+  [[nodiscard]] bool wait_for_drag_motion_sent() const;
+  [[nodiscard]] bool wait_for_drag_drop_sent() const;
+  [[nodiscard]] bool wait_for_drag_leave_sent() const;
   [[nodiscard]] bool wait_for_pointer_cursor_set() const;
   [[nodiscard]] bool wait_for_pointer_cursor_set_count(
       std::uint32_t count) const;

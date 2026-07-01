@@ -279,6 +279,9 @@ struct WaylandTestCompositor::State {
     if (seat_global != nullptr) {
       wl_global_destroy(seat_global);
     }
+    if (data_device_manager_global != nullptr) {
+      wl_global_destroy(data_device_manager_global);
+    }
     if (display != nullptr) {
       wl_display_destroy(display);
     }
@@ -318,8 +321,14 @@ struct WaylandTestCompositor::State {
         5,
         this,
         &State::bind_seat);
+    data_device_manager_global = wl_global_create(
+        display,
+        &wl_data_device_manager_interface,
+        3,
+        this,
+        &State::bind_data_device_manager);
     if (compositor_global == nullptr || shell_global == nullptr ||
-        seat_global == nullptr) {
+        seat_global == nullptr || data_device_manager_global == nullptr) {
       return false;
     }
 
@@ -391,6 +400,26 @@ struct WaylandTestCompositor::State {
       });
     }
     pointer_scroll_pending.store(true);
+  }
+
+  void request_drag_enter(std::int32_t x, std::int32_t y) {
+    drag_x.store(x);
+    drag_y.store(y);
+    drag_enter_pending.store(true);
+  }
+
+  void request_drag_motion(std::int32_t x, std::int32_t y) {
+    drag_x.store(x);
+    drag_y.store(y);
+    drag_motion_pending.store(true);
+  }
+
+  void request_drag_drop() {
+    drag_drop_pending.store(true);
+  }
+
+  void request_drag_leave() {
+    drag_leave_pending.store(true);
   }
 
   void request_keyboard_key(std::uint32_t key, bool pressed) {
@@ -490,6 +519,24 @@ struct WaylandTestCompositor::State {
     }
   }
 
+  static void bind_data_device_manager(
+      wl_client* client,
+      void* data,
+      std::uint32_t version,
+      std::uint32_t id) {
+    auto* compositor = static_cast<State*>(data);
+    auto* resource = wl_resource_create(
+        client,
+        &wl_data_device_manager_interface,
+        std::min<std::uint32_t>(version, 3),
+        id);
+    wl_resource_set_implementation(
+        resource,
+        &data_device_manager_implementation,
+        compositor,
+        nullptr);
+  }
+
   static void create_surface(
       wl_client* client,
       wl_resource* resource,
@@ -534,8 +581,35 @@ struct WaylandTestCompositor::State {
       wl_client* client,
       wl_resource* resource,
       std::uint32_t id);
+  static void data_device_manager_create_data_source(
+      wl_client* client,
+      wl_resource*,
+      std::uint32_t id) {
+    auto* resource = wl_resource_create(client, &wl_data_source_interface, 3, id);
+    wl_resource_set_implementation(resource, nullptr, nullptr, nullptr);
+  }
+  static void data_device_manager_get_data_device(
+      wl_client* client,
+      wl_resource* resource,
+      std::uint32_t id,
+      wl_resource*) {
+    auto* compositor =
+        static_cast<State*>(wl_resource_get_user_data(resource));
+    auto* data_device = wl_resource_create(
+        client,
+        &wl_data_device_interface,
+        std::min<std::uint32_t>(wl_resource_get_version(resource), 3),
+        id);
+    compositor->data_device_resource = data_device;
+    wl_resource_set_implementation(
+        data_device,
+        &data_device_implementation,
+        compositor,
+        &State::handle_data_device_destroyed);
+  }
   void send_keyboard_keymap();
   static void handle_seat_destroyed(wl_resource* resource);
+  static void handle_data_device_destroyed(wl_resource* resource);
   static void pointer_set_cursor(
       wl_client*,
       wl_resource* resource,
@@ -562,6 +636,10 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_pointer_move();
   void dispatch_pending_pointer_button();
   void dispatch_pending_pointer_scroll();
+  void dispatch_pending_drag_enter();
+  void dispatch_pending_drag_motion();
+  void dispatch_pending_drag_drop();
+  void dispatch_pending_drag_leave();
   void dispatch_pending_keyboard_modifiers();
   void dispatch_pending_keyboard_key();
   void dispatch_pending_keyboard_leave();
@@ -573,6 +651,10 @@ struct WaylandTestCompositor::State {
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
+      dispatch_pending_drag_enter();
+      dispatch_pending_drag_motion();
+      dispatch_pending_drag_drop();
+      dispatch_pending_drag_leave();
       dispatch_pending_keyboard_modifiers();
       dispatch_pending_keyboard_key();
       dispatch_pending_keyboard_leave();
@@ -586,6 +668,10 @@ struct WaylandTestCompositor::State {
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
+      dispatch_pending_drag_enter();
+      dispatch_pending_drag_motion();
+      dispatch_pending_drag_drop();
+      dispatch_pending_drag_leave();
       dispatch_pending_keyboard_modifiers();
       dispatch_pending_keyboard_key();
       dispatch_pending_keyboard_leave();
@@ -598,6 +684,9 @@ struct WaylandTestCompositor::State {
   static const struct wl_seat_interface seat_implementation;
   static const struct wl_pointer_interface pointer_implementation;
   static const struct wl_keyboard_interface keyboard_implementation;
+  static const struct wl_data_device_manager_interface
+      data_device_manager_implementation;
+  static const struct wl_data_device_interface data_device_implementation;
   static const XdgWmBaseImplementation shell_implementation;
   static const XdgSurfaceImplementation xdg_surface_implementation;
   static const XdgToplevelImplementation toplevel_implementation;
@@ -606,9 +695,11 @@ struct WaylandTestCompositor::State {
   wl_global* compositor_global = nullptr;
   wl_global* shell_global = nullptr;
   wl_global* seat_global = nullptr;
+  wl_global* data_device_manager_global = nullptr;
   wl_resource* seat_resource = nullptr;
   wl_resource* pointer_resource = nullptr;
   wl_resource* keyboard_resource = nullptr;
+  wl_resource* data_device_resource = nullptr;
   std::filesystem::path runtime_dir;
   std::string socket_name;
   std::vector<std::unique_ptr<SurfaceState>> surfaces;
@@ -627,6 +718,14 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_button_sent{false};
   std::atomic_bool pointer_scroll_pending{false};
   std::atomic_bool pointer_scroll_sent{false};
+  std::atomic_bool drag_enter_pending{false};
+  std::atomic_bool drag_enter_sent{false};
+  std::atomic_bool drag_motion_pending{false};
+  std::atomic_bool drag_motion_sent{false};
+  std::atomic_bool drag_drop_pending{false};
+  std::atomic_bool drag_drop_sent{false};
+  std::atomic_bool drag_leave_pending{false};
+  std::atomic_bool drag_leave_sent{false};
   std::atomic_bool pointer_cursor_set{false};
   std::atomic_uint32_t pointer_cursor_set_count{0};
   std::atomic_bool keyboard_keymap_sent{false};
@@ -640,6 +739,8 @@ struct WaylandTestCompositor::State {
   std::atomic_int resize_height{0};
   std::atomic_int pointer_x{0};
   std::atomic_int pointer_y{0};
+  std::atomic_int drag_x{0};
+  std::atomic_int drag_y{0};
   std::mutex keyboard_key_mutex;
   std::deque<KeyboardKeyRequest> keyboard_keys;
   std::mutex keyboard_modifiers_mutex;
@@ -653,6 +754,9 @@ struct WaylandTestCompositor::State {
   std::uint32_t next_pointer_serial = 1;
   std::uint32_t pointer_time = 1;
   bool pointer_entered = false;
+  std::uint32_t next_drag_serial = 1;
+  std::uint32_t drag_time = 1;
+  bool drag_entered = false;
   std::uint32_t next_keyboard_serial = 1;
   std::uint32_t keyboard_time = 1;
   bool keyboard_entered = false;
@@ -896,6 +1000,16 @@ void WaylandTestCompositor::State::handle_pointer_destroyed(wl_resource* resourc
   }
 }
 
+void WaylandTestCompositor::State::handle_data_device_destroyed(
+    wl_resource* resource) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor != nullptr && compositor->data_device_resource == resource) {
+    compositor->data_device_resource = nullptr;
+    compositor->drag_entered = false;
+  }
+}
+
 void WaylandTestCompositor::State::handle_keyboard_destroyed(wl_resource* resource) {
   auto* compositor =
       static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
@@ -1089,6 +1203,79 @@ void WaylandTestCompositor::State::dispatch_pending_pointer_scroll() {
   pointer_scroll_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_drag_enter() {
+  if (!drag_enter_pending.exchange(false)) {
+    return;
+  }
+
+  const SurfaceState* surface = first_pointer_surface();
+  if (data_device_resource == nullptr || surface == nullptr) {
+    drag_enter_pending.store(true);
+    return;
+  }
+
+  wl_data_device_send_enter(
+      data_device_resource,
+      next_drag_serial++,
+      surface->surface,
+      wl_fixed_from_int(drag_x.load()),
+      wl_fixed_from_int(drag_y.load()),
+      nullptr);
+  wl_display_flush_clients(display);
+  drag_entered = true;
+  drag_enter_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_drag_motion() {
+  if (!drag_motion_pending.exchange(false)) {
+    return;
+  }
+
+  if (data_device_resource == nullptr || !drag_entered) {
+    drag_motion_pending.store(true);
+    return;
+  }
+
+  wl_data_device_send_motion(
+      data_device_resource,
+      drag_time++,
+      wl_fixed_from_int(drag_x.load()),
+      wl_fixed_from_int(drag_y.load()));
+  wl_display_flush_clients(display);
+  drag_motion_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_drag_drop() {
+  if (!drag_drop_pending.exchange(false)) {
+    return;
+  }
+
+  if (data_device_resource == nullptr || !drag_entered) {
+    drag_drop_pending.store(true);
+    return;
+  }
+
+  wl_data_device_send_drop(data_device_resource);
+  wl_display_flush_clients(display);
+  drag_drop_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_drag_leave() {
+  if (!drag_leave_pending.exchange(false)) {
+    return;
+  }
+
+  if (data_device_resource == nullptr || !drag_entered) {
+    drag_leave_pending.store(true);
+    return;
+  }
+
+  wl_data_device_send_leave(data_device_resource);
+  wl_display_flush_clients(display);
+  drag_entered = false;
+  drag_leave_sent.store(true);
+}
+
 void WaylandTestCompositor::State::dispatch_pending_keyboard_modifiers() {
   if (!keyboard_modifiers_pending.exchange(false)) {
     return;
@@ -1251,6 +1438,31 @@ const struct wl_keyboard_interface WaylandTestCompositor::State::keyboard_implem
     .release = noop_resource,
 };
 
+const struct wl_data_device_manager_interface
+    WaylandTestCompositor::State::data_device_manager_implementation{
+        .create_data_source =
+            &WaylandTestCompositor::State::data_device_manager_create_data_source,
+        .get_data_device =
+            &WaylandTestCompositor::State::data_device_manager_get_data_device,
+};
+
+const struct wl_data_device_interface
+    WaylandTestCompositor::State::data_device_implementation{
+        .start_drag = [](
+            wl_client*,
+            wl_resource*,
+            wl_resource*,
+            wl_resource*,
+            wl_resource*,
+            std::uint32_t) {},
+        .set_selection = [](
+            wl_client*,
+            wl_resource*,
+            wl_resource*,
+            std::uint32_t) {},
+        .release = noop_resource,
+};
+
 const WaylandTestCompositor::State::XdgWmBaseImplementation
     WaylandTestCompositor::State::shell_implementation{
         .destroy = destroy_resource,
@@ -1331,6 +1543,22 @@ void WaylandTestCompositor::request_pointer_scroll(float delta_x, float delta_y)
   state_->request_pointer_scroll(delta_x, delta_y);
 }
 
+void WaylandTestCompositor::request_drag_enter(std::int32_t x, std::int32_t y) {
+  state_->request_drag_enter(x, y);
+}
+
+void WaylandTestCompositor::request_drag_motion(std::int32_t x, std::int32_t y) {
+  state_->request_drag_motion(x, y);
+}
+
+void WaylandTestCompositor::request_drag_drop() {
+  state_->request_drag_drop();
+}
+
+void WaylandTestCompositor::request_drag_leave() {
+  state_->request_drag_leave();
+}
+
 void WaylandTestCompositor::request_keyboard_key(
     std::uint32_t key,
     bool pressed) {
@@ -1371,6 +1599,22 @@ bool WaylandTestCompositor::wait_for_pointer_button_sent() const {
 
 bool WaylandTestCompositor::wait_for_pointer_scroll_sent() const {
   return state_->wait_for_flag(state_->pointer_scroll_sent);
+}
+
+bool WaylandTestCompositor::wait_for_drag_enter_sent() const {
+  return state_->wait_for_flag(state_->drag_enter_sent);
+}
+
+bool WaylandTestCompositor::wait_for_drag_motion_sent() const {
+  return state_->wait_for_flag(state_->drag_motion_sent);
+}
+
+bool WaylandTestCompositor::wait_for_drag_drop_sent() const {
+  return state_->wait_for_flag(state_->drag_drop_sent);
+}
+
+bool WaylandTestCompositor::wait_for_drag_leave_sent() const {
+  return state_->wait_for_flag(state_->drag_leave_sent);
 }
 
 bool WaylandTestCompositor::wait_for_pointer_cursor_set() const {

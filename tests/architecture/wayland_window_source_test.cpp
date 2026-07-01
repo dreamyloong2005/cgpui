@@ -155,6 +155,11 @@ int main() {
       !contains(text, "set_ime_text_input_placement")) {
     return 63;
   }
+  if (!contains(text, "WaylandDataDevice") ||
+      !contains(text, "wl_data_device_manager_get_data_device") ||
+      !contains(text, "DragEntered{")) {
+    return 64;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

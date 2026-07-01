@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <expected>
 #include <cstring>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -401,6 +402,22 @@ class WaylandWindow final : public PlatformWindow {
     callback_(PointerScrolled{.delta = delta, .position = position});
   }
 
+  void drag_entered(Point position, DragDropPayload payload) {
+    callback_(DragEntered{.position = position, .payload = std::move(payload)});
+  }
+
+  void drag_updated(Point position, DragDropPayload payload) {
+    callback_(DragUpdated{.position = position, .payload = std::move(payload)});
+  }
+
+  void drag_dropped(Point position, DragDropPayload payload) {
+    callback_(DragDropped{.position = position, .payload = std::move(payload)});
+  }
+
+  void drag_exited(Point position) {
+    callback_(DragExited{.position = position, .payload = {}});
+  }
+
   void keyboard_key(
       std::uint32_t key,
       KeyAction action,
@@ -534,12 +551,175 @@ class WaylandWindow final : public PlatformWindow {
   bool resize_pending_surface_configure_ = false;
 };
 
+class WaylandDataDevice {
+ public:
+  using WindowLookup = std::function<WaylandWindow*(wl_surface*)>;
+
+  void set_manager(wl_data_device_manager* manager) {
+    manager_ = manager;
+  }
+
+  void set_window_lookup(WindowLookup lookup) {
+    find_window_ = std::move(lookup);
+  }
+
+  void bind_to_seat(wl_seat* seat) {
+    if (manager_ == nullptr || seat == nullptr || data_device_ != nullptr) {
+      return;
+    }
+
+    data_device_ = wl_data_device_manager_get_data_device(manager_, seat);
+    if (data_device_ == nullptr) {
+      return;
+    }
+
+    static const wl_data_device_listener data_device_listener{
+        .data_offer = &WaylandDataDevice::handle_data_offer,
+        .enter = &WaylandDataDevice::handle_enter,
+        .leave = &WaylandDataDevice::handle_leave,
+        .motion = &WaylandDataDevice::handle_motion,
+        .drop = &WaylandDataDevice::handle_drop,
+        .selection = &WaylandDataDevice::handle_selection,
+    };
+    wl_data_device_add_listener(data_device_, &data_device_listener, this);
+  }
+
+  void reset_device() {
+    clear_active_offer();
+    if (pending_offer_ != nullptr) {
+      wl_data_offer_destroy(pending_offer_);
+      pending_offer_ = nullptr;
+    }
+    drag_window_ = nullptr;
+    last_drag_position_ = {};
+    if (data_device_ != nullptr) {
+      wl_data_device_destroy(data_device_);
+      data_device_ = nullptr;
+    }
+  }
+
+ private:
+  static void handle_data_offer(
+      void* data,
+      wl_data_device* data_device,
+      wl_data_offer* offer) {
+    (void)data_device;
+    auto* self = static_cast<WaylandDataDevice*>(data);
+    if (self->pending_offer_ != nullptr && self->pending_offer_ != offer) {
+      wl_data_offer_destroy(self->pending_offer_);
+    }
+    self->pending_offer_ = offer;
+  }
+
+  static void handle_enter(
+      void* data,
+      wl_data_device* data_device,
+      std::uint32_t serial,
+      wl_surface* surface,
+      wl_fixed_t x,
+      wl_fixed_t y,
+      wl_data_offer* offer) {
+    (void)data_device;
+    (void)serial;
+    auto* self = static_cast<WaylandDataDevice*>(data);
+    self->drag_window_ = self->find_window_ ? self->find_window_(surface) : nullptr;
+    self->last_drag_position_ = point_from_fixed(x, y);
+    self->replace_active_offer(offer);
+    if (self->drag_window_ != nullptr) {
+      self->drag_window_->drag_entered(
+          self->last_drag_position_,
+          self->payload_from_active_offer());
+    }
+  }
+
+  static void handle_leave(void* data, wl_data_device* data_device) {
+    (void)data_device;
+    auto* self = static_cast<WaylandDataDevice*>(data);
+    if (self->drag_window_ != nullptr) {
+      self->drag_window_->drag_exited(self->last_drag_position_);
+    }
+    self->drag_window_ = nullptr;
+    self->clear_active_offer();
+  }
+
+  static void handle_motion(
+      void* data,
+      wl_data_device* data_device,
+      std::uint32_t time,
+      wl_fixed_t x,
+      wl_fixed_t y) {
+    (void)data_device;
+    (void)time;
+    auto* self = static_cast<WaylandDataDevice*>(data);
+    self->last_drag_position_ = point_from_fixed(x, y);
+    if (self->drag_window_ != nullptr) {
+      self->drag_window_->drag_updated(
+          self->last_drag_position_,
+          self->payload_from_active_offer());
+    }
+  }
+
+  static void handle_drop(void* data, wl_data_device* data_device) {
+    (void)data_device;
+    auto* self = static_cast<WaylandDataDevice*>(data);
+    if (self->drag_window_ != nullptr) {
+      self->drag_window_->drag_dropped(
+          self->last_drag_position_,
+          self->payload_from_active_offer());
+    }
+  }
+
+  static void handle_selection(
+      void* data,
+      wl_data_device* data_device,
+      wl_data_offer* offer) {
+    (void)data_device;
+    auto* self = static_cast<WaylandDataDevice*>(data);
+    if (offer != nullptr) {
+      wl_data_offer_destroy(offer);
+    }
+    if (self->pending_offer_ == offer) {
+      self->pending_offer_ = nullptr;
+    }
+  }
+
+  void replace_active_offer(wl_data_offer* offer) {
+    if (active_offer_ != nullptr && active_offer_ != offer) {
+      wl_data_offer_destroy(active_offer_);
+    }
+    active_offer_ = offer;
+    if (pending_offer_ == offer) {
+      pending_offer_ = nullptr;
+    }
+  }
+
+  void clear_active_offer() {
+    if (active_offer_ != nullptr) {
+      wl_data_offer_destroy(active_offer_);
+      active_offer_ = nullptr;
+    }
+  }
+
+  [[nodiscard]] DragDropPayload payload_from_active_offer() const {
+    return {};
+  }
+
+  wl_data_device_manager* manager_ = nullptr;
+  wl_data_device* data_device_ = nullptr;
+  wl_data_offer* pending_offer_ = nullptr;
+  wl_data_offer* active_offer_ = nullptr;
+  WaylandWindow* drag_window_ = nullptr;
+  Point last_drag_position_{};
+  WindowLookup find_window_;
+};
+
 class WaylandApplication final : public PlatformApplication {
  public:
   WaylandApplication() : display_(wl_display_connect(nullptr)) {
     if (display_ == nullptr) {
       return;
     }
+    configure_data_device_lookup();
 
     registry_ = wl_display_get_registry(display_);
     if (registry_ == nullptr) {
@@ -569,6 +749,7 @@ class WaylandApplication final : public PlatformApplication {
           .name = &WaylandApplication::handle_seat_name,
       };
       wl_seat_add_listener(seat_, &seat_listener, this);
+      data_device_.bind_to_seat(seat_);
       if (wl_display_roundtrip(display_) == -1) {
         initialization_error_ = "wl_display_roundtrip failed while waiting for seat";
       }
@@ -576,6 +757,7 @@ class WaylandApplication final : public PlatformApplication {
   }
 
   ~WaylandApplication() override {
+    data_device_.reset_device();
     reset_keyboard_state();
     if (keyboard_ != nullptr) {
       wl_keyboard_destroy(keyboard_);
@@ -585,6 +767,9 @@ class WaylandApplication final : public PlatformApplication {
     }
     if (seat_ != nullptr) {
       wl_seat_destroy(seat_);
+    }
+    if (data_device_manager_ != nullptr) {
+      wl_data_device_manager_destroy(data_device_manager_);
     }
     if (shell_ != nullptr) {
       xdg_wm_base_destroy(shell_);
@@ -651,6 +836,11 @@ class WaylandApplication final : public PlatformApplication {
   }
 
  private:
+  void configure_data_device_lookup() {
+    data_device_.set_window_lookup(
+        [this](wl_surface* surface) { return find_window(surface); });
+  }
+
   static void handle_global(
       void* data,
       wl_registry* registry,
@@ -681,6 +871,16 @@ class WaylandApplication final : public PlatformApplication {
           name,
           &wl_seat_interface,
           std::min<std::uint32_t>(version, 5)));
+      return;
+    }
+    if (interface_name == wl_data_device_manager_interface.name) {
+      app->data_device_manager_ =
+          static_cast<wl_data_device_manager*>(wl_registry_bind(
+              registry,
+              name,
+              &wl_data_device_manager_interface,
+              std::min<std::uint32_t>(version, 3)));
+      app->data_device_.set_manager(app->data_device_manager_);
     }
   }
 
@@ -734,6 +934,12 @@ class WaylandApplication final : public PlatformApplication {
       app->pointer_window_ = nullptr;
       app->pending_scroll_delta_ = {};
       app->pointer_scroll_pending_ = false;
+    }
+
+    if (capabilities != 0U) {
+      app->data_device_.bind_to_seat(seat);
+    } else {
+      app->data_device_.reset_device();
     }
 
     if (has_keyboard) {
@@ -1201,8 +1407,10 @@ class WaylandApplication final : public PlatformApplication {
   wl_compositor* compositor_ = nullptr;
   xdg_wm_base* shell_ = nullptr;
   wl_seat* seat_ = nullptr;
+  wl_data_device_manager* data_device_manager_ = nullptr;
   wl_pointer* pointer_ = nullptr;
   wl_keyboard* keyboard_ = nullptr;
+  WaylandDataDevice data_device_;
   xkb_context* xkb_context_ = nullptr;
   xkb_keymap* xkb_keymap_ = nullptr;
   xkb_state* xkb_state_ = nullptr;

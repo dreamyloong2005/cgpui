@@ -44,6 +44,10 @@ int main() {
   bool cursor_requested = false;
   bool pressed = false;
   bool released = false;
+  bool drag_entered = false;
+  bool drag_updated = false;
+  bool drag_dropped = false;
+  bool drag_exited = false;
   cgpui::PlatformWindow* platform_window = nullptr;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
@@ -64,10 +68,35 @@ int main() {
           pressed = pressed || button->pressed;
           released = released || !button->pressed;
         }
+        if (const auto* drag = std::get_if<cgpui::DragEntered>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_entered =
+              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
+              drag->payload.text.empty() && drag->payload.files.empty();
+        }
+        if (const auto* drag = std::get_if<cgpui::DragUpdated>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_updated =
+              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
+              drag->payload.text.empty() && drag->payload.files.empty();
+        }
+        if (const auto* drag = std::get_if<cgpui::DragDropped>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_dropped =
+              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
+              drag->payload.text.empty() && drag->payload.files.empty();
+        }
+        if (const auto* drag = std::get_if<cgpui::DragExited>(&event);
+            drag != nullptr && point_equals(drag->position, expected_position)) {
+          drag_exited =
+              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
+              drag->payload.text.empty() && drag->payload.files.empty();
+        }
         if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
-        if (moved && pressed && released) {
+        if (moved && pressed && released && drag_entered && drag_updated &&
+            drag_dropped && drag_exited) {
           (*app)->quit();
         }
       });
@@ -88,6 +117,14 @@ int main() {
       static_cast<std::int32_t>(expected_position.y));
   compositor.request_pointer_button(left_button, true);
   compositor.request_pointer_button(left_button, false);
+  compositor.request_drag_enter(
+      static_cast<std::int32_t>(expected_position.x),
+      static_cast<std::int32_t>(expected_position.y));
+  compositor.request_drag_motion(
+      static_cast<std::int32_t>(expected_position.x),
+      static_cast<std::int32_t>(expected_position.y));
+  compositor.request_drag_drop();
+  compositor.request_drag_leave();
 
   if (!wait_for_run_finished(run_finished)) {
     compositor.request_close();
@@ -116,6 +153,18 @@ int main() {
   if (!compositor.wait_for_pointer_button_sent()) {
     return 7;
   }
+  if (!compositor.wait_for_drag_enter_sent()) {
+    return 13;
+  }
+  if (!compositor.wait_for_drag_motion_sent()) {
+    return 14;
+  }
+  if (!compositor.wait_for_drag_drop_sent()) {
+    return 15;
+  }
+  if (!compositor.wait_for_drag_leave_sent()) {
+    return 16;
+  }
   if (!moved) {
     return 8;
   }
@@ -124,6 +173,9 @@ int main() {
   }
   if (!pressed || !released) {
     return 10;
+  }
+  if (!drag_entered || !drag_updated || !drag_dropped || !drag_exited) {
+    return 17;
   }
 
   return 0;
