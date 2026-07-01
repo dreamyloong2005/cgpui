@@ -449,7 +449,7 @@ checkpoint reviews.
 154. [x] Renderer command batching by clip, opacity, transform, and primitive kind.
 155. [x] Frame timing and paint/layout/render statistics exposed through diagnostics.
 156. [x] HiDPI scale propagation into layout, text metrics, and renderer resources.
-157. [ ] Snapshot tests for paint command streams emitted by the demo and widgets.
+157. [x] Snapshot tests for paint command streams emitted by the demo and widgets.
 158. [ ] Renderer fallback path for unsupported commands with explicit diagnostics.
 159. [ ] Multi-window runtime registry with per-window root view and renderer ownership.
 160. [ ] Window activation, focus, minimize, restore, and close lifecycle events.
@@ -464,13 +464,13 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 156, HiDPI scale propagation into layout, text metrics,
-and renderer resources, is merged on `master` at
-`111ba8d feat: propagate hidpi scale` and post-merge verified on Windows and
-WSL Arch Linux. Post-merge targeted tests passed 6/6, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 157, snapshot
-tests for paint command streams emitted by the demo and widgets, is the next
-implementation slice after docs closeout and cleanup.
+Current handoff: Step 157, snapshot tests for paint command streams emitted
+by the demo and widgets, is merged on `master` at
+`cbda2e4 test: add paint command snapshots` and post-merge verified on Windows
+and WSL Arch Linux. Post-merge targeted/expanded tests passed 6/6, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 158,
+renderer fallback path for unsupported commands with explicit diagnostics, is
+the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

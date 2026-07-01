@@ -1,5 +1,53 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 157 Paint Command Snapshots
+
+- Cleaned up the merged Step 156 worktree
+  `.worktrees/hidpi-scale-propagation` and deleted
+  `codex/hidpi-scale-propagation`.
+- Started Step 157 in `.worktrees/paint-command-snapshots` on
+  `codex/paint-command-snapshots` from `master` at
+  `759eed8 docs: mark step 156 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default`
+  passed 3/3.
+- Added RED snapshot coverage in `tests/ui/element_test.cpp`,
+  `tests/ui/render_view_test.cpp`, and
+  `tests/architecture/hello_window_lifetime_test.cpp`. RED failed as expected
+  on missing `hello_window_uses_stable_paint_snapshot_smoke(...)` while the UI
+  tests referenced the new test-only snapshot serializer surface.
+- GREEN adds `tests/ui/paint_snapshot.hpp`, deterministic paint/render command
+  serializers for tests, widget paint stream snapshots covering button,
+  label, and text input commands, render-view submitted-command snapshots, and
+  a `CGPUI_DEMO_PAINT_SNAPSHOT_SMOKE` marker in the hello demo.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default`
+  passed 3/3.
+- Verified expanded affected coverage:
+  `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 6/6.
+- `git diff --check` reported only expected CRLF warnings before commit and no
+  post-merge whitespace output.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/paint-command-snapshots -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 157 as `cbda2e4 test: add paint command snapshots` and
+  fast-forward merged it to `master`.
+- Verified post-merge expanded targeted tests:
+  `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 6/6.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 157 is marked merged and post-merge verified. Step 158,
+  renderer fallback path for unsupported commands with explicit diagnostics,
+  is the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 156 HiDPI Scale Propagation
 
 - Cleaned up the merged Step 155 worktree

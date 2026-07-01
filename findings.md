@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Paint Command Snapshots
+
+- Step 157 keeps paint snapshot serialization test-only in
+  `tests/ui/paint_snapshot.hpp`; it does not add public API surface or change
+  renderer/runtime ownership.
+- The snapshot format captures command index, primitive kind, logical rects,
+  colors, text content/font/device font size/glyph count, clip metadata,
+  opacity, and affine transform. This gives later renderer changes a stable
+  evidence trail for command order and metadata propagation.
+- Widget coverage currently fixes a combined button/label/text-input paint
+  stream, including rounded background, border order, text selection, text
+  command, and caret command. `render_view_test` separately snapshots the
+  renderer-submitted text command after `render_view(...)` translates
+  `PaintList` output into `TextDraw`.
+- The hello demo smoke marker is source-level and inert by default:
+  `CGPUI_DEMO_PAINT_SNAPSHOT_SMOKE` requests a redraw when present, giving
+  Step 167 a stable hook for future Windows/Linux demo smoke expansion without
+  changing normal demo behavior.
+
 ## 2026-07-01 HiDPI Scale Propagation
 
 - Step 156 makes the runtime store both framebuffer size and logical viewport

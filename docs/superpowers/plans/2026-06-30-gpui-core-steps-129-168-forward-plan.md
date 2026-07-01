@@ -137,8 +137,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `111ba8d feat: propagate hidpi scale`; post-merge targeted tests passed
   6/6, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
+- Step 157 is merged on `master` at
+  `cbda2e4 test: add paint command snapshots`; post-merge expanded targeted
+  tests passed 6/6, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 157 is the next implementation slice after Step 156 docs closeout
+  128. Step 158 is the next implementation slice after Step 157 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -199,6 +203,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 157, snapshot tests for paint command streams emitted by the demo and
   widgets, is the next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 12 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 157 Merge
+
+- Step 157, snapshot tests for paint command streams emitted by the demo and
+  widgets, is merged on `master` at
+  `cbda2e4 test: add paint command snapshots`.
+- RED failed as expected on missing paint snapshot test helper/smoke coverage:
+  `hello_window_uses_stable_paint_snapshot_smoke(...)` was unresolved before
+  GREEN, and the UI tests referenced the new test-only serializer surface.
+- GREEN adds `tests/ui/paint_snapshot.hpp`, widget-level paint command
+  snapshots for button/label/text-input streams, render-view submitted command
+  snapshots, and a hello demo paint snapshot smoke marker without changing the
+  normal demo run path.
+- Post-merge verification passed: expanded targeted tests 6/6, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 158, renderer fallback path for unsupported commands with explicit
+  diagnostics, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 11 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1552,7 +1576,7 @@ Purpose: turn text and renderer output from metadata/placeholder paths into back
 - [x] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
 - [x] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
 - [x] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
-- [ ] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
+- [x] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
 - [ ] Step 158: renderer fallback path for unsupported commands with explicit diagnostics.
 
 Exit check: text, opacity, transform, batching, HiDPI scale, and renderer diagnostics are represented in command streams and Vulkan-facing code without regressing existing rectangle rendering.
@@ -2127,9 +2151,17 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/render_view_test.cpp`
 - Modify: `tests/architecture/hello_window_lifetime_test.cpp`
 
-- [ ] Add RED snapshot-style tests for demo/widget paint command streams.
-- [ ] Add deterministic serializers for paint commands in tests only.
-- [ ] Targeted test command: `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default`.
+- [x] Add RED snapshot-style tests for demo/widget paint command streams.
+- [x] Add deterministic serializers for paint commands in tests only.
+- [x] Targeted test command: `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default`.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `cbda2e4 test: add paint command snapshots`.
+- [x] Post-merge expanded targeted verification passed 6/6:
+  `xmake test -P . element_test/default render_view_test/default hello_window_lifetime_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 158: Renderer Unsupported-Command Diagnostics
 
