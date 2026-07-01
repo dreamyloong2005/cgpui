@@ -115,15 +115,15 @@ remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
 Step 140, element lifecycle hooks for mount, update, and unmount
-notifications, is implemented and targeted GREEN in
-`.worktrees/element-lifecycle-hooks` on `codex/element-lifecycle-hooks`. RED
-failed as expected on missing `ElementLifecycleContext` and lifecycle hook
-APIs. GREEN adds no-op `Element::on_mount(...)`, `on_update(...)`, and
-`on_unmount(...)` hooks plus mount/update/unmount dispatch from root, index
-child, keyed child, subtree removal, and `set_root(...)` replacement paths.
-Step 140 still needs feature-worktree Windows/WSL full verification, feature
-commit, fast-forward merge, post-merge verification, docs closeout, and
-cleanup.
+notifications, is merged on `master` at
+`a179f5a feat: add element lifecycle hooks` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`ElementLifecycleContext` and lifecycle hook APIs. GREEN adds no-op
+`Element::on_mount(...)`, `on_update(...)`, and `on_unmount(...)` hooks plus
+mount/update/unmount dispatch from root, index child, keyed child, subtree
+removal, and `set_root(...)` replacement paths. The effective distance through
+Step 168 is 28 remaining follow-on implementation steps plus the four
+follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -276,7 +276,7 @@ cleanup.
 137. [x] Runtime update batching so multiple model/global changes coalesce redraws.
 138. [x] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 139. [x] Keyed element identity and keyed reconciliation beyond parent-local index matching.
-140. [ ] Element lifecycle hooks for mount, update, and unmount notifications.
+140. [x] Element lifecycle hooks for mount, update, and unmount notifications.
 141. [ ] Element state storage keyed by element id for reusable widgets.
 142. [ ] Style class and theme token primitives for reusable design vocabulary.
 143. [ ] Style cascade resolution combining base, class, state, and inline styles.
@@ -309,15 +309,16 @@ cleanup.
 ## Active Step
 
 Current handoff: Step 140, element lifecycle hooks for mount, update, and
-unmount notifications, is implemented and targeted GREEN in
-`.worktrees/element-lifecycle-hooks` on `codex/element-lifecycle-hooks`. RED
-failed as expected on missing `ElementLifecycleContext` and lifecycle hook
-APIs. GREEN adds public no-op lifecycle hooks on `Element` and dispatches
-mount/update/unmount from root, index child, keyed child, subtree removal, and
-`set_root(...)` replacement paths. Targeted tests passed 2/2. Step 140 still
-needs feature-worktree Windows/WSL full verification, feature commit,
-fast-forward merge, post-merge verification, docs closeout, and cleanup before
-Step 141 begins.
+unmount notifications, is merged on `master` at
+`a179f5a feat: add element lifecycle hooks` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`ElementLifecycleContext` and lifecycle hook APIs. GREEN adds public no-op
+lifecycle hooks on `Element` and dispatches mount/update/unmount from root,
+index child, keyed child, subtree removal, and `set_root(...)` replacement
+paths. Post-merge targeted tests passed 2/2, Windows full debug passed 29/29,
+and WSL Arch Linux full debug passed 26/26. Step 141, element state storage
+keyed by element id for reusable widgets, is the next implementation slice
+after this docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
