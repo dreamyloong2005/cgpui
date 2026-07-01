@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Global App State Registry Merged
+
+- Step 131 is merged on `master` at
+  `54bcec4 feat: add global app state registry` and post-merge verified on
+  Windows and WSL Arch Linux.
+- Step 132 should build scoped actions on top of the existing action dispatch
+  path without changing the new global registry semantics; globals remain
+  passive typed state until Step 137 adds update batching/redraw behavior.
+
 ## 2026-07-01 Global App State Registry
 
 - Step 131 keeps global state runtime-owned and typed by `std::type_index`,

@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 131 Post-Merge
+
+- Fast-forward merged Step 131 to `master` at
+  `54bcec4 feat: add global app state registry`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . app_runner_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 132, scoped action registry for app, window, view, and focused element
+  actions, is the next implementation slice after this docs closeout and
+  cleanup.
+
 ## 2026-07-01 Step 131 Global App State Registry
 
 - Started Step 131 in `.worktrees/global-app-state-registry` on
@@ -22,9 +38,8 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/global-app-state-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 26/26.
-- Step 131 is implemented and feature-worktree verified. It still needs
-  feature commit, fast-forward merge to `master`, post-merge targeted/Windows/
-  WSL verification, docs closeout, and cleanup before Step 132 begins.
+- Step 131 was implemented and feature-worktree verified, then merged and
+  post-merge verified in the Step 131 closeout.
 
 ## 2026-07-01 Step 130 Post-Merge
 
