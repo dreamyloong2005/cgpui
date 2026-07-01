@@ -220,6 +220,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The effective distance through Step 168 is 26 follow-on implementation
   slices plus the four band checkpoint reviews.
 
+## 2026-07-01 Back-40 Planning After Step 143 GREEN
+
+- Step 143, style cascade resolution combining base, class, state, and inline
+  styles, is implemented and targeted GREEN in
+  `.worktrees/style-cascade-resolution` on
+  `codex/style-cascade-resolution`.
+- RED failed as expected on missing `StyleCascade`, class/inline builder APIs,
+  and styled-element resolved-style APIs. GREEN adds deterministic resolution
+  order and builder storage for classes and inline style overlays.
+- This slice stays at the API/resolution layer: runtime layout and paint do not
+  yet consume a cascade automatically, and class base rules cannot intentionally
+  reset non-optional fields back to their defaults.
+- Targeted verification passed 2/2:
+  `xmake test -P . style_test/default element_test/default`.
+- Step 143 still needs full feature-worktree Windows and WSL verification,
+  fresh pre-commit checks, feature commit, fast-forward merge to `master`,
+  post-merge verification, docs closeout, and cleanup.
+- After the Step 143 merge, the effective distance through Step 168 will be
+  25 follow-on implementation slices plus the four band checkpoint reviews.
+
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
 - Step 138, public diagnostics snapshot for entities, subscriptions,
@@ -1585,9 +1605,9 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for base, class, state, and inline style resolution order.
-- [ ] Implement deterministic cascade merge rules using the Step 95 style-state primitives.
-- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default`.
+- [x] Add RED tests for base, class, state, and inline style resolution order.
+- [x] Implement deterministic cascade merge rules using the Step 95 style-state primitives.
+- [x] Targeted test command: `xmake test -P . style_test/default element_test/default`.
 
 ### Step 144: FocusHandle Primitive
 

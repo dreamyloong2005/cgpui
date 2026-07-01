@@ -562,6 +562,113 @@ struct StyleStateFlags {
   bool disabled = false;
 };
 
+class StyleCascade {
+ public:
+  StyleCascade& set_class_style(StyleClassId id, StyleState style);
+
+  [[nodiscard]] const StyleState* class_style(
+      const StyleClassId& id) const;
+
+ private:
+  std::unordered_map<std::string, StyleState> class_styles_;
+};
+
+inline StyleCascade& StyleCascade::set_class_style(
+    StyleClassId id,
+    StyleState style) {
+  class_styles_[std::move(id.value)] = std::move(style);
+  return *this;
+}
+
+inline const StyleState* StyleCascade::class_style(
+    const StyleClassId& id) const {
+  const auto entry = class_styles_.find(id.value);
+  if (entry == class_styles_.end()) {
+    return nullptr;
+  }
+  return &entry->second;
+}
+
+namespace detail {
+
+[[nodiscard]] inline bool same_size(Size lhs, Size rhs) {
+  return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
+[[nodiscard]] inline bool same_edges(EdgeSizes lhs, EdgeSizes rhs) {
+  return lhs.top == rhs.top && lhs.right == rhs.right &&
+         lhs.bottom == rhs.bottom && lhs.left == rhs.left;
+}
+
+[[nodiscard]] inline bool same_radii(BorderRadii lhs, BorderRadii rhs) {
+  return lhs.top_left == rhs.top_left && lhs.top_right == rhs.top_right &&
+         lhs.bottom_right == rhs.bottom_right &&
+         lhs.bottom_left == rhs.bottom_left;
+}
+
+[[nodiscard]] inline StyleOverlay style_base_overlay(const Style& style) {
+  const Style defaults;
+  StyleOverlay overlay;
+  overlay.background_color = style.background_color;
+  overlay.foreground_color = style.foreground_color;
+  overlay.border_color = style.border_color;
+  overlay.clip_rect = style.clip_rect;
+  if (!same_size(style.preferred_size, defaults.preferred_size)) {
+    overlay.preferred_size = style.preferred_size;
+  }
+  if (!same_edges(style.padding, defaults.padding)) {
+    overlay.padding = style.padding;
+  }
+  if (!same_edges(style.margin, defaults.margin)) {
+    overlay.margin = style.margin;
+  }
+  if (!same_edges(style.border_width, defaults.border_width)) {
+    overlay.border_width = style.border_width;
+  }
+  if (!same_radii(style.border_radius, defaults.border_radius)) {
+    overlay.border_radius = style.border_radius;
+  }
+  if (style.overflow != defaults.overflow) {
+    overlay.overflow = style.overflow;
+  }
+  if (style.z_index != defaults.z_index) {
+    overlay.z_index = style.z_index;
+  }
+  if (style.layer != defaults.layer) {
+    overlay.layer = style.layer;
+  }
+  if (style.gap != defaults.gap) {
+    overlay.gap = style.gap;
+  }
+  if (style.align_items != defaults.align_items) {
+    overlay.align_items = style.align_items;
+  }
+  if (style.justify_content != defaults.justify_content) {
+    overlay.justify_content = style.justify_content;
+  }
+  if (style.flex_grow != defaults.flex_grow) {
+    overlay.flex_grow = style.flex_grow;
+  }
+  if (style.flex_shrink != defaults.flex_shrink) {
+    overlay.flex_shrink = style.flex_shrink;
+  }
+  if (style.position != defaults.position) {
+    overlay.position = style.position;
+  }
+  if (!same_edges(style.inset, defaults.inset)) {
+    overlay.inset = style.inset;
+  }
+  if (style.font != defaults.font) {
+    overlay.font = style.font;
+  }
+  if (style.font_size != defaults.font_size) {
+    overlay.font_size = style.font_size;
+  }
+  return overlay;
+}
+
+} // namespace detail
+
 [[nodiscard]] constexpr Style apply_style_overlay(
     Style style,
     const StyleOverlay& overlay) {
@@ -645,6 +752,42 @@ struct StyleStateFlags {
     style = apply_style_overlay(style, state.disabled);
   }
   return style;
+}
+
+[[nodiscard]] inline Style resolved_style(
+    const StyleCascade& cascade,
+    const StyleState& local,
+    const StyleClasses& classes,
+    const StyleOverlay& inline_style,
+    StyleStateFlags flags) {
+  Style style = local.base;
+  for (const StyleClassId& class_id : classes.ids()) {
+    const StyleState* class_style = cascade.class_style(class_id);
+    if (class_style == nullptr) {
+      continue;
+    }
+    style = apply_style_overlay(
+        style,
+        detail::style_base_overlay(class_style->base));
+    if (flags.hovered) {
+      style = apply_style_overlay(style, class_style->hover);
+    }
+    if (flags.focused) {
+      style = apply_style_overlay(style, class_style->focus);
+    }
+    if (flags.disabled) {
+      style = apply_style_overlay(style, class_style->disabled);
+    }
+  }
+
+  style = resolved_style(StyleState{
+                             .base = style,
+                             .hover = local.hover,
+                             .focus = local.focus,
+                             .disabled = local.disabled,
+                         },
+                         flags);
+  return apply_style_overlay(style, inline_style);
 }
 
 } // namespace cgpui

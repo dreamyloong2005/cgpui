@@ -462,6 +462,55 @@ int test_element_builder_key_applies_to_built_element() {
              : 230;
 }
 
+int test_element_builder_stores_style_classes_and_inline_style() {
+  const cgpui::StyleClassId card = cgpui::style_class("card");
+  const cgpui::StyleClassId raised = cgpui::style_class("raised");
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .class_name(card)
+                              .class_name(raised)
+                              .class_name(card)
+                              .inline_style(cgpui::StyleOverlay{}
+                                                .with_background_color(
+                                                    cgpui::rgb(9, 8, 7))
+                                                .with_padding(
+                                                    cgpui::edges(5.0F))));
+
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 231;
+  }
+
+  const cgpui::StyleClasses& classes = styled->style_classes();
+  if (classes.size() != 2 || !classes.contains(card) ||
+      !classes.contains(raised)) {
+    return 232;
+  }
+
+  const cgpui::StyleOverlay& inline_style = styled->inline_style();
+  if (!inline_style.background_color.has_value() ||
+      inline_style.background_color->r != 9.0F / 255.0F ||
+      !inline_style.padding.has_value() || inline_style.padding->left != 5.0F) {
+    return 233;
+  }
+
+  cgpui::StyleCascade cascade;
+  cascade.set_class_style(
+      card,
+      cgpui::StyleState{
+          .base = cgpui::Style{}.with_background_color(cgpui::rgb(1, 2, 3)),
+          .hover = cgpui::StyleOverlay{}.with_gap(4.0F),
+      });
+  const cgpui::Style resolved = styled->resolved_style(
+      cascade,
+      cgpui::StyleStateFlags{.hovered = true});
+  return resolved.background_color.has_value() &&
+                 resolved.background_color->r == 9.0F / 255.0F &&
+                 resolved.padding.left == 5.0F && resolved.gap == 4.0F
+             ? 0
+             : 234;
+}
+
 int test_base_element_lays_out_zero_size() {
   TestElement element;
   const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
@@ -3526,6 +3575,11 @@ int main() {
     return result;
   }
   if (const int result = test_element_builder_key_applies_to_built_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_stores_style_classes_and_inline_style();
       result != 0) {
     return result;
   }

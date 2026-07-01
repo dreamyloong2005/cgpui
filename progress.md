@@ -3931,3 +3931,30 @@
   so Step 142 is marked merged and post-merge verified. Step 143, style
   cascade resolution combining base, class, state, and inline styles, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 143 Style Cascade Resolution
+
+- Started Step 143 in `.worktrees/style-cascade-resolution` on
+  `codex/style-cascade-resolution` from `master` at
+  `8d5acaa docs: mark step 142 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . style_test/default element_test/default` passed 2/2.
+- Added RED coverage in `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp` for `StyleCascade`, deterministic base/class/
+  state/inline style resolution order, element builder `.class_name(...)`,
+  builder `.inline_style(...)`, and `StyledElement::resolved_style(...)`.
+  RED failed as expected on missing cascade and builder APIs.
+- GREEN adds `StyleCascade` and `resolved_style(...)` in
+  `include/cgpui/ui/style.hpp`, plus `StyledElement` storage/accessors for
+  `StyleClasses` and inline `StyleOverlay` in `include/cgpui/ui/element.hpp`.
+  Box builders now preserve authored class names and inline style overlays.
+- Step 143 remains an explicit resolution primitive: it does not yet install a
+  cascade context into normal layout or paint traversal, does not add selectors,
+  and does not add runtime theme switching.
+- Verified targeted GREEN tests:
+  `xmake test -P . style_test/default element_test/default` passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/style-cascade-resolution -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.

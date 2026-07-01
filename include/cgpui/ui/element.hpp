@@ -575,6 +575,33 @@ class StyledElement : public Element {
     return style_state_;
   }
 
+  [[nodiscard]] const StyleClasses& style_classes() const {
+    return style_classes_;
+  }
+
+  [[nodiscard]] const StyleOverlay& inline_style() const {
+    return inline_style_;
+  }
+
+  void set_style_classes(StyleClasses classes) {
+    style_classes_ = std::move(classes);
+  }
+
+  void set_inline_style(StyleOverlay style) {
+    inline_style_ = std::move(style);
+  }
+
+  [[nodiscard]] Style resolved_style(
+      const StyleCascade& cascade,
+      StyleStateFlags flags) const {
+    return cgpui::resolved_style(
+        cascade,
+        style_state_,
+        style_classes_,
+        inline_style_,
+        flags);
+  }
+
   [[nodiscard]] Element* child() {
     return child_.get();
   }
@@ -653,6 +680,8 @@ class StyledElement : public Element {
 
  private:
   StyleState style_state_;
+  StyleClasses style_classes_;
+  StyleOverlay inline_style_;
   std::unique_ptr<Element> child_;
 };
 
@@ -1130,6 +1159,20 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder class_name(StyleClassId id) && {
+    style_classes_.add(std::move(id));
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder class_name(std::string_view value) && {
+    return std::move(*this).class_name(style_class(value));
+  }
+
+  [[nodiscard]] ElementBuilder inline_style(StyleOverlay style) && {
+    inline_style_ = std::move(style);
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder key(ElementKey key) && {
     key_ = std::move(key);
     return std::move(*this);
@@ -1331,8 +1374,10 @@ class ElementBuilder {
     if (!children_.empty()) {
       child = std::move(children_.front());
     }
-    return finish(
-        std::make_unique<StyledElement>(style_state_, std::move(child)));
+    auto element = std::make_unique<StyledElement>(style_state_, std::move(child));
+    element->set_style_classes(style_classes_);
+    element->set_inline_style(inline_style_);
+    return finish(std::move(element));
   }
 
  private:
@@ -1394,6 +1439,8 @@ class ElementBuilder {
 
   Kind kind_ = Kind::box;
   StyleState style_state_;
+  StyleClasses style_classes_;
+  StyleOverlay inline_style_;
   std::optional<ElementKey> key_;
   Size size_;
   TextModel* text_model_ = nullptr;

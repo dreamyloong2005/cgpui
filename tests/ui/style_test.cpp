@@ -565,6 +565,82 @@ int test_theme_color_and_spacing_tokens_lookup_softly() {
              : 72;
 }
 
+int test_style_cascade_resolves_base_classes_state_and_inline_order() {
+  const cgpui::StyleClassId base_class = cgpui::style_class("surface.card");
+  const cgpui::StyleClassId accent_class = cgpui::style_class("accented");
+  const cgpui::StyleClassId missing_class = cgpui::style_class("missing");
+
+  cgpui::StyleCascade cascade;
+  cascade.set_class_style(
+      base_class,
+      cgpui::StyleState{
+          .base = cgpui::Style{}
+                      .with_background_color(cgpui::rgb(20, 20, 20))
+                      .with_padding(cgpui::edges(6.0F))
+                      .with_gap(2.0F),
+          .hover = cgpui::StyleOverlay{}
+                       .with_background_color(cgpui::rgb(30, 30, 30))
+                       .with_gap(4.0F),
+      });
+  cascade.set_class_style(
+      accent_class,
+      cgpui::StyleState{
+          .base = cgpui::Style{}
+                      .with_foreground_color(cgpui::rgb(80, 90, 100))
+                      .with_padding(cgpui::edges(8.0F)),
+          .focus = cgpui::StyleOverlay{}
+                       .with_background_color(cgpui::rgb(40, 40, 40))
+                       .with_border_width(cgpui::edges(3.0F)),
+      });
+
+  cgpui::StyleClasses classes;
+  classes.add(base_class).add(missing_class).add(accent_class);
+  const cgpui::StyleState local{
+      .base = cgpui::Style{}
+                  .with_background_color(cgpui::rgb(10, 10, 10))
+                  .with_preferred_size(
+                      cgpui::Size{.width = 10.0F, .height = 20.0F})
+                  .with_padding(cgpui::edges(1.0F)),
+      .hover = cgpui::StyleOverlay{}.with_gap(6.0F),
+      .focus = cgpui::StyleOverlay{}.with_foreground_color(
+          cgpui::rgb(120, 130, 140)),
+  };
+  const cgpui::StyleOverlay inline_style =
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(200, 10, 10))
+          .with_padding(cgpui::edges(12.0F));
+
+  const cgpui::Style resolved = cgpui::resolved_style(
+      cascade,
+      local,
+      classes,
+      inline_style,
+      cgpui::StyleStateFlags{.hovered = true, .focused = true});
+
+  if (!resolved.background_color.has_value() ||
+      resolved.background_color->r != 200.0F / 255.0F) {
+    return 73;
+  }
+  if (!resolved.foreground_color.has_value() ||
+      resolved.foreground_color->r != 120.0F / 255.0F) {
+    return 74;
+  }
+  if (resolved.padding.left != 12.0F || resolved.gap != 6.0F) {
+    return 75;
+  }
+  if (resolved.border_width.left != 3.0F ||
+      resolved.preferred_size.width != 10.0F ||
+      resolved.preferred_size.height != 20.0F) {
+    return 76;
+  }
+
+  const cgpui::StyleState* accent_rule = cascade.class_style(accent_class);
+  return accent_rule != nullptr &&
+                 accent_rule->base.foreground_color.has_value()
+             ? 0
+             : 77;
+}
+
 } // namespace
 
 static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
@@ -602,6 +678,9 @@ static_assert(std::equality_comparable<cgpui::StyleClassId>);
 static_assert(std::equality_comparable<cgpui::ThemeTokenId>);
 static_assert(std::same_as<decltype(cgpui::style_class("x")), cgpui::StyleClassId>);
 static_assert(std::same_as<decltype(cgpui::theme_token("x")), cgpui::ThemeTokenId>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleCascade{}.class_style(cgpui::style_class("x"))),
+              const cgpui::StyleState*>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
@@ -646,6 +725,11 @@ int main() {
     return result;
   }
   if (const int result = test_theme_color_and_spacing_tokens_lookup_softly();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_style_cascade_resolves_base_classes_state_and_inline_order();
       result != 0) {
     return result;
   }

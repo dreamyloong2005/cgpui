@@ -2411,3 +2411,22 @@
 - Cascade resolution, runtime theme switching, class-to-style rules, and
   inherited style behavior remain out of scope until Step 143 and later
   widget/style slices.
+
+## 2026-07-01 Style Cascade Resolution
+
+- Step 143 introduces a deterministic style-resolution primitive rather than a
+  runtime-installed cascade. Callers pass a `StyleCascade`, local `StyleState`,
+  ordered `StyleClasses`, an inline `StyleOverlay`, and state flags to
+  `resolved_style(...)`.
+- The merge order is local base, class rules in `StyleClasses` insertion order,
+  local state overlays, then inline overlay. Missing class rules soft-fail so
+  authors can share class lists across partial cascades.
+- Class base styles are converted into sparse overlays by comparing against the
+  default `Style`. This preserves local base fields that a class did not
+  author, but it means Step 143 cannot intentionally reset a non-optional field
+  back to its default value through a class base rule. A later richer rule type
+  should make authored-default resets explicit if widgets need that behavior.
+- `StyledElement` stores authored classes and inline styles, and the box builder
+  exposes `.class_name(...)` plus `.inline_style(...)`. Normal layout and paint
+  still use the local style state until a later slice supplies cascade context
+  to runtime traversal.
