@@ -1,5 +1,57 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 156 HiDPI Scale Propagation
+
+- Cleaned up the merged Step 155 worktree
+  `.worktrees/frame-statistics-diagnostics` and deleted
+  `codex/frame-statistics-diagnostics`.
+- Started Step 156 in `.worktrees/hidpi-scale-propagation` on
+  `codex/hidpi-scale-propagation` from `master` at
+  `76eb6f7 docs: mark step 155 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . layout_test/default window_runtime_test/default` passed
+  2/2.
+- Added RED coverage in `tests/ui/layout_test.cpp` and
+  `tests/ui/window_runtime_test.cpp` for `LayoutInput::scale`,
+  logical/device pixel conversion helpers, `ViewContext::scale`, logical
+  viewport stability after a 2x resize, renderer resize framebuffer data, and
+  text draw/glyph device metrics. RED failed as expected on missing
+  `LayoutInput::scale`, `to_logical_pixels(...)`, `to_device_pixels(...)`,
+  `WindowRuntimeContext::scale`, `TextDraw::scale`,
+  `TextDraw::device_font_size`, `TextGlyphPaint::device_advance`,
+  `GlyphAtlasKey::scale`, and `GlyphAtlasKey::device_font_size`.
+- GREEN adds scale-aware layout helpers, threads scale through runtime context,
+  layout root input, render view, paint lists, text shaping, text paint/draw
+  commands, and Vulkan glyph cache resource metadata while preserving authored
+  logical pixel sizes.
+- Verified targeted GREEN tests:
+  `xmake test -P . layout_test/default window_runtime_test/default` passed
+  2/2.
+- Verified expanded renderer/header coverage:
+  `xmake test -P . layout_test/default window_runtime_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default text_model_test/default`
+  passed 6/6.
+- `git diff --check` reported only expected CRLF warnings before commit and no
+  post-merge whitespace output.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/hidpi-scale-propagation -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 156 as `111ba8d feat: propagate hidpi scale` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . layout_test/default window_runtime_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default text_model_test/default`
+  passed 6/6.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 156 is marked merged and post-merge verified. Step 157,
+  snapshot tests for paint command streams emitted by the demo and widgets, is
+  the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 155 Frame Statistics Diagnostics
 
 - Cleaned up the merged Step 154 worktree

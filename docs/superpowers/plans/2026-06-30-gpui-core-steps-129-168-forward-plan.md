@@ -133,8 +133,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `12f5cb3 feat: add frame statistics diagnostics`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 156 is merged on `master` at
+  `111ba8d feat: propagate hidpi scale`; post-merge targeted tests passed
+  6/6, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 156 is the next implementation slice after Step 155 docs closeout
+  128. Step 157 is the next implementation slice after Step 156 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -176,6 +180,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 156, HiDPI scale propagation into layout, text metrics, and renderer
   resources, is the next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 13 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 156 Merge
+
+- Step 156, HiDPI scale propagation into layout, text metrics, and renderer
+  resources, is merged on `master` at
+  `111ba8d feat: propagate hidpi scale`.
+- RED failed as expected on missing `LayoutInput::scale`,
+  `to_logical_pixels(...)`, `to_device_pixels(...)`,
+  `WindowRuntimeContext::scale`, and text draw/glyph device metric fields.
+- GREEN keeps authored sizes in logical pixels, derives logical viewport size
+  from framebuffer size and scale, threads scale through layout/render/paint,
+  adds logical/device text metrics, and feeds device-space glyph metadata into
+  the Vulkan glyph cache.
+- Post-merge verification passed: targeted tests 6/6, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 157, snapshot tests for paint command streams emitted by the demo and
+  widgets, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 12 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1528,7 +1551,7 @@ Purpose: turn text and renderer output from metadata/placeholder paths into back
 - [x] Step 153: opacity and transform paint metadata with deterministic command ordering.
 - [x] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
 - [x] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
-- [ ] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
+- [x] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
 - [ ] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
 - [ ] Step 158: renderer fallback path for unsupported commands with explicit diagnostics.
 
@@ -2093,9 +2116,9 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/layout_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests proving DPI scale affects text metrics, layout context, and renderer resize data consistently.
-- [ ] Thread scale through layout/render context without changing authored logical pixel APIs.
-- [ ] Targeted test command: `xmake test -P . layout_test/default window_runtime_test/default`.
+- [x] Add RED tests proving DPI scale affects text metrics, layout context, and renderer resize data consistently.
+- [x] Thread scale through layout/render context without changing authored logical pixel APIs.
+- [x] Targeted test command: `xmake test -P . layout_test/default window_runtime_test/default`.
 
 ### Step 157: Paint Command Snapshot Tests
 

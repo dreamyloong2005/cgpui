@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 HiDPI Scale Propagation
+
+- Step 156 makes the runtime store both framebuffer size and logical viewport
+  size. Platform resize events still deliver framebuffer dimensions plus
+  `DpiScale`; `WindowRuntime` derives `viewport_size = framebuffer / scale`
+  for view context, layout, and paint.
+- Authored sizes remain logical pixels. `LayoutInput::scale` and
+  `to_logical_pixels(...)` / `to_device_pixels(...)` expose the conversion
+  boundary without requiring existing element builders or style APIs to switch
+  units.
+- Text shaping now preserves logical `font_size`, `total_advance`, glyph
+  origins, and glyph advances while also exposing device font size, device
+  total advance, device origins, and device advances. Vulkan glyph cache
+  entries consume the device-space glyph metadata so renderer resources can be
+  scale-aware without changing text authoring APIs.
+- Step 157 can use the new logical/device paint metadata to serialize stable
+  paint command snapshots for widgets and the demo.
+
 ## 2026-07-01 Frame Statistics Diagnostics
 
 - Step 155 keeps frame timing deterministic for tests: `FrameStatistics`
