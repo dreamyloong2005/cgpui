@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Scoped Action Registry Merged
+
+- Step 132 is merged on `master` at
+  `7de89c7 feat: add scoped action registry` and post-merge verified on
+  Windows and WSL Arch Linux.
+- Step 133 should add subscription ownership/disconnect semantics on top of the
+  existing observer list without changing Step 132 action scope lookup, legacy
+  action compatibility, or `ActionDispatchResult` metadata.
+
 ## 2026-07-01 Scoped Action Registry
 
 - Step 132 keeps the old `register_action(name, handler)` spelling as the

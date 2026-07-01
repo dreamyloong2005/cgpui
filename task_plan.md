@@ -101,12 +101,9 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 132 is implemented and feature-worktree verified in
-`.worktrees/scoped-action-registry` on `codex/scoped-action-registry`. It still
-needs feature commit, fast-forward merge to `master`, post-merge targeted,
-Windows, and WSL verification, then docs closeout and cleanup. After that merge
-the effective distance through Step 168 will be 36 remaining follow-on
-implementation steps plus the four follow-on band checkpoint reviews.
+Step 132 is now merged and post-merge verified. Step 133 is the next
+implementation slice. The effective distance through Step 168 is 36 remaining
+follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -251,7 +248,7 @@ implementation steps plus the four follow-on band checkpoint reviews.
 129. [x] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
 130. [x] Entity handle API with `read`, `update`, and `downgrade` convenience methods.
 131. [x] Global app state registry with typed `set_global`, `global`, and `update_global` helpers.
-132. [ ] Scoped action registry for app, window, view, and focused element actions.
+132. [x] Scoped action registry for app, window, view, and focused element actions.
 133. [ ] Subscription ownership token that disconnects observers on drop/removal.
 134. [ ] Deferred callback queue for `cx.defer(...)` style post-event work.
 135. [ ] Timer API for one-shot and repeating callbacks through the runtime loop.
@@ -292,16 +289,17 @@ implementation steps plus the four follow-on band checkpoint reviews.
 ## Active Step
 
 Current handoff: Step 132, scoped action registry for app, window, view, and
-focused element actions, is implemented and feature-worktree verified in
-`.worktrees/scoped-action-registry` on `codex/scoped-action-registry`. RED
-failed as expected on missing `ActionScope`, scoped action registration APIs,
-and scope/owner metadata in `ActionDispatchResult`; GREEN adds app/window/view
-and focused-element scoped registries, preserves legacy `register_action(...)`
-as app/global scope, and dispatches in focused-element, view, window, app order.
-Feature-worktree targeted tests passed 2/2, Windows full debug passed 29/29,
-and WSL Arch Linux full debug passed 26/26. Step 132 still needs feature commit,
-fast-forward merge to `master`, post-merge verification, docs closeout, and
-cleanup before Step 133 begins.
+focused element actions, is merged on `master` at
+`7de89c7 feat: add scoped action registry` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing `ActionScope`, scoped
+action registration APIs, and scope/owner metadata in `ActionDispatchResult`;
+GREEN adds app/window/view and focused-element scoped registries, preserves
+legacy `register_action(...)` as app/global scope, and dispatches in
+focused-element, view, window, app order. Post-merge targeted tests passed 2/2,
+Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+Step 133, subscription ownership token that disconnects observers on
+drop/removal, is the next implementation slice after this docs closeout and
+cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

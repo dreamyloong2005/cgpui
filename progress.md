@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 132 Post-Merge
+
+- Fast-forward merged Step 132 to `master` at
+  `7de89c7 feat: add scoped action registry`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 133, subscription ownership token that disconnects observers on
+  drop/removal, is the next implementation slice after this docs closeout and
+  cleanup.
+
 ## 2026-07-01 Step 132 Scoped Action Registry
 
 - Started Step 132 in `.worktrees/scoped-action-registry` on
