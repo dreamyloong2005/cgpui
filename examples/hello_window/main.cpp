@@ -160,6 +160,8 @@ int main() {
       injected_text_env == nullptr ? std::string{} : std::string{injected_text_env};
   const bool paint_snapshot_smoke =
       std::getenv("CGPUI_DEMO_PAINT_SNAPSHOT_SMOKE") != nullptr;
+  const bool demo_smoke_flow =
+      std::getenv("CGPUI_DEMO_SMOKE_FLOW") != nullptr;
 
   auto app = cgpui::create_platform_application();
   if (!app) {
@@ -174,6 +176,14 @@ int main() {
   bool resize_requested_after_first_frame = false;
   bool second_frame_presented = false;
   bool close_requested_after_first_frame = false;
+  cgpui::MemoryClipboard demo_smoke_clipboard;
+  bool demo_smoke_clipboard_bound = false;
+  bool demo_smoke_input_event_sent = false;
+  bool demo_smoke_text_inserted = false;
+  bool demo_smoke_clipboard_pasted = false;
+  bool demo_smoke_clipboard_copied = false;
+  bool demo_smoke_redraw_requested = false;
+  bool demo_smoke_close_requested = false;
 
   cgpui::AppRunnerOptions options;
   options.window = cgpui::WindowOptions{}
@@ -186,7 +196,8 @@ int main() {
     });
     app_context.runtime.set_close_requested_callback(
         [&](const cgpui::ViewContext&) {
-          if (close_after_first_frame && first_frame_presented) {
+          if ((close_after_first_frame || demo_smoke_flow) &&
+              first_frame_presented) {
             close_requested_after_first_frame = true;
           }
         });
@@ -204,6 +215,10 @@ int main() {
     app_context.runtime.set_after_frame_callback(
         [&](const cgpui::ViewContext& context) {
           viewport_size = context.viewport_size;
+          if (demo_smoke_flow && !demo_smoke_clipboard_bound) {
+            context.runtime.set_clipboard(&demo_smoke_clipboard);
+            demo_smoke_clipboard_bound = true;
+          }
           if (!first_frame_presented) {
             first_frame_presented = true;
             if (!injected_text.empty()) {
@@ -212,6 +227,31 @@ int main() {
             }
             if (paint_snapshot_smoke) {
               context.request_render();
+            }
+            if (demo_smoke_flow) {
+              const cgpui::PlatformEvent demo_text_input = cgpui::TextInput{
+                  .text = " input",
+              };
+              (void)view.handle_event(demo_text_input, context);
+              demo_smoke_input_event_sent = true;
+              (void)context.mutate_focused_text_model(
+                  [](cgpui::TextModel& model) {
+                    model.insert_text(" input");
+                  });
+              demo_smoke_text_inserted =
+                  view.text_model().text().find("input") !=
+                  std::string_view::npos;
+              (void)demo_smoke_clipboard.write_text(" clipboard");
+              demo_smoke_clipboard_pasted =
+                  context.runtime.paste_clipboard_text();
+              view.text_model().set_selection(
+                  0,
+                  view.text_model().text().size());
+              demo_smoke_clipboard_copied =
+                  context.runtime.copy_selection_to_clipboard();
+              context.request_render();
+              demo_smoke_redraw_requested = true;
+              return;
             }
             if (close_after_first_frame) {
               context.window.request_close();
@@ -236,6 +276,11 @@ int main() {
             }
           } else {
             second_frame_presented = true;
+            if (demo_smoke_flow && !demo_smoke_close_requested) {
+              context.window.request_close();
+              demo_smoke_close_requested = true;
+              return;
+            }
           }
           if (exit_after_first_frame ||
               (resize_after_first_frame && second_frame_presented)) {
@@ -265,6 +310,17 @@ int main() {
   }
   if (close_after_first_frame && !close_requested_after_first_frame) {
     std::cerr << "close smoke did not receive a close request\n";
+    return 1;
+  }
+  if (demo_smoke_flow &&
+      (!first_frame_presented || !second_frame_presented ||
+       !close_requested_after_first_frame || !demo_smoke_clipboard_bound ||
+       !demo_smoke_input_event_sent || !demo_smoke_text_inserted ||
+       !demo_smoke_clipboard_pasted || !demo_smoke_clipboard_copied ||
+       !demo_smoke_redraw_requested || !demo_smoke_close_requested)) {
+    std::cerr
+        << "demo smoke flow did not cover window input text clipboard redraw "
+           "and close\n";
     return 1;
   }
   return run_result;

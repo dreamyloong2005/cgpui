@@ -14,6 +14,27 @@ bool hello_window_uses_stable_paint_snapshot_smoke(std::string_view text) {
          text.find("paint_snapshot_smoke") != std::string_view::npos;
 }
 
+bool hello_window_uses_full_demo_smoke_flow(std::string_view text) {
+  return text.find("CGPUI_DEMO_SMOKE_FLOW") != std::string_view::npos &&
+         text.find("demo_smoke_flow") != std::string_view::npos &&
+         text.find("cgpui::MemoryClipboard") != std::string_view::npos &&
+         text.find("context.runtime.set_clipboard(") !=
+             std::string_view::npos &&
+         text.find("context.runtime.paste_clipboard_text()") !=
+             std::string_view::npos &&
+         text.find("context.runtime.copy_selection_to_clipboard()") !=
+             std::string_view::npos &&
+         text.find("cgpui::TextInput{") != std::string_view::npos &&
+         text.find("demo smoke flow did not") != std::string_view::npos;
+}
+
+bool xmake_has_platform_demo_smoke_tests(std::string_view text) {
+  return text.find("windows_demo_smoke_flow") != std::string_view::npos &&
+         text.find("linux_demo_smoke_flow") != std::string_view::npos &&
+         text.find("CGPUI_DEMO_SMOKE_FLOW") != std::string_view::npos &&
+         text.find("CGPUI_CLOSE_AFTER_FIRST_FRAME") != std::string_view::npos;
+}
+
 } // namespace
 
 int main() {
@@ -181,6 +202,9 @@ int main() {
   if (!hello_window_uses_stable_paint_snapshot_smoke(text)) {
     return 51;
   }
+  if (!hello_window_uses_full_demo_smoke_flow(text)) {
+    return 52;
+  }
 
   std::ifstream platform_source("include/cgpui/platform/platform.hpp");
   if (!platform_source) {
@@ -196,6 +220,21 @@ int main() {
   if (platform_text.find("virtual void request_close() = 0;") ==
       std::string::npos) {
     return 17;
+  }
+
+  std::ifstream xmake_source("xmake.lua");
+  if (!xmake_source) {
+    xmake_source.open("../../../../xmake.lua");
+  }
+  if (!xmake_source) {
+    return 53;
+  }
+
+  const std::string xmake_text{
+      std::istreambuf_iterator<char>(xmake_source),
+      std::istreambuf_iterator<char>()};
+  if (!xmake_has_platform_demo_smoke_tests(xmake_text)) {
+    return 54;
   }
 
   return 0;
