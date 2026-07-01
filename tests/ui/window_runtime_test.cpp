@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <variant>
 
@@ -172,6 +173,27 @@ class RecordingView final : public cgpui::View {
         context.input.keyboard_focus_element_owner.has_value();
     last_keyboard_focus_element_owner =
         context.input.keyboard_focus_element_owner;
+    context_alias_same_view_context_type =
+        std::is_same_v<cgpui::Context<RecordingView>, cgpui::ViewContext>;
+    const cgpui::Context<RecordingView>& author_context = context;
+    context_alias_input_state = author_context.input_state();
+    context_alias_input_state_matches_snapshot =
+        context_alias_input_state.focused == context.input.focused &&
+        context_alias_input_state.pointer_captured ==
+            context.input.pointer_captured &&
+        context_alias_input_state.pointer_capture_owner ==
+            context.input.pointer_capture_owner &&
+        context_alias_input_state.keyboard_focused ==
+            context.input.keyboard_focused &&
+        context_alias_input_state.keyboard_focus_owner ==
+            context.input.keyboard_focus_owner &&
+        context_alias_input_state.keyboard_focus_element_owner ==
+            context.input.keyboard_focus_element_owner &&
+        context_alias_input_state.hovered_element_id ==
+            context.input.hovered_element_id &&
+        context_alias_input_state.cursor_shape == context.input.cursor_shape &&
+        equal(context_alias_input_state.pointer_position,
+              context.input.pointer_position);
     saw_input_state_helper = true;
     input_state_helper = context.input_state();
     input_state_helper_matches_field =
@@ -324,27 +346,33 @@ class RecordingView final : public cgpui::View {
                 cgpui::EntityId<RuntimeEntity>{entity_id.value + 100});
       }
       if (exercise_view_context_model_helpers && keyboard_key_count == 1) {
-        model_id = context.new_model<RuntimeEntity>(10);
-        context.subscribe_view_to_entity(context.view_id, model_id);
-        const RuntimeEntity* created = context.read_model(model_id);
+        const cgpui::Context<RecordingView>& author_context = context;
+        model_id = author_context.new_model<RuntimeEntity>(10);
+        author_context.subscribe_view_to_entity(
+            author_context.view_id,
+            model_id);
+        const RuntimeEntity* created = author_context.read_model(model_id);
         first_model_read_value = created == nullptr ? -1 : created->value;
-        updated_model = context.update_model(
+        updated_model = author_context.update_model(
             model_id,
             [](RuntimeEntity& model) {
               model.value = 24;
             });
-        invalidation_after_model_update = context.runtime.invalidation_state();
-        const RuntimeEntity* updated = context.read_model(model_id);
+        invalidation_after_model_update =
+            author_context.runtime.invalidation_state();
+        const RuntimeEntity* updated = author_context.read_model(model_id);
         updated_model_read_value = updated == nullptr ? -1 : updated->value;
-        update_missing_model = context.update_model(
+        update_missing_model = author_context.update_model(
             cgpui::Model<RuntimeEntity>{model_id.value + 100},
             [](RuntimeEntity& model) {
               model.value = 99;
             });
-        removed_model = context.remove_model(model_id);
-        invalidation_after_model_remove = context.runtime.invalidation_state();
-        removed_model_again = context.remove_model(model_id);
-        missing_model_after_remove = context.read_model(model_id) == nullptr;
+        removed_model = author_context.remove_model(model_id);
+        invalidation_after_model_remove =
+            author_context.runtime.invalidation_state();
+        removed_model_again = author_context.remove_model(model_id);
+        missing_model_after_remove =
+            author_context.read_model(model_id) == nullptr;
       }
       if (exercise_view_context_model_observe_helper &&
           keyboard_key_count == 1) {
@@ -824,6 +852,8 @@ class RecordingView final : public cgpui::View {
   cgpui::InvalidationState view_context_after_clear_invalidation{};
   cgpui::InvalidationState view_context_after_paint_request_invalidation{};
   bool view_context_convenience_same_alias_type = false;
+  bool context_alias_same_view_context_type = false;
+  bool context_alias_input_state_matches_snapshot = false;
   bool view_context_copied_selection = false;
   bool view_context_cut_selection = false;
   bool view_context_pasted_clipboard = false;
@@ -847,6 +877,7 @@ class RecordingView final : public cgpui::View {
   cgpui::EventRoute current_event_route_helper{};
   cgpui::EventDispatchRecord last_event_dispatch{};
   cgpui::ViewInputState input_state_helper{};
+  cgpui::ViewInputState context_alias_input_state{};
   std::optional<cgpui::ElementId> last_route_element_id;
   std::optional<cgpui::ElementId> last_hovered_element_id;
   std::optional<cgpui::ElementId> second_pointer_move_hovered_element_id;
@@ -4110,6 +4141,9 @@ int test_view_context_model_helpers_create_read_update_and_remove() {
       fixture.view.first_model_read_value != 10) {
     return 255;
   }
+  if (!fixture.view.context_alias_same_view_context_type) {
+    return 261;
+  }
   if (!fixture.view.updated_model ||
       fixture.view.updated_model_read_value != 24 ||
       fixture.view.update_missing_model) {
@@ -5616,6 +5650,12 @@ int test_view_context_forwards_common_runtime_apis() {
   }
   if (!fixture.view.view_context_convenience_same_alias_type) {
     return 216;
+  }
+  if (!fixture.view.context_alias_same_view_context_type ||
+      !fixture.view.context_alias_input_state_matches_snapshot ||
+      !equal(fixture.view.context_alias_input_state.pointer_position,
+             fixture.view.last_input_pointer_position)) {
+    return 222;
   }
   if (fixture.view.view_context_initial_invalidation.layout ||
       fixture.view.view_context_initial_invalidation.paint ||

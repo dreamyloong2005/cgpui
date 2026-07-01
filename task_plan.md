@@ -244,8 +244,8 @@ checkpoint reviews.
 125. [x] Win32 system clipboard backend for text copy, cut, and paste.
 126. [x] Wayland system clipboard backend skeleton for text copy, cut, and paste.
 127. [x] IME composition/candidate rectangle data from the focused text element.
-128. [ ] GPUI-like demo rewrite using the public prelude and new authoring API.
-129. [ ] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
+128. [x] GPUI-like demo rewrite using the public prelude and new authoring API.
+129. [x] Public `Context<T>` authoring alias over `ViewContext` for view/model code.
 130. [ ] Entity handle API with `read`, `update`, and `downgrade` convenience methods.
 131. [ ] Global app state registry with typed `set_global`, `global`, and `update_global` helpers.
 132. [ ] Scoped action registry for app, window, view, and focused element actions.
@@ -288,12 +288,15 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 128 is merged on `master` at
-`4026899 feat: rewrite demo with public prelude` and post-merge verified on
-Windows and WSL Arch Linux. Steps 89-128 are complete for the Windows/Linux
-track. Step 129, public `Context<T>` authoring alias over `ViewContext`, is the
-next implementation slice and should start from
-`.worktrees/context-authoring-alias` on `codex/context-authoring-alias`.
+Current handoff: Step 129, public `Context<T>` authoring alias over
+`ViewContext`, is implemented and feature-worktree verified in
+`.worktrees/context-authoring-alias` on `codex/context-authoring-alias`. RED
+failed as expected on missing `cgpui::Context<T>`; GREEN adds the alias over
+`ViewContext` and verifies it through prelude/header coverage and existing
+context helper calls. Targeted tests passed 2/2, Windows full debug passed
+29/29, and WSL Arch Linux full debug passed 26/26. Step 129 still needs
+feature commit, fast-forward merge, post-merge targeted/Windows/WSL
+verification, docs closeout, and cleanup before Step 130 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

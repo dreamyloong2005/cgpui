@@ -30,6 +30,9 @@ namespace cgpui {
 struct WindowRuntimeContext;
 using ViewContext = WindowRuntimeContext;
 
+template <typename T>
+using Context = ViewContext;
+
 using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
 using FocusedTextModelMutation = std::function<void(TextModel&)>;

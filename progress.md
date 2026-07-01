@@ -1,5 +1,32 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 129 Context Authoring Alias
+
+- Started Step 129 in `.worktrees/context-authoring-alias` on
+  `codex/context-authoring-alias` from `master` at
+  `c131294 docs: mark step 128 merged`.
+- Added RED coverage in
+  `tests/header_cleanliness/prelude_header_cleanliness.cpp` and
+  `tests/ui/window_runtime_test.cpp` requiring public `cgpui::Context<T>` to
+  be visible from the prelude, be source-compatible with `ViewContext`, and
+  call existing context helpers such as `input_state()`,
+  `new_model(...)`, `read_model(...)`, `update_model(...)`, and
+  `remove_model(...)`. RED failed as expected on missing `cgpui::Context<T>`.
+- Implemented Step 129 in `include/cgpui/ui/ui.hpp` as an additive
+  `template <typename T> using Context = ViewContext;`, preserving current
+  runtime ownership and helper behavior.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/context-authoring-alias -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 129 is implemented and feature-worktree verified. It still needs
+  feature commit, fast-forward merge to `master`, post-merge targeted/Windows/
+  WSL verification, docs closeout, and cleanup before Step 130 begins.
+
 ## 2026-07-01 Step 128 Post-Merge
 
 - Confirmed Step 128 is already fast-forward merged on `master` at

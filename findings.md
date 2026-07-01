@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Context Authoring Alias
+
+- Step 129 keeps `Context<T>` intentionally as a public authoring alias over
+  `ViewContext`; it does not add new context storage, model ownership, global
+  state, async behavior, or runtime lifetime semantics.
+- The alias is type-compatible with the existing `ViewContext` helper surface,
+  so `Context<MyView>` can call model helpers, input snapshots, invalidation
+  helpers, and other context APIs without changing `WindowRuntimeContext`.
+- The template parameter is reserved for authoring readability and future
+  typed-view ergonomics. Step 130 should build entity handle convenience on top
+  of the existing context/model APIs rather than changing the `Context<T>`
+  alias into an owning wrapper.
+
 ## 2026-07-01 Public Prelude Demo Rewrite Merged
 
 - Step 128 is merged on `master` at
