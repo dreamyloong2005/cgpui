@@ -33,6 +33,21 @@
   progress log so Step 134 is recorded as implemented and feature-worktree
   verified. Step 134 still needs feature commit, fast-forward merge,
   post-merge verification, docs closeout, and cleanup before Step 135 begins.
+- Committed Step 134 as
+  `64f1614 feat: add deferred callback queue` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 134 is marked merged and post-merge verified. Step 135,
+  timer API for one-shot and repeating callbacks through the runtime loop, is
+  the next implementation slice after docs closeout and cleanup.
 
 ## 2026-07-01 Step 132 Post-Merge
 

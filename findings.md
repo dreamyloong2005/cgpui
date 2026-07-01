@@ -1,12 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Deferred Callback Queue Merged
+
+- Step 134 is merged on `master` at
+  `64f1614 feat: add deferred callback queue` and post-merge verified on
+  Windows and WSL Arch Linux.
+- Step 135 should build timer ids and deterministic ticking on top of the
+  runtime loop without changing the Step 134 event-turn defer ordering or
+  introducing platform wakeups early; platform wakeups remain Step 165.
+
 ## 2026-07-01 Deferred Callback Queue
 
 - Step 134 keeps deferred work runtime-owned and deliberately small:
-  `DeferredCallback` is a public `std::function<void(const ViewContext&)>`
-  spelling, `ViewContext::defer(...)` forwards to `WindowRuntime`, and the
-  runtime drains callbacks after `after_event_callback_` but before the
-  deferred redraw request is flushed.
+  `DeferredCallback` is a public `std::function<void(const
+  WindowRuntimeContext&)>` spelling, `WindowRuntimeContext::defer(...)`
+  forwards to `WindowRuntime`, and the runtime drains callbacks after
+  `after_event_callback_` but before the deferred redraw request is flushed.
 - Deferred callbacks are drained FIFO in batches. Callbacks queued by a
   deferred callback run in a later drain iteration before the runtime leaves
   the event turn, which keeps nested `cx.defer(...)` behavior deterministic

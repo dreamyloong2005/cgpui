@@ -101,13 +101,11 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 134 is implemented in `.worktrees/deferred-callback-queue` on
-`codex/deferred-callback-queue` from `master` at
-`21b289e docs: mark step 133 merged` and feature-worktree verified on Windows
-and WSL Arch Linux. Step 134 still needs feature commit, fast-forward merge,
-post-merge verification, docs closeout, and cleanup. The effective distance
-through Step 168 is 34 remaining follow-on implementation steps plus the four
-follow-on band checkpoint reviews after Step 134 merges.
+Step 134 is merged on `master` at
+`64f1614 feat: add deferred callback queue` and post-merge verified on Windows
+and WSL Arch Linux. Step 135 is the next implementation slice. The effective
+distance through Step 168 is 34 remaining follow-on implementation steps plus
+the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -293,18 +291,16 @@ follow-on band checkpoint reviews after Step 134 merges.
 ## Active Step
 
 Current handoff: Step 134, deferred callback queue for `cx.defer(...)` style
-post-event work, is implemented in `.worktrees/deferred-callback-queue` on
-`codex/deferred-callback-queue` from `master` at
-`21b289e docs: mark step 133 merged`. RED failed as expected on missing
+post-event work, is merged on `master` at
+`64f1614 feat: add deferred callback queue` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing
 `WindowRuntimeContext::defer(...)`. GREEN adds public `DeferredCallback`,
 `WindowRuntimeContext::defer(...)`, runtime-owned FIFO deferred callbacks,
 post-event draining after `after_event_callback_`, and redraw deferral while
-the deferred queue drains. Targeted tests passed 2/2, WSL Arch Linux full debug
-passed 26/26, Windows full debug passed 29/29 after a transient
-`clipboard_test/default` failure was isolated by an immediate targeted pass.
-Step 134 still needs feature commit, fast-forward merge to `master`,
-post-merge targeted/Windows/WSL verification, docs closeout, and cleanup
-before Step 135 begins.
+the deferred queue drains. Post-merge targeted tests passed 2/2, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 135,
+timer API for one-shot and repeating callbacks through the runtime loop, is the
+next implementation slice after this docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
