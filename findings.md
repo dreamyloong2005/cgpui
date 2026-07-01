@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Subscription Ownership Token Merged
+
+- Step 133 is merged on `master` at
+  `77293cb feat: add subscription ownership token` and post-merge verified on
+  Windows and WSL Arch Linux.
+- Step 134 should build deferred callbacks on top of the runtime/context
+  capability surface without changing the new subscription token lifetime
+  contract or legacy permanent observer behavior.
+
 ## 2026-07-01 Subscription Ownership Token
 
 - Step 133 adds an explicit owned-observer path instead of changing the legacy

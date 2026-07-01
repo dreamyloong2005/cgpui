@@ -51,13 +51,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 132 is merged on `master` at
   `7de89c7 feat: add scoped action registry` and post-merge verified on
   Windows and WSL Arch Linux.
-- Step 133 is implemented in `.worktrees/subscription-ownership-token` on
-  `codex/subscription-ownership-token`; targeted tests passed 2/2, Windows
-  full debug passed 29/29, and WSL Arch Linux full debug passed 26/26 in the
-  feature worktree.
+- Step 133 is merged on `master` at
+  `77293cb feat: add subscription ownership token` and post-merge verified on
+  Windows and WSL Arch Linux.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 133 still needs merge, post-merge verification, docs
-  closeout, and cleanup before Step 134 begins.
+  128. Step 134 is the next implementation slice after Step 133 docs closeout
+  and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -1169,6 +1168,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] Feature-worktree WSL Arch full debug passed 26/26:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/subscription-ownership-token -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `77293cb feat: add subscription ownership token`.
+- [x] Post-merge targeted test passed 2/2:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 134: Deferred Callback Queue
 

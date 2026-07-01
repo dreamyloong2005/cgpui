@@ -101,12 +101,11 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 133 is implemented in the `codex/subscription-ownership-token` feature
-worktree and verified on Windows and WSL Arch Linux. It still needs
-merge, post-merge verification, docs closeout, and cleanup before Step 134
-begins. The effective distance through Step 168 is 35 remaining follow-on
-implementation steps plus the four follow-on band checkpoint reviews after
-Step 133 merges.
+Step 133 is merged on `master` at
+`77293cb feat: add subscription ownership token` and post-merge verified on
+Windows and WSL Arch Linux. Step 134 is the next implementation slice. The
+effective distance through Step 168 is 35 remaining follow-on implementation
+steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -292,17 +291,18 @@ Step 133 merges.
 ## Active Step
 
 Current handoff: Step 133, subscription ownership token that disconnects
-observers on drop/removal, is implemented in
-`.worktrees/subscription-ownership-token` on
-`codex/subscription-ownership-token`. RED failed as expected on missing
-`Subscription`, `SubscriptionId`, owned observe, and removal APIs. GREEN adds
-a move-only `Subscription` token, monotonic `SubscriptionId`, explicit
+observers on drop/removal, is merged on `master` at
+`77293cb feat: add subscription ownership token` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `Subscription`,
+`SubscriptionId`, owned observe, and removal APIs. GREEN adds a move-only
+`Subscription` token, monotonic `SubscriptionId`, explicit
 `observe_model_subscription(...)`, runtime `subscription_connected(...)`, and
 soft-fail `remove_subscription(...)` while preserving legacy
-`observe_model(...) -> bool` as a permanent observer path. Feature-worktree
-targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux
-full debug passed 26/26. Step 133 still needs merge, post-merge
-verification, docs closeout, and cleanup before Step 134 begins.
+`observe_model(...) -> bool` as a permanent observer path. Post-merge targeted
+tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
+debug passed 26/26. Step 134, deferred callback queue for `cx.defer(...)`
+style post-event work, is the next implementation slice after this docs
+closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
