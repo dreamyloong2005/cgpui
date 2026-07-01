@@ -158,8 +158,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `0a44fed feat: wire win32 ime placement`; post-merge targeted/header tests
   passed 5/5, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 162 is merged on `master` at
+  `23eb6e3 feat: add wayland ime skeleton`; post-merge targeted/header tests
+  passed 4/4 on Windows and WSL Arch Linux, Windows full debug passed 29/29,
+  and WSL Arch Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 162 is the next implementation slice after Step 161 docs closeout
+  128. Step 163 is the next implementation slice after Step 162 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -323,6 +327,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 162, Wayland text-input/IME protocol skeleton wired to focused text
   geometry, is the next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 7 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 162 Merge
+
+- Step 162, Wayland text-input/IME protocol skeleton wired to focused text
+  geometry, is merged on `master` at
+  `23eb6e3 feat: add wayland ime skeleton`.
+- RED failed as expected on missing `ImeTextInputSupport`,
+  `WindowState::ime_text_input_support`, and the Wayland text-input skeleton
+  expected by source/readiness coverage.
+- GREEN adds platform-neutral IME support state, a Wayland `WaylandTextInput`
+  skeleton that consumes focused text placement while reporting graceful
+  `unsupported` behavior without a text-input protocol global, and Win32
+  support metadata for the existing IMM path.
+- Post-merge verification passed: targeted/header tests 4/4 on Windows and
+  WSL Arch Linux, `git diff --check` with no output, Windows full debug 29/29,
+  and WSL Arch Linux full debug 26/26.
+- Step 163, Win32 drag-and-drop text/file event skeleton, is the next
+  implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 6 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1687,8 +1711,8 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 
 - [x] Step 159: multi-window runtime registry with per-window root view and renderer ownership.
 - [x] Step 160: window activation, focus, minimize, restore, and close lifecycle events.
-- [ ] Step 161: Win32 IME composition window placement wired to focused text geometry.
-- [ ] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
+- [x] Step 161: Win32 IME composition window placement wired to focused text geometry.
+- [x] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
 - [ ] Step 163: Win32 drag-and-drop text/file event skeleton.
 - [ ] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
 - [ ] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
@@ -2365,13 +2389,32 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 ### Step 162: Wayland Text-Input IME Skeleton
 
 **Files:**
+- Modify: `include/cgpui/core/window.hpp`
 - Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `tests/architecture/wayland_window_source_test.cpp`
+- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 - Modify: `tests/platform/wayland_keyboard_test.cpp`
-- Modify: `tests/ui/window_runtime_test.cpp`
+- Modify: `tests/platform/win32_text_input_test.cpp`
 
-- [ ] Add RED tests for a Wayland text-input skeleton consuming focused text geometry with graceful unsupported behavior.
-- [ ] Keep protocol wiring isolated in the Wayland platform source.
-- [ ] Targeted test command: `xmake test -P . wayland_keyboard_test/default window_runtime_test/default`.
+- [x] Add RED tests for a Wayland text-input skeleton consuming focused text geometry with graceful unsupported behavior.
+- [x] Keep protocol wiring isolated in the Wayland platform source.
+- [x] RED failed as expected on missing `ImeTextInputSupport`,
+  `WindowState::ime_text_input_support`, and Wayland text-input skeleton
+  source coverage.
+- [x] Targeted Windows command passed 4/4:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default core_header_cleanliness/default wayland_window_source_test/default`.
+- [x] Targeted WSL Arch Linux command passed 4/4:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-ime-skeleton -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default window_runtime_test/default core_header_cleanliness/default wayland_window_source_test/default'`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-ime-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `23eb6e3 feat: add wayland ime skeleton`.
+- [x] Post-merge targeted/header tests passed 4/4 on Windows and WSL Arch
+  Linux, `git diff --check` produced no output, Windows full debug passed
+  29/29, and WSL Arch Linux full debug passed 26/26.
 
 ### Step 163: Win32 Drag-and-Drop Skeleton
 

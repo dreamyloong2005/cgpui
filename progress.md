@@ -4850,3 +4850,54 @@
   progress log so Step 161 is marked merged and post-merge verified. Step 162,
   Wayland text-input/IME protocol skeleton wired to focused text geometry, is
   the next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 162 Wayland IME Skeleton
+
+- Continued Step 162 in `.worktrees/wayland-ime-skeleton` on
+  `codex/wayland-ime-skeleton` from `master` at
+  `64aec13 docs: mark step 161 merged`.
+- Baseline targeted tests passed before edits:
+  Windows `xmake test -P . wayland_keyboard_test/default window_runtime_test/default`
+  built and passed the available `window_runtime_test/default`; WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-ime-skeleton -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default window_runtime_test/default'`
+  passed 2/2.
+- RED coverage in `tests/header_cleanliness/core_header_cleanliness.cpp` and
+  `tests/platform/wayland_keyboard_test.cpp` failed as expected on missing
+  `ImeTextInputSupport` and `WindowState::ime_text_input_support`. A follow-up
+  Win32 protection RED failed as expected until Win32 advertised the existing
+  IMM-backed path as available.
+- GREEN adds platform-neutral IME support state, a Wayland `WaylandTextInput`
+  skeleton that stores focused text placement and reports graceful
+  `unsupported` behavior without a text-input protocol global, plus Win32 IME
+  support metadata for the existing IMM placement path.
+- Verified targeted GREEN tests on Windows:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default core_header_cleanliness/default wayland_window_source_test/default`
+  passed 4/4.
+- Verified targeted GREEN tests on WSL Arch Linux:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-ime-skeleton -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default window_runtime_test/default core_header_cleanliness/default wayland_window_source_test/default'`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-ime-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran fresh pre-commit targeted checks on Windows and WSL Arch Linux; both
+  passed 4/4.
+- Committed Step 162 as `23eb6e3 feat: add wayland ime skeleton` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted/header tests:
+  Windows `xmake test -P . win32_text_input_test/default window_runtime_test/default core_header_cleanliness/default wayland_window_source_test/default`
+  passed 4/4, and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default window_runtime_test/default core_header_cleanliness/default wayland_window_source_test/default'`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 162 is marked merged and post-merge verified. Step 163,
+  Win32 drag-and-drop text/file event skeleton, is the next implementation
+  slice after docs closeout and cleanup.

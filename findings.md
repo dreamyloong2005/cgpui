@@ -2793,3 +2793,23 @@
   side effects. Step 162 should consume this state in an isolated text-input
   skeleton and report graceful unsupported behavior before attempting a full
   text-input-v3 implementation.
+
+## 2026-07-02 Wayland IME Skeleton
+
+- Step 162 makes IME capability explicit through `ImeTextInputSupport` on
+  `WindowState`. The default remains `unsupported`; Win32 marks the existing
+  IMM placement path as `available`, while Wayland reports `unsupported` until
+  a text-input protocol global is actually bound.
+- The Wayland `WaylandTextInput` skeleton is intentionally state-only: it
+  accepts `ImeTextInputPlacement`, stores the latest placement, and exposes a
+  support snapshot without sending protocol requests. This preserves focused
+  text geometry through the platform boundary without pretending that
+  text-input-v3 is implemented.
+- `WaylandWindow::set_ime_text_input_placement(...)` now delegates to the
+  skeleton and mirrors both support and placement into `WindowState`, giving
+  runtime/tests a single platform-neutral observation point for supported and
+  graceful-unsupported paths.
+- Step 163 can now focus on Win32 drag/drop event shapes without reworking IME
+  geometry. A future full Wayland text-input slice should replace only the
+  internals of `WaylandTextInput` with protocol binding, enter/leave, content
+  type, surrounding text, and cursor-rect requests.

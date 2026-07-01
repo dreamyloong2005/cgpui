@@ -357,6 +357,17 @@ storage for later text-input protocol wiring. The effective distance through
 Step 168 is 7 remaining follow-on implementation steps plus the final Band H
 checkpoint review.
 
+Step 162, Wayland text-input/IME protocol skeleton wired to focused text
+geometry, is merged on `master` at `23eb6e3 feat: add wayland ime skeleton`
+and post-merge verified on Windows and WSL Arch Linux. RED failed as expected
+on missing `ImeTextInputSupport`, `WindowState::ime_text_input_support`, and a
+Wayland text-input skeleton. GREEN adds platform-neutral IME support state, a
+Wayland `WaylandTextInput` skeleton that consumes focused text placement while
+reporting graceful `unsupported` behavior without a protocol global, and Win32
+support metadata for the existing IMM path. The effective distance through
+Step 168 is 6 remaining follow-on implementation steps plus the final Band H
+checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -530,7 +541,7 @@ checkpoint review.
 159. [x] Multi-window runtime registry with per-window root view and renderer ownership.
 160. [x] Window activation, focus, minimize, restore, and close lifecycle events.
 161. [x] Win32 IME composition window placement wired to focused text geometry.
-162. [ ] Wayland text-input/IME protocol skeleton wired to focused text geometry.
+162. [x] Wayland text-input/IME protocol skeleton wired to focused text geometry.
 163. [ ] Win32 drag-and-drop text/file event skeleton.
 164. [ ] Wayland data-device drag-and-drop text/file event skeleton.
 165. [ ] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
@@ -540,14 +551,14 @@ checkpoint review.
 
 ## Active Step
 
-Current handoff: Step 161, Win32 IME composition window placement wired to
+Current handoff: Step 162, Wayland text-input/IME protocol skeleton wired to
 focused text geometry, is merged on `master` at
-`0a44fed feat: wire win32 ime placement` and post-merge verified on Windows
-and WSL Arch Linux. Post-merge targeted/header tests passed 5/5,
-`git diff --check` produced no output, Windows full debug passed 29/29, and
-WSL Arch Linux full debug passed 26/26. Step 162, Wayland text-input/IME
-protocol skeleton wired to focused text geometry, is the next implementation
-slice after docs closeout and cleanup.
+`23eb6e3 feat: add wayland ime skeleton` and post-merge verified on Windows
+and WSL Arch Linux. Post-merge targeted/header tests passed 4/4 on Windows and
+WSL Arch Linux, `git diff --check` produced no output, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 163, Win32
+drag-and-drop text/file event skeleton, is the next implementation slice after
+docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
