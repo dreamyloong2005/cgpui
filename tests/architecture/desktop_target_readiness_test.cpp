@@ -128,5 +128,39 @@ int main() {
     return 19;
   }
 
+  const std::string parity_text = read_source("docs/gpui-core-api-parity.md");
+  if (parity_text.empty()) {
+    return 30;
+  }
+  if (!contains(parity_text, "# GPUI-Core API Parity Audit") ||
+      !contains(parity_text, "Windows/Linux Scope") ||
+      !contains(parity_text, "Not Full Upstream GPUI Parity")) {
+    return 31;
+  }
+  if (!contains(parity_text, "Implemented") ||
+      !contains(parity_text, "Partial") ||
+      !contains(parity_text, "Missing") ||
+      !contains(parity_text, "Mac/Metal Deferred")) {
+    return 32;
+  }
+  if (!contains(parity_text, "Context<T>") ||
+      !contains(parity_text, "Entity<T>") ||
+      !contains(parity_text, "WindowOptions") ||
+      !contains(parity_text, "button") ||
+      !contains(parity_text, "label") ||
+      !contains(parity_text, "text_input") ||
+      !contains(parity_text, "scrollable_list")) {
+    return 33;
+  }
+  if (!contains(parity_text, "Vulkan") ||
+      !contains(parity_text, "Wayland") ||
+      !contains(parity_text, "Win32") ||
+      !contains(parity_text, "Metal")) {
+    return 34;
+  }
+  if (!contains(parity_text, "Next Milestone")) {
+    return 35;
+  }
+
   return 0;
 }

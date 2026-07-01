@@ -1,0 +1,141 @@
+# GPUI-Core API Parity Audit
+
+Step 168 closes the current Windows/Linux GPUI-core track with an API audit.
+The active target is Windows/Win32 + Vulkan and Linux/Wayland + Vulkan. macOS
+Cocoa + Metal remains a handoff boundary, not a parity requirement for this
+track.
+
+## Windows/Linux Scope
+
+- Windows uses the Win32 platform backend and Vulkan renderer target.
+- Linux uses the Wayland platform backend and Vulkan renderer target.
+- The public authoring surface is exposed through `cgpui/cgpui.hpp` and the
+  core UI headers.
+- Verification for this track is Windows plus WSL Arch Linux; macOS is not run
+  from this machine.
+
+## Not Full Upstream GPUI Parity
+
+This project is close to a practical GPUI-core-shaped API on Windows and Linux,
+but it is not full upstream GPUI parity. The current implementation focuses on
+the core authoring model, deterministic element/runtime behavior, reusable
+widgets, renderer command metadata, and platform hooks. Production-grade
+native adapters, full text rendering, deep theming, full animation, and several
+desktop integration surfaces remain separate future work.
+
+## Implemented
+
+- Public prelude and authoring entry: `cgpui/cgpui.hpp`, `run_app`,
+  `AppRunnerOptions`, `AppContext`, `WindowOptions`, `View::render(ViewContext&)`,
+  `Context<T>`, public element factories, style helpers, and demo usage through
+  the public API.
+- Model and state APIs: `Entity<T>`, `Model<T>`, weak handles, entity
+  read/update/remove helpers, typed globals, model observers, owned
+  `Subscription` tokens, update batching, invalidation snapshots, and
+  diagnostics snapshots.
+- Runtime scheduling APIs: deferred callbacks, deterministic timers, async
+  task handles with main-thread completion dispatch, and platform wakeup hooks
+  for timers, tasks, and deferred work.
+- Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
+  lifecycle hooks, per-element state storage, event routes, bubbling, disabled
+  handling, focus traversal, focus handles, pointer capture, scroll routing,
+  hit testing, layout, z order, and deterministic paint traversal.
+- Reusable widgets: `button`, `label`, `text_input`, and `scrollable_list`
+  built from public element, focus, style, action, text model, clipboard, and
+  scroll APIs.
+- Style and layout primitives: logical pixel helpers, colors, spacing, border,
+  radius, flex alignment, grow/shrink, absolute positioning, layer/elevation,
+  style state overlays, style classes, theme tokens, and deterministic cascade
+  resolution.
+- Text and renderer command depth: font descriptors, font database skeleton,
+  deterministic fallback shaping, glyph metadata, glyph cache interface, text
+  paint commands, caret/selection metadata, opacity and transform metadata,
+  HiDPI scale propagation, renderer command batching diagnostics, frame
+  statistics, unsupported-command diagnostics, and Vulkan consumption of text
+  draw metadata.
+- Platform hooks on active targets: Win32 cursor application, Win32 clipboard,
+  Wayland clipboard skeleton, focused text IME geometry, Win32 IME placement,
+  Wayland text-input/IME skeleton, Win32 drag/drop event skeleton, Wayland
+  data-device drag/drop skeleton, lifecycle events, multi-window runtime
+  registry, platform wakeups, and accessibility tree snapshots.
+- Windows/Linux demo smoke coverage exercises window creation, first frame,
+  resize, close, text input, clipboard flow, redraw, and bounded shutdown.
+
+## Partial
+
+- Renderer text is metadata-backed. Vulkan consumes text draw commands and
+  glyph cache metadata, but real glyph rasterization, atlas texture upload,
+  textured glyph quads, subpixel positioning, and font fallback shaping are not
+  complete.
+- Accessibility is a platform-neutral tree snapshot. Native Windows UIA and
+  Linux AT-SPI adapters are not implemented.
+- Wayland clipboard and drag/drop are skeletons. They model capability and
+  route events, but data-device MIME negotiation, payload extraction, URI-list
+  parsing, and external desktop integration remain incomplete.
+- Wayland IME stores focused text placement through a text-input skeleton, but
+  full text-input protocol binding, surrounding text, enter/leave, content
+  type, and commit/preedit handling are not complete.
+- Win32 drag/drop uses deterministic event hooks and public payload shapes, not
+  full OLE `IDropTarget` shell integration or drag-effect negotiation.
+- Multi-window support records per-window runtime ownership and app-opened
+  roots, but native creation and independent platform event loops for
+  additional windows are still partial.
+- Frame timing diagnostics expose stable counters, but real profiler timing
+  and production frame pacing are not complete.
+- Font discovery has deterministic abstractions and platform override slots,
+  but real DirectWrite/fontconfig discovery is not complete.
+
+## Missing
+
+- Full upstream GPUI animation and easing system.
+- Rich theme inheritance, dynamic runtime theme switching, and full design
+  system integration.
+- Asset, image, SVG, and texture upload pipelines.
+- Rich text editing, selection handles, undo/redo stacks, complex shaping,
+  bidi text, emoji/color glyphs, and platform input-method depth beyond the
+  current skeletons.
+- Native menus, command palettes, accelerators, window chrome customization,
+  dialogs, file pickers, and deeper shell integration.
+- Production accessibility bridges for UIA and AT-SPI.
+- Full Vulkan renderer pipeline for rounded rectangles, text selection/caret
+  drawing, glyph atlas textures, clipping stacks, transforms, opacity, and GPU
+  batching.
+- Full layout virtualization and large-list recycling beyond the current
+  `scrollable_list` container.
+- Threaded async runtime, cancellation, background executor integration, and
+  cross-thread safety guarantees.
+
+## Mac/Metal Deferred
+
+macOS parity is intentionally deferred. Step 88 already reserves the target
+mapping: macOS/Cocoa uses Metal, while Windows and Linux use Vulkan. The
+current macOS slots provide source-level readiness for Cocoa windows, a Metal
+surface handle, and a Metal renderer placeholder, but they do not implement the
+Windows/Linux behavior listed above.
+
+The Mac handoff requires:
+
+- Cocoa app lifecycle, window lifecycle, cursor, keyboard, pointer, clipboard,
+  drag/drop, IME, accessibility, menu, and focus adapters.
+- Metal renderer parity for solid rectangles, rounded rectangles, text glyphs,
+  clipping, transforms, opacity, HiDPI scale, command diagnostics, and frame
+  statistics.
+- macOS build and runtime verification on a Mac host.
+- Alignment with the existing platform-neutral APIs instead of forking public
+  authoring semantics.
+
+## Next Milestone
+
+The next Windows/Linux milestone should be a depth pass, not another surface
+area expansion. Recommended order:
+
+1. Make Vulkan text rendering real: rasterize glyphs, allocate atlas textures,
+   upload glyphs, and draw textured quads from the existing glyph metadata.
+2. Promote Wayland clipboard, Wayland drag/drop, and Wayland text-input from
+   skeleton capability to real data/protocol handling.
+3. Add native accessibility adapters for Windows UIA and Linux AT-SPI using the
+   existing accessibility snapshot as the source of truth.
+4. Turn multi-window runtime records into native additional windows with owned
+   event-loop and renderer lifetimes.
+5. Start a separate macOS/Cocoa + Metal parity track only after the
+   Windows/Linux depth pass has stable renderer and native adapter behavior.
