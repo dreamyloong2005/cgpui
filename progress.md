@@ -1,5 +1,56 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Step 158 Renderer Unsupported-Command Diagnostics
+
+- Started Step 158 in `.worktrees/renderer-unsupported-diagnostics` on
+  `codex/renderer-unsupported-diagnostics` from `master` at
+  `4635def docs: mark step 157 merged`.
+- Verified baseline targeted test before edits:
+  `xmake test -P . vulkan_solid_rect_test/default` passed 1/1.
+- Added RED coverage in `tests/renderer/vulkan_solid_rect_test.cpp` for a
+  renderer command stream containing supported solid/text primitives
+  interleaved with unsupported rounded-rect and text-caret primitives. RED
+  failed as expected on missing `RendererCommandStreamItem`,
+  `RendererCommandReport`, `RendererUnsupportedCommandDiagnostic`, expanded
+  `RendererPrimitiveKind` values, and
+  `vulkan_build_renderer_command_report(...)`.
+- GREEN adds public renderer command report and unsupported-command diagnostic
+  types in `include/cgpui/renderer/renderer.hpp`, a Vulkan diagnostic helper in
+  `src/renderer/vulkan/vulkan_renderer.cpp`, and header-cleanliness coverage
+  in `tests/header_cleanliness/core_header_cleanliness.cpp`.
+- Verified targeted GREEN test:
+  `xmake test -P . vulkan_solid_rect_test/default` passed 1/1.
+- Verified expanded affected coverage:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings before commit and no
+  post-merge whitespace output.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-unsupported-diagnostics -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 158 as
+  `86a3e00 feat: add renderer unsupported diagnostics` and fast-forward merged
+  it to `master`.
+- Verified post-merge expanded targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- The first post-merge Windows full debug run saw
+  `win32_text_input_test/default` fail once. A targeted rerun of
+  `xmake test -P . win32_text_input_test/default` passed 1/1, and the
+  immediate full Windows debug rerun passed 29/29. Step 158 does not touch
+  Win32 text-input paths.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29 on rerun.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 158 is marked merged and post-merge verified. Step 159,
+  multi-window runtime registry with per-window root view and renderer
+  ownership, is the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 157 Paint Command Snapshots
 
 - Cleaned up the merged Step 156 worktree

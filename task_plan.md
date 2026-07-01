@@ -281,6 +281,44 @@ optimizing GPU submission. The effective distance through Step 168 is 14
 remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
+Step 155, frame timing and paint/layout/render statistics exposed through
+diagnostics, is merged on `master` at
+`12f5cb3 feat: add frame statistics diagnostics` and post-merge verified on
+Windows and WSL Arch Linux. GREEN adds deterministic frame counters for render,
+layout, paint, emitted/submitted/skipped commands, primitive counts, clear, and
+present while keeping timing fields stable. The effective distance through
+Step 168 is 13 remaining follow-on implementation steps plus the four
+follow-on band checkpoint reviews.
+
+Step 156, HiDPI scale propagation into layout, text metrics, and renderer
+resources, is merged on `master` at `111ba8d feat: propagate hidpi scale` and
+post-merge verified on Windows and WSL Arch Linux. GREEN keeps authored sizes
+in logical pixels while deriving logical viewport size from framebuffer size
+and scale, then threads device-scale text/glyph metadata to the Vulkan glyph
+cache. The effective distance through Step 168 is 12 remaining follow-on
+implementation steps plus the four follow-on band checkpoint reviews.
+
+Step 157, snapshot tests for paint command streams emitted by the demo and
+widgets, is merged on `master` at `cbda2e4 test: add paint command snapshots`
+and post-merge verified on Windows and WSL Arch Linux. GREEN adds test-only
+paint/render command serializers, widget paint snapshots, render-view submitted
+command snapshots, and an inert demo paint-snapshot smoke marker. The effective
+distance through Step 168 is 11 remaining follow-on implementation steps plus
+the four follow-on band checkpoint reviews.
+
+Step 158, renderer fallback path for unsupported commands with explicit
+diagnostics, is merged on `master` at
+`86a3e00 feat: add renderer unsupported diagnostics` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`RendererCommandStreamItem`, `RendererCommandReport`,
+`RendererUnsupportedCommandDiagnostic`, unsupported primitive kinds, and
+`vulkan_build_renderer_command_report(...)`. GREEN adds a renderer-facing
+command report that batches supported solid/text commands while recording
+explicit unsupported diagnostics for rounded-rect, text-selection, and
+text-caret style primitives. The effective distance through Step 168 is 10
+remaining follow-on implementation steps plus the final Band H checkpoint
+review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -450,7 +488,7 @@ checkpoint reviews.
 155. [x] Frame timing and paint/layout/render statistics exposed through diagnostics.
 156. [x] HiDPI scale propagation into layout, text metrics, and renderer resources.
 157. [x] Snapshot tests for paint command streams emitted by the demo and widgets.
-158. [ ] Renderer fallback path for unsupported commands with explicit diagnostics.
+158. [x] Renderer fallback path for unsupported commands with explicit diagnostics.
 159. [ ] Multi-window runtime registry with per-window root view and renderer ownership.
 160. [ ] Window activation, focus, minimize, restore, and close lifecycle events.
 161. [ ] Win32 IME composition window placement wired to focused text geometry.
@@ -464,13 +502,15 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 157, snapshot tests for paint command streams emitted
-by the demo and widgets, is merged on `master` at
-`cbda2e4 test: add paint command snapshots` and post-merge verified on Windows
-and WSL Arch Linux. Post-merge targeted/expanded tests passed 6/6, Windows
-full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 158,
-renderer fallback path for unsupported commands with explicit diagnostics, is
-the next implementation slice after docs closeout and cleanup.
+Current handoff: Step 158, renderer fallback path for unsupported commands with
+explicit diagnostics, is merged on `master` at
+`86a3e00 feat: add renderer unsupported diagnostics` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted/expanded tests passed 4/4,
+Windows full debug passed 29/29 after one transient
+`win32_text_input_test/default` rerun, and WSL Arch Linux full debug passed
+26/26. Step 159, multi-window runtime registry with per-window root view and
+renderer ownership, is the next implementation slice after docs closeout and
+cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

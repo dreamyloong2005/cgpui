@@ -141,8 +141,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `cbda2e4 test: add paint command snapshots`; post-merge expanded targeted
   tests passed 6/6, Windows full debug passed 29/29, and WSL Arch Linux full
   debug passed 26/26.
+- Step 158 is merged on `master` at
+  `86a3e00 feat: add renderer unsupported diagnostics`; post-merge targeted
+  tests passed 4/4, Windows full debug passed 29/29 after a transient
+  `win32_text_input_test/default` rerun, and WSL Arch Linux full debug passed
+  26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 158 is the next implementation slice after Step 157 docs closeout
+  128. Step 159 is the next implementation slice after Step 158 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -224,6 +229,29 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   cleanup.
 - The effective distance through Step 168 is 11 follow-on implementation
   slices plus the four band checkpoint reviews.
+
+## 2026-07-02 Back-40 Planning After Step 158 Merge
+
+- Step 158, renderer fallback path for unsupported commands with explicit
+  diagnostics, is merged on `master` at
+  `86a3e00 feat: add renderer unsupported diagnostics`.
+- RED failed as expected on missing `RendererCommandStreamItem`,
+  `RendererCommandReport`, `RendererUnsupportedCommandDiagnostic`, expanded
+  unsupported `RendererPrimitiveKind` values, and
+  `vulkan_build_renderer_command_report(...)`.
+- GREEN adds a renderer command report surface that preserves supported
+  solid-rect/text batching while recording explicit unsupported diagnostics for
+  rounded-rect, text-selection, and text-caret style primitives. Existing
+  `vulkan_build_renderer_command_batches(...)` remains source-compatible for
+  current callers.
+- Post-merge verification passed: targeted renderer/header tests 4/4, Windows
+  full debug 29/29 after one transient `win32_text_input_test/default` rerun,
+  and WSL Arch Linux full debug 26/26.
+- Step 159, multi-window runtime registry with per-window root view and
+  renderer ownership, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 10 follow-on implementation
+  slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
 
@@ -1577,7 +1605,7 @@ Purpose: turn text and renderer output from metadata/placeholder paths into back
 - [x] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
 - [x] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
 - [x] Step 157: snapshot tests for paint command streams emitted by the demo and widgets.
-- [ ] Step 158: renderer fallback path for unsupported commands with explicit diagnostics.
+- [x] Step 158: renderer fallback path for unsupported commands with explicit diagnostics.
 
 Exit check: text, opacity, transform, batching, HiDPI scale, and renderer diagnostics are represented in command streams and Vulkan-facing code without regressing existing rectangle rendering.
 
@@ -2170,9 +2198,20 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED tests proving unsupported renderer commands produce explicit diagnostics instead of silent drops.
-- [ ] Implement fallback diagnostics while keeping supported solid/text paths unchanged.
-- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+- [x] Add RED tests proving unsupported renderer commands produce explicit diagnostics instead of silent drops.
+- [x] Implement fallback diagnostics while keeping supported solid/text paths unchanged.
+- [x] Targeted test command passed:
+  `xmake test -P . vulkan_solid_rect_test/default`.
+- [x] Expanded targeted verification passed 4/4:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `86a3e00 feat: add renderer unsupported diagnostics`.
+- [x] Post-merge targeted verification passed 4/4.
+- [x] Post-merge Windows full debug verification passed 29/29 after a transient
+  `win32_text_input_test/default` single-test rerun passed.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 159: Multi-Window Runtime Registry
 

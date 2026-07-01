@@ -1,5 +1,29 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Renderer Unsupported-Command Diagnostics
+
+- Step 158 adds a renderer-facing diagnostic report rather than changing UI
+  paint routing or pretending unsupported primitives are rendered. Supported
+  Vulkan primitives remain `solid_rect` and `text`; rounded rects,
+  text-selection metadata, and text-caret metadata are now nameable
+  `RendererPrimitiveKind` values that can be reported explicitly when a
+  renderer does not handle them yet.
+- `RendererCommandReport` keeps supported command batching and unsupported
+  diagnostics together. This gives later frame diagnostics and renderer-depth
+  work one surface to inspect without breaking the existing
+  `vulkan_build_renderer_command_batches(...)` helper used by prior tests.
+- Unsupported command diagnostics carry the primitive kind, original command
+  index, `unsupported_primitive` reason, and a human-readable message including
+  the primitive name. The report preserves supported command batches even when
+  unsupported commands are interleaved in the same stream.
+- The post-merge Windows full debug run initially saw a transient
+  `win32_text_input_test/default` failure. A targeted rerun passed 1/1 and the
+  full Windows debug rerun passed 29/29, matching the feature-worktree Windows
+  full debug result. WSL Arch Linux full debug passed 26/26.
+- Step 159 should now move into Band H with multi-window runtime ownership.
+  The renderer diagnostic surface is intentionally backend-facing and should
+  not force platform window registry design to depend on Vulkan internals.
+
 ## 2026-07-01 Paint Command Snapshots
 
 - Step 157 keeps paint snapshot serialization test-only in
