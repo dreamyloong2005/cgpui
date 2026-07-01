@@ -2261,6 +2261,51 @@ int test_text_element_uses_font_size_for_deterministic_metrics() {
              : 282;
 }
 
+int test_label_widget_paints_text_without_editing_metadata() {
+  cgpui::AnyElement element =
+      cgpui::label("status")
+          .foreground(cgpui::rgb(20, 40, 60))
+          .font(cgpui::FontDescriptor{.family = "Inter"})
+          .font_size(18.0F)
+          .key("status-label")
+          .build();
+
+  const auto* label = dynamic_cast<const cgpui::LabelElement*>(element.get());
+  if (label == nullptr || label->text() != "status") {
+    return 353;
+  }
+  if (label->focusable() || !label->key().has_value() ||
+      label->key()->value != "status-label") {
+    return 354;
+  }
+  if (label->font().family != "Inter" || label->font_size() != 18.0F ||
+      !label->style().foreground_color.has_value()) {
+    return 355;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 54.0F || output.size.height != 18.0F) {
+    return 356;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1 ||
+      commands[0].kind != cgpui::PaintCommandKind::text) {
+    return 357;
+  }
+
+  const cgpui::TextPaint& text = commands[0].text;
+  return text.content == "status" && text.byte_length == 6 &&
+                 text.font.family == "Inter" && text.font_size == 18.0F &&
+                 text.color.r == 20.0F / 255.0F &&
+                 text.bounds.size.width == 54.0F &&
+                 text.bounds.size.height == 18.0F
+             ? 0
+             : 358;
+}
+
 int test_child_view_element_references_view_and_lays_out_placeholder() {
   cgpui::ChildViewElement element(
       cgpui::ViewId{42},
@@ -3961,6 +4006,11 @@ int main() {
   }
   if (const int result =
           test_text_element_uses_font_size_for_deterministic_metrics();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_label_widget_paints_text_without_editing_metadata();
       result != 0) {
     return result;
   }

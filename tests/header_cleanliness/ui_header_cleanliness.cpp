@@ -313,6 +313,15 @@ int main() {
                               .font_size(19.0F));
   const auto* built_text =
       dynamic_cast<const cgpui::TextElement*>(text_element.get());
+  cgpui::AnyElement label_element =
+      cgpui::label("Header Label")
+          .foreground(cgpui::rgb(210, 220, 230))
+          .font(cgpui::FontDescriptor{.family = "Label"})
+          .font_size(13.0F)
+          .key("header-label")
+          .build();
+  const auto* label =
+      dynamic_cast<const cgpui::LabelElement*>(label_element.get());
   cgpui::ScrollState scroll_state;
   cgpui::AnyElement scroll_element = cgpui::scroll(
       scroll_state,
@@ -405,6 +414,11 @@ int main() {
                   built_text != nullptr &&
                   built_text->font().family == "Text" &&
                   built_text->font_size() == 19.0F &&
+                  label != nullptr && label->text() == "Header Label" &&
+                  label->font().family == "Label" &&
+                  label->font_size() == 13.0F &&
+                  label_element->key().has_value() &&
+                  label_element->key()->value == "header-label" &&
                   button != nullptr &&
                   button->action_name() == "header.accept" &&
                   button->focusable() &&

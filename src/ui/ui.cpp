@@ -390,6 +390,16 @@ void ButtonElement::paint(PaintList& paint_list) const {
   }
 }
 
+void LabelElement::paint(PaintList& paint_list) const {
+  const std::optional<Rect> bounds = layout_bounds();
+  if (!bounds.has_value() || text().empty()) {
+    return;
+  }
+  const Color text_color = style().foreground_color.value_or(
+      Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
+  paint_list.fill_text(*bounds, text_color, text(), style().font, font_size());
+}
+
 void TextElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   if (!bounds.has_value() || model_ == nullptr) {

@@ -73,6 +73,13 @@ int main() {
       cgpui::scroll(scroll_state, cgpui::div().size(6.0F, 7.0F));
   const auto* scroll =
       dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
+  cgpui::AnyElement label_element =
+      cgpui::label("Prelude Label")
+          .foreground(cgpui::rgb(220, 230, 240))
+          .font_size(12.0F)
+          .build();
+  const auto* label =
+      dynamic_cast<const cgpui::LabelElement*>(label_element.get());
   cgpui::AnyElement button_element =
       cgpui::button("prelude.accept")
           .style(cgpui::Style{}.with_preferred_size(
@@ -104,6 +111,8 @@ int main() {
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
                  scroll != nullptr && scroll->state() == &scroll_state &&
+                 label != nullptr && label->text() == "Prelude Label" &&
+                 label->font_size() == 12.0F &&
                  button != nullptr &&
                  button->action_name() == "prelude.accept" &&
                  button->focusable() && button->child() != nullptr &&
