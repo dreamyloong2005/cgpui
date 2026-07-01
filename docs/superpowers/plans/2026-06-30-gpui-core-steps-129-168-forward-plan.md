@@ -85,15 +85,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `2ab43a7 feat: add style cascade resolution`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
-- Step 144 is implemented and feature-worktree verified in
-  `.worktrees/focus-handle-primitive` on `codex/focus-handle-primitive`;
-  targeted tests passed 2/2, Windows full debug passed 29/29, and WSL Arch
-  Linux full debug passed 26/26. It still needs fresh targeted verification,
-  feature commit, fast-forward merge, post-merge verification, docs closeout,
-  and cleanup.
+- Step 144 is merged on `master` at
+  `874ef1f feat: add focus handle primitive`; post-merge targeted tests passed
+  2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+  26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 145 is the next implementation slice after Step 144 merge,
-  closeout, and cleanup.
+  128. Step 145 is the next implementation slice after Step 144 docs closeout
+  and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -289,6 +287,19 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   cleanup.
 - After the Step 144 merge, the effective distance through Step 168 will be
   24 follow-on implementation slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 144 Merge
+
+- Step 144, `FocusHandle` primitive with request, release, contains, and
+  focused queries, is merged on `master` at
+  `874ef1f feat: add focus handle primitive`.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 145, button widget primitive built from public element, focus, style,
+  and action APIs, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 24 follow-on implementation
+  slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
@@ -1309,7 +1320,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 141: element state storage keyed by element id for reusable widgets.
 - [x] Step 142: style class and theme token primitives for reusable design vocabulary.
 - [x] Step 143: style cascade resolution combining base, class, state, and inline styles.
-- [ ] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
+- [x] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
 - [ ] Step 145: button widget primitive built from public element, focus, style, and action APIs.
 - [ ] Step 146: label widget primitive using text style and text paint commands.
 - [ ] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
@@ -1679,6 +1690,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - [x] Feature-worktree Windows full debug verification passed 29/29.
 - [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `874ef1f feat: add focus handle primitive`.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 145: Button Widget Primitive
 

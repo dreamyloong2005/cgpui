@@ -4011,3 +4011,48 @@
   so Step 143 is marked merged and post-merge verified. Step 144,
   `FocusHandle` primitive with request, release, contains, and focused
   queries, is the next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 144 FocusHandle Primitive
+
+- Started Step 144 in `.worktrees/focus-handle-primitive` on
+  `codex/focus-handle-primitive` from `master` at
+  `c71477b docs: mark step 143 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `cgpui::FocusHandle`, runtime/context `focus_handle(...)` factories,
+  request/release forwarding, and current-focus queries. RED failed as
+  expected on missing `FocusHandle` and `focus_handle(...)` APIs.
+- GREEN adds a lightweight `ElementId` focus handle in
+  `include/cgpui/ui/ui.hpp`, runtime/context focus-handle factories,
+  request/release helpers over existing keyboard-focus owner semantics,
+  `contains(...)` / `focused(...)` queries over runtime/context/input
+  snapshots, and a public `WindowRuntime::input_state()` snapshot.
+- Verified targeted GREEN tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/focus-handle-primitive -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Committed Step 144 as
+  `874ef1f feat: add focus handle primitive` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 144 is marked merged and post-merge verified. Step 145, button
+  widget primitive built from public element, focus, style, and action APIs,
+  is the next implementation slice after docs closeout and cleanup.

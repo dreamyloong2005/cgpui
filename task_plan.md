@@ -158,16 +158,14 @@ remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
 Step 144, `FocusHandle` primitive with request, release, contains, and focused
-queries, is implemented and feature-worktree verified in
-`.worktrees/focus-handle-primitive` on `codex/focus-handle-primitive`. RED
-failed as expected on missing `FocusHandle` and `focus_handle(...)` APIs.
-GREEN adds a lightweight element-id focus handle, runtime/context
-`focus_handle(...)` factories, focus request/release forwarding, and query
-helpers over `ViewInputState` plus a public runtime input snapshot. Feature
-worktree targeted tests passed 2/2, Windows full debug passed 29/29, and WSL
-Arch Linux full debug passed 26/26. Step 144 still needs a fresh pre-commit
-targeted check, feature commit, fast-forward merge, post-merge verification,
-docs closeout, and cleanup before Step 145 begins.
+queries, is merged on `master` at
+`874ef1f feat: add focus handle primitive` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing `FocusHandle` and
+`focus_handle(...)` APIs. GREEN adds a lightweight element-id focus handle,
+runtime/context `focus_handle(...)` factories, focus request/release
+forwarding, and query helpers over `ViewInputState` plus a public runtime
+input snapshot. The effective distance through Step 168 is 24 remaining
+follow-on implementation steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -324,7 +322,7 @@ docs closeout, and cleanup before Step 145 begins.
 141. [x] Element state storage keyed by element id for reusable widgets.
 142. [x] Style class and theme token primitives for reusable design vocabulary.
 143. [x] Style cascade resolution combining base, class, state, and inline styles.
-144. [ ] `FocusHandle` primitive with request, release, contains, and focused queries.
+144. [x] `FocusHandle` primitive with request, release, contains, and focused queries.
 145. [ ] Button widget primitive built from public element, focus, style, and action APIs.
 146. [ ] Label widget primitive using text style and text paint commands.
 147. [ ] Text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
@@ -353,19 +351,12 @@ docs closeout, and cleanup before Step 145 begins.
 ## Active Step
 
 Current handoff: Step 144, `FocusHandle` primitive with request, release,
-contains, and focused queries, is implemented and feature-worktree verified in
-`.worktrees/focus-handle-primitive` on `codex/focus-handle-primitive`. RED
-failed as expected on missing `cgpui::FocusHandle`,
-`WindowRuntime::focus_handle(...)`, and
-`WindowRuntimeContext::focus_handle(...)`. GREEN adds a lightweight `ElementId`
-handle over existing keyboard-focus owner semantics, runtime/context
-factories, request/release forwarding, `contains(...)` and `focused(...)`
-queries over runtime/context/input snapshots, and a public
-`WindowRuntime::input_state()` snapshot. Feature-worktree targeted tests
-passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
-passed 26/26. Step 144 still needs fresh targeted verification, feature
-commit, fast-forward merge to `master`, post-merge verification, docs
-closeout, and cleanup before Step 145 begins.
+contains, and focused queries, is merged on `master` at
+`874ef1f feat: add focus handle primitive` and post-merge verified on Windows
+and WSL Arch Linux. Post-merge targeted tests passed 2/2, Windows full debug
+passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 145, button
+widget primitive built from public element, focus, style, and action APIs, is
+the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

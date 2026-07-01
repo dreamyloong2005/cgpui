@@ -2447,3 +2447,21 @@
   exposes `.class_name(...)` plus `.inline_style(...)`. Normal layout and paint
   still use the local style state until a later slice supplies cascade context
   to runtime traversal.
+
+## 2026-07-01 FocusHandle Primitive
+
+- Step 144 deliberately keeps `FocusHandle` as a lightweight public handle over
+  `ElementId`, not as a new focus graph or owner type. The existing
+  keyboard-focus owner remains authoritative.
+- `FocusHandle::request(...)` and `release(...)` forward through
+  `WindowRuntime` / `WindowRuntimeContext`, so widget code can carry handles
+  without reaching into runtime internals.
+- `contains(...)` and `focused(...)` are snapshot-friendly queries over
+  `ViewInputState`, `WindowRuntime`, and `WindowRuntimeContext`. This keeps
+  focus inspection cheap for reusable widgets and tests.
+- The new public `WindowRuntime::input_state()` snapshot mirrors the context
+  access path and avoids duplicating focus/hover/pointer-capture state assembly.
+- Step 145 should build the button primitive from these public pieces:
+  focusable/disabled/click/action behavior, existing style-state overlays, and
+  element builders. It should not introduce private runtime hooks unless a
+  missing general primitive first becomes explicit in RED coverage.
