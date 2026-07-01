@@ -1,6 +1,20 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <string_view>
+
+namespace {
+
+bool source_contains_paint_snapshot_smoke(std::string_view text) {
+  return text.find("CGPUI_DEMO_PAINT_SNAPSHOT_SMOKE") != std::string_view::npos;
+}
+
+bool hello_window_uses_stable_paint_snapshot_smoke(std::string_view text) {
+  return source_contains_paint_snapshot_smoke(text) &&
+         text.find("paint_snapshot_smoke") != std::string_view::npos;
+}
+
+} // namespace
 
 int main() {
   std::ifstream source("examples/hello_window/main.cpp");
@@ -163,6 +177,9 @@ int main() {
   }
   if (text.find("CGPUI_DEMO_INJECT_TEXT") == std::string::npos) {
     return 30;
+  }
+  if (!hello_window_uses_stable_paint_snapshot_smoke(text)) {
+    return 51;
   }
 
   std::ifstream platform_source("include/cgpui/platform/platform.hpp");

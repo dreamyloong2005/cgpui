@@ -1,6 +1,9 @@
 #include "cgpui/ui/ui.hpp"
+#include "paint_snapshot.hpp"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace {
 
@@ -18,11 +21,13 @@ class RecordingFrame final : public cgpui::RenderFrame {
   void draw_rect(const cgpui::SolidRect& rect) override {
     draw_count += 1;
     last_rect = rect;
+    rects.push_back(rect);
   }
 
   void draw_text(const cgpui::TextDraw& text) override {
     text_draw_count += 1;
     last_text = text;
+    texts.push_back(text);
   }
 
   cgpui::Result<void> present() override {
@@ -36,6 +41,8 @@ class RecordingFrame final : public cgpui::RenderFrame {
   int present_count = 0;
   cgpui::SolidRect last_rect;
   cgpui::TextDraw last_text;
+  std::vector<cgpui::SolidRect> rects;
+  std::vector<cgpui::TextDraw> texts;
 };
 
 class RecordingRenderer final : public cgpui::Renderer {
@@ -146,8 +153,14 @@ int main() {
     return 8;
   }
 
-  return frame.last_text.glyphs[2].key.byte_offset == 2 &&
-                 frame.last_text.glyphs[2].origin.x == 18.0F
-             ? 0
-             : 7;
+  if (frame.last_text.glyphs[2].key.byte_offset != 2 ||
+      frame.last_text.glyphs[2].origin.x != 18.0F) {
+    return 7;
+  }
+
+  const std::string snapshot =
+      snapshot_render_commands(frame.rects, frame.texts);
+  const std::string expected =
+      "0 text bounds=(2.0,4.0 24.0x16.0) color=0.800,0.900,1.000,1.000 content=\"abc\" font=<default> size=16.0 device_size=16.0 glyphs=3 clip=none opacity=0.500 transform=[1.0,0.0,0.0,1.0,3.0,4.0]\n";
+  return snapshot == expected ? 0 : 9;
 }

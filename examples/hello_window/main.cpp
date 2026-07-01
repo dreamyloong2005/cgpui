@@ -158,6 +158,8 @@ int main() {
   const char* injected_text_env = std::getenv("CGPUI_DEMO_INJECT_TEXT");
   const std::string injected_text =
       injected_text_env == nullptr ? std::string{} : std::string{injected_text_env};
+  const bool paint_snapshot_smoke =
+      std::getenv("CGPUI_DEMO_PAINT_SNAPSHOT_SMOKE") != nullptr;
 
   auto app = cgpui::create_platform_application();
   if (!app) {
@@ -206,6 +208,9 @@ int main() {
             first_frame_presented = true;
             if (!injected_text.empty()) {
               view.text_model().insert_text(injected_text);
+              context.request_render();
+            }
+            if (paint_snapshot_smoke) {
               context.request_render();
             }
             if (close_after_first_frame) {

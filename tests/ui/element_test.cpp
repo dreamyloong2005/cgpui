@@ -3,6 +3,7 @@
 #include "cgpui/ui/style.hpp"
 #include "cgpui/ui/text.hpp"
 #include "cgpui/ui/ui.hpp"
+#include "paint_snapshot.hpp"
 
 #include <concepts>
 #include <memory>
@@ -3633,6 +3634,53 @@ int test_button_widget_paints_style_box_before_child() {
              : 352;
 }
 
+int test_widget_paint_command_stream_matches_snapshot() {
+  cgpui::TextModel input_model("input");
+  input_model.set_selection(1, 4);
+  cgpui::PaintList paint_list;
+
+  cgpui::AnyElement button =
+      cgpui::button("snapshot.accept")
+          .style(cgpui::Style{}
+                     .with_padding(cgpui::edges(2.0F))
+                     .with_background_color(cgpui::rgb(20, 30, 40))
+                     .with_border_color(cgpui::rgb(50, 60, 70))
+                     .with_border_width(cgpui::edges(1.0F))
+                     .with_border_radius(cgpui::BorderRadii::all(3.0F)))
+          .child(cgpui::label("OK")
+                     .foreground(cgpui::rgb(220, 230, 240))
+                     .font(cgpui::FontDescriptor{.family = "Snapshot"})
+                     .font_size(12.0F)
+                     .build())
+          .build();
+  (void)button->layout(cgpui::LayoutInput{});
+  button->paint(paint_list);
+
+  cgpui::AnyElement input =
+      cgpui::text_input(input_model)
+          .foreground(cgpui::rgb(10, 20, 30))
+          .font(cgpui::FontDescriptor{.family = "SnapshotInput"})
+          .font_size(18.0F)
+          .build();
+  (void)input->layout(cgpui::LayoutInput{});
+  input->paint(paint_list);
+
+  const std::string snapshot =
+      snapshot_paint_commands(paint_list.commands());
+  const std::string expected =
+      "0 rounded_rect rect=(0.0,0.0 16.0x16.0) color=0.078,0.118,0.157,1.000 radius=3.0,3.0,3.0,3.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "1 solid_rect rect=(0.0,0.0 16.0x1.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "2 solid_rect rect=(15.0,1.0 1.0x14.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "3 solid_rect rect=(0.0,15.0 16.0x1.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "4 solid_rect rect=(0.0,1.0 1.0x14.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "5 text bounds=(2.0,2.0 12.0x12.0) color=0.863,0.902,0.941,1.000 content=\"OK\" font=Snapshot size=12.0 device_size=12.0 glyphs=2 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "6 text_selection rect=(9.0,0.0 27.0x18.0) color=0.220,0.420,0.800,0.380 range=1..4 size=18.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "7 text bounds=(0.0,0.0 45.0x18.0) color=0.039,0.078,0.118,1.000 content=\"input\" font=SnapshotInput size=18.0 device_size=18.0 glyphs=5 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "8 text_caret rect=(36.0,0.0 1.0x18.0) color=0.039,0.078,0.118,1.000 byte=4 size=18.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n";
+
+  return snapshot == expected ? 0 : 372;
+}
+
 int test_element_builder_pointer_handlers_route_concrete_events() {
   int down_count = 0;
   int up_count = 0;
@@ -4444,6 +4492,10 @@ int main() {
     return result;
   }
   if (const int result = test_button_widget_paints_style_box_before_child();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_widget_paint_command_stream_matches_snapshot();
       result != 0) {
     return result;
   }
