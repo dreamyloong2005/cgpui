@@ -101,14 +101,11 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 137 is merged on `master` at
-`c046d0d feat: add runtime update batching` and post-merge verified on Windows
-and WSL Arch Linux. Step 138 is implemented and targeted GREEN in
-`.worktrees/runtime-diagnostics-snapshot`; it still needs feature-worktree
-Windows/WSL full verification, commit, fast-forward merge, post-merge
-verification, docs closeout, and cleanup before Step 139 begins. The effective
-distance through Step 168 after the Step 138 merge is 30 remaining follow-on
-implementation steps plus the four follow-on band checkpoint reviews.
+Step 138 is merged on `master` at
+`7e88e81 feat: add runtime diagnostics snapshot` and post-merge verified on
+Windows and WSL Arch Linux. Step 139 is the next implementation slice. The
+effective distance through Step 168 is 30 remaining follow-on implementation
+steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -294,17 +291,18 @@ implementation steps plus the four follow-on band checkpoint reviews.
 ## Active Step
 
 Current handoff: Step 138, public diagnostics snapshot for entities,
-subscriptions, invalidations, and frames, is implemented in
-`.worktrees/runtime-diagnostics-snapshot` on
-`codex/runtime-diagnostics-snapshot`. RED failed as expected on missing
+subscriptions, invalidations, and frames, is merged on `master` at
+`7e88e81 feat: add runtime diagnostics snapshot` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
 `RuntimeDiagnosticsSnapshot`, `WindowRuntimeContext::diagnostics_snapshot()`,
 and `WindowRuntime::diagnostics_snapshot()`. GREEN adds a public read-only
 snapshot with entity-store/entity counts, view/entity subscription counts,
 observer and connected-subscription counts, current invalidation, frame index,
-and recent render record. Targeted tests passed 2/2. Step 138 still needs
-feature-worktree Windows/WSL full verification, commit, fast-forward merge to
-`master`, post-merge verification, docs closeout, and cleanup before Step 139
-begins.
+and recent render record. Post-merge targeted tests passed 2/2, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 139,
+keyed element identity and keyed reconciliation beyond parent-local index
+matching, is the next implementation slice after this docs closeout and
+cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

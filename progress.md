@@ -3707,5 +3707,21 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/runtime-diagnostics-snapshot -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 26/26.
-- Step 138 still needs a fresh targeted check, feature commit, merge,
-  post-merge verification, docs closeout, and cleanup before Step 139 begins.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Committed Step 138 as
+  `7e88e81 feat: add runtime diagnostics snapshot` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log so
+  Step 138 is marked merged and post-merge verified. Step 139, keyed element
+  identity and keyed reconciliation beyond parent-local index matching, is the
+  next implementation slice after docs closeout and cleanup.

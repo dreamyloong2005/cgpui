@@ -61,14 +61,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `c046d0d feat: add runtime update batching`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
-- Step 138 is implemented in `.worktrees/runtime-diagnostics-snapshot` on
-  `codex/runtime-diagnostics-snapshot` and feature-worktree verified: targeted
-  tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
-  debug passed 26/26.
+- Step 138 is merged on `master` at
+  `7e88e81 feat: add runtime diagnostics snapshot`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 138 still needs feature-worktree Windows/WSL full verification,
-  commit, merge, post-merge verification, docs closeout, and cleanup before
-  Step 139 begins.
+  128. Step 139 is the next implementation slice after the Step 138 docs
+  closeout and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
 
@@ -93,6 +92,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   closeout, and cleanup.
 - After the Step 138 merge, the effective distance through Step 168 will be
   30 follow-on implementation slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 138 Merge
+
+- Step 138, public diagnostics snapshot for entities, subscriptions,
+  invalidations, and frames, is merged on `master` at
+  `7e88e81 feat: add runtime diagnostics snapshot`.
+- RED failed as expected on missing `RuntimeDiagnosticsSnapshot`,
+  `WindowRuntimeContext::diagnostics_snapshot()`, and
+  `WindowRuntime::diagnostics_snapshot()`. GREEN adds a public read-only
+  snapshot with entity-store/entity counts, view/entity subscription counts,
+  observer and connected-subscription counts, current invalidation, frame
+  index, and recent render record.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 139, keyed element identity and keyed reconciliation beyond
+  parent-local index matching, is the next implementation slice after docs
+  closeout and cleanup.
+- The effective distance through Step 168 is 30 follow-on implementation
+  slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 137 GREEN
 
@@ -1302,6 +1320,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
 - [x] Feature-worktree Windows full debug verification passed 29/29.
 - [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `7e88e81 feat: add runtime diagnostics snapshot`.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 - [x] Fast-forward merged to `master` at
   `c046d0d feat: add runtime update batching`.
 - [x] Post-merge targeted verification passed 2/2.
