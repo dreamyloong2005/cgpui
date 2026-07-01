@@ -4390,3 +4390,46 @@
   so Step 151 is marked merged and post-merge verified. Step 152, Vulkan text
   draw path consumes text paint commands through cached glyph metadata, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 152 Vulkan Text Draw Path
+
+- Continued Step 152 in `.worktrees/vulkan-text-draw-path` on
+  `codex/vulkan-text-draw-path` from `master` at
+  `ed7d34e docs: mark step 151 merged`.
+- Baseline targeted test passed before edits:
+  `xmake test -P . vulkan_solid_rect_test/default` passed 1/1.
+- RED coverage in `tests/ui/render_view_test.cpp` and
+  `tests/renderer/vulkan_solid_rect_test.cpp` failed as expected on missing
+  `TextDraw`, `RenderFrame::draw_text(...)`, and
+  `vulkan_consume_text_draw(...)` APIs.
+- GREEN adds public `TextDraw`, a default no-op `RenderFrame::draw_text(...)`
+  compatibility hook, `render_view(...)` forwarding for text paint commands,
+  and a Vulkan text draw consumer that records glyph-cache lookups and stores
+  deterministic atlas entries from `TextGlyphPaint` metadata.
+- Verified targeted GREEN tests:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-draw-path -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Committed Step 152 as
+  `367854b feat: consume text glyphs in vulkan renderer` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 152 is marked merged and post-merge verified. Step 153, opacity and
+  transform paint metadata with deterministic command ordering, is the next
+  implementation slice after docs closeout and cleanup.

@@ -117,8 +117,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `681513a feat: add glyph atlas cache interface`; post-merge targeted tests
   passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 152 is merged on `master` at
+  `367854b feat: consume text glyphs in vulkan renderer`; post-merge targeted
+  tests passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 152 is the next implementation slice after Step 151 docs closeout
+  128. Step 153 is the next implementation slice after Step 152 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -1967,11 +1971,21 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 **Files:**
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `src/ui/ui.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
+- Modify: `tests/ui/render_view_test.cpp`
+- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 
-- [ ] Add RED renderer tests for text draw command acceptance with cached glyph metadata.
-- [ ] Implement a minimal Vulkan text command path that is testable without real font discovery.
-- [ ] Targeted test command: `xmake test -P . vulkan_solid_rect_test/default`.
+- [x] Add RED renderer tests for text draw command acceptance with cached glyph metadata.
+- [x] Implement a minimal Vulkan text command path that is testable without real font discovery.
+- [x] Targeted test command: `xmake test -P . render_view_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default` passed 4/4.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `367854b feat: consume text glyphs in vulkan renderer`.
+- [x] Post-merge targeted verification passed 4/4.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 153: Opacity and Transform Metadata
 

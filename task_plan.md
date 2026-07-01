@@ -246,6 +246,17 @@ metadata for later Vulkan consumption. The effective distance through Step 168
 is 17 remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
+Step 152, Vulkan text draw path consumes text paint commands through cached
+glyph metadata, is merged on `master` at
+`367854b feat: consume text glyphs in vulkan renderer` and post-merge verified
+on Windows and WSL Arch Linux. RED failed as expected on missing `TextDraw`,
+`RenderFrame::draw_text(...)`, and `vulkan_consume_text_draw(...)` APIs. GREEN
+adds a renderer text draw command, forwards UI text paint commands into frames,
+and makes the Vulkan path consume glyph metadata through a persistent
+`GlyphCache` without adding real glyph raster/upload yet. The effective
+distance through Step 168 is 16 remaining follow-on implementation steps plus
+the four follow-on band checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -409,7 +420,7 @@ checkpoint reviews.
 149. [x] Font database abstraction and platform font discovery skeleton for Win32 and Linux.
 150. [x] Text shaping run abstraction with deterministic fallback metrics before full shaping.
 151. [x] Glyph atlas/cache interface shared by text elements and Vulkan renderer.
-152. [ ] Vulkan text draw path consumes text paint commands through cached glyph metadata.
+152. [x] Vulkan text draw path consumes text paint commands through cached glyph metadata.
 153. [ ] Opacity and transform paint metadata with deterministic command ordering.
 154. [ ] Renderer command batching by clip, opacity, transform, and primitive kind.
 155. [ ] Frame timing and paint/layout/render statistics exposed through diagnostics.
@@ -429,13 +440,13 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 151, glyph atlas/cache interface shared by text elements
-and Vulkan renderer, is merged on `master` at
-`681513a feat: add glyph atlas cache interface` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 152,
-Vulkan text draw path consumes text paint commands through cached glyph
-metadata, is the next implementation slice after docs closeout and cleanup.
+Current handoff: Step 152, Vulkan text draw path consumes text paint commands
+through cached glyph metadata, is merged on `master` at
+`367854b feat: consume text glyphs in vulkan renderer` and post-merge verified
+on Windows and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 153,
+opacity and transform paint metadata with deterministic command ordering, is
+the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

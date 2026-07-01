@@ -2606,3 +2606,21 @@
   UI text glyph metadata. Future text-rendering slices should keep the public
   surface split: `ui/text.hpp` owns shaping/glyph paint metadata, while
   `renderer/renderer.hpp` owns atlas/cache lookup records.
+
+## 2026-07-01 Vulkan Text Draw Path
+
+- Step 152 makes text commands reach the renderer frame for the first time:
+  `render_view(...)` now forwards `PaintCommandKind::text` as `TextDraw`
+  instead of skipping it, while text selection and caret commands still remain
+  metadata-only and skipped by the renderer bridge.
+- `RenderFrame::draw_text(...)` intentionally has a default no-op body so
+  existing fake frames and the deferred Metal skeleton remain source-compatible.
+  Vulkan overrides it and stores `TextDraw` commands for frame presentation.
+- The Vulkan path consumes `TextDraw::glyphs` through a persistent
+  `GlyphCache` before recording the swapchain command buffers. This proves the
+  renderer uses cache metadata, but it still does not rasterize glyph pixels,
+  allocate atlas textures, bind pipelines, or emit textured quads.
+- `vulkan_consume_text_draw(...)` stores deterministic atlas placeholder bounds
+  from each glyph origin, advance, and font size. Step 153 can build opacity and
+  transform command metadata on top of this command stream without depending on
+  real font upload yet.
