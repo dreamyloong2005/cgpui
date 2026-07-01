@@ -44,6 +44,23 @@ int main() {
       .atlas_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
       .advance = 9.0F,
   });
+  const cgpui::TextDraw text_draw{
+      .bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
+      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+      .font = cgpui::FontDescriptor{.family = "Header"},
+      .content = "x",
+      .byte_length = 1,
+      .font_size = 18.0F,
+      .glyphs =
+          {
+              cgpui::TextGlyphPaint{
+                  .key = glyph_key,
+                  .origin = {},
+                  .advance = 9.0F,
+              },
+          },
+      .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -51,7 +68,9 @@ int main() {
 
   return state.framebuffer_size.width > 0.0F && !glyph_lookup.hit &&
                  glyph_cache.lookup_count() == 1 &&
-                 glyph_cache.entries().size() == 1
+                 glyph_cache.entries().size() == 1 &&
+                 text_draw.glyphs.size() == 1 &&
+                 text_draw.clip_rect.has_value()
              ? 0
              : 1;
 }

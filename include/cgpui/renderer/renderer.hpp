@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -54,6 +55,17 @@ struct RenderSurfaceDescriptor {
 struct SolidRect {
   Rect rect;
   Color color;
+  std::optional<Rect> clip_rect;
+};
+
+struct TextDraw {
+  Rect bounds;
+  Color color;
+  FontDescriptor font;
+  std::string content;
+  std::size_t byte_length = 0;
+  float font_size = 16.0F;
+  std::vector<TextGlyphPaint> glyphs;
   std::optional<Rect> clip_rect;
 };
 
@@ -124,6 +136,7 @@ class RenderFrame {
   virtual ~RenderFrame() = default;
   virtual void clear(Color color) = 0;
   virtual void draw_rect(const SolidRect& rect) = 0;
+  virtual void draw_text(const TextDraw& text) { (void)text; }
   virtual Result<void> present() = 0;
 };
 
@@ -137,5 +150,6 @@ class Renderer {
 
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor);
+void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
 
 } // namespace cgpui

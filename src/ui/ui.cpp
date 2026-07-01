@@ -490,9 +490,22 @@ Result<void> render_view(Renderer& renderer, View& view, Size viewport_size) {
   PaintList paint_list;
   view.paint(paint_list, viewport_size);
   for (const auto& command : paint_list.commands()) {
-    if (command.kind == PaintCommandKind::text ||
-        command.kind == PaintCommandKind::text_selection ||
+    if (command.kind == PaintCommandKind::text_selection ||
         command.kind == PaintCommandKind::text_caret) {
+      continue;
+    }
+    if (command.kind == PaintCommandKind::text) {
+      const TextPaint& text = command.text;
+      (*frame)->draw_text(TextDraw{
+          .bounds = text.bounds,
+          .color = text.color,
+          .font = text.font,
+          .content = text.content,
+          .byte_length = text.byte_length,
+          .font_size = text.font_size,
+          .glyphs = text.glyphs,
+          .clip_rect = command.clip_rect,
+      });
       continue;
     }
     SolidRect rect = command.solid_rect;

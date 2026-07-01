@@ -179,10 +179,53 @@ int test_glyph_cache_records_lookup_miss_and_hit() {
              : 9;
 }
 
+int test_text_draw_uses_glyph_cache_metadata() {
+  cgpui::GlyphCache cache;
+  cgpui::TextDraw text{
+      .bounds =
+          cgpui::Rect{
+              .origin = {.x = 4.0F, .y = 6.0F},
+              .size = {.width = 40.0F, .height = 20.0F},
+          },
+      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .content = "ab",
+      .byte_length = 2,
+      .font_size = 20.0F,
+      .glyphs = cgpui::text_glyph_paint_metadata(
+          cgpui::shape_text(
+              "ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F),
+          cgpui::Point{.x = 4.0F, .y = 6.0F}),
+  };
+
+  cgpui::vulkan_consume_text_draw(text, cache);
+  if (cache.lookup_count() != 2 || cache.entries().size() != 2) {
+    return 10;
+  }
+  if (cache.lookups()[0].hit || cache.lookups()[1].hit) {
+    return 11;
+  }
+
+  cgpui::vulkan_consume_text_draw(text, cache);
+  if (cache.lookup_count() != 4 || cache.entries().size() != 2) {
+    return 12;
+  }
+
+  return cache.lookups()[2].hit && cache.lookups()[3].hit &&
+                 cache.entries()[0].atlas_bounds.origin.x == 4.0F &&
+                 cache.entries()[1].atlas_bounds.origin.x == 14.0F
+             ? 0
+             : 13;
+}
+
 } // namespace
 
 int main() {
   if (const int result = test_glyph_cache_records_lookup_miss_and_hit();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_draw_uses_glyph_cache_metadata();
       result != 0) {
     return result;
   }

@@ -99,12 +99,14 @@ class VulkanFrame final : public RenderFrame {
       : state_(std::move(state)) {}
   void clear(Color color) override { clear_color_ = color; }
   void draw_rect(const SolidRect& rect) override { rects_.push_back(rect); }
+  void draw_text(const TextDraw& text) override { text_draws_.push_back(text); }
   Result<void> present() override;
 
  private:
   std::shared_ptr<VulkanRendererState> state_;
   Color clear_color_{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F};
   std::vector<SolidRect> rects_;
+  std::vector<TextDraw> text_draws_;
 };
 
 struct QueueFamilies {
@@ -198,11 +200,18 @@ class VulkanRendererState final {
     return {};
   }
 
-  Result<void> present_frame(Color color, std::span<const SolidRect> rects) {
+  Result<void> present_frame(
+      Color color,
+      std::span<const SolidRect> rects,
+      std::span<const TextDraw> text_draws) {
     if (presentation_blocked_) {
       return std::unexpected(vulkan_error(
           ErrorCode::renderer_initialization_failed,
           "Vulkan presentation requires swapchain recreation"));
+    }
+
+    for (const TextDraw& text_draw : text_draws) {
+      vulkan_consume_text_draw(text_draw, glyph_cache_);
     }
 
     if (auto result = require_vk_success(
@@ -1228,6 +1237,7 @@ class VulkanRendererState final {
   VkSemaphore image_available_ = VK_NULL_HANDLE;
   VkSemaphore render_finished_ = VK_NULL_HANDLE;
   VkFence in_flight_ = VK_NULL_HANDLE;
+  GlyphCache glyph_cache_;
   bool presentation_blocked_ = false;
 };
 
@@ -1251,7 +1261,30 @@ class VulkanRenderer final : public Renderer {
 } // namespace
 
 Result<void> VulkanFrame::present() {
-  return state_->present_frame(clear_color_, rects_);
+  return state_->present_frame(clear_color_, rects_, text_draws_);
+}
+
+void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache) {
+  for (const TextGlyphPaint& glyph : text.glyphs) {
+    const GlyphCacheLookup lookup = glyph_cache.lookup(glyph.key);
+    if (lookup.hit) {
+      continue;
+    }
+
+    glyph_cache.store(GlyphAtlasEntry{
+        .key = glyph.key,
+        .atlas_bounds =
+            Rect{
+                .origin = glyph.origin,
+                .size =
+                    Size{
+                        .width = glyph.advance,
+                        .height = text.font_size,
+                    },
+            },
+        .advance = glyph.advance,
+    });
+  }
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(

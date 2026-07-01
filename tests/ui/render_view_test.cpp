@@ -11,6 +11,11 @@ class RecordingFrame final : public cgpui::RenderFrame {
     last_rect = rect;
   }
 
+  void draw_text(const cgpui::TextDraw& text) override {
+    text_draw_count += 1;
+    last_text = text;
+  }
+
   cgpui::Result<void> present() override {
     present_count += 1;
     return {};
@@ -18,8 +23,10 @@ class RecordingFrame final : public cgpui::RenderFrame {
 
   int clear_count = 0;
   int draw_count = 0;
+  int text_draw_count = 0;
   int present_count = 0;
   cgpui::SolidRect last_rect;
+  cgpui::TextDraw last_text;
 };
 
 class RecordingRenderer final : public cgpui::Renderer {
@@ -42,6 +49,9 @@ class RecordingRenderer final : public cgpui::Renderer {
     void clear(cgpui::Color color) override { frame_.clear(color); }
     void draw_rect(const cgpui::SolidRect& rect) override {
       frame_.draw_rect(rect);
+    }
+    void draw_text(const cgpui::TextDraw& text) override {
+      frame_.draw_text(text);
     }
     cgpui::Result<void> present() override { return frame_.present(); }
 
@@ -107,5 +117,15 @@ int main() {
     return 4;
   }
 
-  return frame.draw_count == 0 ? 0 : 5;
+  if (frame.draw_count != 0 || frame.text_draw_count != 1) {
+    return 5;
+  }
+  if (frame.last_text.content != "abc" || frame.last_text.glyphs.size() != 3) {
+    return 6;
+  }
+
+  return frame.last_text.glyphs[2].key.byte_offset == 2 &&
+                 frame.last_text.glyphs[2].origin.x == 18.0F
+             ? 0
+             : 7;
 }
