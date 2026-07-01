@@ -3674,3 +3674,38 @@
   Step 137 is marked merged and post-merge verified. Step 138, public
   diagnostics snapshot for entities, subscriptions, invalidations, and frames,
   is the next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 138 Runtime Diagnostics Snapshot
+
+- Started Step 138 in `.worktrees/runtime-diagnostics-snapshot` on
+  `codex/runtime-diagnostics-snapshot` from `master` at
+  `d6a2928 docs: mark step 137 merged`.
+- Verified the baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage for a public diagnostics snapshot. Header cleanliness now
+  compiles `RuntimeDiagnosticsSnapshot`,
+  `WindowRuntimeContext::diagnostics_snapshot()`, and
+  `WindowRuntime::diagnostics_snapshot()`. The runtime test exercises entity
+  counts, entity-store counts, view/entity subscription counts, observer
+  counts, connected owned subscription counts, current invalidation, frame
+  index, and recent render status from both context and runtime snapshots.
+- RED failed as expected on missing `cgpui::RuntimeDiagnosticsSnapshot`,
+  `WindowRuntimeContext::diagnostics_snapshot()`, and
+  `WindowRuntime::diagnostics_snapshot()`.
+- GREEN adds public `RuntimeDiagnosticsSnapshot`, runtime/context snapshot
+  accessors, a runtime-maintained `entity_count_`, and snapshot population from
+  existing invalidation, render record, frame index, subscription, and observer
+  state.
+- Verified targeted GREEN tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log with the Step 138 API boundary and targeted GREEN status.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/runtime-diagnostics-snapshot -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 138 still needs a fresh targeted check, feature commit, merge,
+  post-merge verification, docs closeout, and cleanup before Step 139 begins.

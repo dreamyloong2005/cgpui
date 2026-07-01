@@ -547,6 +547,7 @@ int WindowRuntime::run(
   current_event_route_.reset();
   invalidation_state_ = {};
   subscription_query_buffer_.clear();
+  entity_count_ = 0;
   dispatching_view_event_ = false;
   firing_timers_ = false;
   draining_task_completions_ = false;
@@ -1658,6 +1659,26 @@ std::optional<RenderRecord> WindowRuntime::last_render_record() const {
   return last_render_record_;
 }
 
+RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
+  std::size_t connected_subscription_count = 0;
+  for (const EntityObserver& observer : entity_observers_) {
+    if (observer.subscription_id.value != 0 && observer.callback) {
+      connected_subscription_count += 1;
+    }
+  }
+
+  return RuntimeDiagnosticsSnapshot{
+      .entity_store_count = entity_stores_.size(),
+      .entity_count = entity_count_,
+      .view_entity_subscription_count = entity_subscriptions_.size(),
+      .entity_observer_count = entity_observers_.size(),
+      .connected_subscription_count = connected_subscription_count,
+      .invalidation = invalidation_state_,
+      .frame_index = frame_index_,
+      .last_render_record = last_render_record_,
+  };
+}
+
 std::span<const EntitySubscription> WindowRuntime::subscriptions_for_view(
     ViewId view_id) const {
   subscription_query_buffer_.clear();
@@ -2076,6 +2097,10 @@ void WindowRuntimeContext::clear_invalidation() const {
 
 InvalidationState WindowRuntimeContext::invalidation_state() const {
   return runtime.invalidation_state();
+}
+
+RuntimeDiagnosticsSnapshot WindowRuntimeContext::diagnostics_snapshot() const {
+  return runtime.diagnostics_snapshot();
 }
 
 } // namespace cgpui

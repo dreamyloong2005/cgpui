@@ -2320,3 +2320,21 @@
   `WindowRuntimeContext::batch_updates(...)`, and
   `WindowRuntime::batch_updates(...)`. It does not introduce transaction
   rollback, observer reordering, or cross-thread mutation.
+
+## 2026-07-01 Runtime Diagnostics Snapshot
+
+- Step 138 should expose a read-only public snapshot from both
+  `WindowRuntime` and `WindowRuntimeContext`, because app code should not need
+  to stitch together raw runtime internals like `subscriptions_for_view(...)`,
+  `invalidation_state()`, `last_render_record()`, and `frame_index`.
+- Entity storage is type-erased in `WindowRuntime::entity_stores_`, so the
+  narrow diagnostic route is to maintain a runtime-level `entity_count_` as
+  entities are inserted/emplaced/removed. This avoids adding reflection or
+  virtual diagnostics to `EntityStore<T>` during the context-side API band.
+- Step 138 intentionally counts observer records separately from connected
+  owned subscriptions. Permanent observers have a zero `SubscriptionId`, while
+  owned subscriptions remain connected only while their callback is still
+  present.
+- The snapshot includes current invalidation and last render/frame state, but
+  not timing, command counts, or profiling fields. Those belong to the later
+  frame statistics diagnostics slice.

@@ -61,11 +61,38 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `c046d0d feat: add runtime update batching`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 138 is implemented in `.worktrees/runtime-diagnostics-snapshot` on
+  `codex/runtime-diagnostics-snapshot` and feature-worktree verified: targeted
+  tests passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 138 is the next implementation slice after the Step 137 docs
-  closeout and cleanup.
+  128. Step 138 still needs feature-worktree Windows/WSL full verification,
+  commit, merge, post-merge verification, docs closeout, and cleanup before
+  Step 139 begins.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
+
+## 2026-07-01 Back-40 Planning After Step 138 GREEN
+
+- Step 138, public diagnostics snapshot for entities, subscriptions,
+  invalidations, and frames, is implemented and targeted GREEN in
+  `.worktrees/runtime-diagnostics-snapshot` on
+  `codex/runtime-diagnostics-snapshot`.
+- RED failed as expected on missing `RuntimeDiagnosticsSnapshot`,
+  `WindowRuntimeContext::diagnostics_snapshot()`, and
+  `WindowRuntime::diagnostics_snapshot()`. GREEN adds a public read-only
+  snapshot with entity-store/entity counts, view/entity subscription counts,
+  observer and connected-subscription counts, current invalidation, frame
+  index, and recent render record.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Targeted verification command:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- Step 138 still needs feature-worktree Windows/WSL full verification, feature
+  commit, fast-forward merge to `master`, post-merge verification, docs
+  closeout, and cleanup.
+- After the Step 138 merge, the effective distance through Step 168 will be
+  30 follow-on implementation slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 137 GREEN
 
@@ -1032,7 +1059,7 @@ Purpose: make the model/context side feel closer to GPUI authoring instead of di
 - [x] Step 135: timer API for one-shot and repeating callbacks through the runtime loop.
 - [x] Step 136: async task handle skeleton with main-thread completion dispatch.
 - [x] Step 137: runtime update batching so multiple model/global changes coalesce redraws.
-- [ ] Step 138: public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
+- [x] Step 138: public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 
 Exit check: author code can use context-shaped APIs for entities, globals, actions, subscriptions, deferred work, timers, and async completions, with deterministic diagnostics and redraw batching.
 
@@ -1304,9 +1331,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for diagnostics that report entity counts, subscription counts, invalidation state, frame index, and recent render status.
-- [ ] Expose a read-only runtime/context diagnostics snapshot.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for diagnostics that report entity counts, subscription counts, invalidation state, frame index, and recent render status.
+- [x] Expose a read-only runtime/context diagnostics snapshot.
+- [x] Targeted test command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 139: Keyed Element Identity
 

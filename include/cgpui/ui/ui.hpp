@@ -383,6 +383,17 @@ struct RenderRecord {
   std::optional<ElementId> root_element_id;
 };
 
+struct RuntimeDiagnosticsSnapshot {
+  std::size_t entity_store_count = 0;
+  std::size_t entity_count = 0;
+  std::size_t view_entity_subscription_count = 0;
+  std::size_t entity_observer_count = 0;
+  std::size_t connected_subscription_count = 0;
+  InvalidationState invalidation;
+  int frame_index = 0;
+  std::optional<RenderRecord> last_render_record;
+};
+
 struct EntitySubscription {
   ViewId view_id;
   std::type_index entity_type{typeid(void)};
@@ -477,6 +488,7 @@ struct WindowRuntimeContext {
   void batch_updates(UpdateBatchCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
+  [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
 
   template <typename T>
   void set_global(T global_value) const;
@@ -637,6 +649,7 @@ class WindowRuntime {
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
+  [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
   [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
       ViewId view_id) const;
   [[nodiscard]] bool subscription_connected(SubscriptionId id) const;
@@ -785,6 +798,7 @@ class WindowRuntime {
   int frame_index_ = 0;
   std::unordered_map<std::type_index, std::any> globals_;
   std::unordered_map<std::type_index, std::any> entity_stores_;
+  std::size_t entity_count_ = 0;
   std::unordered_map<std::string, ActionHandler> action_handlers_;
   std::unordered_map<std::string, ActionHandler> window_action_handlers_;
   std::unordered_map<
@@ -942,12 +956,17 @@ void WindowRuntimeContext::subscribe_view_to_entity(
 
 template <typename T>
 EntityId<T> WindowRuntime::insert_entity(T entity) {
-  return entity_store<T>().insert(std::move(entity));
+  const EntityId<T> id = entity_store<T>().insert(std::move(entity));
+  entity_count_ += 1;
+  return id;
 }
 
 template <typename T, typename... Args>
 EntityId<T> WindowRuntime::emplace_entity(Args&&... args) {
-  return entity_store<T>().emplace(std::forward<Args>(args)...);
+  const EntityId<T> id =
+      entity_store<T>().emplace(std::forward<Args>(args)...);
+  entity_count_ += 1;
+  return id;
 }
 
 template <typename T>
@@ -1032,6 +1051,9 @@ bool WindowRuntime::remove_entity(EntityId<T> id) {
   }
   const bool removed = store->remove(id);
   if (removed) {
+    if (entity_count_ > 0) {
+      entity_count_ -= 1;
+    }
     (void)notify_entity_changed(id);
   }
   return removed;

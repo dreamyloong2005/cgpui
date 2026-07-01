@@ -87,6 +87,12 @@ class TestView final : public cgpui::View {
     context.runtime.batch_updates([](const cgpui::ViewContext& batch_context) {
       batch_context.request_layout();
     });
+    const cgpui::RuntimeDiagnosticsSnapshot context_diagnostics =
+        context.diagnostics_snapshot();
+    const cgpui::RuntimeDiagnosticsSnapshot runtime_diagnostics =
+        context.runtime.diagnostics_snapshot();
+    (void)context_diagnostics.entity_count;
+    (void)runtime_diagnostics.last_render_record;
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {

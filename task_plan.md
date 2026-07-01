@@ -103,9 +103,12 @@ steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 
 Step 137 is merged on `master` at
 `c046d0d feat: add runtime update batching` and post-merge verified on Windows
-and WSL Arch Linux. Step 138 is the next implementation slice. The effective
-distance through Step 168 is 31 remaining follow-on implementation steps plus
-the four follow-on band checkpoint reviews.
+and WSL Arch Linux. Step 138 is implemented and targeted GREEN in
+`.worktrees/runtime-diagnostics-snapshot`; it still needs feature-worktree
+Windows/WSL full verification, commit, fast-forward merge, post-merge
+verification, docs closeout, and cleanup before Step 139 begins. The effective
+distance through Step 168 after the Step 138 merge is 30 remaining follow-on
+implementation steps plus the four follow-on band checkpoint reviews.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -256,7 +259,7 @@ the four follow-on band checkpoint reviews.
 135. [x] Timer API for one-shot and repeating callbacks through the runtime loop.
 136. [x] Async task handle skeleton with main-thread completion dispatch.
 137. [x] Runtime update batching so multiple model/global changes coalesce redraws.
-138. [ ] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
+138. [x] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
 139. [ ] Keyed element identity and keyed reconciliation beyond parent-local index matching.
 140. [ ] Element lifecycle hooks for mount, update, and unmount notifications.
 141. [ ] Element state storage keyed by element id for reusable widgets.
@@ -290,19 +293,18 @@ the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 137, runtime update batching so multiple model/global
-changes coalesce redraws, is merged on `master` at
-`c046d0d feat: add runtime update batching` and post-merge verified on Windows
-and WSL Arch Linux. RED failed as expected on missing
-`WindowRuntimeContext::batch_updates(...)` and
-`WindowRuntime::batch_updates(...)`. GREEN adds public `UpdateBatchCallback`,
-context/runtime `batch_updates(...)`, an update-batch depth guard, redraw
-deferral until the outermost batch exits, and render invalidation for
-`set_global(...)` / `update_global(...)`. Post-merge targeted tests passed 2/2,
-Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
-Step 138, public diagnostics snapshot for entities, subscriptions,
-invalidations, and frames, is the next implementation slice after this docs
-closeout and cleanup.
+Current handoff: Step 138, public diagnostics snapshot for entities,
+subscriptions, invalidations, and frames, is implemented in
+`.worktrees/runtime-diagnostics-snapshot` on
+`codex/runtime-diagnostics-snapshot`. RED failed as expected on missing
+`RuntimeDiagnosticsSnapshot`, `WindowRuntimeContext::diagnostics_snapshot()`,
+and `WindowRuntime::diagnostics_snapshot()`. GREEN adds a public read-only
+snapshot with entity-store/entity counts, view/entity subscription counts,
+observer and connected-subscription counts, current invalidation, frame index,
+and recent render record. Targeted tests passed 2/2. Step 138 still needs
+feature-worktree Windows/WSL full verification, commit, fast-forward merge to
+`master`, post-merge verification, docs closeout, and cleanup before Step 139
+begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -5819,6 +5819,96 @@ int test_runtime_batches_model_and_global_update_redraws() {
   return 0;
 }
 
+cgpui::WindowRuntime* diagnostics_runtime = nullptr;
+cgpui::Subscription diagnostics_subscription;
+cgpui::RuntimeDiagnosticsSnapshot diagnostics_context_snapshot{};
+
+void dispatch_diagnostics_snapshot_sequence() {
+  auto& runtime = *diagnostics_runtime;
+  runtime.batch_updates(
+      [](const cgpui::ViewContext& context) {
+        const cgpui::Model<RuntimeEntity> first_model =
+            context.new_model<RuntimeEntity>(1);
+        const cgpui::Model<RuntimeEntity> second_model =
+            context.new_model<RuntimeEntity>(2);
+        context.subscribe_view_to_entity(context.view_id, first_model);
+        context.subscribe_view_to_entity(context.view_id, second_model);
+        (void)context.observe_model(
+            first_model,
+            [](const cgpui::ViewContext&, cgpui::Model<RuntimeEntity>) {});
+        diagnostics_subscription = context.observe_model_subscription(
+            second_model,
+            [](const cgpui::ViewContext&, cgpui::Model<RuntimeEntity>) {});
+        (void)diagnostics_subscription.connected();
+        (void)context.update_model(
+            first_model,
+            [](RuntimeEntity& entity) {
+              entity.value += 10;
+            });
+        diagnostics_context_snapshot = context.diagnostics_snapshot();
+      });
+}
+
+int test_runtime_reports_public_diagnostics_snapshot() {
+  RuntimeFixture fixture;
+  fixture.app.on_run = &dispatch_diagnostics_snapshot_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  diagnostics_runtime = &runtime;
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  diagnostics_runtime = nullptr;
+  if (result != 0) {
+    (void)diagnostics_subscription.release();
+    return 387;
+  }
+
+  const cgpui::RuntimeDiagnosticsSnapshot after_run =
+      runtime.diagnostics_snapshot();
+  if (diagnostics_context_snapshot.entity_store_count != 1 ||
+      diagnostics_context_snapshot.entity_count != 2 ||
+      diagnostics_context_snapshot.view_entity_subscription_count != 2 ||
+      diagnostics_context_snapshot.entity_observer_count != 2 ||
+      diagnostics_context_snapshot.connected_subscription_count != 1) {
+    return 388;
+  }
+  if (!diagnostics_context_snapshot.invalidation.render ||
+      !diagnostics_context_snapshot.invalidation.layout ||
+      !diagnostics_context_snapshot.invalidation.paint) {
+    return 389;
+  }
+  if (diagnostics_context_snapshot.frame_index != 0 ||
+      diagnostics_context_snapshot.last_render_record.has_value()) {
+    return 390;
+  }
+  if (after_run.entity_store_count != 1 || after_run.entity_count != 2 ||
+      after_run.view_entity_subscription_count != 2 ||
+      after_run.entity_observer_count != 2 ||
+      after_run.connected_subscription_count != 1) {
+    return 391;
+  }
+  if (after_run.invalidation.render || after_run.invalidation.layout ||
+      after_run.invalidation.paint || after_run.frame_index != 1) {
+    return 392;
+  }
+  if (!after_run.last_render_record.has_value() ||
+      after_run.last_render_record->sequence != 1 ||
+      after_run.last_render_record->view_id != cgpui::ViewId{1}) {
+    (void)diagnostics_subscription.release();
+    return 393;
+  }
+
+  (void)diagnostics_subscription.release();
+  return 0;
+}
+
 RuntimeFixture* key_binding_fixture = nullptr;
 
 void dispatch_key_binding_sequence() {
@@ -7070,6 +7160,10 @@ int main() {
   }
   if (const int result =
           test_runtime_batches_model_and_global_update_redraws();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_reports_public_diagnostics_snapshot();
       result != 0) {
     return result;
   }
