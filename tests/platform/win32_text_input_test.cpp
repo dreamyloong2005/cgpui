@@ -52,6 +52,10 @@ int main() {
   if (!window) {
     return 3;
   }
+  if ((*window)->state().ime_text_input_support !=
+      cgpui::ImeTextInputSupport::available) {
+    return 11;
+  }
 
   const auto surface =
       std::get<cgpui::Win32SurfaceHandle>((*window)->native_surface());

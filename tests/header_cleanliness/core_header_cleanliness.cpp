@@ -12,6 +12,7 @@ int main() {
   cgpui::WindowDescriptor descriptor;
   cgpui::WindowState state;
   state.framebuffer_size = descriptor.size;
+  state.ime_text_input_support = cgpui::ImeTextInputSupport::unsupported;
   cgpui::PlatformEvent event = cgpui::WindowRedrawRequested{};
   (void)event;
   cgpui::PlatformEvent ime_event = cgpui::ImeComposition{

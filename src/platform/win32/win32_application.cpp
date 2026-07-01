@@ -413,7 +413,8 @@ class Win32Application final : public PlatformApplication {
     auto state = WindowState{
         .framebuffer_size = descriptor.size,
         .scale = DpiScale{1.0F},
-        .close_requested = false};
+        .close_requested = false,
+        .ime_text_input_support = ImeTextInputSupport::available};
     auto window = std::make_unique<Win32Window>(instance_, std::move(callback), state);
 
     const auto title = widen(descriptor.title);

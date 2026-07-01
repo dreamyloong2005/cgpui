@@ -294,6 +294,24 @@ KeyboardModifiers modifiers_from_xkb_state(xkb_state* state) {
   };
 }
 
+class WaylandTextInput {
+ public:
+  [[nodiscard]] ImeTextInputSupport support() const {
+    return ImeTextInputSupport::unsupported;
+  }
+
+  void set_placement(std::optional<ImeTextInputPlacement> placement) {
+    placement_ = placement;
+  }
+
+  [[nodiscard]] std::optional<ImeTextInputPlacement> placement() const {
+    return placement_;
+  }
+
+ private:
+  std::optional<ImeTextInputPlacement> placement_;
+};
+
 class WaylandWindow final : public PlatformWindow {
  public:
   static Result<std::unique_ptr<WaylandWindow>> create(
@@ -356,7 +374,9 @@ class WaylandWindow final : public PlatformWindow {
 
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override {
-    state_.ime_text_input_placement = placement;
+    text_input_.set_placement(placement);
+    state_.ime_text_input_support = text_input_.support();
+    state_.ime_text_input_placement = text_input_.placement();
   }
 
   [[nodiscard]] CursorShape cursor_shape() const {
@@ -508,6 +528,7 @@ class WaylandWindow final : public PlatformWindow {
   xdg_toplevel* toplevel_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
+  WaylandTextInput text_input_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;

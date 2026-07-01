@@ -77,6 +77,36 @@ int main() {
   if (!window) {
     return 4;
   }
+  if ((*window)->state().ime_text_input_support !=
+      cgpui::ImeTextInputSupport::unsupported) {
+    return 14;
+  }
+
+  (*window)->set_ime_text_input_placement(cgpui::ImeTextInputPlacement{
+      .rect =
+          cgpui::Rect{
+              .origin = {.x = 18.0F, .y = 28.0F},
+              .size = {.width = 1.0F, .height = 16.0F}},
+      .byte_offset = 1});
+  const cgpui::WindowState placed_state = (*window)->state();
+  if (placed_state.ime_text_input_support !=
+          cgpui::ImeTextInputSupport::unsupported ||
+      !placed_state.ime_text_input_placement.has_value() ||
+      placed_state.ime_text_input_placement->byte_offset != 1 ||
+      placed_state.ime_text_input_placement->rect.origin.x != 18.0F ||
+      placed_state.ime_text_input_placement->rect.origin.y != 28.0F ||
+      placed_state.ime_text_input_placement->rect.size.width != 1.0F ||
+      placed_state.ime_text_input_placement->rect.size.height != 16.0F) {
+    return 15;
+  }
+
+  (*window)->set_ime_text_input_placement(std::nullopt);
+  const cgpui::WindowState cleared_state = (*window)->state();
+  if (cleared_state.ime_text_input_support !=
+          cgpui::ImeTextInputSupport::unsupported ||
+      cleared_state.ime_text_input_placement.has_value()) {
+    return 16;
+  }
 
   std::atomic_bool run_finished{false};
   int run_result = -1;

@@ -150,6 +150,11 @@ int main() {
       !contains(text, "FontDatabase")) {
     return 62;
   }
+  if (!contains(text, "WaylandTextInput") ||
+      !contains(text, "ImeTextInputSupport::unsupported") ||
+      !contains(text, "set_ime_text_input_placement")) {
+    return 63;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {
