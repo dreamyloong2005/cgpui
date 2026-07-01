@@ -40,6 +40,40 @@ class WeakEntity {
 };
 
 template <typename T>
+class EntityHandle {
+ public:
+  constexpr EntityHandle() = default;
+  constexpr explicit EntityHandle(EntityId<T> id) : id_(id) {}
+
+  [[nodiscard]] constexpr EntityId<T> id() const {
+    return id_;
+  }
+
+  [[nodiscard]] constexpr bool empty() const {
+    return id_.value == 0;
+  }
+
+  [[nodiscard]] constexpr WeakEntity<T> downgrade() const {
+    return WeakEntity<T>(id_);
+  }
+
+  template <typename Context>
+  [[nodiscard]] const T* read(const Context& context) const {
+    return context.read_entity(id_);
+  }
+
+  template <typename Context, typename Update>
+  bool update(const Context& context, Update&& update) const {
+    return context.update_model(id_, std::forward<Update>(update));
+  }
+
+  friend bool operator==(const EntityHandle&, const EntityHandle&) = default;
+
+ private:
+  EntityId<T> id_;
+};
+
+template <typename T>
 class EntityStore {
  public:
   template <typename... Args>

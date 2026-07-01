@@ -111,6 +111,37 @@ int test_weak_entity_stores_typed_id() {
   return 0;
 }
 
+int test_entity_handle_stores_id_and_downgrades() {
+  cgpui::EntityStore<Document> store;
+
+  const cgpui::Entity<Document> entity =
+      store.insert(Document{.title = "handle", .revision = 7});
+  const cgpui::EntityHandle<Document> handle(entity);
+
+  if (handle.empty()) {
+    return 30;
+  }
+  if (handle.id() != entity) {
+    return 31;
+  }
+
+  const cgpui::WeakEntity<Document> weak = handle.downgrade();
+  if (weak.empty() || weak.id() != entity) {
+    return 32;
+  }
+
+  const cgpui::EntityHandle<Document> empty;
+  if (!empty.empty() || !empty.downgrade().empty()) {
+    return 33;
+  }
+
+  static_assert(!std::is_same_v<
+                cgpui::EntityHandle<Document>,
+                cgpui::EntityHandle<Panel>>);
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -123,6 +154,10 @@ int main() {
     return result;
   }
   if (const int result = test_weak_entity_stores_typed_id(); result != 0) {
+    return result;
+  }
+  if (const int result = test_entity_handle_stores_id_and_downgrades();
+      result != 0) {
     return result;
   }
   return 0;

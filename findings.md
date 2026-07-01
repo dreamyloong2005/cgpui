@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Entity Handle Convenience API
+
+- Step 130 keeps `EntityHandle<T>` as a lightweight typed id wrapper, not a new
+  ownership model. The runtime remains the source of truth for entity storage,
+  liveness, notification, and invalidation.
+- `EntityHandle<T>::read(cx)` delegates to the existing context entity read
+  helper, while `update(cx, fn)` delegates to the existing notifying update
+  path. This intentionally gives entity handles the same subscribed-view
+  invalidation behavior already used by model updates.
+- `downgrade()` returns the existing `WeakEntity<T>` shape, preserving the
+  soft-fail upgrade semantics from Step 101 instead of introducing a second
+  weak handle type.
+
 ## 2026-07-01 Context Authoring Alias Merged
 
 - Step 129 is merged on `master` at

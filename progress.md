@@ -1,5 +1,31 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 130 Entity Handle Convenience API
+
+- Started Step 130 in `.worktrees/entity-handle-convenience` on
+  `codex/entity-handle-convenience` from `master` at
+  `d7334db docs: mark step 129 merged`.
+- Added RED coverage in `tests/core/entity_store_test.cpp` and
+  `tests/ui/window_runtime_test.cpp` for public `EntityHandle<T>` typed
+  handles, `id()`, `empty()`, `downgrade()`, `read(cx)`, `update(cx, fn)`,
+  missing-entity soft failure, and subscription invalidation after a handle
+  update. RED failed as expected on missing `cgpui::EntityHandle<T>`.
+- Implemented Step 130 in `include/cgpui/core/entity.hpp`: `EntityHandle<T>`
+  is a lightweight typed id wrapper with no ownership or second store, reads
+  through existing context/runtime entity helpers, updates through the existing
+  notifying model/entity update path, and downgrades to `WeakEntity<T>`.
+- Verified targeted tests after GREEN:
+  `xmake test -P . entity_store_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/entity-handle-convenience -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 130 is implemented and feature-worktree verified. It still needs
+  feature commit, fast-forward merge to `master`, post-merge targeted/Windows/
+  WSL verification, docs closeout, and cleanup before Step 131 begins.
+
 ## 2026-07-01 Step 129 Post-Merge
 
 - Fast-forward merged Step 129 to `master` at

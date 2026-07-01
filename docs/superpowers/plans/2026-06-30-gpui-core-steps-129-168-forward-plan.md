@@ -223,6 +223,22 @@ Historical snapshot, superseded by the Step 128 merge refresh below.
   convenience methods, is the next implementation slice after docs closeout
   and cleanup.
 
+## 2026-07-01 Step 130 Entity Handle Convenience API
+
+- Step 130 is implemented and feature-worktree verified in
+  `.worktrees/entity-handle-convenience` on
+  `codex/entity-handle-convenience`.
+- RED failed as expected on missing public `cgpui::EntityHandle<T>` from core
+  entity and runtime context-helper coverage.
+- GREEN adds a lightweight `EntityHandle<T>` typed id wrapper with `id()`,
+  `empty()`, `downgrade()`, `read(cx)`, and `update(cx, fn)` over the existing
+  entity/context APIs.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 131, global app state registry with typed `set_global`, `global`, and
+  `update_global` helpers, is the next implementation slice after the Step 130
+  merge and post-merge verification.
+
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
 Historical snapshot, superseded by the Step 125 merge refresh above.
@@ -927,7 +943,7 @@ Step 128 demo state.
 Purpose: make the model/context side feel closer to GPUI authoring instead of direct runtime plumbing.
 
 - [x] Step 129: public `Context<T>` authoring alias over `ViewContext` for view/model code.
-- [ ] Step 130: entity handle API with `read`, `update`, and `downgrade` convenience methods.
+- [x] Step 130: entity handle API with `read`, `update`, and `downgrade` convenience methods.
 - [ ] Step 131: global app state registry with typed `set_global`, `global`, and `update_global` helpers.
 - [ ] Step 132: scoped action registry for app, window, view, and focused element actions.
 - [ ] Step 133: subscription ownership token that disconnects observers on drop/removal.
@@ -1032,6 +1048,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [ ] Add RED tests for an entity handle that stores a typed id and supports `read(cx)`, `update(cx, fn)`, and `downgrade()`.
 - [ ] Implement handle helpers over the existing entity store/context APIs.
 - [ ] Targeted test command: `xmake test -P . entity_store_test/default window_runtime_test/default`.
+- [x] RED failed as expected on missing `cgpui::EntityHandle<T>`.
+- [x] GREEN added the lightweight handle over existing entity/context APIs.
+- [x] Targeted tests passed 2/2:
+  `xmake test -P . entity_store_test/default window_runtime_test/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/entity-handle-convenience -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 131: Global App State Registry
 
