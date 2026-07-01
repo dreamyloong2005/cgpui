@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Context Authoring Alias Merged
+
+- Step 129 is merged on `master` at
+  `d1576fe feat: add context authoring alias` and post-merge verified on
+  Windows and WSL Arch Linux.
+- The public context authoring surface now has the GPUI-like spelling
+  `Context<T>` while preserving the existing `ViewContext`/`WindowRuntimeContext`
+  runtime behavior.
+- Step 130 should add entity handle convenience methods on top of this alias
+  and the existing entity/model helpers, without turning `Context<T>` into an
+  owning context wrapper.
+
 ## 2026-07-01 Context Authoring Alias
 
 - Step 129 keeps `Context<T>` intentionally as a public authoring alias over

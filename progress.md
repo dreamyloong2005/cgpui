@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 129 Post-Merge
+
+- Fast-forward merged Step 129 to `master` at
+  `d1576fe feat: add context authoring alias`.
+- Verified post-merge targeted tests on `master`:
+  `xmake test -P . window_runtime_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge Windows full debug on `master`:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug on `master`:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Step 130, entity handle API with `read`, `update`, and `downgrade`
+  convenience methods, is the next implementation slice after this docs
+  closeout and cleanup.
+
 ## 2026-07-01 Step 129 Context Authoring Alias
 
 - Started Step 129 in `.worktrees/context-authoring-alias` on
@@ -23,9 +39,10 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/context-authoring-alias -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 26/26.
-- Step 129 is implemented and feature-worktree verified. It still needs
-  feature commit, fast-forward merge to `master`, post-merge targeted/Windows/
-  WSL verification, docs closeout, and cleanup before Step 130 begins.
+- Step 129 was implemented and feature-worktree verified. At that point it
+  still needed feature commit, fast-forward merge to `master`, post-merge
+  targeted/Windows/WSL verification, docs closeout, and cleanup before Step
+  130 could begin.
 
 ## 2026-07-01 Step 128 Post-Merge
 

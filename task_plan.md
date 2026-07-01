@@ -289,14 +289,15 @@ checkpoint reviews.
 ## Active Step
 
 Current handoff: Step 129, public `Context<T>` authoring alias over
-`ViewContext`, is implemented and feature-worktree verified in
-`.worktrees/context-authoring-alias` on `codex/context-authoring-alias`. RED
-failed as expected on missing `cgpui::Context<T>`; GREEN adds the alias over
-`ViewContext` and verifies it through prelude/header coverage and existing
-context helper calls. Targeted tests passed 2/2, Windows full debug passed
-29/29, and WSL Arch Linux full debug passed 26/26. Step 129 still needs
-feature commit, fast-forward merge, post-merge targeted/Windows/WSL
-verification, docs closeout, and cleanup before Step 130 begins.
+`ViewContext`, is merged on `master` at
+`d1576fe feat: add context authoring alias` and post-merge verified on Windows
+and WSL Arch Linux. RED failed as expected on missing `cgpui::Context<T>`;
+GREEN adds the alias over `ViewContext` and verifies it through prelude/header
+coverage and existing context helper calls. Post-merge targeted tests passed
+2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. Step 130, entity handle API with `read`, `update`, and `downgrade`
+convenience methods, is the next implementation slice after docs closeout and
+cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

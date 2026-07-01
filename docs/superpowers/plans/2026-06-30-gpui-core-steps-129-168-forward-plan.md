@@ -207,8 +207,9 @@ Historical snapshot, superseded by the Step 128 merge refresh below.
 
 ## 2026-07-01 Step 129 Context Authoring Alias
 
-- Step 129 is implemented and feature-worktree verified in
-  `.worktrees/context-authoring-alias` on `codex/context-authoring-alias`.
+- Step 129 is merged on `master` at
+  `d1576fe feat: add context authoring alias` and post-merge verified on
+  Windows and WSL Arch Linux.
 - RED failed as expected on missing public `cgpui::Context<T>` from prelude and
   runtime context-helper coverage.
 - GREEN adds `template <typename T> using Context = ViewContext;` in
@@ -216,9 +217,11 @@ Historical snapshot, superseded by the Step 128 merge refresh below.
   with existing `ViewContext` helper behavior.
 - Feature-worktree verification passed: targeted tests 2/2, Windows full
   debug 29/29, and WSL Arch Linux full debug 26/26.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
 - Step 130, entity handle API with `read`, `update`, and `downgrade`
-  convenience methods, is the next implementation slice after the Step 129
-  merge and post-merge verification.
+  convenience methods, is the next implementation slice after docs closeout
+  and cleanup.
 
 ## 2026-07-01 Back-40 Planning After Step 125 GREEN
 
@@ -1009,6 +1012,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
   `xmake f -c -m debug -P .; xmake test -P .`.
 - [x] Feature-worktree WSL Arch full debug passed 26/26:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/context-authoring-alias -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `d1576fe feat: add context authoring alias`.
+- [x] Post-merge targeted tests passed 2/2:
+  `xmake test -P . window_runtime_test/default prelude_header_cleanliness/default`.
+- [x] Post-merge Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Post-merge WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
 
 ### Step 130: Entity Handle Convenience API
 
