@@ -171,8 +171,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   coverage passed 4/4 on Windows for available targets and 5/5 on WSL Arch
   Linux, `git diff --check` produced no output, Windows full debug passed
   29/29, and WSL Arch Linux full debug passed 26/26.
+- Step 165 is merged on `master` at
+  `1c7f665 feat: add platform event loop wakeup`; post-merge targeted
+  coverage passed 6/6 on Windows and 5/5 on WSL Arch Linux, Windows full debug
+  passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 165 is the next implementation slice after Step 164 docs closeout
+  128. Step 166 is the next implementation slice after Step 165 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -399,6 +403,33 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   deferred callbacks, is the next implementation slice after docs closeout and
   cleanup.
 - The effective distance through Step 168 is 4 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 165 Merge
+
+- Step 165, platform event loop wakeup API for timers, async completions, and
+  deferred callbacks, is merged on `master` at
+  `1c7f665 feat: add platform event loop wakeup`.
+- RED failed as expected on missing `WindowWakeupRequested` and platform
+  wakeup APIs.
+- GREEN adds `WindowWakeupRequested`,
+  `PlatformApplication::request_wakeup()`, runtime wakeup requests from
+  deferred callbacks, one-shot/repeating timers, and async task completions,
+  and deterministic wakeup drain order: task completions first, timers second,
+  deferred callbacks third.
+- Runtime wakeup handling is an outer drain batch. Redraw invalidations queued
+  by the three sources flush once after all wakeup work drains, while direct
+  `advance_time(...)` and `drain_task_completions()` semantics remain
+  source-compatible for existing deterministic tests.
+- Win32 posts a private thread wakeup message, Wayland polls a nonblocking
+  pipe alongside the display fd, and the empty backend keeps a no-op default.
+- Post-merge verification passed: Windows targeted/header/source tests 6/6,
+  WSL Arch Linux targeted/source tests 5/5, Windows full debug 29/29, and WSL
+  Arch Linux full debug 26/26.
+- Step 166, accessibility tree skeleton for labels, buttons, text inputs, and
+  focus state, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 3 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1767,7 +1798,7 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 - [x] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
 - [x] Step 163: Win32 drag-and-drop text/file event skeleton.
 - [x] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
-- [ ] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
+- [x] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
 - [ ] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 - [ ] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 - [ ] Step 168: GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
@@ -2518,9 +2549,15 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests proving timers, async completions, and deferred callbacks request platform wakeups.
-- [ ] Add a platform wakeup method with Win32/Wayland implementations and deterministic fakes.
-- [ ] Targeted test command: `xmake test -P . window_runtime_test/default win32_input_event_test/default wayland_keyboard_test/default`.
+- [x] Add RED tests proving timers, async completions, and deferred callbacks request platform wakeups.
+- [x] Add a platform wakeup method with Win32/Wayland implementations and deterministic fakes.
+- [x] Targeted test command:
+  `xmake test -P . window_runtime_test/default app_runner_test/default core_header_cleanliness/default ui_header_cleanliness/default platform_header_cleanliness/default win32_window_source_test/default win32_input_event_test/default`
+  passed 6/6 on Windows after merge, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default wayland_keyboard_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default platform_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux after merge.
+- [x] Full post-merge verification passed: Windows full debug 29/29 and WSL
+  Arch Linux full debug 26/26.
 
 ### Step 166: Accessibility Tree Skeleton
 

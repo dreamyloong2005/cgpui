@@ -2854,3 +2854,29 @@
 - Step 165 should bridge runtime deferred callbacks, timers, and async
   completions to platform wakeups without changing the Step 164 DnD payload
   boundary.
+
+## 2026-07-02 Platform Event Loop Wakeup
+
+- Step 165 adds a platform-neutral wakeup event rather than overloading redraw:
+  `WindowWakeupRequested` asks the runtime to drain queued non-render work,
+  while `WindowRedrawRequested` remains the render path.
+- Runtime queue producers now request a platform wakeup when the window is
+  live: `defer(...)`, `schedule_timer(...)`,
+  `schedule_repeating_timer(...)`, and `complete_task(...)`. Existing
+  deterministic test hooks such as `advance_time(...)` remain available and
+  keep their direct timer-drain behavior.
+- Wakeup drain order is deterministic: task completions first, due timers
+  second, deferred callbacks third. This prevents async completions from
+  racing timer/defer callbacks inside the same wakeup turn.
+- Wakeup handling is an outer drain batch. `handling_wakeup_` suppresses
+  intermediate deferred-redraw flushes from task/timer/defer drains so one
+  redraw is requested after all queued wakeup work drains. This fixed the
+  initial Step 165 GREEN failure where a task completion flushed redraw before
+  timers and deferred callbacks ran.
+- Win32 implements the wakeup bridge by posting a private thread message to the
+  event-loop thread and dispatching `WindowWakeupRequested` to tracked windows.
+  Wayland implements the bridge with a nonblocking close-on-exec pipe polled
+  alongside the display fd. The base/empty platform implementation stays a
+  no-op for source compatibility.
+- Step 166 can now focus on platform-neutral accessibility snapshots without
+  needing to revisit runtime wakeup plumbing.

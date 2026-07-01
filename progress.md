@@ -4966,3 +4966,60 @@
   progress log so Step 164 is marked merged and post-merge verified. Step 165,
   platform event loop wakeup API for timers, async completions, and deferred
   callbacks, is the next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 165 Platform Event Loop Wakeup
+
+- Continued after interruption with Step 165 already started in
+  `.worktrees/platform-event-loop-wakeup` on
+  `codex/platform-event-loop-wakeup` from `master` at
+  `330a18d docs: mark step 164 merged`.
+- RED had already been confirmed from the handoff:
+  `xmake test -P . window_runtime_test/default core_header_cleanliness/default`
+  failed as expected on missing `cgpui::WindowWakeupRequested`.
+- Initial GREEN implementation compiled but `window_runtime_test/default`
+  failed with exit code `386`. Root cause: task completion wakeup work called
+  `request_layout()`, `drain_task_completions()` flushed the deferred redraw
+  immediately, and the redraw happened before due timers and deferred
+  callbacks drained.
+- Fixed the wakeup drain boundary by adding a `handling_wakeup_` flag so
+  task/timer/defer invalidations coalesce and flush one redraw after the full
+  wakeup turn drains.
+- GREEN adds `WindowWakeupRequested`,
+  `PlatformApplication::request_wakeup()`, runtime wakeup requests from
+  `defer(...)`, timers, and task completions, Win32 private thread-message
+  wakeups, Wayland nonblocking-pipe wakeups, and deterministic fake wakeup
+  coverage.
+- Verified targeted GREEN on Windows:
+  `xmake test -P . window_runtime_test/default core_header_cleanliness/default win32_window_source_test/default`
+  passed 3/3.
+- Verified expanded targeted coverage:
+  Windows
+  `xmake test -P . window_runtime_test/default app_runner_test/default core_header_cleanliness/default ui_header_cleanliness/default platform_header_cleanliness/default win32_window_source_test/default win32_input_event_test/default`
+  passed 6/6, and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-event-loop-wakeup -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default wayland_keyboard_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default platform_header_cleanliness/default'`
+  passed 5/5.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-event-loop-wakeup -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 165 as
+  `1c7f665 feat: add platform event loop wakeup` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted/header/source tests:
+  Windows
+  `xmake test -P . window_runtime_test/default app_runner_test/default core_header_cleanliness/default ui_header_cleanliness/default platform_header_cleanliness/default win32_window_source_test/default win32_input_event_test/default`
+  passed 6/6, and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default wayland_keyboard_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default platform_header_cleanliness/default'`
+  passed 5/5.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 165 is marked merged and post-merge verified. Step 166,
+  accessibility tree skeleton for labels, buttons, text inputs, and focus
+  state, is the next implementation slice after docs closeout and cleanup.
