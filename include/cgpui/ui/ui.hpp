@@ -266,10 +266,20 @@ struct EventDispatchRecord {
   EventResult result;
 };
 
+enum class ActionScope {
+  app,
+  window,
+  view,
+  focused_element,
+};
+
 struct ActionDispatchResult {
   std::string name;
   bool handled = false;
   EventResult result;
+  std::optional<ActionScope> scope;
+  std::optional<ViewId> view_id;
+  std::optional<ElementId> element_id;
 };
 
 struct KeyBinding {
@@ -355,6 +365,17 @@ struct WindowRuntimeContext {
   void blur(ElementId element_id) const;
   void set_element_tree(std::unique_ptr<ElementTree> tree) const;
   void register_action(std::string name, ActionHandler handler) const;
+  void register_app_action(std::string name, ActionHandler handler) const;
+  void register_window_action(std::string name, ActionHandler handler) const;
+  void register_view_action(std::string name, ActionHandler handler) const;
+  void register_view_action(
+      ViewId view_id,
+      std::string name,
+      ActionHandler handler) const;
+  void register_focused_element_action(
+      ElementId element_id,
+      std::string name,
+      ActionHandler handler) const;
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_key(KeyBinding binding) const;
@@ -485,6 +506,16 @@ class WindowRuntime {
   void release_keyboard_focus(ViewId view_id);
   void release_keyboard_focus(ElementId element_id);
   void register_action(std::string name, ActionHandler handler);
+  void register_app_action(std::string name, ActionHandler handler);
+  void register_window_action(std::string name, ActionHandler handler);
+  void register_view_action(
+      ViewId view_id,
+      std::string name,
+      ActionHandler handler);
+  void register_focused_element_action(
+      ElementId element_id,
+      std::string name,
+      ActionHandler handler);
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void bind_key(KeyBinding binding);
@@ -567,6 +598,7 @@ class WindowRuntime {
   [[nodiscard]] std::optional<ViewId> child_view_target_for(
       ElementId element_id) const;
   [[nodiscard]] bool focus_next_element(bool reverse);
+  [[nodiscard]] std::optional<ViewId> action_dispatch_view_id() const;
   [[nodiscard]] ScrollState* scroll_state_for_route(const EventRoute& route);
   [[nodiscard]] EventResult dispatch_routed_element_event(
       const PlatformEvent& event,
@@ -624,6 +656,15 @@ class WindowRuntime {
   std::unordered_map<std::type_index, std::any> globals_;
   std::unordered_map<std::type_index, std::any> entity_stores_;
   std::unordered_map<std::string, ActionHandler> action_handlers_;
+  std::unordered_map<std::string, ActionHandler> window_action_handlers_;
+  std::unordered_map<
+      std::uint64_t,
+      std::unordered_map<std::string, ActionHandler>>
+      view_action_handlers_;
+  std::unordered_map<
+      std::uint64_t,
+      std::unordered_map<std::string, ActionHandler>>
+      focused_element_action_handlers_;
   std::vector<KeyBinding> key_bindings_;
   std::vector<TextEditBinding> text_edit_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;

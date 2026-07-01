@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Scoped Action Registry
+
+- Step 132 keeps the old `register_action(name, handler)` spelling as the
+  app/global action scope, so existing key bindings and demo authoring code stay
+  source-compatible.
+- Scoped dispatch now has explicit metadata through `ActionScope` and
+  `ActionDispatchResult::scope`, `view_id`, and `element_id`. Missing actions
+  still return `handled == false` with no scope or owner metadata.
+- Lookup order is focused element, current/target view, window, then app. The
+  view lookup uses the current event route when dispatch happens inside event
+  handling and falls back to the root view outside an event route.
+- `ViewContext` exposes explicit `register_app_action`,
+  `register_window_action`, `register_view_action`, and
+  `register_focused_element_action` helpers while preserving the older
+  `register_action` helper as app/global scope forwarding.
+- This step deliberately does not add subscription lifetime tokens, deferred
+  callbacks, timers, async completions, or redraw batching; those remain Steps
+  133-137.
+
 ## 2026-07-01 Global App State Registry Merged
 
 - Step 131 is merged on `master` at

@@ -4902,6 +4902,290 @@ int test_view_context_registers_and_dispatches_actions() {
   return 0;
 }
 
+RuntimeFixture* scoped_action_fixture = nullptr;
+
+void dispatch_scoped_action_sequence() {
+  auto& callback = scoped_action_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 65,
+      .action = cgpui::KeyAction::pressed});
+}
+
+class ScopedActionView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {}
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    if (!std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      return cgpui::EventResult::unhandled();
+    }
+
+    context.runtime.request_keyboard_focus(focused_element_id);
+    context.runtime.register_action(
+        "legacy.app",
+        [this](const cgpui::WindowRuntimeContext&) {
+          app_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_action(
+        "scoped.all",
+        [this](const cgpui::WindowRuntimeContext&) {
+          app_shadow_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_window_action(
+        "scoped.all",
+        [this](const cgpui::WindowRuntimeContext&) {
+          window_shadow_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_view_action(
+        context.view_id,
+        "scoped.all",
+        [this](const cgpui::WindowRuntimeContext&) {
+          view_shadow_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_focused_element_action(
+        focused_element_id,
+        "scoped.all",
+        [this](const cgpui::WindowRuntimeContext&) {
+          focused_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_action(
+        "scoped.view",
+        [this](const cgpui::WindowRuntimeContext&) {
+          app_shadow_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_window_action(
+        "scoped.view",
+        [this](const cgpui::WindowRuntimeContext&) {
+          window_shadow_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_view_action(
+        context.view_id,
+        "scoped.view",
+        [this](const cgpui::WindowRuntimeContext&) {
+          view_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_action(
+        "scoped.window",
+        [this](const cgpui::WindowRuntimeContext&) {
+          app_shadow_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.runtime.register_window_action(
+        "scoped.window",
+        [this](const cgpui::WindowRuntimeContext&) {
+          window_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+
+    focused_result = context.runtime.dispatch_action("scoped.all");
+    view_result = context.runtime.dispatch_action("scoped.view");
+    window_result = context.runtime.dispatch_action("scoped.window");
+    app_result = context.runtime.dispatch_action("legacy.app");
+    missing_result = context.runtime.dispatch_action("scoped.missing");
+    last_result = context.runtime.last_action_dispatch();
+    return cgpui::EventResult::consumed_event();
+  }
+
+  cgpui::ElementId focused_element_id{42};
+  int app_action_count = 0;
+  int app_shadow_count = 0;
+  int window_action_count = 0;
+  int window_shadow_count = 0;
+  int view_action_count = 0;
+  int view_shadow_count = 0;
+  int focused_action_count = 0;
+  cgpui::ActionDispatchResult focused_result{};
+  cgpui::ActionDispatchResult view_result{};
+  cgpui::ActionDispatchResult window_result{};
+  cgpui::ActionDispatchResult app_result{};
+  cgpui::ActionDispatchResult missing_result{};
+  std::optional<cgpui::ActionDispatchResult> last_result;
+};
+
+int test_runtime_dispatches_scoped_actions_by_lookup_order() {
+  RuntimeFixture fixture;
+  ScopedActionView view;
+  scoped_action_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scoped_action_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  scoped_action_fixture = nullptr;
+
+  if (result != 0) {
+    return 349;
+  }
+  if (view.focused_action_count != 1 || view.view_action_count != 1 ||
+      view.window_action_count != 1 || view.app_action_count != 1) {
+    return 350;
+  }
+  if (view.app_shadow_count != 0 || view.window_shadow_count != 0 ||
+      view.view_shadow_count != 0) {
+    return 351;
+  }
+  if (!view.focused_result.scope.has_value() ||
+      *view.focused_result.scope != cgpui::ActionScope::focused_element ||
+      !view.focused_result.element_id.has_value() ||
+      *view.focused_result.element_id != view.focused_element_id) {
+    return 352;
+  }
+  if (!view.view_result.scope.has_value() ||
+      *view.view_result.scope != cgpui::ActionScope::view ||
+      !view.view_result.view_id.has_value() ||
+      *view.view_result.view_id != cgpui::ViewId{1}) {
+    return 353;
+  }
+  if (!view.window_result.scope.has_value() ||
+      *view.window_result.scope != cgpui::ActionScope::window ||
+      view.window_result.view_id.has_value() ||
+      view.window_result.element_id.has_value()) {
+    return 354;
+  }
+  if (!view.app_result.scope.has_value() ||
+      *view.app_result.scope != cgpui::ActionScope::app ||
+      !view.app_result.handled ||
+      !view.app_result.result.consumed) {
+    return 355;
+  }
+  if (view.missing_result.handled || view.missing_result.scope.has_value()) {
+    return 356;
+  }
+  if (!view.last_result.has_value() ||
+      view.last_result->name != "scoped.missing" ||
+      view.last_result->scope.has_value()) {
+    return 357;
+  }
+
+  return 0;
+}
+
+class ViewContextScopedActionView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {}
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    if (!std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      return cgpui::EventResult::unhandled();
+    }
+
+    context.focus(focused_element_id);
+    context.register_action(
+        "context.legacy",
+        [this](const cgpui::ViewContext&) {
+          app_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_app_action(
+        "context.app",
+        [this](const cgpui::ViewContext&) {
+          explicit_app_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_window_action(
+        "context.window",
+        [this](const cgpui::ViewContext&) {
+          window_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_view_action(
+        "context.view",
+        [this](const cgpui::ViewContext&) {
+          view_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_focused_element_action(
+        focused_element_id,
+        "context.focused",
+        [this](const cgpui::ViewContext&) {
+          focused_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+
+    legacy_result = context.dispatch_action("context.legacy");
+    app_result = context.dispatch_action("context.app");
+    window_result = context.dispatch_action("context.window");
+    view_result = context.dispatch_action("context.view");
+    focused_result = context.dispatch_action("context.focused");
+    return cgpui::EventResult::consumed_event();
+  }
+
+  cgpui::ElementId focused_element_id{51};
+  int app_action_count = 0;
+  int explicit_app_action_count = 0;
+  int window_action_count = 0;
+  int view_action_count = 0;
+  int focused_action_count = 0;
+  cgpui::ActionDispatchResult legacy_result{};
+  cgpui::ActionDispatchResult app_result{};
+  cgpui::ActionDispatchResult window_result{};
+  cgpui::ActionDispatchResult view_result{};
+  cgpui::ActionDispatchResult focused_result{};
+};
+
+int test_view_context_registers_explicit_scoped_actions() {
+  RuntimeFixture fixture;
+  ViewContextScopedActionView view;
+  scoped_action_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scoped_action_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  scoped_action_fixture = nullptr;
+
+  if (result != 0) {
+    return 358;
+  }
+  if (view.app_action_count != 1 || view.explicit_app_action_count != 1 ||
+      view.window_action_count != 1 || view.view_action_count != 1 ||
+      view.focused_action_count != 1) {
+    return 359;
+  }
+  if (!view.legacy_result.scope.has_value() ||
+      *view.legacy_result.scope != cgpui::ActionScope::app ||
+      !view.app_result.scope.has_value() ||
+      *view.app_result.scope != cgpui::ActionScope::app) {
+    return 360;
+  }
+  if (!view.window_result.scope.has_value() ||
+      *view.window_result.scope != cgpui::ActionScope::window ||
+      !view.view_result.scope.has_value() ||
+      *view.view_result.scope != cgpui::ActionScope::view ||
+      !view.focused_result.scope.has_value() ||
+      *view.focused_result.scope != cgpui::ActionScope::focused_element) {
+    return 361;
+  }
+  if (!view.focused_result.element_id.has_value() ||
+      *view.focused_result.element_id != view.focused_element_id) {
+    return 362;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* invalidation_fixture = nullptr;
 
 void dispatch_invalidation_sequence() {
@@ -6228,6 +6512,16 @@ int main() {
     return result;
   }
   if (const int result = test_view_context_registers_and_dispatches_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_dispatches_scoped_actions_by_lookup_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_view_context_registers_explicit_scoped_actions();
       result != 0) {
     return result;
   }

@@ -994,6 +994,13 @@ bool WindowRuntime::focus_next_element(bool reverse) {
   return true;
 }
 
+std::optional<ViewId> WindowRuntime::action_dispatch_view_id() const {
+  if (current_event_route_.has_value()) {
+    return current_event_route_->target_view_id;
+  }
+  return root_view_id_;
+}
+
 ScrollState* WindowRuntime::scroll_state_for_route(const EventRoute& route) {
   if (!route.target_element_id.has_value()) {
     return nullptr;
@@ -1183,8 +1190,42 @@ void WindowRuntime::release_keyboard_focus(ElementId element_id) {
 }
 
 void WindowRuntime::register_action(std::string name, ActionHandler handler) {
+  register_app_action(std::move(name), std::move(handler));
+}
+
+void WindowRuntime::register_app_action(
+    std::string name,
+    ActionHandler handler) {
   if (!name.empty() && handler) {
     action_handlers_[std::move(name)] = std::move(handler);
+  }
+}
+
+void WindowRuntime::register_window_action(
+    std::string name,
+    ActionHandler handler) {
+  if (!name.empty() && handler) {
+    window_action_handlers_[std::move(name)] = std::move(handler);
+  }
+}
+
+void WindowRuntime::register_view_action(
+    ViewId view_id,
+    std::string name,
+    ActionHandler handler) {
+  if (view_id.value != 0 && !name.empty() && handler) {
+    view_action_handlers_[view_id.value][std::move(name)] =
+        std::move(handler);
+  }
+}
+
+void WindowRuntime::register_focused_element_action(
+    ElementId element_id,
+    std::string name,
+    ActionHandler handler) {
+  if (element_id.value != 0 && !name.empty() && handler) {
+    focused_element_action_handlers_[element_id.value][std::move(name)] =
+        std::move(handler);
   }
 }
 
@@ -1193,9 +1234,51 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
       .name = std::move(name),
       .result = EventResult::unhandled()};
 
-  const auto handler = action_handlers_.find(dispatch.name);
-  if (handler != action_handlers_.end()) {
+  if (keyboard_focus_element_owner_.has_value()) {
+    const auto owner = focused_element_action_handlers_.find(
+        keyboard_focus_element_owner_->value);
+    if (owner != focused_element_action_handlers_.end()) {
+      const auto handler = owner->second.find(dispatch.name);
+      if (handler != owner->second.end()) {
+        dispatch.handled = true;
+        dispatch.scope = ActionScope::focused_element;
+        dispatch.element_id = keyboard_focus_element_owner_;
+        dispatch.result = handler->second(context());
+        last_action_dispatch_ = dispatch;
+        return dispatch;
+      }
+    }
+  }
+
+  if (const std::optional<ViewId> view_id = action_dispatch_view_id();
+      view_id.has_value()) {
+    const auto owner = view_action_handlers_.find(view_id->value);
+    if (owner != view_action_handlers_.end()) {
+      const auto handler = owner->second.find(dispatch.name);
+      if (handler != owner->second.end()) {
+        dispatch.handled = true;
+        dispatch.scope = ActionScope::view;
+        dispatch.view_id = view_id;
+        dispatch.result = handler->second(context());
+        last_action_dispatch_ = dispatch;
+        return dispatch;
+      }
+    }
+  }
+
+  if (const auto handler = window_action_handlers_.find(dispatch.name);
+      handler != window_action_handlers_.end()) {
     dispatch.handled = true;
+    dispatch.scope = ActionScope::window;
+    dispatch.result = handler->second(context());
+    last_action_dispatch_ = dispatch;
+    return dispatch;
+  }
+
+  if (const auto handler = action_handlers_.find(dispatch.name);
+      handler != action_handlers_.end()) {
+    dispatch.handled = true;
+    dispatch.scope = ActionScope::app;
     dispatch.result = handler->second(context());
   }
 
@@ -1555,6 +1638,44 @@ void WindowRuntimeContext::register_action(
     std::string name,
     ActionHandler handler) const {
   runtime.register_action(std::move(name), std::move(handler));
+}
+
+void WindowRuntimeContext::register_app_action(
+    std::string name,
+    ActionHandler handler) const {
+  runtime.register_app_action(std::move(name), std::move(handler));
+}
+
+void WindowRuntimeContext::register_window_action(
+    std::string name,
+    ActionHandler handler) const {
+  runtime.register_window_action(std::move(name), std::move(handler));
+}
+
+void WindowRuntimeContext::register_view_action(
+    std::string name,
+    ActionHandler handler) const {
+  runtime.register_view_action(view_id, std::move(name), std::move(handler));
+}
+
+void WindowRuntimeContext::register_view_action(
+    ViewId target_view_id,
+    std::string name,
+    ActionHandler handler) const {
+  runtime.register_view_action(
+      target_view_id,
+      std::move(name),
+      std::move(handler));
+}
+
+void WindowRuntimeContext::register_focused_element_action(
+    ElementId element_id,
+    std::string name,
+    ActionHandler handler) const {
+  runtime.register_focused_element_action(
+      element_id,
+      std::move(name),
+      std::move(handler));
 }
 
 ActionDispatchResult WindowRuntimeContext::dispatch_action(

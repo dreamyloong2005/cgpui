@@ -49,6 +49,27 @@ class TestView final : public cgpui::View {
     (void)context.observe_model(
         model,
         [](const cgpui::ViewContext&, cgpui::Model<TestModel>) {});
+    context.register_app_action(
+        "header.context.app",
+        [](const cgpui::ViewContext&) {
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_window_action(
+        "header.context.window",
+        [](const cgpui::ViewContext&) {
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_view_action(
+        "header.context.view",
+        [](const cgpui::ViewContext&) {
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_focused_element_action(
+        cgpui::ElementId{4},
+        "header.context.focused",
+        [](const cgpui::ViewContext&) {
+          return cgpui::EventResult::consumed_event();
+        });
     (void)context.read_model(model);
     (void)context.update_model(
         model,
@@ -108,6 +129,16 @@ int main() {
   cgpui::AppContextSetupCallback app_setup =
       [](cgpui::AppContext& app_context) {
         (void)app_context.runtime.invalidation_state();
+        app_context.runtime.register_app_action(
+            "header.app",
+            [](const cgpui::WindowRuntimeContext&) {
+              return cgpui::EventResult::consumed_event();
+            });
+        app_context.runtime.register_window_action(
+            "header.window",
+            [](const cgpui::WindowRuntimeContext&) {
+              return cgpui::EventResult::consumed_event();
+            });
         const cgpui::AppOpenedWindow opened =
             app_context.open_window(
                 cgpui::WindowOptions{}.title("Header Window").size(9.0F, 7.0F),
@@ -118,11 +149,25 @@ int main() {
         ChildView registered_view;
         const cgpui::ViewId registered_view_id =
             app_context.runtime.register_view(registered_view);
+        app_context.runtime.register_view_action(
+            registered_view_id,
+            "header.view",
+            [](const cgpui::WindowRuntimeContext&) {
+              return cgpui::EventResult::consumed_event();
+            });
         cgpui::AnyElement placeholder =
             cgpui::into_element(cgpui::child_view(registered_view_id)
                                     .size(cgpui::Size{5.0F, 6.0F}));
         const auto* child_view_placeholder =
             dynamic_cast<const cgpui::ChildViewElement*>(placeholder.get());
+        app_context.runtime.register_focused_element_action(
+            cgpui::ElementId{3},
+            "header.focused",
+            [](const cgpui::WindowRuntimeContext&) {
+              return cgpui::EventResult::consumed_event();
+            });
+        const cgpui::ActionDispatchResult dispatch =
+            app_context.runtime.dispatch_action("header.view");
         const cgpui::View* found_view =
             app_context.runtime.find_view(registered_view_id);
         const bool removed_view =
@@ -132,6 +177,13 @@ int main() {
         (void)child_view_placeholder;
         (void)found_view;
         (void)removed_view;
+        (void)dispatch.scope;
+        (void)dispatch.view_id;
+        (void)dispatch.element_id;
+        (void)cgpui::ActionScope::app;
+        (void)cgpui::ActionScope::window;
+        (void)cgpui::ActionScope::view;
+        (void)cgpui::ActionScope::focused_element;
       };
   const cgpui::WindowDescriptor window_descriptor =
       cgpui::WindowOptions{}

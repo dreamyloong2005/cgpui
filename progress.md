@@ -1,5 +1,37 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 132 Scoped Action Registry
+
+- Started Step 132 in `.worktrees/scoped-action-registry` on
+  `codex/scoped-action-registry` from `master` at
+  `0a2395a docs: mark step 131 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `ActionScope`, `ActionDispatchResult` scope/owner metadata, explicit
+  app/window/view/focused-element action registration APIs, and dispatch lookup
+  order. RED failed as expected on missing scoped action APIs and result
+  metadata.
+- Implemented Step 132 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`: legacy
+  `register_action(...)` now forwards to app/global scope, explicit app/window
+  view/focused-element registries are stored separately, and `dispatch_action`
+  resolves focused element, view, window, then app while preserving missing
+  action soft-fail behavior.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/scoped-action-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 132 is recorded as implemented and feature-worktree
+  verified. Step 132 still needs feature commit, merge, post-merge
+  verification, docs closeout, and cleanup before Step 133 begins.
+
 ## 2026-07-01 Step 131 Post-Merge
 
 - Fast-forward merged Step 131 to `master` at
