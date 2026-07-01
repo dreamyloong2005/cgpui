@@ -4807,3 +4807,46 @@
   progress log so Step 160 is marked merged and post-merge verified. Step 161,
   Win32 IME composition window placement wired to focused text geometry, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 161 Win32 IME Placement
+
+- Continued Step 161 in `.worktrees/win32-ime-placement` on
+  `codex/win32-ime-placement` from `master` at
+  `4698489 docs: mark step 160 merged`.
+- Baseline targeted tests passed before edits:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default`
+  passed 2/2.
+- RED coverage in `tests/platform/win32_text_input_test.cpp` and
+  `tests/ui/window_runtime_test.cpp` failed as expected on missing
+  `ImeTextInputPlacement`, `PlatformWindow::set_ime_text_input_placement(...)`,
+  and `WindowState::ime_text_input_placement`.
+- GREEN adds platform-neutral IME text-input placement state, runtime
+  propagation from focused text geometry, Win32 IMM composition/candidate
+  placement application, and Wayland state storage for later protocol wiring.
+- Verified targeted GREEN tests:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default`
+  passed 2/2.
+- Verified expanded targeted/header tests:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default platform_header_cleanliness/default`
+  passed 5/5.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-ime-placement -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 161 as `0a44fed feat: wire win32 ime placement` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted/header tests:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default platform_header_cleanliness/default`
+  passed 5/5.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 161 is marked merged and post-merge verified. Step 162,
+  Wayland text-input/IME protocol skeleton wired to focused text geometry, is
+  the next implementation slice after docs closeout and cleanup.

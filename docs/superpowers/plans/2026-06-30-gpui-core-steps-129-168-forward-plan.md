@@ -154,8 +154,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `13a99ae feat: add window lifecycle events`; post-merge targeted/header
   tests passed 3/3, Windows full debug passed 29/29, and WSL Arch Linux full
   debug passed 26/26.
+- Step 161 is merged on `master` at
+  `0a44fed feat: wire win32 ime placement`; post-merge targeted/header tests
+  passed 5/5, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 161 is the next implementation slice after Step 160 docs closeout
+  128. Step 162 is the next implementation slice after Step 161 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -300,6 +304,25 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 161, Win32 IME composition window placement wired to focused text
   geometry, is the next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 8 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 161 Merge
+
+- Step 161, Win32 IME composition window placement wired to focused text
+  geometry, is merged on `master` at
+  `0a44fed feat: wire win32 ime placement`.
+- RED failed as expected on missing `ImeTextInputPlacement`,
+  `PlatformWindow::set_ime_text_input_placement(...)`, and
+  `WindowState::ime_text_input_placement`.
+- GREEN adds a platform-neutral IME placement snapshot, runtime propagation
+  from `focused_text_ime_rect()`, Win32 IMM composition/candidate window
+  placement, and Wayland storage for later text-input protocol wiring.
+- Post-merge verification passed: targeted/header tests 5/5, `git diff
+  --check` with no output, Windows full debug 29/29, and WSL Arch Linux full
+  debug 26/26.
+- Step 162, Wayland text-input/IME protocol skeleton wired to focused text
+  geometry, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 7 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -2311,14 +2334,33 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 ### Step 161: Win32 IME Placement
 
 **Files:**
+- Modify: `include/cgpui/core/window.hpp`
+- Modify: `include/cgpui/platform/platform.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `src/platform/macos/macos_application.mm`
 - Modify: `src/platform/win32/win32_application.cpp`
 - Modify: `src/ui/ui.cpp`
+- Modify: `tests/ui/app_runner_test.cpp`
 - Modify: `tests/platform/win32_text_input_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
+- Modify: `xmake.lua`
 
-- [ ] Add RED tests for focused text geometry reaching Win32 IME candidate/composition placement data.
-- [ ] Wire the existing IME geometry surface into the Win32 platform layer.
-- [ ] Targeted test command: `xmake test -P . win32_text_input_test/default window_runtime_test/default`.
+- [x] Add RED tests for focused text geometry reaching Win32 IME candidate/composition placement data.
+- [x] Wire the existing IME geometry surface into the Win32 platform layer.
+- [x] Targeted test command passed 2/2:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default`.
+- [x] Expanded targeted/header command passed 5/5:
+  `xmake test -P . win32_text_input_test/default window_runtime_test/default app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default platform_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-ime-placement -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `0a44fed feat: wire win32 ime placement`.
+- [x] Post-merge targeted/header tests passed 5/5, `git diff --check`
+  produced no output, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 
 ### Step 162: Wayland Text-Input IME Skeleton
 

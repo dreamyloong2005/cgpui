@@ -2775,3 +2775,21 @@
   only enough for lifecycle callbacks to observe focus loss. They do not yet
   model platform window state, visibility, occlusion, or renderer suspension;
   those should remain separate future platform/runtime decisions if needed.
+
+## 2026-07-02 Win32 IME Placement
+
+- Step 161 keeps UI-level `ImeCandidateRect` tied to `ElementId`, but the
+  platform layer receives only `ImeTextInputPlacement` with a screen-space
+  `Rect` and `byte_offset`. This keeps platform IME handling independent of
+  element-tree ownership and focused-text lookup details.
+- Runtime placement sync runs after focused text geometry can change: event
+  dispatch, layout/redraw, focus request/release, and rendered-tree updates all
+  converge through a cached platform placement update path so redundant native
+  calls are avoided.
+- Win32 stores the latest placement in `WindowState` and applies it to both IMM
+  composition and candidate windows. Missing `HIMC` is treated as a soft skip,
+  which keeps tests and non-IME scenarios deterministic.
+- Wayland currently preserves the same placement state without protocol
+  side effects. Step 162 should consume this state in an isolated text-input
+  skeleton and report graceful unsupported behavior before attempting a full
+  text-input-v3 implementation.
