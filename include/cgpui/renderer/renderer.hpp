@@ -80,6 +80,23 @@ struct TextDraw {
   PaintMetadata metadata;
 };
 
+enum class RendererPrimitiveKind {
+  solid_rect,
+  text,
+};
+
+struct RendererCommandBatchKey {
+  RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::solid_rect;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+};
+
+struct RendererCommandBatch {
+  RendererCommandBatchKey key;
+  std::size_t command_count = 0;
+  std::vector<std::size_t> command_indices;
+};
+
 struct GlyphAtlasEntry {
   GlyphAtlasKey key;
   Rect atlas_bounds;
@@ -162,5 +179,8 @@ class Renderer {
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor);
 void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
+std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
+    std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws);
 
 } // namespace cgpui

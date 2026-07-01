@@ -70,6 +70,16 @@ int main() {
       .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
       .metadata = paint_metadata,
   };
+  const cgpui::RendererCommandBatch batch{
+      .key =
+          cgpui::RendererCommandBatchKey{
+              .primitive_kind = cgpui::RendererPrimitiveKind::text,
+              .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
+              .metadata = paint_metadata,
+          },
+      .command_count = 1,
+      .command_indices = {0},
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -80,7 +90,10 @@ int main() {
                  glyph_cache.entries().size() == 1 &&
                  text_draw.glyphs.size() == 1 &&
                  text_draw.metadata.transform.translate_x == 4.0F &&
-                 text_draw.clip_rect.has_value()
+                 text_draw.clip_rect.has_value() &&
+                 batch.key.primitive_kind ==
+                     cgpui::RendererPrimitiveKind::text &&
+                 batch.command_count == 1 && batch.command_indices.size() == 1
              ? 0
              : 1;
 }

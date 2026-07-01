@@ -218,6 +218,89 @@ int test_text_draw_uses_glyph_cache_metadata() {
              : 13;
 }
 
+int test_renderer_batches_by_clip_opacity_transform_and_kind() {
+  const cgpui::Rect clip{
+      .origin = {.x = 2.0F, .y = 4.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  };
+  const cgpui::PaintMetadata faded_translated{
+      .opacity = 0.5F,
+      .transform = cgpui::AffineTransform::translation(3.0F, 7.0F),
+  };
+  const cgpui::PaintMetadata faded_scaled{
+      .opacity = 0.5F,
+      .transform = cgpui::AffineTransform::scale(2.0F, 2.0F),
+  };
+
+  const std::vector<cgpui::SolidRect> rects{
+      cgpui::SolidRect{
+          .rect = {.size = {.width = 10.0F, .height = 10.0F}},
+          .color = {.r = 1.0F, .a = 1.0F},
+          .clip_rect = clip,
+          .metadata = faded_translated,
+      },
+      cgpui::SolidRect{
+          .rect = {.origin = {.x = 12.0F}, .size = {.width = 10.0F, .height = 10.0F}},
+          .color = {.g = 1.0F, .a = 1.0F},
+          .clip_rect = clip,
+          .metadata = faded_translated,
+      },
+      cgpui::SolidRect{
+          .rect = {.origin = {.x = 24.0F}, .size = {.width = 10.0F, .height = 10.0F}},
+          .color = {.b = 1.0F, .a = 1.0F},
+          .clip_rect = clip,
+          .metadata = faded_scaled,
+      },
+  };
+  const std::vector<cgpui::TextDraw> text_draws{
+      cgpui::TextDraw{
+          .bounds = {.size = {.width = 20.0F, .height = 10.0F}},
+          .color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+          .font = {.family = "Inter"},
+          .content = "hi",
+          .byte_length = 2,
+          .font_size = 12.0F,
+          .clip_rect = clip,
+          .metadata = faded_translated,
+      },
+  };
+
+  const std::vector<cgpui::RendererCommandBatch> batches =
+      cgpui::vulkan_build_renderer_command_batches(rects, text_draws);
+  if (batches.size() != 3) {
+    return 14;
+  }
+
+  if (batches[0].key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::solid_rect ||
+      batches[0].command_count != 2 ||
+      batches[0].command_indices.size() != 2 ||
+      batches[0].command_indices[0] != 0 ||
+      batches[0].command_indices[1] != 1 ||
+      !batches[0].key.clip_rect.has_value() ||
+      batches[0].key.clip_rect->origin.x != clip.origin.x ||
+      batches[0].key.clip_rect->size.width != clip.size.width ||
+      batches[0].key.metadata != faded_translated) {
+    return 15;
+  }
+
+  if (batches[1].key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::solid_rect ||
+      batches[1].command_count != 1 ||
+      batches[1].command_indices[0] != 2 ||
+      batches[1].key.metadata != faded_scaled) {
+    return 16;
+  }
+
+  return batches[2].key.primitive_kind == cgpui::RendererPrimitiveKind::text &&
+                 batches[2].command_count == 1 &&
+                 batches[2].command_indices[0] == 0 &&
+                 batches[2].key.clip_rect.has_value() &&
+                 batches[2].key.metadata == faded_translated
+             ? 0
+             : 17;
+}
+
 } // namespace
 
 int main() {
@@ -226,6 +309,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_draw_uses_glyph_cache_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_renderer_batches_by_clip_opacity_transform_and_kind();
       result != 0) {
     return result;
   }

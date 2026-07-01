@@ -91,6 +91,41 @@ Result<WaylandSurfaceHandle> require_wayland_surface(
   return *surface;
 }
 
+[[nodiscard]] bool same_rect(Rect lhs, Rect rhs) {
+  return lhs.origin.x == rhs.origin.x && lhs.origin.y == rhs.origin.y &&
+         lhs.size.width == rhs.size.width && lhs.size.height == rhs.size.height;
+}
+
+[[nodiscard]] bool same_clip_rect(
+    const std::optional<Rect>& lhs,
+    const std::optional<Rect>& rhs) {
+  if (lhs.has_value() != rhs.has_value()) {
+    return false;
+  }
+  return !lhs.has_value() || same_rect(*lhs, *rhs);
+}
+
+[[nodiscard]] bool same_batch_key(
+    const RendererCommandBatchKey& lhs,
+    const RendererCommandBatchKey& rhs) {
+  return lhs.primitive_kind == rhs.primitive_kind &&
+         same_clip_rect(lhs.clip_rect, rhs.clip_rect) &&
+         lhs.metadata == rhs.metadata;
+}
+
+void append_command_batch(
+    std::vector<RendererCommandBatch>& batches,
+    RendererCommandBatchKey key,
+    std::size_t command_index) {
+  if (batches.empty() || !same_batch_key(batches.back().key, key)) {
+    batches.push_back(RendererCommandBatch{.key = std::move(key)});
+  }
+
+  RendererCommandBatch& batch = batches.back();
+  batch.command_count += 1;
+  batch.command_indices.push_back(command_index);
+}
+
 class VulkanRendererState;
 
 class VulkanFrame final : public RenderFrame {
@@ -213,6 +248,8 @@ class VulkanRendererState final {
     for (const TextDraw& text_draw : text_draws) {
       vulkan_consume_text_draw(text_draw, glyph_cache_);
     }
+    last_command_batches_ =
+        vulkan_build_renderer_command_batches(rects, text_draws);
 
     if (auto result = require_vk_success(
             vkWaitForFences(device_, 1, &in_flight_, VK_TRUE, UINT64_MAX),
@@ -1238,6 +1275,7 @@ class VulkanRendererState final {
   VkSemaphore render_finished_ = VK_NULL_HANDLE;
   VkFence in_flight_ = VK_NULL_HANDLE;
   GlyphCache glyph_cache_;
+  std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;
 };
 
@@ -1285,6 +1323,39 @@ void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache) {
         .advance = glyph.advance,
     });
   }
+}
+
+std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
+    std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws) {
+  std::vector<RendererCommandBatch> batches;
+  batches.reserve(rects.size() + text_draws.size());
+
+  for (std::size_t index = 0; index < rects.size(); ++index) {
+    const SolidRect& rect = rects[index];
+    append_command_batch(
+        batches,
+        RendererCommandBatchKey{
+            .primitive_kind = RendererPrimitiveKind::solid_rect,
+            .clip_rect = rect.clip_rect,
+            .metadata = rect.metadata,
+        },
+        index);
+  }
+
+  for (std::size_t index = 0; index < text_draws.size(); ++index) {
+    const TextDraw& text_draw = text_draws[index];
+    append_command_batch(
+        batches,
+        RendererCommandBatchKey{
+            .primitive_kind = RendererPrimitiveKind::text,
+            .clip_rect = text_draw.clip_rect,
+            .metadata = text_draw.metadata,
+        },
+        index);
+  }
+
+  return batches;
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(
