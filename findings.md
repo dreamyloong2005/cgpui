@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Timer API
+
+- Step 135 keeps timers deterministic and runtime-local: `TimerId`,
+  `TimerCallback`, `schedule_timer(...)`, `schedule_repeating_timer(...)`,
+  `cancel_timer(...)`, and `advance_time(...)` live on the shared runtime/
+  context surface without adding real OS timer backends yet.
+- Timer callbacks run while `WindowRuntime` still has a live window and
+  renderer. Tests therefore drive `advance_time(...)` from the fake
+  application's `run()` callback rather than after `WindowRuntime::run(...)`
+  returns.
+- One-shot timers are removed before their callback runs, repeating timers
+  reschedule by their interval, and `request_render`/`request_layout`/
+  `request_paint` inside timer callbacks defer a redraw until timer firing
+  finishes. This mirrors Step 134's event/deferred-callback redraw discipline.
+- Step 135 intentionally does not add platform event-loop wakeups, async task
+  handles, batching, or diagnostics. Those remain Steps 136-138 and 165.
+
 ## 2026-07-01 Deferred Callback Queue Merged
 
 - Step 134 is merged on `master` at

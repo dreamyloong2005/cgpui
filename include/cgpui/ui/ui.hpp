@@ -37,6 +37,7 @@ using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
 using FocusedTextModelMutation = std::function<void(TextModel&)>;
 using DeferredCallback = std::function<void(const WindowRuntimeContext&)>;
+using TimerCallback = std::function<void(const WindowRuntimeContext&)>;
 
 template <typename T>
 using ModelObserver =
@@ -147,6 +148,12 @@ struct SubscriptionId {
   friend bool operator==(
       const SubscriptionId&,
       const SubscriptionId&) = default;
+};
+
+struct TimerId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(const TimerId&, const TimerId&) = default;
 };
 
 class Subscription {
@@ -430,6 +437,12 @@ struct WindowRuntimeContext {
   void request_layout() const;
   void request_paint() const;
   void defer(DeferredCallback callback) const;
+  [[nodiscard]] TimerId schedule_timer(
+      std::uint64_t delay_ms,
+      TimerCallback callback) const;
+  [[nodiscard]] TimerId schedule_repeating_timer(
+      std::uint64_t interval_ms,
+      TimerCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
 
@@ -577,6 +590,14 @@ class WindowRuntime {
   void request_layout();
   void request_paint();
   void defer(DeferredCallback callback);
+  [[nodiscard]] TimerId schedule_timer(
+      std::uint64_t delay_ms,
+      TimerCallback callback);
+  [[nodiscard]] TimerId schedule_repeating_timer(
+      std::uint64_t interval_ms,
+      TimerCallback callback);
+  [[nodiscard]] bool cancel_timer(TimerId id);
+  void advance_time(std::uint64_t delta_ms);
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
@@ -641,6 +662,7 @@ class WindowRuntime {
   void schedule_redraw();
   void flush_deferred_redraw_request();
   void drain_deferred_callbacks();
+  void fire_due_timers();
   void apply_cursor_shape(CursorShape cursor_shape);
   void fail_and_quit(Error error);
   void refresh_route_ancestry(EventRoute& route) const;
@@ -672,6 +694,14 @@ class WindowRuntime {
   struct RegisteredView {
     View* view = nullptr;
     std::unique_ptr<View> owned_view;
+  };
+
+  struct RuntimeTimer {
+    TimerId id;
+    std::uint64_t due_ms = 0;
+    std::uint64_t interval_ms = 0;
+    bool repeating = false;
+    TimerCallback callback;
   };
 
   PlatformApplication& application_;
@@ -727,6 +757,10 @@ class WindowRuntime {
   std::vector<EntityObserver> entity_observers_;
   std::uint64_t next_subscription_id_ = 1;
   std::vector<DeferredCallback> deferred_callbacks_;
+  std::vector<RuntimeTimer> timers_;
+  std::uint64_t next_timer_id_ = 1;
+  std::uint64_t current_time_ms_ = 0;
+  bool firing_timers_ = false;
   std::vector<AppOpenedWindow> app_opened_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;

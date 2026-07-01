@@ -540,6 +540,7 @@ int WindowRuntime::run(
   invalidation_state_ = {};
   subscription_query_buffer_.clear();
   dispatching_view_event_ = false;
+  firing_timers_ = false;
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
   event_dispatch_sequence_ = 0;
@@ -1498,6 +1499,63 @@ void WindowRuntime::defer(DeferredCallback callback) {
   deferred_callbacks_.push_back(std::move(callback));
 }
 
+TimerId WindowRuntime::schedule_timer(
+    std::uint64_t delay_ms,
+    TimerCallback callback) {
+  if (!callback) {
+    return {};
+  }
+  const TimerId id{next_timer_id_++};
+  timers_.push_back(RuntimeTimer{
+      .id = id,
+      .due_ms = current_time_ms_ + delay_ms,
+      .interval_ms = 0,
+      .repeating = false,
+      .callback = std::move(callback),
+  });
+  return id;
+}
+
+TimerId WindowRuntime::schedule_repeating_timer(
+    std::uint64_t interval_ms,
+    TimerCallback callback) {
+  if (!callback || interval_ms == 0) {
+    return {};
+  }
+  const TimerId id{next_timer_id_++};
+  timers_.push_back(RuntimeTimer{
+      .id = id,
+      .due_ms = current_time_ms_ + interval_ms,
+      .interval_ms = interval_ms,
+      .repeating = true,
+      .callback = std::move(callback),
+  });
+  return id;
+}
+
+bool WindowRuntime::cancel_timer(TimerId id) {
+  if (id.value == 0) {
+    return false;
+  }
+  const auto timer = std::find_if(
+      timers_.begin(),
+      timers_.end(),
+      [id](const RuntimeTimer& timer) {
+        return timer.id == id;
+      });
+  if (timer == timers_.end()) {
+    return false;
+  }
+  timers_.erase(timer);
+  return true;
+}
+
+void WindowRuntime::advance_time(std::uint64_t delta_ms) {
+  current_time_ms_ += delta_ms;
+  fire_due_timers();
+  flush_deferred_redraw_request();
+}
+
 void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
 }
@@ -1553,7 +1611,7 @@ void WindowRuntime::schedule_redraw() {
     return;
   }
   redraw_scheduled_ = true;
-  if (dispatching_view_event_ || draining_deferred_callbacks_) {
+  if (dispatching_view_event_ || draining_deferred_callbacks_ || firing_timers_) {
     deferred_redraw_request_ = true;
     return;
   }
@@ -1580,6 +1638,36 @@ void WindowRuntime::drain_deferred_callbacks() {
     }
     draining_deferred_callbacks_ = false;
   }
+}
+
+void WindowRuntime::fire_due_timers() {
+  if (firing_timers_ || should_quit_) {
+    return;
+  }
+
+  firing_timers_ = true;
+  while (!should_quit_) {
+    auto timer = std::find_if(
+        timers_.begin(),
+        timers_.end(),
+        [this](const RuntimeTimer& timer) {
+          return timer.callback && timer.due_ms <= current_time_ms_;
+        });
+    if (timer == timers_.end()) {
+      break;
+    }
+
+    TimerCallback callback = timer->callback;
+    if (timer->repeating) {
+      timer->due_ms += timer->interval_ms;
+    } else {
+      timer = timers_.erase(timer);
+    }
+    if (callback) {
+      callback(context());
+    }
+  }
+  firing_timers_ = false;
 }
 
 void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
@@ -1839,6 +1927,18 @@ void WindowRuntimeContext::request_paint() const {
 
 void WindowRuntimeContext::defer(DeferredCallback callback) const {
   runtime.defer(std::move(callback));
+}
+
+TimerId WindowRuntimeContext::schedule_timer(
+    std::uint64_t delay_ms,
+    TimerCallback callback) const {
+  return runtime.schedule_timer(delay_ms, std::move(callback));
+}
+
+TimerId WindowRuntimeContext::schedule_repeating_timer(
+    std::uint64_t interval_ms,
+    TimerCallback callback) const {
+  return runtime.schedule_repeating_timer(interval_ms, std::move(callback));
 }
 
 void WindowRuntimeContext::clear_invalidation() const {

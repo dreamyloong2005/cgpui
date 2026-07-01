@@ -60,6 +60,18 @@ class TestView final : public cgpui::View {
     context.defer([](const cgpui::ViewContext& deferred_context) {
       deferred_context.request_paint();
     });
+    const cgpui::TimerId timer_id = context.schedule_timer(
+        10,
+        [](const cgpui::ViewContext& timer_context) {
+          timer_context.request_layout();
+        });
+    const cgpui::TimerId repeating_timer_id = context.schedule_repeating_timer(
+        5,
+        [](const cgpui::ViewContext& timer_context) {
+          timer_context.request_paint();
+        });
+    (void)context.runtime.cancel_timer(timer_id);
+    (void)context.runtime.cancel_timer(repeating_timer_id);
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {

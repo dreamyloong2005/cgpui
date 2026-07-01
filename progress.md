@@ -1,5 +1,42 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 135 Timer API
+
+- Started Step 135 in `.worktrees/runtime-timer-api` on
+  `codex/runtime-timer-api` from `master` at
+  `707e846 docs: mark step 134 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public `TimerId`,
+  context/runtime `schedule_timer(...)`, `schedule_repeating_timer(...)`,
+  runtime `cancel_timer(...)`, deterministic fake time ticks, one-shot
+  removal, repeating rescheduling, cancellation, and timer-callback redraw
+  deferral. RED failed as expected on missing timer APIs.
+- Implemented Step 135 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  added public `TimerId`, `TimerCallback`, runtime-local timer storage,
+  one-shot and repeating registration, cancellation, deterministic
+  `advance_time(...)`, due-timer firing, and redraw deferral while timers fire.
+- During GREEN, the first test shape advanced fake time after
+  `WindowRuntime::run(...)` returned, but the runtime correctly clears its live
+  window/renderer pointers at run exit. The test was corrected to advance fake
+  time inside the fake application's `run()` callback so timer callbacks see a
+  live `WindowRuntimeContext`.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree Windows full debug:
+  `git diff --check; xmake f -c -m debug -P .; xmake test -P .` passed
+  formatting plus 29/29 tests.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/runtime-timer-api -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 135 is recorded as implemented and feature-worktree
+  verified. Step 135 still needs feature commit, fast-forward merge,
+  post-merge verification, docs closeout, and cleanup before Step 136 begins.
+
 ## 2026-07-01 Step 134 Deferred Callback Queue
 
 - Started Step 134 in `.worktrees/deferred-callback-queue` on

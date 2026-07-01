@@ -101,11 +101,13 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 134 is merged on `master` at
-`64f1614 feat: add deferred callback queue` and post-merge verified on Windows
-and WSL Arch Linux. Step 135 is the next implementation slice. The effective
-distance through Step 168 is 34 remaining follow-on implementation steps plus
-the four follow-on band checkpoint reviews.
+Step 135 is implemented in `.worktrees/runtime-timer-api` on
+`codex/runtime-timer-api` from `master` at
+`707e846 docs: mark step 134 merged` and feature-worktree verified on Windows
+and WSL Arch Linux. Step 135 still needs feature commit, fast-forward merge,
+post-merge verification, docs closeout, and cleanup. The effective distance
+through Step 168 is 33 remaining follow-on implementation steps plus the four
+follow-on band checkpoint reviews after Step 135 merges.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -253,7 +255,7 @@ the four follow-on band checkpoint reviews.
 132. [x] Scoped action registry for app, window, view, and focused element actions.
 133. [x] Subscription ownership token that disconnects observers on drop/removal.
 134. [x] Deferred callback queue for `cx.defer(...)` style post-event work.
-135. [ ] Timer API for one-shot and repeating callbacks through the runtime loop.
+135. [x] Timer API for one-shot and repeating callbacks through the runtime loop.
 136. [ ] Async task handle skeleton with main-thread completion dispatch.
 137. [ ] Runtime update batching so multiple model/global changes coalesce redraws.
 138. [ ] Public diagnostics snapshot for entities, subscriptions, invalidations, and frames.
@@ -290,17 +292,18 @@ the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 134, deferred callback queue for `cx.defer(...)` style
-post-event work, is merged on `master` at
-`64f1614 feat: add deferred callback queue` and post-merge verified on Windows
-and WSL Arch Linux. RED failed as expected on missing
-`WindowRuntimeContext::defer(...)`. GREEN adds public `DeferredCallback`,
-`WindowRuntimeContext::defer(...)`, runtime-owned FIFO deferred callbacks,
-post-event draining after `after_event_callback_`, and redraw deferral while
-the deferred queue drains. Post-merge targeted tests passed 2/2, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 135,
-timer API for one-shot and repeating callbacks through the runtime loop, is the
-next implementation slice after this docs closeout and cleanup.
+Current handoff: Step 135, timer API for one-shot and repeating callbacks
+through the runtime loop, is implemented in `.worktrees/runtime-timer-api` on
+`codex/runtime-timer-api` from `master` at
+`707e846 docs: mark step 134 merged`. RED failed as expected on missing
+`TimerId`, `schedule_timer(...)`, `schedule_repeating_timer(...)`, and
+`cancel_timer(...)`. GREEN adds public `TimerId`, `TimerCallback`, context and
+runtime timer registration helpers, deterministic `advance_time(...)` test
+ticks, cancellation, one-shot removal, repeating rescheduling, and redraw
+deferral while timer callbacks fire. Targeted tests passed 2/2, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 135 still
+needs feature commit, fast-forward merge to `master`, post-merge targeted/
+Windows/WSL verification, docs closeout, and cleanup before Step 136 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

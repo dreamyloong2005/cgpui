@@ -5308,6 +5308,9 @@ int test_view_context_registers_explicit_scoped_actions() {
 }
 
 RuntimeFixture* deferred_callback_fixture = nullptr;
+class TimerApiView;
+TimerApiView* timer_api_view = nullptr;
+cgpui::WindowRuntime* timer_api_runtime = nullptr;
 
 void dispatch_deferred_callback_sequence() {
   auto& callback = deferred_callback_fixture->window.callback;
@@ -5408,6 +5411,115 @@ int test_deferred_callbacks_run_after_event_before_redraw_fifo() {
       fixture.renderer.begin_frame_count != 1 ||
       view.paint_count != 1) {
     return 368;
+  }
+
+  return 0;
+}
+
+class TimerApiView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {
+    paint_count += 1;
+  }
+
+  int timer_order = 0;
+  int one_shot_count = 0;
+  int one_shot_order = 0;
+  int repeating_count = 0;
+  int repeating_last_order = 0;
+  int paint_count = 0;
+  bool repeating_second_saw_invalidation = false;
+};
+
+void dispatch_timer_api_sequence() {
+  timer_api_runtime->advance_time(4);
+  if (timer_api_view->one_shot_count != 0 ||
+      timer_api_view->repeating_count != 0) {
+    return;
+  }
+
+  timer_api_runtime->advance_time(1);
+  if (timer_api_view->one_shot_count != 0 ||
+      timer_api_view->repeating_count != 1 ||
+      timer_api_view->repeating_last_order != 1) {
+    return;
+  }
+
+  timer_api_runtime->advance_time(5);
+  if (timer_api_view->one_shot_count != 1 ||
+      timer_api_view->repeating_count != 2 ||
+      timer_api_view->one_shot_order != 2 ||
+      timer_api_view->repeating_last_order != 3 ||
+      !timer_api_view->repeating_second_saw_invalidation) {
+    return;
+  }
+
+  timer_api_runtime->advance_time(10);
+}
+
+int test_one_shot_and_repeating_timers_tick_deterministically() {
+  RuntimeFixture fixture;
+  TimerApiView view;
+  timer_api_view = &view;
+  fixture.app.on_run = &dispatch_timer_api_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  timer_api_runtime = &runtime;
+
+  const cgpui::TimerId one_shot = runtime.schedule_timer(
+      10,
+      [&](const cgpui::WindowRuntimeContext& context) {
+        view.one_shot_count += 1;
+        view.one_shot_order = ++view.timer_order;
+        context.request_render();
+      });
+  const cgpui::TimerId repeating = runtime.schedule_repeating_timer(
+      5,
+      [&](const cgpui::WindowRuntimeContext& context) {
+        view.repeating_count += 1;
+        view.repeating_last_order = ++view.timer_order;
+        if (view.repeating_count == 2) {
+          view.repeating_second_saw_invalidation =
+              context.runtime.invalidation_state().render;
+        }
+      });
+
+  if (one_shot.value == 0 || repeating.value == 0 || one_shot == repeating) {
+    return 369;
+  }
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  timer_api_view = nullptr;
+  timer_api_runtime = nullptr;
+  if (result != 0) {
+    return 370;
+  }
+
+  if (view.one_shot_count != 1 || view.repeating_count != 4 ||
+      view.repeating_last_order != 5) {
+    return 374;
+  }
+
+  if (!runtime.cancel_timer(repeating) || runtime.cancel_timer(one_shot)) {
+    return 375;
+  }
+
+  runtime.advance_time(20);
+  if (view.one_shot_count != 1 || view.repeating_count != 4) {
+    return 376;
+  }
+
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1 ||
+      view.paint_count != 1) {
+    return 377;
   }
 
   return 0;
@@ -6759,6 +6871,11 @@ int main() {
   }
   if (const int result =
           test_deferred_callbacks_run_after_event_before_redraw_fifo();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_one_shot_and_repeating_timers_tick_deterministically();
       result != 0) {
     return result;
   }
