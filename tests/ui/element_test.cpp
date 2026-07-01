@@ -2261,6 +2261,24 @@ int test_text_element_uses_font_size_for_deterministic_metrics() {
              : 282;
 }
 
+int test_text_element_uses_shaping_run_for_utf8_layout_metrics() {
+  cgpui::TextModel model("A\xE4\xB8\xAD");
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_font(cgpui::FontDescriptor{.family = "Fallback"})
+          .with_font_size(20.0F));
+
+  const cgpui::TextShapeRun run = element.shape_run();
+  if (run.glyph_count() != 2 || run.total_advance != 20.0F ||
+      run.byte_length != model.text().size()) {
+    return 283;
+  }
+
+  const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{});
+  return output.size.width == 20.0F && output.size.height == 20.0F ? 0 : 284;
+}
+
 int test_label_widget_paints_text_without_editing_metadata() {
   cgpui::AnyElement element =
       cgpui::label("status")
@@ -4127,6 +4145,11 @@ int main() {
   }
   if (const int result =
           test_text_element_uses_font_size_for_deterministic_metrics();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_uses_shaping_run_for_utf8_layout_metrics();
       result != 0) {
     return result;
   }

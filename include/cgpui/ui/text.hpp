@@ -80,6 +80,60 @@ class FontDatabase {
   return database;
 }
 
+struct TextGlyphRun {
+  std::size_t byte_offset = 0;
+  std::size_t byte_length = 0;
+  float advance = 0.0F;
+};
+
+struct TextShapeRun {
+  std::string text;
+  FontDescriptor font;
+  float font_size = 16.0F;
+  std::vector<TextGlyphRun> glyphs;
+  std::size_t byte_length = 0;
+  float total_advance = 0.0F;
+  float line_height = 16.0F;
+
+  [[nodiscard]] std::size_t glyph_count() const {
+    return glyphs.size();
+  }
+};
+
+[[nodiscard]] inline bool is_utf8_continuation_byte(char value) {
+  return (static_cast<unsigned char>(value) & 0xC0U) == 0x80U;
+}
+
+[[nodiscard]] inline TextShapeRun shape_text(
+    std::string_view text,
+    FontDescriptor font = {},
+    float font_size = 16.0F) {
+  TextShapeRun run{
+      .text = std::string(text),
+      .font = std::move(font),
+      .font_size = font_size,
+      .byte_length = text.size(),
+      .line_height = font_size,
+  };
+  const float fallback_advance = font_size * 0.5F;
+  std::size_t byte_offset = 0;
+  while (byte_offset < text.size()) {
+    std::size_t byte_length = 1;
+    while (byte_offset + byte_length < text.size() &&
+           is_utf8_continuation_byte(text[byte_offset + byte_length])) {
+      byte_length += 1;
+    }
+    run.glyphs.push_back(TextGlyphRun{
+        .byte_offset = byte_offset,
+        .byte_length = byte_length,
+        .advance = fallback_advance,
+    });
+    run.total_advance += fallback_advance;
+    byte_offset += byte_length;
+  }
+  return run;
+}
+
 struct TextSelectionRange {
   std::size_t start = 0;
   std::size_t end = 0;

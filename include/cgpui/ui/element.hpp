@@ -713,13 +713,19 @@ class TextElement : public Element {
   }
 
   [[nodiscard]] float glyph_width() const {
-    return font_size() * 0.5F;
+    const TextShapeRun run = shape_run();
+    return run.glyphs.empty() ? font_size() * 0.5F : run.glyphs.front().advance;
+  }
+
+  [[nodiscard]] TextShapeRun shape_run() const {
+    return shape_text(text(), font(), font_size());
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const TextShapeRun run = shape_run();
     const Size preferred{
-        .width = static_cast<float>(text().size()) * glyph_width(),
-        .height = font_size(),
+        .width = run.total_advance,
+        .height = run.line_height,
     };
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),
@@ -790,13 +796,19 @@ class LabelElement : public Element {
   }
 
   [[nodiscard]] float glyph_width() const {
-    return font_size() * 0.5F;
+    const TextShapeRun run = shape_run();
+    return run.glyphs.empty() ? font_size() * 0.5F : run.glyphs.front().advance;
+  }
+
+  [[nodiscard]] TextShapeRun shape_run() const {
+    return shape_text(text_, font(), font_size());
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    const TextShapeRun run = shape_run();
     const Size preferred{
-        .width = static_cast<float>(text_.size()) * glyph_width(),
-        .height = font_size(),
+        .width = run.total_advance,
+        .height = run.line_height,
     };
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),

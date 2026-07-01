@@ -143,6 +143,10 @@ int main() {
   cgpui::PaintList paint_list;
   TestView view;
   cgpui::TextModel text_model;
+  const cgpui::TextShapeRun shape_run = cgpui::shape_text(
+      "H\xE4\xB8\xAD",
+      cgpui::FontDescriptor{.family = "Header"},
+      18.0F);
   cgpui::ScrollModel scroll_model;
   cgpui::ElementTree element_tree;
   const cgpui::ElementId header_root_id =
@@ -383,6 +387,8 @@ int main() {
                  rounded.radius.top_left == 2.0F && text_model.text() == "x" &&
                  text.content == "header" && text.byte_length == 6 &&
                  text.font.family == "Header" && text.font_size == 18.0F &&
+                 shape_run.glyph_count() == 2 &&
+                 shape_run.total_advance == 18.0F &&
                  selection.range.start == 1 && selection.range.end == 3 &&
                  selection.rect.size.width == 5.0F &&
                  caret.byte_offset == 3 && caret.rect.size.width == 1.0F &&

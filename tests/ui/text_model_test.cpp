@@ -272,6 +272,28 @@ int test_fake_font_discovery_is_deterministic() {
              : 40;
 }
 
+int test_shape_text_produces_deterministic_fallback_glyphs() {
+  const cgpui::TextShapeRun run = cgpui::shape_text(
+      "A\xE4\xB8\xAD",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+
+  if (run.text != std::string_view{"A\xE4\xB8\xAD"} ||
+      run.font.family != "Inter" || run.font_size != 20.0F ||
+      run.glyph_count() != 2 || run.byte_length != 4) {
+    return 41;
+  }
+  if (run.glyphs[0].byte_offset != 0 || run.glyphs[0].byte_length != 1 ||
+      run.glyphs[0].advance != 10.0F) {
+    return 42;
+  }
+  if (run.glyphs[1].byte_offset != 1 || run.glyphs[1].byte_length != 3 ||
+      run.glyphs[1].advance != 10.0F) {
+    return 43;
+  }
+  return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 44;
+}
+
 } // namespace
 
 int main() {
@@ -313,6 +335,10 @@ int main() {
     return result;
   }
   if (const int result = test_fake_font_discovery_is_deterministic();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_shape_text_produces_deterministic_fallback_glyphs();
       result != 0) {
     return result;
   }
