@@ -201,6 +201,18 @@ bindings, clipboard operations, and IME geometry without requiring manual
 remaining follow-on implementation steps plus the four follow-on band
 checkpoint reviews.
 
+Step 148, scrollable list container with stable item keys and viewport
+clipping metadata, is merged on `master` at
+`447b74c feat: add scrollable list container` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`cgpui::scrollable_list` and `ScrollableListElement` APIs. GREEN adds
+`ScrollableListElement`, fluent `ScrollableListBuilder`, public
+`scrollable_list(ScrollState&)`, keyed item installation, scroll-state
+viewport/content updates, offset-adjusted child bounds, and viewport clip
+metadata around item paint commands. The effective distance through Step 168
+is 20 remaining follow-on implementation steps plus the four follow-on band
+checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -360,7 +372,7 @@ checkpoint reviews.
 145. [x] Button widget primitive built from public element, focus, style, and action APIs.
 146. [x] Label widget primitive using text style and text paint commands.
 147. [x] Text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
-148. [ ] Scrollable list container with stable item keys and viewport clipping metadata.
+148. [x] Scrollable list container with stable item keys and viewport clipping metadata.
 149. [ ] Font database abstraction and platform font discovery skeleton for Win32 and Linux.
 150. [ ] Text shaping run abstraction with deterministic fallback metrics before full shaping.
 151. [ ] Glyph atlas/cache interface shared by text elements and Vulkan renderer.
@@ -384,12 +396,12 @@ checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 147, text input widget primitive integrating focus, text
-model, selection, clipboard, and IME geometry, is merged on `master` at
-`e3f122b feat: add text input widget primitive` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted tests passed 5/5, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 148,
-scrollable list container with stable item keys and viewport clipping metadata,
+Current handoff: Step 148, scrollable list container with stable item keys and
+viewport clipping metadata, is merged on `master` at
+`447b74c feat: add scrollable list container` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 149, font
+database abstraction and platform font discovery skeleton for Win32 and Linux,
 is the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`

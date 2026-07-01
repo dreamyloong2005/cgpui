@@ -1,5 +1,51 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 148 Scrollable List Container
+
+- Continued Step 148 in `.worktrees/scrollable-list-container` on
+  `codex/scrollable-list-container` from `master` at
+  `f072aac docs: mark step 147 merged`.
+- Baseline targeted tests had already passed before edits:
+  `xmake test -P . element_test/default scroll_test/default` passed 2/2.
+- Added RED coverage in `tests/ui/element_test.cpp`,
+  `tests/header_cleanliness/ui_header_cleanliness.cpp`, and
+  `tests/header_cleanliness/prelude_header_cleanliness.cpp` for public
+  `cgpui::scrollable_list(...)`, `ScrollableListElement`, keyed list items,
+  scroll state viewport/content sizing, scroll-offset child bounds, viewport
+  clip metadata, and header/prelude exposure. RED failed as expected on
+  missing `scrollable_list` and `ScrollableListElement` APIs.
+- GREEN adds `ScrollableListElement`, fluent `ScrollableListBuilder`, public
+  `scrollable_list(ScrollState&)`, keyed item installation into an internal
+  `VerticalStackElement`, scroll-state viewport/content updates, offset-
+  adjusted item bounds, and clip-wrapped item paint commands.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default scroll_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/scrollable-list-container -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . element_test/default scroll_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4. `git diff --check` reported only expected CRLF warnings.
+- Committed Step 148 as
+  `447b74c feat: add scrollable list container` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default scroll_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 148 is marked merged and post-merge verified. Step 149, font
+  database abstraction and platform font discovery skeleton for Win32 and
+  Linux, is the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-01 Step 147 Text Input Widget Primitive
 
 - Started Step 147 in `.worktrees/text-input-widget-primitive` on

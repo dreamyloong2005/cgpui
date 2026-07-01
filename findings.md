@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Scrollable List Container
+
+- Step 148 keeps the scrollable list as a public reusable widget built on
+  existing primitives: `ScrollState`, `VerticalStackElement`, keyed elements,
+  layout bounds, and paint clip metadata. It does not introduce a separate
+  runtime scroll owner or virtualization system yet.
+- `scrollable_list(state)` installs each `.item(key, child)` by setting the
+  child element key and storing it in an internal vertical stack. This makes
+  item identity visible to keyed reconciliation without inventing a second
+  list-specific key map.
+- Layout computes content size through the internal stack, writes viewport and
+  content dimensions back to `ScrollState`, and applies the current scroll
+  offset to child layout bounds so tests and paint commands observe scrolled
+  geometry.
+- Paint pushes the list viewport as a clip around direct item painting. The
+  internal `VerticalStackElement` remains a layout container rather than a
+  paint dispatcher, so the list paints its items explicitly.
+- Step 149 should switch focus to text/font infrastructure: platform-neutral
+  font descriptors and deterministic Win32/Linux discovery skeletons, while
+  keeping renderer text work command-driven until later glyph cache slices.
+
 ## 2026-07-01 Text Input Widget Primitive
 
 - Step 147 adds `TextInputElement` as a focusable widget backed by an existing

@@ -101,8 +101,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `e3f122b feat: add text input widget primitive`; post-merge targeted tests
   passed 5/5, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 148 is merged on `master` at
+  `447b74c feat: add scrollable list container`; post-merge targeted tests
+  passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 148 is the next implementation slice after Step 147 docs closeout
+  128. Step 149 is the next implementation slice after Step 148 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -363,6 +367,24 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   clipping metadata, is the next implementation slice after docs closeout and
   cleanup.
 - The effective distance through Step 168 is 21 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 148 Merge
+
+- Step 148, scrollable list container with stable item keys and viewport
+  clipping metadata, is merged on `master` at
+  `447b74c feat: add scrollable list container`.
+- RED failed as expected on missing `cgpui::scrollable_list` and
+  `ScrollableListElement` APIs. GREEN adds `ScrollableListElement`, fluent
+  `ScrollableListBuilder`, public `scrollable_list(ScrollState&)`, keyed item
+  installation, scroll-state viewport/content updates, offset-adjusted child
+  bounds, and viewport clip metadata around item paint commands.
+- Post-merge verification passed: targeted tests 4/4, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 149, font database abstraction and platform font discovery skeleton for
+  Win32 and Linux, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 20 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
@@ -1388,7 +1410,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 145: button widget primitive built from public element, focus, style, and action APIs.
 - [x] Step 146: label widget primitive using text style and text paint commands.
 - [x] Step 147: text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
-- [ ] Step 148: scrollable list container with stable item keys and viewport clipping metadata.
+- [x] Step 148: scrollable list container with stable item keys and viewport clipping metadata.
 
 Exit check: the public prelude can express common app UI controls through reusable widgets, keyed state, style classes/themes, and focus handles.
 
@@ -1822,9 +1844,14 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/scroll_test.cpp`
 
-- [ ] Add RED tests for stable keyed list items, viewport clipping metadata, and scroll state offset.
-- [ ] Implement a scrollable list container on top of existing scroll state and keyed elements.
-- [ ] Targeted test command: `xmake test -P . element_test/default scroll_test/default`.
+- [x] Add RED tests for stable keyed list items, viewport clipping metadata, and scroll state offset.
+- [x] Implement a scrollable list container on top of existing scroll state and keyed elements.
+- [x] Targeted test command: `xmake test -P . element_test/default scroll_test/default ui_header_cleanliness/default prelude_header_cleanliness/default` passed 4/4.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Post-merge targeted tests passed 4/4.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 149: Font Database Skeleton
 
