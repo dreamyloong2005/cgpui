@@ -4944,3 +4944,25 @@
   progress log so Step 163 is marked merged and post-merge verified. Step 164,
   Wayland data-device drag-and-drop text/file event skeleton, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 164 Wayland Data-Device Drag-and-Drop Skeleton
+
+- Continued after interruption with Step 164 already implemented in
+  `.worktrees/wayland-data-device-dnd` on
+  `codex/wayland-data-device-dnd` and fast-forward merged to `master`.
+- Step 164 commit is
+  `e1f485e feat: add wayland data device dnd skeleton`.
+- GREEN binds `wl_data_device_manager`, creates a seat data device, maps
+  Wayland data-device enter/motion/drop/leave to the public drag/drop events,
+  expands the Wayland test compositor with deterministic DnD requests, and
+  leaves payload extraction as graceful `DragDropPayloadKind::none`.
+- Verified post-merge targeted/source coverage from the handoff:
+  WSL Arch Linux targeted/source tests passed 5/5, and Windows targeted
+  available targets passed 4/4.
+- Verified post-merge whitespace and full suites from the handoff:
+  `git diff --check` produced no output, Windows full debug passed 29/29, and
+  WSL Arch Linux full debug passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 164 is marked merged and post-merge verified. Step 165,
+  platform event loop wakeup API for timers, async completions, and deferred
+  callbacks, is the next implementation slice after docs closeout and cleanup.

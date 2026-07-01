@@ -166,8 +166,13 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `0d90edd feat: add win32 drag drop skeleton`; post-merge targeted/header
   tests passed 5/5, `git diff --check` produced no output, Windows full debug
   passed 29/29, and WSL Arch Linux full debug passed 26/26.
+- Step 164 is merged on `master` at
+  `e1f485e feat: add wayland data device dnd skeleton`; post-merge targeted
+  coverage passed 4/4 on Windows for available targets and 5/5 on WSL Arch
+  Linux, `git diff --check` produced no output, Windows full debug passed
+  29/29, and WSL Arch Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 164 is the next implementation slice after Step 163 docs closeout
+  128. Step 165 is the next implementation slice after Step 164 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -370,6 +375,30 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - Step 164, Wayland data-device drag-and-drop text/file event skeleton, is the
   next implementation slice after docs closeout and cleanup.
 - The effective distance through Step 168 is 5 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 164 Merge
+
+- Step 164, Wayland data-device drag-and-drop text/file event skeleton, is
+  merged on `master` at
+  `e1f485e feat: add wayland data device dnd skeleton`.
+- RED failed as expected on missing Wayland data-device drag/drop dispatch and
+  source-readiness coverage.
+- GREEN binds `wl_data_device_manager`, creates a seat data device, maps
+  Wayland data-device enter/motion/drop/leave notifications to the existing
+  public `DragEntered`, `DragUpdated`, `DragDropped`, and `DragExited` events,
+  and expands the test compositor with deterministic data-device DnD requests.
+- Payload extraction intentionally remains a graceful no-data skeleton:
+  `DragDropPayloadKind::none` is emitted and full MIME negotiation,
+  `wl_data_offer_receive`, URI-list parsing, text extraction, and file-manager
+  integration remain future depth work.
+- Post-merge verification passed: WSL Arch Linux targeted/source tests 5/5,
+  Windows targeted available targets 4/4, `git diff --check` with no output,
+  Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 165, platform event loop wakeup API for timers, async completions, and
+  deferred callbacks, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 4 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1737,7 +1766,7 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 - [x] Step 161: Win32 IME composition window placement wired to focused text geometry.
 - [x] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
 - [x] Step 163: Win32 drag-and-drop text/file event skeleton.
-- [ ] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
+- [x] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
 - [ ] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
 - [ ] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 - [ ] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
@@ -2464,13 +2493,21 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 ### Step 164: Wayland Data-Device Drag-and-Drop Skeleton
 
 **Files:**
-- Modify: `include/cgpui/core/events.hpp`
 - Modify: `src/platform/linux/wayland_application.cpp`
 - Modify: `tests/platform/wayland_pointer_button_test.cpp`
+- Modify: `tests/platform/wayland_test_compositor.cpp`
+- Modify: `tests/platform/wayland_test_compositor.hpp`
+- Modify: `tests/architecture/wayland_window_source_test.cpp`
 
-- [ ] Add RED tests for Wayland data-device drag/drop event shapes with graceful no-data behavior.
-- [ ] Implement isolated Wayland skeleton hooks.
-- [ ] Targeted test command: `xmake test -P . wayland_pointer_button_test/default`.
+- [x] Add RED tests for Wayland data-device drag/drop event shapes with graceful no-data behavior.
+- [x] Implement isolated Wayland skeleton hooks.
+- [x] Targeted WSL Arch Linux command passed 5/5:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-data-device-dnd -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default wayland_window_source_test/default'`.
+- [x] Targeted Windows available-target command passed 4/4:
+  `xmake test -P . window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default wayland_window_source_test/default`.
+- [x] Post-merge verification passed: WSL Arch Linux targeted/source tests
+  5/5, Windows targeted available targets 4/4, `git diff --check` with no
+  output, Windows full debug 29/29, and WSL Arch Linux full debug 26/26.
 
 ### Step 165: Platform Event Loop Wakeup API
 

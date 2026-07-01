@@ -380,6 +380,16 @@ payloads without claiming real shell drag/drop integration yet. The effective
 distance through Step 168 is 5 remaining follow-on implementation steps plus
 the final Band H checkpoint review.
 
+Step 164, Wayland data-device drag-and-drop text/file event skeleton, is
+merged on `master` at `e1f485e feat: add wayland data device dnd skeleton`
+and post-merge verified on Windows and WSL Arch Linux. RED failed as expected
+on missing Wayland data-device drag/drop dispatch and source-readiness
+coverage. GREEN binds `wl_data_device_manager`, creates a seat data device,
+maps Wayland enter/motion/drop/leave notifications to the public drag/drop
+events, and keeps payload extraction as a graceful no-data skeleton. The
+effective distance through Step 168 is 4 remaining follow-on implementation
+steps plus the final Band H checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -555,7 +565,7 @@ the final Band H checkpoint review.
 161. [x] Win32 IME composition window placement wired to focused text geometry.
 162. [x] Wayland text-input/IME protocol skeleton wired to focused text geometry.
 163. [x] Win32 drag-and-drop text/file event skeleton.
-164. [ ] Wayland data-device drag-and-drop text/file event skeleton.
+164. [x] Wayland data-device drag-and-drop text/file event skeleton.
 165. [ ] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
 166. [ ] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 167. [ ] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
@@ -563,13 +573,15 @@ the final Band H checkpoint review.
 
 ## Active Step
 
-Current handoff: Step 163, Win32 drag-and-drop text/file event skeleton, is
-merged on `master` at `0d90edd feat: add win32 drag drop skeleton` and
-post-merge verified on Windows and WSL Arch Linux. Post-merge targeted/header
-tests passed 5/5, `git diff --check` produced no output, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 164, Wayland
-data-device drag-and-drop text/file event skeleton, is the next implementation
-slice after docs closeout and cleanup.
+Current handoff: Step 164, Wayland data-device drag-and-drop text/file event
+skeleton, is merged on `master` at
+`e1f485e feat: add wayland data device dnd skeleton` and post-merge verified
+on Windows and WSL Arch Linux. Post-merge targeted/header/source coverage
+passed 4/4 on Windows for available targets and 5/5 on WSL Arch Linux, `git
+diff --check` produced no output, Windows full debug passed 29/29, and WSL
+Arch Linux full debug passed 26/26. Step 165, platform event loop wakeup API
+for timers, async completions, and deferred callbacks, is the next
+implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

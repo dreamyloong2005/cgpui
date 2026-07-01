@@ -2831,3 +2831,26 @@
 - Step 164 should reuse the public event shapes for Wayland data-device work
   and add Wayland-specific graceful no-data behavior without changing the
   Win32 test hook surface.
+
+## 2026-07-02 Wayland Data-Device Drag-and-Drop Skeleton
+
+- Step 164 reuses the existing public drag/drop event shapes rather than
+  adding Wayland-specific public API: `DragEntered`, `DragUpdated`,
+  `DragDropped`, and `DragExited` are emitted from Wayland data-device
+  notifications.
+- Production Wayland now binds `wl_data_device_manager`, creates a seat data
+  device, tracks the active drag target surface through the existing
+  window-lookup path, and maps data-device enter/motion/drop/leave into
+  platform events. `DragExited` uses the last known drag position because
+  Wayland leave has no coordinates.
+- Payload handling intentionally soft-fails to `DragDropPayloadKind::none`.
+  The slice does not implement MIME negotiation, `wl_data_offer_receive`, pipe
+  reading, text extraction, URI-list parsing, file-manager integration, or drag
+  effects.
+- The Wayland test compositor now exposes a deterministic
+  `wl_data_device_manager`/`wl_data_device` path and request helpers for
+  drag-enter, drag-motion, drop, and leave. This keeps Step 164 testable
+  without depending on an external compositor or desktop file manager.
+- Step 165 should bridge runtime deferred callbacks, timers, and async
+  completions to platform wakeups without changing the Step 164 DnD payload
+  boundary.
