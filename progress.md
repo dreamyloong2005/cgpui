@@ -1,5 +1,52 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Step 159 Multi-Window Runtime Registry
+
+- Started Step 159 in `.worktrees/multi-window-runtime-registry` on
+  `codex/multi-window-runtime-registry` from `master` at
+  `7099c1a docs: mark step 158 merged`.
+- Verified baseline targeted test before edits:
+  `xmake test -P . app_runner_test/default` passed 1/1.
+- Added RED coverage in `tests/ui/app_runner_test.cpp` for multiple
+  app-opened runtime/window records with independent root view ids, queryable
+  runtime ids, root-window active record state, and explicit per-window
+  window/renderer/root-view ownership metadata. RED failed as expected on
+  missing `WindowRuntimeRecord`, `AppOpenedWindow::runtime_id`,
+  `WindowRuntime::window_runtime_records()`,
+  `WindowRuntime::window_runtime_record(...)`, and
+  `WindowRuntime::root_window_runtime_id()`.
+- GREEN adds `WindowRuntimeId`, `WindowRuntimeRecord`, root and app-opened
+  runtime records, registry query helpers, and run-time activation/deactivation
+  of the existing single-window root record while preserving
+  `app_opened_windows()` source compatibility.
+- Verified targeted GREEN test:
+  `xmake test -P . app_runner_test/default` passed 1/1.
+- Verified expanded affected coverage:
+  `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings before commit and no
+  post-merge whitespace output.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/multi-window-runtime-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 159 as
+  `7d515bb feat: add multi-window runtime registry` and fast-forward merged it
+  to `master`.
+- Verified post-merge expanded targeted tests:
+  `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 159 is marked merged and post-merge verified. Step 160,
+  window activation, focus, minimize, restore, and close lifecycle events, is
+  the next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-02 Step 158 Renderer Unsupported-Command Diagnostics
 
 - Started Step 158 in `.worktrees/renderer-unsupported-diagnostics` on

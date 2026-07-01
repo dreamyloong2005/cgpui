@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Multi-Window Runtime Registry
+
+- Step 159 introduces a platform-neutral ownership registry, not a full native
+  multi-window event loop. `WindowRuntimeRecord` tracks runtime id, descriptor,
+  root view id, live platform window/renderer pointers when active, and
+  explicit `owns_window`, `owns_renderer`, and `owns_root_view` flags.
+- The root window keeps the existing single-window run path. Its record is
+  active only while `WindowRuntime::run(...)` owns a live platform window and
+  borrowed renderer pointer, then clears the live pointers when the run returns.
+  This preserves current callback/context behavior.
+- App-opened windows now receive stable `WindowRuntimeId` values in
+  `AppOpenedWindow::runtime_id`. Owned root views are still stored in the
+  existing view registry, while the new runtime record declares future window
+  and renderer ownership separately from actual platform creation.
+- The new query surface is read-only:
+  `root_window_runtime_id()`, `window_runtime_records()`, and
+  `window_runtime_record(...)`. This gives Step 160 lifecycle events a concrete
+  per-window record to update without forcing Step 159 to rewrite Win32 or
+  Wayland event-loop behavior.
+
 ## 2026-07-02 Renderer Unsupported-Command Diagnostics
 
 - Step 158 adds a renderer-facing diagnostic report rather than changing UI

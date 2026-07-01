@@ -253,6 +253,27 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The effective distance through Step 168 is 10 follow-on implementation
   slices plus the final Band H checkpoint review.
 
+## 2026-07-02 Back-40 Planning After Step 159 Merge
+
+- Step 159, multi-window runtime registry with per-window root view and
+  renderer ownership, is merged on `master` at
+  `7d515bb feat: add multi-window runtime registry`.
+- RED failed as expected on missing `WindowRuntimeId`, `WindowRuntimeRecord`,
+  `AppOpenedWindow::runtime_id`, `WindowRuntime::window_runtime_records()`,
+  `WindowRuntime::window_runtime_record(...)`, and
+  `WindowRuntime::root_window_runtime_id()`.
+- GREEN adds a platform-neutral per-window runtime registry that keeps the
+  existing root window run path active only while the platform window and
+  renderer are live, and records app-opened windows with independent root view
+  ids plus explicit window, renderer, and root-view ownership metadata.
+- Post-merge verification passed: expanded app-runner/header tests 4/4,
+  `git diff --check` with no output, Windows full debug 29/29, and WSL Arch
+  Linux full debug 26/26.
+- Step 160, window activation, focus, minimize, restore, and close lifecycle
+  events, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 9 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
 
 - Step 139, keyed element identity and keyed reconciliation beyond
@@ -1613,7 +1634,7 @@ Exit check: text, opacity, transform, batching, HiDPI scale, and renderer diagno
 
 Purpose: connect the public API to Windows/Wayland runtime behavior and close the Windows/Linux parity loop.
 
-- [ ] Step 159: multi-window runtime registry with per-window root view and renderer ownership.
+- [x] Step 159: multi-window runtime registry with per-window root view and renderer ownership.
 - [ ] Step 160: window activation, focus, minimize, restore, and close lifecycle events.
 - [ ] Step 161: Win32 IME composition window placement wired to focused text geometry.
 - [ ] Step 162: Wayland text-input/IME protocol skeleton wired to focused text geometry.
@@ -2220,9 +2241,23 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/app_runner_test.cpp`
 
-- [ ] Add RED tests for multiple runtime/window records with independent root views and renderers.
-- [ ] Implement a registry that keeps ownership explicit and preserves the single-window path.
-- [ ] Targeted test command: `xmake test -P . app_runner_test/default`.
+- [x] Add RED tests for multiple runtime/window records with independent root views and renderers.
+- [x] Implement a registry that keeps ownership explicit and preserves the single-window path.
+- [x] Targeted test command: `xmake test -P . app_runner_test/default`.
+- [x] RED failed as expected on missing `WindowRuntimeRecord`,
+  `AppOpenedWindow::runtime_id`, and runtime registry query APIs.
+- [x] GREEN added `WindowRuntimeId`, `WindowRuntimeRecord`, root/app-opened
+  records, and read-only registry query helpers.
+- [x] Targeted and expanded tests passed 4/4:
+  `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`.
+- [x] Feature-worktree Windows full debug passed 29/29:
+  `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Feature-worktree WSL Arch full debug passed 26/26:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/multi-window-runtime-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Fast-forward merged to `master` at
+  `7d515bb feat: add multi-window runtime registry`.
+- [x] Post-merge targeted tests passed 4/4, Windows full debug passed 29/29,
+  and WSL Arch Linux full debug passed 26/26.
 
 ### Step 160: Window Lifecycle Events
 

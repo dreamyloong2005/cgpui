@@ -319,6 +319,20 @@ text-caret style primitives. The effective distance through Step 168 is 10
 remaining follow-on implementation steps plus the final Band H checkpoint
 review.
 
+Step 159, multi-window runtime registry with per-window root view and renderer
+ownership, is merged on `master` at
+`7d515bb feat: add multi-window runtime registry` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`WindowRuntimeId`, `WindowRuntimeRecord`, `AppOpenedWindow::runtime_id`,
+`WindowRuntime::window_runtime_records()`,
+`WindowRuntime::window_runtime_record(...)`, and
+`WindowRuntime::root_window_runtime_id()`. GREEN adds a platform-neutral
+runtime registry that keeps the root window record active during the existing
+single-window run path and records app-opened windows with independent root
+view ids plus explicit window/renderer/root-view ownership metadata. The
+effective distance through Step 168 is 9 remaining follow-on implementation
+steps plus the final Band H checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -489,7 +503,7 @@ review.
 156. [x] HiDPI scale propagation into layout, text metrics, and renderer resources.
 157. [x] Snapshot tests for paint command streams emitted by the demo and widgets.
 158. [x] Renderer fallback path for unsupported commands with explicit diagnostics.
-159. [ ] Multi-window runtime registry with per-window root view and renderer ownership.
+159. [x] Multi-window runtime registry with per-window root view and renderer ownership.
 160. [ ] Window activation, focus, minimize, restore, and close lifecycle events.
 161. [ ] Win32 IME composition window placement wired to focused text geometry.
 162. [ ] Wayland text-input/IME protocol skeleton wired to focused text geometry.
@@ -502,15 +516,14 @@ review.
 
 ## Active Step
 
-Current handoff: Step 158, renderer fallback path for unsupported commands with
-explicit diagnostics, is merged on `master` at
-`86a3e00 feat: add renderer unsupported diagnostics` and post-merge verified on
+Current handoff: Step 159, multi-window runtime registry with per-window root
+view and renderer ownership, is merged on `master` at
+`7d515bb feat: add multi-window runtime registry` and post-merge verified on
 Windows and WSL Arch Linux. Post-merge targeted/expanded tests passed 4/4,
-Windows full debug passed 29/29 after one transient
-`win32_text_input_test/default` rerun, and WSL Arch Linux full debug passed
-26/26. Step 159, multi-window runtime registry with per-window root view and
-renderer ownership, is the next implementation slice after docs closeout and
-cleanup.
+`git diff --check` produced no output, Windows full debug passed 29/29, and
+WSL Arch Linux full debug passed 26/26. Step 160, window activation, focus,
+minimize, restore, and close lifecycle events, is the next implementation
+slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
