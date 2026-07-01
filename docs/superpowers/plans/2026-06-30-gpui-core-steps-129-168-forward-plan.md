@@ -77,8 +77,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `10415c6 feat: add element state storage`; post-merge targeted tests passed
   2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
   26/26.
+- Step 142 is merged on `master` at
+  `1493c91 feat: add style classes theme tokens`; post-merge targeted tests
+  passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 142 is the next implementation slice after Step 141 docs closeout
+  128. Step 143 is the next implementation slice after Step 142 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -199,6 +203,22 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   cleanup.
 - After the Step 142 merge, the effective distance through Step 168 will be
   26 follow-on implementation slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 142 Merge
+
+- Step 142, style class and theme token primitives for reusable design
+  vocabulary, is merged on `master` at
+  `1493c91 feat: add style classes theme tokens`.
+- RED failed as expected on missing `StyleClassId`, `style_class(...)`,
+  `StyleClasses`, `ThemeTokenId`, `theme_token(...)`, and `Theme` color/
+  spacing token APIs. GREEN adds inert public vocabulary primitives without
+  applying cascade behavior.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 143, style cascade resolution combining base, class, state, and inline
+  styles, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 26 follow-on implementation
+  slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
@@ -1217,7 +1237,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 139: keyed element identity and keyed reconciliation beyond parent-local index matching.
 - [x] Step 140: element lifecycle hooks for mount, update, and unmount notifications.
 - [x] Step 141: element state storage keyed by element id for reusable widgets.
-- [ ] Step 142: style class and theme token primitives for reusable design vocabulary.
+- [x] Step 142: style class and theme token primitives for reusable design vocabulary.
 - [ ] Step 143: style cascade resolution combining base, class, state, and inline styles.
 - [ ] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
 - [ ] Step 145: button widget primitive built from public element, focus, style, and action APIs.
@@ -1551,6 +1571,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Targeted test command: `xmake test -P . style_test/default prelude_header_cleanliness/default` passed 2/2.
 - [x] Feature-worktree Windows full debug verification passed 29/29.
 - [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `1493c91 feat: add style classes theme tokens`.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 143: Style Cascade Resolution
 

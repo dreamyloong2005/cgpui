@@ -135,6 +135,17 @@ soft-fail lookup/init/replace helpers, and `WindowRuntime` /
 effective distance through Step 168 is 27 remaining follow-on implementation
 steps plus the four follow-on band checkpoint reviews.
 
+Step 142, style class and theme token primitives for reusable design
+vocabulary, is merged on `master` at
+`1493c91 feat: add style classes theme tokens` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `StyleClassId`,
+`style_class(...)`, `StyleClasses`, `ThemeTokenId`, `theme_token(...)`, and
+`Theme` color/spacing token APIs. GREEN adds inert public style vocabulary
+primitives: named class ids, ordered de-duplicated class lists, named theme
+token ids, and typed color/spacing token storage with missing-token soft
+failure. The effective distance through Step 168 is 26 remaining follow-on
+implementation steps plus the four follow-on band checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -288,7 +299,7 @@ steps plus the four follow-on band checkpoint reviews.
 139. [x] Keyed element identity and keyed reconciliation beyond parent-local index matching.
 140. [x] Element lifecycle hooks for mount, update, and unmount notifications.
 141. [x] Element state storage keyed by element id for reusable widgets.
-142. [ ] Style class and theme token primitives for reusable design vocabulary.
+142. [x] Style class and theme token primitives for reusable design vocabulary.
 143. [ ] Style cascade resolution combining base, class, state, and inline styles.
 144. [ ] `FocusHandle` primitive with request, release, contains, and focused queries.
 145. [ ] Button widget primitive built from public element, focus, style, and action APIs.
@@ -318,17 +329,17 @@ steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 141, element state storage keyed by element id for
-reusable widgets, is merged on `master` at
-`10415c6 feat: add element state storage` and post-merge verified on Windows
-and WSL Arch Linux. RED failed as expected on missing
-`ElementTree::state<T>(...)`, `state_or_init<T>(...)`, and
-`emplace_state<T>(...)` APIs. GREEN adds per-node type-indexed state storage,
-soft-fail lookup/init/replace helpers, and runtime/context forwarding for
-owned element trees. Post-merge targeted tests passed 2/2, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 142, style
-class and theme token primitives for reusable design vocabulary, is the next
-implementation slice after this docs closeout and cleanup.
+Current handoff: Step 142, style class and theme token primitives for reusable
+design vocabulary, is merged on `master` at
+`1493c91 feat: add style classes theme tokens` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `StyleClassId`,
+`style_class(...)`, `StyleClasses`, `ThemeTokenId`, `theme_token(...)`, and
+`Theme` color/spacing token APIs. GREEN adds inert public style vocabulary
+primitives without applying cascade behavior. Post-merge targeted tests passed
+2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
+26/26. Step 143, style cascade resolution combining base, class, state, and
+inline styles, is the next implementation slice after this docs closeout and
+cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
