@@ -101,11 +101,17 @@ checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
 
-Step 138 is merged on `master` at
-`7e88e81 feat: add runtime diagnostics snapshot` and post-merge verified on
-Windows and WSL Arch Linux. Step 139 is the next implementation slice. The
-effective distance through Step 168 is 30 remaining follow-on implementation
-steps plus the four follow-on band checkpoint reviews.
+Step 139, keyed element identity and keyed reconciliation beyond parent-local
+index matching, is implemented and feature-worktree verified in
+`.worktrees/keyed-element-identity` on `codex/keyed-element-identity`. RED
+failed as expected on missing `ElementKey`, `Element::key()`,
+`ElementBuilder::key(...)`, and `ElementTree::reconcile_children(...)`.
+GREEN adds optional stable element keys, builder key propagation through
+event/focus wrappers, and parent-local batch reconciliation that preserves
+keyed child ids across reorder/insert/remove while keeping index-based
+reconciliation available for existing unkeyed call sites. The effective
+distance through Step 168 is 29 remaining follow-on implementation steps plus
+the four follow-on band checkpoint reviews after Step 139 merges.
 
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
@@ -290,19 +296,22 @@ steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 138, public diagnostics snapshot for entities,
-subscriptions, invalidations, and frames, is merged on `master` at
-`7e88e81 feat: add runtime diagnostics snapshot` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing
-`RuntimeDiagnosticsSnapshot`, `WindowRuntimeContext::diagnostics_snapshot()`,
-and `WindowRuntime::diagnostics_snapshot()`. GREEN adds a public read-only
-snapshot with entity-store/entity counts, view/entity subscription counts,
-observer and connected-subscription counts, current invalidation, frame index,
-and recent render record. Post-merge targeted tests passed 2/2, Windows full
-debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 139,
-keyed element identity and keyed reconciliation beyond parent-local index
-matching, is the next implementation slice after this docs closeout and
-cleanup.
+Current handoff: Step 139, keyed element identity and keyed reconciliation
+beyond parent-local index matching, is implemented and feature-worktree
+verified in `.worktrees/keyed-element-identity` on
+`codex/keyed-element-identity`. RED failed as expected on missing
+`ElementKey`, `Element::key()`, `ElementBuilder::key(...)`, and
+`ElementTree::reconcile_children(...)`. GREEN adds optional stable
+`ElementKey` metadata, public builder `.key(...)` overloads, key propagation
+to event/focus wrapper elements, and `ElementTree::reconcile_children(...)`
+for parent-local keyed reorder/insert/remove while preserving existing
+`reconcile_child(...)` index matching for unkeyed paths. Targeted tests passed
+2/2, the first Windows full debug run had the known transient
+`clipboard_test/default` failure but an immediate targeted rerun passed 1/1,
+the Windows full debug rerun passed 29/29, and WSL Arch Linux full debug
+passed 26/26. Step 139 still needs a final fresh targeted check, feature
+commit, fast-forward merge, post-merge verification, docs closeout, and
+cleanup before Step 140 begins.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

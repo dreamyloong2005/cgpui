@@ -60,6 +60,7 @@ class FocusableCountingElement final : public cgpui::Element {
 
 static_assert(std::same_as<decltype(cgpui::ElementId{}.value), std::uint64_t>);
 static_assert(std::equality_comparable<cgpui::ElementId>);
+static_assert(std::equality_comparable<cgpui::ElementKey>);
 static_assert(std::same_as<cgpui::AnyElement, std::unique_ptr<cgpui::Element>>);
 
 int test_element_id_defaults_to_invalid() {
@@ -392,6 +393,26 @@ int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
   }
 
   return 0;
+}
+
+int test_element_builder_key_applies_to_built_element() {
+  cgpui::ElementKey key{.value = "profile-row"};
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div().key(key).size(12.0F, 4.0F));
+
+  if (!element->key().has_value() || element->key()->value != "profile-row") {
+    return 229;
+  }
+
+  cgpui::AnyElement wrapped =
+      cgpui::into_element(cgpui::div()
+                              .key("clickable-row")
+                              .on_click([](const cgpui::ElementEventContext&) {
+                                return cgpui::EventResult::consumed_event();
+                              }));
+  return wrapped->key().has_value() && wrapped->key()->value == "clickable-row"
+             ? 0
+             : 230;
 }
 
 int test_base_element_lays_out_zero_size() {
@@ -1279,6 +1300,90 @@ int test_element_tree_reconcile_appends_new_child_index() {
           children[1] == second_child_id
       ? 0
       : 25;
+}
+
+int test_keyed_children_preserve_ids_across_reorder_insert_and_removal() {
+  cgpui::ElementTree tree;
+  const cgpui::ElementId root_id =
+      tree.reconcile_root(std::make_unique<NamedElement>(1));
+
+  std::vector<cgpui::AnyElement> first_pass;
+  first_pass.push_back(
+      cgpui::into_element(cgpui::div().key("alpha").size(10.0F, 1.0F)));
+  first_pass.push_back(
+      cgpui::into_element(cgpui::div().key("beta").size(20.0F, 2.0F)));
+  first_pass.push_back(
+      cgpui::into_element(cgpui::div().key("gamma").size(30.0F, 3.0F)));
+  const std::vector<cgpui::ElementId> first_ids =
+      tree.reconcile_children(root_id, std::move(first_pass));
+  if (first_ids.size() != 3 || first_ids[0].value == 0 ||
+      first_ids[1].value == 0 || first_ids[2].value == 0) {
+    return 231;
+  }
+
+  const cgpui::ElementId alpha_id = first_ids[0];
+  const cgpui::ElementId beta_id = first_ids[1];
+  const cgpui::ElementId gamma_id = first_ids[2];
+  const cgpui::ElementId gamma_child_id =
+      tree.append_child(gamma_id, std::make_unique<NamedElement>(99));
+  if (gamma_child_id.value == 0) {
+    return 232;
+  }
+
+  std::vector<cgpui::AnyElement> second_pass;
+  second_pass.push_back(
+      cgpui::into_element(cgpui::div().key("gamma").size(33.0F, 3.0F)));
+  second_pass.push_back(
+      cgpui::into_element(cgpui::div().key("delta").size(40.0F, 4.0F)));
+  second_pass.push_back(
+      cgpui::into_element(cgpui::div().key("alpha").size(11.0F, 1.0F)));
+  const std::vector<cgpui::ElementId> second_ids =
+      tree.reconcile_children(root_id, std::move(second_pass));
+  if (second_ids.size() != 3) {
+    return 233;
+  }
+  if (second_ids[0] != gamma_id || second_ids[2] != alpha_id) {
+    return 234;
+  }
+  if (second_ids[1].value == 0 || second_ids[1] == alpha_id ||
+      second_ids[1] == beta_id || second_ids[1] == gamma_id) {
+    return 235;
+  }
+
+  const std::span<const cgpui::ElementId> children = tree.children(root_id);
+  if (children.size() != 3 || children[0] != gamma_id ||
+      children[1] != second_ids[1] || children[2] != alpha_id) {
+    return 236;
+  }
+
+  const auto* gamma = dynamic_cast<const cgpui::StyledElement*>(
+      tree.get(gamma_id));
+  const auto* delta = dynamic_cast<const cgpui::StyledElement*>(
+      tree.get(second_ids[1]));
+  const auto* alpha = dynamic_cast<const cgpui::StyledElement*>(
+      tree.get(alpha_id));
+  if (gamma == nullptr || delta == nullptr || alpha == nullptr) {
+    return 237;
+  }
+  if (gamma->style().preferred_size.width != 33.0F ||
+      delta->style().preferred_size.width != 40.0F ||
+      alpha->style().preferred_size.width != 11.0F) {
+    return 238;
+  }
+  if (!tree.parent(gamma_id).has_value() || *tree.parent(gamma_id) != root_id ||
+      !tree.parent(alpha_id).has_value() || *tree.parent(alpha_id) != root_id ||
+      !tree.parent(second_ids[1]).has_value() ||
+      *tree.parent(second_ids[1]) != root_id) {
+    return 239;
+  }
+  if (tree.get(beta_id) != nullptr || tree.parent(beta_id).has_value()) {
+    return 240;
+  }
+  return tree.get(gamma_child_id) != nullptr &&
+                 tree.parent(gamma_child_id).has_value() &&
+                 *tree.parent(gamma_child_id) == gamma_id
+             ? 0
+             : 241;
 }
 
 int test_element_tree_reconcile_rejects_unknown_parent() {
@@ -3180,6 +3285,10 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_element_builder_key_applies_to_built_element();
+      result != 0) {
+    return result;
+  }
   if (const int result = test_base_element_lays_out_zero_size(); result != 0) {
     return result;
   }
@@ -3309,6 +3418,11 @@ int main() {
     return result;
   }
   if (const int result = test_element_tree_reconcile_appends_new_child_index();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_keyed_children_preserve_ids_across_reorder_insert_and_removal();
       result != 0) {
     return result;
   }

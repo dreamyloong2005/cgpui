@@ -65,11 +65,38 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `7e88e81 feat: add runtime diagnostics snapshot`; post-merge targeted tests
   passed 2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 139 is implemented and feature-worktree verified in
+  `.worktrees/keyed-element-identity` on `codex/keyed-element-identity`.
+  RED failed as expected on missing keyed element APIs; GREEN adds optional
+  `ElementKey` metadata, builder `.key(...)`, wrapper key propagation, and
+  parent-local keyed child reconciliation.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 139 is the next implementation slice after the Step 138 docs
-  closeout and cleanup.
+  128. Step 139 still needs feature commit, fast-forward merge, post-merge
+  verification, docs closeout, and cleanup before Step 140 begins.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
+
+## 2026-07-01 Back-40 Planning After Step 139 GREEN
+
+- Step 139, keyed element identity and keyed reconciliation beyond
+  parent-local index matching, is implemented and feature-worktree verified in
+  `.worktrees/keyed-element-identity` on `codex/keyed-element-identity`.
+- RED failed as expected on missing `ElementKey`, `Element::key()`,
+  `ElementBuilder::key(...)`, and `ElementTree::reconcile_children(...)`.
+  GREEN adds optional stable element keys, public builder key overloads, key
+  propagation to event/focus wrapper elements, and parent-local batch
+  reconciliation that preserves keyed child ids across reorder, insert, and
+  removal.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full
+  debug 29/29 after the known transient `clipboard_test/default` retry, and
+  WSL Arch Linux full debug 26/26.
+- Targeted verification command:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`.
+- Step 139 still needs a final fresh targeted check, feature commit,
+  fast-forward merge to `master`, post-merge verification, docs closeout, and
+  cleanup.
+- After the Step 139 merge, the effective distance through Step 168 will be
+  29 follow-on implementation slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
@@ -1085,7 +1112,7 @@ Exit check: author code can use context-shaped APIs for entities, globals, actio
 
 Purpose: make elements reusable and widget-ready, not just one-off builder trees.
 
-- [ ] Step 139: keyed element identity and keyed reconciliation beyond parent-local index matching.
+- [x] Step 139: keyed element identity and keyed reconciliation beyond parent-local index matching.
 - [ ] Step 140: element lifecycle hooks for mount, update, and unmount notifications.
 - [ ] Step 141: element state storage keyed by element id for reusable widgets.
 - [ ] Step 142: style class and theme token primitives for reusable design vocabulary.
@@ -1365,10 +1392,13 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 **Files:**
 - Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for stable ids across keyed child reorder, insert, and removal.
-- [ ] Extend reconciliation with optional stable keys while preserving existing index-based behavior for unkeyed children.
-- [ ] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default`.
+- [x] Add RED tests for stable ids across keyed child reorder, insert, and removal.
+- [x] Extend reconciliation with optional stable keys while preserving existing index-based behavior for unkeyed children.
+- [x] Targeted test command: `xmake test -P . element_test/default ui_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29 after a transient `clipboard_test/default` retry.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 140: Element Lifecycle Hooks
 

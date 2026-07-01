@@ -3725,3 +3725,45 @@
   Step 138 is marked merged and post-merge verified. Step 139, keyed element
   identity and keyed reconciliation beyond parent-local index matching, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 139 Keyed Element Identity
+
+- Started Step 139 in `.worktrees/keyed-element-identity` on
+  `codex/keyed-element-identity` from `master` at
+  `09ca1c3 docs: mark step 138 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/element_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `ElementKey`, `Element::key()`, builder `.key(...)`, wrapper key
+  propagation, and `ElementTree::reconcile_children(...)` preserving keyed
+  child ids across reorder, insert, and removal while pruning removed
+  children.
+- RED failed as expected on missing `cgpui::ElementKey`,
+  `ElementBuilder::key(...)`, `Element::key()`, and
+  `ElementTree::reconcile_children(...)`.
+- GREEN adds optional stable `ElementKey` metadata to `Element`, builder key
+  overloads, key propagation through click/pointer/key/focus wrappers, and
+  parent-local batch child reconciliation that reuses keyed child ids while
+  preserving existing index-based `reconcile_child(...)` behavior.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- The first feature-worktree Windows full debug run had one
+  `clipboard_test/default` failure while the rest of the suite passed.
+  Immediately rerunning `xmake test -P . clipboard_test/default` passed 1/1,
+  and a full Windows rerun with
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/keyed-element-identity -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 139 is recorded as implemented and feature-worktree
+  verified. Step 139 still needs a final fresh targeted check, feature commit,
+  fast-forward merge, post-merge verification, docs closeout, and cleanup
+  before Step 140 begins.
+- After adding header-cleanliness coverage for
+  `ElementTree::reconcile_children(...)`, re-ran final feature-worktree
+  verification: targeted tests passed 2/2, Windows full debug passed 29/29,
+  and WSL Arch Linux full debug passed 26/26.

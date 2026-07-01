@@ -6,6 +6,7 @@
 #include "cgpui/ui/text.hpp"
 
 #include <memory>
+#include <vector>
 
 struct TestModel {
   int value = 0;
@@ -135,6 +136,14 @@ int main() {
   TestView view;
   cgpui::TextModel text_model;
   cgpui::ScrollModel scroll_model;
+  cgpui::ElementTree element_tree;
+  const cgpui::ElementId header_root_id =
+      element_tree.reconcile_root(cgpui::into_element(cgpui::div()));
+  std::vector<cgpui::AnyElement> keyed_children;
+  keyed_children.push_back(cgpui::into_element(cgpui::div().key("first")));
+  keyed_children.push_back(cgpui::into_element(cgpui::div().key("second")));
+  const std::vector<cgpui::ElementId> keyed_child_ids =
+      element_tree.reconcile_children(header_root_id, std::move(keyed_children));
   cgpui::RenderRecord render_record{
       .sequence = 1,
       .view_id = cgpui::ViewId{1},
@@ -154,6 +163,7 @@ int main() {
       .byte_offset = 3,
   };
   cgpui::StyleState style_state;
+  cgpui::ElementKey element_key{.value = "header-key"};
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)
@@ -238,6 +248,7 @@ int main() {
   app_options.setup_context = app_setup;
   cgpui::AnyElement element =
       cgpui::into_element(cgpui::div()
+                              .key(element_key)
                               .size(cgpui::px(1.0F), cgpui::px(2.0F))
                               .padding(cgpui::edges(cgpui::px(1.0F)))
                               .background(cgpui::rgb(255, 0, 0))
@@ -273,6 +284,7 @@ int main() {
                                }));
   cgpui::AnyElement flex_element =
       cgpui::into_element(cgpui::h_flex()
+                              .key("header-flex")
                               .align_items(cgpui::AlignItems::center)
                               .justify_content(cgpui::JustifyContent::end)
                               .child(cgpui::div()
@@ -324,6 +336,9 @@ int main() {
                  selection.rect.size.width == 5.0F &&
                  caret.byte_offset == 3 && caret.rect.size.width == 1.0F &&
                  ime_rect.byte_offset == 3 &&
+                 keyed_child_ids.size() == 2 &&
+                 keyed_child_ids[0].value != 0 &&
+                 element_tree.children(header_root_id).size() == 2 &&
                  ime_rect.element_id == cgpui::ElementId{2} &&
                  ime_rect.rect.size.height == 18.0F &&
                  render_record.sequence == 1 &&
@@ -331,6 +346,10 @@ int main() {
                  event_route.element_ancestry.size() == 1 &&
                  event_route.view_ancestry.size() == 1 &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
+                 pointer->key().has_value() &&
+                 pointer->key()->value == element_key.value &&
+                 flex_element->key().has_value() &&
+                 flex_element->key()->value == "header-flex" &&
                  resolved.background_color.has_value() &&
                  resolved.justify_content ==
                      cgpui::JustifyContent::space_between &&

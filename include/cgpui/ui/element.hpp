@@ -14,6 +14,7 @@
 #include <memory>
 #include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <variant>
 #include <vector>
@@ -34,6 +35,12 @@ struct ViewId {
   std::uint64_t value = 0;
 
   friend bool operator==(ViewId, ViewId) = default;
+};
+
+struct ElementKey {
+  std::string value;
+
+  friend bool operator==(const ElementKey&, const ElementKey&) = default;
 };
 
 struct EventResult {
@@ -77,6 +84,10 @@ class Element {
 
   [[nodiscard]] ElementId id() const {
     return id_;
+  }
+
+  [[nodiscard]] const std::optional<ElementKey>& key() const {
+    return key_;
   }
 
   [[nodiscard]] virtual LayoutOutput layout(LayoutInput input) const {
@@ -188,8 +199,13 @@ class Element {
     id_ = id;
   }
 
+  void set_key(std::optional<ElementKey> key) {
+    key_ = std::move(key);
+  }
+
  private:
   ElementId id_;
+  std::optional<ElementKey> key_;
   bool enabled_ = true;
   float flex_grow_ = 0.0F;
   float flex_shrink_ = 0.0F;
@@ -1092,6 +1108,16 @@ class ElementBuilder {
     return std::move(*this);
   }
 
+  [[nodiscard]] ElementBuilder key(ElementKey key) && {
+    key_ = std::move(key);
+    return std::move(*this);
+  }
+
+  [[nodiscard]] ElementBuilder key(std::string_view value) && {
+    key_ = ElementKey{.value = std::string(value)};
+    return std::move(*this);
+  }
+
   [[nodiscard]] ElementBuilder size(Size size) && {
     style_state_.base = style_state_.base.with_preferred_size(size);
     if (kind_ == Kind::fixed_size || kind_ == Kind::child_view) {
@@ -1300,25 +1326,24 @@ class ElementBuilder {
 
   explicit ElementBuilder(Kind kind) : kind_(kind) {}
 
+  void apply_element_attributes(Element& element) const {
+    element.set_enabled(enabled_);
+    element.set_key(key_);
+    element.set_flex_grow(style_state_.base.flex_grow);
+    element.set_flex_shrink(style_state_.base.flex_shrink);
+    element.set_position(style_state_.base.position);
+    element.set_inset(style_state_.base.inset);
+    element.set_z_index(style_state_.base.z_index);
+    element.set_layer(style_state_.base.layer);
+  }
+
   [[nodiscard]] std::unique_ptr<Element> finish(
       std::unique_ptr<Element> element) const {
-    element->set_enabled(enabled_);
-    element->set_flex_grow(style_state_.base.flex_grow);
-    element->set_flex_shrink(style_state_.base.flex_shrink);
-    element->set_position(style_state_.base.position);
-    element->set_inset(style_state_.base.inset);
-    element->set_z_index(style_state_.base.z_index);
-    element->set_layer(style_state_.base.layer);
+    apply_element_attributes(*element);
     if (click_handler_) {
       auto click_element =
           std::make_unique<ClickElement>(std::move(element), click_handler_);
-      click_element->set_enabled(enabled_);
-      click_element->set_flex_grow(style_state_.base.flex_grow);
-      click_element->set_flex_shrink(style_state_.base.flex_shrink);
-      click_element->set_position(style_state_.base.position);
-      click_element->set_inset(style_state_.base.inset);
-      click_element->set_z_index(style_state_.base.z_index);
-      click_element->set_layer(style_state_.base.layer);
+      apply_element_attributes(*click_element);
       element = std::move(click_element);
     }
     if (pointer_down_handler_ || pointer_up_handler_ || pointer_move_handler_) {
@@ -1327,37 +1352,19 @@ class ElementBuilder {
           pointer_down_handler_,
           pointer_up_handler_,
           pointer_move_handler_);
-      pointer_element->set_enabled(enabled_);
-      pointer_element->set_flex_grow(style_state_.base.flex_grow);
-      pointer_element->set_flex_shrink(style_state_.base.flex_shrink);
-      pointer_element->set_position(style_state_.base.position);
-      pointer_element->set_inset(style_state_.base.inset);
-      pointer_element->set_z_index(style_state_.base.z_index);
-      pointer_element->set_layer(style_state_.base.layer);
+      apply_element_attributes(*pointer_element);
       element = std::move(pointer_element);
     }
     if (key_handler_) {
       auto key_element =
           std::make_unique<KeyElement>(std::move(element), key_handler_);
-      key_element->set_enabled(enabled_);
-      key_element->set_flex_grow(style_state_.base.flex_grow);
-      key_element->set_flex_shrink(style_state_.base.flex_shrink);
-      key_element->set_position(style_state_.base.position);
-      key_element->set_inset(style_state_.base.inset);
-      key_element->set_z_index(style_state_.base.z_index);
-      key_element->set_layer(style_state_.base.layer);
+      apply_element_attributes(*key_element);
       element = std::move(key_element);
     }
     if (focusable_) {
       auto focusable_element =
           std::make_unique<FocusableElement>(std::move(element));
-      focusable_element->set_enabled(enabled_);
-      focusable_element->set_flex_grow(style_state_.base.flex_grow);
-      focusable_element->set_flex_shrink(style_state_.base.flex_shrink);
-      focusable_element->set_position(style_state_.base.position);
-      focusable_element->set_inset(style_state_.base.inset);
-      focusable_element->set_z_index(style_state_.base.z_index);
-      focusable_element->set_layer(style_state_.base.layer);
+      apply_element_attributes(*focusable_element);
       element = std::move(focusable_element);
     }
     return element;
@@ -1365,6 +1372,7 @@ class ElementBuilder {
 
   Kind kind_ = Kind::box;
   StyleState style_state_;
+  std::optional<ElementKey> key_;
   Size size_;
   TextModel* text_model_ = nullptr;
   ViewId child_view_id_;
@@ -1508,6 +1516,81 @@ class ElementTree {
     return child_id;
   }
 
+  [[nodiscard]] std::vector<ElementId> reconcile_children(
+      ElementId parent,
+      std::vector<AnyElement> elements) {
+    Node* parent_node = find_node(parent);
+    if (parent_node == nullptr) {
+      return {};
+    }
+
+    const std::vector<ElementId> old_children = parent_node->children;
+    std::vector<ElementId> new_children;
+    std::vector<ElementId> used_children;
+    new_children.reserve(elements.size());
+    used_children.reserve(elements.size());
+
+    for (std::size_t index = 0; index < elements.size(); ++index) {
+      AnyElement& element = elements[index];
+      if (!element) {
+        continue;
+      }
+
+      ElementId child_id;
+      if (element->key().has_value()) {
+        child_id =
+            find_keyed_child(old_children, *element->key(), used_children);
+      } else {
+        child_id = find_unkeyed_child_at_index(
+            old_children,
+            index,
+            used_children);
+      }
+
+      if (child_id.value == 0) {
+        child_id = allocate_id();
+        element->assign_id(child_id);
+        nodes_.push_back(Node{
+            .element = std::move(element),
+            .id = child_id,
+            .parent = parent,
+        });
+      } else {
+        Node* child_node = find_node(child_id);
+        if (child_node == nullptr) {
+          child_id = allocate_id();
+          element->assign_id(child_id);
+          nodes_.push_back(Node{
+              .element = std::move(element),
+              .id = child_id,
+              .parent = parent,
+          });
+        } else {
+          element->assign_id(child_id);
+          child_node->element = std::move(element);
+          child_node->parent = parent;
+        }
+      }
+
+      new_children.push_back(child_id);
+      used_children.push_back(child_id);
+    }
+
+    parent_node = find_node(parent);
+    if (parent_node == nullptr) {
+      return {};
+    }
+    parent_node->children = new_children;
+
+    for (ElementId old_child : old_children) {
+      if (!contains_id(new_children, old_child)) {
+        remove_subtree(old_child);
+      }
+    }
+
+    return new_children;
+  }
+
   [[nodiscard]] ElementId root_id() const {
     return root_id_;
   }
@@ -1590,6 +1673,49 @@ class ElementTree {
     return id;
   }
 
+  [[nodiscard]] static bool contains_id(
+      const std::vector<ElementId>& ids,
+      ElementId id) {
+    return std::find(ids.begin(), ids.end(), id) != ids.end();
+  }
+
+  [[nodiscard]] ElementId find_keyed_child(
+      const std::vector<ElementId>& old_children,
+      const ElementKey& key,
+      const std::vector<ElementId>& used_children) const {
+    for (ElementId child_id : old_children) {
+      if (contains_id(used_children, child_id)) {
+        continue;
+      }
+      const Node* child_node = find_node(child_id);
+      if (child_node == nullptr || !child_node->element->key().has_value()) {
+        continue;
+      }
+      if (*child_node->element->key() == key) {
+        return child_id;
+      }
+    }
+    return {};
+  }
+
+  [[nodiscard]] ElementId find_unkeyed_child_at_index(
+      const std::vector<ElementId>& old_children,
+      std::size_t index,
+      const std::vector<ElementId>& used_children) const {
+    if (index >= old_children.size()) {
+      return {};
+    }
+    const ElementId child_id = old_children[index];
+    if (contains_id(used_children, child_id)) {
+      return {};
+    }
+    const Node* child_node = find_node(child_id);
+    if (child_node == nullptr || child_node->element->key().has_value()) {
+      return {};
+    }
+    return child_id;
+  }
+
   [[nodiscard]] Node* find_node(ElementId id) {
     for (Node& node : nodes_) {
       if (node.id == id) {
@@ -1606,6 +1732,26 @@ class ElementTree {
       }
     }
     return nullptr;
+  }
+
+  void remove_subtree(ElementId id) {
+    const Node* node = find_node(id);
+    if (node == nullptr) {
+      return;
+    }
+
+    const std::vector<ElementId> children = node->children;
+    for (ElementId child_id : children) {
+      remove_subtree(child_id);
+    }
+    nodes_.erase(
+        std::remove_if(
+            nodes_.begin(),
+            nodes_.end(),
+            [id](const Node& candidate) {
+              return candidate.id == id;
+            }),
+        nodes_.end());
   }
 
   void append_preorder_ids(ElementId id, std::vector<ElementId>& ids) const {

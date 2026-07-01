@@ -2338,3 +2338,24 @@
 - The snapshot includes current invalidation and last render/frame state, but
   not timing, command counts, or profiling fields. Those belong to the later
   frame statistics diagnostics slice.
+
+## 2026-07-01 Keyed Element Identity
+
+- Step 139 keeps keyed identity parent-local and additive: `ElementKey`,
+  `Element::key()`, and `ElementBuilder::key(...)` annotate elements without
+  changing the existing `ElementId` allocation contract.
+- `ElementTree::reconcile_children(...)` is the new batch path for keyed
+  reorder/insert/remove. Existing `reconcile_child(parent, index, element)`
+  remains index-based so older unkeyed tests and call sites keep their current
+  behavior.
+- Reused keyed nodes keep their `ElementId` and existing child subtrees while
+  replacing the node's element payload. Removed direct children are pruned with
+  their descendants, which gives Step 140 lifecycle hooks and Step 141 element
+  state storage a clear mount/update/unmount boundary to build on.
+- Builder keys are propagated to click, pointer, key, and focus wrappers so
+  event/focus-decorated authored elements reconcile by the public key attached
+  at the builder level, not by an inner implementation detail.
+- The first Step 139 feature-worktree Windows full debug run saw the known
+  transient `clipboard_test/default` failure; an immediate targeted rerun
+  passed 1/1 and the Windows full debug rerun passed 29/29. No Step 139 code
+  touches clipboard paths.
