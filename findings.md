@@ -2624,3 +2624,20 @@
   from each glyph origin, advance, and font size. Step 153 can build opacity and
   transform command metadata on top of this command stream without depending on
   real font upload yet.
+
+## 2026-07-01 Opacity and Transform Paint Metadata
+
+- Step 153 keeps opacity and transform as deterministic command metadata, not a
+  GPU pipeline or animation feature. `AffineTransform` lives in core geometry so
+  style, UI paint, renderer commands, and future Metal/Vulkan paths can share
+  the same public value type.
+- `PaintList` owns metadata scoping: nested scopes multiply opacity and compose
+  transforms parent-to-child. This keeps `StyledElement`, `ButtonElement`, text
+  widgets, and scroll containers from needing renderer-specific knowledge while
+  still producing stable command metadata.
+- `render_view(...)` now forwards command metadata into both `SolidRect` and
+  `TextDraw`. Text selection and caret remain metadata-only and skipped by the
+  renderer bridge, matching the Step 152 behavior.
+- Step 154 can use `PaintMetadata` directly when defining batching keys by clip,
+  opacity, transform, and primitive kind; it should remain diagnostic grouping,
+  not GPU optimization.

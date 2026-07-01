@@ -4433,3 +4433,46 @@
   so Step 152 is marked merged and post-merge verified. Step 153, opacity and
   transform paint metadata with deterministic command ordering, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 153 Opacity and Transform Metadata
+
+- Continued Step 153 in `.worktrees/opacity-transform-metadata` on
+  `codex/opacity-transform-metadata` from `master` at
+  `973a3f9 docs: mark step 152 merged`.
+- Baseline targeted tests passed before edits:
+  `xmake test -P . style_test/default element_test/default` passed 2/2.
+- RED coverage in `tests/ui/style_test.cpp`, `tests/ui/element_test.cpp`, and
+  `tests/ui/render_view_test.cpp` failed as expected on missing
+  `AffineTransform`, opacity/transform style APIs, `PaintMetadata`, and
+  renderer command metadata fields.
+- GREEN adds shared `AffineTransform`, `Style::opacity`, `Style::transform`,
+  matching `StyleOverlay` helpers, `PaintMetadata`, paint-list metadata scopes,
+  parent/child metadata composition, and render-view forwarding into `SolidRect`
+  and `TextDraw`.
+- Verified targeted GREEN tests:
+  `xmake test -P . style_test/default element_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/opacity-transform-metadata -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . style_test/default element_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5.
+- Committed Step 153 as
+  `8bf2270 feat: add opacity transform paint metadata` and fast-forward merged
+  it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . style_test/default element_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log so
+  Step 153 is marked merged and post-merge verified. Step 154, renderer command
+  batching by clip, opacity, transform, and primitive kind, is the next
+  implementation slice after docs closeout and cleanup.

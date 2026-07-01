@@ -121,8 +121,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `367854b feat: consume text glyphs in vulkan renderer`; post-merge targeted
   tests passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full
   debug passed 26/26.
+- Step 153 is merged on `master` at
+  `8bf2270 feat: add opacity transform paint metadata`; post-merge targeted
+  tests passed 5/5, Windows full debug passed 29/29, and WSL Arch Linux full
+  debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 153 is the next implementation slice after Step 152 docs closeout
+  128. Step 154 is the next implementation slice after Step 153 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -1472,9 +1476,9 @@ Purpose: turn text and renderer output from metadata/placeholder paths into back
 
 - [x] Step 149: font database abstraction and platform font discovery skeleton for Win32 and Linux.
 - [x] Step 150: text shaping run abstraction with deterministic fallback metrics before full shaping.
-- [ ] Step 151: glyph atlas/cache interface shared by text elements and Vulkan renderer.
-- [ ] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
-- [ ] Step 153: opacity and transform paint metadata with deterministic command ordering.
+- [x] Step 151: glyph atlas/cache interface shared by text elements and Vulkan renderer.
+- [x] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
+- [x] Step 153: opacity and transform paint metadata with deterministic command ordering.
 - [ ] Step 154: renderer command batching by clip, opacity, transform, and primitive kind.
 - [ ] Step 155: frame timing and paint/layout/render statistics exposed through diagnostics.
 - [ ] Step 156: HiDPI scale propagation into layout, text metrics, and renderer resources.
@@ -1995,9 +1999,16 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
 
-- [ ] Add RED tests for opacity and transform style fields reaching paint command metadata.
-- [ ] Implement metadata propagation without changing default paint output.
-- [ ] Targeted test command: `xmake test -P . style_test/default element_test/default`.
+- [x] Add RED tests for opacity and transform style fields reaching paint command metadata.
+- [x] Implement metadata propagation without changing default paint output.
+- [x] Targeted test command: `xmake test -P . style_test/default element_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default` passed 5/5.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `8bf2270 feat: add opacity transform paint metadata`.
+- [x] Post-merge targeted verification passed 5/5.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 154: Renderer Command Batching
 

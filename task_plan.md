@@ -257,6 +257,18 @@ and makes the Vulkan path consume glyph metadata through a persistent
 distance through Step 168 is 16 remaining follow-on implementation steps plus
 the four follow-on band checkpoint reviews.
 
+Step 153, opacity and transform paint metadata with deterministic command
+ordering, is merged on `master` at
+`8bf2270 feat: add opacity transform paint metadata` and post-merge verified
+on Windows and WSL Arch Linux. RED failed as expected on missing
+`AffineTransform`, `Style::opacity`, `Style::transform`, `PaintMetadata`, and
+renderer command metadata APIs. GREEN adds shared affine transform metadata,
+style/overlay opacity and transform fields, paint-list metadata scoping,
+render-view forwarding for rect and text commands, and deterministic
+parent/child metadata composition. The effective distance through Step 168 is
+15 remaining follow-on implementation steps plus the four follow-on band
+checkpoint reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -421,7 +433,7 @@ the four follow-on band checkpoint reviews.
 150. [x] Text shaping run abstraction with deterministic fallback metrics before full shaping.
 151. [x] Glyph atlas/cache interface shared by text elements and Vulkan renderer.
 152. [x] Vulkan text draw path consumes text paint commands through cached glyph metadata.
-153. [ ] Opacity and transform paint metadata with deterministic command ordering.
+153. [x] Opacity and transform paint metadata with deterministic command ordering.
 154. [ ] Renderer command batching by clip, opacity, transform, and primitive kind.
 155. [ ] Frame timing and paint/layout/render statistics exposed through diagnostics.
 156. [ ] HiDPI scale propagation into layout, text metrics, and renderer resources.
@@ -440,12 +452,12 @@ the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 152, Vulkan text draw path consumes text paint commands
-through cached glyph metadata, is merged on `master` at
-`367854b feat: consume text glyphs in vulkan renderer` and post-merge verified
-on Windows and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows
-full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 153,
-opacity and transform paint metadata with deterministic command ordering, is
+Current handoff: Step 153, opacity and transform paint metadata with
+deterministic command ordering, is merged on `master` at
+`8bf2270 feat: add opacity transform paint metadata` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted tests passed 5/5, Windows full
+debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 154,
+renderer command batching by clip, opacity, transform, and primitive kind, is
 the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
