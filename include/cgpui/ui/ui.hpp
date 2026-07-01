@@ -233,9 +233,30 @@ struct WindowOptions {
   [[nodiscard]] WindowDescriptor to_descriptor() const;
 };
 
+struct WindowRuntimeId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(
+      const WindowRuntimeId&,
+      const WindowRuntimeId&) = default;
+};
+
 struct AppOpenedWindow {
+  WindowRuntimeId runtime_id;
   WindowDescriptor descriptor;
   ViewId root_view_id;
+};
+
+struct WindowRuntimeRecord {
+  WindowRuntimeId runtime_id;
+  WindowDescriptor descriptor;
+  ViewId root_view_id;
+  PlatformWindow* window = nullptr;
+  Renderer* renderer = nullptr;
+  bool owns_window = false;
+  bool owns_renderer = false;
+  bool owns_root_view = false;
+  bool active = false;
 };
 
 struct AppContext {
@@ -650,6 +671,11 @@ class WindowRuntime {
       WindowOptions options,
       std::unique_ptr<View> root_view);
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
+  [[nodiscard]] WindowRuntimeId root_window_runtime_id() const;
+  [[nodiscard]] std::span<const WindowRuntimeRecord>
+  window_runtime_records() const;
+  [[nodiscard]] const WindowRuntimeRecord* window_runtime_record(
+      WindowRuntimeId runtime_id) const;
   [[nodiscard]] const View* app_opened_window_root_view(
       ViewId root_view_id) const;
   [[nodiscard]] View* root_view();
@@ -804,6 +830,11 @@ class WindowRuntime {
   [[nodiscard]] bool task_complete(TaskId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
   void fail_and_quit(Error error);
+  [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
+  [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
+      WindowRuntimeId runtime_id);
+  [[nodiscard]] const WindowRuntimeRecord* find_window_runtime_record(
+      WindowRuntimeId runtime_id) const;
   void refresh_route_ancestry(EventRoute& route) const;
   [[nodiscard]] std::vector<ElementId> element_ancestry_for(
       ElementId element_id) const;
@@ -917,6 +948,9 @@ class WindowRuntime {
   bool draining_task_completions_ = false;
   int update_batch_depth_ = 0;
   std::vector<AppOpenedWindow> app_opened_windows_;
+  WindowRuntimeId root_window_runtime_id_{1};
+  std::uint64_t next_window_runtime_id_ = 2;
+  std::vector<WindowRuntimeRecord> window_runtime_records_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;

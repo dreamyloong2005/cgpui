@@ -690,6 +690,16 @@ WindowRuntime::WindowRuntime(
   view_registry_.insert_or_assign(
       root_view_id_.value,
       RegisteredView{.view = &view_});
+  window_runtime_records_.push_back(WindowRuntimeRecord{
+      .runtime_id = root_window_runtime_id_,
+      .descriptor = {},
+      .root_view_id = root_view_id_,
+      .window = nullptr,
+      .renderer = nullptr,
+      .owns_window = true,
+      .owns_renderer = false,
+      .owns_root_view = false,
+      .active = false});
 }
 
 int WindowRuntime::run(
@@ -699,6 +709,15 @@ int WindowRuntime::run(
   failed_ = false;
   window_ = nullptr;
   renderer_ = nullptr;
+  if (WindowRuntimeRecord* root_record =
+          find_window_runtime_record(root_window_runtime_id_);
+      root_record != nullptr) {
+    root_record->descriptor = descriptor;
+    root_record->root_view_id = root_view_id_;
+    root_record->window = nullptr;
+    root_record->renderer = nullptr;
+    root_record->active = false;
+  }
   framebuffer_size_ = descriptor.size;
   viewport_size_ = descriptor.size;
   scale_ = {};
@@ -762,6 +781,13 @@ int WindowRuntime::run(
     return 1;
   }
   renderer_ = *renderer_result;
+  if (WindowRuntimeRecord* root_record =
+          find_window_runtime_record(root_window_runtime_id_);
+      root_record != nullptr) {
+    root_record->window = window_;
+    root_record->renderer = renderer_;
+    root_record->active = true;
+  }
 
   if (options.request_initial_redraw) {
     redraw_scheduled_ = true;
@@ -769,6 +795,13 @@ int WindowRuntime::run(
   }
 
   const int run_result = application_.run();
+  if (WindowRuntimeRecord* root_record =
+          find_window_runtime_record(root_window_runtime_id_);
+      root_record != nullptr) {
+    root_record->window = nullptr;
+    root_record->renderer = nullptr;
+    root_record->active = false;
+  }
   window_ = nullptr;
   renderer_ = nullptr;
 
@@ -779,26 +812,66 @@ int WindowRuntime::run(
 }
 
 AppOpenedWindow WindowRuntime::open_window(WindowOptions options) {
+  const WindowRuntimeId runtime_id = allocate_window_runtime_id();
+  const WindowDescriptor descriptor = options.to_descriptor();
   AppOpenedWindow opened{
-      .descriptor = options.to_descriptor(),
+      .runtime_id = runtime_id,
+      .descriptor = descriptor,
       .root_view_id = {}};
   app_opened_windows_.push_back(opened);
+  window_runtime_records_.push_back(WindowRuntimeRecord{
+      .runtime_id = runtime_id,
+      .descriptor = descriptor,
+      .root_view_id = {},
+      .window = nullptr,
+      .renderer = nullptr,
+      .owns_window = true,
+      .owns_renderer = true,
+      .owns_root_view = false,
+      .active = false});
   return opened;
 }
 
 AppOpenedWindow WindowRuntime::open_window(
     WindowOptions options,
     std::unique_ptr<View> root_view) {
+  const WindowRuntimeId runtime_id = allocate_window_runtime_id();
+  const WindowDescriptor descriptor = options.to_descriptor();
   const ViewId root_view_id = register_view(std::move(root_view));
   AppOpenedWindow opened{
-      .descriptor = options.to_descriptor(),
+      .runtime_id = runtime_id,
+      .descriptor = descriptor,
       .root_view_id = root_view_id};
   app_opened_windows_.push_back(opened);
+  window_runtime_records_.push_back(WindowRuntimeRecord{
+      .runtime_id = runtime_id,
+      .descriptor = descriptor,
+      .root_view_id = root_view_id,
+      .window = nullptr,
+      .renderer = nullptr,
+      .owns_window = true,
+      .owns_renderer = true,
+      .owns_root_view = root_view_id.value != 0,
+      .active = false});
   return opened;
 }
 
 std::span<const AppOpenedWindow> WindowRuntime::app_opened_windows() const {
   return app_opened_windows_;
+}
+
+WindowRuntimeId WindowRuntime::root_window_runtime_id() const {
+  return root_window_runtime_id_;
+}
+
+std::span<const WindowRuntimeRecord> WindowRuntime::window_runtime_records()
+    const {
+  return window_runtime_records_;
+}
+
+const WindowRuntimeRecord* WindowRuntime::window_runtime_record(
+    WindowRuntimeId runtime_id) const {
+  return find_window_runtime_record(runtime_id);
 }
 
 const View* WindowRuntime::app_opened_window_root_view(
@@ -1114,6 +1187,34 @@ void WindowRuntime::fail_and_quit(Error error) {
     error_callback_(error);
   }
   application_.quit();
+}
+
+WindowRuntimeId WindowRuntime::allocate_window_runtime_id() {
+  const WindowRuntimeId runtime_id{next_window_runtime_id_};
+  next_window_runtime_id_ += 1;
+  return runtime_id;
+}
+
+WindowRuntimeRecord* WindowRuntime::find_window_runtime_record(
+    WindowRuntimeId runtime_id) {
+  const auto record = std::find_if(
+      window_runtime_records_.begin(),
+      window_runtime_records_.end(),
+      [runtime_id](const WindowRuntimeRecord& record) {
+        return record.runtime_id == runtime_id;
+      });
+  return record == window_runtime_records_.end() ? nullptr : &*record;
+}
+
+const WindowRuntimeRecord* WindowRuntime::find_window_runtime_record(
+    WindowRuntimeId runtime_id) const {
+  const auto record = std::find_if(
+      window_runtime_records_.begin(),
+      window_runtime_records_.end(),
+      [runtime_id](const WindowRuntimeRecord& record) {
+        return record.runtime_id == runtime_id;
+      });
+  return record == window_runtime_records_.end() ? nullptr : &*record;
 }
 
 void WindowRuntime::refresh_route_ancestry(EventRoute& route) const {

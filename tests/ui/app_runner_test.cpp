@@ -572,6 +572,155 @@ int test_app_opened_window_keeps_root_view_alive_until_run_app_returns() {
   return 0;
 }
 
+int test_multi_window_registry_owns_independent_runtime_records() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  int renderer_factory_count = 0;
+  bool setup_called = false;
+  bool after_frame_called = false;
+  bool first_destroyed = false;
+  bool second_destroyed = false;
+  bool setup_records_ok = false;
+  bool frame_root_record_ok = false;
+  bool frame_secondary_records_ok = false;
+  const cgpui::View* first_root_ptr = nullptr;
+  const cgpui::View* second_root_ptr = nullptr;
+  cgpui::AppOpenedWindow first_opened;
+  cgpui::AppOpenedWindow second_opened;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        renderer_factory_count += 1;
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                auto first_root =
+                    std::make_unique<LifetimeView>(first_destroyed);
+                auto second_root =
+                    std::make_unique<LifetimeView>(second_destroyed);
+                first_root_ptr = first_root.get();
+                second_root_ptr = second_root.get();
+
+                first_opened = context.open_window(
+                    cgpui::WindowOptions{}
+                        .title("First Child")
+                        .size(320.0F, 200.0F),
+                    std::move(first_root));
+                second_opened = context.open_window(
+                    cgpui::WindowOptions{}
+                        .title("Second Child")
+                        .size(420.0F, 260.0F),
+                    std::move(second_root));
+
+                const cgpui::WindowRuntimeRecord* first_record =
+                    context.runtime.window_runtime_record(
+                        first_opened.runtime_id);
+                const cgpui::WindowRuntimeRecord* second_record =
+                    context.runtime.window_runtime_record(
+                        second_opened.runtime_id);
+                const auto records = context.runtime.window_runtime_records();
+                setup_records_ok =
+                    records.size() == 3 &&
+                    first_opened.runtime_id.value != 0 &&
+                    second_opened.runtime_id.value != 0 &&
+                    first_opened.runtime_id != second_opened.runtime_id &&
+                    first_opened.root_view_id.value != 0 &&
+                    second_opened.root_view_id.value != 0 &&
+                    first_opened.root_view_id != second_opened.root_view_id &&
+                    first_record != nullptr && second_record != nullptr &&
+                    first_record->descriptor.title == "First Child" &&
+                    second_record->descriptor.title == "Second Child" &&
+                    first_record->root_view_id == first_opened.root_view_id &&
+                    second_record->root_view_id == second_opened.root_view_id &&
+                    first_record->owns_root_view &&
+                    second_record->owns_root_view &&
+                    first_record->renderer == nullptr &&
+                    second_record->renderer == nullptr &&
+                    first_record->owns_renderer &&
+                    second_record->owns_renderer &&
+                    !first_record->active &&
+                    !second_record->active &&
+                    context.runtime.app_opened_window_root_view(
+                        first_opened.root_view_id) == first_root_ptr &&
+                    context.runtime.app_opened_window_root_view(
+                        second_opened.root_view_id) == second_root_ptr;
+
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext& frame_context) {
+                      after_frame_called = true;
+                      const cgpui::WindowRuntimeRecord* root_record =
+                          frame_context.runtime.window_runtime_record(
+                              frame_context.runtime.root_window_runtime_id());
+                      const cgpui::WindowRuntimeRecord* first_frame_record =
+                          frame_context.runtime.window_runtime_record(
+                              first_opened.runtime_id);
+                      const cgpui::WindowRuntimeRecord* second_frame_record =
+                          frame_context.runtime.window_runtime_record(
+                              second_opened.runtime_id);
+                      frame_root_record_ok =
+                          root_record != nullptr &&
+                          root_record->active &&
+                          root_record->root_view_id == frame_context.view_id &&
+                          root_record->window == &frame_context.window &&
+                          root_record->renderer == &frame_context.renderer &&
+                          root_record->owns_window &&
+                          !root_record->owns_renderer &&
+                          !root_record->owns_root_view;
+                      frame_secondary_records_ok =
+                          first_frame_record != nullptr &&
+                          second_frame_record != nullptr &&
+                          first_frame_record->root_view_id ==
+                              first_opened.root_view_id &&
+                          second_frame_record->root_view_id ==
+                              second_opened.root_view_id &&
+                          first_frame_record->renderer == nullptr &&
+                          second_frame_record->renderer == nullptr &&
+                          first_frame_record->owns_renderer &&
+                          second_frame_record->owns_renderer &&
+                          !first_frame_record->active &&
+                          !second_frame_record->active;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 32;
+  }
+  if (!setup_called || !after_frame_called) {
+    return 33;
+  }
+  if (!setup_records_ok || !frame_root_record_ok ||
+      !frame_secondary_records_ok) {
+    return 34;
+  }
+  if (renderer_factory_count != 1 || renderer_begin_frame_count != 1 ||
+      frame.present_count != 1) {
+    return 35;
+  }
+  if (!first_destroyed || !second_destroyed) {
+    return 36;
+  }
+  if (application.create_window_count != 1) {
+    return 37;
+  }
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -594,6 +743,11 @@ int main() {
   }
   if (const int result =
           test_app_opened_window_keeps_root_view_alive_until_run_app_returns();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_multi_window_registry_owns_independent_runtime_records();
       result != 0) {
     return result;
   }
