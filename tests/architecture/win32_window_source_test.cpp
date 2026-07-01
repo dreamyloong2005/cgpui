@@ -104,6 +104,11 @@ int main() {
   if (!contains(win32_text, "PostMessageW(hwnd_, WM_CLOSE")) {
     return 6;
   }
+  if (!contains(win32_text, "cgpui_wakeup_message") ||
+      !contains(win32_text, "PostThreadMessageW") ||
+      !contains(win32_text, "WindowWakeupRequested{}")) {
+    return 55;
+  }
   if (!contains(win32_text, "WM_MOUSEWHEEL")) {
     return 7;
   }

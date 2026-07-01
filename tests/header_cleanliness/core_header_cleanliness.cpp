@@ -15,6 +15,8 @@ int main() {
   state.ime_text_input_support = cgpui::ImeTextInputSupport::unsupported;
   cgpui::PlatformEvent event = cgpui::WindowRedrawRequested{};
   (void)event;
+  cgpui::PlatformEvent wakeup_event = cgpui::WindowWakeupRequested{};
+  (void)wakeup_event;
   cgpui::PlatformEvent ime_event = cgpui::ImeComposition{
       .phase = cgpui::ImeCompositionPhase::update,
       .text = "x"};

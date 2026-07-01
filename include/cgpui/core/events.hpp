@@ -42,6 +42,8 @@ struct WindowCloseRequested {};
 
 struct WindowRedrawRequested {};
 
+struct WindowWakeupRequested {};
+
 struct WindowResized {
   Size size;
   DpiScale scale;
@@ -134,6 +136,7 @@ struct ImeComposition {
 using PlatformEvent = std::variant<
     WindowCloseRequested,
     WindowRedrawRequested,
+    WindowWakeupRequested,
     WindowResized,
     WindowActivated,
     WindowFocused,

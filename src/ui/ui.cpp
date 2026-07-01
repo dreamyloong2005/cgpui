@@ -798,6 +798,7 @@ int WindowRuntime::run(
   dispatching_view_event_ = false;
   firing_timers_ = false;
   draining_task_completions_ = false;
+  handling_wakeup_ = false;
   update_batch_depth_ = 0;
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
@@ -1036,6 +1037,11 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
 
   if (std::holds_alternative<WindowRedrawRequested>(event)) {
     handle_redraw();
+    return;
+  }
+
+  if (std::holds_alternative<WindowWakeupRequested>(event)) {
+    handle_wakeup();
     return;
   }
 
@@ -1960,6 +1966,7 @@ void WindowRuntime::defer(DeferredCallback callback) {
     return;
   }
   deferred_callbacks_.push_back(std::move(callback));
+  request_platform_wakeup();
 }
 
 TimerId WindowRuntime::schedule_timer(
@@ -1976,6 +1983,7 @@ TimerId WindowRuntime::schedule_timer(
       .repeating = false,
       .callback = std::move(callback),
   });
+  request_platform_wakeup();
   return id;
 }
 
@@ -1993,6 +2001,7 @@ TimerId WindowRuntime::schedule_repeating_timer(
       .repeating = true,
       .callback = std::move(callback),
   });
+  request_platform_wakeup();
   return id;
 }
 
@@ -2051,6 +2060,7 @@ bool WindowRuntime::complete_task(TaskId id) {
 
   task->queued = true;
   task_completion_queue_.push_back(id);
+  request_platform_wakeup();
   return true;
 }
 
@@ -2176,7 +2186,7 @@ void WindowRuntime::schedule_redraw() {
   }
   redraw_scheduled_ = true;
   if (dispatching_view_event_ || draining_deferred_callbacks_ || firing_timers_ ||
-      draining_task_completions_ || update_batch_depth_ > 0) {
+      draining_task_completions_ || handling_wakeup_ || update_batch_depth_ > 0) {
     deferred_redraw_request_ = true;
     return;
   }
@@ -2184,11 +2194,31 @@ void WindowRuntime::schedule_redraw() {
 }
 
 void WindowRuntime::flush_deferred_redraw_request() {
-  if (!deferred_redraw_request_ || window_ == nullptr || should_quit_) {
+  if (!deferred_redraw_request_ || handling_wakeup_ || window_ == nullptr ||
+      should_quit_) {
     return;
   }
   deferred_redraw_request_ = false;
   window_->request_redraw();
+}
+
+void WindowRuntime::request_platform_wakeup() {
+  if (window_ == nullptr || should_quit_) {
+    return;
+  }
+  application_.request_wakeup();
+}
+
+void WindowRuntime::handle_wakeup() {
+  if (window_ == nullptr || renderer_ == nullptr || should_quit_) {
+    return;
+  }
+  handling_wakeup_ = true;
+  drain_task_completions();
+  fire_due_timers();
+  drain_deferred_callbacks();
+  handling_wakeup_ = false;
+  flush_deferred_redraw_request();
 }
 
 void WindowRuntime::drain_deferred_callbacks() {

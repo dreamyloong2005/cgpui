@@ -832,6 +832,8 @@ class WindowRuntime {
   void handle_redraw();
   void schedule_redraw();
   void flush_deferred_redraw_request();
+  void request_platform_wakeup();
+  void handle_wakeup();
   void drain_deferred_callbacks();
   void fire_due_timers();
   [[nodiscard]] bool task_active(TaskId id) const;
@@ -957,6 +959,7 @@ class WindowRuntime {
   std::vector<TaskId> task_completion_queue_;
   std::uint64_t next_task_id_ = 1;
   bool draining_task_completions_ = false;
+  bool handling_wakeup_ = false;
   int update_batch_depth_ = 0;
   std::vector<AppOpenedWindow> app_opened_windows_;
   WindowRuntimeId root_window_runtime_id_{1};

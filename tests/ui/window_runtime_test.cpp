@@ -1251,6 +1251,23 @@ class FakeApplication final : public cgpui::PlatformApplication {
   int run_result = 0;
   cgpui::WindowDescriptor last_descriptor{};
   void (*on_run)() = nullptr;
+  int request_wakeup_count = 0;
+  bool wakeup_pending = false;
+
+  void request_wakeup() override {
+    request_wakeup_count += 1;
+    wakeup_pending = true;
+  }
+
+  void dispatch_wakeup() {
+    if (!wakeup_pending) {
+      return;
+    }
+    wakeup_pending = false;
+    if (window_.callback) {
+      window_.callback(cgpui::WindowWakeupRequested{});
+    }
+  }
 
  private:
   class BorrowedWindow final : public cgpui::PlatformWindow {
@@ -6000,6 +6017,10 @@ cgpui::WindowRuntime* timer_api_runtime = nullptr;
 class AsyncTaskApiView;
 AsyncTaskApiView* async_task_api_view = nullptr;
 cgpui::WindowRuntime* async_task_api_runtime = nullptr;
+RuntimeFixture* platform_wakeup_fixture = nullptr;
+cgpui::WindowRuntime* platform_wakeup_runtime = nullptr;
+class PlatformWakeupQueueView;
+PlatformWakeupQueueView* platform_wakeup_view = nullptr;
 
 void dispatch_deferred_callback_sequence() {
   auto& callback = deferred_callback_fixture->window.callback;
@@ -6302,6 +6323,114 @@ int test_async_task_completion_dispatches_on_runtime_queue() {
       fixture.renderer.begin_frame_count != 1 ||
       view.paint_count != 1) {
     return 381;
+  }
+
+  return 0;
+}
+
+class PlatformWakeupQueueView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {
+    paint_count += 1;
+  }
+
+  int task_count = 0;
+  int timer_count = 0;
+  int deferred_count = 0;
+  int paint_count = 0;
+  bool queued_work_stayed_pending_before_wakeup = false;
+  bool wakeup_drained_all_queues = false;
+  bool task_saw_no_timer_or_defer = false;
+  bool timer_saw_task_before_defer = false;
+  bool deferred_saw_prior_queues = false;
+};
+
+void dispatch_platform_wakeup_sequence() {
+  platform_wakeup_runtime->defer(
+      [](const cgpui::WindowRuntimeContext& context) {
+        platform_wakeup_view->deferred_count += 1;
+        platform_wakeup_view->deferred_saw_prior_queues =
+            platform_wakeup_view->task_count == 1 &&
+            platform_wakeup_view->timer_count == 1;
+        context.request_render();
+      });
+  const cgpui::TimerId timer = platform_wakeup_runtime->schedule_timer(
+      0,
+      [](const cgpui::WindowRuntimeContext& context) {
+        platform_wakeup_view->timer_count += 1;
+        platform_wakeup_view->timer_saw_task_before_defer =
+            platform_wakeup_view->task_count == 1 &&
+            platform_wakeup_view->deferred_count == 0;
+        context.request_paint();
+      });
+  const cgpui::TaskHandle task = platform_wakeup_runtime->spawn_task(
+      [](const cgpui::WindowRuntimeContext& context) {
+        platform_wakeup_view->task_count += 1;
+        platform_wakeup_view->task_saw_no_timer_or_defer =
+            platform_wakeup_view->timer_count == 0 &&
+            platform_wakeup_view->deferred_count == 0;
+        context.request_layout();
+      });
+
+  if (timer.value == 0 || task.id().value == 0 ||
+      !platform_wakeup_runtime->complete_task(task.id())) {
+    return;
+  }
+  platform_wakeup_view->queued_work_stayed_pending_before_wakeup =
+      platform_wakeup_view->task_count == 0 &&
+      platform_wakeup_view->timer_count == 0 &&
+      platform_wakeup_view->deferred_count == 0;
+  if (platform_wakeup_fixture->app.request_wakeup_count < 3 ||
+      !platform_wakeup_fixture->app.wakeup_pending) {
+    return;
+  }
+
+  platform_wakeup_fixture->app.dispatch_wakeup();
+  platform_wakeup_view->wakeup_drained_all_queues =
+      platform_wakeup_view->task_count == 1 &&
+      platform_wakeup_view->timer_count == 1 &&
+      platform_wakeup_view->deferred_count == 1;
+}
+
+int test_runtime_async_timer_and_defer_request_platform_wakeup() {
+  RuntimeFixture fixture;
+  PlatformWakeupQueueView view;
+  platform_wakeup_fixture = &fixture;
+  platform_wakeup_view = &view;
+  fixture.app.on_run = &dispatch_platform_wakeup_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  platform_wakeup_runtime = &runtime;
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  platform_wakeup_fixture = nullptr;
+  platform_wakeup_runtime = nullptr;
+  platform_wakeup_view = nullptr;
+  if (result != 0) {
+    return 382;
+  }
+  if (!view.queued_work_stayed_pending_before_wakeup ||
+      !view.wakeup_drained_all_queues) {
+    return 383;
+  }
+  if (!view.task_saw_no_timer_or_defer ||
+      !view.timer_saw_task_before_defer ||
+      !view.deferred_saw_prior_queues) {
+    return 384;
+  }
+  if (fixture.app.request_wakeup_count < 3 || fixture.app.wakeup_pending) {
+    return 385;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1 || view.paint_count != 1) {
+    return 386;
   }
 
   return 0;
@@ -8132,6 +8261,11 @@ int main() {
   }
   if (const int result =
           test_async_task_completion_dispatches_on_runtime_queue();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_async_timer_and_defer_request_platform_wakeup();
       result != 0) {
     return result;
   }

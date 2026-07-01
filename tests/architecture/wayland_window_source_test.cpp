@@ -160,6 +160,11 @@ int main() {
       !contains(text, "DragEntered{")) {
     return 64;
   }
+  if (!contains(text, "wakeup_pipe_") ||
+      !contains(text, "poll(fds.data()") ||
+      !contains(text, "WindowWakeupRequested{}")) {
+    return 65;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

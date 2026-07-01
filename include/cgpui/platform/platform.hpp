@@ -39,6 +39,7 @@ class PlatformApplication {
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) = 0;
   [[nodiscard]] virtual FontDatabase discover_fonts() const;
+  virtual void request_wakeup();
 
   virtual int run() = 0;
   virtual void quit() = 0;

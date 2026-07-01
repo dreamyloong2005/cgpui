@@ -6,12 +6,15 @@
 
 #include <algorithm>
 #include <array>
+#include <cerrno>
 #include <cstdint>
 #include <expected>
 #include <cstring>
+#include <fcntl.h>
 #include <functional>
 #include <memory>
 #include <optional>
+#include <poll.h>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -418,6 +421,8 @@ class WaylandWindow final : public PlatformWindow {
     callback_(DragExited{.position = position, .payload = {}});
   }
 
+  void wakeup_requested() { callback_(WindowWakeupRequested{}); }
+
   void keyboard_key(
       std::uint32_t key,
       KeyAction action,
@@ -719,6 +724,10 @@ class WaylandApplication final : public PlatformApplication {
     if (display_ == nullptr) {
       return;
     }
+    if (pipe2(wakeup_pipe_, O_NONBLOCK | O_CLOEXEC) == -1) {
+      initialization_error_ = "pipe2 failed while creating event-loop wakeup pipe";
+      return;
+    }
     configure_data_device_lookup();
 
     registry_ = wl_display_get_registry(display_);
@@ -783,6 +792,12 @@ class WaylandApplication final : public PlatformApplication {
     if (display_ != nullptr) {
       wl_display_disconnect(display_);
     }
+    if (wakeup_pipe_[0] != -1) {
+      close(wakeup_pipe_[0]);
+    }
+    if (wakeup_pipe_[1] != -1) {
+      close(wakeup_pipe_[1]);
+    }
   }
 
   Result<std::unique_ptr<PlatformWindow>> create_window(
@@ -822,14 +837,62 @@ class WaylandApplication final : public PlatformApplication {
 
   int run() override {
     while (running_ && display_ != nullptr) {
-      if (wl_display_dispatch(display_) == -1) {
+      const int pending = wl_display_dispatch_pending(display_);
+      if (pending == -1) {
+        return 1;
+      }
+      if (pending > 0) {
+        continue;
+      }
+      (void)wl_display_flush(display_);
+
+      std::array<pollfd, 2> fds{
+          pollfd{
+              .fd = wl_display_get_fd(display_),
+              .events = POLLIN,
+              .revents = 0,
+          },
+          pollfd{
+              .fd = wakeup_pipe_[0],
+              .events = POLLIN,
+              .revents = 0,
+          },
+      };
+      const int poll_result = poll(fds.data(), fds.size(), -1);
+      if (poll_result == -1) {
+        if (errno == EINTR) {
+          continue;
+        }
+        return 1;
+      }
+      if ((fds[1].revents & POLLIN) != 0) {
+        drain_wakeup_pipe();
+        dispatch_wakeup();
+      }
+      if ((fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+        return 1;
+      }
+      if ((fds[0].revents & POLLIN) != 0 &&
+          wl_display_dispatch(display_) == -1) {
         return 1;
       }
     }
     return 0;
   }
 
-  void quit() override { running_ = false; }
+  void request_wakeup() override {
+    if (wakeup_pipe_[1] == -1) {
+      return;
+    }
+    const std::uint8_t byte = 1;
+    const ssize_t written = write(wakeup_pipe_[1], &byte, sizeof(byte));
+    (void)written;
+  }
+
+  void quit() override {
+    running_ = false;
+    request_wakeup();
+  }
 
   [[nodiscard]] FontDatabase discover_fonts() const override {
     return {};
@@ -1252,6 +1315,22 @@ class WaylandApplication final : public PlatformApplication {
     }
   }
 
+  void drain_wakeup_pipe() {
+    if (wakeup_pipe_[0] == -1) {
+      return;
+    }
+    std::array<std::uint8_t, 64> buffer{};
+    while (read(wakeup_pipe_[0], buffer.data(), buffer.size()) > 0) {}
+  }
+
+  void dispatch_wakeup() {
+    for (WaylandWindow* window : windows_) {
+      if (window != nullptr) {
+        window->wakeup_requested();
+      }
+    }
+  }
+
   void set_window_cursor(WaylandWindow& window, CursorShape cursor_shape) {
     window.set_cursor(cursor_shape);
     if (pointer_window_ == &window) {
@@ -1417,6 +1496,7 @@ class WaylandApplication final : public PlatformApplication {
   std::vector<WaylandWindow*> windows_;
   WaylandWindow* pointer_window_ = nullptr;
   WaylandWindow* keyboard_window_ = nullptr;
+  int wakeup_pipe_[2] = {-1, -1};
   Point pointer_position_{};
   Point pending_scroll_delta_{};
   std::string initialization_error_;

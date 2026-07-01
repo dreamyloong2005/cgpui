@@ -12,9 +12,12 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 namespace cgpui {
 namespace {
+
+constexpr UINT cgpui_wakeup_message = WM_APP + 1U;
 
 std::wstring widen(std::string_view value) {
   if (value.empty()) {
@@ -247,6 +250,8 @@ class Win32Window final : public PlatformWindow {
   }
 
   void redraw_requested() { callback_(WindowRedrawRequested{}); }
+
+  void wakeup_requested() { callback_(WindowWakeupRequested{}); }
 
   void pointer_moved(LPARAM lparam) {
     callback_(PointerMoved{.position = Point{
@@ -554,16 +559,30 @@ class Win32Application final : public PlatformApplication {
 
     ShowWindow(hwnd, SW_SHOW);
     window->update_size();
+    windows_.push_back(window.get());
     return window;
   }
 
   int run() override {
+    running_thread_id_ = GetCurrentThreadId();
     MSG message{};
     while (running_ && GetMessageW(&message, nullptr, 0, 0) > 0) {
+      if (message.message == cgpui_wakeup_message) {
+        dispatch_wakeup();
+        continue;
+      }
       TranslateMessage(&message);
       DispatchMessageW(&message);
     }
+    running_thread_id_ = 0;
+    windows_.clear();
     return 0;
+  }
+
+  void request_wakeup() override {
+    if (running_thread_id_ != 0) {
+      PostThreadMessageW(running_thread_id_, cgpui_wakeup_message, 0, 0);
+    }
   }
 
   void quit() override {
@@ -576,8 +595,18 @@ class Win32Application final : public PlatformApplication {
   }
 
  private:
+  void dispatch_wakeup() {
+    for (Win32Window* window : windows_) {
+      if (window != nullptr) {
+        window->wakeup_requested();
+      }
+    }
+  }
+
   HINSTANCE instance_ = nullptr;
+  DWORD running_thread_id_ = 0;
   bool running_ = true;
+  std::vector<Win32Window*> windows_;
 };
 
 } // namespace

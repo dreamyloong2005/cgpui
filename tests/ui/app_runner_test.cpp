@@ -166,9 +166,12 @@ class FakeApplication final : public cgpui::PlatformApplication {
 
   void quit() override { quit_count += 1; }
 
+  void request_wakeup() override { request_wakeup_count += 1; }
+
   int create_window_count = 0;
   int run_count = 0;
   int quit_count = 0;
+  int request_wakeup_count = 0;
   int run_result = 0;
   cgpui::WindowDescriptor last_descriptor{};
 
