@@ -1,5 +1,39 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-01 Step 134 Deferred Callback Queue
+
+- Started Step 134 in `.worktrees/deferred-callback-queue` on
+  `codex/deferred-callback-queue` from `master` at
+  `21b289e docs: mark step 133 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` for public
+  `ViewContext::defer(...)`/`WindowRuntimeContext::defer(...)`, event-turn
+  ordering, FIFO callback drain, deferred invalidation visibility, and redraw
+  flushing after deferred callbacks. RED failed as expected on missing
+  `WindowRuntimeContext::defer(...)`.
+- Implemented Step 134 in `include/cgpui/ui/ui.hpp` and `src/ui/ui.cpp`:
+  added public `DeferredCallback`, context/runtime `defer(...)`, a
+  runtime-owned FIFO callback queue, post-event drain after
+  `after_event_callback_`, and redraw deferral while deferred callbacks drain.
+- Verified targeted tests after GREEN:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/deferred-callback-queue -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- The first feature-worktree Windows full debug run had one
+  `clipboard_test/default` failure while the rest of the suite passed.
+  Immediately rerunning `xmake test -P . clipboard_test/default` passed 1/1,
+  and a full Windows rerun with
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Updated `task_plan.md`, the 129-168 forward plan, `findings.md`, and this
+  progress log so Step 134 is recorded as implemented and feature-worktree
+  verified. Step 134 still needs feature commit, fast-forward merge,
+  post-merge verification, docs closeout, and cleanup before Step 135 begins.
+
 ## 2026-07-01 Step 132 Post-Merge
 
 - Fast-forward merged Step 132 to `master` at

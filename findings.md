@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-01 Deferred Callback Queue
+
+- Step 134 keeps deferred work runtime-owned and deliberately small:
+  `DeferredCallback` is a public `std::function<void(const ViewContext&)>`
+  spelling, `ViewContext::defer(...)` forwards to `WindowRuntime`, and the
+  runtime drains callbacks after `after_event_callback_` but before the
+  deferred redraw request is flushed.
+- Deferred callbacks are drained FIFO in batches. Callbacks queued by a
+  deferred callback run in a later drain iteration before the runtime leaves
+  the event turn, which keeps nested `cx.defer(...)` behavior deterministic
+  without introducing timers or async task handles early.
+- Redraw scheduling now treats `draining_deferred_callbacks_` like event
+  dispatch: `request_render`, `request_layout`, and `request_paint` made from a
+  deferred callback set the deferred redraw flag and request one redraw after
+  the queue is drained.
+- Step 134 intentionally does not add timer ids, async task handles, platform
+  wakeups, batching, or diagnostics. Those remain Steps 135-138 and 165.
+
 ## 2026-07-01 Subscription Ownership Token Merged
 
 - Step 133 is merged on `master` at

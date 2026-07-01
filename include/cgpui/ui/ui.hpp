@@ -36,6 +36,7 @@ using Context = ViewContext;
 using ActionHandler =
     std::function<EventResult(const WindowRuntimeContext&)>;
 using FocusedTextModelMutation = std::function<void(TextModel&)>;
+using DeferredCallback = std::function<void(const WindowRuntimeContext&)>;
 
 template <typename T>
 using ModelObserver =
@@ -428,6 +429,7 @@ struct WindowRuntimeContext {
   void request_render() const;
   void request_layout() const;
   void request_paint() const;
+  void defer(DeferredCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
 
@@ -574,6 +576,7 @@ class WindowRuntime {
   void request_render();
   void request_layout();
   void request_paint();
+  void defer(DeferredCallback callback);
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
@@ -637,6 +640,7 @@ class WindowRuntime {
   void handle_redraw();
   void schedule_redraw();
   void flush_deferred_redraw_request();
+  void drain_deferred_callbacks();
   void apply_cursor_shape(CursorShape cursor_shape);
   void fail_and_quit(Error error);
   void refresh_route_ancestry(EventRoute& route) const;
@@ -722,10 +726,12 @@ class WindowRuntime {
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
   std::uint64_t next_subscription_id_ = 1;
+  std::vector<DeferredCallback> deferred_callbacks_;
   std::vector<AppOpenedWindow> app_opened_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;
+  bool draining_deferred_callbacks_ = false;
   bool redraw_scheduled_ = false;
   bool deferred_redraw_request_ = false;
   bool should_quit_ = false;

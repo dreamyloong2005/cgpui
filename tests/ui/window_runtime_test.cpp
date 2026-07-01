@@ -5307,6 +5307,112 @@ int test_view_context_registers_explicit_scoped_actions() {
   return 0;
 }
 
+RuntimeFixture* deferred_callback_fixture = nullptr;
+
+void dispatch_deferred_callback_sequence() {
+  auto& callback = deferred_callback_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 68,
+      .action = cgpui::KeyAction::pressed});
+}
+
+class DeferredCallbackView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {
+    paint_count += 1;
+  }
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    if (!std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      return cgpui::EventResult::unhandled();
+    }
+
+    event_count += 1;
+    context.defer(
+        [this](const cgpui::WindowRuntimeContext& deferred_context) {
+          deferred_count += 1;
+          first_deferred_order = next_deferred_order++;
+          first_deferred_saw_dispatch =
+              deferred_context.last_event_dispatch.has_value();
+          first_deferred_event_kind =
+              deferred_context.last_event_dispatch.has_value()
+                  ? deferred_context.last_event_dispatch->event_kind
+                  : cgpui::EventKind::unknown;
+          deferred_context.request_render();
+        });
+    context.defer(
+        [this](const cgpui::WindowRuntimeContext& deferred_context) {
+          deferred_count += 1;
+          second_deferred_order = next_deferred_order++;
+          second_deferred_saw_invalidation =
+              deferred_context.runtime.invalidation_state().render;
+        });
+    return cgpui::EventResult::consumed_event();
+  }
+
+  int paint_count = 0;
+  int event_count = 0;
+  int deferred_count = 0;
+  int next_deferred_order = 1;
+  int first_deferred_order = 0;
+  int second_deferred_order = 0;
+  bool after_event_saw_no_deferred = false;
+  bool first_deferred_saw_dispatch = false;
+  cgpui::EventKind first_deferred_event_kind = cgpui::EventKind::unknown;
+  bool second_deferred_saw_invalidation = false;
+};
+
+int test_deferred_callbacks_run_after_event_before_redraw_fifo() {
+  RuntimeFixture fixture;
+  DeferredCallbackView view;
+  deferred_callback_fixture = &fixture;
+  fixture.app.on_run = &dispatch_deferred_callback_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord&) {
+        view.after_event_saw_no_deferred = view.deferred_count == 0;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  deferred_callback_fixture = nullptr;
+
+  if (result != 0) {
+    return 363;
+  }
+  if (view.event_count != 1 || view.deferred_count != 2 ||
+      !view.after_event_saw_no_deferred) {
+    return 364;
+  }
+  if (view.first_deferred_order != 1 || view.second_deferred_order != 2) {
+    return 365;
+  }
+  if (!view.first_deferred_saw_dispatch ||
+      view.first_deferred_event_kind != cgpui::EventKind::keyboard_key) {
+    return 366;
+  }
+  if (!view.second_deferred_saw_invalidation) {
+    return 367;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1 ||
+      view.paint_count != 1) {
+    return 368;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* invalidation_fixture = nullptr;
 
 void dispatch_invalidation_sequence() {
@@ -6648,6 +6754,11 @@ int main() {
   }
   if (const int result =
           test_view_context_registers_explicit_scoped_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_deferred_callbacks_run_after_event_before_redraw_fifo();
       result != 0) {
     return result;
   }

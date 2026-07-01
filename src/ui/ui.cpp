@@ -857,6 +857,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
     if (after_event_callback_) {
       after_event_callback_(context(), *last_event_dispatch_);
     }
+    drain_deferred_callbacks();
     flush_deferred_redraw_request();
   }
 }
@@ -1490,6 +1491,13 @@ void WindowRuntime::request_paint() {
   schedule_redraw();
 }
 
+void WindowRuntime::defer(DeferredCallback callback) {
+  if (!callback) {
+    return;
+  }
+  deferred_callbacks_.push_back(std::move(callback));
+}
+
 void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
 }
@@ -1545,7 +1553,7 @@ void WindowRuntime::schedule_redraw() {
     return;
   }
   redraw_scheduled_ = true;
-  if (dispatching_view_event_) {
+  if (dispatching_view_event_ || draining_deferred_callbacks_) {
     deferred_redraw_request_ = true;
     return;
   }
@@ -1558,6 +1566,20 @@ void WindowRuntime::flush_deferred_redraw_request() {
   }
   deferred_redraw_request_ = false;
   window_->request_redraw();
+}
+
+void WindowRuntime::drain_deferred_callbacks() {
+  while (!deferred_callbacks_.empty() && !should_quit_) {
+    std::vector<DeferredCallback> callbacks;
+    callbacks.swap(deferred_callbacks_);
+    draining_deferred_callbacks_ = true;
+    for (DeferredCallback& callback : callbacks) {
+      if (callback) {
+        callback(context());
+      }
+    }
+    draining_deferred_callbacks_ = false;
+  }
 }
 
 void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
@@ -1813,6 +1835,10 @@ void WindowRuntimeContext::request_layout() const {
 
 void WindowRuntimeContext::request_paint() const {
   runtime.request_paint();
+}
+
+void WindowRuntimeContext::defer(DeferredCallback callback) const {
+  runtime.defer(std::move(callback));
 }
 
 void WindowRuntimeContext::clear_invalidation() const {

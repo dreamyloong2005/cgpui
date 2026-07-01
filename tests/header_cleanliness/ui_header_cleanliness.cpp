@@ -57,6 +57,9 @@ class TestView final : public cgpui::View {
     (void)subscription.connected();
     (void)context.runtime.remove_subscription(subscription_id);
     (void)subscription.release();
+    context.defer([](const cgpui::ViewContext& deferred_context) {
+      deferred_context.request_paint();
+    });
     context.register_app_action(
         "header.context.app",
         [](const cgpui::ViewContext&) {
