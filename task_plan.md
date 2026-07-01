@@ -224,6 +224,17 @@ gracefully empty Win32 and Wayland discovery overrides. The effective distance
 through Step 168 is 19 remaining follow-on implementation steps plus the four
 follow-on band checkpoint reviews.
 
+Step 150, text shaping run abstraction with deterministic fallback metrics
+before full shaping, is merged on `master` at
+`d5a3c57 feat: add text shaping run abstraction` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `TextShapeRun`,
+`shape_text(...)`, and text element shaping APIs. GREEN adds `TextGlyphRun`,
+`TextShapeRun`, UTF-8 codepoint-style fallback glyph grouping,
+font-size-derived fallback advances, and `TextElement`/`LabelElement` layout
+through shaping runs. The effective distance through Step 168 is 18 remaining
+follow-on implementation steps plus the four follow-on band checkpoint
+reviews.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -385,7 +396,7 @@ follow-on band checkpoint reviews.
 147. [x] Text input widget primitive integrating focus, text model, selection, clipboard, and IME geometry.
 148. [x] Scrollable list container with stable item keys and viewport clipping metadata.
 149. [x] Font database abstraction and platform font discovery skeleton for Win32 and Linux.
-150. [ ] Text shaping run abstraction with deterministic fallback metrics before full shaping.
+150. [x] Text shaping run abstraction with deterministic fallback metrics before full shaping.
 151. [ ] Glyph atlas/cache interface shared by text elements and Vulkan renderer.
 152. [ ] Vulkan text draw path consumes text paint commands through cached glyph metadata.
 153. [ ] Opacity and transform paint metadata with deterministic command ordering.
@@ -407,13 +418,13 @@ follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 149, font database abstraction and platform font
-discovery skeleton for Win32 and Linux, is merged on `master` at
-`b415784 feat: add font database skeleton` and post-merge verified on Windows
-and WSL Arch Linux. Post-merge targeted tests passed 7/7, Windows full debug
-passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 150, text
-shaping run abstraction with deterministic fallback metrics before full
-shaping, is the next implementation slice after docs closeout and cleanup.
+Current handoff: Step 150, text shaping run abstraction with deterministic
+fallback metrics before full shaping, is merged on `master` at
+`d5a3c57 feat: add text shaping run abstraction` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted tests passed 4/4, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 151,
+glyph atlas/cache interface shared by text elements and Vulkan renderer, is
+the next implementation slice after docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

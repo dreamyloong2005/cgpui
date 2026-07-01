@@ -2569,3 +2569,21 @@
 - Step 146 can build `label(...)` as a thin text-widget helper over the
   existing `TextElement`, text style fields, and text paint command metadata;
   it should include header cleanliness coverage for the public widget helper.
+
+## 2026-07-01 Text Shaping Run Abstraction
+
+- Step 150 intentionally introduces deterministic fallback shaping, not full
+  HarfBuzz/text-complex shaping. Each leading UTF-8 byte plus its continuation
+  bytes becomes one `TextGlyphRun`, with byte offsets/lengths preserved for
+  later glyph-atlas and caret/selection work.
+- `shape_text(...)` stores the original text bytes, font descriptor, font size,
+  total byte length, glyph advances, total advance, and line height. This gives
+  Step 151 a stable bridge from UI text metadata to renderer-facing glyph cache
+  keys without depending on platform font discovery yet.
+- `TextElement` and `LabelElement` now derive layout width/height from
+  `TextShapeRun::total_advance` and `line_height`. This fixes the old
+  byte-count metric for UTF-8 text while preserving the existing ASCII fallback
+  behavior of `font_size * 0.5F` per glyph.
+- The public header-cleanliness test now directly exercises `TextShapeRun` and
+  `shape_text(...)`; future text/glyph APIs should keep that coverage current
+  so author-facing headers remain standalone.

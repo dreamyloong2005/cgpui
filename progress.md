@@ -4307,3 +4307,43 @@
   so Step 145 is marked merged and post-merge verified. Step 146, label widget
   primitive using text style and text paint commands, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 150 Text Shaping Run Abstraction
+
+- Continued Step 150 in `.worktrees/text-shaping-run` on
+  `codex/text-shaping-run` from `master` at
+  `91cf302 docs: mark step 149 merged`.
+- Baseline targeted tests had already passed before edits:
+  `xmake test -P . text_model_test/default element_test/default` passed 2/2.
+- RED coverage had already been added and observed failing as expected on
+  missing `TextShapeRun`, `shape_text(...)`, and text element shaping APIs.
+- GREEN adds `TextGlyphRun`, `TextShapeRun`, public `shape_text(...)`,
+  deterministic UTF-8 byte-run fallback glyph grouping, font-size-derived
+  fallback advances, and `TextElement`/`LabelElement` layout using shaping
+  runs instead of raw byte counts.
+- Added public header-cleanliness coverage for `TextShapeRun` and
+  `shape_text(...)`.
+- Verified targeted GREEN tests:
+  `xmake test -P . text_model_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-shaping-run -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 150 as
+  `d5a3c57 feat: add text shaping run abstraction` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . text_model_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 150 is marked merged and post-merge verified. Step 151, glyph
+  atlas/cache interface shared by text elements and Vulkan renderer, is the
+  next implementation slice after docs closeout and cleanup.

@@ -109,8 +109,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `b415784 feat: add font database skeleton`; post-merge targeted tests
   passed 7/7, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 150 is merged on `master` at
+  `d5a3c57 feat: add text shaping run abstraction`; post-merge targeted tests
+  passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 150 is the next implementation slice after Step 149 docs closeout
+  128. Step 151 is the next implementation slice after Step 150 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -408,6 +412,23 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   before full shaping, is the next implementation slice after docs closeout
   and cleanup.
 - The effective distance through Step 168 is 19 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
+## 2026-07-01 Back-40 Planning After Step 150 Merge
+
+- Step 150, text shaping run abstraction with deterministic fallback metrics
+  before full shaping, is merged on `master` at
+  `d5a3c57 feat: add text shaping run abstraction`.
+- RED failed as expected on missing `TextShapeRun`, `shape_text(...)`,
+  `TextElement::shape_run()`, and text layout behavior for UTF-8 text. GREEN
+  adds `TextGlyphRun`, `TextShapeRun`, deterministic UTF-8 byte-run grouping,
+  font-size-derived fallback advances, public `shape_text(...)`, and text/
+  label layout based on shaping runs.
+- Post-merge verification passed: targeted tests 4/4, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 151, glyph atlas/cache interface shared by text elements and Vulkan
+  renderer, is the next implementation slice after docs closeout and cleanup.
+- The effective distance through Step 168 is 18 follow-on implementation
   slices plus the four band checkpoint reviews.
 
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
@@ -1442,7 +1463,7 @@ Exit check: the public prelude can express common app UI controls through reusab
 Purpose: turn text and renderer output from metadata/placeholder paths into backend-ready command streams.
 
 - [x] Step 149: font database abstraction and platform font discovery skeleton for Win32 and Linux.
-- [ ] Step 150: text shaping run abstraction with deterministic fallback metrics before full shaping.
+- [x] Step 150: text shaping run abstraction with deterministic fallback metrics before full shaping.
 - [ ] Step 151: glyph atlas/cache interface shared by text elements and Vulkan renderer.
 - [ ] Step 152: Vulkan text draw path consumes text paint commands through cached glyph metadata.
 - [ ] Step 153: opacity and transform paint metadata with deterministic command ordering.
@@ -1898,12 +1919,21 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 
 **Files:**
 - Modify: `include/cgpui/ui/text.hpp`
+- Modify: `include/cgpui/ui/element.hpp`
 - Modify: `tests/ui/text_model_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for shaping runs carrying text, font, glyph advances, and fallback metrics.
-- [ ] Implement deterministic fallback shaping without requiring HarfBuzz yet.
-- [ ] Targeted test command: `xmake test -P . text_model_test/default element_test/default`.
+- [x] Add RED tests for shaping runs carrying text, font, glyph advances, and fallback metrics.
+- [x] Implement deterministic fallback shaping without requiring HarfBuzz yet.
+- [x] Targeted test command: `xmake test -P . text_model_test/default element_test/default ui_header_cleanliness/default prelude_header_cleanliness/default` passed 4/4.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `d5a3c57 feat: add text shaping run abstraction`.
+- [x] Post-merge targeted verification passed 4/4.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 151: Glyph Atlas/Cache Interface
 
