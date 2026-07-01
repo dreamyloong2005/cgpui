@@ -1,6 +1,7 @@
 #include "cgpui/ui/style.hpp"
 
 #include <concepts>
+#include <span>
 #include <string>
 
 namespace {
@@ -499,6 +500,71 @@ int test_style_state_resolves_hover_focus_disabled_order() {
              : 47;
 }
 
+int test_style_classes_store_named_class_ids() {
+  const cgpui::StyleClassId primary = cgpui::style_class("button.primary");
+  const cgpui::StyleClassId secondary = cgpui::style_class("button.secondary");
+  const cgpui::StyleClassId primary_again =
+      cgpui::style_class("button.primary");
+
+  if (primary.value != "button.primary" || primary != primary_again ||
+      primary == secondary) {
+    return 64;
+  }
+
+  cgpui::StyleClasses classes;
+  if (!classes.empty() || classes.contains(primary)) {
+    return 65;
+  }
+
+  classes.add(primary).add(secondary).add(primary_again);
+  if (classes.empty() || classes.size() != 2 ||
+      !classes.contains(primary) || !classes.contains(secondary)) {
+    return 66;
+  }
+
+  const std::span<const cgpui::StyleClassId> ids = classes.ids();
+  return ids.size() == 2 && ids[0] == primary && ids[1] == secondary ? 0 : 67;
+}
+
+int test_theme_color_and_spacing_tokens_lookup_softly() {
+  const cgpui::ThemeTokenId accent = cgpui::theme_token("color.accent");
+  const cgpui::ThemeTokenId gap = cgpui::theme_token("space.gap");
+  const cgpui::ThemeTokenId missing = cgpui::theme_token("missing");
+
+  if (accent.value != "color.accent" || accent == gap) {
+    return 68;
+  }
+
+  cgpui::Theme theme;
+  if (theme.color(accent).has_value() || theme.spacing(gap).has_value()) {
+    return 69;
+  }
+
+  theme.set_color(accent, cgpui::rgb(10, 20, 30))
+      .set_spacing(gap, cgpui::px(8.0F));
+  const std::optional<cgpui::Color> accent_color = theme.color(accent);
+  const std::optional<float> gap_spacing = theme.spacing(gap);
+  if (!accent_color.has_value() || accent_color->r != 10.0F / 255.0F ||
+      !gap_spacing.has_value() || *gap_spacing != 8.0F) {
+    return 70;
+  }
+
+  theme.set_color(accent, cgpui::rgb(40, 50, 60))
+      .set_spacing(gap, cgpui::px(12.0F));
+  const std::optional<cgpui::Color> replaced_color = theme.color(accent);
+  const std::optional<float> replaced_spacing = theme.spacing(gap);
+  if (!replaced_color.has_value() ||
+      replaced_color->r != 40.0F / 255.0F ||
+      !replaced_spacing.has_value() || *replaced_spacing != 12.0F) {
+    return 71;
+  }
+
+  return !theme.color(missing).has_value() &&
+                 !theme.spacing(missing).has_value()
+             ? 0
+             : 72;
+}
+
 } // namespace
 
 static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
@@ -532,6 +598,10 @@ static_assert(std::same_as<decltype(cgpui::StyleState{}.base), cgpui::Style>);
 static_assert(std::same_as<
               decltype(cgpui::StyleStateFlags{}.hovered),
               bool>);
+static_assert(std::equality_comparable<cgpui::StyleClassId>);
+static_assert(std::equality_comparable<cgpui::ThemeTokenId>);
+static_assert(std::same_as<decltype(cgpui::style_class("x")), cgpui::StyleClassId>);
+static_assert(std::same_as<decltype(cgpui::theme_token("x")), cgpui::ThemeTokenId>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
@@ -568,6 +638,14 @@ int main() {
     return result;
   }
   if (const int result = test_style_state_resolves_hover_focus_disabled_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_style_classes_store_named_class_ids();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_theme_color_and_spacing_tokens_lookup_softly();
       result != 0) {
     return result;
   }

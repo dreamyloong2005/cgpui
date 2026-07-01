@@ -73,6 +73,16 @@ int main() {
       cgpui::scroll(scroll_state, cgpui::div().size(6.0F, 7.0F));
   const auto* scroll =
       dynamic_cast<const cgpui::ScrollElement*>(scroll_element.get());
+  const cgpui::StyleClassId class_id = cgpui::style_class("prelude.card");
+  cgpui::StyleClasses classes;
+  classes.add(class_id);
+  cgpui::Theme theme;
+  const cgpui::ThemeTokenId accent_token = cgpui::theme_token("color.accent");
+  const cgpui::ThemeTokenId gap_token = cgpui::theme_token("space.gap");
+  theme.set_color(accent_token, cgpui::rgb(1, 2, 3))
+      .set_spacing(gap_token, cgpui::px(4.0F));
+  const std::optional<cgpui::Color> accent_color = theme.color(accent_token);
+  const std::optional<float> gap_spacing = theme.spacing(gap_token);
   PreludeView view;
   cgpui::AppRunnerOptions options;
   options.setup_context = app_setup;
@@ -81,7 +91,10 @@ int main() {
   return root_id.value != 0 && tree.root_id() == root_id &&
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
-                 scroll != nullptr && scroll->state() == &scroll_state
+                 scroll != nullptr && scroll->state() == &scroll_state &&
+                 classes.contains(class_id) && accent_color.has_value() &&
+                 accent_color->b == 3.0F / 255.0F &&
+                 gap_spacing.has_value() && *gap_spacing == 4.0F
              ? 0
              : 1;
 }

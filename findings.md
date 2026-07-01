@@ -2396,3 +2396,18 @@
   when the runtime owns an installed `ElementTree`; legacy raw
   `set_element_root(...)` paths intentionally soft-fail until they migrate to
   tree ownership.
+
+## 2026-07-01 Style Classes And Theme Tokens
+
+- Step 142 keeps style vocabulary inert: `StyleClassId`, `StyleClasses`,
+  `ThemeTokenId`, and `Theme` are public authoring data structures, but they do
+  not affect `resolved_style(...)` or element rendering yet.
+- `StyleClasses` preserves insertion order and de-duplicates repeated class
+  ids. This gives Step 143 a deterministic class application order without
+  introducing selectors or CSS-like matching in this slice.
+- `Theme` has separate typed maps for color and spacing tokens. Missing token
+  lookups soft-fail with `std::nullopt`, and replacing an existing token value
+  is explicit through `set_color(...)` / `set_spacing(...)`.
+- Cascade resolution, runtime theme switching, class-to-style rules, and
+  inherited style behavior remain out of scope until Step 143 and later
+  widget/style slices.

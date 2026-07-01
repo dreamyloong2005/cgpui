@@ -3887,3 +3887,29 @@
   so Step 141 is marked merged and post-merge verified. Step 142, style class
   and theme token primitives for reusable design vocabulary, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 142 Style Classes And Theme Tokens
+
+- Started Step 142 in `.worktrees/style-classes-theme-tokens` on
+  `codex/style-classes-theme-tokens` from `master` at
+  `a242a2a docs: mark step 141 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . style_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Added RED coverage in `tests/ui/style_test.cpp` and
+  `tests/header_cleanliness/prelude_header_cleanliness.cpp` for public
+  `StyleClassId`, `style_class(...)`, `StyleClasses`, `ThemeTokenId`,
+  `theme_token(...)`, and `Theme` color/spacing token lookup. RED failed as
+  expected on missing style class and theme token APIs.
+- GREEN adds inert public style vocabulary primitives in
+  `include/cgpui/ui/style.hpp`: named class ids, ordered de-duplicated class
+  lists, named theme token ids, and typed color/spacing token storage with
+  missing-token soft failure.
+- Verified targeted GREEN tests:
+  `xmake test -P . style_test/default prelude_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/style-classes-theme-tokens -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.

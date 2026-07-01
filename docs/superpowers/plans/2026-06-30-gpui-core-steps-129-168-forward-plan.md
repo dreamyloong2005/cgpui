@@ -180,6 +180,26 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - The effective distance through Step 168 is 27 follow-on implementation
   slices plus the four band checkpoint reviews.
 
+## 2026-07-01 Back-40 Planning After Step 142 GREEN
+
+- Step 142, style class and theme token primitives for reusable design
+  vocabulary, is implemented and targeted GREEN in
+  `.worktrees/style-classes-theme-tokens` on
+  `codex/style-classes-theme-tokens`.
+- RED failed as expected on missing `StyleClassId`, `style_class(...)`,
+  `StyleClasses`, `ThemeTokenId`, `theme_token(...)`, and `Theme` color/
+  spacing token APIs. GREEN adds inert public vocabulary primitives without
+  applying cascade behavior.
+- Targeted verification passed 2/2:
+  `xmake test -P . style_test/default prelude_header_cleanliness/default`.
+- Feature-worktree verification passed: targeted tests 2/2, Windows full
+  debug 29/29, and WSL Arch Linux full debug 26/26.
+- Step 142 still needs a fresh pre-commit targeted check, feature commit,
+  fast-forward merge to `master`, post-merge verification, docs closeout, and
+  cleanup.
+- After the Step 142 merge, the effective distance through Step 168 will be
+  26 follow-on implementation slices plus the four band checkpoint reviews.
+
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
 - Step 138, public diagnostics snapshot for entities, subscriptions,
@@ -1526,9 +1546,11 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/header_cleanliness/prelude_header_cleanliness.cpp`
 
-- [ ] Add RED tests for class ids, theme token ids, and typed color/spacing token lookup.
-- [ ] Implement inert style vocabulary primitives before applying cascade behavior.
-- [ ] Targeted test command: `xmake test -P . style_test/default prelude_header_cleanliness/default`.
+- [x] Add RED tests for class ids, theme token ids, and typed color/spacing token lookup.
+- [x] Implement inert style vocabulary primitives before applying cascade behavior.
+- [x] Targeted test command: `xmake test -P . style_test/default prelude_header_cleanliness/default` passed 2/2.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 143: Style Cascade Resolution
 
