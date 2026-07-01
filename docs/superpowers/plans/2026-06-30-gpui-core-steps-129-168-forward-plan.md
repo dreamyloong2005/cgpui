@@ -240,6 +240,23 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
 - After the Step 143 merge, the effective distance through Step 168 will be
   25 follow-on implementation slices plus the four band checkpoint reviews.
 
+## 2026-07-01 Back-40 Planning After Step 143 Merge
+
+- Step 143, style cascade resolution combining base, class, state, and inline
+  styles, is merged on `master` at
+  `2ab43a7 feat: add style cascade resolution`.
+- RED failed as expected on missing `StyleCascade`, class/inline builder APIs,
+  and styled-element resolved-style APIs. GREEN adds deterministic cascade
+  resolution, class and inline style storage on `StyledElement`, and builder
+  APIs for authored class names and inline overlays.
+- Post-merge verification passed: targeted tests 2/2, Windows full debug
+  29/29, and WSL Arch Linux full debug 26/26.
+- Step 144, `FocusHandle` primitive with request, release, contains, and
+  focused queries, is the next implementation slice after docs closeout and
+  cleanup.
+- The effective distance through Step 168 is 25 follow-on implementation
+  slices plus the four band checkpoint reviews.
+
 ## 2026-07-01 Back-40 Planning After Step 138 GREEN
 
 - Step 138, public diagnostics snapshot for entities, subscriptions,
@@ -1258,7 +1275,7 @@ Purpose: make elements reusable and widget-ready, not just one-off builder trees
 - [x] Step 140: element lifecycle hooks for mount, update, and unmount notifications.
 - [x] Step 141: element state storage keyed by element id for reusable widgets.
 - [x] Step 142: style class and theme token primitives for reusable design vocabulary.
-- [ ] Step 143: style cascade resolution combining base, class, state, and inline styles.
+- [x] Step 143: style cascade resolution combining base, class, state, and inline styles.
 - [ ] Step 144: `FocusHandle` primitive with request, release, contains, and focused queries.
 - [ ] Step 145: button widget primitive built from public element, focus, style, and action APIs.
 - [ ] Step 146: label widget primitive using text style and text paint commands.
@@ -1608,6 +1625,13 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - [x] Add RED tests for base, class, state, and inline style resolution order.
 - [x] Implement deterministic cascade merge rules using the Step 95 style-state primitives.
 - [x] Targeted test command: `xmake test -P . style_test/default element_test/default`.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `2ab43a7 feat: add style cascade resolution`.
+- [x] Post-merge targeted verification passed 2/2.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 144: FocusHandle Primitive
 

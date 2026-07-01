@@ -3958,3 +3958,20 @@
 - Verified feature-worktree WSL Arch Linux full debug:
   `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/style-cascade-resolution -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . style_test/default element_test/default` passed 2/2.
+  `git diff --check` reported only expected CRLF warnings.
+- Committed Step 143 as
+  `2ab43a7 feat: add style cascade resolution` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . style_test/default element_test/default` passed 2/2.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 143 is marked merged and post-merge verified. Step 144,
+  `FocusHandle` primitive with request, release, contains, and focused
+  queries, is the next implementation slice after docs closeout and cleanup.

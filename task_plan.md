@@ -300,7 +300,7 @@ implementation steps plus the four follow-on band checkpoint reviews.
 140. [x] Element lifecycle hooks for mount, update, and unmount notifications.
 141. [x] Element state storage keyed by element id for reusable widgets.
 142. [x] Style class and theme token primitives for reusable design vocabulary.
-143. [ ] Style cascade resolution combining base, class, state, and inline styles.
+143. [x] Style cascade resolution combining base, class, state, and inline styles.
 144. [ ] `FocusHandle` primitive with request, release, contains, and focused queries.
 145. [ ] Button widget primitive built from public element, focus, style, and action APIs.
 146. [ ] Label widget primitive using text style and text paint commands.
@@ -329,17 +329,17 @@ implementation steps plus the four follow-on band checkpoint reviews.
 
 ## Active Step
 
-Current handoff: Step 142, style class and theme token primitives for reusable
-design vocabulary, is merged on `master` at
-`1493c91 feat: add style classes theme tokens` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing `StyleClassId`,
-`style_class(...)`, `StyleClasses`, `ThemeTokenId`, `theme_token(...)`, and
-`Theme` color/spacing token APIs. GREEN adds inert public style vocabulary
-primitives without applying cascade behavior. Post-merge targeted tests passed
-2/2, Windows full debug passed 29/29, and WSL Arch Linux full debug passed
-26/26. Step 143, style cascade resolution combining base, class, state, and
-inline styles, is the next implementation slice after this docs closeout and
-cleanup.
+Current handoff: Step 143, style cascade resolution combining base, class,
+state, and inline styles, is merged on `master` at
+`2ab43a7 feat: add style cascade resolution` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing `StyleCascade`,
+class/inline builder APIs, and styled-element resolved-style APIs. GREEN adds
+deterministic `StyleCascade` resolution plus `StyledElement` storage for
+classes and inline overlays, while leaving runtime layout/paint cascade
+installation for a later slice. Post-merge targeted tests passed 2/2, Windows
+full debug passed 29/29, and WSL Arch Linux full debug passed 26/26. Step 144,
+`FocusHandle` primitive with request, release, contains, and focused queries,
+is the next implementation slice after this docs closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
