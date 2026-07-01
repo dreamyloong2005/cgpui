@@ -176,7 +176,7 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   coverage passed 6/6 on Windows and 5/5 on WSL Arch Linux, Windows full debug
   passed 29/29, and WSL Arch Linux full debug passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 166 is the next implementation slice after Step 165 docs closeout
+  128. Step 167 is the next implementation slice after Step 166 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -430,6 +430,31 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   focus state, is the next implementation slice after docs closeout and
   cleanup.
 - The effective distance through Step 168 is 3 follow-on implementation
+  slices plus the final Band H checkpoint review.
+
+## 2026-07-02 Back-40 Planning After Step 166 Merge
+
+- Step 166, accessibility tree skeleton for labels, buttons, text inputs, and
+  focus state, is merged on `master` at
+  `57bb3aa feat: add accessibility tree skeleton`.
+- RED failed as expected on missing `AccessibilityTreeSnapshot`,
+  `AccessibilityNode`, `AccessibilityRole`, `AccessibilitySnapshotOptions`,
+  and `ElementTree` / `WindowRuntime` accessibility snapshot APIs.
+- GREEN adds platform-neutral accessibility snapshot metadata over
+  `ElementTree`, default element accessibility hooks, role/name/text metadata
+  for `LabelElement`, `TextElement`, `TextInputElement`, and `ButtonElement`,
+  plus runtime/context snapshot helpers that mark the keyboard-focused element.
+- Platform accessibility remains a skeleton: `PlatformAccessibilityTreeUpdate`
+  is a lightweight root-id/node-count placeholder and
+  `PlatformWindow::update_accessibility_tree(...)` defaults to no-op. Windows
+  UIA and Linux AT-SPI adapters remain later work.
+- Post-merge verification passed: Windows targeted/header tests 4/4, WSL Arch
+  Linux targeted/header tests 4/4, Windows full debug 29/29, and WSL Arch
+  Linux full debug 26/26.
+- Step 167, Windows/Linux demo smoke tests covering window, input, text,
+  clipboard, and redraw flows, is the next implementation slice after docs
+  closeout and cleanup.
+- The effective distance through Step 168 is 2 follow-on implementation
   slices plus the final Band H checkpoint review.
 
 ## 2026-07-01 Back-40 Planning After Step 139 GREEN
@@ -1799,7 +1824,7 @@ Purpose: connect the public API to Windows/Wayland runtime behavior and close th
 - [x] Step 163: Win32 drag-and-drop text/file event skeleton.
 - [x] Step 164: Wayland data-device drag-and-drop text/file event skeleton.
 - [x] Step 165: platform event loop wakeup API for timers, async completions, and deferred callbacks.
-- [ ] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
+- [x] Step 166: accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 - [ ] Step 167: Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 - [ ] Step 168: GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
@@ -2567,9 +2592,15 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 - Modify: `tests/ui/element_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED tests for accessibility roles/names/focus state on labels, buttons, and text inputs.
-- [ ] Expose a platform-neutral accessibility tree snapshot before OS-specific adapters.
-- [ ] Targeted test command: `xmake test -P . element_test/default window_runtime_test/default`.
+- [x] Add RED tests for accessibility roles/names/focus state on labels, buttons, and text inputs.
+- [x] Expose a platform-neutral accessibility tree snapshot before OS-specific adapters.
+- [x] Targeted test command:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows after merge, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . element_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux after merge.
+- [x] Full post-merge verification passed: Windows full debug 29/29 and WSL
+  Arch Linux full debug 26/26.
 
 ### Step 167: Windows/Linux Demo Smoke Tests
 

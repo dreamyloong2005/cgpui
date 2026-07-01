@@ -405,6 +405,19 @@ and the empty backend keeps a no-op default. The effective distance through
 Step 168 is 3 remaining follow-on implementation steps plus the final Band H
 checkpoint review.
 
+Step 166, accessibility tree skeleton for labels, buttons, text inputs, and
+focus state, is merged on `master` at
+`57bb3aa feat: add accessibility tree skeleton` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`AccessibilityTreeSnapshot`, `AccessibilityNode`, `AccessibilityRole`,
+`AccessibilitySnapshotOptions`, and `accessibility_snapshot(...)` APIs. GREEN
+adds platform-neutral accessibility snapshot metadata over the `ElementTree`,
+element role/name/text hooks for labels, buttons, text, and text inputs,
+runtime/context snapshot helpers that mark the keyboard-focused element, and a
+low-coupling platform update placeholder for future Windows UIA / Linux AT-SPI
+adapters. The effective distance through Step 168 is 2 remaining follow-on
+implementation steps plus the final Band H checkpoint review.
+
 - Band E, Steps 129-138: GPUI-like context, entity, global state, action
   scoping, subscriptions, and async/timer primitives.
 - Band F, Steps 139-148: keyed reconciliation, element lifecycle hooks,
@@ -582,20 +595,20 @@ checkpoint review.
 163. [x] Win32 drag-and-drop text/file event skeleton.
 164. [x] Wayland data-device drag-and-drop text/file event skeleton.
 165. [x] Platform event loop wakeup API for timers, async completions, and deferred callbacks.
-166. [ ] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
+166. [x] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 167. [ ] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 168. [ ] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 
 ## Active Step
 
-Current handoff: Step 165, platform event loop wakeup API for timers, async
-completions, and deferred callbacks, is merged on `master` at
-`1c7f665 feat: add platform event loop wakeup` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted/header/source coverage passed
-6/6 on Windows and 5/5 on WSL Arch Linux, `git diff --check` produced no
-output before merge, Windows full debug passed 29/29, and WSL Arch Linux full
-debug passed 26/26. Step 166, accessibility tree skeleton for labels, buttons,
-text inputs, and focus state, is the next implementation slice after docs
+Current handoff: Step 166, accessibility tree skeleton for labels, buttons,
+text inputs, and focus state, is merged on `master` at
+`57bb3aa feat: add accessibility tree skeleton` and post-merge verified on
+Windows and WSL Arch Linux. Post-merge targeted/header coverage passed 4/4 on
+Windows and 4/4 on WSL Arch Linux, `git diff --check` produced no output,
+Windows full debug passed 29/29, and WSL Arch Linux full debug passed 26/26.
+Step 167, Windows/Linux demo smoke tests covering window, input, text,
+clipboard, and redraw flows, is the next implementation slice after docs
 closeout and cleanup.
 
 Step 115, flex alignment and justification primitives, is merged on `master`

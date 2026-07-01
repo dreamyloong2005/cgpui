@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Accessibility Tree Skeleton
+
+- Step 166 adds a platform-neutral accessibility snapshot, not Windows UIA or
+  Linux AT-SPI adapters. `AccessibilityTreeSnapshot` is built from
+  `ElementTree` preorder traversal and carries root id, per-node parent/child
+  ids, role, name, text, enabled/focusable/focused flags, and optional layout
+  bounds.
+- `Element` now exposes default accessibility role/name/text hooks. Labels and
+  text elements report their text as name/text, text inputs report the text
+  role as `text_input`, and buttons report role `button` with accessible name
+  derived from their child label/text before falling back to action name.
+- `WindowRuntime::accessibility_snapshot()` and
+  `WindowRuntimeContext::accessibility_snapshot()` reuse the installed
+  runtime-owned element tree and mark the current keyboard-focus element owner.
+  No installed tree returns an empty snapshot.
+- The platform hook remains intentionally low-coupling:
+  `PlatformAccessibilityTreeUpdate` carries only root element id and node
+  count, while `PlatformWindow::update_accessibility_tree(...)` defaults to
+  no-op. Real UIA/AT-SPI tree serialization remains future platform work.
+- Step 167 can now focus on demo smoke coverage without needing accessibility
+  OS adapter work; Step 168 should count accessibility as snapshot-level
+  partial parity, not full native accessibility parity.
+
 ## 2026-07-02 Multi-Window Runtime Registry
 
 - Step 159 introduces a platform-neutral ownership registry, not a full native

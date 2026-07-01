@@ -1,5 +1,57 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Step 166 Accessibility Tree Skeleton
+
+- Continued after interruption with Step 166 started in
+  `.worktrees/accessibility-tree-skeleton` on
+  `codex/accessibility-tree-skeleton` from `master` at
+  `685e1e7 docs: mark step 165 merged`.
+- Baseline targeted tests passed before edits:
+  `xmake test -P . element_test/default window_runtime_test/default` passed
+  2/2.
+- Added RED coverage in `tests/ui/element_test.cpp`,
+  `tests/ui/window_runtime_test.cpp`, and header-cleanliness tests. The final
+  RED failed as expected on missing `AccessibilityTreeSnapshot`,
+  `AccessibilityNode`, `AccessibilityRole`, `AccessibilitySnapshotOptions`,
+  and `accessibility_snapshot(...)` APIs.
+- GREEN adds public accessibility role/node/snapshot types,
+  `Element::accessibility_role/name/text()` hooks, label/text/text-input/button
+  role/name metadata, `ElementTree::accessibility_snapshot(...)`, runtime and
+  context snapshot helpers that mark keyboard focus, and a no-op platform
+  accessibility update placeholder.
+- Verified targeted GREEN on Windows:
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4.
+- Verified targeted GREEN on WSL Arch Linux:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/accessibility-tree-skeleton -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . element_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 4/4.
+- `git diff --check` exited 0 with only expected CRLF warnings in the feature
+  worktree and produced no output after merge on `master`.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/accessibility-tree-skeleton -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Committed Step 166 as
+  `57bb3aa feat: add accessibility tree skeleton` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted/header tests:
+  Windows
+  `xmake test -P . element_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4, and WSL Arch Linux
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . element_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, findings, and this
+  progress log so Step 166 is marked merged and post-merge verified. Step 167,
+  Windows/Linux demo smoke tests covering window, input, text, clipboard, and
+  redraw flows, is the next implementation slice after docs closeout and
+  cleanup.
+
 ## 2026-07-02 Step 159 Multi-Window Runtime Registry
 
 - Started Step 159 in `.worktrees/multi-window-runtime-registry` on
