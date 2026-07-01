@@ -113,8 +113,12 @@ and macOS/Cocoa + Metal remains a readiness boundary for a later parity run.
   `d5a3c57 feat: add text shaping run abstraction`; post-merge targeted tests
   passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
   passed 26/26.
+- Step 151 is merged on `master` at
+  `681513a feat: add glyph atlas cache interface`; post-merge targeted tests
+  passed 4/4, Windows full debug passed 29/29, and WSL Arch Linux full debug
+  passed 26/26.
 - This document is the active follow-on plan for the next 40 steps after Step
-  128. Step 151 is the next implementation slice after Step 150 docs closeout
+  128. Step 152 is the next implementation slice after Step 151 docs closeout
   and cleanup.
 - The main worktree is on `master`; the known local-only untracked item is
   `.vscode/`.
@@ -1940,12 +1944,23 @@ Exit check: Windows and Wayland have the platform hooks needed by the public cor
 **Files:**
 - Modify: `include/cgpui/renderer/renderer.hpp`
 - Modify: `include/cgpui/ui/text.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/ui/ui.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/ui/element_test.cpp`
+- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED tests for glyph cache lookup/miss records and text command glyph metadata.
-- [ ] Define renderer-facing glyph atlas interfaces without forcing a concrete Vulkan allocation in this slice.
-- [ ] Targeted test command: `xmake test -P . element_test/default vulkan_solid_rect_test/default`.
+- [x] Add RED tests for glyph cache lookup/miss records and text command glyph metadata.
+- [x] Define renderer-facing glyph atlas interfaces without forcing a concrete Vulkan allocation in this slice.
+- [x] Targeted test command: `xmake test -P . element_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default` passed 4/4.
+- [x] Feature-worktree Windows full debug verification passed 29/29.
+- [x] Feature-worktree WSL Arch Linux full debug verification passed 26/26.
+- [x] Fast-forward merged to `master` at
+  `681513a feat: add glyph atlas cache interface`.
+- [x] Post-merge targeted verification passed 4/4.
+- [x] Post-merge Windows full debug verification passed 29/29.
+- [x] Post-merge WSL Arch Linux full debug verification passed 26/26.
 
 ### Step 152: Vulkan Text Draw Path
 

@@ -2587,3 +2587,22 @@
 - The public header-cleanliness test now directly exercises `TextShapeRun` and
   `shape_text(...)`; future text/glyph APIs should keep that coverage current
   so author-facing headers remain standalone.
+
+## 2026-07-01 Glyph Atlas Cache Interface
+
+- Step 151 keeps glyph caching renderer-facing but allocation-free:
+  `GlyphCache` records lookup hits/misses and stores `GlyphAtlasEntry`
+  metadata, but it does not allocate Vulkan images, upload glyph pixels, or
+  depend on platform font discovery yet.
+- `GlyphAtlasKey` is derived from the fallback shaping run: font family, font
+  size, glyph index, byte offset, and byte length. This makes text paint
+  metadata deterministic for ASCII and UTF-8 fallback glyph runs while leaving
+  room for a later real shaper to provide stable glyph ids.
+- `PaintList::fill_text(...)` now shapes text once and emits `TextPaint::glyphs`
+  with per-glyph origin and advance metadata. Step 152 should consume this
+  metadata in the Vulkan text path instead of reshaping raw text in the
+  renderer.
+- Header-cleanliness coverage now exercises the renderer-facing cache types and
+  UI text glyph metadata. Future text-rendering slices should keep the public
+  surface split: `ui/text.hpp` owns shaping/glyph paint metadata, while
+  `renderer/renderer.hpp` owns atlas/cache lookup records.

@@ -4347,3 +4347,46 @@
   so Step 150 is marked merged and post-merge verified. Step 151, glyph
   atlas/cache interface shared by text elements and Vulkan renderer, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-01 Step 151 Glyph Atlas Cache Interface
+
+- Continued Step 151 in `.worktrees/glyph-atlas-cache-interface` on
+  `codex/glyph-atlas-cache-interface` from `master` at
+  `b2a7b71 docs: mark step 150 merged`.
+- Baseline targeted tests had already passed before edits:
+  `xmake test -P . element_test/default vulkan_solid_rect_test/default`
+  passed 2/2.
+- RED coverage had already been added and observed failing as expected on
+  missing `GlyphCache`, `GlyphAtlasKey`, `GlyphCacheLookup`, and
+  `GlyphAtlasEntry` APIs.
+- GREEN adds `GlyphAtlasKey`, `TextGlyphPaint`,
+  `text_glyph_paint_metadata(...)`, `GlyphAtlasEntry`,
+  `GlyphCacheRecord`, `GlyphCacheLookup`, and `GlyphCache`. Text paint
+  commands now carry shaped glyph metadata for later Vulkan consumption.
+- Verified targeted GREEN tests:
+  `xmake test -P . element_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/glyph-atlas-cache-interface -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Re-ran the fresh pre-commit targeted check:
+  `xmake test -P . element_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Committed Step 151 as
+  `681513a feat: add glyph atlas cache interface` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . element_test/default vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 29/29.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 26/26.
+- Refreshed `task_plan.md`, the 129-168 forward plan, and this progress log
+  so Step 151 is marked merged and post-merge verified. Step 152, Vulkan text
+  draw path consumes text paint commands through cached glyph metadata, is the
+  next implementation slice after docs closeout and cleanup.
