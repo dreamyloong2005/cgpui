@@ -707,7 +707,7 @@ follow-on goal is now complete on the Windows/Linux track.
 184. [x] Vulkan text selection and caret geometry records.
 185. [x] Renderer clip stack metadata beyond single optional clips.
 186. [x] Renderer opacity and transform stack reports.
-187. [ ] Renderer batch submission plan records.
+187. [x] Renderer batch submission plan records.
 188. [ ] Renderer frame snapshot report aggregating text, uploads, batches, and gaps.
 189. [ ] Font fallback chain resolution.
 190. [ ] Platform font discovery records for Win32 and Wayland/Linux.
@@ -745,10 +745,11 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 186, renderer opacity and transform stack reports, is merged on `master`
-at `36cb483 feat: add renderer composition stack reports` and post-merge
-verified on Windows and WSL Arch Linux. Step 187, renderer batch submission
-plan records, is the next implementation slice. The track
+Step 187, renderer batch submission plan records, is merged on `master` at
+`6f9a399 feat: add renderer submission plan records` and post-merge verified
+on Windows and WSL Arch Linux. Step 188, renderer frame snapshot report
+aggregating text, uploads, batches, and gaps, is the next implementation
+slice. The track
 remains Windows/Linux first; macOS/Cocoa + Metal is still deferred to a
 separate parity run.
 

@@ -6159,3 +6159,57 @@
   this progress log so Step 186 is marked merged and post-merge verified. Step
   187, renderer batch submission plan records, is the next implementation slice
   after docs closeout and cleanup.
+
+## 2026-07-03 Step 187 Renderer Batch Submission Plan Records
+
+- Created `.worktrees/renderer-batch-submission-plan` on
+  `codex/renderer-batch-submission-plan` from `master` at
+  `0c9b2b6 docs: mark step 186 merged`.
+- Baseline Windows targeted tests passed 2/2:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
+- Baseline WSL targeted tests passed 1/1:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-batch-submission-plan -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+- RED coverage:
+  `vulkan_solid_rect_test/default` failed as expected on missing
+  `RendererSubmissionPlanRecord`, `RendererCommandReport::submission_plan_records`,
+  and submission-plan counters.
+- GREEN adds public submission-plan key/record types, submission-plan vectors
+  and counters on `RendererCommandReport`, and Vulkan report construction that
+  maps renderer command batches into deterministic submission groups by
+  primitive, clip stack, optional glyph atlas page, and pipeline descriptor.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-batch-submission-plan -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1 for the available Linux target subset.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-batch-submission-plan -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-batch-submission-plan -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 187 as
+  `6f9a399 feat: add renderer submission plan records` and fast-forward merged
+  it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1 for the available Linux target subset.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 187 is marked merged and post-merge verified. Step
+  188, renderer frame snapshot report, is the next implementation slice after
+  docs closeout and cleanup.

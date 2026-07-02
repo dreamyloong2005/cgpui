@@ -202,11 +202,15 @@
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED coverage for GPU-submission-plan records built from renderer command batches.
-- [ ] Expected RED: batches are diagnostics only and cannot form stable submission groups.
-- [ ] GREEN: add deterministic submission-plan records grouped by primitive, clip stack, atlas page, and pipeline descriptor.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `core_header_cleanliness/default`.
+- [x] Add RED coverage for GPU-submission-plan records built from renderer command batches.
+- [x] Expected RED: batches are diagnostics only and cannot form stable submission groups.
+- [x] GREEN: add deterministic submission-plan records grouped by primitive, clip stack, atlas page, and pipeline descriptor.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `core_header_cleanliness/default`.
+
+**Merged:** `6f9a399 feat: add renderer submission plan records`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 1/1,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 188: Renderer Frame Snapshot Report
 

@@ -3290,3 +3290,18 @@
   different ancestors remain distinguishable.
 - This remains diagnostics/reporting work. It does not implement real Vulkan
   transform stack emission, opacity compositing, or GPU pipeline state changes.
+
+## 2026-07-03 Renderer Batch Submission Plan Records
+
+- Step 187 adds renderer submission-plan records on `RendererCommandReport`
+  that summarize command batches into deterministic submission groups.
+- Submission plan keys preserve primitive kind, current clip, clip stack, and
+  optional glyph atlas page index. Text submissions are split by atlas page and
+  carry the current text sampler pipeline descriptor, while non-text
+  submissions carry primitive-specific pipeline descriptors.
+- Reports now expose submission record count, command count, and glyph quad
+  count so later frame snapshots can summarize planned GPU work without
+  re-walking raw command batches.
+- This remains a deterministic planning/reporting slice. It does not allocate
+  Vulkan command buffers, descriptor sets, render passes, pipeline objects, or
+  submit work to a GPU queue.
