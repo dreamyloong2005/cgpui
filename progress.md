@@ -6798,3 +6798,60 @@
   this progress log so Step 198 is marked merged and post-merge verified. Step
   199, Wayland clipboard ownership and send offers, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-03 Step 199 Wayland Clipboard Ownership And Send Offers
+
+- Continued `.worktrees/wayland-clipboard-ownership` on
+  `codex/wayland-clipboard-ownership` from `master` at
+  `6d9a9b5 docs: mark step 198 merged`.
+- Baseline targeted tests had already passed on WSL Arch Linux, and the
+  Windows `clipboard_test/default` retry passed after an initial transient
+  system-clipboard failure in the handoff state.
+- Added RED coverage in `tests/platform/clipboard_test.cpp` requiring
+  `WaylandClipboard::write_text(...)` on a connected display to create a
+  client-owned selection, offer `text/plain;charset=utf-8` and `text/plain`,
+  and send the UTF-8 payload when the test compositor requests it. The test
+  compiled and failed as expected at the compositor wait for client selection
+  ownership because writes were still memory-only.
+- GREEN adds `wl_data_source` ownership in `src/platform/clipboard.cpp`,
+  offering UTF-8/plain text MIME types, installing the source with
+  `wl_data_device_set_selection`, and running a bounded dispatch loop so
+  compositor `send` events can be answered after `write_text(...)` returns.
+  `WaylandClipboard` still writes the memory fallback for local read-back and
+  unsupported/no-seat cases.
+- The Wayland test compositor now records client-created `wl_data_source`
+  offers, observes `wl_data_device.set_selection`, exposes selected MIME types
+  to tests, and can request the selected source payload through
+  `wl_data_source_send_send` plus a pipe read.
+- Verified feature-worktree targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-ownership -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux, and
+  `xmake test -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3 on Windows.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-ownership -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 199 as
+  `96a5afa feat: add wayland clipboard ownership` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Post-merge Windows full debug initially failed only
+  `clipboard_test/default`; a targeted rerun of that test passed 1/1, and the
+  full-suite rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 199 is marked merged and post-merge verified. Step
+  200, Wayland drag action negotiation, is the next implementation slice after
+  docs closeout and cleanup.

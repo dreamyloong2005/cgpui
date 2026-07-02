@@ -446,16 +446,22 @@ targeted rerun and full-suite rerun.
 **Worktree:** `.worktrees/wayland-clipboard-ownership`
 
 **Files:**
-- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `src/platform/clipboard.cpp`
 - Modify: `tests/platform/clipboard_test.cpp`
 - Modify: `tests/platform/wayland_test_compositor.cpp`
 - Modify: `tests/platform/wayland_test_compositor.hpp`
 
-- [ ] Add RED coverage for Wayland clipboard write ownership and compositor-side payload receive.
-- [ ] Expected RED: Wayland clipboard can read offers but writes fall back to memory-only behavior.
-- [ ] GREEN: add data-source ownership, offered text MIME types, and deterministic send path in the test compositor.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-ownership -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default`.
+- [x] Add RED coverage for Wayland clipboard write ownership and compositor-side payload receive.
+- [x] Expected RED: Wayland clipboard can read offers but writes fall back to memory-only behavior.
+- [x] GREEN: add data-source ownership, offered text MIME types, and deterministic send path in the test compositor.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-ownership -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
+- [x] Windows available-target command: `xmake test -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default`.
+
+**Merged:** `96a5afa feat: add wayland clipboard ownership`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30 after a
+transient `clipboard_test/default` failure was isolated with a passing targeted
+rerun and passing full-suite rerun.
 
 ## Step 200: Wayland Drag Action Negotiation
 

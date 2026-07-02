@@ -1,5 +1,29 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Wayland Clipboard Ownership And Send Offers
+
+- Step 199 promotes standalone `WaylandClipboard::Connection::write_text(...)`
+  from memory fallback to a real Wayland selection owner when connected to an
+  available data device. It creates a `wl_data_source`, offers
+  `text/plain;charset=utf-8` and `text/plain`, and installs it with
+  `wl_data_device_set_selection`.
+- The clipboard connection keeps a small dispatch loop alive while it owns a
+  source so compositor `wl_data_source.send` events can be received after
+  `write_text(...)` returns. The send callback copies the current owned UTF-8
+  payload under a mutex and writes it to the compositor-provided fd.
+- `MemoryClipboard` remains the fallback/read-back path, so unsupported,
+  no-seat, or failed protocol write cases keep the existing local clipboard
+  contract while connected Wayland displays now have a protocol-backed write
+  path.
+- The Wayland test compositor now models both directions of clipboard data:
+  compositor-owned `wl_data_offer` payloads for reads, and client-owned
+  `wl_data_source` selection with offered MIME types and deterministic payload
+  requests for writes.
+- This slice still does not implement non-text formats, serial policy beyond
+  the deterministic test path, clipboard manager persistence after process
+  exit, or richer desktop edge cases. Step 200 moves to Wayland drag action
+  negotiation rather than expanding clipboard formats.
+
 ## 2026-07-03 Text Soft Wrap Layout Records
 
 - Step 198 adds `TextWrapLine`, `TextWrapLayout`, and

@@ -719,7 +719,7 @@ follow-on goal is now complete on the Windows/Linux track.
 196. [x] Text measurement cache.
 197. [x] Text pointer selection geometry.
 198. [x] Soft wrap layout records.
-199. [ ] Wayland clipboard ownership and send offers.
+199. [x] Wayland clipboard ownership and send offers.
 200. [ ] Wayland drag action negotiation.
 201. [ ] Wayland cursor theme image state.
 202. [ ] Wayland XDG configure lifecycle state.
@@ -745,11 +745,32 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 198, soft wrap layout records, is merged on `master` at
-`02b534c feat: add text soft wrap records` and post-merge verified on Windows
-and WSL Arch Linux. Step 199, Wayland clipboard ownership and send offers, is
-the next implementation slice. The track remains Windows/Linux first;
+Step 199, Wayland clipboard ownership and send offers, is merged on `master`
+at `96a5afa feat: add wayland clipboard ownership` and post-merge verified on
+Windows and WSL Arch Linux. Step 200, Wayland drag action negotiation, is the
+next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 199, Wayland clipboard ownership and send offers, is merged on `master`
+at `96a5afa feat: add wayland clipboard ownership`. RED failed as expected on
+the new Wayland clipboard write test waiting for a client-owned selection:
+`write_text(...)` still wrote only to memory fallback, so the test compositor
+never observed `wl_data_device.set_selection`. GREEN adds a real
+`wl_data_source` ownership path in `WaylandClipboard::Connection`, offers
+`text/plain;charset=utf-8` and `text/plain`, owns the selection through
+`wl_data_device_set_selection`, and keeps a small dispatch loop alive so the
+source can answer compositor `send` requests with the current UTF-8 payload.
+The Wayland test compositor now records client-created data sources, offered
+MIME types, selected sources, and deterministic payload reads through
+`wl_data_source_send_send`. Feature-worktree targeted tests passed 3/3 on
+Windows and WSL Arch Linux, `git diff --check` reported only expected CRLF
+warnings, WSL full debug passed 27/27, and Windows full debug passed 30/30.
+Post-merge targeted tests passed 3/3 on Windows and WSL Arch Linux,
+`git diff --check` produced no output, WSL full debug passed 27/27, and the
+Windows full debug gate passed 30/30 after isolating one transient
+`clipboard_test/default` failure with a passing targeted rerun and a passing
+full-suite rerun. Step 200, Wayland drag action negotiation, is the next
+implementation slice.
 
 Step 198, soft wrap layout records, is merged on `master` at
 `02b534c feat: add text soft wrap records`. RED failed as expected on missing
