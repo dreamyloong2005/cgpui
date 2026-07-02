@@ -6855,3 +6855,55 @@
   this progress log so Step 199 is marked merged and post-merge verified. Step
   200, Wayland drag action negotiation, is the next implementation slice after
   docs closeout and cleanup.
+
+## 2026-07-03 Step 200 Wayland Drag Action Negotiation
+
+- Continued `.worktrees/wayland-dnd-actions` on
+  `codex/wayland-dnd-actions` from `master` at
+  `9f3bca4 docs: mark step 199 merged`.
+- Baseline targeted tests had already passed in the handoff state on WSL Arch
+  Linux and Windows available targets.
+- Added RED coverage in `tests/platform/wayland_pointer_button_test.cpp`,
+  `tests/platform/wayland_test_compositor.*`, `tests/ui/window_runtime_test.cpp`,
+  and `tests/header_cleanliness/core_header_cleanliness.cpp` requiring public
+  drag action metadata plus Wayland drag `accept`, `set_actions`, and `finish`
+  records. The targeted WSL run failed as expected because
+  `cgpui::DragDropAction` and drag-event `.action` fields did not exist.
+- GREEN adds `DragDropAction::{none, copy, move}` to public drag events, makes
+  `WaylandDataDevice` record offer source/selected actions, accepts the
+  preferred supported MIME type, advertises copy/move destination actions, and
+  finishes the active offer after drop payload extraction.
+- The Wayland test compositor now sends source and selected DnD action events
+  and records client offer `accept`, `set_actions`, and `finish` requests so
+  copy/move negotiation is test-visible.
+- Verified feature-worktree targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-actions -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux, and
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4 on Windows.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-actions -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 200 as
+  `d45061c feat: add wayland drag action negotiation` and fast-forward merged
+  it to `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 5/5.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 200 is marked merged and post-merge verified. Step
+  201, Wayland cursor theme image state, is the next implementation slice after
+  docs closeout and cleanup.

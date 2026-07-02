@@ -475,11 +475,15 @@ rerun and passing full-suite rerun.
 - Modify: `tests/platform/wayland_test_compositor.hpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for copy/move/none drag action negotiation and finish records.
-- [ ] Expected RED: drag payload extraction exists but accept/finish/action state is missing.
-- [ ] GREEN: track offered actions, selected action, accept calls, drop finish, and public drag action metadata.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-actions -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] Add RED coverage for copy/move/none drag action negotiation and finish records.
+- [x] Expected RED: drag payload extraction exists but accept/finish/action state is missing.
+- [x] GREEN: track offered actions, selected action, accept calls, drop finish, and public drag action metadata.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-actions -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
+- [x] Windows available-target command: `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+
+**Merged:** `d45061c feat: add wayland drag action negotiation`.
+**Post-merge verification:** WSL targeted 5/5, Windows targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 201: Wayland Cursor Theme Image State
 

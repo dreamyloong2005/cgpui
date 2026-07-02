@@ -720,7 +720,7 @@ follow-on goal is now complete on the Windows/Linux track.
 197. [x] Text pointer selection geometry.
 198. [x] Soft wrap layout records.
 199. [x] Wayland clipboard ownership and send offers.
-200. [ ] Wayland drag action negotiation.
+200. [x] Wayland drag action negotiation.
 201. [ ] Wayland cursor theme image state.
 202. [ ] Wayland XDG configure lifecycle state.
 203. [ ] Win32 OLE drop target skeleton.
@@ -745,11 +745,28 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 199, Wayland clipboard ownership and send offers, is merged on `master`
-at `96a5afa feat: add wayland clipboard ownership` and post-merge verified on
-Windows and WSL Arch Linux. Step 200, Wayland drag action negotiation, is the
+Step 200, Wayland drag action negotiation, is merged on `master` at
+`d45061c feat: add wayland drag action negotiation` and post-merge verified on
+Windows and WSL Arch Linux. Step 201, Wayland cursor theme image state, is the
 next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 200, Wayland drag action negotiation, is merged on `master` at
+`d45061c feat: add wayland drag action negotiation`. RED failed as expected on
+missing public `DragDropAction` metadata and drag-event `.action` fields.
+GREEN adds `DragDropAction::{none, copy, move}` to public drag events, records
+Wayland `wl_data_offer.source_actions` and `action`, accepts the preferred
+payload MIME type, advertises destination copy/move actions with
+`wl_data_offer_set_actions`, and calls `wl_data_offer_finish` after drop
+payload extraction. The Wayland test compositor now records drag offer
+`accept`, `set_actions`, and `finish` requests while emitting source and
+selected action events for copy/move coverage. Feature-worktree targeted tests
+passed 5/5 on WSL Arch Linux and 4/4 on Windows, `git diff --check` exited 0
+with only expected CRLF warnings, WSL full debug passed 27/27, and Windows
+full debug passed 30/30. Post-merge targeted tests passed 5/5 on WSL Arch
+Linux and 4/4 on Windows, `git diff --check` produced no output, WSL full
+debug passed 27/27, and Windows full debug passed 30/30. Step 201, Wayland
+cursor theme image state, is the next implementation slice.
 
 Step 199, Wayland clipboard ownership and send offers, is merged on `master`
 at `96a5afa feat: add wayland clipboard ownership`. RED failed as expected on

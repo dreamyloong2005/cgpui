@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Wayland Drag Action Negotiation
+
+- Step 200 adds public `DragDropAction::{none, copy, move}` metadata to
+  `DragEntered`, `DragUpdated`, `DragDropped`, and `DragExited`, keeping the
+  default action as `none` for existing call sites.
+- `WaylandDataDevice` now records `wl_data_offer.source_actions` and
+  `wl_data_offer.action`, accepts the preferred supported MIME type, advertises
+  destination copy/move support through `wl_data_offer_set_actions`, and calls
+  `wl_data_offer_finish` after drop payload extraction.
+- The Wayland test compositor now sends source/selected DnD action events and
+  records client-side `accept`, `set_actions`, and `finish` requests. The
+  platform test covers text move and URI-list copy flows, while the runtime
+  test verifies action metadata survives normal event routing.
+- The slice intentionally maps only Wayland copy/move/none into the public API.
+  Wayland ask actions, richer drag-effect policy, non-local URI handling, and
+  production shell edge cases remain future platform-depth work.
+
 ## 2026-07-03 Wayland Clipboard Ownership And Send Offers
 
 - Step 199 promotes standalone `WaylandClipboard::Connection::write_text(...)`
