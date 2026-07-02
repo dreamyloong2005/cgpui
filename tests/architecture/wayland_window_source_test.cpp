@@ -173,6 +173,18 @@ int main() {
       !contains(text, "window_->update_accessibility_tree(std::move(update))")) {
     return 66;
   }
+  if (!contains(text, "struct WaylandAtspiObjectNode") ||
+      !contains(text, "atspi_object_nodes_") ||
+      !contains(text, "atspi_object_nodes()") ||
+      !contains(text, "std::string object_path") ||
+      !contains(text, "atspi_object_path_for(") ||
+      !contains(text, "\"/org/a11y/atspi/accessible/\"") ||
+      !contains(text, "role = node.role") ||
+      !contains(text, "name = node.name") ||
+      !contains(text, "text = node.text") ||
+      !contains(text, "focused = node.focused")) {
+    return 75;
+  }
   if (!contains(text, "WaylandDataDevice") ||
       !contains(text, "wl_data_device_manager_get_data_device") ||
       !contains(text, "DragEntered{")) {
