@@ -153,6 +153,10 @@ int main() {
       "H\xE4\xB8\xAD",
       cgpui::FontDescriptor{.family = "Header"},
       18.0F);
+  const std::vector<cgpui::TextGlyphPaint> header_glyphs =
+      cgpui::text_glyph_paint_metadata(shape_run);
+  const cgpui::RasterizedGlyph header_rasterized =
+      cgpui::rasterize_fallback_glyph(header_glyphs[0]);
   cgpui::ScrollModel scroll_model;
   cgpui::ElementTree element_tree;
   const cgpui::ElementId header_root_id =
@@ -425,6 +429,9 @@ int main() {
                  text.glyphs[0].advance == 9.0F &&
                  shape_run.glyph_count() == 2 &&
                  shape_run.total_advance == 18.0F &&
+                 !header_rasterized.bitmap.empty() &&
+                 header_rasterized.bitmap.width == 9 &&
+                 header_rasterized.key.font_family == "Header" &&
                  selection.range.start == 1 && selection.range.end == 3 &&
                  selection.rect.size.width == 5.0F &&
                  caret.byte_offset == 3 && caret.rect.size.width == 1.0F &&

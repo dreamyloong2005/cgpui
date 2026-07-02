@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <algorithm>
 #include <span>
 #include <string>
@@ -124,6 +125,98 @@ struct TextGlyphPaint {
   Point device_origin;
   float device_advance = 0.0F;
 };
+
+struct GlyphBitmap {
+  std::uint32_t width = 0;
+  std::uint32_t height = 0;
+  std::uint32_t stride = 0;
+  std::vector<std::uint8_t> alpha;
+
+  [[nodiscard]] bool empty() const {
+    return width == 0 || height == 0 || stride == 0 || alpha.empty();
+  }
+
+  [[nodiscard]] std::size_t byte_size() const {
+    return alpha.size();
+  }
+
+  [[nodiscard]] std::uint8_t pixel(
+      std::uint32_t x,
+      std::uint32_t y) const {
+    if (x >= width || y >= height || stride == 0) {
+      return 0;
+    }
+    const std::size_t index =
+        static_cast<std::size_t>(y) * static_cast<std::size_t>(stride) + x;
+    return index < alpha.size() ? alpha[index] : 0;
+  }
+};
+
+struct GlyphRasterizerOptions {
+  std::uint8_t foreground_alpha = 255;
+  std::uint8_t background_alpha = 0;
+  std::uint32_t padding = 1;
+};
+
+struct RasterizedGlyph {
+  GlyphAtlasKey key;
+  GlyphBitmap bitmap;
+  float advance = 0.0F;
+  float device_font_size = 16.0F;
+  float left_bearing = 0.0F;
+  float top_bearing = 0.0F;
+  float baseline = 0.0F;
+};
+
+[[nodiscard]] inline std::uint32_t rasterized_glyph_dimension(float value) {
+  if (value <= 0.0F) {
+    return 1;
+  }
+  return std::max(1U, static_cast<std::uint32_t>(value + 0.5F));
+}
+
+[[nodiscard]] inline RasterizedGlyph rasterize_fallback_glyph(
+    const TextGlyphPaint& glyph,
+    GlyphRasterizerOptions options = {}) {
+  const std::uint32_t width =
+      rasterized_glyph_dimension(glyph.device_advance);
+  const std::uint32_t height =
+      rasterized_glyph_dimension(glyph.key.device_font_size);
+  const std::uint32_t stride = width;
+  std::vector<std::uint8_t> alpha(
+      static_cast<std::size_t>(stride) * static_cast<std::size_t>(height),
+      options.background_alpha);
+
+  const bool can_pad =
+      width > options.padding * 2U && height > options.padding * 2U;
+  for (std::uint32_t y = 0; y < height; ++y) {
+    for (std::uint32_t x = 0; x < width; ++x) {
+      const bool inside = !can_pad ||
+          (x >= options.padding && x + options.padding < width &&
+           y >= options.padding && y + options.padding < height);
+      if (inside) {
+        alpha[static_cast<std::size_t>(y) * stride + x] =
+            options.foreground_alpha;
+      }
+    }
+  }
+
+  return RasterizedGlyph{
+      .key = glyph.key,
+      .bitmap =
+          GlyphBitmap{
+              .width = width,
+              .height = height,
+              .stride = stride,
+              .alpha = std::move(alpha),
+          },
+      .advance = glyph.device_advance,
+      .device_font_size = glyph.key.device_font_size,
+      .left_bearing = 0.0F,
+      .top_bearing = 0.0F,
+      .baseline = glyph.key.device_font_size * 0.8F,
+  };
+}
 
 [[nodiscard]] inline bool is_utf8_continuation_byte(char value) {
   return (static_cast<unsigned char>(value) & 0xC0U) == 0x80U;

@@ -294,6 +294,47 @@ int test_shape_text_produces_deterministic_fallback_glyphs() {
   return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 44;
 }
 
+int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
+  const cgpui::TextShapeRun run = cgpui::shape_text(
+      "A\xE4\xB8\xAD",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(run);
+  if (glyphs.size() != 2) {
+    return 45;
+  }
+
+  const cgpui::RasterizedGlyph rasterized = cgpui::rasterize_fallback_glyph(
+      glyphs[1],
+      cgpui::GlyphRasterizerOptions{.foreground_alpha = 220});
+  if (!(rasterized.key == glyphs[1].key) ||
+      rasterized.key.byte_length != 3 ||
+      rasterized.advance != glyphs[1].device_advance ||
+      rasterized.device_font_size != run.device_font_size) {
+    return 46;
+  }
+  if (rasterized.bitmap.empty() || rasterized.bitmap.width != 10 ||
+      rasterized.bitmap.height != 20 || rasterized.bitmap.stride != 10 ||
+      rasterized.bitmap.byte_size() != 200) {
+    return 47;
+  }
+  if (rasterized.bitmap.pixel(0, 0) != 0 ||
+      rasterized.bitmap.pixel(1, 1) != 220 ||
+      rasterized.bitmap.pixel(9, 19) != 0) {
+    return 48;
+  }
+  if (rasterized.left_bearing != 0.0F || rasterized.top_bearing != 0.0F ||
+      rasterized.baseline != 16.0F) {
+    return 49;
+  }
+
+  const cgpui::RasterizedGlyph rerasterized = cgpui::rasterize_fallback_glyph(
+      glyphs[1],
+      cgpui::GlyphRasterizerOptions{.foreground_alpha = 220});
+  return rerasterized.bitmap.alpha == rasterized.bitmap.alpha ? 0 : 50;
+}
+
 } // namespace
 
 int main() {
@@ -339,6 +380,11 @@ int main() {
     return result;
   }
   if (const int result = test_shape_text_produces_deterministic_fallback_glyphs();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_fallback_glyph_rasterizer_produces_deterministic_bitmap();
       result != 0) {
     return result;
   }

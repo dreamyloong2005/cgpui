@@ -59,6 +59,15 @@ int main() {
       .byte_length = 1,
   };
   const cgpui::GlyphCacheLookup glyph_lookup = glyph_cache.lookup(glyph_key);
+  const cgpui::TextGlyphPaint glyph_paint{
+      .key = glyph_key,
+      .origin = {},
+      .advance = 9.0F,
+      .device_origin = {},
+      .device_advance = 9.0F,
+  };
+  const cgpui::RasterizedGlyph rasterized =
+      cgpui::rasterize_fallback_glyph(glyph_paint);
   glyph_cache.store(cgpui::GlyphAtlasEntry{
       .key = glyph_key,
       .atlas_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
@@ -127,6 +136,8 @@ int main() {
   return state.framebuffer_size.width > 0.0F && !glyph_lookup.hit &&
                  glyph_cache.lookup_count() == 1 &&
                  glyph_cache.entries().size() == 1 &&
+                 !rasterized.bitmap.empty() &&
+                 rasterized.bitmap.width == 9 &&
                  text_draw.glyphs.size() == 1 &&
                  text_draw.metadata.transform.translate_x == 4.0F &&
                  text_draw.clip_rect.has_value() &&
