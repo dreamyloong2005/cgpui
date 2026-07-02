@@ -701,7 +701,7 @@ follow-on goal is now complete on the Windows/Linux track.
 178. [x] Native additional-window creation slice over the multi-window runtime registry.
 179. [x] Vulkan glyph atlas image descriptors and upload-batch planning.
 180. [x] Vulkan glyph atlas texture resource lifetime skeleton.
-181. [ ] Vulkan glyph upload dirty-range tracking.
+181. [x] Vulkan glyph upload dirty-range tracking.
 182. [ ] Vulkan text sampler pipeline descriptor and readiness report.
 183. [ ] Vulkan rounded-rect tessellation records.
 184. [ ] Vulkan text selection and caret geometry records.
@@ -745,12 +745,12 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 180, Vulkan glyph atlas texture resource lifetime skeleton, is merged on
-`master` at `8446fb7 feat: add glyph atlas texture resource state` and
-post-merge verified on Windows and WSL Arch Linux. Step 181, Vulkan glyph
-upload dirty-range tracking, is the next implementation slice. The track
-remains Windows/Linux first; macOS/Cocoa + Metal is still deferred to a
-separate parity run.
+Step 181, Vulkan glyph upload dirty-range tracking, is merged on `master` at
+`3844a46 feat: add glyph atlas dirty upload ranges` and post-merge verified on
+Windows and WSL Arch Linux. Step 182, Vulkan text sampler pipeline descriptor
+and readiness report, is the next implementation slice. The track remains
+Windows/Linux first; macOS/Cocoa + Metal is still deferred to a separate
+parity run.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -3206,3 +3206,15 @@
   `VkImage`, `VkImageView`, device memory, staging buffers, descriptor sets, or
   transfer commands. Step 181 should build dirty-range upload tracking on top
   of this page-level resource state.
+
+## 2026-07-02 Vulkan Glyph Atlas Dirty Upload Ranges
+
+- Step 181 adds deterministic dirty upload ranges over Step 179 upload batches
+  and Step 180 texture resource state. The range planner uses each live page's
+  uploaded count to skip already-planned glyph regions.
+- Dirty ranges are coalesced per atlas page into byte spans over the upload
+  batch alpha buffer. Repeating the same batch emits no ranges; adding one
+  glyph emits a range starting at that glyph's upload index and byte offset.
+- This remains CPU-side upload planning. It does not allocate staging buffers,
+  record Vulkan transfer commands, transition image layouts, or update
+  descriptor sets.

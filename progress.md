@@ -5829,3 +5829,59 @@
   this progress log so Step 180 is marked merged and post-merge verified. Step
   181, Vulkan glyph upload dirty-range tracking, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 181 Vulkan Glyph Upload Dirty-Range Tracking
+
+- Created `.worktrees/vulkan-glyph-upload-dirty-ranges` on
+  `codex/vulkan-glyph-upload-dirty-ranges` from `master` at
+  `80099f3 docs: mark step 180 merged`.
+- Baseline Windows targeted tests passed 2/2:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
+- Baseline WSL targeted test passed 1/1:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-upload-dirty-ranges -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+- RED coverage:
+  `vulkan_solid_rect_test/default` failed as expected on missing
+  `GlyphAtlasDirtyUploadRange` and
+  `vulkan_plan_glyph_atlas_dirty_uploads(...)`.
+- GREEN adds page-coalesced dirty upload range records over atlas upload
+  batches. The planner uses `GlyphAtlasTextureResourceState` upload counts so
+  repeated batches emit no new ranges, while later glyph allocations emit only
+  the newly added upload byte span.
+- Updated `core_header_cleanliness/default` to instantiate the new public
+  dirty upload range record without linking Vulkan implementation functions.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Verified feature-worktree WSL targeted test:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-upload-dirty-ranges -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-upload-dirty-ranges -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-upload-dirty-ranges -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 181 as
+  `3844a46 feat: add glyph atlas dirty upload ranges` and fast-forward merged
+  it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted test:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 181 is marked merged and post-merge verified. Step
+  182, Vulkan text sampler pipeline descriptor and readiness report, is the
+  next implementation slice after docs closeout and cleanup.

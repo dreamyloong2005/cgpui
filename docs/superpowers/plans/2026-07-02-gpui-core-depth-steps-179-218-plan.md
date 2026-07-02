@@ -72,11 +72,15 @@
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED coverage proving repeated text draws only upload newly allocated glyph regions.
-- [ ] Expected RED: upload diagnostics count every glyph each report instead of dirty ranges.
-- [ ] GREEN: add dirty-range coalescing per atlas page and expose deterministic upload-range diagnostics.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `core_header_cleanliness/default`.
+- [x] Add RED coverage proving repeated text draws only upload newly allocated glyph regions.
+- [x] Expected RED: upload diagnostics count every glyph each report instead of dirty ranges.
+- [x] GREEN: add dirty-range coalescing per atlas page and expose deterministic upload-range diagnostics.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `core_header_cleanliness/default`.
+
+**Merged:** `3844a46 feat: add glyph atlas dirty upload ranges`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 1/1,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 182: Vulkan Text Sampler Pipeline Descriptor
 
