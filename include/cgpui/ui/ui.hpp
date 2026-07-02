@@ -838,6 +838,7 @@ class WindowRuntime {
   void handle_wakeup();
   void drain_deferred_callbacks();
   void fire_due_timers();
+  void update_platform_accessibility_tree();
   [[nodiscard]] bool task_active(TaskId id) const;
   [[nodiscard]] bool task_complete(TaskId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);

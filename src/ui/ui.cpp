@@ -58,6 +58,54 @@ EventKind event_kind_for(const PlatformEvent& event) {
   return EventKind::unknown;
 }
 
+PlatformAccessibilityRole platform_accessibility_role(
+    AccessibilityRole role) {
+  switch (role) {
+    case AccessibilityRole::label:
+      return PlatformAccessibilityRole::label;
+    case AccessibilityRole::button:
+      return PlatformAccessibilityRole::button;
+    case AccessibilityRole::text:
+      return PlatformAccessibilityRole::text;
+    case AccessibilityRole::text_input:
+      return PlatformAccessibilityRole::text_input;
+    case AccessibilityRole::generic:
+      return PlatformAccessibilityRole::generic;
+  }
+  return PlatformAccessibilityRole::generic;
+}
+
+PlatformAccessibilityTreeUpdate platform_accessibility_update_from(
+    const AccessibilityTreeSnapshot& snapshot) {
+  PlatformAccessibilityTreeUpdate update{
+      .root_element_id = snapshot.root_element_id.value,
+      .node_count = snapshot.nodes.size(),
+  };
+  update.nodes.reserve(snapshot.nodes.size());
+  for (const AccessibilityNode& node : snapshot.nodes) {
+    if (node.focused) {
+      update.focused_node_count += 1;
+    }
+    std::optional<std::uint64_t> parent_id;
+    if (node.parent_element_id.has_value()) {
+      parent_id = node.parent_element_id->value;
+    }
+    update.nodes.push_back(PlatformAccessibilityNodeUpdate{
+        .element_id = node.element_id.value,
+        .parent_element_id = parent_id,
+        .role = platform_accessibility_role(node.role),
+        .name = node.name,
+        .text = node.text,
+        .enabled = node.enabled,
+        .focusable = node.focusable,
+        .focused = node.focused,
+        .bounds = node.bounds,
+        .child_count = node.children.size(),
+    });
+  }
+  return update;
+}
+
 std::optional<Point> pointer_position_for(const PlatformEvent& event) {
   if (const auto* moved = std::get_if<PointerMoved>(&event);
       moved != nullptr) {
@@ -1265,6 +1313,7 @@ void WindowRuntime::handle_redraw() {
     });
     frame_statistics.layout_pass_count += 1;
   }
+  update_platform_accessibility_tree();
   apply_focused_text_ime_placement();
 
   auto result = render_view(
@@ -2273,6 +2322,14 @@ void WindowRuntime::fire_due_timers() {
     }
   }
   firing_timers_ = false;
+}
+
+void WindowRuntime::update_platform_accessibility_tree() {
+  if (window_ == nullptr || owned_element_tree_ == nullptr) {
+    return;
+  }
+  window_->update_accessibility_tree(
+      platform_accessibility_update_from(accessibility_snapshot()));
 }
 
 bool WindowRuntime::task_active(TaskId id) const {

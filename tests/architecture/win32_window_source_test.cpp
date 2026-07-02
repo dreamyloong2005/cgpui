@@ -145,6 +145,13 @@ int main() {
       !contains(win32_text, "DragDropPayloadKind::files")) {
     return 52;
   }
+  if (!contains(win32_text, "Win32UiaAccessibilityAdapter") ||
+      !contains(win32_text, "PlatformAccessibilityTreeUpdate") ||
+      !contains(win32_text, "update_accessibility_tree(") ||
+      !contains(win32_text, "focused_node_count") ||
+      !contains(win32_text, "PlatformAccessibilityRole::text_input")) {
+    return 56;
+  }
   if (!contains(win32_text, "DragEntered{") ||
       !contains(win32_text, "DragUpdated{") ||
       !contains(win32_text, "DragDropped{") ||

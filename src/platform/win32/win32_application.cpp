@@ -130,6 +130,45 @@ Point drag_position_from_test_hook(const Win32TestDragDropPayload* payload) {
   return Point{.x = payload->x, .y = payload->y};
 }
 
+class Win32UiaAccessibilityAdapter {
+ public:
+  void update(PlatformAccessibilityTreeUpdate update) {
+    last_update_ = std::move(update);
+    root_element_id_ = last_update_.root_element_id;
+    node_count_ = last_update_.node_count;
+    focused_node_count_ = last_update_.focused_node_count;
+    text_input_node_count_ = 0;
+    for (const PlatformAccessibilityNodeUpdate& node : last_update_.nodes) {
+      if (node.role == PlatformAccessibilityRole::text_input) {
+        text_input_node_count_ += 1;
+      }
+    }
+  }
+
+  [[nodiscard]] std::uint64_t root_element_id() const {
+    return root_element_id_;
+  }
+
+  [[nodiscard]] std::size_t node_count() const {
+    return node_count_;
+  }
+
+  [[nodiscard]] std::size_t focused_node_count() const {
+    return focused_node_count_;
+  }
+
+  [[nodiscard]] std::size_t text_input_node_count() const {
+    return text_input_node_count_;
+  }
+
+ private:
+  PlatformAccessibilityTreeUpdate last_update_;
+  std::uint64_t root_element_id_ = 0;
+  std::size_t node_count_ = 0;
+  std::size_t focused_node_count_ = 0;
+  std::size_t text_input_node_count_ = 0;
+};
+
 KeyboardModifiers current_modifiers() {
   return KeyboardModifiers{
       .shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0,
@@ -212,6 +251,11 @@ class Win32Window final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override {
     state_.ime_text_input_placement = placement;
     apply_ime_text_input_placement();
+  }
+
+  void update_accessibility_tree(
+      PlatformAccessibilityTreeUpdate update) override {
+    uia_accessibility_.update(std::move(update));
   }
 
   void update_size() {
@@ -374,6 +418,7 @@ class Win32Window final : public PlatformWindow {
   HCURSOR current_cursor_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
+  Win32UiaAccessibilityAdapter uia_accessibility_;
 };
 
 LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {

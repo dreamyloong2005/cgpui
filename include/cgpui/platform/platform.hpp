@@ -11,15 +11,40 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 namespace cgpui {
 
 class FontDatabase;
 
+enum class PlatformAccessibilityRole {
+  generic,
+  label,
+  button,
+  text,
+  text_input,
+};
+
+struct PlatformAccessibilityNodeUpdate {
+  std::uint64_t element_id = 0;
+  std::optional<std::uint64_t> parent_element_id;
+  PlatformAccessibilityRole role = PlatformAccessibilityRole::generic;
+  std::string name;
+  std::string text;
+  bool enabled = true;
+  bool focusable = false;
+  bool focused = false;
+  std::optional<Rect> bounds;
+  std::size_t child_count = 0;
+};
+
 struct PlatformAccessibilityTreeUpdate {
   std::uint64_t root_element_id = 0;
   std::size_t node_count = 0;
+  std::size_t focused_node_count = 0;
+  std::vector<PlatformAccessibilityNodeUpdate> nodes;
 };
 
 class PlatformWindow {

@@ -143,6 +143,19 @@ int main() {
   cgpui::PlatformAccessibilityTreeUpdate accessibility_update{
       .root_element_id = 2,
       .node_count = 3,
+      .focused_node_count = 1,
+      .nodes =
+          {
+              cgpui::PlatformAccessibilityNodeUpdate{
+                  .element_id = 2,
+                  .role = cgpui::PlatformAccessibilityRole::text_input,
+                  .name = "Input",
+                  .text = "value",
+                  .focusable = true,
+                  .focused = true,
+                  .child_count = 0,
+              },
+          },
   };
 
   cgpui::Win32SurfaceHandle win32_surface;
@@ -169,7 +182,10 @@ int main() {
                  report.command_count() == 2 &&
                  report.unsupported_commands[0].message == "text_caret" &&
                  accessibility_update.root_element_id == 2 &&
-                 accessibility_update.node_count == 3
+                 accessibility_update.node_count == 3 &&
+                 accessibility_update.focused_node_count == 1 &&
+                 accessibility_update.nodes[0].role ==
+                     cgpui::PlatformAccessibilityRole::text_input
              ? 0
              : 1;
 }

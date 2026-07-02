@@ -4,6 +4,7 @@
 #include "cgpui/ui/text.hpp"
 #include "cgpui/ui/ui.hpp"
 
+#include <algorithm>
 #include <expected>
 #include <memory>
 #include <optional>
@@ -1197,6 +1198,12 @@ class FakeWindow final : public cgpui::PlatformWindow {
     ime_placement_history.push_back(placement);
   }
 
+  void update_accessibility_tree(
+      cgpui::PlatformAccessibilityTreeUpdate update) override {
+    accessibility_update_count += 1;
+    last_accessibility_update = std::move(update);
+  }
+
   void dispatch_resize(cgpui::Size size, cgpui::DpiScale scale) {
     state_.framebuffer_size = size;
     state_.scale = scale;
@@ -1210,8 +1217,11 @@ class FakeWindow final : public cgpui::PlatformWindow {
   int request_close_count = 0;
   int set_cursor_count = 0;
   int ime_placement_count = 0;
+  int accessibility_update_count = 0;
   cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
   std::optional<cgpui::ImeTextInputPlacement> last_ime_placement;
+  std::optional<cgpui::PlatformAccessibilityTreeUpdate>
+      last_accessibility_update;
   std::vector<std::optional<cgpui::ImeTextInputPlacement>>
       ime_placement_history;
   std::string_view last_title;
@@ -1289,6 +1299,10 @@ class FakeApplication final : public cgpui::PlatformApplication {
     void set_ime_text_input_placement(
         std::optional<cgpui::ImeTextInputPlacement> placement) override {
       window_.set_ime_text_input_placement(placement);
+    }
+    void update_accessibility_tree(
+        cgpui::PlatformAccessibilityTreeUpdate update) override {
+      window_.update_accessibility_tree(std::move(update));
     }
 
    private:
@@ -7308,6 +7322,78 @@ int test_runtime_accessibility_snapshot_uses_keyboard_focus_owner() {
   return 0;
 }
 
+int test_runtime_sends_accessibility_snapshot_summary_to_platform_window() {
+  RuntimeFixture fixture;
+  cgpui::TextModel model("query");
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(cgpui::into_element(cgpui::v_stack()));
+  const cgpui::ElementId label_id =
+      tree->append_child(root_id, cgpui::label("Search").build());
+  const cgpui::ElementId input_id =
+      tree->append_child(root_id, cgpui::text_input(model).build());
+  (void)label_id;
+  (void)input_id;
+  fixture.app.on_run = +[] {};
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  if (result != 0) {
+    return 326;
+  }
+  if (fixture.window.accessibility_update_count != 1 ||
+      !fixture.window.last_accessibility_update.has_value()) {
+    return 327;
+  }
+
+  const cgpui::PlatformAccessibilityTreeUpdate& update =
+      *fixture.window.last_accessibility_update;
+  if (update.root_element_id == 0 || update.node_count != 3 ||
+      update.nodes.size() != 3 || update.focused_node_count != 0) {
+    return 328;
+  }
+
+  const auto label = std::ranges::find_if(
+      update.nodes,
+      [](const cgpui::PlatformAccessibilityNodeUpdate& node) {
+        return node.role == cgpui::PlatformAccessibilityRole::label &&
+               node.name == "Search";
+      });
+  if (label == update.nodes.end() || label->element_id == 0 ||
+      !label->parent_element_id.has_value() || label->child_count != 0 ||
+      label->focused) {
+    return 329;
+  }
+
+  const auto input = std::ranges::find_if(
+      update.nodes,
+      [](const cgpui::PlatformAccessibilityNodeUpdate& node) {
+        return node.role == cgpui::PlatformAccessibilityRole::text_input &&
+               node.name == "query" && node.text == "query";
+      });
+  if (input == update.nodes.end() || input->element_id == 0 ||
+      !input->parent_element_id.has_value() || !input->focusable ||
+      input->focused || input->child_count != 0) {
+    return 330;
+  }
+
+  const cgpui::PlatformAccessibilityNodeUpdate& root = update.nodes.front();
+  if (root.element_id != update.root_element_id ||
+      root.role != cgpui::PlatformAccessibilityRole::generic ||
+      root.parent_element_id.has_value() || root.child_count != 2) {
+    return 331;
+  }
+
+  return 0;
+}
+
 int test_runtime_applies_focused_text_ime_rect_to_platform_window() {
   RuntimeFixture fixture;
   ime_rect_fixture = &fixture;
@@ -8077,6 +8163,11 @@ int main() {
   }
   if (const int result =
           test_runtime_accessibility_snapshot_uses_keyboard_focus_owner();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_sends_accessibility_snapshot_summary_to_platform_window();
       result != 0) {
     return result;
   }
