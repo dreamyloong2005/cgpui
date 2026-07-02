@@ -653,7 +653,7 @@ follow-on goal is now complete on the Windows/Linux track.
 167. [x] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 168. [x] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 169. [x] Glyph bitmap/raster data model and deterministic fallback glyph rasterizer.
-170. [ ] Glyph atlas page allocation, slot packing, and upload-record API.
+170. [x] Glyph atlas page allocation, slot packing, and upload-record API.
 171. [ ] Vulkan textured glyph quad command generation from atlas entries.
 172. [ ] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
 173. [ ] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
@@ -665,19 +665,19 @@ follow-on goal is now complete on the Windows/Linux track.
 
 ## Active Step
 
-Current handoff: Step 169, glyph bitmap/raster data model and deterministic
-fallback glyph rasterizer, is merged on `master` at
-`2805ed5 feat: add fallback glyph raster data` and post-merge verified on
+Current handoff: Step 170, glyph atlas page allocation, slot packing, and
+upload-record API, is merged on `master` at
+`980ebc7 feat: add glyph atlas upload records` and post-merge verified on
 Windows and WSL Arch Linux. RED failed as expected on missing
-`RasterizedGlyph`, `GlyphRasterizerOptions`, and
-`rasterize_fallback_glyph(...)`. GREEN adds CPU-side `GlyphBitmap`,
-`RasterizedGlyph`, rasterizer options, and deterministic fallback alpha
-bitmaps derived from existing glyph paint metadata. Post-merge targeted
-coverage passed 3/3 on Windows and 3/3 on WSL Arch Linux, `git diff --check`
-produced no output, WSL full debug passed 27/27, and Windows full debug passed
-30/30 after a single isolated `clipboard_test/default` rerun cleared the known
-full-suite clipboard flake. Step 170, glyph atlas page allocation, slot
-packing, and upload-record API, is the next implementation slice.
+`GlyphAtlasAllocation`, `GlyphCache::allocate(...)`, `atlas_pages()`, and
+`upload_records()` APIs. GREEN adds deterministic glyph atlas pages,
+row-packed glyph allocation from `RasterizedGlyph`, upload records carrying
+alpha bitmap bytes, and Vulkan text consumption through fallback rasterized
+glyph allocation without creating Vulkan texture objects yet. Post-merge
+targeted coverage passed 4/4 on Windows and 3/3 on WSL Arch Linux,
+`git diff --check` produced no output, WSL full debug passed 27/27, and
+Windows full debug passed 30/30. Step 171, Vulkan textured glyph quad command
+generation from atlas entries, is the next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -5242,3 +5242,39 @@
   progress log so Step 165 is marked merged and post-merge verified. Step 166,
   accessibility tree skeleton for labels, buttons, text inputs, and focus
   state, is the next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 170 Glyph Atlas Upload Records
+
+- Continued after interruption with Step 170 already implemented in
+  `.worktrees/glyph-atlas-upload-records` on
+  `codex/glyph-atlas-upload-records`.
+- GREEN adds `GlyphAtlasAllocation`, `GlyphUploadRecord`, `GlyphAtlasPage`,
+  `GlyphCache::allocate(...)`, `atlas_pages()`, and `upload_records()`.
+  Allocation row-packs `RasterizedGlyph` bitmaps into deterministic fixed-size
+  atlas pages, stores page-aware atlas entries, and records alpha upload bytes
+  while leaving Vulkan texture object creation for a later slice.
+- Vulkan text consumption now allocates missing glyphs by calling
+  `rasterize_fallback_glyph(...)`, so `TextDraw` advances from cached glyph
+  metadata to uploadable fallback glyph bitmap records.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default text_model_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Committed Step 170 as
+  `980ebc7 feat: add glyph atlas upload records` and fast-forward merged it to
+  `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default text_model_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge WSL Arch Linux targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan, findings, and this
+  progress log so Step 170 is marked merged and post-merge verified. Step 171,
+  Vulkan textured glyph quad command generation from atlas entries, is the
+  next implementation slice after docs closeout and cleanup.

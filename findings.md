@@ -2989,3 +2989,22 @@
 - The `hello_window` xmake target now has one additional platform smoke test on
   each active target: `windows_demo_smoke_flow` and `linux_demo_smoke_flow`.
   This raises full-suite counts to Windows 30/30 and WSL Arch Linux 27/27.
+
+## 2026-07-02 Glyph Atlas Upload Records
+
+- Step 170 keeps glyph upload preparation CPU-side and deterministic:
+  `GlyphCache::allocate(...)` consumes `RasterizedGlyph`, creates fixed-size
+  atlas pages as needed, row-packs glyph bitmaps, and records alpha upload
+  bytes without creating Vulkan texture objects yet.
+- `GlyphAtlasEntry` now carries `page_index`, so renderer-facing cache entries
+  can distinguish atlas pages while preserving existing lookup and store
+  behavior for manually supplied entries.
+- Repeat allocation of an existing glyph is a cache hit for atlas storage:
+  it returns the existing atlas bounds with `created == false` and does not
+  append duplicate upload records.
+- `vulkan_consume_text_draw(...)` now runs missing glyph metadata through
+  `rasterize_fallback_glyph(...)` and atlas allocation, moving the text path
+  beyond placeholder metadata toward uploadable bitmap data.
+- Step 171 can build textured glyph quad records from these atlas entries and
+  upload records; actual GPU texture creation remains a later renderer
+  integration boundary.

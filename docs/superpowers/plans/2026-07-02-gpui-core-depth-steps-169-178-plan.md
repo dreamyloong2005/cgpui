@@ -48,11 +48,12 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 
-- [ ] Add RED coverage for `GlyphAtlasPage`, `GlyphAtlasAllocation`, `GlyphUploadRecord`, and cache allocation from `RasterizedGlyph`.
-- [ ] Expected RED: missing atlas page/allocation/upload record APIs.
-- [ ] GREEN: pack glyph bitmaps into deterministic rows inside fixed-size atlas pages, store atlas UV/device bounds, and record upload byte ranges without creating Vulkan images yet.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same targets under the Step 170 worktree through WSL.
+- [x] Add RED coverage for `GlyphAtlasPage`, `GlyphAtlasAllocation`, `GlyphUploadRecord`, and cache allocation from `RasterizedGlyph`.
+- [x] Expected RED: missing atlas page/allocation/upload record APIs.
+- [x] GREEN: pack glyph bitmaps into deterministic rows inside fixed-size atlas pages, store atlas UV/device bounds, and record upload byte ranges without creating Vulkan images yet.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default text_model_test/default core_header_cleanliness/default ui_header_cleanliness/default` passed 4/4 on Windows after merge.
+- [x] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default core_header_cleanliness/default ui_header_cleanliness/default'` passed 3/3 after merge.
+- [x] Full post-merge verification passed: `git diff --check` produced no output, WSL Arch Linux full debug passed 27/27, and Windows full debug passed 30/30.
 
 ## Step 171: Vulkan Textured Glyph Quad Commands
 
