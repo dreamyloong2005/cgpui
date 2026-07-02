@@ -83,6 +83,7 @@ int run_drag_payload_case(
 
   bool moved = false;
   bool cursor_requested = false;
+  bool hand_cursor_requested = false;
   bool pressed = false;
   bool released = false;
   bool drag_entered = false;
@@ -113,6 +114,10 @@ int run_drag_payload_case(
             drag != nullptr && point_equals(drag->position, expected_position)) {
           drag_entered = payload_matches(drag->payload, expected) &&
                          drag_action_matches(drag->action, expected);
+          if (!hand_cursor_requested && platform_window != nullptr) {
+            platform_window->set_cursor(cgpui::CursorShape::pointing_hand);
+            hand_cursor_requested = true;
+          }
         }
         if (const auto* drag = std::get_if<cgpui::DragUpdated>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
@@ -186,7 +191,7 @@ int run_drag_payload_case(
   if (!compositor.wait_for_pointer_move_sent()) {
     return failure_base + 6;
   }
-  if (!compositor.wait_for_pointer_cursor_set_count(2)) {
+  if (!compositor.wait_for_pointer_cursor_set_count(3)) {
     return failure_base + 12;
   }
   if (!compositor.wait_for_pointer_button_sent()) {
@@ -207,7 +212,7 @@ int run_drag_payload_case(
   if (!moved) {
     return failure_base + 8;
   }
-  if (!cursor_requested) {
+  if (!cursor_requested || !hand_cursor_requested) {
     return failure_base + 11;
   }
   if (!pressed || !released) {

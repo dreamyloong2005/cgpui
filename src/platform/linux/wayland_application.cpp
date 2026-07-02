@@ -691,6 +691,54 @@ class WaylandAtspiAccessibilityAdapter {
   std::size_t text_input_node_count_ = 0;
 };
 
+enum class WaylandCursorThemeLoadStatus {
+  unavailable,
+  loaded,
+};
+
+enum class WaylandCursorImageStatus {
+  cursor_image_unavailable,
+  ready,
+};
+
+struct WaylandCursorImageState {
+  CursorShape shape = CursorShape::default_arrow;
+  std::string cursor_name = "left_ptr";
+  WaylandCursorImageStatus status =
+      WaylandCursorImageStatus::cursor_image_unavailable;
+  std::int32_t hotspot_x = 0;
+  std::int32_t hotspot_y = 0;
+  std::string unavailable_reason;
+};
+
+struct WaylandCursorThemeState {
+  WaylandCursorThemeLoadStatus cursor_theme_status =
+      WaylandCursorThemeLoadStatus::unavailable;
+  WaylandCursorImageState image;
+  std::uint32_t serial = 0;
+  std::uint32_t apply_count = 0;
+};
+
+[[nodiscard]] std::string cursor_name_for_shape(CursorShape shape) {
+  switch (shape) {
+  case CursorShape::default_arrow:
+    return "left_ptr";
+  case CursorShape::pointing_hand:
+    return "hand2";
+  case CursorShape::text:
+    return "xterm";
+  case CursorShape::crosshair:
+    return "crosshair";
+  case CursorShape::resize_left_right:
+    return "sb_h_double_arrow";
+  case CursorShape::resize_up_down:
+    return "sb_v_double_arrow";
+  case CursorShape::not_allowed:
+    return "not-allowed";
+  }
+  return "left_ptr";
+}
+
 class WaylandWindow final : public PlatformWindow {
  public:
   static Result<std::unique_ptr<WaylandWindow>> create(
@@ -2323,10 +2371,27 @@ class WaylandApplication final : public PlatformApplication {
     text_input_.apply_placement(window);
   }
 
+  void record_cursor_theme_state(
+      CursorShape cursor_shape,
+      std::uint32_t serial) {
+    cursor_theme_state_.cursor_theme_status = cursor_theme_status_;
+    cursor_theme_state_.image = WaylandCursorImageState{
+        .shape = cursor_shape,
+        .cursor_name = cursor_name_for_shape(cursor_shape),
+        .status = WaylandCursorImageStatus::cursor_image_unavailable,
+        .hotspot_x = 0,
+        .hotspot_y = 0,
+        .unavailable_reason = "cursor theme image unavailable",
+    };
+    cursor_theme_state_.serial = serial;
+    cursor_theme_state_.apply_count += 1;
+  }
+
   void apply_cursor_for(WaylandWindow* window) {
     if (window == nullptr || pointer_ == nullptr) {
       return;
     }
+    record_cursor_theme_state(window->cursor_shape(), pointer_enter_serial_);
     wl_pointer_set_cursor(pointer_, pointer_enter_serial_, nullptr, 0, 0);
     (void)wl_display_flush(display_);
   }
@@ -2492,6 +2557,9 @@ class WaylandApplication final : public PlatformApplication {
   Point pointer_position_{};
   Point pending_scroll_delta_{};
   std::string initialization_error_;
+  WaylandCursorThemeLoadStatus cursor_theme_status_ =
+      WaylandCursorThemeLoadStatus::unavailable;
+  WaylandCursorThemeState cursor_theme_state_;
   std::uint32_t pointer_enter_serial_ = 0;
   bool pointer_scroll_pending_ = false;
   bool running_ = true;

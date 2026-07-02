@@ -178,6 +178,18 @@ int main() {
       !contains(text, "DragEntered{")) {
     return 64;
   }
+  if (!contains(text, "WaylandCursorThemeState") ||
+      !contains(text, "WaylandCursorThemeLoadStatus") ||
+      !contains(text, "WaylandCursorImageState") ||
+      !contains(text, "cursor_name_for_shape") ||
+      !contains(text, "\"left_ptr\"") ||
+      !contains(text, "\"hand2\"") ||
+      !contains(text, "\"xterm\"") ||
+      !contains(text, "cursor_theme_state_") ||
+      !contains(text, "cursor_theme_status_") ||
+      !contains(text, "cursor_image_unavailable")) {
+    return 68;
+  }
   if (!contains(text, "wakeup_pipe_") ||
       !contains(text, "poll(fds.data()") ||
       !contains(text, "WindowWakeupRequested{}")) {
