@@ -321,6 +321,30 @@ class Win32UiaAccessibilityAdapter {
   std::size_t text_input_node_count_ = 0;
 };
 
+class Win32NativeMenuState {
+ public:
+  PlatformMenuInstallationResult install_native_menu(NativeMenuModel menu) {
+    model_ = std::move(menu);
+    last_menu_installation_ = PlatformMenuInstallationResult{
+        .supported = false,
+        .backend = "win32",
+        .menu_count = model_.items.size(),
+        .item_count = native_menu_item_count(model_),
+        .accelerator_count = native_menu_accelerator_count(model_),
+    };
+    return last_menu_installation_;
+  }
+
+  [[nodiscard]] const PlatformMenuInstallationResult& last_menu_installation()
+      const {
+    return last_menu_installation_;
+  }
+
+ private:
+  NativeMenuModel model_;
+  PlatformMenuInstallationResult last_menu_installation_;
+};
+
 KeyboardModifiers current_modifiers() {
   return KeyboardModifiers{
       .shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0,
@@ -973,6 +997,13 @@ class Win32Application final : public PlatformApplication {
     }
   }
 
+  PlatformMenuInstallationResult install_native_menu(
+      NativeMenuModel menu) override {
+    last_menu_installation_ =
+        native_menu_state_.install_native_menu(std::move(menu));
+    return last_menu_installation_;
+  }
+
   void quit() override {
     running_ = false;
     PostQuitMessage(0);
@@ -1002,6 +1033,8 @@ class Win32Application final : public PlatformApplication {
   HINSTANCE instance_ = nullptr;
   HRESULT ole_initialization_result_ = S_FALSE;
   bool ole_initialized_ = false;
+  Win32NativeMenuState native_menu_state_;
+  PlatformMenuInstallationResult last_menu_installation_;
   DWORD running_thread_id_ = 0;
   bool running_ = true;
   std::vector<Win32Window*> windows_;

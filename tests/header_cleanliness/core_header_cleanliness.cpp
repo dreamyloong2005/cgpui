@@ -274,6 +274,30 @@ int main() {
               },
           },
   };
+  const cgpui::NativeMenuModel native_menu{
+      .items =
+          {
+              cgpui::NativeMenuItem{
+                  .kind = cgpui::NativeMenuItemKind::command,
+                  .title = "Save",
+                  .action_name = "file.save",
+                  .accelerator =
+                      cgpui::NativeMenuAccelerator{
+                          .key_code = 'S',
+                          .modifiers =
+                              cgpui::KeyboardModifiers{.control = true},
+                      },
+              },
+          },
+  };
+  const cgpui::PlatformMenuInstallationResult native_menu_install_result{
+      .supported = true,
+      .backend = "test",
+      .menu_count = native_menu.items.size(),
+      .item_count = cgpui::native_menu_item_count(native_menu),
+      .accelerator_count =
+          cgpui::native_menu_accelerator_count(native_menu),
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -321,7 +345,9 @@ int main() {
                  accessibility_update.node_count == 3 &&
                  accessibility_update.focused_node_count == 1 &&
                  accessibility_update.nodes[0].role ==
-                     cgpui::PlatformAccessibilityRole::text_input
+                     cgpui::PlatformAccessibilityRole::text_input &&
+                 native_menu_install_result.accelerator_count == 1 &&
+                 native_menu.items[0].action_name == "file.save"
              ? 0
              : 1;
 }

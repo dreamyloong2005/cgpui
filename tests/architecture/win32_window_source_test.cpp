@@ -191,6 +191,18 @@ int main() {
       !contains(win32_text, "win32://Segoe UI")) {
     return 57;
   }
+  if (!contains(win32_text, "Win32NativeMenuState") ||
+      !contains(win32_text, "install_native_menu(") ||
+      !contains(win32_text, "PlatformMenuInstallationResult") ||
+      !contains(win32_text, "native_menu_item_count(") ||
+      !contains(win32_text, "native_menu_accelerator_count(") ||
+      !contains(win32_text, "last_menu_installation_")) {
+    return 61;
+  }
+  if (!contains(win32_text, "backend = \"win32\"") ||
+      !contains(win32_text, "accelerator_count")) {
+    return 62;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {

@@ -226,6 +226,34 @@ int main() {
       .rect = cgpui::Rect{.origin = {4.0F, 5.0F}, .size = {1.0F, 18.0F}},
       .byte_offset = 3,
   };
+  cgpui::NativeMenuModel menu_model{
+      .items =
+          {
+              cgpui::NativeMenuItem{
+                  .kind = cgpui::NativeMenuItemKind::command,
+                  .title = "Open",
+                  .action_name = "file.open",
+                  .accelerator =
+                      cgpui::NativeMenuAccelerator{
+                          .key_code = 'O',
+                          .modifiers =
+                              cgpui::KeyboardModifiers{.control = true},
+                      },
+              },
+          },
+  };
+  const cgpui::PlatformMenuInstallationResult menu_result{
+      .supported = false,
+      .backend = "header",
+      .menu_count = menu_model.items.size(),
+      .item_count = cgpui::native_menu_item_count(menu_model),
+      .accelerator_count =
+          cgpui::native_menu_accelerator_count(menu_model),
+  };
+  const cgpui::NativeMenuInstallation menu_installation{
+      .model = menu_model,
+      .platform = menu_result,
+  };
   cgpui::StyleState style_state;
   cgpui::ElementKey element_key{.value = "header-key"};
   style_state.base = cgpui::Style{}
@@ -477,6 +505,8 @@ int main() {
                  render_record.root_element_id.has_value() &&
                  event_route.element_ancestry.size() == 1 &&
                  event_route.view_ancestry.size() == 1 &&
+                 menu_installation.platform.accelerator_count == 1 &&
+                 menu_installation.model.items[0].action_name == "file.open" &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  pointer->key().has_value() &&
                  pointer->key()->value == element_key.value &&

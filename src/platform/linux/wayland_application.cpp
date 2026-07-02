@@ -695,6 +695,30 @@ class WaylandAtspiAccessibilityAdapter {
   std::size_t text_input_node_count_ = 0;
 };
 
+class WaylandNativeMenuState {
+ public:
+  PlatformMenuInstallationResult install_native_menu(NativeMenuModel menu) {
+    model_ = std::move(menu);
+    last_menu_installation_ = PlatformMenuInstallationResult{
+        .supported = false,
+        .backend = "wayland",
+        .menu_count = model_.items.size(),
+        .item_count = native_menu_item_count(model_),
+        .accelerator_count = native_menu_accelerator_count(model_),
+    };
+    return last_menu_installation_;
+  }
+
+  [[nodiscard]] const PlatformMenuInstallationResult& last_menu_installation()
+      const {
+    return last_menu_installation_;
+  }
+
+ private:
+  NativeMenuModel model_;
+  PlatformMenuInstallationResult last_menu_installation_;
+};
+
 enum class WaylandCursorThemeLoadStatus {
   unavailable,
   loaded,
@@ -1982,6 +2006,13 @@ class WaylandApplication final : public PlatformApplication {
     request_wakeup();
   }
 
+  PlatformMenuInstallationResult install_native_menu(
+      NativeMenuModel menu) override {
+    last_menu_installation_ =
+        native_menu_state_.install_native_menu(std::move(menu));
+    return last_menu_installation_;
+  }
+
   [[nodiscard]] std::vector<FontFaceDescriptor> discover_font_records()
       const override {
     return {
@@ -2634,6 +2665,8 @@ class WaylandApplication final : public PlatformApplication {
   wl_keyboard* keyboard_ = nullptr;
   WaylandDataDevice data_device_;
   WaylandTextInput text_input_;
+  WaylandNativeMenuState native_menu_state_;
+  PlatformMenuInstallationResult last_menu_installation_;
   xkb_context* xkb_context_ = nullptr;
   xkb_keymap* xkb_keymap_ = nullptr;
   xkb_state* xkb_state_ = nullptr;

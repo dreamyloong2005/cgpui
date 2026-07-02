@@ -177,13 +177,29 @@ class FakeApplication final : public cgpui::PlatformApplication {
 
   void request_wakeup() override { request_wakeup_count += 1; }
 
+  cgpui::PlatformMenuInstallationResult install_native_menu(
+      cgpui::NativeMenuModel menu) override {
+    install_native_menu_count += 1;
+    last_menu_model = std::move(menu);
+    return cgpui::PlatformMenuInstallationResult{
+        .supported = true,
+        .backend = "fake",
+        .menu_count = last_menu_model.items.size(),
+        .item_count = cgpui::native_menu_item_count(last_menu_model),
+        .accelerator_count =
+            cgpui::native_menu_accelerator_count(last_menu_model),
+    };
+  }
+
   int create_window_count = 0;
   int run_count = 0;
   int quit_count = 0;
   int request_wakeup_count = 0;
+  int install_native_menu_count = 0;
   int run_result = 0;
   cgpui::WindowDescriptor last_descriptor{};
   std::vector<cgpui::WindowDescriptor> created_descriptors;
+  cgpui::NativeMenuModel last_menu_model;
   std::string failing_window_title;
 
  private:
@@ -840,6 +856,110 @@ int test_app_opened_window_records_native_creation_error() {
   return 0;
 }
 
+int test_app_context_installs_native_menu_and_accelerators() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  bool setup_called = false;
+  bool setup_install_ok = false;
+  bool frame_install_ok = false;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned = std::make_unique<RecordingRenderer>(
+            frame,
+            application.run_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                cgpui::NativeMenuModel menu{
+                    .items =
+                        {
+                            cgpui::NativeMenuItem{
+                                .kind = cgpui::NativeMenuItemKind::submenu,
+                                .title = "File",
+                                .children =
+                                    {
+                                        cgpui::NativeMenuItem{
+                                            .kind =
+                                                cgpui::NativeMenuItemKind::
+                                                    command,
+                                            .title = "Open",
+                                            .action_name = "file.open",
+                                            .accelerator =
+                                                cgpui::NativeMenuAccelerator{
+                                                    .key_code = 'O',
+                                                    .modifiers =
+                                                        cgpui::
+                                                            KeyboardModifiers{
+                                                                .control =
+                                                                    true},
+                                                },
+                                        },
+                                        cgpui::NativeMenuItem{
+                                            .kind =
+                                                cgpui::NativeMenuItemKind::
+                                                    separator,
+                                        },
+                                        cgpui::NativeMenuItem{
+                                            .kind =
+                                                cgpui::NativeMenuItemKind::
+                                                    command,
+                                            .title = "Quit",
+                                            .action_name = "app.quit",
+                                            .enabled = false,
+                                        },
+                                    },
+                            },
+                        },
+                };
+
+                const cgpui::NativeMenuInstallation installation =
+                    context.install_native_menu(std::move(menu));
+                setup_install_ok =
+                    installation.platform.supported &&
+                    installation.platform.backend == "fake" &&
+                    installation.platform.menu_count == 1 &&
+                    installation.platform.item_count == 4 &&
+                    installation.platform.accelerator_count == 1 &&
+                    context.runtime.native_menu_installation()
+                        .platform.accelerator_count == 1 &&
+                    application.install_native_menu_count == 1 &&
+                    application.last_menu_model.items.size() == 1 &&
+                    application.last_menu_model.items[0].children.size() == 3;
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext& frame_context) {
+                      const cgpui::NativeMenuInstallation& frame_installation =
+                          frame_context.native_menu_installation();
+                      frame_install_ok =
+                          frame_installation.model.items.size() == 1 &&
+                          frame_installation.platform.item_count == 4 &&
+                          frame_installation.platform.accelerator_count == 1;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 900;
+  }
+  if (!setup_called || !setup_install_ok || !frame_install_ok) {
+    return 901;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -872,6 +992,11 @@ int main() {
   }
   if (const int result =
           test_app_opened_window_records_native_creation_error();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_app_context_installs_native_menu_and_accelerators();
       result != 0) {
     return result;
   }

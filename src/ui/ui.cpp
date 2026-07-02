@@ -573,6 +573,11 @@ AppOpenedWindow AppContext::open_window(
   return runtime.open_window(std::move(options), std::move(root_view));
 }
 
+NativeMenuInstallation AppContext::install_native_menu(
+    NativeMenuModel menu) const {
+  return runtime.install_native_menu(std::move(menu));
+}
+
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
@@ -2471,6 +2476,22 @@ InvalidationState WindowRuntime::invalidation_state() const {
   return invalidation_state_;
 }
 
+NativeMenuInstallation WindowRuntime::install_native_menu(
+    NativeMenuModel menu) {
+  NativeMenuModel stored_menu = std::move(menu);
+  const PlatformMenuInstallationResult platform_result =
+      application_.install_native_menu(stored_menu);
+  native_menu_installation_ = NativeMenuInstallation{
+      .model = std::move(stored_menu),
+      .platform = platform_result,
+  };
+  return native_menu_installation_;
+}
+
+const NativeMenuInstallation& WindowRuntime::native_menu_installation() const {
+  return native_menu_installation_;
+}
+
 std::optional<RenderRecord> WindowRuntime::last_render_record() const {
   return last_render_record_;
 }
@@ -2980,6 +3001,16 @@ InvalidationState WindowRuntimeContext::invalidation_state() const {
 
 RuntimeDiagnosticsSnapshot WindowRuntimeContext::diagnostics_snapshot() const {
   return runtime.diagnostics_snapshot();
+}
+
+NativeMenuInstallation WindowRuntimeContext::install_native_menu(
+    NativeMenuModel menu) const {
+  return runtime.install_native_menu(std::move(menu));
+}
+
+const NativeMenuInstallation& WindowRuntimeContext::native_menu_installation()
+    const {
+  return runtime.native_menu_installation();
 }
 
 } // namespace cgpui

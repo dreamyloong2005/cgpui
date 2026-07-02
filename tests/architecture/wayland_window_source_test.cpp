@@ -206,6 +206,18 @@ int main() {
       !contains(text, "WindowWakeupRequested{}")) {
     return 65;
   }
+  if (!contains(text, "WaylandNativeMenuState") ||
+      !contains(text, "install_native_menu(") ||
+      !contains(text, "PlatformMenuInstallationResult") ||
+      !contains(text, "native_menu_item_count(") ||
+      !contains(text, "native_menu_accelerator_count(") ||
+      !contains(text, "last_menu_installation_")) {
+    return 70;
+  }
+  if (!contains(text, "backend = \"wayland\"") ||
+      !contains(text, "accelerator_count")) {
+    return 71;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {
