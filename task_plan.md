@@ -656,7 +656,7 @@ follow-on goal is now complete on the Windows/Linux track.
 170. [x] Glyph atlas page allocation, slot packing, and upload-record API.
 171. [x] Vulkan textured glyph quad command generation from atlas entries.
 172. [x] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
-173. [ ] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
+173. [x] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
 174. [ ] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
 175. [ ] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
 176. [ ] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
@@ -665,22 +665,21 @@ follow-on goal is now complete on the Windows/Linux track.
 
 ## Active Step
 
-Current handoff: Step 172, Vulkan text render report distinguishes
-glyph-backed draw preparation from metadata placeholders, is merged on
-`master` at `20adfab feat: add vulkan text render report counters` and
-post-merge verified on Windows and WSL Arch Linux. RED failed as expected on
-missing `RendererCommandReport::text_render` counters and the draw-data
-`vulkan_build_renderer_command_report(...)` overload. GREEN adds
-`RendererTextRenderReport` counters for text draws, glyph-backed versus
-metadata-only text draws, glyph cache hits, fallback-rasterized glyphs, upload
-records, and emitted textured glyph quads; `docs/gpui-core-api-parity.md` now
-categorizes renderer text as CPU fallback-raster/atlas-record-backed while
-real Vulkan texture objects and shader sampling remain future work.
-Post-merge targeted coverage passed 2/2 on Windows and the available 1/1
-subset on WSL Arch Linux, `git diff --check` produced no output, WSL full
-debug passed 27/27, and Windows full debug passed 30/30. Step 173, Wayland
-clipboard MIME offer/send/receive test-compositor path with text payload
-extraction, is the next implementation slice.
+Current handoff: Step 173, Wayland clipboard MIME offer/send/receive
+test-compositor path with text payload extraction, is merged on `master` at
+`c364be3 feat: add wayland clipboard mime payloads` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing test-compositor
+clipboard selection helpers, `WaylandClipboardMimePayload`, and the
+`WaylandClipboardOptions::connect_to_display` path. GREEN adds an opt-in
+Wayland clipboard connection that binds registry/seat/data-device state,
+tracks the current selection offer, prefers `text/plain;charset=utf-8` over
+`text/plain`, and reads payload bytes through `wl_data_offer_receive` pipes;
+the test compositor now sends deterministic clipboard selection offers and
+records requested MIME types. Post-merge targeted coverage passed 2/2 on
+Windows and 3/3 on WSL Arch Linux, `git diff --check` produced no output, WSL
+full debug passed 27/27, and Windows full debug passed 30/30. Step 174,
+Wayland drag/drop MIME payload extraction for text and URI-list/file payloads,
+is the next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

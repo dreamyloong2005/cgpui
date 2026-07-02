@@ -3048,3 +3048,25 @@
   incomplete.
 - Step 173 can now pivot away from Vulkan text metadata and start the Wayland
   clipboard MIME payload extraction path.
+
+## 2026-07-02 Wayland Clipboard MIME Payload Extraction
+
+- Step 173 keeps `create_platform_clipboard()` conservative while adding an
+  opt-in Wayland clipboard connection for tests and future integration:
+  `WaylandClipboardOptions::connect_to_display` connects to the active
+  Wayland display, binds `wl_data_device_manager`, `wl_seat`, and
+  `wl_data_device`, and stores the current selection offer behind a PIMPL so
+  public headers do not include Wayland protocol headers.
+- Text MIME selection is deterministic: `text/plain;charset=utf-8` is chosen
+  before `text/plain`, unsupported MIME types are ignored, and payload bytes
+  are read through a pipe passed to `wl_data_offer_receive`.
+- The Wayland test compositor now has a deterministic clipboard selection
+  path: tests can set MIME/payload pairs, the compositor sends a
+  `wl_data_offer`, writes the selected payload to the received fd, and records
+  the requested MIME type for assertions.
+- This is not full Wayland clipboard parity yet. Clipboard ownership/write
+  offers, default platform-factory connection behavior, non-text MIME formats,
+  and production desktop edge cases remain future work.
+- Step 174 can reuse the same offer/MIME/payload direction for Wayland
+  drag/drop, then add text and `text/uri-list` parsing through the drag
+  data-device path.

@@ -5383,3 +5383,56 @@
   Wayland clipboard MIME offer/send/receive test-compositor path with text
   payload extraction, is the next implementation slice after docs closeout and
   cleanup.
+
+## 2026-07-02 Step 173 Wayland Clipboard MIME Payload Extraction
+
+- Continued Step 173 in `.worktrees/wayland-clipboard-mime-payloads` on
+  `codex/wayland-clipboard-mime-payloads` from `master` at
+  `12e3c37 docs: mark step 172 merged`.
+- RED coverage:
+  WSL `clipboard_test/default` failed as expected on missing
+  `WaylandTestCompositor::set_clipboard_selection(...)`,
+  `cgpui::test::WaylandClipboardMimePayload`, and
+  `WaylandClipboardOptions::connect_to_display`.
+- GREEN adds an opt-in Wayland clipboard connection behind
+  `WaylandClipboard::Connection`. The connection binds registry, seat,
+  data-device-manager, and data-device objects, tracks the current selection
+  offer MIME types, prefers `text/plain;charset=utf-8` over `text/plain`, and
+  reads text payload bytes through a `wl_data_offer_receive` pipe.
+- The Wayland test compositor now supports deterministic clipboard selection
+  payloads: it sends `wl_data_offer` resources, advertises MIME types, writes
+  requested payload bytes to the received fd, and records the requested MIME
+  type for tests.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-mime-payloads -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . clipboard_test/default core_header_cleanliness/default`
+  passed 2/2.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-mime-payloads -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Committed Step 173 as
+  `c364be3 feat: add wayland clipboard mime payloads` and fast-forward merged
+  it to `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . clipboard_test/default core_header_cleanliness/default`
+  passed 2/2.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan,
+  `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 173
+  is marked merged and post-merge verified. Step 174, Wayland drag/drop MIME
+  payload extraction for text and URI-list/file payloads, is the next
+  implementation slice after docs closeout and cleanup.

@@ -55,10 +55,11 @@ desktop integration surfaces remain separate future work.
   statistics, unsupported-command diagnostics, and Vulkan text preparation
   reports that distinguish glyph-backed work from metadata-only placeholders.
 - Platform hooks on active targets: Win32 cursor application, Win32 clipboard,
-  Wayland clipboard skeleton, focused text IME geometry, Win32 IME placement,
-  Wayland text-input/IME skeleton, Win32 drag/drop event skeleton, Wayland
-  data-device drag/drop skeleton, lifecycle events, multi-window runtime
-  registry, platform wakeups, and accessibility tree snapshots.
+  Wayland clipboard support state plus text selection payload extraction,
+  focused text IME geometry, Win32 IME placement, Wayland text-input/IME
+  skeleton, Win32 drag/drop event skeleton, Wayland data-device drag/drop
+  skeleton, lifecycle events, multi-window runtime registry, platform wakeups,
+  and accessibility tree snapshots.
 - Windows/Linux demo smoke coverage exercises window creation, first frame,
   resize, close, text input, clipboard flow, redraw, and bounded shutdown.
 
@@ -71,9 +72,15 @@ desktop integration surfaces remain separate future work.
   sampling, subpixel positioning, and font fallback shaping are not complete.
 - Accessibility is a platform-neutral tree snapshot. Native Windows UIA and
   Linux AT-SPI adapters are not implemented.
-- Wayland clipboard and drag/drop are skeletons. They model capability and
-  route events, but data-device MIME negotiation, payload extraction, URI-list
-  parsing, and external desktop integration remain incomplete.
+- Wayland clipboard is partially protocol-backed. It can connect to a Wayland
+  display, bind data-device state, track selection MIME offers, prefer
+  `text/plain;charset=utf-8` over `text/plain`, and read text payload bytes
+  through `wl_data_offer_receive`; default platform-factory integration,
+  clipboard ownership/write offers, non-text formats, and production desktop
+  edge cases remain incomplete.
+- Wayland drag/drop remains a skeleton. It models capability and routes
+  events, but drag data-device MIME negotiation, payload extraction,
+  URI-list parsing, and external desktop integration remain incomplete.
 - Wayland IME stores focused text placement through a text-input skeleton, but
   full text-input protocol binding, surrounding text, enter/leave, content
   type, and commit/preedit handling are not complete.
@@ -135,8 +142,9 @@ area expansion. Recommended order:
    glyphs, atlas allocation records, upload records, textured glyph quads, and
    text render counters into real Vulkan atlas textures, GPU uploads, shader
    sampling, and draw calls.
-2. Promote Wayland clipboard, Wayland drag/drop, and Wayland text-input from
-   skeleton capability to real data/protocol handling.
+2. Continue promoting Wayland clipboard, Wayland drag/drop, and Wayland
+   text-input from skeleton capability to real data/protocol handling,
+   including clipboard write/ownership and drag payload extraction.
 3. Add native accessibility adapters for Windows UIA and Linux AT-SPI using the
    existing accessibility snapshot as the source of truth.
 4. Turn multi-window runtime records into native additional windows with owned

@@ -102,11 +102,12 @@
 - Modify: `tests/platform/wayland_test_compositor.cpp`
 - Modify: `tests/platform/wayland_test_compositor.hpp`
 
-- [ ] Add RED coverage for offered MIME types, `text/plain;charset=utf-8`, `text/plain`, and deterministic payload reads from the test compositor.
-- [ ] Expected RED: Wayland clipboard still only reports skeleton memory fallback behavior.
-- [ ] GREEN: track the current selection offer, choose preferred text MIME type, read payload bytes through deterministic compositor pipes, and return UTF-8 text through the public clipboard API.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-clipboard-mime-payloads -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default platform_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . clipboard_test/default platform_header_cleanliness/default`.
+- [x] Add RED coverage for offered MIME types, `text/plain;charset=utf-8`, `text/plain`, and deterministic payload reads from the test compositor.
+- [x] Expected RED: Wayland clipboard still only reports skeleton memory fallback behavior.
+- [x] GREEN: track the current selection offer, choose preferred text MIME type, read payload bytes through deterministic compositor pipes, and return UTF-8 text through the public clipboard API.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . clipboard_test/default wayland_window_source_test/default core_header_cleanliness/default'` passed 3/3 after merge.
+- [x] Windows available-target command: `xmake test -P . clipboard_test/default core_header_cleanliness/default` passed 2/2 after merge.
+- [x] Full post-merge verification passed: `git diff --check` produced no output, WSL Arch Linux full debug passed 27/27, and Windows full debug passed 30/30.
 
 ## Step 174: Wayland Drag/Drop MIME Text And URI Payloads
 
