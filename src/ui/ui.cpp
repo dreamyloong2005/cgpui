@@ -603,6 +603,31 @@ NativeFileDialogResult AppContext::show_native_file_dialog(
   return runtime.show_native_file_dialog(std::move(options));
 }
 
+void AppContext::register_command_palette_entry(
+    CommandPaletteEntry entry) const {
+  runtime.register_command_palette_entry(std::move(entry));
+}
+
+std::span<const CommandPaletteEntry> AppContext::command_palette_entries()
+    const {
+  return runtime.command_palette_entries();
+}
+
+std::vector<CommandPaletteEntry> AppContext::command_palette_entries_for_group(
+    std::string_view group) const {
+  return runtime.command_palette_entries_for_group(group);
+}
+
+ActionDispatchResult AppContext::dispatch_command_palette_entry(
+    const CommandPaletteEntry& entry) const {
+  return runtime.dispatch_command_palette_entry(entry);
+}
+
+ActionDispatchResult AppContext::dispatch_command_palette_action(
+    std::string action_name) const {
+  return runtime.dispatch_command_palette_action(std::move(action_name));
+}
+
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
@@ -2169,6 +2194,56 @@ std::optional<ActionDispatchResult> WindowRuntime::last_action_dispatch()
   return last_action_dispatch_;
 }
 
+void WindowRuntime::register_command_palette_entry(CommandPaletteEntry entry) {
+  if (!entry.action_name.empty() && !entry.title.empty()) {
+    command_palette_entries_.push_back(std::move(entry));
+  }
+}
+
+std::span<const CommandPaletteEntry> WindowRuntime::command_palette_entries()
+    const {
+  return command_palette_entries_;
+}
+
+std::vector<CommandPaletteEntry>
+WindowRuntime::command_palette_entries_for_group(std::string_view group) const {
+  std::vector<CommandPaletteEntry> entries;
+  for (const CommandPaletteEntry& entry : command_palette_entries_) {
+    if (entry.group == group) {
+      entries.push_back(entry);
+    }
+  }
+  return entries;
+}
+
+ActionDispatchResult WindowRuntime::dispatch_command_palette_entry(
+    const CommandPaletteEntry& entry) {
+  if (!entry.enabled || entry.action_name.empty()) {
+    ActionDispatchResult dispatch{
+        .name = entry.action_name,
+        .result = EventResult::unhandled()};
+    last_action_dispatch_ = dispatch;
+    return dispatch;
+  }
+
+  return dispatch_action(entry.action_name);
+}
+
+ActionDispatchResult WindowRuntime::dispatch_command_palette_action(
+    std::string action_name) {
+  for (const CommandPaletteEntry& entry : command_palette_entries_) {
+    if (entry.action_name == action_name) {
+      return dispatch_command_palette_entry(entry);
+    }
+  }
+
+  ActionDispatchResult dispatch{
+      .name = std::move(action_name),
+      .result = EventResult::unhandled()};
+  last_action_dispatch_ = dispatch;
+  return dispatch;
+}
+
 void WindowRuntime::bind_key(KeyBinding binding) {
   if (!binding.action_name.empty()) {
     key_bindings_.push_back(std::move(binding));
@@ -2930,6 +3005,32 @@ ActionDispatchResult WindowRuntimeContext::dispatch_action(
 std::optional<ActionDispatchResult> WindowRuntimeContext::last_action_dispatch()
     const {
   return runtime.last_action_dispatch();
+}
+
+void WindowRuntimeContext::register_command_palette_entry(
+    CommandPaletteEntry entry) const {
+  runtime.register_command_palette_entry(std::move(entry));
+}
+
+std::span<const CommandPaletteEntry>
+WindowRuntimeContext::command_palette_entries() const {
+  return runtime.command_palette_entries();
+}
+
+std::vector<CommandPaletteEntry>
+WindowRuntimeContext::command_palette_entries_for_group(
+    std::string_view group) const {
+  return runtime.command_palette_entries_for_group(group);
+}
+
+ActionDispatchResult WindowRuntimeContext::dispatch_command_palette_entry(
+    const CommandPaletteEntry& entry) const {
+  return runtime.dispatch_command_palette_entry(entry);
+}
+
+ActionDispatchResult WindowRuntimeContext::dispatch_command_palette_action(
+    std::string action_name) const {
+  return runtime.dispatch_command_palette_action(std::move(action_name));
 }
 
 void WindowRuntimeContext::bind_key(KeyBinding binding) const {

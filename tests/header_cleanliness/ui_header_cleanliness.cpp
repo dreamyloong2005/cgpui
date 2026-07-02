@@ -273,6 +273,12 @@ int main() {
       .kind = file_dialog_options.kind,
       .filter_count = file_dialog_options.filters.size(),
   };
+  const cgpui::CommandPaletteEntry command_palette_entry{
+      .action_name = "header.palette",
+      .title = "Header Palette",
+      .group = "Header",
+      .scope = cgpui::ActionScope::app,
+  };
   cgpui::StyleState style_state;
   cgpui::ElementKey element_key{.value = "header-key"};
   style_state.base = cgpui::Style{}
@@ -337,8 +343,18 @@ int main() {
             [](const cgpui::WindowRuntimeContext&) {
               return cgpui::EventResult::consumed_event();
             });
+        app_context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+            .action_name = "header.palette",
+            .title = "Header Palette",
+            .group = "Header",
+            .scope = cgpui::ActionScope::app,
+        });
+        const std::vector<cgpui::CommandPaletteEntry> header_commands =
+            app_context.command_palette_entries_for_group("Header");
         const cgpui::ActionDispatchResult dispatch =
             app_context.runtime.dispatch_action("header.view");
+        const cgpui::ActionDispatchResult palette_dispatch =
+            app_context.dispatch_command_palette_action("header.palette");
         const cgpui::View* found_view =
             app_context.runtime.find_view(registered_view_id);
         const bool removed_view =
@@ -349,6 +365,8 @@ int main() {
         (void)found_view;
         (void)removed_view;
         (void)dispatch.scope;
+        (void)palette_dispatch.scope;
+        (void)header_commands;
         (void)dispatch.view_id;
         (void)dispatch.element_id;
         (void)cgpui::ActionScope::app;
@@ -533,6 +551,8 @@ int main() {
                  file_dialog_result.filter_count == 1 &&
                  file_dialog_result.kind ==
                      cgpui::NativeFileDialogKind::open_file &&
+                 command_palette_entry.action_name == "header.palette" &&
+                 command_palette_entry.scope == cgpui::ActionScope::app &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  pointer->key().has_value() &&
                  pointer->key()->value == element_key.value &&

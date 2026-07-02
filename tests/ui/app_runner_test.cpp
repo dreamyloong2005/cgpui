@@ -1100,6 +1100,95 @@ int test_app_context_shows_native_file_dialog_skeleton() {
   return 0;
 }
 
+int test_app_context_registers_command_palette_entries() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  bool setup_called = false;
+  bool setup_palette_ok = false;
+  bool frame_palette_ok = false;
+  int dispatch_count = 0;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned = std::make_unique<RecordingRenderer>(
+            frame,
+            application.run_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                context.runtime.register_app_action(
+                    "app.palette.open",
+                    [&](const cgpui::ViewContext&) {
+                      dispatch_count += 1;
+                      return cgpui::EventResult::consumed_event();
+                    });
+                context.register_command_palette_entry(
+                    cgpui::CommandPaletteEntry{
+                        .action_name = "app.palette.open",
+                        .title = "Open Project",
+                        .group = "File",
+                        .scope = cgpui::ActionScope::app,
+                    });
+                context.register_command_palette_entry(
+                    cgpui::CommandPaletteEntry{
+                        .action_name = "app.palette.disabled",
+                        .title = "Disabled",
+                        .group = "File",
+                        .scope = cgpui::ActionScope::app,
+                        .enabled = false,
+                    });
+
+                const std::vector<cgpui::CommandPaletteEntry> file_entries =
+                    context.command_palette_entries_for_group("File");
+                setup_palette_ok =
+                    context.command_palette_entries().size() == 2 &&
+                    file_entries.size() == 2 &&
+                    file_entries[0].action_name == "app.palette.open";
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext& frame_context) {
+                      const std::vector<cgpui::CommandPaletteEntry>
+                          frame_file_entries =
+                              frame_context.command_palette_entries_for_group(
+                                  "File");
+                      const cgpui::ActionDispatchResult dispatch =
+                          frame_context.dispatch_command_palette_action(
+                              "app.palette.open");
+                      const cgpui::ActionDispatchResult disabled_dispatch =
+                          frame_context.dispatch_command_palette_action(
+                              "app.palette.disabled");
+                      frame_palette_ok =
+                          frame_context.command_palette_entries().size() == 2 &&
+                          frame_file_entries.size() == 2 && dispatch.handled &&
+                          dispatch.result.consumed &&
+                          !disabled_dispatch.handled &&
+                          disabled_dispatch.name == "app.palette.disabled";
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 920;
+  }
+  if (!setup_called || !setup_palette_ok || !frame_palette_ok ||
+      dispatch_count != 1) {
+    return 921;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1142,6 +1231,10 @@ int main() {
   }
   if (const int result =
           test_app_context_shows_native_file_dialog_skeleton();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_app_context_registers_command_palette_entries();
       result != 0) {
     return result;
   }

@@ -269,6 +269,32 @@ struct WindowRuntimeRecord {
   std::optional<Error> native_window_error;
 };
 
+enum class ActionScope {
+  app,
+  window,
+  view,
+  focused_element,
+};
+
+struct ActionDispatchResult {
+  std::string name;
+  bool handled = false;
+  EventResult result;
+  std::optional<ActionScope> scope;
+  std::optional<ViewId> view_id;
+  std::optional<ElementId> element_id;
+};
+
+struct CommandPaletteEntry {
+  std::string action_name;
+  std::string title;
+  std::string group;
+  ActionScope scope = ActionScope::app;
+  bool enabled = true;
+  std::optional<ViewId> view_id;
+  std::optional<ElementId> element_id;
+};
+
 struct AppContext {
   WindowRuntime& runtime;
 
@@ -280,6 +306,15 @@ struct AppContext {
       NativeMenuModel menu) const;
   [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
       NativeFileDialogOptions options) const;
+  void register_command_palette_entry(CommandPaletteEntry entry) const;
+  [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
+      const;
+  [[nodiscard]] std::vector<CommandPaletteEntry>
+  command_palette_entries_for_group(std::string_view group) const;
+  [[nodiscard]] ActionDispatchResult dispatch_command_palette_entry(
+      const CommandPaletteEntry& entry) const;
+  [[nodiscard]] ActionDispatchResult dispatch_command_palette_action(
+      std::string action_name) const;
 
   template <typename T>
   void set_global(T global_value) const;
@@ -392,22 +427,6 @@ struct EventDispatchRecord {
   EventKind event_kind = EventKind::unknown;
   EventRoute route;
   EventResult result;
-};
-
-enum class ActionScope {
-  app,
-  window,
-  view,
-  focused_element,
-};
-
-struct ActionDispatchResult {
-  std::string name;
-  bool handled = false;
-  EventResult result;
-  std::optional<ActionScope> scope;
-  std::optional<ViewId> view_id;
-  std::optional<ElementId> element_id;
 };
 
 struct KeyBinding {
@@ -586,6 +605,15 @@ struct WindowRuntimeContext {
       ActionHandler handler) const;
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
+  void register_command_palette_entry(CommandPaletteEntry entry) const;
+  [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
+      const;
+  [[nodiscard]] std::vector<CommandPaletteEntry>
+  command_palette_entries_for_group(std::string_view group) const;
+  [[nodiscard]] ActionDispatchResult dispatch_command_palette_entry(
+      const CommandPaletteEntry& entry) const;
+  [[nodiscard]] ActionDispatchResult dispatch_command_palette_action(
+      std::string action_name) const;
   void bind_key(KeyBinding binding) const;
   void bind_text_edit_action(TextEditBinding binding) const;
   void bind_text_model(ElementId element_id, TextModel* model) const;
@@ -769,6 +797,15 @@ class WindowRuntime {
       ActionHandler handler);
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
+  void register_command_palette_entry(CommandPaletteEntry entry);
+  [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
+      const;
+  [[nodiscard]] std::vector<CommandPaletteEntry>
+  command_palette_entries_for_group(std::string_view group) const;
+  [[nodiscard]] ActionDispatchResult dispatch_command_palette_entry(
+      const CommandPaletteEntry& entry);
+  [[nodiscard]] ActionDispatchResult dispatch_command_palette_action(
+      std::string action_name);
   void bind_key(KeyBinding binding);
   void bind_text_edit_action(TextEditBinding binding);
   void bind_text_model(ElementId element_id, TextModel* model);
@@ -1000,6 +1037,7 @@ class WindowRuntime {
       std::uint64_t,
       std::unordered_map<std::string, ActionHandler>>
       focused_element_action_handlers_;
+  std::vector<CommandPaletteEntry> command_palette_entries_;
   std::vector<KeyBinding> key_bindings_;
   std::vector<TextEditBinding> text_edit_bindings_;
   std::unordered_map<std::uint64_t, TextModel*> text_models_;

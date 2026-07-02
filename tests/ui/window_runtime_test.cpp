@@ -6063,6 +6063,189 @@ int test_view_context_registers_explicit_scoped_actions() {
   return 0;
 }
 
+class CommandPaletteRegistryView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {}
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    if (!std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      return cgpui::EventResult::unhandled();
+    }
+
+    context.focus(focused_element_id);
+    context.register_app_action(
+        "palette.app",
+        [this](const cgpui::ViewContext&) {
+          app_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_window_action(
+        "palette.window",
+        [this](const cgpui::ViewContext&) {
+          window_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_view_action(
+        "palette.view",
+        [this](const cgpui::ViewContext&) {
+          view_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_focused_element_action(
+        focused_element_id,
+        "palette.focused",
+        [this](const cgpui::ViewContext&) {
+          focused_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+    context.register_app_action(
+        "palette.disabled",
+        [this](const cgpui::ViewContext&) {
+          disabled_action_count += 1;
+          return cgpui::EventResult::consumed_event();
+        });
+
+    context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+        .action_name = "palette.app",
+        .title = "Open Settings",
+        .group = "File",
+        .scope = cgpui::ActionScope::app,
+    });
+    context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+        .action_name = "palette.window",
+        .title = "Close Window",
+        .group = "File",
+        .scope = cgpui::ActionScope::window,
+    });
+    context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+        .action_name = "palette.view",
+        .title = "Focus Editor",
+        .group = "Navigate",
+        .scope = cgpui::ActionScope::view,
+        .view_id = context.view_id,
+    });
+    context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+        .action_name = "palette.focused",
+        .title = "Rename Symbol",
+        .group = "Edit",
+        .scope = cgpui::ActionScope::focused_element,
+        .element_id = focused_element_id,
+    });
+    context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+        .action_name = "palette.disabled",
+        .title = "Disabled Command",
+        .group = "File",
+        .scope = cgpui::ActionScope::app,
+        .enabled = false,
+    });
+    context.register_command_palette_entry(cgpui::CommandPaletteEntry{
+        .action_name = "",
+        .title = "Ignored Command",
+        .group = "File",
+    });
+
+    entries = std::vector<cgpui::CommandPaletteEntry>(
+        context.command_palette_entries().begin(),
+        context.command_palette_entries().end());
+    file_entries = context.command_palette_entries_for_group("File");
+    app_result = context.dispatch_command_palette_action("palette.app");
+    window_result = context.dispatch_command_palette_entry(entries[1]);
+    view_result = context.dispatch_command_palette_entry(entries[2]);
+    focused_result = context.dispatch_command_palette_entry(entries[3]);
+    disabled_result = context.dispatch_command_palette_entry(entries[4]);
+    missing_result = context.dispatch_command_palette_action("palette.missing");
+    last_result = context.last_action_dispatch();
+
+    return cgpui::EventResult::consumed_event();
+  }
+
+  cgpui::ElementId focused_element_id{61};
+  int app_action_count = 0;
+  int window_action_count = 0;
+  int view_action_count = 0;
+  int focused_action_count = 0;
+  int disabled_action_count = 0;
+  std::vector<cgpui::CommandPaletteEntry> entries;
+  std::vector<cgpui::CommandPaletteEntry> file_entries;
+  cgpui::ActionDispatchResult app_result{};
+  cgpui::ActionDispatchResult window_result{};
+  cgpui::ActionDispatchResult view_result{};
+  cgpui::ActionDispatchResult focused_result{};
+  cgpui::ActionDispatchResult disabled_result{};
+  cgpui::ActionDispatchResult missing_result{};
+  std::optional<cgpui::ActionDispatchResult> last_result;
+};
+
+int test_runtime_registers_command_palette_entries() {
+  RuntimeFixture fixture;
+  CommandPaletteRegistryView view;
+  scoped_action_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scoped_action_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  scoped_action_fixture = nullptr;
+
+  if (result != 0) {
+    return 363;
+  }
+  if (view.entries.size() != 5 || runtime.command_palette_entries().size() != 5) {
+    return 364;
+  }
+  if (view.entries[0].action_name != "palette.app" ||
+      view.entries[0].title != "Open Settings" ||
+      view.entries[0].group != "File" ||
+      view.entries[0].scope != cgpui::ActionScope::app) {
+    return 365;
+  }
+  if (view.file_entries.size() != 3 ||
+      view.file_entries[0].action_name != "palette.app" ||
+      view.file_entries[2].action_name != "palette.disabled") {
+    return 366;
+  }
+  if (view.app_action_count != 1 || view.window_action_count != 1 ||
+      view.view_action_count != 1 || view.focused_action_count != 1 ||
+      view.disabled_action_count != 0) {
+    return 367;
+  }
+  if (!view.app_result.handled || !view.app_result.scope.has_value() ||
+      *view.app_result.scope != cgpui::ActionScope::app ||
+      !view.window_result.scope.has_value() ||
+      *view.window_result.scope != cgpui::ActionScope::window ||
+      !view.view_result.scope.has_value() ||
+      *view.view_result.scope != cgpui::ActionScope::view ||
+      !view.focused_result.scope.has_value() ||
+      *view.focused_result.scope != cgpui::ActionScope::focused_element) {
+    return 368;
+  }
+  if (!view.view_result.view_id.has_value() ||
+      *view.view_result.view_id != cgpui::ViewId{1} ||
+      !view.focused_result.element_id.has_value() ||
+      *view.focused_result.element_id != view.focused_element_id) {
+    return 369;
+  }
+  if (view.disabled_result.name != "palette.disabled" ||
+      view.disabled_result.handled || view.disabled_result.result.consumed ||
+      view.missing_result.handled || view.missing_result.scope.has_value()) {
+    return 370;
+  }
+  if (!view.last_result.has_value() ||
+      view.last_result->name != "palette.missing" ||
+      view.last_result->handled) {
+    return 371;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* deferred_callback_fixture = nullptr;
 class TimerApiView;
 TimerApiView* timer_api_view = nullptr;
@@ -8582,6 +8765,10 @@ int main() {
   }
   if (const int result =
           test_view_context_registers_explicit_scoped_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_registers_command_palette_entries();
       result != 0) {
     return result;
   }
