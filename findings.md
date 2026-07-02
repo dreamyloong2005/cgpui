@@ -3260,3 +3260,18 @@
   and text command depth.
 - This is still a geometry/reporting slice. It does not create real Vulkan
   selection/caret draw pipelines, shader paths, or GPU submissions.
+
+## 2026-07-02 Renderer Clip Stack Metadata
+
+- Step 185 adds a bounded `RendererClipStackRecord` that preserves nested clip
+  stack metadata while keeping the existing per-command `clip_rect` field as
+  the current innermost clip.
+- `PaintList` now records the full active clip stack on paint commands, and
+  `render_view(...)` forwards that stack through solid rect, rounded rect,
+  text, text selection, and caret draw records.
+- Vulkan renderer command reports now include clip-stack counts, maximum stack
+  depth, and batch keys that distinguish commands with the same current clip
+  but different outer clip ancestors.
+- This remains metadata/reporting work. It does not implement real Vulkan
+  scissor-stack command emission or GPU clipping beyond the existing solid
+  rectangle clip handling.

@@ -6056,3 +6056,55 @@
   this progress log so Step 184 is marked merged and post-merge verified. Step
   185, renderer clip stack metadata beyond single optional clips, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 185 Renderer Clip Stack Metadata
+
+- Created `.worktrees/renderer-clip-stack` on
+  `codex/renderer-clip-stack` from `master` at
+  `0950608 docs: mark step 184 merged`.
+- Baseline Windows targeted tests passed 4/4:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- Baseline WSL targeted tests passed 3/3:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-clip-stack -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- RED coverage:
+  `render_view_test/default` failed as expected on missing `clip_stack` fields
+  for `SolidRect`, missing `FrameStatistics::clip_stack_command_count`, and
+  missing `FrameStatistics::max_clip_stack_depth`. The renderer RED also
+  covered missing `RendererClipStackRecord`, report clip-stack counters, and
+  batch-key stack differentiation.
+- GREEN adds a bounded `RendererClipStackRecord`, public clip-stack helper,
+  clip-stack fields across renderer draw/geometry/command records, paint-list
+  stack capture, render-view forwarding, frame-statistics counters, and Vulkan
+  report/batch aggregation by full clip-stack metadata.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-clip-stack -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 3/3 for the available Linux target subset.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-clip-stack -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 185 as
+  `e37a6c1 feat: add renderer clip stack metadata` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 3/3 for the available Linux target subset.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 185 is marked merged and post-merge verified. Step
+  186, renderer opacity and transform stack reports, is the next implementation
+  slice after docs closeout and cleanup.

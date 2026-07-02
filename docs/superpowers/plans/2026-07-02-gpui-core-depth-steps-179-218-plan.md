@@ -155,16 +155,21 @@
 
 **Files:**
 - Modify: `include/cgpui/renderer/renderer.hpp`
-- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
+- Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED coverage for nested clip stack records emitted by paint traversal and consumed by renderer reports.
-- [ ] Expected RED: commands only carry a single optional clip rect.
-- [ ] GREEN: add a bounded clip stack metadata record while preserving the existing per-command clip API.
-- [ ] Targeted command: `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set without Windows-only targets.
+- [x] Add RED coverage for nested clip stack records emitted by paint traversal and consumed by renderer reports.
+- [x] Expected RED: commands only carry a single optional clip rect.
+- [x] GREEN: add a bounded clip stack metadata record while preserving the existing per-command clip API.
+- [x] Targeted command: `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set without Windows-only targets.
+
+**Merged:** `e37a6c1 feat: add renderer clip stack metadata`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 186: Renderer Opacity And Transform Stack Reports
 
