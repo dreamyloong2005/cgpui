@@ -70,6 +70,27 @@ Windows/Linux core API is stable enough for parity work.
   merge, Windows verification, and WSL verification discipline used for Steps
   89-128.
 
+## Definition Of Done For The 178-Step Depth Goal
+
+- Steps 1-168 remain implemented, merged to `master`, and verified on Windows
+  and WSL Arch Linux.
+- Steps 169-178 are implemented as a Windows/Linux depth pass, not a macOS
+  parity pivot. Windows continues to use Win32 + Vulkan, Linux continues to
+  use Wayland + Vulkan, and macOS/Cocoa + Metal remains deferred.
+- Vulkan text moves beyond metadata toward deterministic glyph bitmap
+  rasterization, atlas allocation/upload records, textured glyph quads, and
+  renderer reports that distinguish real text draw preparation from
+  placeholder metadata.
+- Wayland clipboard, drag/drop, and text-input move from skeleton state toward
+  MIME payload extraction and protocol state-machine behavior that can be
+  exercised by the test compositor.
+- Windows UIA and Linux AT-SPI adapter skeletons consume the existing
+  `AccessibilityTreeSnapshot` without forking public UI semantics.
+- Multi-window work turns existing runtime records into native additional
+  window creation scaffolding while preserving the single-window root path.
+- Each implementation step follows RED/GREEN, feature-worktree isolation,
+  merge, Windows verification, and WSL verification.
+
 ## Steps 89-128 Execution Roadmap
 
 Detailed execution plan:
@@ -100,6 +121,15 @@ That plan now includes branch slugs, first RED test intent, targeted commands,
 checkpoint exits, and Windows/WSL verification matrix for all 40 follow-on
 steps. The pre-back-40 handoff is complete: Steps 89-128 are merged to
 `master` and post-merge verified on Windows and WSL Arch Linux.
+
+## Steps 169-178 Depth Roadmap
+
+Detailed depth plan:
+`docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-169-178-plan.md`.
+The active track stays Windows/Linux first. The ten-step depth pass prioritizes
+Vulkan text rendering data flow, Wayland data/protocol handling, native
+accessibility adapter boundaries, and native multi-window creation before a
+separate macOS/Cocoa + Metal parity track begins.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
@@ -622,19 +652,28 @@ follow-on goal is now complete on the Windows/Linux track.
 166. [x] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 167. [x] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 168. [x] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
+169. [ ] Glyph bitmap/raster data model and deterministic fallback glyph rasterizer.
+170. [ ] Glyph atlas page allocation, slot packing, and upload-record API.
+171. [ ] Vulkan textured glyph quad command generation from atlas entries.
+172. [ ] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
+173. [ ] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
+174. [ ] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
+175. [ ] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
+176. [ ] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
+177. [ ] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
+178. [ ] Native additional-window creation slice over the multi-window runtime registry.
 
 ## Active Step
 
 Current handoff: Step 168, GPUI-core API parity audit document with remaining
 gaps and Mac parity handoff boundaries, is merged on `master` at
 `c16689e docs: add gpui core api parity audit` and post-merge verified on
-Windows and WSL Arch Linux. Post-merge targeted readiness coverage passed 1/1
-on Windows and 1/1 on WSL Arch Linux, `git diff --check` produced no output,
-Windows full debug passed 30/30, and WSL Arch Linux full debug passed 27/27.
-The 168-step Windows/Linux follow-on goal is complete. The next milestone
-should be a depth pass over Vulkan text rendering, Wayland protocol payload
-handling, native accessibility adapters, and native multi-window creation, or a
-separate macOS/Cocoa + Metal parity track if that becomes the priority.
+Windows and WSL Arch Linux. The 168-step Windows/Linux follow-on goal is
+complete. The active goal is now Steps 169-178, a Windows/Linux depth pass over
+Vulkan text rendering, Wayland protocol payload handling, native accessibility
+adapters, and native additional-window creation. Step 169, glyph bitmap/raster
+data model and deterministic fallback glyph rasterizer, is the next
+implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

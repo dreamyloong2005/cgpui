@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Steps 169-178 Depth Pass Planning
+
+- Continued the active goal "往后做10步" after Step 168.
+- Restored planning context by reading `task_plan.md`, `findings.md`, and
+  `progress.md`, then ran the planning-with-files catchup script. Catchup only
+  reported current-turn unsynced context; `git diff --stat` had no output
+  before planning edits.
+- Confirmed `master` was at `465374a docs: mark step 168 complete` with only
+  the expected untracked `.vscode/`.
+- Added
+  `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-169-178-plan.md`
+  for the next ten Windows/Linux depth steps.
+- Updated `task_plan.md` with the 178-step depth goal definition, Steps
+  169-178 checklist, and Step 169 active handoff.
+- Updated `findings.md` with the depth-pass rationale: keep Windows/Linux
+  first, start with real glyph bitmap/raster data, then atlas/upload records,
+  Wayland MIME/text-input depth, native accessibility adapters, and native
+  additional-window creation.
+
 ## 2026-07-02 Step 168 GPUI-Core API Parity Audit
 
 - Continued after interruption with `master` at

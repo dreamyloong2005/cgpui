@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Steps 169-178 Depth Pass Planning
+
+- The next ten-step track should continue Windows/Linux depth work instead of
+  pivoting to macOS. The current parity audit identifies Vulkan text rendering,
+  Wayland payload/protocol handling, native accessibility adapters, and native
+  multi-window creation as higher-leverage blockers for the existing target
+  pair.
+- Step 169 should start with CPU-side glyph bitmap and deterministic fallback
+  rasterization in `include/cgpui/ui/text.hpp`. Existing Step 151/152 work
+  already provides glyph keys, glyph paint metadata, and renderer cache
+  lookup/store, but atlas entries still use placeholder bounds derived from
+  glyph positions instead of actual raster data.
+- Step 170 can then allocate atlas slots and upload records from rasterized
+  glyphs without needing real Vulkan image upload yet. This keeps renderer
+  state testable before GPU texture objects become necessary.
+- Steps 173-175 should deepen Wayland using the existing test compositor. The
+  current data-device and text-input code already routes skeleton events, so
+  the next useful work is MIME offer tracking, text/URI payload extraction,
+  and protocol-independent text-input state records.
+- Steps 176-177 should consume the platform-neutral accessibility snapshot for
+  UIA/AT-SPI adapter skeletons. They should not add separate public
+  accessibility semantics until the adapter boundary proves a missing concept.
+
 ## 2026-07-02 GPUI-Core API Parity Audit
 
 - Step 168 adds `docs/gpui-core-api-parity.md` as the Windows/Linux truth
