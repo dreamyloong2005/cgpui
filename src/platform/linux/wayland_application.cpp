@@ -28,6 +28,8 @@ struct xdg_positioner;
 struct xdg_wm_base;
 struct xdg_surface;
 struct xdg_toplevel;
+struct zwp_text_input_manager_v3;
+struct zwp_text_input_v3;
 
 namespace {
 
@@ -35,6 +37,8 @@ extern const wl_interface xdg_positioner_interface;
 extern const wl_interface xdg_wm_base_interface;
 extern const wl_interface xdg_surface_interface;
 extern const wl_interface xdg_toplevel_interface;
+extern const wl_interface zwp_text_input_manager_v3_interface;
+extern const wl_interface zwp_text_input_v3_interface;
 
 const wl_interface xdg_positioner_interface{
     "xdg_positioner", 1, 0, nullptr, 0, nullptr};
@@ -104,6 +108,60 @@ const wl_interface xdg_wm_base_interface{
     xdg_wm_base_events,
 };
 
+const wl_interface* zwp_text_input_manager_v3_get_text_input_types[]{
+    &zwp_text_input_v3_interface,
+    &wl_seat_interface,
+};
+const wl_message zwp_text_input_manager_v3_requests[]{
+    {"destroy", "", nullptr},
+    {
+        "get_text_input",
+        "no",
+        zwp_text_input_manager_v3_get_text_input_types,
+    },
+};
+const wl_interface zwp_text_input_manager_v3_interface{
+    "zwp_text_input_manager_v3",
+    1,
+    2,
+    zwp_text_input_manager_v3_requests,
+    0,
+    nullptr,
+};
+
+const wl_message zwp_text_input_v3_requests[]{
+    {"destroy", "", nullptr},
+    {"enable", "", nullptr},
+    {"disable", "", nullptr},
+    {"set_surrounding_text", "sii", nullptr},
+    {"set_text_change_cause", "u", nullptr},
+    {"set_content_type", "uu", nullptr},
+    {"set_cursor_rectangle", "iiii", nullptr},
+    {"commit", "", nullptr},
+};
+const wl_interface* zwp_text_input_v3_enter_types[]{
+    &wl_surface_interface,
+};
+const wl_interface* zwp_text_input_v3_leave_types[]{
+    &wl_surface_interface,
+};
+const wl_message zwp_text_input_v3_events[]{
+    {"enter", "o", zwp_text_input_v3_enter_types},
+    {"leave", "o", zwp_text_input_v3_leave_types},
+    {"preedit_string", "sii", nullptr},
+    {"commit_string", "s", nullptr},
+    {"delete_surrounding_text", "uu", nullptr},
+    {"done", "u", nullptr},
+};
+const wl_interface zwp_text_input_v3_interface{
+    "zwp_text_input_v3",
+    1,
+    8,
+    zwp_text_input_v3_requests,
+    6,
+    zwp_text_input_v3_events,
+};
+
 struct xdg_wm_base_listener {
   void (*ping)(void* data, xdg_wm_base* shell, std::uint32_t serial);
 };
@@ -120,6 +178,30 @@ struct xdg_toplevel_listener {
       std::int32_t height,
       wl_array* states);
   void (*close)(void* data, xdg_toplevel* toplevel);
+};
+
+struct zwp_text_input_v3_listener {
+  void (*enter)(void* data, zwp_text_input_v3* text_input, wl_surface* surface);
+  void (*leave)(void* data, zwp_text_input_v3* text_input, wl_surface* surface);
+  void (*preedit_string)(
+      void* data,
+      zwp_text_input_v3* text_input,
+      const char* text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end);
+  void (*commit_string)(
+      void* data,
+      zwp_text_input_v3* text_input,
+      const char* text);
+  void (*delete_surrounding_text)(
+      void* data,
+      zwp_text_input_v3* text_input,
+      std::uint32_t before_length,
+      std::uint32_t after_length);
+  void (*done)(
+      void* data,
+      zwp_text_input_v3* text_input,
+      std::uint32_t serial);
 };
 
 int xdg_wm_base_add_listener(
@@ -239,6 +321,124 @@ void xdg_toplevel_set_title(
       wl_proxy_get_version(reinterpret_cast<wl_proxy*>(toplevel)),
       0,
       title);
+}
+
+void zwp_text_input_manager_v3_destroy(zwp_text_input_manager_v3* manager) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(manager),
+      0,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(manager)),
+      WL_MARSHAL_FLAG_DESTROY);
+}
+
+zwp_text_input_v3* zwp_text_input_manager_v3_get_text_input(
+    zwp_text_input_manager_v3* manager,
+    wl_seat* seat) {
+  wl_proxy* proxy = wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(manager),
+      1,
+      &zwp_text_input_v3_interface,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(manager)),
+      0,
+      nullptr,
+      seat);
+  return reinterpret_cast<zwp_text_input_v3*>(proxy);
+}
+
+int zwp_text_input_v3_add_listener(
+    zwp_text_input_v3* text_input,
+    const zwp_text_input_v3_listener* listener,
+    void* data) {
+  return wl_proxy_add_listener(
+      reinterpret_cast<wl_proxy*>(text_input),
+      reinterpret_cast<void (**)(void)>(
+          const_cast<zwp_text_input_v3_listener*>(listener)),
+      data);
+}
+
+void zwp_text_input_v3_destroy(zwp_text_input_v3* text_input) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      0,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      WL_MARSHAL_FLAG_DESTROY);
+}
+
+void zwp_text_input_v3_enable(zwp_text_input_v3* text_input) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      1,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      0);
+}
+
+void zwp_text_input_v3_disable(zwp_text_input_v3* text_input) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      2,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      0);
+}
+
+void zwp_text_input_v3_set_surrounding_text(
+    zwp_text_input_v3* text_input,
+    const char* text,
+    std::int32_t cursor,
+    std::int32_t anchor) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      3,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      0,
+      text,
+      cursor,
+      anchor);
+}
+
+void zwp_text_input_v3_set_content_type(
+    zwp_text_input_v3* text_input,
+    std::uint32_t hint,
+    std::uint32_t purpose) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      5,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      0,
+      hint,
+      purpose);
+}
+
+void zwp_text_input_v3_set_cursor_rectangle(
+    zwp_text_input_v3* text_input,
+    std::int32_t x,
+    std::int32_t y,
+    std::int32_t width,
+    std::int32_t height) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      6,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      0,
+      x,
+      y,
+      width,
+      height);
+}
+
+void zwp_text_input_v3_commit(zwp_text_input_v3* text_input) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(text_input),
+      7,
+      nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(text_input)),
+      0);
 }
 
 } // namespace
@@ -369,10 +569,15 @@ KeyboardModifiers modifiers_from_xkb_state(xkb_state* state) {
   };
 }
 
-class WaylandTextInput {
+class WaylandTextInputState {
  public:
+  void set_available(bool available) {
+    available_ = available;
+  }
+
   [[nodiscard]] ImeTextInputSupport support() const {
-    return ImeTextInputSupport::unsupported;
+    return available_ ? ImeTextInputSupport::available
+                      : ImeTextInputSupport::unsupported;
   }
 
   void set_placement(std::optional<ImeTextInputPlacement> placement) {
@@ -383,8 +588,68 @@ class WaylandTextInput {
     return placement_;
   }
 
+  void enter() {
+    entered_ = true;
+  }
+
+  std::optional<ImeComposition> leave(KeyboardModifiers modifiers) {
+    entered_ = false;
+    if (!preedit_text_.empty()) {
+      preedit_text_.clear();
+      return ImeComposition{
+          .phase = ImeCompositionPhase::cancel,
+          .text = {},
+          .modifiers = modifiers};
+    }
+    return std::nullopt;
+  }
+
+  void set_surrounding_text(
+      std::string surrounding_text,
+      std::int32_t cursor,
+      std::int32_t anchor) {
+    surrounding_text_ = std::move(surrounding_text);
+    surrounding_text_cursor_ = cursor;
+    surrounding_text_anchor_ = anchor;
+  }
+
+  void set_content_type(std::uint32_t hint, std::uint32_t purpose) {
+    content_type_hint_ = hint;
+    content_type_purpose_ = purpose;
+  }
+
+  [[nodiscard]] ImeComposition preedit(
+      std::string text,
+      KeyboardModifiers modifiers) {
+    preedit_text_ = std::move(text);
+    return ImeComposition{
+        .phase = ImeCompositionPhase::update,
+        .text = preedit_text_,
+        .modifiers = modifiers};
+  }
+
+  [[nodiscard]] ImeComposition commit(
+      std::string text,
+      KeyboardModifiers modifiers) {
+    preedit_text_.clear();
+    committed_text_ = std::move(text);
+    return ImeComposition{
+        .phase = ImeCompositionPhase::commit,
+        .text = committed_text_,
+        .modifiers = modifiers};
+  }
+
  private:
+  bool available_ = false;
+  bool entered_ = false;
   std::optional<ImeTextInputPlacement> placement_;
+  std::string surrounding_text_;
+  std::int32_t surrounding_text_cursor_ = 0;
+  std::int32_t surrounding_text_anchor_ = 0;
+  std::uint32_t content_type_hint_ = 0;
+  std::uint32_t content_type_purpose_ = 0;
+  std::string preedit_text_;
+  std::string committed_text_;
 };
 
 class WaylandWindow final : public PlatformWindow {
@@ -394,13 +659,15 @@ class WaylandWindow final : public PlatformWindow {
       wl_compositor* compositor,
       xdg_wm_base* shell,
       const WindowDescriptor& descriptor,
-      PlatformEventCallback callback) {
+      PlatformEventCallback callback,
+      bool text_input_available) {
     auto window = std::unique_ptr<WaylandWindow>(
         new WaylandWindow(display, std::move(callback), WindowState{
             .framebuffer_size = descriptor.size,
             .scale = DpiScale{1.0F},
             .close_requested = false,
         }));
+    window->set_text_input_available(text_input_available);
 
     auto initialized = window->initialize(compositor, shell, descriptor);
     if (!initialized) {
@@ -449,9 +716,8 @@ class WaylandWindow final : public PlatformWindow {
 
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override {
-    text_input_.set_placement(placement);
-    state_.ime_text_input_support = text_input_.support();
-    state_.ime_text_input_placement = text_input_.placement();
+    text_input_state_.set_placement(placement);
+    sync_text_input_state();
   }
 
   [[nodiscard]] CursorShape cursor_shape() const {
@@ -508,6 +774,40 @@ class WaylandWindow final : public PlatformWindow {
     callback_(TextInput{
         .text = std::move(text),
         .modifiers = modifiers});
+  }
+
+  void text_input_entered() {
+    text_input_state_.enter();
+  }
+
+  void text_input_left(KeyboardModifiers modifiers) {
+    if (auto event = text_input_state_.leave(modifiers); event.has_value()) {
+      callback_(*event);
+    }
+  }
+
+  void text_input_preedit(std::string text, KeyboardModifiers modifiers) {
+    callback_(text_input_state_.preedit(std::move(text), modifiers));
+  }
+
+  void text_input_commit(std::string text, KeyboardModifiers modifiers) {
+    callback_(text_input_state_.commit(std::move(text), modifiers));
+  }
+
+  void text_input_surrounding_text(
+      std::string text,
+      std::int32_t cursor,
+      std::int32_t anchor) {
+    text_input_state_.set_surrounding_text(std::move(text), cursor, anchor);
+  }
+
+  void text_input_content_type(std::uint32_t hint, std::uint32_t purpose) {
+    text_input_state_.set_content_type(hint, purpose);
+  }
+
+  void set_text_input_available(bool available) {
+    text_input_state_.set_available(available);
+    sync_text_input_state();
   }
 
   void focus_changed(bool focused) {
@@ -615,16 +915,223 @@ class WaylandWindow final : public PlatformWindow {
     callback_(WindowCloseRequested{});
   }
 
+  void sync_text_input_state() {
+    state_.ime_text_input_support = text_input_state_.support();
+    state_.ime_text_input_placement = text_input_state_.placement();
+  }
+
   wl_display* display_ = nullptr;
   wl_surface* surface_ = nullptr;
   xdg_surface* xdg_surface_ = nullptr;
   xdg_toplevel* toplevel_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
-  WaylandTextInput text_input_;
+  WaylandTextInputState text_input_state_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;
+};
+
+class WaylandTextInput {
+ public:
+  using WindowLookup = std::function<WaylandWindow*(wl_surface*)>;
+  using ModifiersProvider = std::function<KeyboardModifiers()>;
+
+  void set_display(wl_display* display) {
+    display_ = display;
+  }
+
+  void set_manager(zwp_text_input_manager_v3* manager) {
+    manager_ = manager;
+  }
+
+  void set_window_lookup(WindowLookup lookup) {
+    find_window_ = std::move(lookup);
+  }
+
+  void set_modifiers_provider(ModifiersProvider provider) {
+    modifiers_ = std::move(provider);
+  }
+
+  void bind_to_seat(wl_seat* seat) {
+    if (manager_ == nullptr || seat == nullptr || text_input_ != nullptr) {
+      return;
+    }
+
+    text_input_ = zwp_text_input_manager_v3_get_text_input(manager_, seat);
+    if (text_input_ == nullptr) {
+      return;
+    }
+
+    static const zwp_text_input_v3_listener listener{
+        .enter = &WaylandTextInput::handle_enter,
+        .leave = &WaylandTextInput::handle_leave,
+        .preedit_string = &WaylandTextInput::handle_preedit_string,
+        .commit_string = &WaylandTextInput::handle_commit_string,
+        .delete_surrounding_text =
+            &WaylandTextInput::handle_delete_surrounding_text,
+        .done = &WaylandTextInput::handle_done,
+    };
+    zwp_text_input_v3_add_listener(text_input_, &listener, this);
+  }
+
+  void reset_text_input() {
+    active_window_ = nullptr;
+    pending_preedit_.reset();
+    pending_commit_.reset();
+    if (text_input_ != nullptr) {
+      zwp_text_input_v3_destroy(text_input_);
+      text_input_ = nullptr;
+    }
+  }
+
+  [[nodiscard]] bool available() const {
+    return text_input_ != nullptr;
+  }
+
+  void apply_placement(WaylandWindow& window) {
+    const auto placement = window.state().ime_text_input_placement;
+    if (placement.has_value()) {
+      const std::int32_t cursor =
+          static_cast<std::int32_t>(placement->byte_offset);
+      window.text_input_surrounding_text({}, cursor, cursor);
+      window.text_input_content_type(0, 0);
+    }
+    if (text_input_ == nullptr) {
+      return;
+    }
+
+    if (placement.has_value()) {
+      const auto& rect = placement->rect;
+      const std::int32_t cursor =
+          static_cast<std::int32_t>(placement->byte_offset);
+      const std::string surrounding_text;
+      zwp_text_input_v3_enable(text_input_);
+      zwp_text_input_v3_set_surrounding_text(
+          text_input_,
+          surrounding_text.c_str(),
+          cursor,
+          cursor);
+      zwp_text_input_v3_set_content_type(text_input_, 0, 0);
+      zwp_text_input_v3_set_cursor_rectangle(
+          text_input_,
+          static_cast<std::int32_t>(rect.origin.x),
+          static_cast<std::int32_t>(rect.origin.y),
+          static_cast<std::int32_t>(rect.size.width),
+          static_cast<std::int32_t>(rect.size.height));
+    } else {
+      zwp_text_input_v3_disable(text_input_);
+    }
+    zwp_text_input_v3_commit(text_input_);
+    if (display_ != nullptr) {
+      (void)wl_display_flush(display_);
+    }
+  }
+
+ private:
+  static void handle_enter(
+      void* data,
+      zwp_text_input_v3* text_input,
+      wl_surface* surface) {
+    (void)text_input;
+    auto* self = static_cast<WaylandTextInput*>(data);
+    self->active_window_ = self->find_window_ ? self->find_window_(surface) : nullptr;
+    if (self->active_window_ != nullptr) {
+      self->active_window_->text_input_entered();
+    }
+  }
+
+  static void handle_leave(
+      void* data,
+      zwp_text_input_v3* text_input,
+      wl_surface* surface) {
+    (void)text_input;
+    auto* self = static_cast<WaylandTextInput*>(data);
+    WaylandWindow* window =
+        self->find_window_ ? self->find_window_(surface) : self->active_window_;
+    if (window != nullptr) {
+      window->text_input_left(self->current_modifiers());
+    }
+    if (window == self->active_window_) {
+      self->active_window_ = nullptr;
+    }
+    self->pending_preedit_.reset();
+    self->pending_commit_.reset();
+  }
+
+  static void handle_preedit_string(
+      void* data,
+      zwp_text_input_v3* text_input,
+      const char* text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end) {
+    (void)text_input;
+    (void)cursor_begin;
+    (void)cursor_end;
+    auto* self = static_cast<WaylandTextInput*>(data);
+    self->pending_preedit_ = text == nullptr ? std::string{} : std::string(text);
+  }
+
+  static void handle_commit_string(
+      void* data,
+      zwp_text_input_v3* text_input,
+      const char* text) {
+    (void)text_input;
+    auto* self = static_cast<WaylandTextInput*>(data);
+    self->pending_commit_ = text == nullptr ? std::string{} : std::string(text);
+  }
+
+  static void handle_delete_surrounding_text(
+      void* data,
+      zwp_text_input_v3* text_input,
+      std::uint32_t before_length,
+      std::uint32_t after_length) {
+    (void)data;
+    (void)text_input;
+    (void)before_length;
+    (void)after_length;
+  }
+
+  static void handle_done(
+      void* data,
+      zwp_text_input_v3* text_input,
+      std::uint32_t serial) {
+    (void)text_input;
+    (void)serial;
+    auto* self = static_cast<WaylandTextInput*>(data);
+    if (self->active_window_ == nullptr) {
+      self->pending_preedit_.reset();
+      self->pending_commit_.reset();
+      return;
+    }
+
+    const KeyboardModifiers modifiers = self->current_modifiers();
+    if (self->pending_preedit_.has_value()) {
+      self->active_window_->text_input_preedit(
+          std::move(*self->pending_preedit_),
+          modifiers);
+    }
+    if (self->pending_commit_.has_value()) {
+      self->active_window_->text_input_commit(
+          std::move(*self->pending_commit_),
+          modifiers);
+    }
+    self->pending_preedit_.reset();
+    self->pending_commit_.reset();
+  }
+
+  [[nodiscard]] KeyboardModifiers current_modifiers() const {
+    return modifiers_ ? modifiers_() : KeyboardModifiers{};
+  }
+
+  wl_display* display_ = nullptr;
+  zwp_text_input_manager_v3* manager_ = nullptr;
+  zwp_text_input_v3* text_input_ = nullptr;
+  WaylandWindow* active_window_ = nullptr;
+  WindowLookup find_window_;
+  ModifiersProvider modifiers_;
+  std::optional<std::string> pending_preedit_;
+  std::optional<std::string> pending_commit_;
 };
 
 class WaylandDataDevice {
@@ -933,11 +1440,13 @@ class WaylandApplication final : public PlatformApplication {
       return;
     }
     data_device_.set_display(display_);
+    text_input_.set_display(display_);
     if (pipe2(wakeup_pipe_, O_NONBLOCK | O_CLOEXEC) == -1) {
       initialization_error_ = "pipe2 failed while creating event-loop wakeup pipe";
       return;
     }
     configure_data_device_lookup();
+    configure_text_input_lookup();
 
     registry_ = wl_display_get_registry(display_);
     if (registry_ == nullptr) {
@@ -968,6 +1477,7 @@ class WaylandApplication final : public PlatformApplication {
       };
       wl_seat_add_listener(seat_, &seat_listener, this);
       data_device_.bind_to_seat(seat_);
+      text_input_.bind_to_seat(seat_);
       if (wl_display_roundtrip(display_) == -1) {
         initialization_error_ = "wl_display_roundtrip failed while waiting for seat";
       }
@@ -975,6 +1485,7 @@ class WaylandApplication final : public PlatformApplication {
   }
 
   ~WaylandApplication() override {
+    text_input_.reset_text_input();
     data_device_.reset_device();
     reset_keyboard_state();
     if (keyboard_ != nullptr) {
@@ -988,6 +1499,9 @@ class WaylandApplication final : public PlatformApplication {
     }
     if (data_device_manager_ != nullptr) {
       wl_data_device_manager_destroy(data_device_manager_);
+    }
+    if (text_input_manager_ != nullptr) {
+      zwp_text_input_manager_v3_destroy(text_input_manager_);
     }
     if (shell_ != nullptr) {
       xdg_wm_base_destroy(shell_);
@@ -1034,7 +1548,12 @@ class WaylandApplication final : public PlatformApplication {
     }
 
     auto window = WaylandWindow::create(
-        display_, compositor_, shell_, descriptor, std::move(callback));
+        display_,
+        compositor_,
+        shell_,
+        descriptor,
+        std::move(callback),
+        text_input_.available());
     if (!window) {
       return std::unexpected(window.error());
     }
@@ -1113,6 +1632,12 @@ class WaylandApplication final : public PlatformApplication {
         [this](wl_surface* surface) { return find_window(surface); });
   }
 
+  void configure_text_input_lookup() {
+    text_input_.set_window_lookup(
+        [this](wl_surface* surface) { return find_window(surface); });
+    text_input_.set_modifiers_provider([this] { return keyboard_modifiers(); });
+  }
+
   static void handle_global(
       void* data,
       wl_registry* registry,
@@ -1153,6 +1678,15 @@ class WaylandApplication final : public PlatformApplication {
               &wl_data_device_manager_interface,
               std::min<std::uint32_t>(version, 3)));
       app->data_device_.set_manager(app->data_device_manager_);
+    }
+    if (interface_name == zwp_text_input_manager_v3_interface.name) {
+      app->text_input_manager_ =
+          static_cast<zwp_text_input_manager_v3*>(wl_registry_bind(
+              registry,
+              name,
+              &zwp_text_input_manager_v3_interface,
+              std::min<std::uint32_t>(version, 1)));
+      app->text_input_.set_manager(app->text_input_manager_);
     }
   }
 
@@ -1210,8 +1744,10 @@ class WaylandApplication final : public PlatformApplication {
 
     if (capabilities != 0U) {
       app->data_device_.bind_to_seat(seat);
+      app->text_input_.bind_to_seat(seat);
     } else {
       app->data_device_.reset_device();
+      app->text_input_.reset_text_input();
     }
 
     if (has_keyboard) {
@@ -1547,6 +2083,13 @@ class WaylandApplication final : public PlatformApplication {
     }
   }
 
+  void set_window_ime_text_input_placement(
+      WaylandWindow& window,
+      std::optional<ImeTextInputPlacement> placement) {
+    window.set_ime_text_input_placement(placement);
+    text_input_.apply_placement(window);
+  }
+
   void apply_cursor_for(WaylandWindow* window) {
     if (window == nullptr || pointer_ == nullptr) {
       return;
@@ -1682,7 +2225,7 @@ class WaylandApplication final : public PlatformApplication {
 
     void set_ime_text_input_placement(
         std::optional<ImeTextInputPlacement> placement) override {
-      window_->set_ime_text_input_placement(placement);
+      app_.set_window_ime_text_input_placement(*window_, placement);
     }
 
    private:
@@ -1696,9 +2239,11 @@ class WaylandApplication final : public PlatformApplication {
   xdg_wm_base* shell_ = nullptr;
   wl_seat* seat_ = nullptr;
   wl_data_device_manager* data_device_manager_ = nullptr;
+  zwp_text_input_manager_v3* text_input_manager_ = nullptr;
   wl_pointer* pointer_ = nullptr;
   wl_keyboard* keyboard_ = nullptr;
   WaylandDataDevice data_device_;
+  WaylandTextInput text_input_;
   xkb_context* xkb_context_ = nullptr;
   xkb_keymap* xkb_keymap_ = nullptr;
   xkb_state* xkb_state_ = nullptr;

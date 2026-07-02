@@ -150,9 +150,15 @@ int main() {
       !contains(text, "FontDatabase")) {
     return 62;
   }
-  if (!contains(text, "WaylandTextInput") ||
-      !contains(text, "ImeTextInputSupport::unsupported") ||
-      !contains(text, "set_ime_text_input_placement")) {
+  if (!contains(text, "WaylandTextInputState") ||
+      !contains(text, "WaylandTextInput") ||
+      !contains(text, "ImeTextInputSupport::available") ||
+      !contains(text, "set_ime_text_input_placement") ||
+      !contains(text, "surrounding_text") ||
+      !contains(text, "content_type") ||
+      !contains(text, "preedit") ||
+      !contains(text, "commit") ||
+      !contains(text, "ImeComposition{")) {
     return 63;
   }
   if (!contains(text, "WaylandDataDevice") ||

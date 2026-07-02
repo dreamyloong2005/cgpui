@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <optional>
 #include <vector>
 
 namespace cgpui::test {
@@ -13,6 +14,23 @@ struct WaylandMimePayload {
 };
 
 using WaylandClipboardMimePayload = WaylandMimePayload;
+
+struct WaylandTextInputRect {
+  std::int32_t x = 0;
+  std::int32_t y = 0;
+  std::int32_t width = 0;
+  std::int32_t height = 0;
+};
+
+struct WaylandTextInputClientState {
+  std::string surrounding_text;
+  std::int32_t cursor = 0;
+  std::int32_t anchor = 0;
+  std::uint32_t content_hint = 0;
+  std::uint32_t content_purpose = 0;
+  std::optional<WaylandTextInputRect> cursor_rect;
+  bool enabled = false;
+};
 
 class WaylandTestCompositor {
  public:
@@ -45,6 +63,10 @@ class WaylandTestCompositor {
       bool super);
   void request_keyboard_key(std::uint32_t key, bool pressed);
   void request_keyboard_leave();
+  void request_text_input_enter();
+  void request_text_input_preedit(std::string text);
+  void request_text_input_commit(std::string text);
+  void request_text_input_leave();
   void set_clipboard_selection(
       std::vector<WaylandMimePayload> payloads);
 
@@ -64,6 +86,12 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_keyboard_modifiers_sent() const;
   [[nodiscard]] bool wait_for_keyboard_key_sent() const;
   [[nodiscard]] bool wait_for_keyboard_leave_sent() const;
+  [[nodiscard]] bool wait_for_text_input_enter_sent() const;
+  [[nodiscard]] bool wait_for_text_input_preedit_sent() const;
+  [[nodiscard]] bool wait_for_text_input_commit_sent() const;
+  [[nodiscard]] bool wait_for_text_input_leave_sent() const;
+  [[nodiscard]] bool wait_for_text_input_client_state_committed() const;
+  [[nodiscard]] WaylandTextInputClientState text_input_client_state() const;
   [[nodiscard]] bool wait_for_clipboard_selection_sent() const;
   [[nodiscard]] std::string last_clipboard_receive_mime_type() const;
 

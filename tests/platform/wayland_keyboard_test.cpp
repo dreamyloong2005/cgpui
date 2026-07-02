@@ -4,6 +4,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdlib>
+#include <optional>
 #include <thread>
 #include <variant>
 
@@ -40,6 +41,8 @@ int main() {
   bool blurred = false;
   bool key_pressed_with_shift = false;
   bool text_received = false;
+  bool ime_preedit_received = false;
+  bool ime_commit_received = false;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Keyboard Test",
@@ -66,11 +69,23 @@ int main() {
               !text->modifiers.control && !text->modifiers.alt &&
               !text->modifiers.super;
         }
+        if (const auto* composition = std::get_if<cgpui::ImeComposition>(&event);
+            composition != nullptr) {
+          if (composition->phase == cgpui::ImeCompositionPhase::update &&
+              composition->text == "draft") {
+            ime_preedit_received = true;
+          }
+          if (composition->phase == cgpui::ImeCompositionPhase::commit &&
+              composition->text == "\xE4\xB8\xAD") {
+            ime_commit_received = true;
+          }
+        }
         if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
         if (focused && pressed && released && key_pressed_with_shift &&
-            text_received && blurred) {
+            text_received && ime_preedit_received && ime_commit_received &&
+            blurred) {
           (*app)->quit();
         }
       });
@@ -78,7 +93,7 @@ int main() {
     return 4;
   }
   if ((*window)->state().ime_text_input_support !=
-      cgpui::ImeTextInputSupport::unsupported) {
+      cgpui::ImeTextInputSupport::available) {
     return 14;
   }
 
@@ -89,8 +104,7 @@ int main() {
               .size = {.width = 1.0F, .height = 16.0F}},
       .byte_offset = 1});
   const cgpui::WindowState placed_state = (*window)->state();
-  if (placed_state.ime_text_input_support !=
-          cgpui::ImeTextInputSupport::unsupported ||
+  if (placed_state.ime_text_input_support != cgpui::ImeTextInputSupport::available ||
       !placed_state.ime_text_input_placement.has_value() ||
       placed_state.ime_text_input_placement->byte_offset != 1 ||
       placed_state.ime_text_input_placement->rect.origin.x != 18.0F ||
@@ -102,11 +116,17 @@ int main() {
 
   (*window)->set_ime_text_input_placement(std::nullopt);
   const cgpui::WindowState cleared_state = (*window)->state();
-  if (cleared_state.ime_text_input_support !=
-          cgpui::ImeTextInputSupport::unsupported ||
+  if (cleared_state.ime_text_input_support != cgpui::ImeTextInputSupport::available ||
       cleared_state.ime_text_input_placement.has_value()) {
     return 16;
   }
+
+  (*window)->set_ime_text_input_placement(cgpui::ImeTextInputPlacement{
+      .rect =
+          cgpui::Rect{
+              .origin = {.x = 22.0F, .y = 34.0F},
+              .size = {.width = 2.0F, .height = 18.0F}},
+      .byte_offset = 2});
 
   std::atomic_bool run_finished{false};
   int run_result = -1;
@@ -118,6 +138,10 @@ int main() {
   compositor.request_keyboard_modifiers(true, false, false, false);
   compositor.request_keyboard_key(expected_key, true);
   compositor.request_keyboard_key(expected_key, false);
+  compositor.request_text_input_enter();
+  compositor.request_text_input_preedit("draft");
+  compositor.request_text_input_commit("\xE4\xB8\xAD");
+  compositor.request_text_input_leave();
   compositor.request_keyboard_leave();
 
   if (!wait_for_run_finished(run_finished)) {
@@ -144,6 +168,36 @@ int main() {
   if (!compositor.wait_for_keyboard_modifiers_sent()) {
     return 11;
   }
+  if (!compositor.wait_for_text_input_enter_sent()) {
+    return 17;
+  }
+  if (!compositor.wait_for_text_input_preedit_sent()) {
+    return 18;
+  }
+  if (!compositor.wait_for_text_input_commit_sent()) {
+    return 19;
+  }
+  if (!compositor.wait_for_text_input_leave_sent()) {
+    return 20;
+  }
+  if (!compositor.wait_for_text_input_client_state_committed()) {
+    return 21;
+  }
+  const cgpui::test::WaylandTextInputClientState text_input_state =
+      compositor.text_input_client_state();
+  if (!text_input_state.enabled ||
+      text_input_state.surrounding_text != std::string{} ||
+      text_input_state.cursor != 2 ||
+      text_input_state.anchor != 2 ||
+      text_input_state.content_hint != 0 ||
+      text_input_state.content_purpose != 0 ||
+      !text_input_state.cursor_rect.has_value() ||
+      text_input_state.cursor_rect->x != 22 ||
+      text_input_state.cursor_rect->y != 34 ||
+      text_input_state.cursor_rect->width != 2 ||
+      text_input_state.cursor_rect->height != 18) {
+    return 22;
+  }
   if (!pressed || !released) {
     return 7;
   }
@@ -158,6 +212,12 @@ int main() {
   }
   if (!text_received) {
     return 13;
+  }
+  if (!ime_preedit_received) {
+    return 23;
+  }
+  if (!ime_commit_received) {
+    return 24;
   }
 
   return 0;
