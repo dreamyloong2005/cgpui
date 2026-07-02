@@ -730,7 +730,7 @@ follow-on goal is now complete on the Windows/Linux track.
 207. [x] App command palette registry.
 208. [x] Platform diagnostics event stream.
 209. [x] UIA provider tree facade.
-210. [ ] AT-SPI object model facade.
+210. [x] AT-SPI object model facade.
 211. [ ] Accessibility value and live update events.
 212. [ ] Additional window renderer ownership.
 213. [ ] Additional window event routing.
@@ -745,11 +745,30 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 209, UIA provider tree facade, is merged on `master` at
-`2eb0749 feat: add win32 uia provider facade` and post-merge verified on
-Windows and WSL Arch Linux. Step 210, AT-SPI object model facade, is the next
+Step 210, AT-SPI object model facade, is merged on `master` at
+`069a997 feat: add linux atspi object facade` and post-merge verified on
+Windows and WSL Arch Linux. Step 211, accessibility value and live update
+events, is the next
 implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 210, AT-SPI object model facade, is merged on `master` at
+`069a997 feat: add linux atspi object facade`. RED failed as expected on
+missing Wayland AT-SPI object facade source markers, with
+`wayland_window_source_test` returning the new 75 marker. GREEN adds
+`WaylandAtspiObjectNode` records and stable
+`/org/a11y/atspi/accessible/<element-id>` object paths over the existing
+`PlatformAccessibilityTreeUpdate`, retaining parent ids/object paths,
+role/name/text/value, enabled/focusable/focused state, bounds, and child
+counts without exposing D-Bus provider types. Feature-worktree targeted tests
+passed 4/4 on Windows and WSL Arch Linux, `git diff --check` exited 0 with
+only expected CRLF warnings, WSL full debug passed 27/27, and Windows full
+debug passed 30/30. Post-merge targeted tests passed 4/4 on Windows and WSL
+Arch Linux, `git diff --check` produced no output, WSL full debug passed
+27/27, and Windows full debug passed 30/30 after isolating a transient
+`clipboard_test/default` batch failure with a passing targeted rerun. Step
+211, accessibility value and live update events, is the next implementation
+slice.
 
 Step 209, UIA provider tree facade, is merged on `master` at
 `2eb0749 feat: add win32 uia provider facade`. RED failed as expected on

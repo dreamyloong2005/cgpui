@@ -700,13 +700,18 @@ targeted rerun and full-suite rerun.
 **Files:**
 - Modify: `src/platform/linux/wayland_application.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
-- Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for an AT-SPI object facade with stable object paths, roles, names, text, and focus state.
-- [ ] Expected RED: Linux AT-SPI adapter only counts nodes.
-- [ ] GREEN: add internal object-model records over `PlatformAccessibilityTreeUpdate` without exposing D-Bus provider types.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-object-facade -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] Add RED coverage for an AT-SPI object facade with stable object paths, roles, names, text, and focus state.
+- [x] Expected RED: Linux AT-SPI adapter only counts nodes.
+- [x] GREEN: add internal object-model records over `PlatformAccessibilityTreeUpdate` without exposing D-Bus provider types.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-object-facade -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
+- [x] Windows available-target command: `xmake test -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+
+**Merged:** `069a997 feat: add linux atspi object facade`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30 after
+isolating a transient `clipboard_test/default` batch failure with a passing
+targeted rerun.
 
 ## Step 211: Accessibility Value And Live Update Events
 

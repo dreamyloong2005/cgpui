@@ -1,5 +1,54 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 210 AT-SPI Object Model Facade
+
+- Created `.worktrees/linux-atspi-object-facade` on
+  `codex/linux-atspi-object-facade` from `master` at
+  `e4b18a1 docs: mark step 209 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-object-facade -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- Added RED coverage in `tests/architecture/wayland_window_source_test.cpp`.
+  RED failed as expected on missing AT-SPI object facade markers; direct
+  `xmake run -P . wayland_window_source_test` reported failed(75).
+- GREEN adds `WaylandAtspiObjectNode`, deterministic
+  `atspi_object_path_for(...)`, and retained `atspi_object_nodes_` records over
+  `PlatformAccessibilityTreeUpdate` while keeping the adapter internal and not
+  exposing D-Bus provider types.
+- Verified feature-worktree targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-object-facade -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux, and
+  `xmake test -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4 on Windows.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-object-facade -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 210 as `069a997 feat: add linux atspi object facade` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Post-merge Windows full debug initially failed only
+  `clipboard_test/default`; targeted
+  `xmake test -P . clipboard_test/default` passed 1/1, and the full-suite
+  rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 210 is marked merged and post-merge verified.
+  Step 211, accessibility value and live update events, is the next
+  implementation slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 209 UIA Provider Tree Facade
 
 - Continued `.worktrees/win32-uia-provider-facade` on

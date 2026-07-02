@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 AT-SPI Object Model Facade
+
+- Step 210 mirrors the Step 209 Win32 UIA provider-node facade on
+  Linux/Wayland. `WaylandAtspiAccessibilityAdapter` now builds
+  `WaylandAtspiObjectNode` records from the latest
+  `PlatformAccessibilityTreeUpdate` instead of only retaining summary counts.
+- AT-SPI object paths are deterministic and element-id based:
+  `/org/a11y/atspi/accessible/<element-id>`. Child records also retain optional
+  parent object paths, so later D-Bus provider work can navigate the object
+  model without inventing a separate public accessibility identity.
+- The facade preserves role, name, text, value, enabled/focusable/focused
+  state, bounds, and child counts while keeping the existing root/node/focus
+  summary counters intact.
+- This remains an internal object model, not production AT-SPI. It does not
+  register on the accessibility bus, expose D-Bus object paths, implement
+  AT-SPI interfaces, or emit accessibility events. Step 211 moves to
+  accessibility value and live update event records shared by the platform
+  adapters.
+
 ## 2026-07-03 UIA Provider Tree Facade
 
 - Step 209 adds `PlatformAccessibilityNodeUpdate::value` so text-input
