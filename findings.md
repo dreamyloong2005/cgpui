@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Linux AT-SPI Accessibility Adapter Skeleton
+
+- Step 177 mirrors the Step 176 Win32 adapter boundary on Linux/Wayland. The
+  new `WaylandAtspiAccessibilityAdapter` consumes
+  `PlatformAccessibilityTreeUpdate` and tracks root element id, total nodes,
+  focused nodes, and text-input nodes.
+- The adapter is stored inside `WaylandWindow`, and
+  `RegisteredWaylandWindow::update_accessibility_tree(...)` forwards platform
+  updates into the underlying Wayland window. This matters because the runtime
+  owns the registered wrapper, not the raw `WaylandWindow`.
+- The slice intentionally avoids D-Bus, AT-SPI object paths, role mapping to
+  AT-SPI enums, event emission, or desktop accessibility bus registration.
+  Windows and Linux now have matching adapter skeletons, while production
+  accessibility bridges remain future work.
+- Step 178 can move to native additional-window creation without revisiting the
+  public accessibility snapshot surface.
+
 ## 2026-07-02 Windows UIA Accessibility Adapter Skeleton
 
 - Step 176 expands the platform accessibility update from a summary-only root

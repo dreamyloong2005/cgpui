@@ -5602,3 +5602,61 @@
   is marked merged and post-merge verified. Step 177, Linux AT-SPI
   accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 177 Linux AT-SPI Accessibility Adapter Skeleton
+
+- Created `.worktrees/linux-atspi-accessibility-adapter` on
+  `codex/linux-atspi-accessibility-adapter` from `master` at
+  `96f5e63 docs: mark step 176 merged`.
+- Baseline targeted WSL coverage passed 4/4 before edits:
+  `wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- RED coverage:
+  WSL targeted verification failed as expected only in
+  `wayland_window_source_test/default` after adding source guards for
+  `WaylandAtspiAccessibilityAdapter`, `PlatformAccessibilityTreeUpdate`,
+  focused-node counts, text-input role counting, and registered-window
+  accessibility forwarding.
+- GREEN adds `WaylandAtspiAccessibilityAdapter` in
+  `src/platform/linux/wayland_application.cpp`. It consumes
+  `PlatformAccessibilityTreeUpdate`, stores the last update, tracks root,
+  node, focused-node, and text-input-node counts, and remains isolated from
+  public headers and real D-Bus/AT-SPI provider types.
+- `WaylandWindow::update_accessibility_tree(...)` now updates the skeleton,
+  and `RegisteredWaylandWindow::update_accessibility_tree(...)` forwards
+  runtime platform updates to the underlying Wayland window.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 4/4.
+- Verified feature-worktree Windows available-target tests:
+  `xmake test -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Committed Step 177 as
+  `d03a383 feat: add linux atspi accessibility adapter skeleton` and
+  fast-forward merged it to `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 4/4.
+- Verified post-merge Windows available-target tests:
+  `xmake test -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- First post-merge Windows full debug run had one transient
+  `clipboard_test/default` failure while the other 29 tests passed. A targeted
+  rerun of `xmake test -P . clipboard_test/default` passed 1/1, and the full
+  Windows debug rerun `xmake f -c -m debug -P .; xmake test -P .` passed
+  30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan,
+  `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 177
+  is marked merged and post-merge verified. Step 178, native additional-window
+  creation slice over the multi-window runtime registry, is the next
+  implementation slice after docs closeout and cleanup.

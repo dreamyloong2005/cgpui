@@ -660,27 +660,28 @@ follow-on goal is now complete on the Windows/Linux track.
 174. [x] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
 175. [x] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
 176. [x] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
-177. [ ] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
+177. [x] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 178. [ ] Native additional-window creation slice over the multi-window runtime registry.
 
 ## Active Step
 
-Current handoff: Step 176, Windows UIA accessibility adapter skeleton
+Current handoff: Step 177, Linux AT-SPI accessibility adapter skeleton
 consuming `AccessibilityTreeSnapshot`, is merged on `master` at
-`edd3513 feat: add win32 uia accessibility adapter skeleton` and post-merge
-verified on Windows and WSL Arch Linux. RED failed as expected on missing
-platform accessibility node update records, role mapping, focused-node counts,
-and per-node data in `PlatformAccessibilityTreeUpdate`. GREEN expands the
-platform-neutral update payload with node id, parent id, role, name, text,
-enabled/focusable/focused state, optional bounds, and child count; forwards
-runtime accessibility snapshots to the platform window after layout; and adds
-a Win32 `Win32UiaAccessibilityAdapter` skeleton that consumes the update and
-tracks root, node, focused-node, and text-input counts without claiming a
-production UI Automation COM provider. Post-merge targeted coverage passed 4/4
-on Windows and 4/4 on WSL Arch Linux, `git diff --check` produced no output,
-WSL full debug passed 27/27, and Windows full debug passed 30/30. Step 177,
-Linux AT-SPI accessibility adapter skeleton consuming
-`AccessibilityTreeSnapshot`, is the next implementation slice.
+`d03a383 feat: add linux atspi accessibility adapter skeleton` and post-merge
+verified on Windows and WSL Arch Linux. RED failed as expected in the Wayland
+architecture source test on missing Linux AT-SPI adapter markers and wrapper
+forwarding from the registered platform window. GREEN adds an internal
+`WaylandAtspiAccessibilityAdapter` that consumes
+`PlatformAccessibilityTreeUpdate`, tracks root, node, focused-node, and
+text-input counts, stores it in `WaylandWindow`, and forwards
+`RegisteredWaylandWindow::update_accessibility_tree(...)` into the underlying
+Wayland window without exposing D-Bus or AT-SPI provider types in public
+headers. Post-merge targeted coverage passed 4/4 on Windows and 4/4 on WSL
+Arch Linux, `git diff --check` produced no output, WSL full debug passed 27/27,
+and Windows full debug passed 30/30 after a single transient
+`clipboard_test/default` failure was cleared by targeted rerun and full-suite
+rerun. Step 178, native additional-window creation slice over the multi-window
+runtime registry, is the next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

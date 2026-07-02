@@ -213,11 +213,31 @@
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for a Linux AT-SPI adapter update record consuming `AccessibilityTreeSnapshot`.
-- [ ] Expected RED: Wayland platform does not record AT-SPI-facing tree updates.
-- [ ] GREEN: add a Wayland/Linux AT-SPI adapter skeleton with stable node id/name/role/focus counts and source isolation from the public UI surface.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
-- [ ] Windows available-target command: platform-neutral/header coverage only.
+- [x] Add RED coverage for a Linux AT-SPI adapter update record consuming `AccessibilityTreeSnapshot`.
+- [x] Expected RED observed: WSL targeted verification failed only
+  `wayland_window_source_test/default` after the source guard required
+  `WaylandAtspiAccessibilityAdapter`, `PlatformAccessibilityTreeUpdate`,
+  `focused_node_count`, `PlatformAccessibilityRole::text_input`, and wrapper
+  forwarding.
+- [x] GREEN: added a Wayland/Linux AT-SPI adapter skeleton with stable root,
+  node, focused-node, and text-input counts plus source isolation from the
+  public UI surface and from real D-Bus/AT-SPI provider types.
+- [x] Feature-worktree WSL targeted command passed 4/4:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- [x] Feature-worktree Windows available-target command passed 4/4:
+  `xmake test -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- [x] Feature-worktree full debug verification passed: WSL Arch Linux 27/27;
+  Windows 30/30.
+- [x] Merged to `master` as
+  `d03a383 feat: add linux atspi accessibility adapter skeleton`.
+- [x] Post-merge targeted verification passed: WSL Arch Linux 4/4; Windows 4/4.
+- [x] Post-merge `git diff --check` produced no output.
+- [x] Full post-merge verification passed: WSL Arch Linux full debug 27/27;
+  Windows `clipboard_test/default` failed once during a full-suite batch, then
+  targeted `clipboard_test/default` passed 1/1 and Windows full debug rerun
+  passed 30/30.
 
 ## Step 178: Native Additional Window Creation Slice
 
