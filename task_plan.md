@@ -657,7 +657,7 @@ follow-on goal is now complete on the Windows/Linux track.
 171. [x] Vulkan textured glyph quad command generation from atlas entries.
 172. [x] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
 173. [x] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
-174. [ ] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
+174. [x] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
 175. [ ] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
 176. [ ] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 177. [ ] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
@@ -665,21 +665,20 @@ follow-on goal is now complete on the Windows/Linux track.
 
 ## Active Step
 
-Current handoff: Step 173, Wayland clipboard MIME offer/send/receive
-test-compositor path with text payload extraction, is merged on `master` at
-`c364be3 feat: add wayland clipboard mime payloads` and post-merge verified on
-Windows and WSL Arch Linux. RED failed as expected on missing test-compositor
-clipboard selection helpers, `WaylandClipboardMimePayload`, and the
-`WaylandClipboardOptions::connect_to_display` path. GREEN adds an opt-in
-Wayland clipboard connection that binds registry/seat/data-device state,
-tracks the current selection offer, prefers `text/plain;charset=utf-8` over
-`text/plain`, and reads payload bytes through `wl_data_offer_receive` pipes;
-the test compositor now sends deterministic clipboard selection offers and
-records requested MIME types. Post-merge targeted coverage passed 2/2 on
-Windows and 3/3 on WSL Arch Linux, `git diff --check` produced no output, WSL
-full debug passed 27/27, and Windows full debug passed 30/30. Step 174,
-Wayland drag/drop MIME payload extraction for text and URI-list/file payloads,
-is the next implementation slice.
+Current handoff: Step 174, Wayland drag/drop MIME payload extraction for text
+and URI-list/file payloads, is merged on `master` at
+`4004663 feat: add wayland drag payload mime extraction` and post-merge
+verified on Windows and WSL Arch Linux. RED failed as expected on missing
+`WaylandTestCompositor::set_drag_payloads(...)`, while the old no-payload
+drag path still expected `DragDropPayloadKind::none`. GREEN adds
+Wayland data-offer MIME tracking for drag offers, reads `text/plain` and
+`text/plain;charset=utf-8` payloads through `wl_data_offer_receive`, parses
+`text/uri-list` local file URIs into public file payloads, and keeps no-data
+offers graceful. Post-merge targeted coverage passed 4/4 on Windows and 5/5
+on WSL Arch Linux, `git diff --check` produced no output, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Step 175, Wayland
+text-input state machine for enter/leave, surrounding text, preedit, and
+commit, is the next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

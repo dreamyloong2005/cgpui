@@ -121,11 +121,12 @@
 - Modify: `tests/platform/wayland_test_compositor.hpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for text/plain drag payloads and `text/uri-list` file payload parsing.
-- [ ] Expected RED: Wayland drag payloads remain `DragDropPayloadKind::none`.
-- [ ] GREEN: store offer MIME types, choose text or URI-list payloads, parse local file URIs into public file payloads, and keep no-data offers graceful.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-mime-payloads -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default wayland_window_source_test/default`.
+- [x] Add RED coverage for text/plain drag payloads and `text/uri-list` file payload parsing.
+- [x] Expected RED: Wayland drag payloads remain `DragDropPayloadKind::none`.
+- [x] GREEN: store offer MIME types, choose text or URI-list payloads, parse local file URIs into public file payloads, and keep no-data offers graceful.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'` passed 5/5 after merge.
+- [x] Windows available-target command: `xmake test -P . window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default wayland_window_source_test/default` passed 4/4 after merge.
+- [x] Full post-merge verification passed: `git diff --check` produced no output, WSL Arch Linux full debug passed 27/27, and Windows full debug passed 30/30.
 
 ## Step 175: Wayland Text-Input State Machine
 

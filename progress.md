@@ -5436,3 +5436,57 @@
   is marked merged and post-merge verified. Step 174, Wayland drag/drop MIME
   payload extraction for text and URI-list/file payloads, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 174 Wayland Drag/Drop MIME Payload Extraction
+
+- Created `.worktrees/wayland-dnd-mime-payloads` on
+  `codex/wayland-dnd-mime-payloads` from `master` at
+  `1a9d002 docs: mark step 173 merged`.
+- RED coverage:
+  WSL `wayland_pointer_button_test/default` failed as expected on missing
+  `WaylandTestCompositor::set_drag_payloads(...)`; the refactored test also
+  preserved the no-payload path expecting `DragDropPayloadKind::none`.
+- GREEN adds drag offer MIME tracking to `WaylandDataDevice`: pending/active
+  drag offers now own MIME lists from `wl_data_offer.offer`, payload bytes are
+  read through `wl_data_offer_receive`, and drag events expose text or files
+  instead of always returning `DragDropPayloadKind::none`.
+- Text payloads prefer `text/plain;charset=utf-8` over `text/plain`.
+  `text/uri-list` payloads parse local `file:///...` and
+  `file://localhost/...` URIs, ignore comments, decode percent escapes, and
+  publish file paths through `DragDropPayload::files`.
+- The Wayland test compositor now exposes a neutral `WaylandMimePayload` test
+  payload type, keeps `WaylandClipboardMimePayload` as an alias for existing
+  clipboard tests, and can attach MIME payload offers to drag enter events.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-mime-payloads -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 5/5.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default wayland_window_source_test/default`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-dnd-mime-payloads -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Committed Step 174 as
+  `4004663 feat: add wayland drag payload mime extraction` and fast-forward
+  merged it to `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 5/5.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default wayland_window_source_test/default`
+  passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan,
+  `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 174
+  is marked merged and post-merge verified. Step 175, Wayland text-input state
+  machine for enter/leave, surrounding text, preedit, and commit, is the next
+  implementation slice after docs closeout and cleanup.

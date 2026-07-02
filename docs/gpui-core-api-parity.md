@@ -58,8 +58,8 @@ desktop integration surfaces remain separate future work.
   Wayland clipboard support state plus text selection payload extraction,
   focused text IME geometry, Win32 IME placement, Wayland text-input/IME
   skeleton, Win32 drag/drop event skeleton, Wayland data-device drag/drop
-  skeleton, lifecycle events, multi-window runtime registry, platform wakeups,
-  and accessibility tree snapshots.
+  text and URI-list payload extraction, lifecycle events, multi-window runtime
+  registry, platform wakeups, and accessibility tree snapshots.
 - Windows/Linux demo smoke coverage exercises window creation, first frame,
   resize, close, text input, clipboard flow, redraw, and bounded shutdown.
 
@@ -78,9 +78,12 @@ desktop integration surfaces remain separate future work.
   through `wl_data_offer_receive`; default platform-factory integration,
   clipboard ownership/write offers, non-text formats, and production desktop
   edge cases remain incomplete.
-- Wayland drag/drop remains a skeleton. It models capability and routes
-  events, but drag data-device MIME negotiation, payload extraction,
-  URI-list parsing, and external desktop integration remain incomplete.
+- Wayland drag/drop is partially protocol-backed. It tracks drag data-offer
+  MIME types, reads `text/plain` and `text/plain;charset=utf-8` payloads,
+  parses `text/uri-list` local file URIs into file payloads, and keeps no-data
+  offers graceful. Drag actions, accept/finish negotiation, non-local URI
+  handling, richer MIME formats, and production desktop integration remain
+  incomplete.
 - Wayland IME stores focused text placement through a text-input skeleton, but
   full text-input protocol binding, surrounding text, enter/leave, content
   type, and commit/preedit handling are not complete.

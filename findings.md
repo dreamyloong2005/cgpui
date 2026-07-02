@@ -3070,3 +3070,24 @@
 - Step 174 can reuse the same offer/MIME/payload direction for Wayland
   drag/drop, then add text and `text/uri-list` parsing through the drag
   data-device path.
+
+## 2026-07-02 Wayland Drag/Drop MIME Payload Extraction
+
+- Step 174 extends the Wayland data-device path from event routing to payload
+  extraction. `WaylandDataDevice` now listens to `wl_data_offer.offer`, stores
+  offered MIME types with the active drag offer, and reads payload bytes with
+  `wl_data_offer_receive` through deterministic pipes.
+- Drag payload preference is text first: `text/plain;charset=utf-8` then
+  `text/plain`, followed by `text/uri-list` for files. Unsupported or empty
+  offers continue to produce `DragDropPayloadKind::none`.
+- URI-list parsing intentionally handles the practical local-file subset:
+  comments and blank lines are ignored, `file:///...` and
+  `file://localhost/...` are accepted, and percent escapes are decoded before
+  exposing public file paths.
+- The Wayland test compositor now uses a neutral `WaylandMimePayload` test
+  type, retains the old clipboard payload alias, and can send drag offers as
+  well as clipboard selection offers from the same deterministic data-offer
+  receive path.
+- Remaining drag/drop depth includes accept/finish/action negotiation,
+  non-local URI policy, richer MIME formats, and production desktop-file
+  manager edge cases.
