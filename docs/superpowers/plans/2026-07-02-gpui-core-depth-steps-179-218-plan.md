@@ -428,11 +428,15 @@ targeted rerun and full-suite rerun.
 - Modify: `tests/ui/text_model_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED coverage for deterministic soft-wrap line records under a maximum width.
-- [ ] Expected RED: text layout emits one run with no wrap records.
-- [ ] GREEN: add wrap-record generation and use it for text paint bounds while preserving existing single-line behavior.
-- [ ] Targeted command: `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for deterministic soft-wrap line records under a maximum width.
+- [x] Expected RED: text layout emits one run with no wrap records.
+- [x] GREEN: add wrap-record generation and use it for text paint bounds while preserving existing single-line behavior.
+- [x] Targeted command: `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `02b534c feat: add text soft wrap records`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Band K: Windows And Linux Native Platform Depth
 

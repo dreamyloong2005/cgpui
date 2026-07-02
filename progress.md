@@ -6745,3 +6745,56 @@
   this progress log so Step 197 is marked merged and post-merge verified. Step
   198, soft wrap layout records, is the next implementation slice after docs
   closeout and cleanup.
+
+## 2026-07-03 Step 198 Text Soft Wrap Layout Records
+
+- Continued `.worktrees/text-soft-wrap-records` on
+  `codex/text-soft-wrap-records` from `master` at
+  `adda026 docs: mark step 197 merged`.
+- Baseline targeted tests passed before RED:
+  `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-soft-wrap-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default render_view_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for a wished-for
+  `TextWrapLayout`, `TextWrapLine`, and `wrap_text_measurement(...)` API that
+  splits measured glyphs into deterministic line records under a maximum
+  width. Added render-view coverage requiring wrapped text bounds, line
+  metadata, and wrap-aware glyph origins to reach `TextDraw`. RED failed as
+  expected on missing wrap layout APIs.
+- GREEN adds deterministic greedy glyph-level wrap records in
+  `include/cgpui/ui/text.hpp`, wrap-aware glyph paint metadata, `TextPaint` /
+  `TextDraw` line forwarding, and `TextElement` / `LabelElement` layout sizing
+  through the current max-width constraint. The implementation preserves the
+  existing one-line behavior when text fits the paint width.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-soft-wrap-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default render_view_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-soft-wrap-records -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 198 as
+  `02b534c feat: add text soft wrap records` and fast-forward merged it to
+  `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default render_view_test/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 198 is marked merged and post-merge verified. Step
+  199, Wayland clipboard ownership and send offers, is the next implementation
+  slice after docs closeout and cleanup.

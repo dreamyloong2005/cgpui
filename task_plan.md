@@ -718,7 +718,7 @@ follow-on goal is now complete on the Windows/Linux track.
 195. [x] Multiline text model and line navigation.
 196. [x] Text measurement cache.
 197. [x] Text pointer selection geometry.
-198. [ ] Soft wrap layout records.
+198. [x] Soft wrap layout records.
 199. [ ] Wayland clipboard ownership and send offers.
 200. [ ] Wayland drag action negotiation.
 201. [ ] Wayland cursor theme image state.
@@ -745,11 +745,26 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 197, text pointer selection geometry, is merged on `master` at
-`7d148c5 feat: add text pointer selection geometry` and post-merge verified on
-Windows and WSL Arch Linux. Step 198, soft wrap layout records, is the next
-implementation slice. The track remains Windows/Linux first; macOS/Cocoa +
-Metal is still deferred to a separate parity run.
+Step 198, soft wrap layout records, is merged on `master` at
+`02b534c feat: add text soft wrap records` and post-merge verified on Windows
+and WSL Arch Linux. Step 199, Wayland clipboard ownership and send offers, is
+the next implementation slice. The track remains Windows/Linux first;
+macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 198, soft wrap layout records, is merged on `master` at
+`02b534c feat: add text soft wrap records`. RED failed as expected on missing
+`TextWrapLayout`, `TextWrapLine`, `wrap_text_measurement(...)`, and
+renderer-visible text wrap lines. GREEN adds deterministic greedy glyph-level
+wrap records derived from `TextMeasurement`, wrap-aware glyph paint metadata,
+`TextPaint` / `TextDraw` line forwarding, and text/label layout sizing through
+the current max-width constraint while preserving existing single-line text
+behavior. Feature-worktree targeted tests passed 3/3 on Windows and WSL Arch
+Linux, `git diff --check` reported only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 3/3 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30.
+Step 199, Wayland clipboard ownership and send offers, is the next
+implementation slice.
 
 Step 191, grapheme-aware cursor movement skeleton, is merged on `master` at
 `2108199 feat: add grapheme-aware text cursor movement`. RED failed as expected

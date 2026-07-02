@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Text Soft Wrap Layout Records
+
+- Step 198 adds `TextWrapLine`, `TextWrapLayout`, and
+  `wrap_text_measurement(...)` in `include/cgpui/ui/text.hpp`. The current
+  algorithm is deterministic greedy glyph-level wrapping over already-shaped
+  fallback glyph advances; it does not split glyphs or introduce word/bidi
+  paragraph layout.
+- `PaintList::fill_text(...)` now derives wrap records from the measured text
+  and authored paint width, expands text paint height when wrapped content
+  needs more lines, and emits wrap-aware glyph origins. Existing single-line
+  text remains one line with unchanged glyph positions when it fits the paint
+  width.
+- `TextPaint` and `TextDraw` carry the same line records, giving renderer
+  tests and future Vulkan text work a stable view of wrapped byte ranges,
+  glyph ranges, relative line origins, and line sizes.
+- `TextElement` and `LabelElement` layout now size text through
+  `wrap_text_measurement(...)` using the current max-width constraint. This is
+  still a fallback-metric soft-wrap skeleton, not rich paragraph layout,
+  platform shaping, bidi visual lines, selection geometry over wraps, or
+  word-aware wrapping.
+
 ## 2026-07-03 Text Pointer Selection Geometry
 
 - Step 197 adds deterministic single-line pointer hit geometry in
@@ -13,8 +34,9 @@
   outside its bounds.
 - The slice intentionally remains single-line and fallback-metric based. It
   does not add soft wrapping, bidi visual order, grapheme column accounting,
-  paragraph layout, platform shaping, or selection handles. Step 198 can build
-  wrap records on top of the reusable measurement and hit-test primitives.
+  paragraph layout, platform shaping, or selection handles. Step 198 now builds
+  wrap records on top of the reusable measurement primitives while wrapped
+  selection geometry remains future work.
 
 ## 2026-07-02 Linux AT-SPI Accessibility Adapter Skeleton
 
