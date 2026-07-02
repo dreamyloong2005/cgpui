@@ -36,6 +36,18 @@ class RecordingFrame final : public cgpui::RenderFrame {
     texts.push_back(text);
   }
 
+  void draw_text_selection(const cgpui::TextSelectionDraw& selection) override {
+    text_selection_draw_count += 1;
+    last_text_selection = selection;
+    text_selections.push_back(selection);
+  }
+
+  void draw_text_caret(const cgpui::TextCaretDraw& caret) override {
+    text_caret_draw_count += 1;
+    last_text_caret = caret;
+    text_carets.push_back(caret);
+  }
+
   cgpui::Result<void> present() override {
     present_count += 1;
     return {};
@@ -45,13 +57,19 @@ class RecordingFrame final : public cgpui::RenderFrame {
   int draw_count = 0;
   int rounded_draw_count = 0;
   int text_draw_count = 0;
+  int text_selection_draw_count = 0;
+  int text_caret_draw_count = 0;
   int present_count = 0;
   cgpui::SolidRect last_rect;
   cgpui::RoundedRectDraw last_rounded_rect;
   cgpui::TextDraw last_text;
+  cgpui::TextSelectionDraw last_text_selection;
+  cgpui::TextCaretDraw last_text_caret;
   std::vector<cgpui::SolidRect> rects;
   std::vector<cgpui::RoundedRectDraw> rounded_rects;
   std::vector<cgpui::TextDraw> texts;
+  std::vector<cgpui::TextSelectionDraw> text_selections;
+  std::vector<cgpui::TextCaretDraw> text_carets;
 };
 
 class RecordingRenderer final : public cgpui::Renderer {
@@ -80,6 +98,12 @@ class RecordingRenderer final : public cgpui::Renderer {
     }
     void draw_text(const cgpui::TextDraw& text) override {
       frame_.draw_text(text);
+    }
+    void draw_text_selection(const cgpui::TextSelectionDraw& selection) override {
+      frame_.draw_text_selection(selection);
+    }
+    void draw_text_caret(const cgpui::TextCaretDraw& caret) override {
+      frame_.draw_text_caret(caret);
     }
     cgpui::Result<void> present() override { return frame_.present(); }
 
@@ -140,6 +164,38 @@ class RoundedBoxView final : public cgpui::View {
         },
         cgpui::Color{.r = 0.4F, .g = 0.5F, .b = 0.6F, .a = 1.0F},
         cgpui::BorderRadii::corners(2.0F, 3.0F, 4.0F, 5.0F));
+    paint_list.pop_metadata();
+    paint_list.pop_clip();
+  }
+};
+
+class TextSelectionCaretView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.push_clip(cgpui::Rect{
+        .origin = {.x = 1.0F, .y = 2.0F},
+        .size = {.width = 96.0F, .height = 28.0F},
+    });
+    paint_list.push_metadata(cgpui::PaintMetadata{
+        .opacity = 0.625F,
+        .transform = cgpui::AffineTransform::translation(4.0F, 6.0F),
+    });
+    paint_list.fill_text_selection(
+        cgpui::Rect{
+            .origin = {.x = 12.0F, .y = 14.0F},
+            .size = {.width = 30.0F, .height = 18.0F},
+        },
+        cgpui::Color{.r = 0.2F, .g = 0.35F, .b = 0.9F, .a = 0.5F},
+        cgpui::TextSelectionRange{.start = 2, .end = 6, .collapsed = false},
+        18.0F);
+    paint_list.fill_text_caret(
+        cgpui::Rect{
+            .origin = {.x = 42.0F, .y = 14.0F},
+            .size = {.width = 1.0F, .height = 18.0F},
+        },
+        cgpui::Color{.r = 0.95F, .g = 0.95F, .b = 1.0F, .a = 1.0F},
+        6,
+        18.0F);
     paint_list.pop_metadata();
     paint_list.pop_clip();
   }
@@ -257,5 +313,53 @@ int main() {
       rounded_frame.texts);
   const std::string rounded_expected =
       "0 rounded_rect rect=(4.0,5.0 30.0x16.0) color=0.400,0.500,0.600,1.000 radius=2.0,3.0,4.0,5.0 clip=(1.0,2.0 48.0x32.0) opacity=0.750 transform=[1.0,0.0,0.0,1.0,6.0,8.0]\n";
-  return rounded_snapshot == rounded_expected ? 0 : 14;
+  if (rounded_snapshot != rounded_expected) {
+    return 14;
+  }
+
+  RecordingFrame selection_frame;
+  RecordingRenderer selection_renderer(selection_frame);
+  TextSelectionCaretView selection_view;
+  cgpui::FrameStatistics selection_stats;
+  const auto selection_result = cgpui::render_view(
+      selection_renderer,
+      selection_view,
+      cgpui::Size{128.0F, 48.0F},
+      cgpui::DpiScale{},
+      &selection_stats);
+  if (!selection_result) {
+    return 15;
+  }
+  if (selection_frame.text_selection_draw_count != 1 ||
+      selection_frame.text_caret_draw_count != 1 ||
+      selection_frame.draw_count != 0 ||
+      selection_frame.text_draw_count != 0 ||
+      selection_stats.skipped_command_count != 0 ||
+      selection_stats.submitted_command_count != 2 ||
+      selection_stats.text_selection_command_count != 1 ||
+      selection_stats.text_caret_command_count != 1) {
+    return 16;
+  }
+  const cgpui::TextSelectionDraw& selection =
+      selection_frame.last_text_selection;
+  const cgpui::TextCaretDraw& caret = selection_frame.last_text_caret;
+  if (selection.rect.origin.x != 12.0F ||
+      selection.range.start != 2 ||
+      selection.range.end != 6 ||
+      selection.range.collapsed ||
+      selection.color.b != 0.9F ||
+      !selection.clip_rect.has_value() ||
+      selection.clip_rect->size.width != 96.0F ||
+      selection.metadata.opacity != 0.625F ||
+      !same_transform(
+          selection.metadata.transform,
+          cgpui::AffineTransform::translation(4.0F, 6.0F))) {
+    return 17;
+  }
+
+  return caret.rect.origin.x == 42.0F && caret.byte_offset == 6 &&
+                 caret.color.a == 1.0F && caret.clip_rect.has_value() &&
+                 caret.metadata.opacity == 0.625F
+             ? 0
+             : 18;
 }

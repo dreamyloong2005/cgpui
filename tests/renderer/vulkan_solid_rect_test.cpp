@@ -617,6 +617,7 @@ int test_renderer_batches_by_clip_opacity_transform_and_kind() {
 }
 
 int test_renderer_reports_unsupported_commands_without_dropping_supported() {
+  const auto unknown_primitive = static_cast<cgpui::RendererPrimitiveKind>(999);
   const cgpui::PaintMetadata metadata{
       .opacity = 0.75F,
       .transform = cgpui::AffineTransform::translation(4.0F, 2.0F),
@@ -646,7 +647,7 @@ int test_renderer_reports_unsupported_commands_without_dropping_supported() {
           .metadata = metadata,
       },
       cgpui::RendererCommandStreamItem{
-          .primitive_kind = cgpui::RendererPrimitiveKind::text_caret,
+          .primitive_kind = unknown_primitive,
           .command_index = 3,
           .clip_rect = clip,
           .metadata = metadata,
@@ -673,12 +674,11 @@ int test_renderer_reports_unsupported_commands_without_dropping_supported() {
     return 19;
   }
   if (report.unsupported_commands.size() != 1 ||
-      report.unsupported_commands[0].primitive_kind !=
-          cgpui::RendererPrimitiveKind::text_caret ||
+      report.unsupported_commands[0].primitive_kind != unknown_primitive ||
       report.unsupported_commands[0].command_index != 3 ||
       report.unsupported_commands[0].reason !=
           cgpui::RendererUnsupportedCommandReason::unsupported_primitive ||
-      report.unsupported_commands[0].message.find("text_caret") ==
+      report.unsupported_commands[0].message.find("unknown") ==
           std::string::npos) {
     return 20;
   }
@@ -846,6 +846,107 @@ int test_rounded_rects_build_tessellation_records_with_clip_metadata() {
              : 48;
 }
 
+int test_text_selection_and_caret_build_geometry_records_with_metadata() {
+  const cgpui::PaintMetadata metadata{
+      .opacity = 0.5F,
+      .transform = cgpui::AffineTransform::translation(3.0F, 9.0F),
+  };
+  const cgpui::Rect clip{
+      .origin = {.x = 2.0F, .y = 4.0F},
+      .size = {.width = 80.0F, .height = 24.0F},
+  };
+  const std::vector<cgpui::TextSelectionDraw> selections{
+      cgpui::TextSelectionDraw{
+          .rect =
+              cgpui::Rect{
+                  .origin = {.x = 10.0F, .y = 12.0F},
+                  .size = {.width = 32.0F, .height = 18.0F},
+              },
+          .color = {.r = 0.1F, .g = 0.3F, .b = 0.9F, .a = 0.6F},
+          .range = {.start = 1, .end = 5, .collapsed = false},
+          .font_size = 18.0F,
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+  };
+  const std::vector<cgpui::TextCaretDraw> carets{
+      cgpui::TextCaretDraw{
+          .rect =
+              cgpui::Rect{
+                  .origin = {.x = 42.0F, .y = 12.0F},
+                  .size = {.width = 1.0F, .height = 18.0F},
+              },
+          .color = {.r = 0.9F, .g = 0.9F, .b = 0.95F, .a = 1.0F},
+          .byte_offset = 5,
+          .font_size = 18.0F,
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+  };
+
+  const std::vector<cgpui::TextSelectionGeometryRecord> selection_records =
+      cgpui::vulkan_build_text_selection_geometry(selections);
+  const std::vector<cgpui::TextCaretGeometryRecord> caret_records =
+      cgpui::vulkan_build_text_caret_geometry(carets);
+  if (selection_records.size() != 1 || caret_records.size() != 1) {
+    return 49;
+  }
+  if (selection_records[0].rect.origin.x != 10.0F ||
+      selection_records[0].range.start != 1 ||
+      selection_records[0].range.end != 5 ||
+      selection_records[0].range.collapsed ||
+      selection_records[0].color.b != 0.9F ||
+      !selection_records[0].clip_rect.has_value() ||
+      selection_records[0].clip_rect->size.width != clip.size.width ||
+      selection_records[0].metadata != metadata ||
+      selection_records[0].vertex_count != 4 ||
+      selection_records[0].triangle_count != 2) {
+    return 50;
+  }
+  if (caret_records[0].rect.origin.x != 42.0F ||
+      caret_records[0].byte_offset != 5 ||
+      caret_records[0].color.a != 1.0F ||
+      !caret_records[0].clip_rect.has_value() ||
+      caret_records[0].metadata != metadata ||
+      caret_records[0].vertex_count != 4 ||
+      caret_records[0].triangle_count != 2) {
+    return 51;
+  }
+
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::SolidRect> rects;
+  const std::vector<cgpui::RoundedRectDraw> rounded_rects;
+  const std::vector<cgpui::TextDraw> text_draws;
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(
+          rects,
+          rounded_rects,
+          text_draws,
+          selections,
+          carets,
+          cache);
+  if (report.supported_command_count != 2 ||
+      report.unsupported_command_count != 0 ||
+      report.text_selection_geometry_count != 1 ||
+      report.text_caret_geometry_count != 1 ||
+      report.text_selection_geometries.size() != 1 ||
+      report.text_caret_geometries.size() != 1) {
+    return 52;
+  }
+
+  return report.batches.size() == 2 &&
+                 report.batches[0].key.primitive_kind ==
+                     cgpui::RendererPrimitiveKind::text_selection &&
+                 report.batches[0].key.metadata == metadata &&
+                 report.batches[0].command_indices[0] == 0 &&
+                 report.batches[1].key.primitive_kind ==
+                     cgpui::RendererPrimitiveKind::text_caret &&
+                 report.batches[1].key.clip_rect.has_value() &&
+                 report.batches[1].command_indices[0] == 0
+             ? 0
+             : 53;
+}
+
 } // namespace
 
 int main() {
@@ -904,6 +1005,11 @@ int main() {
   }
   if (const int result =
           test_rounded_rects_build_tessellation_records_with_clip_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_selection_and_caret_build_geometry_records_with_metadata();
       result != 0) {
     return result;
   }

@@ -681,10 +681,35 @@ Result<void> render_view(
     statistics->paint_command_count = paint_list.commands().size();
   }
   for (const auto& command : paint_list.commands()) {
-    if (command.kind == PaintCommandKind::text_selection ||
-        command.kind == PaintCommandKind::text_caret) {
+    if (command.kind == PaintCommandKind::text_selection) {
+      const TextSelectionPaint& selection = command.text_selection;
+      (*frame)->draw_text_selection(TextSelectionDraw{
+          .rect = selection.rect,
+          .color = selection.color,
+          .range = selection.range,
+          .font_size = selection.font_size,
+          .clip_rect = command.clip_rect,
+          .metadata = command.metadata,
+      });
       if (statistics != nullptr) {
-        statistics->skipped_command_count += 1;
+        statistics->submitted_command_count += 1;
+        statistics->text_selection_command_count += 1;
+      }
+      continue;
+    }
+    if (command.kind == PaintCommandKind::text_caret) {
+      const TextCaretPaint& caret = command.text_caret;
+      (*frame)->draw_text_caret(TextCaretDraw{
+          .rect = caret.rect,
+          .color = caret.color,
+          .byte_offset = caret.byte_offset,
+          .font_size = caret.font_size,
+          .clip_rect = command.clip_rect,
+          .metadata = command.metadata,
+      });
+      if (statistics != nullptr) {
+        statistics->submitted_command_count += 1;
+        statistics->text_caret_command_count += 1;
       }
       continue;
     }

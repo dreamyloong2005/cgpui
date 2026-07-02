@@ -140,6 +140,22 @@ int main() {
       .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
       .metadata = paint_metadata,
   };
+  const cgpui::TextSelectionDraw text_selection{
+      .rect = cgpui::Rect{.size = {18.0F, 18.0F}},
+      .color = cgpui::Color{.r = 0.2F, .g = 0.4F, .b = 0.8F, .a = 0.5F},
+      .range = cgpui::TextSelectionRange{.start = 0, .end = 1, .collapsed = false},
+      .font_size = 18.0F,
+      .clip_rect = cgpui::Rect{.size = {20.0F, 20.0F}},
+      .metadata = paint_metadata,
+  };
+  const cgpui::TextCaretDraw text_caret{
+      .rect = cgpui::Rect{.size = {1.0F, 18.0F}},
+      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+      .byte_offset = 1,
+      .font_size = 18.0F,
+      .clip_rect = cgpui::Rect{.size = {20.0F, 20.0F}},
+      .metadata = paint_metadata,
+  };
   const cgpui::TexturedGlyphQuad textured_quad{
       .key = glyph_key,
       .page_index = allocation.page_index,
@@ -167,18 +183,40 @@ int main() {
       .vertex_count = 20,
       .triangle_count = 18,
   };
+  const cgpui::TextSelectionGeometryRecord text_selection_geometry{
+      .rect = text_selection.rect,
+      .color = text_selection.color,
+      .range = text_selection.range,
+      .font_size = text_selection.font_size,
+      .clip_rect = text_selection.clip_rect,
+      .metadata = text_selection.metadata,
+      .vertex_count = 4,
+      .triangle_count = 2,
+  };
+  const cgpui::TextCaretGeometryRecord text_caret_geometry{
+      .rect = text_caret.rect,
+      .color = text_caret.color,
+      .byte_offset = text_caret.byte_offset,
+      .font_size = text_caret.font_size,
+      .clip_rect = text_caret.clip_rect,
+      .metadata = text_caret.metadata,
+      .vertex_count = 4,
+      .triangle_count = 2,
+  };
   const cgpui::RendererCommandBatch batch{
       .key =
           cgpui::RendererCommandBatchKey{
               .primitive_kind = cgpui::RendererPrimitiveKind::text,
               .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
               .metadata = paint_metadata,
-          },
+      },
       .command_count = 1,
       .command_indices = {0},
   };
+  const auto unknown_primitive =
+      static_cast<cgpui::RendererPrimitiveKind>(999);
   const cgpui::RendererCommandStreamItem unsupported_command{
-      .primitive_kind = cgpui::RendererPrimitiveKind::text_caret,
+      .primitive_kind = unknown_primitive,
       .command_index = 7,
       .clip_rect = cgpui::Rect{.size = {2.0F, 18.0F}},
       .metadata = paint_metadata,
@@ -198,9 +236,13 @@ int main() {
               },
       },
       .rounded_rect_tessellations = {rounded_tessellation},
+      .text_selection_geometries = {text_selection_geometry},
+      .text_caret_geometries = {text_caret_geometry},
       .supported_command_count = 1,
       .unsupported_command_count = 1,
       .rounded_rect_tessellation_count = 1,
+      .text_selection_geometry_count = 1,
+      .text_caret_geometry_count = 1,
       .text_render =
           cgpui::RendererTextRenderReport{
               .text_sampler_pipeline = text_sampler_pipeline,
@@ -252,6 +294,8 @@ int main() {
                  textured_quad.atlas_uv_bounds.size.width > 0.0F &&
                  rounded_rect.radius.bottom_left == 4.0F &&
                  rounded_tessellation.vertex_count == 20 &&
+                 text_selection_geometry.range.end == 1 &&
+                 text_caret_geometry.byte_offset == 1 &&
                  text_draw.glyphs.size() == 1 &&
                  text_draw.metadata.transform.translate_x == 4.0F &&
                  text_draw.clip_rect.has_value() &&
@@ -261,9 +305,11 @@ int main() {
                  batch.command_indices.size() == 1 &&
                  report.command_count() == 2 &&
                  report.rounded_rect_tessellation_count == 1 &&
+                 report.text_selection_geometry_count == 1 &&
+                 report.text_caret_geometry_count == 1 &&
                  report.text_render
                          .text_sampler_pipeline_pending_text_draw_count == 1 &&
-                 report.unsupported_commands[0].message == "text_caret" &&
+                 report.unsupported_commands[0].message == "unknown" &&
                  accessibility_update.root_element_id == 2 &&
                  accessibility_update.node_count == 3 &&
                  accessibility_update.focused_node_count == 1 &&

@@ -93,6 +93,24 @@ struct TextDraw {
   PaintMetadata metadata;
 };
 
+struct TextSelectionDraw {
+  Rect rect;
+  Color color;
+  TextSelectionRange range;
+  float font_size = 16.0F;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+};
+
+struct TextCaretDraw {
+  Rect rect;
+  Color color;
+  std::size_t byte_offset = 0;
+  float font_size = 16.0F;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+};
+
 enum class RendererPrimitiveKind {
   solid_rect,
   rounded_rect,
@@ -200,13 +218,39 @@ struct RoundedRectTessellationRecord {
   std::size_t triangle_count = 0;
 };
 
+struct TextSelectionGeometryRecord {
+  Rect rect;
+  Color color;
+  TextSelectionRange range;
+  float font_size = 16.0F;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+  std::size_t vertex_count = 0;
+  std::size_t triangle_count = 0;
+};
+
+struct TextCaretGeometryRecord {
+  Rect rect;
+  Color color;
+  std::size_t byte_offset = 0;
+  float font_size = 16.0F;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+  std::size_t vertex_count = 0;
+  std::size_t triangle_count = 0;
+};
+
 struct RendererCommandReport {
   std::vector<RendererCommandBatch> batches;
   std::vector<RendererUnsupportedCommandDiagnostic> unsupported_commands;
   std::vector<RoundedRectTessellationRecord> rounded_rect_tessellations;
+  std::vector<TextSelectionGeometryRecord> text_selection_geometries;
+  std::vector<TextCaretGeometryRecord> text_caret_geometries;
   std::size_t supported_command_count = 0;
   std::size_t unsupported_command_count = 0;
   std::size_t rounded_rect_tessellation_count = 0;
+  std::size_t text_selection_geometry_count = 0;
+  std::size_t text_caret_geometry_count = 0;
   RendererTextRenderReport text_render;
 
   [[nodiscard]] std::size_t command_count() const {
@@ -503,6 +547,10 @@ class RenderFrame {
   virtual void draw_rect(const SolidRect& rect) = 0;
   virtual void draw_rounded_rect(const RoundedRectDraw& rect) { (void)rect; }
   virtual void draw_text(const TextDraw& text) { (void)text; }
+  virtual void draw_text_selection(const TextSelectionDraw& selection) {
+    (void)selection;
+  }
+  virtual void draw_text_caret(const TextCaretDraw& caret) { (void)caret; }
   virtual Result<void> present() = 0;
 };
 
@@ -531,6 +579,10 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     GlyphCache& glyph_cache);
 std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(
     std::span<const RoundedRectDraw> rounded_rects);
+std::vector<TextSelectionGeometryRecord> vulkan_build_text_selection_geometry(
+    std::span<const TextSelectionDraw> selections);
+std::vector<TextCaretGeometryRecord> vulkan_build_text_caret_geometry(
+    std::span<const TextCaretDraw> carets);
 RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const RendererCommandStreamItem> commands);
 RendererCommandReport vulkan_build_renderer_command_report(
@@ -542,6 +594,13 @@ RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws,
     GlyphCache& glyph_cache);
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
+    std::span<const TextDraw> text_draws,
+    std::span<const TextSelectionDraw> selections,
+    std::span<const TextCaretDraw> carets,
+    GlyphCache& glyph_cache);
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
     std::span<const TextDraw> text_draws);
@@ -549,5 +608,11 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
     std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws);
+std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
+    std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
+    std::span<const TextDraw> text_draws,
+    std::span<const TextSelectionDraw> selections,
+    std::span<const TextCaretDraw> carets);
 
 } // namespace cgpui

@@ -64,6 +64,16 @@ class RecordingFrame final : public cgpui::RenderFrame {
     last_text = text;
   }
 
+  void draw_text_selection(const cgpui::TextSelectionDraw& selection) override {
+    text_selection_draw_count += 1;
+    last_text_selection = selection;
+  }
+
+  void draw_text_caret(const cgpui::TextCaretDraw& caret) override {
+    text_caret_draw_count += 1;
+    last_text_caret = caret;
+  }
+
   cgpui::Result<void> present() override {
     present_count += 1;
     return {};
@@ -72,10 +82,14 @@ class RecordingFrame final : public cgpui::RenderFrame {
   int clear_count = 0;
   int draw_count = 0;
   int text_draw_count = 0;
+  int text_selection_draw_count = 0;
+  int text_caret_draw_count = 0;
   int present_count = 0;
   cgpui::Color last_clear{};
   cgpui::SolidRect last_rect{};
   cgpui::TextDraw last_text{};
+  cgpui::TextSelectionDraw last_text_selection{};
+  cgpui::TextCaretDraw last_text_caret{};
 };
 
 class RecordingRenderer final : public cgpui::Renderer {
@@ -117,6 +131,12 @@ class RecordingRenderer final : public cgpui::Renderer {
     }
     void draw_text(const cgpui::TextDraw& text) override {
       frame_.draw_text(text);
+    }
+    void draw_text_selection(const cgpui::TextSelectionDraw& selection) override {
+      frame_.draw_text_selection(selection);
+    }
+    void draw_text_caret(const cgpui::TextCaretDraw& caret) override {
+      frame_.draw_text_caret(caret);
     }
     cgpui::Result<void> present() override { return frame_.present(); }
 
@@ -6806,10 +6826,12 @@ int test_frame_statistics_report_render_layout_paint_and_command_counts() {
     return 396;
   }
   if (statistics.paint_command_count != 4 ||
-      statistics.submitted_command_count != 2 ||
-      statistics.skipped_command_count != 2 ||
+      statistics.submitted_command_count != 4 ||
+      statistics.skipped_command_count != 0 ||
       statistics.solid_rect_command_count != 1 ||
-      statistics.text_command_count != 1) {
+      statistics.text_command_count != 1 ||
+      statistics.text_selection_command_count != 1 ||
+      statistics.text_caret_command_count != 1) {
     return 397;
   }
   if (statistics.begin_frame_count != 1 || statistics.clear_count != 1 ||
@@ -6827,6 +6849,8 @@ int test_frame_statistics_report_render_layout_paint_and_command_counts() {
   }
   if (view.render_count != 1 || view.paint_count != 1 ||
       frame.draw_count != 1 || frame.text_draw_count != 1 ||
+      frame.text_selection_draw_count != 1 ||
+      frame.text_caret_draw_count != 1 ||
       frame.clear_count != 1 || frame.present_count != 1) {
     return 401;
   }
