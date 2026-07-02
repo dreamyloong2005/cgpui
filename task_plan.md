@@ -708,7 +708,7 @@ follow-on goal is now complete on the Windows/Linux track.
 185. [x] Renderer clip stack metadata beyond single optional clips.
 186. [x] Renderer opacity and transform stack reports.
 187. [x] Renderer batch submission plan records.
-188. [ ] Renderer frame snapshot report aggregating text, uploads, batches, and gaps.
+188. [x] Renderer frame snapshot report aggregating text, uploads, batches, and gaps.
 189. [ ] Font fallback chain resolution.
 190. [ ] Platform font discovery records for Win32 and Wayland/Linux.
 191. [ ] Grapheme-aware cursor movement skeleton.
@@ -745,11 +745,11 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 187, renderer batch submission plan records, is merged on `master` at
-`6f9a399 feat: add renderer submission plan records` and post-merge verified
-on Windows and WSL Arch Linux. Step 188, renderer frame snapshot report
-aggregating text, uploads, batches, and gaps, is the next implementation
-slice. The track
+Step 188, renderer frame snapshot report aggregating text, uploads, batches,
+and gaps, is merged on `master` at
+`365d695 feat: add renderer frame snapshot report` and post-merge verified on
+Windows and WSL Arch Linux. Step 189, font fallback chain resolution, is the
+next implementation slice. The track
 remains Windows/Linux first; macOS/Cocoa + Metal is still deferred to a
 separate parity run.
 

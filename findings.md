@@ -3305,3 +3305,20 @@
 - This remains a deterministic planning/reporting slice. It does not allocate
   Vulkan command buffers, descriptor sets, render passes, pipeline objects, or
   submit work to a GPU queue.
+
+## 2026-07-03 Renderer Frame Snapshot Report
+
+- Step 188 adds `RendererFrameReport`, a frame-level aggregation over
+  `RendererCommandReport` that preserves the underlying command report while
+  summarizing supported/unsupported primitives, renderer batches, submission
+  plans, glyph upload records, textured glyph quads, and renderer gaps.
+- Frame gaps currently cover unsupported commands, pending text sampler
+  pipeline readiness, metadata-only text draws, and missing submission plans.
+  The gap list gives later diagnostics a single source for "what is still not
+  real GPU work" in a frame.
+- Vulkan exposes `vulkan_build_renderer_frame_report(...)` overloads that build
+  the existing command report and wrap it into the new frame report. The parity
+  audit now calls out frame-level text/render reports and planned submissions.
+- This remains a reporting slice. It does not create real Vulkan command
+  buffers, submit GPU work, or replace the existing deterministic report
+  building path.

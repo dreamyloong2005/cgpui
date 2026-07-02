@@ -6213,3 +6213,58 @@
   this progress log so Step 187 is marked merged and post-merge verified. Step
   188, renderer frame snapshot report, is the next implementation slice after
   docs closeout and cleanup.
+
+## 2026-07-03 Step 188 Renderer Frame Snapshot Report
+
+- Created `.worktrees/renderer-frame-snapshot-report` on
+  `codex/renderer-frame-snapshot-report` from `master` at
+  `bdcfb9d docs: mark step 187 merged`.
+- Baseline Windows targeted tests passed 3/3:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default desktop_target_readiness_test/default`.
+- Baseline WSL targeted tests passed 2/2:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-frame-snapshot-report -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default desktop_target_readiness_test/default'`.
+- RED coverage:
+  `vulkan_solid_rect_test/default` and `render_view_test/default` failed as
+  expected on missing `RendererFrameReport`, `RendererFrameGapKind`,
+  `renderer_frame_report_from_command_report(...)`, and
+  `vulkan_build_renderer_frame_report(...)`.
+- GREEN adds frame-level renderer snapshot types, a header-inline command-report
+  aggregation helper, Vulkan frame-report construction overloads, frame-gap
+  diagnostics, render-view API smoke coverage, and parity-audit wording for
+  frame-level renderer reports.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default desktop_target_readiness_test/default`
+  passed 3/3.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-frame-snapshot-report -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default desktop_target_readiness_test/default'`
+  passed 2/2 for the available Linux target subset.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-frame-snapshot-report -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-frame-snapshot-report -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 188 as
+  `365d695 feat: add renderer frame snapshot report` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default desktop_target_readiness_test/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default desktop_target_readiness_test/default'`
+  passed 2/2 for the available Linux target subset.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 188 is marked merged and post-merge verified. Step
+  189, font fallback chain resolution, is the next implementation slice after
+  docs closeout and cleanup.

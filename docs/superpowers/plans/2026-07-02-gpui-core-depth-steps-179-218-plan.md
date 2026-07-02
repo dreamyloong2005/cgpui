@@ -224,11 +224,15 @@
 - Modify: `tests/ui/render_view_test.cpp`
 - Modify: `docs/gpui-core-api-parity.md`
 
-- [ ] Add RED coverage for a single frame report summarizing supported primitives, atlas uploads, submission plans, and unsupported gaps.
-- [ ] Expected RED: report pieces exist but no frame-level renderer snapshot captures the full text/render state.
-- [ ] GREEN: add `RendererFrameReport` aggregation and update the parity audit to reflect the new renderer depth.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default desktop_target_readiness_test/default`.
-- [ ] WSL targeted command: available Linux subset `render_view_test/default desktop_target_readiness_test/default`.
+- [x] Add RED coverage for a single frame report summarizing supported primitives, atlas uploads, submission plans, and unsupported gaps.
+- [x] Expected RED: report pieces exist but no frame-level renderer snapshot captures the full text/render state.
+- [x] GREEN: add `RendererFrameReport` aggregation and update the parity audit to reflect the new renderer depth.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default desktop_target_readiness_test/default`.
+- [x] WSL targeted command: available Linux subset `render_view_test/default desktop_target_readiness_test/default`.
+
+**Merged:** `365d695 feat: add renderer frame snapshot report`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Band J: Text, Font, Editing, And IME Depth
 
