@@ -65,5 +65,16 @@ PlatformMenuInstallationResult PlatformApplication::install_native_menu(
   };
 }
 
+NativeFileDialogResult PlatformApplication::show_native_file_dialog(
+    NativeFileDialogOptions options) {
+  return NativeFileDialogResult{
+      .supported = false,
+      .accepted = false,
+      .backend = "unsupported",
+      .kind = options.kind,
+      .filter_count = options.filters.size(),
+  };
+}
+
 void cgpui_platform_anchor() {}
 } // namespace cgpui

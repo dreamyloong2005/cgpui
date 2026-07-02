@@ -191,15 +191,32 @@ class FakeApplication final : public cgpui::PlatformApplication {
     };
   }
 
+  cgpui::NativeFileDialogResult show_native_file_dialog(
+      cgpui::NativeFileDialogOptions options) override {
+    show_native_file_dialog_count += 1;
+    last_file_dialog_options = std::move(options);
+    return cgpui::NativeFileDialogResult{
+        .supported = true,
+        .accepted = true,
+        .backend = "fake",
+        .kind = last_file_dialog_options.kind,
+        .paths = {last_file_dialog_options.default_directory +
+                  "/project.cgpui"},
+        .filter_count = last_file_dialog_options.filters.size(),
+    };
+  }
+
   int create_window_count = 0;
   int run_count = 0;
   int quit_count = 0;
   int request_wakeup_count = 0;
   int install_native_menu_count = 0;
+  int show_native_file_dialog_count = 0;
   int run_result = 0;
   cgpui::WindowDescriptor last_descriptor{};
   std::vector<cgpui::WindowDescriptor> created_descriptors;
   cgpui::NativeMenuModel last_menu_model;
+  cgpui::NativeFileDialogOptions last_file_dialog_options;
   std::string failing_window_title;
 
  private:
@@ -960,6 +977,89 @@ int test_app_context_installs_native_menu_and_accelerators() {
   return 0;
 }
 
+int test_app_context_shows_native_file_dialog_skeleton() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  bool setup_called = false;
+  bool setup_dialog_ok = false;
+  bool frame_dialog_ok = false;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned = std::make_unique<RecordingRenderer>(
+            frame,
+            application.run_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                cgpui::NativeFileDialogOptions options{
+                    .kind = cgpui::NativeFileDialogKind::open_file,
+                    .title = "Open Project",
+                    .default_directory = "D:/Projects",
+                    .suggested_name = "project.cgpui",
+                    .filters =
+                        {
+                            cgpui::NativeFileDialogFilter{
+                                .name = "CGPUI Project",
+                                .extensions = {"cgpui"},
+                            },
+                            cgpui::NativeFileDialogFilter{
+                                .name = "Text",
+                                .extensions = {"txt", "md"},
+                            },
+                        },
+                };
+
+                const cgpui::NativeFileDialogResult dialog_result =
+                    context.show_native_file_dialog(std::move(options));
+                setup_dialog_ok =
+                    dialog_result.supported && dialog_result.accepted &&
+                    dialog_result.backend == "fake" &&
+                    dialog_result.kind ==
+                        cgpui::NativeFileDialogKind::open_file &&
+                    dialog_result.filter_count == 2 &&
+                    dialog_result.paths.size() == 1 &&
+                    dialog_result.paths[0] == "D:/Projects/project.cgpui" &&
+                    context.runtime.native_file_dialog_result().paths.size() ==
+                        1 &&
+                    application.show_native_file_dialog_count == 1 &&
+                    application.last_file_dialog_options.filters.size() == 2 &&
+                    application.last_file_dialog_options.suggested_name ==
+                        "project.cgpui";
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext& frame_context) {
+                      const cgpui::NativeFileDialogResult& frame_dialog =
+                          frame_context.native_file_dialog_result();
+                      frame_dialog_ok =
+                          frame_dialog.backend == "fake" &&
+                          frame_dialog.filter_count == 2 &&
+                          frame_dialog.paths.size() == 1;
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 910;
+  }
+  if (!setup_called || !setup_dialog_ok || !frame_dialog_ok) {
+    return 911;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -997,6 +1097,11 @@ int main() {
   }
   if (const int result =
           test_app_context_installs_native_menu_and_accelerators();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_app_context_shows_native_file_dialog_skeleton();
       result != 0) {
     return result;
   }

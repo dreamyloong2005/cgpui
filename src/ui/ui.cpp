@@ -578,6 +578,11 @@ NativeMenuInstallation AppContext::install_native_menu(
   return runtime.install_native_menu(std::move(menu));
 }
 
+NativeFileDialogResult AppContext::show_native_file_dialog(
+    NativeFileDialogOptions options) const {
+  return runtime.show_native_file_dialog(std::move(options));
+}
+
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
@@ -2492,6 +2497,18 @@ const NativeMenuInstallation& WindowRuntime::native_menu_installation() const {
   return native_menu_installation_;
 }
 
+NativeFileDialogResult WindowRuntime::show_native_file_dialog(
+    NativeFileDialogOptions options) {
+  native_file_dialog_result_ =
+      application_.show_native_file_dialog(std::move(options));
+  return native_file_dialog_result_;
+}
+
+const NativeFileDialogResult& WindowRuntime::native_file_dialog_result()
+    const {
+  return native_file_dialog_result_;
+}
+
 std::optional<RenderRecord> WindowRuntime::last_render_record() const {
   return last_render_record_;
 }
@@ -3011,6 +3028,16 @@ NativeMenuInstallation WindowRuntimeContext::install_native_menu(
 const NativeMenuInstallation& WindowRuntimeContext::native_menu_installation()
     const {
   return runtime.native_menu_installation();
+}
+
+NativeFileDialogResult WindowRuntimeContext::show_native_file_dialog(
+    NativeFileDialogOptions options) const {
+  return runtime.show_native_file_dialog(std::move(options));
+}
+
+const NativeFileDialogResult& WindowRuntimeContext::native_file_dialog_result()
+    const {
+  return runtime.native_file_dialog_result();
 }
 
 } // namespace cgpui

@@ -218,6 +218,16 @@ int main() {
       !contains(text, "accelerator_count")) {
     return 71;
   }
+  if (!contains(text, "WaylandNativeFileDialogState") ||
+      !contains(text, "show_native_file_dialog(") ||
+      !contains(text, "NativeFileDialogResult") ||
+      !contains(text, "last_file_dialog_result_")) {
+    return 72;
+  }
+  if (!contains(text, "backend = \"wayland\"") ||
+      !contains(text, "filter_count")) {
+    return 73;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

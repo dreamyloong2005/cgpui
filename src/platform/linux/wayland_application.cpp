@@ -719,6 +719,30 @@ class WaylandNativeMenuState {
   PlatformMenuInstallationResult last_menu_installation_;
 };
 
+class WaylandNativeFileDialogState {
+ public:
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) {
+    options_ = std::move(options);
+    last_file_dialog_result_ = NativeFileDialogResult{
+        .supported = false,
+        .accepted = false,
+        .backend = "wayland",
+        .kind = options_.kind,
+        .filter_count = options_.filters.size(),
+    };
+    return last_file_dialog_result_;
+  }
+
+  [[nodiscard]] const NativeFileDialogResult& last_file_dialog_result() const {
+    return last_file_dialog_result_;
+  }
+
+ private:
+  NativeFileDialogOptions options_;
+  NativeFileDialogResult last_file_dialog_result_;
+};
+
 enum class WaylandCursorThemeLoadStatus {
   unavailable,
   loaded,
@@ -2013,6 +2037,13 @@ class WaylandApplication final : public PlatformApplication {
     return last_menu_installation_;
   }
 
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) override {
+    last_file_dialog_result_ =
+        native_file_dialog_state_.show_native_file_dialog(std::move(options));
+    return last_file_dialog_result_;
+  }
+
   [[nodiscard]] std::vector<FontFaceDescriptor> discover_font_records()
       const override {
     return {
@@ -2667,6 +2698,8 @@ class WaylandApplication final : public PlatformApplication {
   WaylandTextInput text_input_;
   WaylandNativeMenuState native_menu_state_;
   PlatformMenuInstallationResult last_menu_installation_;
+  WaylandNativeFileDialogState native_file_dialog_state_;
+  NativeFileDialogResult last_file_dialog_result_;
   xkb_context* xkb_context_ = nullptr;
   xkb_keymap* xkb_keymap_ = nullptr;
   xkb_state* xkb_state_ = nullptr;

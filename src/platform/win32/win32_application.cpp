@@ -345,6 +345,30 @@ class Win32NativeMenuState {
   PlatformMenuInstallationResult last_menu_installation_;
 };
 
+class Win32NativeFileDialogState {
+ public:
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) {
+    options_ = std::move(options);
+    last_file_dialog_result_ = NativeFileDialogResult{
+        .supported = false,
+        .accepted = false,
+        .backend = "win32",
+        .kind = options_.kind,
+        .filter_count = options_.filters.size(),
+    };
+    return last_file_dialog_result_;
+  }
+
+  [[nodiscard]] const NativeFileDialogResult& last_file_dialog_result() const {
+    return last_file_dialog_result_;
+  }
+
+ private:
+  NativeFileDialogOptions options_;
+  NativeFileDialogResult last_file_dialog_result_;
+};
+
 KeyboardModifiers current_modifiers() {
   return KeyboardModifiers{
       .shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0,
@@ -1004,6 +1028,13 @@ class Win32Application final : public PlatformApplication {
     return last_menu_installation_;
   }
 
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) override {
+    last_file_dialog_result_ =
+        native_file_dialog_state_.show_native_file_dialog(std::move(options));
+    return last_file_dialog_result_;
+  }
+
   void quit() override {
     running_ = false;
     PostQuitMessage(0);
@@ -1035,6 +1066,8 @@ class Win32Application final : public PlatformApplication {
   bool ole_initialized_ = false;
   Win32NativeMenuState native_menu_state_;
   PlatformMenuInstallationResult last_menu_installation_;
+  Win32NativeFileDialogState native_file_dialog_state_;
+  NativeFileDialogResult last_file_dialog_result_;
   DWORD running_thread_id_ = 0;
   bool running_ = true;
   std::vector<Win32Window*> windows_;

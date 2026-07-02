@@ -274,6 +274,8 @@ struct AppContext {
       std::unique_ptr<View> root_view) const;
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu) const;
+  [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) const;
 
   template <typename T>
   void set_global(T global_value) const;
@@ -609,6 +611,10 @@ struct WindowRuntimeContext {
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu) const;
   [[nodiscard]] const NativeMenuInstallation& native_menu_installation() const;
+  [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) const;
+  [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result()
+      const;
 
   template <typename T>
   void set_global(T global_value) const;
@@ -792,6 +798,10 @@ class WindowRuntime {
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu);
   [[nodiscard]] const NativeMenuInstallation& native_menu_installation() const;
+  [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options);
+  [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result()
+      const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
   [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
   [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
@@ -1012,6 +1022,7 @@ class WindowRuntime {
   std::vector<WindowRuntimeRecord> window_runtime_records_;
   std::vector<std::unique_ptr<PlatformWindow>> native_additional_windows_;
   NativeMenuInstallation native_menu_installation_;
+  NativeFileDialogResult native_file_dialog_result_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;

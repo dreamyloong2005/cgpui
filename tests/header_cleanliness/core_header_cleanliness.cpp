@@ -298,6 +298,26 @@ int main() {
       .accelerator_count =
           cgpui::native_menu_accelerator_count(native_menu),
   };
+  const cgpui::NativeFileDialogOptions native_file_dialog_options{
+      .kind = cgpui::NativeFileDialogKind::save_file,
+      .title = "Save Project",
+      .default_directory = "D:/Projects",
+      .suggested_name = "project.cgpui",
+      .filters =
+          {
+              cgpui::NativeFileDialogFilter{
+                  .name = "CGPUI Project",
+                  .extensions = {"cgpui"},
+              },
+          },
+  };
+  const cgpui::NativeFileDialogResult native_file_dialog_result{
+      .supported = false,
+      .accepted = false,
+      .backend = "test",
+      .kind = native_file_dialog_options.kind,
+      .filter_count = native_file_dialog_options.filters.size(),
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -347,7 +367,10 @@ int main() {
                  accessibility_update.nodes[0].role ==
                      cgpui::PlatformAccessibilityRole::text_input &&
                  native_menu_install_result.accelerator_count == 1 &&
-                 native_menu.items[0].action_name == "file.save"
+                 native_menu.items[0].action_name == "file.save" &&
+                 native_file_dialog_result.kind ==
+                     cgpui::NativeFileDialogKind::save_file &&
+                 native_file_dialog_result.filter_count == 1
              ? 0
              : 1;
 }

@@ -254,6 +254,25 @@ int main() {
       .model = menu_model,
       .platform = menu_result,
   };
+  const cgpui::NativeFileDialogOptions file_dialog_options{
+      .kind = cgpui::NativeFileDialogKind::open_file,
+      .title = "Open",
+      .default_directory = "D:/Projects",
+      .filters =
+          {
+              cgpui::NativeFileDialogFilter{
+                  .name = "Images",
+                  .extensions = {"png", "jpg"},
+              },
+          },
+  };
+  const cgpui::NativeFileDialogResult file_dialog_result{
+      .supported = false,
+      .accepted = false,
+      .backend = "header",
+      .kind = file_dialog_options.kind,
+      .filter_count = file_dialog_options.filters.size(),
+  };
   cgpui::StyleState style_state;
   cgpui::ElementKey element_key{.value = "header-key"};
   style_state.base = cgpui::Style{}
@@ -507,6 +526,9 @@ int main() {
                  event_route.view_ancestry.size() == 1 &&
                  menu_installation.platform.accelerator_count == 1 &&
                  menu_installation.model.items[0].action_name == "file.open" &&
+                 file_dialog_result.filter_count == 1 &&
+                 file_dialog_result.kind ==
+                     cgpui::NativeFileDialogKind::open_file &&
                  styled != nullptr && styled->style().padding.top == 1.0F &&
                  pointer->key().has_value() &&
                  pointer->key()->value == element_key.value &&

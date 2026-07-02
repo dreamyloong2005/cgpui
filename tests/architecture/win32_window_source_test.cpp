@@ -203,6 +203,16 @@ int main() {
       !contains(win32_text, "accelerator_count")) {
     return 62;
   }
+  if (!contains(win32_text, "Win32NativeFileDialogState") ||
+      !contains(win32_text, "show_native_file_dialog(") ||
+      !contains(win32_text, "NativeFileDialogResult") ||
+      !contains(win32_text, "last_file_dialog_result_")) {
+    return 63;
+  }
+  if (!contains(win32_text, "backend = \"win32\"") ||
+      !contains(win32_text, "filter_count")) {
+    return 64;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {
