@@ -133,6 +133,7 @@ class PaintList {
       Color color,
       std::size_t byte_offset,
       float font_size = 16.0F);
+  void set_text_measurement_cache(TextMeasurementCache* cache);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
  private:
@@ -140,6 +141,7 @@ class PaintList {
   std::vector<Rect> clip_stack_;
   std::vector<PaintMetadata> metadata_stack_;
   DpiScale scale_;
+  TextMeasurementCache* text_measurement_cache_ = nullptr;
 };
 
 class View {
@@ -1005,6 +1007,13 @@ Result<void> render_view(
     View& view,
     Size viewport_size,
     DpiScale scale,
+    FrameStatistics* statistics = nullptr);
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
     FrameStatistics* statistics = nullptr);
 [[nodiscard]] int run_app(
     PlatformApplication& application,

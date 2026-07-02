@@ -464,6 +464,37 @@ int main() {
     return 24;
   }
 
+  cgpui::TextMeasurementCache text_measurement_cache;
+  RecordingFrame cached_text_frame;
+  RecordingRenderer cached_text_renderer(cached_text_frame);
+  TextOnlyView cached_text_view;
+  const auto first_cached_text_result = cgpui::render_view(
+      cached_text_renderer,
+      cached_text_view,
+      cgpui::Size{64.0F, 64.0F},
+      cgpui::DpiScale{},
+      &text_measurement_cache);
+  if (!first_cached_text_result ||
+      text_measurement_cache.entry_count() != 1 ||
+      text_measurement_cache.miss_count() != 1 ||
+      text_measurement_cache.hit_count() != 0) {
+    return 25;
+  }
+  const auto second_cached_text_result = cgpui::render_view(
+      cached_text_renderer,
+      cached_text_view,
+      cgpui::Size{64.0F, 64.0F},
+      cgpui::DpiScale{},
+      &text_measurement_cache);
+  if (!second_cached_text_result ||
+      text_measurement_cache.entry_count() != 1 ||
+      text_measurement_cache.miss_count() != 1 ||
+      text_measurement_cache.hit_count() != 1 ||
+      cached_text_frame.text_draw_count != 2 ||
+      cached_text_frame.texts[1].glyphs[2].origin.x != 18.0F) {
+    return 26;
+  }
+
   cgpui::RendererCommandReport command_report;
   command_report.supported_command_count = metadata_stats.submitted_command_count;
   command_report.submission_plan_record_count = 1;
@@ -488,5 +519,5 @@ int main() {
                  frame_report.submission_plan_record_count == 1 &&
                  frame_report.gap_count == 0
              ? 0
-             : 25;
+             : 27;
 }

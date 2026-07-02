@@ -700,6 +700,55 @@ int test_shape_text_produces_deterministic_fallback_glyphs() {
   return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 47;
 }
 
+int test_text_measurement_cache_reuses_same_text_tuple() {
+  cgpui::TextMeasurementCache cache;
+  const cgpui::FontDescriptor font{.family = "Inter"};
+  const cgpui::DpiScale scale{.value = 2.0F};
+
+  const cgpui::TextMeasurementResult first =
+      cache.measure("Cache", font, 18.0F, scale);
+  if (first.cache_hit || cache.entry_count() != 1 ||
+      cache.miss_count() != 1 || cache.hit_count() != 0) {
+    return 54;
+  }
+  if (first.measurement.shape_run.text != "Cache" ||
+      first.measurement.shape_run.font.family != "Inter" ||
+      first.measurement.logical_size.width != 45.0F ||
+      first.measurement.logical_size.height != 18.0F ||
+      first.measurement.device_size.width != 90.0F ||
+      first.measurement.device_size.height != 36.0F) {
+    return 55;
+  }
+
+  const cgpui::TextMeasurementResult second =
+      cache.measure("Cache", font, 18.0F, scale);
+  if (!second.cache_hit || cache.entry_count() != 1 ||
+      cache.miss_count() != 1 || cache.hit_count() != 1) {
+    return 56;
+  }
+  if (second.measurement.shape_run.glyph_count() !=
+          first.measurement.shape_run.glyph_count() ||
+      second.measurement.device_size.width !=
+          first.measurement.device_size.width) {
+    return 57;
+  }
+
+  const cgpui::TextMeasurementResult different_scale =
+      cache.measure("Cache", font, 18.0F, cgpui::DpiScale{.value = 1.5F});
+  if (different_scale.cache_hit || cache.entry_count() != 2 ||
+      cache.miss_count() != 2 || cache.hit_count() != 1 ||
+      different_scale.measurement.device_size.width != 67.5F) {
+    return 58;
+  }
+
+  const cgpui::TextMeasurementResult different_text =
+      cache.measure("Cached", font, 18.0F, scale);
+  return !different_text.cache_hit && cache.entry_count() == 3 &&
+                 cache.miss_count() == 3 && cache.hit_count() == 1
+             ? 0
+             : 59;
+}
+
 int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
   const cgpui::TextShapeRun run = cgpui::shape_text(
       "A\xE4\xB8\xAD",
@@ -816,6 +865,10 @@ int main() {
     return result;
   }
   if (const int result = test_shape_text_produces_deterministic_fallback_glyphs();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_measurement_cache_reuses_same_text_tuple();
       result != 0) {
     return result;
   }

@@ -400,6 +400,10 @@ DpiScale PaintList::scale() const {
   return scale_;
 }
 
+void PaintList::set_text_measurement_cache(TextMeasurementCache* cache) {
+  text_measurement_cache_ = cache;
+}
+
 void PaintList::push_clip(Rect rect) {
   clip_stack_.push_back(rect);
 }
@@ -458,7 +462,12 @@ void PaintList::fill_text(
     std::string_view text,
     FontDescriptor font,
     float font_size) {
-  const TextShapeRun shape_run = shape_text(text, font, font_size, scale_);
+  const TextMeasurement measurement =
+      text_measurement_cache_ != nullptr
+      ? text_measurement_cache_->measure(text, font, font_size, scale_)
+            .measurement
+      : measure_text(text, font, font_size, scale_);
+  const TextShapeRun& shape_run = measurement.shape_run;
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::text,
       .text =
@@ -698,6 +707,22 @@ Result<void> render_view(
     Size viewport_size,
     DpiScale scale,
     FrameStatistics* statistics) {
+  return render_view(
+      renderer,
+      view,
+      viewport_size,
+      scale,
+      nullptr,
+      statistics);
+}
+
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
+    FrameStatistics* statistics) {
   if (statistics != nullptr) {
     statistics->begin_frame_count += 1;
   }
@@ -719,6 +744,7 @@ Result<void> render_view(
 
   PaintList paint_list;
   paint_list.set_scale(scale);
+  paint_list.set_text_measurement_cache(text_measurement_cache);
   view.paint(paint_list, viewport_size);
   if (statistics != nullptr) {
     statistics->paint_pass_count += 1;

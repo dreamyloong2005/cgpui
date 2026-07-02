@@ -339,6 +339,122 @@ struct RasterizedGlyph {
   return run;
 }
 
+struct TextMeasurementKey {
+  std::string text;
+  FontDescriptor font;
+  float font_size = 16.0F;
+  float scale = 1.0F;
+
+  friend bool operator==(
+      const TextMeasurementKey&,
+      const TextMeasurementKey&) = default;
+};
+
+struct TextMeasurement {
+  TextShapeRun shape_run;
+  Size logical_size;
+  Size device_size;
+};
+
+struct TextMeasurementResult {
+  TextMeasurement measurement;
+  bool cache_hit = false;
+};
+
+[[nodiscard]] inline TextMeasurement measure_text(
+    std::string_view text,
+    FontDescriptor font = {},
+    float font_size = 16.0F,
+    DpiScale scale = {}) {
+  TextShapeRun shape_run =
+      shape_text(text, std::move(font), font_size, scale);
+  const Size logical_size{
+      .width = shape_run.total_advance,
+      .height = shape_run.line_height,
+  };
+  const Size device_size{
+      .width = shape_run.device_total_advance,
+      .height = shape_run.device_line_height,
+  };
+  return TextMeasurement{
+      .shape_run = std::move(shape_run),
+      .logical_size = logical_size,
+      .device_size = device_size,
+  };
+}
+
+class TextMeasurementCache {
+ public:
+  [[nodiscard]] TextMeasurementResult measure(
+      std::string_view text,
+      FontDescriptor font = {},
+      float font_size = 16.0F,
+      DpiScale scale = {}) {
+    const TextMeasurementKey key{
+        .text = std::string(text),
+        .font = std::move(font),
+        .font_size = font_size,
+        .scale = normalized_scale(scale),
+    };
+    lookup_count_ += 1;
+    for (const auto& entry : entries_) {
+      if (entry.key == key) {
+        hit_count_ += 1;
+        return TextMeasurementResult{
+            .measurement = entry.measurement,
+            .cache_hit = true,
+        };
+      }
+    }
+
+    miss_count_ += 1;
+    const TextMeasurement measurement = measure_text(
+        key.text,
+        key.font,
+        key.font_size,
+        DpiScale{.value = key.scale});
+    entries_.push_back(Entry{
+        .key = key,
+        .measurement = measurement,
+    });
+    return TextMeasurementResult{
+        .measurement = measurement,
+        .cache_hit = false,
+    };
+  }
+
+  [[nodiscard]] std::size_t entry_count() const {
+    return entries_.size();
+  }
+
+  [[nodiscard]] std::size_t lookup_count() const {
+    return lookup_count_;
+  }
+
+  [[nodiscard]] std::size_t hit_count() const {
+    return hit_count_;
+  }
+
+  [[nodiscard]] std::size_t miss_count() const {
+    return miss_count_;
+  }
+
+  void clear() {
+    entries_.clear();
+  }
+
+ private:
+  struct Entry {
+    TextMeasurementKey key;
+    TextMeasurement measurement;
+  };
+
+  std::vector<Entry> entries_;
+  std::size_t lookup_count_ = 0;
+  std::size_t hit_count_ = 0;
+  std::size_t miss_count_ = 0;
+};
+
 [[nodiscard]] inline std::vector<TextGlyphPaint> text_glyph_paint_metadata(
     const TextShapeRun& run,
     Point origin = {}) {
