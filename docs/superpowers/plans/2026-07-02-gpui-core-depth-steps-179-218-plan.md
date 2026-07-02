@@ -130,15 +130,23 @@
 
 **Files:**
 - Modify: `include/cgpui/renderer/renderer.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
+- Modify: `src/ui/ui.cpp`
+- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
-- Modify: `tests/ui/text_model_test.cpp`
+- Modify: `tests/ui/render_view_test.cpp`
+- Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage proving text selection and caret paint commands become supported renderer records.
-- [ ] Expected RED: selection/caret commands remain unsupported or skipped in renderer reports.
-- [ ] GREEN: add deterministic selection/caret rectangle records with color, clip, opacity, and transform metadata.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default text_model_test/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `text_model_test/default core_header_cleanliness/default`.
+- [x] Add RED coverage proving text selection and caret paint commands become supported renderer records.
+- [x] Expected RED: selection/caret commands remain unsupported or skipped in renderer reports.
+- [x] GREEN: add deterministic selection/caret rectangle records with color, clip, opacity, and transform metadata.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default text_model_test/default window_runtime_test/default core_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `render_view_test/default text_model_test/default window_runtime_test/default core_header_cleanliness/default`.
+
+**Merged:** `9a1413b feat: add text selection caret geometry records`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 185: Renderer Clip Stack Metadata
 

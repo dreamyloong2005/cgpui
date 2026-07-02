@@ -704,7 +704,7 @@ follow-on goal is now complete on the Windows/Linux track.
 181. [x] Vulkan glyph upload dirty-range tracking.
 182. [x] Vulkan text sampler pipeline descriptor and readiness report.
 183. [x] Vulkan rounded-rect tessellation records.
-184. [ ] Vulkan text selection and caret geometry records.
+184. [x] Vulkan text selection and caret geometry records.
 185. [ ] Renderer clip stack metadata beyond single optional clips.
 186. [ ] Renderer opacity and transform stack reports.
 187. [ ] Renderer batch submission plan records.
@@ -745,13 +745,12 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 183, Vulkan rounded-rect tessellation records, is
-merged on `master` at
-`395af5d feat: add rounded rect tessellation records` and post-merge verified
-on Windows and WSL Arch Linux. Step 184, Vulkan text selection and caret
-geometry records, is the next implementation slice. The track remains
-Windows/Linux first; macOS/Cocoa + Metal is still deferred to a separate parity
-run.
+Step 184, Vulkan text selection and caret geometry records, is merged on
+`master` at `9a1413b feat: add text selection caret geometry records` and
+post-merge verified on Windows and WSL Arch Linux. Step 185, renderer clip
+stack metadata beyond single optional clips, is the next implementation slice.
+The track remains Windows/Linux first; macOS/Cocoa + Metal is still deferred
+to a separate parity run.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

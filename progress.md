@@ -6000,3 +6000,59 @@
   this progress log so Step 183 is marked merged and post-merge verified. Step
   184, Vulkan text selection and caret geometry records, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 184 Vulkan Text Selection And Caret Geometry Records
+
+- Created `.worktrees/vulkan-text-selection-caret-records` on
+  `codex/vulkan-text-selection-caret-records` from `master` at
+  `8ddda24 docs: mark step 183 merged`.
+- Baseline Windows targeted tests passed 3/3:
+  `xmake test -P . vulkan_solid_rect_test/default text_model_test/default core_header_cleanliness/default`.
+- Baseline WSL targeted tests passed 2/2:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-selection-caret-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default core_header_cleanliness/default'`.
+- RED coverage:
+  `vulkan_solid_rect_test/default` and `render_view_test/default` failed as
+  expected on missing text selection/caret draw records, geometry records,
+  Vulkan geometry helpers, renderer report fields, `RenderFrame` hooks, and
+  frame-statistics counters.
+- GREEN adds public `TextSelectionDraw`, `TextCaretDraw`,
+  `TextSelectionGeometryRecord`, and `TextCaretGeometryRecord` types,
+  `RenderFrame::draw_text_selection(...)` and `draw_text_caret(...)`, Vulkan
+  report/batch overloads, selection/caret command statistics, and render-view
+  forwarding for text selection and caret paint commands.
+- Updated `window_runtime_test/default` because selection and caret commands
+  are now submitted to the renderer instead of counted as skipped commands.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default text_model_test/default window_runtime_test/default core_header_cleanliness/default`
+  passed 5/5.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-selection-caret-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default text_model_test/default window_runtime_test/default core_header_cleanliness/default'`
+  passed 4/4.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-selection-caret-records -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-selection-caret-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 184 as
+  `9a1413b feat: add text selection caret geometry records` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default text_model_test/default window_runtime_test/default core_header_cleanliness/default`
+  passed 5/5.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default text_model_test/default window_runtime_test/default core_header_cleanliness/default'`
+  passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 184 is marked merged and post-merge verified. Step
+  185, renderer clip stack metadata beyond single optional clips, is the next
+  implementation slice after docs closeout and cleanup.

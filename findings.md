@@ -3246,3 +3246,17 @@
 - This is still a geometry/reporting slice. It does not create a real Vulkan
   rounded-rect pipeline, shader path, anti-aliased edge generation, or GPU draw
   submission.
+
+## 2026-07-02 Vulkan Text Selection And Caret Geometry Records
+
+- Step 184 adds renderer-facing text selection and caret draw/geometry records
+  so those text paint commands are no longer skipped or reported as unsupported.
+- `render_view(...)` now forwards text selection and caret paint commands
+  through `RenderFrame::draw_text_selection(...)` and
+  `RenderFrame::draw_text_caret(...)`, preserving bounds, color, clip, opacity,
+  and transform metadata for Vulkan reporting.
+- Renderer command reports and frame statistics now count selection and caret
+  commands separately from text glyph draws, matching the existing rounded-rect
+  and text command depth.
+- This is still a geometry/reporting slice. It does not create real Vulkan
+  selection/caret draw pipelines, shader paths, or GPU submissions.
