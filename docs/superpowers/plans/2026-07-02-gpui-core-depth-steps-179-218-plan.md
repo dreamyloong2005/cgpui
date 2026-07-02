@@ -92,11 +92,15 @@
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED coverage for a renderer report that distinguishes glyph quad preparation from sampler-pipeline readiness.
-- [ ] Expected RED: no text sampler pipeline descriptor or readiness counters exist.
-- [ ] GREEN: add a deterministic text sampler pipeline descriptor and report fields while keeping shader module creation for later.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `core_header_cleanliness/default`.
+- [x] Add RED coverage for a renderer report that distinguishes glyph quad preparation from sampler-pipeline readiness.
+- [x] Expected RED: no text sampler pipeline descriptor or readiness counters exist.
+- [x] GREEN: add a deterministic text sampler pipeline descriptor and report fields while keeping shader module creation for later.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `core_header_cleanliness/default`.
+
+**Merged:** `2fbc2b1 feat: add text sampler pipeline readiness report`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 1/1,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 183: Vulkan Rounded-Rect Tessellation Records
 

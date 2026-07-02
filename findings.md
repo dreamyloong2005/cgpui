@@ -3218,3 +3218,16 @@
 - This remains CPU-side upload planning. It does not allocate staging buffers,
   record Vulkan transfer commands, transition image layouts, or update
   descriptor sets.
+
+## 2026-07-02 Vulkan Text Sampler Pipeline Readiness Report
+
+- Step 182 adds a deterministic `TextSamplerPipelineDescriptor` to the renderer
+  public surface and wires it into `RendererTextRenderReport`.
+- Text render reports now distinguish glyph quad preparation from sampler
+  pipeline readiness: non-empty textured glyph draws increment the sampler
+  descriptor count and pending draw count while the descriptor reports shader
+  modules, descriptor set layout, pipeline layout, and graphics pipeline as not
+  ready.
+- This is still a readiness-report slice. It does not create shader modules,
+  descriptor set layouts, pipeline layouts, graphics pipelines, descriptor
+  sets, or sampled atlas draw calls.
