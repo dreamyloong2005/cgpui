@@ -878,6 +878,15 @@ class WindowRuntime {
   [[nodiscard]] std::optional<ViewId> action_dispatch_view_id() const;
   [[nodiscard]] ScrollState* scroll_state_for_route(const EventRoute& route);
   void record_lifecycle_event(const PlatformEvent& event);
+  [[nodiscard]] bool apply_text_pointer_selection(
+      const PlatformEvent& event,
+      const EventRoute& route);
+  [[nodiscard]] std::optional<std::size_t> text_offset_for_point(
+      const TextElement& element,
+      Point point) const;
+  [[nodiscard]] TextInputElement* routed_text_input(ElementId element_id);
+  [[nodiscard]] const TextInputElement* routed_text_input(
+      ElementId element_id) const;
   [[nodiscard]] EventResult dispatch_routed_element_event(
       const PlatformEvent& event,
       const EventRoute& route);
@@ -914,6 +923,11 @@ class WindowRuntime {
     bool completed = false;
   };
 
+  struct TextPointerSelectionDrag {
+    ElementId element_id;
+    std::size_t anchor_offset = 0;
+  };
+
   PlatformApplication& application_;
   View& view_;
   RendererFactory renderer_factory_;
@@ -931,6 +945,7 @@ class WindowRuntime {
   std::optional<PointerCaptureOwner> pointer_capture_owner_;
   std::optional<ViewId> keyboard_focus_owner_;
   std::optional<ElementId> keyboard_focus_element_owner_;
+  std::optional<TextPointerSelectionDrag> text_pointer_selection_drag_;
   std::optional<ElementId> hovered_element_id_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   CursorShape applied_cursor_shape_ = CursorShape::default_arrow;

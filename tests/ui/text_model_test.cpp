@@ -749,6 +749,57 @@ int test_text_measurement_cache_reuses_same_text_tuple() {
              : 59;
 }
 
+int test_text_hit_geometry_maps_points_to_offsets_and_selection() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "abcd",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const cgpui::Rect bounds{
+      .origin = {.x = 10.0F, .y = 5.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  };
+
+  const cgpui::TextHitTestResult before =
+      cgpui::hit_test_text_position(measurement, bounds, {4.0F, 10.0F});
+  if (before.byte_offset != 0 || before.inside_bounds) {
+    return 60;
+  }
+
+  const cgpui::TextHitTestResult near_first =
+      cgpui::hit_test_text_position(measurement, bounds, {14.0F, 10.0F});
+  const cgpui::TextHitTestResult after_first =
+      cgpui::hit_test_text_position(measurement, bounds, {16.0F, 10.0F});
+  const cgpui::TextHitTestResult after_third =
+      cgpui::hit_test_text_position(measurement, bounds, {39.0F, 10.0F});
+  const cgpui::TextHitTestResult after_text =
+      cgpui::hit_test_text_position(measurement, bounds, {60.0F, 10.0F});
+  if (near_first.byte_offset != 0 || !near_first.inside_bounds ||
+      after_first.byte_offset != 1 || !after_first.inside_bounds ||
+      after_third.byte_offset != 3 || !after_third.inside_bounds ||
+      after_text.byte_offset != 4 || after_text.inside_bounds) {
+    return 61;
+  }
+
+  const cgpui::TextSelectionRange forward =
+      cgpui::text_selection_range_from_points(
+          measurement,
+          bounds,
+          {11.0F, 10.0F},
+          {39.0F, 10.0F});
+  if (forward.start != 0 || forward.end != 3 || forward.collapsed) {
+    return 62;
+  }
+
+  const cgpui::TextSelectionRange backward =
+      cgpui::text_selection_range_from_points(
+          measurement,
+          bounds,
+          {49.0F, 10.0F},
+          {24.0F, 10.0F});
+  return backward.start == 1 && backward.end == 4 && !backward.collapsed ? 0
+                                                                         : 63;
+}
+
 int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
   const cgpui::TextShapeRun run = cgpui::shape_text(
       "A\xE4\xB8\xAD",
@@ -869,6 +920,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_measurement_cache_reuses_same_text_tuple();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_hit_geometry_maps_points_to_offsets_and_selection();
       result != 0) {
     return result;
   }

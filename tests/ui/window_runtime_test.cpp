@@ -7142,6 +7142,81 @@ int test_runtime_routes_text_input_widget_without_manual_binding() {
   return 0;
 }
 
+RuntimeFixture* text_pointer_selection_fixture = nullptr;
+
+void dispatch_text_pointer_selection_sequence() {
+  auto& callback = text_pointer_selection_fixture->window.callback;
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {26.0F, 5.0F}});
+  callback(cgpui::PointerMoved{.position = {6.0F, 5.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .position = {6.0F, 5.0F}});
+}
+
+int test_runtime_drags_text_input_pointer_selection() {
+  RuntimeFixture fixture;
+  text_pointer_selection_fixture = &fixture;
+  fixture.app.on_run = &dispatch_text_pointer_selection_sequence;
+
+  cgpui::TextModel model("abcd");
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId input_id =
+      tree->set_root(cgpui::text_input(model).font_size(20.0F).build());
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  bool down_placed_cursor = false;
+  bool drag_extended_selection = false;
+  bool up_kept_selection = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_button &&
+            record.sequence == 1) {
+          down_placed_cursor =
+              context.input.keyboard_focus_element_owner == input_id &&
+              model.cursor() == 3 && model.selection().collapsed;
+        } else if (record.event_kind == cgpui::EventKind::pointer_moved) {
+          drag_extended_selection =
+              model.selection_anchor() == 3 &&
+              model.selection_head() == 1 &&
+              model.selected_text() == std::string_view{"bc"};
+        } else if (record.event_kind == cgpui::EventKind::pointer_button &&
+                   record.sequence == 3) {
+          up_kept_selection =
+              model.selection_anchor() == 3 &&
+              model.selection_head() == 1 &&
+              model.selected_text() == std::string_view{"bc"};
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = true});
+  text_pointer_selection_fixture = nullptr;
+
+  if (result != 0) {
+    return 328;
+  }
+  if (runtime.focused_text_model() != &model) {
+    return 329;
+  }
+  if (!down_placed_cursor || !drag_extended_selection || !up_kept_selection) {
+    return 330;
+  }
+  return 0;
+}
+
 int test_runtime_reports_focused_text_model() {
   RuntimeFixture fixture;
 
@@ -8558,6 +8633,10 @@ int main() {
   }
   if (const int result =
           test_runtime_routes_text_input_widget_without_manual_binding();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_drags_text_input_pointer_selection();
       result != 0) {
     return result;
   }

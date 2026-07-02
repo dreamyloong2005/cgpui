@@ -1360,13 +1360,18 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
             delete_surrounding->after_length);
       }
     }
-    EventResult result = EventResult::unhandled();
-    if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
-        scrolled != nullptr) {
-      if (ScrollState* state = scroll_state_for_route(*current_event_route_);
-          state != nullptr) {
-        state->scroll_by(scrolled->delta);
-        result = EventResult::consumed_event();
+    const bool text_selection_consumed =
+        apply_text_pointer_selection(event, *current_event_route_);
+    EventResult result = text_selection_consumed ? EventResult::consumed_event()
+                                                 : EventResult::unhandled();
+    if (!result.consumed && !result.cancelled) {
+      if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
+          scrolled != nullptr) {
+        if (ScrollState* state = scroll_state_for_route(*current_event_route_);
+            state != nullptr) {
+          state->scroll_by(scrolled->delta);
+          result = EventResult::consumed_event();
+        }
       }
     }
     if (!result.consumed && !result.cancelled) {
@@ -1407,6 +1412,97 @@ void WindowRuntime::record_lifecycle_event(const PlatformEvent& event) {
   }
   drain_deferred_callbacks();
   flush_deferred_redraw_request();
+}
+
+bool WindowRuntime::apply_text_pointer_selection(
+    const PlatformEvent& event,
+    const EventRoute& route) {
+  if (const auto* button = std::get_if<PointerButton>(&event);
+      button != nullptr && button->button == MouseButton::left) {
+    if (button->pressed) {
+      text_pointer_selection_drag_.reset();
+      if (!route.target_element_id.has_value()) {
+        return false;
+      }
+
+      TextInputElement* input = routed_text_input(*route.target_element_id);
+      if (input == nullptr || !input->enabled() || input->model() == nullptr) {
+        return false;
+      }
+
+      const std::optional<std::size_t> offset =
+          text_offset_for_point(*input, button->position);
+      if (!offset.has_value()) {
+        return false;
+      }
+
+      input->model()->set_selection(*offset, *offset);
+      text_pointer_selection_drag_ = TextPointerSelectionDrag{
+          .element_id = *route.target_element_id,
+          .anchor_offset = *offset,
+      };
+      return false;
+    }
+
+    if (!text_pointer_selection_drag_.has_value()) {
+      return false;
+    }
+
+    const TextPointerSelectionDrag drag = *text_pointer_selection_drag_;
+    text_pointer_selection_drag_.reset();
+    TextInputElement* input = routed_text_input(drag.element_id);
+    if (input == nullptr || input->model() == nullptr) {
+      return true;
+    }
+
+    const std::optional<std::size_t> offset =
+        text_offset_for_point(*input, button->position);
+    if (offset.has_value()) {
+      input->model()->set_selection(drag.anchor_offset, *offset);
+    }
+    return true;
+  }
+
+  if (const auto* moved = std::get_if<PointerMoved>(&event);
+      moved != nullptr && text_pointer_selection_drag_.has_value()) {
+    const TextPointerSelectionDrag drag = *text_pointer_selection_drag_;
+    TextInputElement* input = routed_text_input(drag.element_id);
+    if (input == nullptr || input->model() == nullptr) {
+      text_pointer_selection_drag_.reset();
+      return false;
+    }
+
+    const std::optional<std::size_t> offset =
+        text_offset_for_point(*input, moved->position);
+    if (offset.has_value()) {
+      input->model()->set_selection(drag.anchor_offset, *offset);
+    }
+    return true;
+  }
+
+  return false;
+}
+
+std::optional<std::size_t> WindowRuntime::text_offset_for_point(
+    const TextElement& element,
+    Point point) const {
+  const std::optional<Rect> bounds = element.layout_bounds();
+  if (!bounds.has_value()) {
+    return {};
+  }
+
+  const TextMeasurement measurement =
+      measure_text(element.text(), element.font(), element.font_size(), scale_);
+  return hit_test_text_position(measurement, *bounds, point).byte_offset;
+}
+
+TextInputElement* WindowRuntime::routed_text_input(ElementId element_id) {
+  return dynamic_cast<TextInputElement*>(routed_element(element_id));
+}
+
+const TextInputElement* WindowRuntime::routed_text_input(
+    ElementId element_id) const {
+  return dynamic_cast<const TextInputElement*>(routed_element(element_id));
 }
 
 void WindowRuntime::handle_resize(const WindowResized& event) {
