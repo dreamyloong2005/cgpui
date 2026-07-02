@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <cerrno>
+#include <chrono>
 #include <cstdint>
 #include <expected>
 #include <cstring>
@@ -271,6 +272,76 @@ Point point_from_fixed(wl_fixed_t x, wl_fixed_t y) {
       static_cast<float>(wl_fixed_to_double(x)),
       static_cast<float>(wl_fixed_to_double(y)),
   };
+}
+
+std::optional<int> hex_digit(char value) {
+  if (value >= '0' && value <= '9') {
+    return value - '0';
+  }
+  if (value >= 'a' && value <= 'f') {
+    return value - 'a' + 10;
+  }
+  if (value >= 'A' && value <= 'F') {
+    return value - 'A' + 10;
+  }
+  return std::nullopt;
+}
+
+std::string percent_decode(std::string_view value) {
+  std::string result;
+  result.reserve(value.size());
+  for (std::size_t index = 0; index < value.size(); ++index) {
+    if (value[index] == '%' && index + 2 < value.size()) {
+      const auto high = hex_digit(value[index + 1]);
+      const auto low = hex_digit(value[index + 2]);
+      if (high.has_value() && low.has_value()) {
+        result.push_back(static_cast<char>((*high << 4) | *low));
+        index += 2;
+        continue;
+      }
+    }
+    result.push_back(value[index]);
+  }
+  return result;
+}
+
+std::optional<std::string> path_from_file_uri(std::string_view uri) {
+  constexpr std::string_view prefix = "file://";
+  if (!uri.starts_with(prefix)) {
+    return std::nullopt;
+  }
+
+  std::string_view path = uri.substr(prefix.size());
+  constexpr std::string_view localhost = "localhost/";
+  if (path.starts_with(localhost)) {
+    path.remove_prefix(localhost.size() - 1U);
+  }
+  if (!path.starts_with('/')) {
+    return std::nullopt;
+  }
+  return percent_decode(path);
+}
+
+std::vector<std::string> parse_uri_list(std::string_view payload) {
+  std::vector<std::string> files;
+  while (!payload.empty()) {
+    auto line_end = payload.find('\n');
+    std::string_view line =
+        line_end == std::string_view::npos ? payload : payload.substr(0, line_end);
+    if (!line.empty() && line.back() == '\r') {
+      line.remove_suffix(1);
+    }
+    if (!line.empty() && line.front() != '#') {
+      if (auto path = path_from_file_uri(line); path.has_value()) {
+        files.push_back(std::move(*path));
+      }
+    }
+    if (line_end == std::string_view::npos) {
+      break;
+    }
+    payload.remove_prefix(line_end + 1U);
+  }
+  return files;
 }
 
 KeyboardModifiers modifiers_from_xkb_state(xkb_state* state) {
@@ -560,6 +631,10 @@ class WaylandDataDevice {
  public:
   using WindowLookup = std::function<WaylandWindow*(wl_surface*)>;
 
+  void set_display(wl_display* display) {
+    display_ = display;
+  }
+
   void set_manager(wl_data_device_manager* manager) {
     manager_ = manager;
   }
@@ -591,10 +666,7 @@ class WaylandDataDevice {
 
   void reset_device() {
     clear_active_offer();
-    if (pending_offer_ != nullptr) {
-      wl_data_offer_destroy(pending_offer_);
-      pending_offer_ = nullptr;
-    }
+    clear_offer(pending_offer_);
     drag_window_ = nullptr;
     last_drag_position_ = {};
     if (data_device_ != nullptr) {
@@ -604,17 +676,47 @@ class WaylandDataDevice {
   }
 
  private:
+  struct Offer {
+    wl_data_offer* offer = nullptr;
+    std::vector<std::string> mime_types;
+  };
+
   static void handle_data_offer(
       void* data,
       wl_data_device* data_device,
       wl_data_offer* offer) {
     (void)data_device;
     auto* self = static_cast<WaylandDataDevice*>(data);
-    if (self->pending_offer_ != nullptr && self->pending_offer_ != offer) {
-      wl_data_offer_destroy(self->pending_offer_);
-    }
-    self->pending_offer_ = offer;
+    self->clear_offer(self->pending_offer_);
+    self->pending_offer_ = std::make_unique<Offer>();
+    self->pending_offer_->offer = offer;
+    static const wl_data_offer_listener offer_listener{
+        .offer = &WaylandDataDevice::handle_offer_mime_type,
+        .source_actions = &WaylandDataDevice::handle_offer_source_actions,
+        .action = &WaylandDataDevice::handle_offer_action,
+    };
+    wl_data_offer_add_listener(
+        offer,
+        &offer_listener,
+        self->pending_offer_.get());
   }
+
+  static void handle_offer_mime_type(
+      void* data,
+      wl_data_offer*,
+      const char* mime_type) {
+    auto* offer = static_cast<Offer*>(data);
+    if (offer != nullptr && mime_type != nullptr) {
+      offer->mime_types.emplace_back(mime_type);
+    }
+  }
+
+  static void handle_offer_source_actions(
+      void*,
+      wl_data_offer*,
+      std::uint32_t) {}
+
+  static void handle_offer_action(void*, wl_data_offer*, std::uint32_t) {}
 
   static void handle_enter(
       void* data,
@@ -681,38 +783,144 @@ class WaylandDataDevice {
     (void)data_device;
     auto* self = static_cast<WaylandDataDevice*>(data);
     if (offer != nullptr) {
-      wl_data_offer_destroy(offer);
-    }
-    if (self->pending_offer_ == offer) {
-      self->pending_offer_ = nullptr;
+      if (self->pending_offer_ != nullptr &&
+          self->pending_offer_->offer == offer) {
+        self->clear_offer(self->pending_offer_);
+      } else {
+        wl_data_offer_destroy(offer);
+      }
     }
   }
 
   void replace_active_offer(wl_data_offer* offer) {
-    if (active_offer_ != nullptr && active_offer_ != offer) {
-      wl_data_offer_destroy(active_offer_);
+    if (active_offer_ != nullptr && active_offer_->offer != offer) {
+      clear_offer(active_offer_);
     }
-    active_offer_ = offer;
-    if (pending_offer_ == offer) {
-      pending_offer_ = nullptr;
+    if (offer == nullptr) {
+      return;
+    }
+    if (pending_offer_ != nullptr && pending_offer_->offer == offer) {
+      active_offer_ = std::move(pending_offer_);
+    } else if (active_offer_ == nullptr) {
+      active_offer_ = std::make_unique<Offer>();
+      active_offer_->offer = offer;
     }
   }
 
   void clear_active_offer() {
-    if (active_offer_ != nullptr) {
-      wl_data_offer_destroy(active_offer_);
-      active_offer_ = nullptr;
-    }
+    clear_offer(active_offer_);
   }
 
-  [[nodiscard]] DragDropPayload payload_from_active_offer() const {
+  void clear_offer(std::unique_ptr<Offer>& offer) {
+    if (offer != nullptr && offer->offer != nullptr) {
+      wl_data_offer_destroy(offer->offer);
+    }
+    offer.reset();
+  }
+
+  [[nodiscard]] std::optional<std::string> read_offer_payload(
+      const std::string& mime_type) {
+    if (active_offer_ == nullptr || active_offer_->offer == nullptr ||
+        display_ == nullptr) {
+      return std::nullopt;
+    }
+
+    int pipe_fds[2] = {-1, -1};
+    if (pipe2(pipe_fds, O_CLOEXEC) == -1) {
+      return std::nullopt;
+    }
+
+    wl_data_offer_receive(active_offer_->offer, mime_type.c_str(), pipe_fds[1]);
+    if (wl_display_flush(display_) == -1) {
+      close(pipe_fds[0]);
+      close(pipe_fds[1]);
+      return std::nullopt;
+    }
+
+    close(pipe_fds[1]);
+    pipe_fds[1] = -1;
+
+    std::string payload;
+    const auto deadline =
+        std::chrono::steady_clock::now() + std::chrono::seconds(3);
+    while (std::chrono::steady_clock::now() < deadline) {
+      pollfd descriptor{
+          .fd = pipe_fds[0],
+          .events = POLLIN | POLLHUP,
+          .revents = 0,
+      };
+      const int ready = poll(&descriptor, 1, 50);
+      if (ready == -1 && errno == EINTR) {
+        continue;
+      }
+      if (ready <= 0) {
+        continue;
+      }
+
+      char buffer[4096];
+      const auto bytes_read = read(pipe_fds[0], buffer, sizeof(buffer));
+      if (bytes_read > 0) {
+        payload.append(buffer, static_cast<std::size_t>(bytes_read));
+        continue;
+      }
+      close(pipe_fds[0]);
+      return bytes_read == 0 ? std::optional<std::string>{std::move(payload)}
+                             : std::nullopt;
+    }
+
+    close(pipe_fds[0]);
+    return std::nullopt;
+  }
+
+  [[nodiscard]] bool active_offer_has_mime(std::string_view mime_type) const {
+    if (active_offer_ == nullptr) {
+      return false;
+    }
+    return std::ranges::find_if(
+               active_offer_->mime_types,
+               [mime_type](const std::string& candidate) {
+                 return candidate == mime_type;
+               }) != active_offer_->mime_types.end();
+  }
+
+  [[nodiscard]] DragDropPayload payload_from_active_offer() {
+    if (active_offer_has_mime("text/plain;charset=utf-8")) {
+      if (auto text = read_offer_payload("text/plain;charset=utf-8");
+          text.has_value()) {
+        return DragDropPayload{
+            .kind = DragDropPayloadKind::text,
+            .text = std::move(*text),
+        };
+      }
+    }
+    if (active_offer_has_mime("text/plain")) {
+      if (auto text = read_offer_payload("text/plain"); text.has_value()) {
+        return DragDropPayload{
+            .kind = DragDropPayloadKind::text,
+            .text = std::move(*text),
+        };
+      }
+    }
+    if (active_offer_has_mime("text/uri-list")) {
+      if (auto uri_list = read_offer_payload("text/uri-list");
+          uri_list.has_value()) {
+        auto files = parse_uri_list(*uri_list);
+        if (!files.empty()) {
+          return DragDropPayload{
+              .kind = DragDropPayloadKind::files,
+              .files = std::move(files),
+          };
+        }
+      }
+    }
     return {};
   }
 
+  wl_display* display_ = nullptr;
   wl_data_device_manager* manager_ = nullptr;
   wl_data_device* data_device_ = nullptr;
-  wl_data_offer* pending_offer_ = nullptr;
-  wl_data_offer* active_offer_ = nullptr;
+  std::unique_ptr<Offer> pending_offer_;
+  std::unique_ptr<Offer> active_offer_;
   WaylandWindow* drag_window_ = nullptr;
   Point last_drag_position_{};
   WindowLookup find_window_;
@@ -724,6 +932,7 @@ class WaylandApplication final : public PlatformApplication {
     if (display_ == nullptr) {
       return;
     }
+    data_device_.set_display(display_);
     if (pipe2(wakeup_pipe_, O_NONBLOCK | O_CLOEXEC) == -1) {
       initialization_error_ = "pipe2 failed while creating event-loop wakeup pipe";
       return;

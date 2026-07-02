@@ -7,10 +7,12 @@
 
 namespace cgpui::test {
 
-struct WaylandClipboardMimePayload {
+struct WaylandMimePayload {
   std::string mime_type;
   std::string payload;
 };
+
+using WaylandClipboardMimePayload = WaylandMimePayload;
 
 class WaylandTestCompositor {
  public:
@@ -35,6 +37,7 @@ class WaylandTestCompositor {
   void request_drag_motion(std::int32_t x, std::int32_t y);
   void request_drag_drop();
   void request_drag_leave();
+  void set_drag_payloads(std::vector<WaylandMimePayload> payloads);
   void request_keyboard_modifiers(
       bool shift,
       bool control,
@@ -43,7 +46,7 @@ class WaylandTestCompositor {
   void request_keyboard_key(std::uint32_t key, bool pressed);
   void request_keyboard_leave();
   void set_clipboard_selection(
-      std::vector<WaylandClipboardMimePayload> payloads);
+      std::vector<WaylandMimePayload> payloads);
 
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;

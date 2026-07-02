@@ -5,8 +5,11 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <variant>
+#include <vector>
 
 namespace {
 
@@ -25,19 +28,40 @@ bool wait_for_run_finished(const std::atomic_bool& run_finished) {
   return run_finished.load();
 }
 
-} // namespace
+struct ExpectedDragPayload {
+  cgpui::DragDropPayloadKind kind = cgpui::DragDropPayloadKind::none;
+  std::string_view text;
+  std::vector<std::string> files;
+};
 
-int main() {
-  cgpui::test::WaylandTestCompositor compositor("pointer-button");
+bool payload_matches(
+    const cgpui::DragDropPayload& payload,
+    const ExpectedDragPayload& expected) {
+  if (payload.kind != expected.kind) {
+    return false;
+  }
+  if (payload.text != expected.text) {
+    return false;
+  }
+  return payload.files == expected.files;
+}
+
+int run_drag_payload_case(
+    std::string_view name,
+    std::vector<cgpui::test::WaylandMimePayload> payloads,
+    ExpectedDragPayload expected,
+    int failure_base) {
+  cgpui::test::WaylandTestCompositor compositor{std::string(name)};
+  compositor.set_drag_payloads(std::move(payloads));
   if (!compositor.start()) {
-    return 2;
+    return failure_base + 2;
   }
 
   setenv("WAYLAND_DISPLAY", compositor.socket_name().c_str(), 1);
 
   auto app = cgpui::create_platform_application();
   if (!app) {
-    return 3;
+    return failure_base + 3;
   }
 
   bool moved = false;
@@ -70,21 +94,15 @@ int main() {
         }
         if (const auto* drag = std::get_if<cgpui::DragEntered>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
-          drag_entered =
-              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
-              drag->payload.text.empty() && drag->payload.files.empty();
+          drag_entered = payload_matches(drag->payload, expected);
         }
         if (const auto* drag = std::get_if<cgpui::DragUpdated>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
-          drag_updated =
-              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
-              drag->payload.text.empty() && drag->payload.files.empty();
+          drag_updated = payload_matches(drag->payload, expected);
         }
         if (const auto* drag = std::get_if<cgpui::DragDropped>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
-          drag_dropped =
-              drag->payload.kind == cgpui::DragDropPayloadKind::none &&
-              drag->payload.text.empty() && drag->payload.files.empty();
+          drag_dropped = payload_matches(drag->payload, expected);
         }
         if (const auto* drag = std::get_if<cgpui::DragExited>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
@@ -101,7 +119,7 @@ int main() {
         }
       });
   if (!window) {
-    return 4;
+    return failure_base + 4;
   }
   platform_window = window->get();
 
@@ -133,7 +151,7 @@ int main() {
     if (client_thread.joinable()) {
       client_thread.join();
     }
-    return 9;
+    return failure_base + 9;
   }
 
   if (client_thread.joinable()) {
@@ -142,40 +160,93 @@ int main() {
   compositor.stop();
 
   if (run_result != 0) {
-    return 5;
+    return failure_base + 5;
   }
   if (!compositor.wait_for_pointer_move_sent()) {
-    return 6;
+    return failure_base + 6;
   }
   if (!compositor.wait_for_pointer_cursor_set_count(2)) {
-    return 12;
+    return failure_base + 12;
   }
   if (!compositor.wait_for_pointer_button_sent()) {
-    return 7;
+    return failure_base + 7;
   }
   if (!compositor.wait_for_drag_enter_sent()) {
-    return 13;
+    return failure_base + 13;
   }
   if (!compositor.wait_for_drag_motion_sent()) {
-    return 14;
+    return failure_base + 14;
   }
   if (!compositor.wait_for_drag_drop_sent()) {
-    return 15;
+    return failure_base + 15;
   }
   if (!compositor.wait_for_drag_leave_sent()) {
-    return 16;
+    return failure_base + 16;
   }
   if (!moved) {
-    return 8;
+    return failure_base + 8;
   }
   if (!cursor_requested) {
-    return 11;
+    return failure_base + 11;
   }
   if (!pressed || !released) {
-    return 10;
+    return failure_base + 10;
   }
   if (!drag_entered || !drag_updated || !drag_dropped || !drag_exited) {
-    return 17;
+    return failure_base + 17;
+  }
+
+  return 0;
+}
+
+} // namespace
+
+int main() {
+  if (const int result = run_drag_payload_case(
+          "pointer-button-none",
+          {},
+          ExpectedDragPayload{},
+          0);
+      result != 0) {
+    return result;
+  }
+  if (const int result = run_drag_payload_case(
+          "pointer-button-text",
+          {
+              cgpui::test::WaylandMimePayload{
+                  .mime_type = "text/plain",
+                  .payload = "drag text \xE4\xB8\xAD",
+              },
+          },
+          ExpectedDragPayload{
+              .kind = cgpui::DragDropPayloadKind::text,
+              .text = "drag text \xE4\xB8\xAD",
+          },
+          100);
+      result != 0) {
+    return result;
+  }
+  if (const int result = run_drag_payload_case(
+          "pointer-button-uri-list",
+          {
+              cgpui::test::WaylandMimePayload{
+                  .mime_type = "text/uri-list",
+                  .payload =
+                      "file:///tmp/cgpui-one.txt\r\n"
+                      "# ignored comment\r\n"
+                      "file:///home/test/two%20words.txt\r\n",
+              },
+          },
+          ExpectedDragPayload{
+              .kind = cgpui::DragDropPayloadKind::files,
+              .files = {
+                  "/tmp/cgpui-one.txt",
+                  "/home/test/two words.txt",
+              },
+          },
+          200);
+      result != 0) {
+    return result;
   }
 
   return 0;
