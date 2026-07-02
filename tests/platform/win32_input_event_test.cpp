@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
+#include <ole2.h>
 
 #include <cmath>
 #include <cstddef>
@@ -20,6 +21,7 @@ struct Win32DragDropTestPayload {
   const wchar_t* text = nullptr;
   const wchar_t* const* files = nullptr;
   std::size_t file_count = 0;
+  std::uint32_t drop_effect = 0;
 };
 
 bool point_equals(cgpui::Point lhs, cgpui::Point rhs) {
@@ -90,13 +92,17 @@ int main() {
             drag != nullptr && point_equals(drag->position, expected_position)) {
           drag_entered =
               drag->payload.kind == cgpui::DragDropPayloadKind::text &&
-              drag->payload.text == "Dragged text" && drag->payload.files.empty();
+              drag->payload.text == "Dragged text" &&
+              drag->payload.files.empty() &&
+              drag->action == cgpui::DragDropAction::copy;
         }
         if (const auto* drag = std::get_if<cgpui::DragUpdated>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
           drag_updated =
               drag->payload.kind == cgpui::DragDropPayloadKind::text &&
-              drag->payload.text == "Dragged text" && drag->payload.files.empty();
+              drag->payload.text == "Dragged text" &&
+              drag->payload.files.empty() &&
+              drag->action == cgpui::DragDropAction::move;
         }
         if (const auto* drag = std::get_if<cgpui::DragDropped>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
@@ -104,13 +110,15 @@ int main() {
               drag->payload.kind == cgpui::DragDropPayloadKind::files &&
               drag->payload.text.empty() && drag->payload.files.size() == 2 &&
               drag->payload.files[0] == "C:\\Temp\\first.txt" &&
-              drag->payload.files[1] == "C:\\Temp\\second.cpp";
+              drag->payload.files[1] == "C:\\Temp\\second.cpp" &&
+              drag->action == cgpui::DragDropAction::move;
         }
         if (const auto* drag = std::get_if<cgpui::DragExited>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
           drag_exited =
               drag->payload.kind == cgpui::DragDropPayloadKind::none &&
-              drag->payload.text.empty() && drag->payload.files.empty();
+              drag->payload.text.empty() && drag->payload.files.empty() &&
+              drag->action == cgpui::DragDropAction::none;
         }
       });
   if (!window) {
@@ -162,10 +170,17 @@ int main() {
       RegisterWindowMessageW(L"CGPUI.Win32.TestDragDrop");
   const UINT drag_exit_message =
       RegisterWindowMessageW(L"CGPUI.Win32.TestDragExit");
-  const Win32DragDropTestPayload text_payload{
+  const Win32DragDropTestPayload text_copy_payload{
       .x = expected_position.x,
       .y = expected_position.y,
       .text = L"Dragged text",
+      .drop_effect = DROPEFFECT_COPY,
+  };
+  const Win32DragDropTestPayload text_move_payload{
+      .x = expected_position.x,
+      .y = expected_position.y,
+      .text = L"Dragged text",
+      .drop_effect = DROPEFFECT_MOVE,
   };
   const wchar_t* file_paths[] = {
       L"C:\\Temp\\first.txt",
@@ -176,6 +191,7 @@ int main() {
       .y = expected_position.y,
       .files = file_paths,
       .file_count = 2,
+      .drop_effect = DROPEFFECT_MOVE,
   };
   const Win32DragDropTestPayload empty_payload{
       .x = expected_position.x,
@@ -185,12 +201,12 @@ int main() {
       hwnd,
       drag_enter_message,
       0,
-      reinterpret_cast<LPARAM>(&text_payload));
+      reinterpret_cast<LPARAM>(&text_copy_payload));
   SendMessageW(
       hwnd,
       drag_update_message,
       0,
-      reinterpret_cast<LPARAM>(&text_payload));
+      reinterpret_cast<LPARAM>(&text_move_payload));
   SendMessageW(
       hwnd,
       drag_drop_message,

@@ -4,8 +4,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
+#include <ole2.h>
+#include <shellapi.h>
 #include <imm.h>
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -73,6 +76,7 @@ struct Win32TestDragDropPayload {
   const wchar_t* text = nullptr;
   const wchar_t* const* files = nullptr;
   std::size_t file_count = 0;
+  std::uint32_t drop_effect = 0;
 };
 
 UINT test_drag_enter_message() {
@@ -129,6 +133,154 @@ Point drag_position_from_test_hook(const Win32TestDragDropPayload* payload) {
   }
   return Point{.x = payload->x, .y = payload->y};
 }
+
+DragDropAction drag_action_from_drop_effect(DWORD drop_effect) {
+  if ((drop_effect & DROPEFFECT_MOVE) != 0) {
+    return DragDropAction::move;
+  }
+  if ((drop_effect & DROPEFFECT_COPY) != 0) {
+    return DragDropAction::copy;
+  }
+  return DragDropAction::none;
+}
+
+DragDropAction drag_action_from_test_hook(
+    const Win32TestDragDropPayload* payload) {
+  if (payload == nullptr) {
+    return DragDropAction::none;
+  }
+  return drag_action_from_drop_effect(payload->drop_effect);
+}
+
+DWORD choose_ole_drop_effect(DWORD allowed_effect, DWORD key_state) {
+  if ((key_state & MK_CONTROL) != 0 &&
+      (allowed_effect & DROPEFFECT_COPY) != 0) {
+    return DROPEFFECT_COPY;
+  }
+  if ((key_state & MK_SHIFT) != 0 &&
+      (allowed_effect & DROPEFFECT_MOVE) != 0) {
+    return DROPEFFECT_MOVE;
+  }
+  if ((allowed_effect & DROPEFFECT_COPY) != 0) {
+    return DROPEFFECT_COPY;
+  }
+  if ((allowed_effect & DROPEFFECT_MOVE) != 0) {
+    return DROPEFFECT_MOVE;
+  }
+  return DROPEFFECT_NONE;
+}
+
+DragDropPayload drag_payload_from_ole_data_object(IDataObject* data_object) {
+  if (data_object == nullptr) {
+    return {};
+  }
+
+  FORMATETC text_format{
+      .cfFormat = CF_UNICODETEXT,
+      .ptd = nullptr,
+      .dwAspect = DVASPECT_CONTENT,
+      .lindex = -1,
+      .tymed = TYMED_HGLOBAL,
+  };
+  STGMEDIUM text_storage{};
+  if (SUCCEEDED(data_object->GetData(&text_format, &text_storage))) {
+    DragDropPayload payload;
+    if (text_storage.tymed == TYMED_HGLOBAL &&
+        text_storage.hGlobal != nullptr) {
+      const auto* text =
+          static_cast<const wchar_t*>(GlobalLock(text_storage.hGlobal));
+      if (text != nullptr && text[0] != L'\0') {
+        payload.kind = DragDropPayloadKind::text;
+        payload.text = utf8_from_utf16(text);
+      }
+      if (text != nullptr) {
+        GlobalUnlock(text_storage.hGlobal);
+      }
+    }
+    ReleaseStgMedium(&text_storage);
+    if (payload.kind != DragDropPayloadKind::none) {
+      return payload;
+    }
+  }
+
+  FORMATETC file_format{
+      .cfFormat = CF_HDROP,
+      .ptd = nullptr,
+      .dwAspect = DVASPECT_CONTENT,
+      .lindex = -1,
+      .tymed = TYMED_HGLOBAL,
+  };
+  STGMEDIUM file_storage{};
+  if (SUCCEEDED(data_object->GetData(&file_format, &file_storage))) {
+    DragDropPayload payload;
+    if (file_storage.tymed == TYMED_HGLOBAL &&
+        file_storage.hGlobal != nullptr) {
+      auto* drop_handle = reinterpret_cast<HDROP>(file_storage.hGlobal);
+      const UINT file_count =
+          DragQueryFileW(drop_handle, 0xFFFFFFFFU, nullptr, 0);
+      if (file_count > 0) {
+        payload.kind = DragDropPayloadKind::files;
+        payload.files.reserve(file_count);
+        for (UINT index = 0; index < file_count; ++index) {
+          const UINT length = DragQueryFileW(drop_handle, index, nullptr, 0);
+          std::wstring file_path(static_cast<std::size_t>(length) + 1U, L'\0');
+          DragQueryFileW(
+              drop_handle,
+              index,
+              file_path.data(),
+              static_cast<UINT>(file_path.size()));
+          file_path.resize(length);
+          if (!file_path.empty()) {
+            payload.files.push_back(utf8_from_utf16(file_path));
+          }
+        }
+      }
+    }
+    ReleaseStgMedium(&file_storage);
+    return payload;
+  }
+
+  return {};
+}
+
+struct Win32OleDropTargetRegistrationState {
+  HWND hwnd = nullptr;
+  bool registered = false;
+  HRESULT last_registration_result = S_FALSE;
+  HRESULT last_revocation_result = S_FALSE;
+};
+
+class Win32Window;
+
+class Win32OleDropTarget final : public IDropTarget {
+ public:
+  explicit Win32OleDropTarget(Win32Window& owner) : owner_(&owner) {}
+
+  HRESULT STDMETHODCALLTYPE QueryInterface(
+      REFIID interface_id,
+      void** object) override;
+  ULONG STDMETHODCALLTYPE AddRef() override;
+  ULONG STDMETHODCALLTYPE Release() override;
+  HRESULT STDMETHODCALLTYPE DragEnter(
+      IDataObject* data_object,
+      DWORD key_state,
+      POINTL point,
+      DWORD* effect) override;
+  HRESULT STDMETHODCALLTYPE DragOver(
+      DWORD key_state,
+      POINTL point,
+      DWORD* effect) override;
+  HRESULT STDMETHODCALLTYPE DragLeave() override;
+  HRESULT STDMETHODCALLTYPE Drop(
+      IDataObject* data_object,
+      DWORD key_state,
+      POINTL point,
+      DWORD* effect) override;
+
+ private:
+  std::atomic_ulong reference_count_{1};
+  Win32Window* owner_ = nullptr;
+};
 
 class Win32UiaAccessibilityAdapter {
  public:
@@ -202,19 +354,29 @@ const wchar_t* cursor_id_for(CursorShape cursor_shape) {
 class Win32Window final : public PlatformWindow {
  public:
   Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state)
-      : instance_(instance), callback_(std::move(callback)), state_(state) {}
+      : instance_(instance),
+        callback_(std::move(callback)),
+        state_(state),
+        ole_drop_target_(std::make_unique<Win32OleDropTarget>(*this)) {}
 
   ~Win32Window() override {
     if (hwnd_ != nullptr) {
+      revoke_drop_target();
       SetWindowLongPtrW(hwnd_, GWLP_USERDATA, 0);
       DestroyWindow(hwnd_);
       hwnd_ = nullptr;
     }
   }
 
-  void attach(HWND hwnd) { hwnd_ = hwnd; }
+  void attach(HWND hwnd) {
+    hwnd_ = hwnd;
+    register_drop_target(hwnd);
+  }
 
-  void detach() { hwnd_ = nullptr; }
+  void detach() {
+    revoke_drop_target();
+    hwnd_ = nullptr;
+  }
 
   [[nodiscard]] NativeSurfaceHandle native_surface() const override {
     return Win32SurfaceHandle{.hinstance = instance_, .hwnd = hwnd_};
@@ -352,28 +514,132 @@ class Win32Window final : public PlatformWindow {
   void drag_entered(const Win32TestDragDropPayload* payload) {
     callback_(DragEntered{
         .position = drag_position_from_test_hook(payload),
-        .payload = drag_payload_from_test_hook(payload)});
+        .payload = drag_payload_from_test_hook(payload),
+        .action = drag_action_from_test_hook(payload)});
   }
 
   void drag_updated(const Win32TestDragDropPayload* payload) {
     callback_(DragUpdated{
         .position = drag_position_from_test_hook(payload),
-        .payload = drag_payload_from_test_hook(payload)});
+        .payload = drag_payload_from_test_hook(payload),
+        .action = drag_action_from_test_hook(payload)});
   }
 
   void drag_dropped(const Win32TestDragDropPayload* payload) {
     callback_(DragDropped{
         .position = drag_position_from_test_hook(payload),
-        .payload = drag_payload_from_test_hook(payload)});
+        .payload = drag_payload_from_test_hook(payload),
+        .action = drag_action_from_test_hook(payload)});
   }
 
   void drag_exited(const Win32TestDragDropPayload* payload) {
     callback_(DragExited{
         .position = drag_position_from_test_hook(payload),
-        .payload = {}});
+        .payload = {},
+        .action = DragDropAction::none});
+  }
+
+  void ole_drag_entered(
+      IDataObject* data_object,
+      POINTL point,
+      DWORD key_state,
+      DWORD* effect) {
+    const DWORD selected_effect =
+        choose_ole_drop_effect(
+            effect != nullptr ? *effect : DROPEFFECT_NONE,
+            key_state);
+    if (effect != nullptr) {
+      *effect = selected_effect;
+    }
+    last_ole_drag_position_ = client_position_from_screen(point);
+    last_ole_drag_payload_ = drag_payload_from_ole_data_object(data_object);
+    callback_(DragEntered{
+        .position = last_ole_drag_position_,
+        .payload = last_ole_drag_payload_,
+        .action = drag_action_from_drop_effect(selected_effect)});
+  }
+
+  void ole_drag_updated(POINTL point, DWORD key_state, DWORD* effect) {
+    const DWORD selected_effect =
+        choose_ole_drop_effect(
+            effect != nullptr ? *effect : DROPEFFECT_NONE,
+            key_state);
+    if (effect != nullptr) {
+      *effect = selected_effect;
+    }
+    last_ole_drag_position_ = client_position_from_screen(point);
+    callback_(DragUpdated{
+        .position = last_ole_drag_position_,
+        .payload = last_ole_drag_payload_,
+        .action = drag_action_from_drop_effect(selected_effect)});
+  }
+
+  void ole_drag_exited() {
+    callback_(DragExited{
+        .position = last_ole_drag_position_,
+        .payload = {},
+        .action = DragDropAction::none});
+    last_ole_drag_payload_ = {};
+  }
+
+  void ole_drag_dropped(
+      IDataObject* data_object,
+      POINTL point,
+      DWORD key_state,
+      DWORD* effect) {
+    const DWORD selected_effect =
+        choose_ole_drop_effect(
+            effect != nullptr ? *effect : DROPEFFECT_NONE,
+            key_state);
+    if (effect != nullptr) {
+      *effect = selected_effect;
+    }
+    last_ole_drag_position_ = client_position_from_screen(point);
+    last_ole_drag_payload_ = drag_payload_from_ole_data_object(data_object);
+    callback_(DragDropped{
+        .position = last_ole_drag_position_,
+        .payload = last_ole_drag_payload_,
+        .action = drag_action_from_drop_effect(selected_effect)});
+    last_ole_drag_payload_ = {};
   }
 
  private:
+  void register_drop_target(HWND hwnd) {
+    if (ole_drop_target_ == nullptr || hwnd == nullptr ||
+        ole_drop_target_registration_.registered) {
+      return;
+    }
+    ole_drop_target_registration_.hwnd = hwnd;
+    ole_drop_target_registration_.last_registration_result =
+        RegisterDragDrop(hwnd, ole_drop_target_.get());
+    ole_drop_target_registration_.registered =
+        SUCCEEDED(ole_drop_target_registration_.last_registration_result);
+  }
+
+  void revoke_drop_target() {
+    if (!ole_drop_target_registration_.registered ||
+        ole_drop_target_registration_.hwnd == nullptr) {
+      return;
+    }
+    ole_drop_target_registration_.last_revocation_result =
+        RevokeDragDrop(ole_drop_target_registration_.hwnd);
+    ole_drop_target_registration_.registered = false;
+    ole_drop_target_registration_.hwnd = nullptr;
+  }
+
+  Point client_position_from_screen(POINTL point) const {
+    POINT screen_point{
+        .x = static_cast<LONG>(point.x),
+        .y = static_cast<LONG>(point.y),
+    };
+    if (hwnd_ != nullptr) {
+      ScreenToClient(hwnd_, &screen_point);
+    }
+    return Point{
+        .x = static_cast<float>(screen_point.x),
+        .y = static_cast<float>(screen_point.y)};
+  }
+
   void apply_ime_text_input_placement() {
     if (hwnd_ == nullptr || !state_.ime_text_input_placement.has_value()) {
       return;
@@ -419,7 +685,75 @@ class Win32Window final : public PlatformWindow {
   PlatformEventCallback callback_;
   WindowState state_;
   Win32UiaAccessibilityAdapter uia_accessibility_;
+  std::unique_ptr<Win32OleDropTarget> ole_drop_target_;
+  Win32OleDropTargetRegistrationState ole_drop_target_registration_;
+  Point last_ole_drag_position_{};
+  DragDropPayload last_ole_drag_payload_;
 };
+
+HRESULT STDMETHODCALLTYPE Win32OleDropTarget::QueryInterface(
+    REFIID interface_id,
+    void** object) {
+  if (object == nullptr) {
+    return E_POINTER;
+  }
+  if (IsEqualIID(interface_id, IID_IUnknown) ||
+      IsEqualIID(interface_id, IID_IDropTarget)) {
+    *object = static_cast<IDropTarget*>(this);
+    AddRef();
+    return S_OK;
+  }
+  *object = nullptr;
+  return E_NOINTERFACE;
+}
+
+ULONG STDMETHODCALLTYPE Win32OleDropTarget::AddRef() {
+  return static_cast<ULONG>(reference_count_.fetch_add(1) + 1U);
+}
+
+ULONG STDMETHODCALLTYPE Win32OleDropTarget::Release() {
+  const auto count = reference_count_.fetch_sub(1) - 1U;
+  return static_cast<ULONG>(count);
+}
+
+HRESULT STDMETHODCALLTYPE Win32OleDropTarget::DragEnter(
+    IDataObject* data_object,
+    DWORD key_state,
+    POINTL point,
+    DWORD* effect) {
+  if (owner_ != nullptr) {
+    owner_->ole_drag_entered(data_object, point, key_state, effect);
+  }
+  return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE Win32OleDropTarget::DragOver(
+    DWORD key_state,
+    POINTL point,
+    DWORD* effect) {
+  if (owner_ != nullptr) {
+    owner_->ole_drag_updated(point, key_state, effect);
+  }
+  return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE Win32OleDropTarget::DragLeave() {
+  if (owner_ != nullptr) {
+    owner_->ole_drag_exited();
+  }
+  return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE Win32OleDropTarget::Drop(
+    IDataObject* data_object,
+    DWORD key_state,
+    POINTL point,
+    DWORD* effect) {
+  if (owner_ != nullptr) {
+    owner_->ole_drag_dropped(data_object, point, key_state, effect);
+  }
+  return S_OK;
+}
 
 LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   auto* window = reinterpret_cast<Win32Window*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
@@ -554,7 +888,16 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 
 class Win32Application final : public PlatformApplication {
  public:
-  Win32Application() : instance_(GetModuleHandleW(nullptr)) {}
+  Win32Application() : instance_(GetModuleHandleW(nullptr)) {
+    ole_initialization_result_ = OleInitialize(nullptr);
+    ole_initialized_ = SUCCEEDED(ole_initialization_result_);
+  }
+
+  ~Win32Application() override {
+    if (ole_initialized_) {
+      OleUninitialize();
+    }
+  }
 
   Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
@@ -657,6 +1000,8 @@ class Win32Application final : public PlatformApplication {
   }
 
   HINSTANCE instance_ = nullptr;
+  HRESULT ole_initialization_result_ = S_FALSE;
+  bool ole_initialized_ = false;
   DWORD running_thread_id_ = 0;
   bool running_ = true;
   std::vector<Win32Window*> windows_;

@@ -158,6 +158,25 @@ int main() {
       !contains(win32_text, "DragExited{")) {
     return 53;
   }
+  if (!contains(win32_text, "class Win32OleDropTarget final : public IDropTarget") ||
+      !contains(win32_text, "Win32OleDropTargetRegistrationState") ||
+      !contains(win32_text, "IDataObject") ||
+      !contains(win32_text, "RegisterDragDrop(") ||
+      !contains(win32_text, "RevokeDragDrop(")) {
+    return 58;
+  }
+  if (!contains(win32_text, "DROPEFFECT_COPY") ||
+      !contains(win32_text, "DROPEFFECT_MOVE") ||
+      !contains(win32_text, "drag_action_from_drop_effect(") ||
+      !contains(win32_text, "drag_payload_from_ole_data_object(")) {
+    return 59;
+  }
+  if (!contains(win32_text, "last_registration_result") ||
+      !contains(win32_text, "last_revocation_result") ||
+      !contains(win32_text, "register_drop_target(") ||
+      !contains(win32_text, "revoke_drop_target()")) {
+    return 60;
+  }
   if (!contains(win32_text, "CGPUI.Win32.TestDragEnter") ||
       !contains(win32_text, "CGPUI.Win32.TestDragUpdate") ||
       !contains(win32_text, "CGPUI.Win32.TestDragDrop") ||
@@ -192,7 +211,8 @@ int main() {
   }
   if (!contains(platform_target, "\"user32\"") ||
       !contains(platform_target, "\"gdi32\"") ||
-      !contains(platform_target, "\"shell32\"")) {
+      !contains(platform_target, "\"shell32\"") ||
+      !contains(platform_target, "\"ole32\"")) {
     return 13;
   }
 
