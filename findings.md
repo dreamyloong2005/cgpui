@@ -3091,3 +3091,23 @@
 - Remaining drag/drop depth includes accept/finish/action negotiation,
   non-local URI policy, richer MIME formats, and production desktop-file
   manager edge cases.
+
+## 2026-07-02 Wayland Text-Input State Machine
+
+- Step 175 moves Wayland IME beyond placement-only storage. The Linux backend
+  now has a minimal handwritten `zwp_text_input_v3` client binding and the
+  test compositor exposes the matching server-side protocol surface for
+  deterministic tests.
+- `WaylandTextInputState` is protocol-independent window state: it tracks
+  protocol availability, placement, enter/leave state, surrounding-text cursor
+  records, content-type records, preedit text, and committed text.
+- IME placement is now converted into protocol requests when text-input v3 is
+  available: enable/disable, empty surrounding text with cursor/anchor byte
+  offset, default content type, cursor rectangle, and protocol commit.
+- Deterministic compositor enter/preedit/commit/leave events now route into
+  public `ImeComposition` update/commit events through the platform callback,
+  while the test compositor records the client-side surrounding/cursor/content
+  commit state for assertions.
+- This is still partial Wayland IME parity. Production input-method behavior,
+  delete-surrounding editing, richer content hints/purposes, serial policy, and
+  compositor-specific edge cases remain future work.

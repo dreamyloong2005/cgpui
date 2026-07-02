@@ -658,27 +658,30 @@ follow-on goal is now complete on the Windows/Linux track.
 172. [x] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
 173. [x] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
 174. [x] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
-175. [ ] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
+175. [x] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
 176. [ ] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 177. [ ] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 178. [ ] Native additional-window creation slice over the multi-window runtime registry.
 
 ## Active Step
 
-Current handoff: Step 174, Wayland drag/drop MIME payload extraction for text
-and URI-list/file payloads, is merged on `master` at
-`4004663 feat: add wayland drag payload mime extraction` and post-merge
-verified on Windows and WSL Arch Linux. RED failed as expected on missing
-`WaylandTestCompositor::set_drag_payloads(...)`, while the old no-payload
-drag path still expected `DragDropPayloadKind::none`. GREEN adds
-Wayland data-offer MIME tracking for drag offers, reads `text/plain` and
-`text/plain;charset=utf-8` payloads through `wl_data_offer_receive`, parses
-`text/uri-list` local file URIs into public file payloads, and keeps no-data
-offers graceful. Post-merge targeted coverage passed 4/4 on Windows and 5/5
-on WSL Arch Linux, `git diff --check` produced no output, WSL full debug
-passed 27/27, and Windows full debug passed 30/30. Step 175, Wayland
-text-input state machine for enter/leave, surrounding text, preedit, and
-commit, is the next implementation slice.
+Current handoff: Step 175, Wayland text-input state machine for enter/leave,
+surrounding text, preedit, and commit, is merged on `master` at
+`3484f62 feat: add wayland text input state machine` and post-merge verified
+on Windows and WSL Arch Linux. RED failed as expected on missing deterministic
+test-compositor text-input requests and missing Wayland text-input state
+machine source markers. GREEN adds a minimal handwritten `zwp_text_input_v3`
+client/server binding, a protocol-independent `WaylandTextInputState`, window
+support state that reports `available` when the protocol global is bound,
+surrounding/cursor/content-type commit records from IME placement, and
+test-compositor enter/preedit/commit/leave events that publish public
+`ImeComposition` updates and commits. Post-merge targeted coverage passed 3/3
+on Windows and 4/4 on WSL Arch Linux, `git diff --check` produced no output,
+WSL full debug passed 27/27, and Windows full debug passed 30/30 after a
+single transient `clipboard_test/default` failure was cleared by a targeted
+rerun and full-suite rerun. Step 176, Windows UIA accessibility adapter
+skeleton consuming `AccessibilityTreeSnapshot`, is the next implementation
+slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

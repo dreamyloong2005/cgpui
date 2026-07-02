@@ -56,10 +56,11 @@ desktop integration surfaces remain separate future work.
   reports that distinguish glyph-backed work from metadata-only placeholders.
 - Platform hooks on active targets: Win32 cursor application, Win32 clipboard,
   Wayland clipboard support state plus text selection payload extraction,
-  focused text IME geometry, Win32 IME placement, Wayland text-input/IME
-  skeleton, Win32 drag/drop event skeleton, Wayland data-device drag/drop
-  text and URI-list payload extraction, lifecycle events, multi-window runtime
-  registry, platform wakeups, and accessibility tree snapshots.
+  focused text IME geometry, Win32 IME placement, Wayland text-input v3
+  enter/leave plus preedit/commit event dispatch, Win32 drag/drop event
+  skeleton, Wayland data-device drag/drop text and URI-list payload extraction,
+  lifecycle events, multi-window runtime registry, platform wakeups, and
+  accessibility tree snapshots.
 - Windows/Linux demo smoke coverage exercises window creation, first frame,
   resize, close, text input, clipboard flow, redraw, and bounded shutdown.
 
@@ -84,9 +85,14 @@ desktop integration surfaces remain separate future work.
   offers graceful. Drag actions, accept/finish negotiation, non-local URI
   handling, richer MIME formats, and production desktop integration remain
   incomplete.
-- Wayland IME stores focused text placement through a text-input skeleton, but
-  full text-input protocol binding, surrounding text, enter/leave, content
-  type, and commit/preedit handling are not complete.
+- Wayland IME is partially protocol-backed. It binds a minimal
+  `zwp_text_input_v3` manager when available, reports text-input support as
+  available, commits surrounding-text cursor and default content-type records
+  from focused text placement, and routes deterministic enter/leave plus
+  preedit/commit protocol events into public `ImeComposition` events. Full
+  desktop input-method integration, delete-surrounding editing, richer content
+  hints/purposes, serial synchronization policy, and production compositor
+  edge cases remain incomplete.
 - Win32 drag/drop uses deterministic event hooks and public payload shapes, not
   full OLE `IDropTarget` shell integration or drag-effect negotiation.
 - Multi-window support records per-window runtime ownership and app-opened
@@ -146,8 +152,9 @@ area expansion. Recommended order:
    text render counters into real Vulkan atlas textures, GPU uploads, shader
    sampling, and draw calls.
 2. Continue promoting Wayland clipboard, Wayland drag/drop, and Wayland
-   text-input from skeleton capability to real data/protocol handling,
-   including clipboard write/ownership and drag payload extraction.
+   text-input from deterministic protocol slices to production desktop
+   handling, including clipboard write/ownership, drag action negotiation, and
+   richer text-input editing semantics.
 3. Add native accessibility adapters for Windows UIA and Linux AT-SPI using the
    existing accessibility snapshot as the source of truth.
 4. Turn multi-window runtime records into native additional windows with owned

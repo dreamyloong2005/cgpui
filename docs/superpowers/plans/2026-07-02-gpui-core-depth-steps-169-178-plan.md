@@ -137,13 +137,34 @@
 - Modify: `src/platform/linux/wayland_application.cpp`
 - Modify: `tests/platform/wayland_keyboard_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
-- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
+- Modify: `tests/platform/wayland_test_compositor.cpp`
+- Modify: `tests/platform/wayland_test_compositor.hpp`
 
-- [ ] Add RED coverage for text-input support state with enter, leave, surrounding text, preedit, commit, and content-type records.
-- [ ] Expected RED: current `WaylandTextInput` only stores placement and reports unsupported.
-- [ ] GREEN: introduce a protocol-independent `WaylandTextInputState` model that tracks enter/leave and preedit/commit data, then wire deterministic test-compositor events into public IME/text input events.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-text-input-state-machine -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`.
+- [x] Add RED coverage for text-input support state with enter, leave, surrounding text, preedit, commit, and content-type records.
+- [x] Expected RED observed: WSL targeted build failed on missing
+  `WaylandTestCompositor::request_text_input_enter/preedit/commit/leave`,
+  wait/accessor helpers, and text-input client-state API.
+- [x] GREEN: introduced a protocol-independent `WaylandTextInputState`,
+  a minimal handwritten `zwp_text_input_v3` client/server binding, protocol
+  records for surrounding/cursor/content-type commits, and deterministic
+  compositor enter/preedit/commit/leave events that dispatch public
+  `ImeComposition` update/commit events.
+- [x] Feature-worktree WSL targeted command passed 3/3:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-text-input-state-machine -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
+- [x] Feature-worktree Windows targeted command passed 3/3:
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`.
+- [x] `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- [x] Feature-worktree full debug verification passed: WSL Arch Linux 27/27;
+  Windows 30/30.
+- [x] Merged to `master` as
+  `3484f62 feat: add wayland text input state machine`.
+- [x] Post-merge targeted verification passed: WSL Arch Linux 4/4; Windows 3/3.
+- [x] Post-merge `git diff --check` produced no output.
+- [x] Full post-merge verification passed: WSL Arch Linux full debug 27/27;
+  Windows `clipboard_test/default` failed once during a full-suite batch, then
+  targeted `clipboard_test/default` passed 1/1 and Windows full debug rerun
+  passed 30/30.
 
 ## Step 176: Windows UIA Accessibility Adapter Skeleton
 

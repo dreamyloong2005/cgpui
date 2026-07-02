@@ -5490,3 +5490,65 @@
   is marked merged and post-merge verified. Step 175, Wayland text-input state
   machine for enter/leave, surrounding text, preedit, and commit, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 175 Wayland Text-Input State Machine
+
+- Continued Step 175 in `.worktrees/wayland-text-input-state-machine` on
+  `codex/wayland-text-input-state-machine` from `master` at
+  `211fcb7 docs: mark step 174 merged`.
+- RED coverage:
+  WSL `wayland_keyboard_test/default` failed as expected at link time on
+  missing deterministic text-input compositor APIs:
+  `request_text_input_enter/preedit/commit/leave`, text-input wait helpers,
+  and text-input client-state accessors. The architecture source test also
+  required `WaylandTextInputState`, `ImeTextInputSupport::available`,
+  surrounding/content/preedit/commit markers, and `ImeComposition{`.
+- GREEN adds a minimal handwritten `zwp_text_input_v3` client binding in
+  `src/platform/linux/wayland_application.cpp` and matching server-side
+  protocol definitions in the Wayland test compositor.
+- `WaylandTextInputState` now tracks protocol availability, placement,
+  enter/leave, surrounding-text cursor/anchor records, content-type records,
+  preedit text, and committed text without exposing Wayland protocol headers
+  through public CGPUI headers.
+- IME placement updates now send text-input v3 enable/disable,
+  `set_surrounding_text`, default `set_content_type`, cursor rectangle, and
+  protocol commit when the text-input manager global is available.
+- The test compositor can send deterministic enter, preedit, commit, and leave
+  events; the client routes preedit to public `ImeCompositionPhase::update` and
+  commit to `ImeCompositionPhase::commit`.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-text-input-state-machine -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-text-input-state-machine -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Committed Step 175 as
+  `3484f62 feat: add wayland text input state machine` and fast-forward
+  merged it to `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_keyboard_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 4/4.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- First post-merge Windows full debug run had one transient
+  `clipboard_test/default` failure while the other 29 tests passed. A targeted
+  rerun of `xmake test -P . clipboard_test/default` passed 1/1, and the full
+  Windows debug rerun `xmake f -c -m debug -P .; xmake test -P .` passed
+  30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan,
+  `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 175
+  is marked merged and post-merge verified. Step 176, Windows UIA
+  accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`, is the
+  next implementation slice after docs closeout and cleanup.
