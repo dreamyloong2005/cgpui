@@ -239,6 +239,56 @@ int test_font_database_registers_and_resolves_faces() {
   return 0;
 }
 
+int test_font_database_resolves_ordered_fallback_chain() {
+  cgpui::FontDatabase database;
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "System UI"},
+      .postscript_name = "SystemUI-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "system-ui.ttf",
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Sans"},
+      .postscript_name = "NotoSans-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "noto-sans.ttf",
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "inter.ttf",
+  });
+  database.add_generic_fallback_family("Noto Sans");
+  database.add_generic_fallback_family("System UI");
+
+  const cgpui::FontFallbackChain inter_chain =
+      database.resolve_chain(cgpui::FontDescriptor{.family = "Inter"});
+  if (inter_chain.empty() || inter_chain.size() != 3 ||
+      inter_chain.primary()->postscript_name != "Inter-Regular" ||
+      inter_chain.faces()[1]->postscript_name != "NotoSans-Regular" ||
+      inter_chain.faces()[2]->postscript_name != "SystemUI-Regular") {
+    return 38;
+  }
+
+  const cgpui::FontFallbackChain missing_chain =
+      database.resolve_chain(cgpui::FontDescriptor{.family = "Missing"});
+  if (missing_chain.empty() || missing_chain.size() != 2 ||
+      missing_chain.primary()->postscript_name != "NotoSans-Regular" ||
+      missing_chain.faces()[1]->postscript_name != "SystemUI-Regular") {
+    return 39;
+  }
+
+  const cgpui::FontFallbackChain empty_chain =
+      database.resolve_chain(cgpui::FontDescriptor{});
+  if (empty_chain.empty() || empty_chain.size() != 1 ||
+      empty_chain.primary()->postscript_name != "SystemUI-Regular") {
+    return 40;
+  }
+
+  return 0;
+}
+
 int test_fake_font_discovery_is_deterministic() {
   const std::vector<cgpui::FontFaceDescriptor> fixtures{
       cgpui::FontFaceDescriptor{
@@ -260,16 +310,16 @@ int test_fake_font_discovery_is_deterministic() {
           fixtures.data(),
           fixtures.size()));
   if (database.face_count() != fixtures.size()) {
-    return 38;
+    return 41;
   }
   if (database.faces()[0].font.family != "Zed Sans" ||
       database.faces()[1].font.family != "Zed Mono") {
-    return 39;
+    return 42;
   }
   return database.resolve(cgpui::FontDescriptor{.family = "Zed Mono"}) !=
                  nullptr
              ? 0
-             : 40;
+             : 43;
 }
 
 int test_shape_text_produces_deterministic_fallback_glyphs() {
@@ -281,17 +331,17 @@ int test_shape_text_produces_deterministic_fallback_glyphs() {
   if (run.text != std::string_view{"A\xE4\xB8\xAD"} ||
       run.font.family != "Inter" || run.font_size != 20.0F ||
       run.glyph_count() != 2 || run.byte_length != 4) {
-    return 41;
+    return 44;
   }
   if (run.glyphs[0].byte_offset != 0 || run.glyphs[0].byte_length != 1 ||
       run.glyphs[0].advance != 10.0F) {
-    return 42;
+    return 45;
   }
   if (run.glyphs[1].byte_offset != 1 || run.glyphs[1].byte_length != 3 ||
       run.glyphs[1].advance != 10.0F) {
-    return 43;
+    return 46;
   }
-  return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 44;
+  return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 47;
 }
 
 int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
@@ -302,7 +352,7 @@ int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
   const std::vector<cgpui::TextGlyphPaint> glyphs =
       cgpui::text_glyph_paint_metadata(run);
   if (glyphs.size() != 2) {
-    return 45;
+    return 48;
   }
 
   const cgpui::RasterizedGlyph rasterized = cgpui::rasterize_fallback_glyph(
@@ -312,27 +362,27 @@ int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
       rasterized.key.byte_length != 3 ||
       rasterized.advance != glyphs[1].device_advance ||
       rasterized.device_font_size != run.device_font_size) {
-    return 46;
+    return 49;
   }
   if (rasterized.bitmap.empty() || rasterized.bitmap.width != 10 ||
       rasterized.bitmap.height != 20 || rasterized.bitmap.stride != 10 ||
       rasterized.bitmap.byte_size() != 200) {
-    return 47;
+    return 50;
   }
   if (rasterized.bitmap.pixel(0, 0) != 0 ||
       rasterized.bitmap.pixel(1, 1) != 220 ||
       rasterized.bitmap.pixel(9, 19) != 0) {
-    return 48;
+    return 51;
   }
   if (rasterized.left_bearing != 0.0F || rasterized.top_bearing != 0.0F ||
       rasterized.baseline != 16.0F) {
-    return 49;
+    return 52;
   }
 
   const cgpui::RasterizedGlyph rerasterized = cgpui::rasterize_fallback_glyph(
       glyphs[1],
       cgpui::GlyphRasterizerOptions{.foreground_alpha = 220});
-  return rerasterized.bitmap.alpha == rasterized.bitmap.alpha ? 0 : 50;
+  return rerasterized.bitmap.alpha == rasterized.bitmap.alpha ? 0 : 53;
 }
 
 } // namespace
@@ -372,6 +422,10 @@ int main() {
     return result;
   }
   if (const int result = test_font_database_registers_and_resolves_faces();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_font_database_resolves_ordered_fallback_chain();
       result != 0) {
     return result;
   }

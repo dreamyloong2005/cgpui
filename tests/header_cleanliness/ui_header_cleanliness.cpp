@@ -157,6 +157,22 @@ int main() {
       cgpui::text_glyph_paint_metadata(shape_run);
   const cgpui::RasterizedGlyph header_rasterized =
       cgpui::rasterize_fallback_glyph(header_glyphs[0]);
+  cgpui::FontDatabase font_database;
+  font_database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Header"},
+      .postscript_name = "Header-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "header.ttf",
+  });
+  font_database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Fallback"},
+      .postscript_name = "Fallback-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "fallback.ttf",
+  });
+  font_database.add_generic_fallback_family("Fallback");
+  const cgpui::FontFallbackChain header_font_chain =
+      font_database.resolve_chain(cgpui::FontDescriptor{.family = "Header"});
   cgpui::ScrollModel scroll_model;
   cgpui::ElementTree element_tree;
   const cgpui::ElementId header_root_id =
@@ -433,6 +449,10 @@ int main() {
                  !header_rasterized.bitmap.empty() &&
                  header_rasterized.bitmap.width == 9 &&
                  header_rasterized.key.font_family == "Header" &&
+                 !header_font_chain.empty() &&
+                 header_font_chain.primary()->font.family == "Header" &&
+                 header_font_chain.size() == 2 &&
+                 header_font_chain.faces()[1]->font.family == "Fallback" &&
                  selection.range.start == 1 && selection.range.end == 3 &&
                  selection.rect.size.width == 5.0F &&
                  caret.byte_offset == 3 && caret.rect.size.width == 1.0F &&
