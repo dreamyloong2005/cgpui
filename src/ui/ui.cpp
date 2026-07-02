@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <utility>
 #include <variant>
+#include <vector>
 
 namespace cgpui {
 namespace {
@@ -1017,7 +1018,7 @@ int run_app(
     View& view,
     AppRendererFactory renderer_factory,
     AppRunnerOptions options) {
-  std::unique_ptr<Renderer> renderer;
+  std::vector<std::unique_ptr<Renderer>> renderers;
   WindowRuntime runtime(
       application,
       view,
@@ -1036,8 +1037,9 @@ int run_app(
               .code = ErrorCode::renderer_initialization_failed,
               .message = "App renderer factory returned an empty renderer"});
         }
-        renderer = std::move(*result);
-        return renderer.get();
+        Renderer* renderer = result->get();
+        renderers.push_back(std::move(*result));
+        return renderer;
       });
 
   if (options.setup) {
@@ -1788,8 +1790,27 @@ void WindowRuntime::activate_native_window_for_record(
   }
 
   std::unique_ptr<PlatformWindow> window = std::move(*window_result);
+  const WindowState window_state = window->state();
+  auto renderer_result = renderer_factory_(RenderSurfaceDescriptor{
+      .native_surface = window->native_surface(),
+      .framebuffer_size = window_state.framebuffer_size,
+      .scale = window_state.scale});
+  if (!renderer_result || *renderer_result == nullptr) {
+    record.window = nullptr;
+    record.renderer = nullptr;
+    record.active = false;
+    record.native_window_error =
+        renderer_result
+            ? Error{
+                  .code = ErrorCode::renderer_initialization_failed,
+                  .message =
+                      "Renderer factory returned an empty child renderer"}
+            : renderer_result.error();
+    return;
+  }
+
   record.window = window.get();
-  record.renderer = nullptr;
+  record.renderer = *renderer_result;
   record.active = true;
   native_additional_windows_.push_back(std::move(window));
 }

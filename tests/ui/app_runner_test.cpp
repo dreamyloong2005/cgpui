@@ -686,6 +686,8 @@ int test_multi_window_registry_owns_independent_runtime_records() {
   bool setup_records_ok = false;
   bool frame_root_record_ok = false;
   bool frame_secondary_records_ok = false;
+  bool setup_child_renderers_distinct = false;
+  bool frame_child_renderers_distinct = false;
   const cgpui::View* first_root_ptr = nullptr;
   const cgpui::View* second_root_ptr = nullptr;
   cgpui::AppOpenedWindow first_opened;
@@ -748,8 +750,8 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                     second_record->owns_root_view &&
                     first_record->window != nullptr &&
                     second_record->window != nullptr &&
-                    first_record->renderer == nullptr &&
-                    second_record->renderer == nullptr &&
+                    first_record->renderer != nullptr &&
+                    second_record->renderer != nullptr &&
                     first_record->owns_window &&
                     second_record->owns_window &&
                     first_record->owns_renderer &&
@@ -762,6 +764,11 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                         first_opened.root_view_id) == first_root_ptr &&
                     context.runtime.app_opened_window_root_view(
                         second_opened.root_view_id) == second_root_ptr;
+                setup_child_renderers_distinct =
+                    first_record != nullptr && second_record != nullptr &&
+                    first_record->renderer != nullptr &&
+                    second_record->renderer != nullptr &&
+                    first_record->renderer != second_record->renderer;
 
                 context.runtime.set_after_frame_callback(
                     [&](const cgpui::ViewContext& frame_context) {
@@ -793,8 +800,8 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                               second_opened.root_view_id &&
                           first_frame_record->window != nullptr &&
                           second_frame_record->window != nullptr &&
-                          first_frame_record->renderer == nullptr &&
-                          second_frame_record->renderer == nullptr &&
+                          first_frame_record->renderer != nullptr &&
+                          second_frame_record->renderer != nullptr &&
                           first_frame_record->owns_window &&
                           second_frame_record->owns_window &&
                           first_frame_record->owns_renderer &&
@@ -803,6 +810,15 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                           second_frame_record->active &&
                           !first_frame_record->native_window_error.has_value() &&
                           !second_frame_record->native_window_error.has_value();
+                      frame_child_renderers_distinct =
+                          root_record != nullptr && first_frame_record != nullptr &&
+                          second_frame_record != nullptr &&
+                          first_frame_record->renderer != nullptr &&
+                          second_frame_record->renderer != nullptr &&
+                          first_frame_record->renderer !=
+                              second_frame_record->renderer &&
+                          first_frame_record->renderer != root_record->renderer &&
+                          second_frame_record->renderer != root_record->renderer;
                     });
               },
       });
@@ -817,7 +833,10 @@ int test_multi_window_registry_owns_independent_runtime_records() {
       !frame_secondary_records_ok) {
     return 34;
   }
-  if (renderer_factory_count != 1 || renderer_begin_frame_count != 1 ||
+  if (!setup_child_renderers_distinct || !frame_child_renderers_distinct) {
+    return 43;
+  }
+  if (renderer_factory_count != 3 || renderer_begin_frame_count != 1 ||
       frame.present_count != 1) {
     return 35;
   }
