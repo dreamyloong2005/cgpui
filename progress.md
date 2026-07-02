@@ -1,5 +1,54 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 206 Window Chrome Customization Skeleton
+
+- Continued `.worktrees/window-chrome-customization` on
+  `codex/window-chrome-customization` from `master` at
+  `75d27c5 docs: mark step 205 merged`.
+- Baseline targeted tests had already passed on Windows and WSL Arch Linux in
+  the handoff state.
+- RED coverage had already been added in `tests/ui/app_runner_test.cpp`,
+  `tests/architecture/win32_window_source_test.cpp`, and
+  `tests/architecture/wayland_window_source_test.cpp`. RED failed as expected
+  on missing `WindowOptions::titlebar_visible(...)`,
+  `WindowDescriptor::chrome`, and Win32/Wayland chrome state markers.
+- GREEN adds `WindowChromeOptions` to `WindowDescriptor`, fluent
+  `WindowOptions` helpers for titlebar visibility, decorations, resizing, and
+  transparent background, `PlatformWindowChromeState`, default unsupported
+  `PlatformWindow::apply_window_chrome(...)`, Win32 style/ex-style application,
+  Wayland unsupported xdg-decoration diagnostics, and header-cleanliness
+  coverage.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/window-chrome-customization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/window-chrome-customization -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 206 as
+  `6387371 feat: add window chrome customization skeleton` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 206 is marked merged and post-merge verified.
+  Step 207, app command palette registry, is the next implementation slice
+  after docs closeout and cleanup.
+
 ## 2026-07-03 Step 205 Native File Dialog API Skeleton
 
 - Created `.worktrees/native-file-dialog-api` on

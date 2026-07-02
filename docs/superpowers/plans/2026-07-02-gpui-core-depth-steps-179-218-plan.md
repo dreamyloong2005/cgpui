@@ -612,11 +612,15 @@ passing targeted rerun and passing full-suite rerun.
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 
-- [ ] Add RED coverage for titlebar visibility, decorations, resizable, and transparent window options.
-- [ ] Expected RED: `WindowOptions` cannot express window chrome preferences.
-- [ ] GREEN: add option metadata and platform state application skeletons with graceful unsupported behavior.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for titlebar visibility, decorations, resizable, and transparent window options.
+- [x] Expected RED: `WindowOptions` cannot express window chrome preferences.
+- [x] GREEN: add option metadata and platform state application skeletons with graceful unsupported behavior.
+- [x] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `6387371 feat: add window chrome customization skeleton`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 207: App Command Palette Registry
 

@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Window Chrome Customization Skeleton
+
+- Step 206 adds platform-neutral window chrome metadata:
+  `WindowChromeOptions` now lives on `WindowDescriptor` with titlebar
+  visibility, decoration, resizable, and transparent-background flags.
+- `WindowOptions` exposes fluent `.titlebar_visible(...)`, `.decorations(...)`,
+  `.resizable(...)`, and `.transparent(...)` helpers, and app-opened child
+  windows preserve those descriptors through the runtime registry and native
+  `PlatformApplication::create_window(...)` path.
+- `PlatformWindowChromeState` records requested/applied chrome state, backend
+  name, support state, and unsupported reason. The base `PlatformWindow`
+  returns an explicit unsupported result so fallback backends stay graceful.
+- Win32 computes window `style` / `extended_style` from the chrome request,
+  uses those styles during `CreateWindowExW`, and can reapply them through
+  `apply_window_chrome(...)`. Wayland records the request and applied default
+  chrome while reporting unsupported xdg-decoration behavior until decoration
+  negotiation is implemented.
+- This is still a skeleton. Full frameless hit testing, resize grips,
+  drag-to-move regions, Wayland xdg-decoration/client-side decoration policy,
+  transparent swapchain/compositor behavior, and native runtime diagnostics
+  remain future platform-depth work. Step 207 moves to command palette metadata
+  over the existing action registry.
+
 ## 2026-07-03 Native File Dialog API Skeleton
 
 - Step 205 adds platform-neutral native file dialog descriptors:

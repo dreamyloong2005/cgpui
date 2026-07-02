@@ -726,7 +726,7 @@ follow-on goal is now complete on the Windows/Linux track.
 203. [x] Win32 OLE drop target skeleton.
 204. [x] Native menu and accelerator API skeleton.
 205. [x] Native file dialog API skeleton.
-206. [ ] Window chrome customization skeleton.
+206. [x] Window chrome customization skeleton.
 207. [ ] App command palette registry.
 208. [ ] Platform diagnostics event stream.
 209. [ ] UIA provider tree facade.
@@ -745,11 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 205, native file dialog API skeleton, is merged on `master` at
-`a7a2ac5 feat: add native file dialog skeleton` and post-merge verified on
-Windows and WSL Arch Linux. Step 206, window chrome customization skeleton, is
-the next implementation slice. The track remains Windows/Linux first;
+Step 206, window chrome customization skeleton, is merged on `master` at
+`6387371 feat: add window chrome customization skeleton` and post-merge
+verified on Windows and WSL Arch Linux. Step 207, app command palette
+registry, is the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 206, window chrome customization skeleton, is merged on `master` at
+`6387371 feat: add window chrome customization skeleton`. RED failed as
+expected on missing `WindowOptions::titlebar_visible(...)`, chrome descriptor
+storage, and Win32/Wayland platform chrome markers. GREEN adds
+`WindowChromeOptions` to `WindowDescriptor`, fluent `WindowOptions`
+titlebar/decorations/resizable/transparent helpers, `PlatformWindowChromeState`
+and a default unsupported `PlatformWindow::apply_window_chrome(...)` hook,
+Win32 style/ex-style application skeletons, Wayland unsupported xdg-decoration
+diagnostics, and header-cleanliness coverage. Feature-worktree targeted tests
+passed 5/5 on Windows and WSL Arch Linux, `git diff --check` exited 0 with only
+expected CRLF warnings, WSL full debug passed 27/27, and Windows full debug
+passed 30/30. Post-merge targeted tests passed 5/5 on Windows and WSL Arch
+Linux, `git diff --check` produced no output, WSL full debug passed 27/27, and
+Windows full debug passed 30/30. Step 207, app command palette registry, is the
+next implementation slice.
 
 Step 205, native file dialog API skeleton, is merged on `master` at
 `a7a2ac5 feat: add native file dialog skeleton`. RED failed as expected on
