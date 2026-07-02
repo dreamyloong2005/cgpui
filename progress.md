@@ -6268,3 +6268,52 @@
   this progress log so Step 188 is marked merged and post-merge verified. Step
   189, font fallback chain resolution, is the next implementation slice after
   docs closeout and cleanup.
+
+## 2026-07-03 Step 189 Font Fallback Chain Resolution
+
+- Created `.worktrees/font-fallback-chain` on `codex/font-fallback-chain` from
+  `master` at `59a0ffc docs: mark step 188 merged`.
+- Baseline Windows targeted tests passed 3/3:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- Baseline WSL targeted tests passed 3/3:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/font-fallback-chain -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- RED coverage:
+  `text_model_test/default` and `ui_header_cleanliness/default` failed as
+  expected on missing `FontDatabase::add_generic_fallback_family(...)`,
+  `FontFallbackChain`, and `FontDatabase::resolve_chain(...)`.
+- GREEN adds `FontFallbackChain`, deterministic generic fallback family
+  storage, and `FontDatabase::resolve_chain(...)` ordering over requested
+  family, generic fallbacks, and the first available face while preserving the
+  existing single-face `resolve(...)` behavior.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/font-fallback-chain -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/font-fallback-chain -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 189 as
+  `6d0afc2 feat: add font fallback chain resolution` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 189 is marked merged and post-merge verified. Step
+  190, platform font discovery records for Win32 and Wayland/Linux, is the next
+  implementation slice after docs closeout and cleanup.

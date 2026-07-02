@@ -246,11 +246,15 @@
 - Modify: `tests/ui/text_model_test.cpp`
 - Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED coverage for ordered font fallback chains and missing-family fallback behavior.
-- [ ] Expected RED: `FontDatabase::resolve(...)` returns one face and cannot expose fallback candidates.
-- [ ] GREEN: add fallback-chain resolution over requested family, generic fallback, and first available face.
-- [ ] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for ordered font fallback chains and missing-family fallback behavior.
+- [x] Expected RED: `FontDatabase::resolve(...)` returns one face and cannot expose fallback candidates.
+- [x] GREEN: add fallback-chain resolution over requested family, generic fallback, and first available face.
+- [x] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `6d0afc2 feat: add font fallback chain resolution`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 190: Platform Font Discovery Records
 

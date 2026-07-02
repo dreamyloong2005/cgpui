@@ -3322,3 +3322,17 @@
 - This remains a reporting slice. It does not create real Vulkan command
   buffers, submit GPU work, or replace the existing deterministic report
   building path.
+
+## 2026-07-03 Font Fallback Chain Resolution
+
+- Step 189 adds a public `FontFallbackChain` over `FontDatabase` faces so text
+  code can inspect ordered fallback candidates instead of only receiving the
+  single face from `FontDatabase::resolve(...)`.
+- `FontDatabase` now stores deterministic generic fallback families and
+  resolves chains in requested-family, generic-fallback, first-available order
+  with duplicate face pointers removed.
+- Empty-family chain resolution intentionally preserves the existing
+  `resolve({})` behavior by returning only the first registered face.
+- This is still deterministic fallback planning. It does not perform
+  DirectWrite/fontconfig discovery, per-codepoint coverage checks, shaping
+  fallback splits, or platform font enumeration.
