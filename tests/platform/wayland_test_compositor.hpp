@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <optional>
 #include <vector>
 
@@ -72,6 +73,7 @@ class WaylandTestCompositor {
   void request_text_input_leave();
   void set_clipboard_selection(
       std::vector<WaylandMimePayload> payloads);
+  void request_clipboard_client_selection(std::string_view mime_type);
 
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
@@ -98,6 +100,12 @@ class WaylandTestCompositor {
   [[nodiscard]] WaylandTextInputClientState text_input_client_state() const;
   [[nodiscard]] bool wait_for_clipboard_selection_sent() const;
   [[nodiscard]] std::string last_clipboard_receive_mime_type() const;
+  [[nodiscard]] bool wait_for_clipboard_client_selection_set() const;
+  [[nodiscard]] std::vector<std::string> clipboard_client_selection_mime_types()
+      const;
+  [[nodiscard]] bool wait_for_clipboard_client_selection_payload_received()
+      const;
+  [[nodiscard]] std::string last_clipboard_client_selection_payload() const;
 
  private:
   struct State;

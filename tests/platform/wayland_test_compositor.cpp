@@ -5,12 +5,14 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cerrno>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <deque>
 #include <filesystem>
 #include <fcntl.h>
+#include <poll.h>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -268,6 +270,11 @@ namespace cgpui::test {
 
 struct WaylandTestCompositor::State {
   struct SurfaceState;
+  struct ClientDataSource {
+    State* compositor = nullptr;
+    wl_resource* resource = nullptr;
+    std::vector<std::string> mime_types;
+  };
 
   struct XdgWmBaseImplementation {
     void (*destroy)(wl_client*, wl_resource*);
@@ -595,6 +602,34 @@ struct WaylandTestCompositor::State {
     clipboard_selection_pending.store(true);
   }
 
+  void request_clipboard_client_selection(std::string_view mime_type) {
+    {
+      std::lock_guard lock(clipboard_client_selection_request_mutex);
+      pending_clipboard_client_selection_mime = std::string(mime_type);
+    }
+    {
+      std::lock_guard lock(clipboard_client_selection_payload_mutex);
+      last_clipboard_client_selection_mime.clear();
+      last_clipboard_client_selection_payload_value.clear();
+    }
+    clipboard_client_selection_payload_received.store(false);
+    clipboard_client_selection_request_pending.store(true);
+  }
+
+  [[nodiscard]] std::vector<std::string>
+  clipboard_client_selection_mime_types() const {
+    std::lock_guard lock(clipboard_client_selection_mutex);
+    if (clipboard_client_selection_source == nullptr) {
+      return {};
+    }
+    return clipboard_client_selection_source->mime_types;
+  }
+
+  [[nodiscard]] std::string last_clipboard_client_selection_payload() const {
+    std::lock_guard lock(clipboard_client_selection_payload_mutex);
+    return last_clipboard_client_selection_payload_value;
+  }
+
   static void bind_compositor(
       wl_client* client,
       void* data,
@@ -738,10 +773,7 @@ struct WaylandTestCompositor::State {
   static void data_device_manager_create_data_source(
       wl_client* client,
       wl_resource*,
-      std::uint32_t id) {
-    auto* resource = wl_resource_create(client, &wl_data_source_interface, 3, id);
-    wl_resource_set_implementation(resource, nullptr, nullptr, nullptr);
-  }
+      std::uint32_t id);
   static void data_device_manager_get_data_device(
       wl_client* client,
       wl_resource* resource,
@@ -858,6 +890,18 @@ struct WaylandTestCompositor::State {
   static void handle_text_input_destroyed(wl_resource* resource);
   static void handle_clipboard_offer_destroyed(wl_resource* resource);
   static void handle_drag_offer_destroyed(wl_resource* resource);
+  static void handle_client_data_source_destroyed(wl_resource* resource);
+  static void data_source_offer(
+      wl_client*,
+      wl_resource* resource,
+      const char* mime_type);
+  static void data_source_destroy(wl_client*, wl_resource* resource);
+  static void data_source_set_actions(wl_client*, wl_resource*, std::uint32_t) {}
+  static void data_device_set_selection(
+      wl_client*,
+      wl_resource* resource,
+      wl_resource* source,
+      std::uint32_t);
   static void data_offer_receive(
       wl_client*,
       wl_resource* resource,
@@ -902,10 +946,12 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_text_input_commit();
   void dispatch_pending_text_input_leave();
   void dispatch_pending_clipboard_selection();
+  void dispatch_pending_clipboard_client_selection_request();
 
   void run() {
     while (running.load()) {
       dispatch_pending_clipboard_selection();
+      dispatch_pending_clipboard_client_selection_request();
       dispatch_pending_close();
       dispatch_pending_resize_configure();
       dispatch_pending_pointer_move();
@@ -929,6 +975,7 @@ struct WaylandTestCompositor::State {
         break;
       }
       dispatch_pending_clipboard_selection();
+      dispatch_pending_clipboard_client_selection_request();
       dispatch_pending_close();
       dispatch_pending_resize_configure();
       dispatch_pending_pointer_move();
@@ -959,6 +1006,7 @@ struct WaylandTestCompositor::State {
       data_device_manager_implementation;
   static const struct wl_data_device_interface data_device_implementation;
   static const struct wl_data_offer_interface data_offer_implementation;
+  static const struct wl_data_source_interface data_source_implementation;
   struct ZwpTextInputManagerV3Implementation {
     void (*destroy)(wl_client*, wl_resource*);
     void (*get_text_input)(wl_client*, wl_resource*, std::uint32_t, wl_resource*);
@@ -1056,6 +1104,9 @@ struct WaylandTestCompositor::State {
   std::atomic_bool text_input_client_state_committed{false};
   std::atomic_bool clipboard_selection_pending{false};
   std::atomic_bool clipboard_selection_sent{false};
+  std::atomic_bool clipboard_client_selection_set{false};
+  std::atomic_bool clipboard_client_selection_request_pending{false};
+  std::atomic_bool clipboard_client_selection_payload_received{false};
   std::atomic_int resize_width{0};
   std::atomic_int resize_height{0};
   std::atomic_int pointer_x{0};
@@ -1080,6 +1131,13 @@ struct WaylandTestCompositor::State {
   std::vector<WaylandMimePayload> clipboard_selection_payloads;
   mutable std::mutex clipboard_receive_mutex;
   std::string last_clipboard_receive_mime;
+  mutable std::mutex clipboard_client_selection_mutex;
+  ClientDataSource* clipboard_client_selection_source = nullptr;
+  mutable std::mutex clipboard_client_selection_request_mutex;
+  std::string pending_clipboard_client_selection_mime;
+  mutable std::mutex clipboard_client_selection_payload_mutex;
+  std::string last_clipboard_client_selection_mime;
+  std::string last_clipboard_client_selection_payload_value;
   std::mutex drag_payload_mutex;
   std::vector<WaylandMimePayload> drag_payloads;
   mutable std::mutex drag_receive_mutex;
@@ -1442,6 +1500,87 @@ void WaylandTestCompositor::State::data_offer_receive(
   close(fd);
 }
 
+void WaylandTestCompositor::State::data_device_manager_create_data_source(
+    wl_client* client,
+    wl_resource* resource,
+    std::uint32_t id) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  auto* source_state = new ClientDataSource{
+      .compositor = compositor,
+  };
+  auto* source_resource =
+      wl_resource_create(client, &wl_data_source_interface, 3, id);
+  if (source_resource == nullptr) {
+    delete source_state;
+    return;
+  }
+
+  source_state->resource = source_resource;
+  wl_resource_set_implementation(
+      source_resource,
+      &data_source_implementation,
+      source_state,
+      &State::handle_client_data_source_destroyed);
+}
+
+void WaylandTestCompositor::State::data_source_offer(
+    wl_client*,
+    wl_resource* resource,
+    const char* mime_type) {
+  auto* source = static_cast<ClientDataSource*>(wl_resource_get_user_data(resource));
+  if (source == nullptr || source->compositor == nullptr || mime_type == nullptr) {
+    return;
+  }
+
+  std::lock_guard lock(source->compositor->clipboard_client_selection_mutex);
+  source->mime_types.emplace_back(mime_type);
+}
+
+void WaylandTestCompositor::State::data_source_destroy(
+    wl_client*,
+    wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+void WaylandTestCompositor::State::data_device_set_selection(
+    wl_client*,
+    wl_resource* resource,
+    wl_resource* source_resource,
+    std::uint32_t) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor == nullptr) {
+    return;
+  }
+
+  auto* source = source_resource == nullptr
+      ? nullptr
+      : static_cast<ClientDataSource*>(wl_resource_get_user_data(source_resource));
+  {
+    std::lock_guard lock(compositor->clipboard_client_selection_mutex);
+    compositor->clipboard_client_selection_source = source;
+  }
+  compositor->clipboard_client_selection_payload_received.store(false);
+  compositor->clipboard_client_selection_set.store(source != nullptr);
+}
+
+void WaylandTestCompositor::State::handle_client_data_source_destroyed(
+    wl_resource* resource) {
+  auto* source = static_cast<ClientDataSource*>(wl_resource_get_user_data(resource));
+  if (source == nullptr) {
+    return;
+  }
+  if (source->compositor != nullptr) {
+    std::lock_guard lock(source->compositor->clipboard_client_selection_mutex);
+    if (source->compositor->clipboard_client_selection_source == source) {
+      source->compositor->clipboard_client_selection_source = nullptr;
+      source->compositor->clipboard_client_selection_set.store(false);
+    }
+  }
+  delete source;
+}
+
 void WaylandTestCompositor::State::handle_keyboard_destroyed(wl_resource* resource) {
   auto* compositor =
       static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
@@ -1734,6 +1873,79 @@ void WaylandTestCompositor::State::dispatch_pending_clipboard_selection() {
   wl_data_device_send_selection(data_device_resource, offer);
   wl_display_flush_clients(display);
   clipboard_selection_sent.store(true);
+}
+
+void WaylandTestCompositor::State::
+    dispatch_pending_clipboard_client_selection_request() {
+  if (!clipboard_client_selection_request_pending.exchange(false)) {
+    return;
+  }
+
+  std::string mime_type;
+  {
+    std::lock_guard lock(clipboard_client_selection_request_mutex);
+    mime_type = pending_clipboard_client_selection_mime;
+  }
+
+  ClientDataSource* source = nullptr;
+  {
+    std::lock_guard lock(clipboard_client_selection_mutex);
+    source = clipboard_client_selection_source;
+  }
+  if (source == nullptr || source->resource == nullptr || mime_type.empty()) {
+    clipboard_client_selection_request_pending.store(true);
+    return;
+  }
+
+  int pipe_fds[2] = {-1, -1};
+  if (pipe2(pipe_fds, O_CLOEXEC) == -1) {
+    return;
+  }
+
+  wl_data_source_send_send(source->resource, mime_type.c_str(), pipe_fds[1]);
+  wl_display_flush_clients(display);
+  close(pipe_fds[1]);
+  pipe_fds[1] = -1;
+
+  std::string payload;
+  bool completed = false;
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::seconds(3);
+  while (std::chrono::steady_clock::now() < deadline) {
+    pollfd descriptor{
+        .fd = pipe_fds[0],
+        .events = POLLIN | POLLHUP,
+        .revents = 0,
+    };
+    const int ready = poll(&descriptor, 1, 50);
+    if (ready == -1 && errno == EINTR) {
+      continue;
+    }
+    if (ready <= 0) {
+      continue;
+    }
+
+    char buffer[4096];
+    const auto bytes_read = read(pipe_fds[0], buffer, sizeof(buffer));
+    if (bytes_read > 0) {
+      payload.append(buffer, static_cast<std::size_t>(bytes_read));
+      continue;
+    }
+    completed = bytes_read == 0;
+    break;
+  }
+  close(pipe_fds[0]);
+
+  if (!completed) {
+    return;
+  }
+
+  {
+    std::lock_guard lock(clipboard_client_selection_payload_mutex);
+    last_clipboard_client_selection_mime = std::move(mime_type);
+    last_clipboard_client_selection_payload_value = std::move(payload);
+  }
+  clipboard_client_selection_payload_received.store(true);
 }
 
 void WaylandTestCompositor::State::dispatch_pending_drag_motion() {
@@ -2100,10 +2312,16 @@ const struct wl_data_device_interface
             wl_resource*,
             std::uint32_t) {},
         .set_selection = [](
-            wl_client*,
-            wl_resource*,
-            wl_resource*,
-            std::uint32_t) {},
+            wl_client* client,
+            wl_resource* resource,
+            wl_resource* source,
+            std::uint32_t serial) {
+          WaylandTestCompositor::State::data_device_set_selection(
+              client,
+              resource,
+              source,
+              serial);
+        },
         .release = noop_resource,
 };
 
@@ -2122,6 +2340,13 @@ const struct wl_data_offer_interface
             wl_resource*,
             std::uint32_t,
             std::uint32_t) {},
+};
+
+const struct wl_data_source_interface
+    WaylandTestCompositor::State::data_source_implementation{
+        .offer = &WaylandTestCompositor::State::data_source_offer,
+        .destroy = &WaylandTestCompositor::State::data_source_destroy,
+        .set_actions = &WaylandTestCompositor::State::data_source_set_actions,
 };
 
 const WaylandTestCompositor::State::ZwpTextInputManagerV3Implementation
@@ -2293,6 +2518,11 @@ void WaylandTestCompositor::set_clipboard_selection(
   state_->set_clipboard_selection(std::move(payloads));
 }
 
+void WaylandTestCompositor::request_clipboard_client_selection(
+    std::string_view mime_type) {
+  state_->request_clipboard_client_selection(mime_type);
+}
+
 bool WaylandTestCompositor::wait_for_close_sent() const {
   return state_->wait_for_flag(state_->close_sent);
 }
@@ -2390,6 +2620,26 @@ bool WaylandTestCompositor::wait_for_clipboard_selection_sent() const {
 std::string WaylandTestCompositor::last_clipboard_receive_mime_type() const {
   std::lock_guard lock(state_->clipboard_receive_mutex);
   return state_->last_clipboard_receive_mime;
+}
+
+bool WaylandTestCompositor::wait_for_clipboard_client_selection_set() const {
+  return state_->wait_for_flag(state_->clipboard_client_selection_set);
+}
+
+std::vector<std::string>
+WaylandTestCompositor::clipboard_client_selection_mime_types() const {
+  return state_->clipboard_client_selection_mime_types();
+}
+
+bool WaylandTestCompositor::
+    wait_for_clipboard_client_selection_payload_received() const {
+  return state_->wait_for_flag(
+      state_->clipboard_client_selection_payload_received);
+}
+
+std::string WaylandTestCompositor::last_clipboard_client_selection_payload()
+    const {
+  return state_->last_clipboard_client_selection_payload();
 }
 
 } // namespace cgpui::test

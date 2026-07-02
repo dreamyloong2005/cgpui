@@ -18,6 +18,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #ifdef _WIN32
 namespace {
@@ -163,6 +164,17 @@ class SystemClipboardRestore {
 #endif
 
 namespace {
+
+bool contains_mime_type(
+    const std::vector<std::string>& mime_types,
+    std::string_view mime_type) {
+  for (const auto& candidate : mime_types) {
+    if (candidate == mime_type) {
+      return true;
+    }
+  }
+  return false;
+}
 
 int test_memory_clipboard_round_trips_utf8_text() {
   cgpui::MemoryClipboard clipboard;
@@ -336,6 +348,55 @@ int test_wayland_clipboard_ignores_non_text_selection_payload() {
   compositor.stop();
   return 0;
 }
+
+int test_wayland_clipboard_write_owns_selection_and_sends_payload() {
+  cgpui::test::WaylandTestCompositor compositor("clipboard-client-selection");
+  if (!compositor.start()) {
+    return 37;
+  }
+  setenv("WAYLAND_DISPLAY", compositor.socket_name().c_str(), 1);
+
+  cgpui::WaylandClipboard clipboard(cgpui::WaylandClipboardOptions{
+      .connect_to_display = true,
+  });
+  if (clipboard.support() != cgpui::WaylandClipboardSupport::available) {
+    compositor.stop();
+    return 38;
+  }
+
+  if (!clipboard.write_text("owned payload \xE4\xB8\xAD")) {
+    compositor.stop();
+    return 39;
+  }
+  if (!compositor.wait_for_clipboard_client_selection_set()) {
+    compositor.stop();
+    return 40;
+  }
+
+  const auto mime_types = compositor.clipboard_client_selection_mime_types();
+  if (!contains_mime_type(mime_types, "text/plain;charset=utf-8")) {
+    compositor.stop();
+    return 41;
+  }
+  if (!contains_mime_type(mime_types, "text/plain")) {
+    compositor.stop();
+    return 42;
+  }
+
+  compositor.request_clipboard_client_selection("text/plain;charset=utf-8");
+  if (!compositor.wait_for_clipboard_client_selection_payload_received()) {
+    compositor.stop();
+    return 43;
+  }
+  if (compositor.last_clipboard_client_selection_payload() !=
+      std::string_view{"owned payload \xE4\xB8\xAD"}) {
+    compositor.stop();
+    return 44;
+  }
+
+  compositor.stop();
+  return 0;
+}
 #endif
 
 } // namespace
@@ -428,6 +489,11 @@ int main() {
   }
   if (const int result =
           test_wayland_clipboard_ignores_non_text_selection_payload();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_wayland_clipboard_write_owns_selection_and_sends_payload();
       result != 0) {
     return result;
   }

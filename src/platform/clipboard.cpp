@@ -10,14 +10,17 @@
 #endif
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cstring>
 #include <cwchar>
 #include <cerrno>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 #if defined(__linux__)
@@ -179,6 +182,8 @@ struct WaylandClipboard::Connection {
   }
 
   ~Connection() {
+    stop_dispatch_thread();
+    clear_owned_source();
     clear_offer(selection_offer_);
     clear_offer(pending_offer_);
     if (data_device_ != nullptr) {
@@ -207,6 +212,7 @@ struct WaylandClipboard::Connection {
       return std::nullopt;
     }
 
+    std::lock_guard display_lock(display_mutex_);
     if (wl_display_roundtrip(display_) == -1) {
       return std::nullopt;
     }
@@ -217,6 +223,56 @@ struct WaylandClipboard::Connection {
     }
 
     return read_offer_payload(*mime_type);
+  }
+
+  [[nodiscard]] bool write_text(std::string_view text) {
+    if (support_ != WaylandClipboardSupport::available || display_ == nullptr ||
+        manager_ == nullptr || data_device_ == nullptr) {
+      return false;
+    }
+
+    {
+      std::lock_guard display_lock(display_mutex_);
+      auto* source = wl_data_device_manager_create_data_source(manager_);
+      if (source == nullptr) {
+        return false;
+      }
+
+      static const wl_data_source_listener source_listener{
+          .target = &Connection::handle_source_target,
+          .send = &Connection::handle_source_send,
+          .cancelled = &Connection::handle_source_cancelled,
+          .dnd_drop_performed = &Connection::handle_source_drop_performed,
+          .dnd_finished = &Connection::handle_source_dnd_finished,
+          .action = &Connection::handle_source_action,
+      };
+      wl_data_source_add_listener(source, &source_listener, this);
+      wl_data_source_offer(source, "text/plain;charset=utf-8");
+      wl_data_source_offer(source, "text/plain");
+
+      {
+        std::lock_guard selection_lock(owned_selection_mutex_);
+        if (owned_source_ != nullptr) {
+          wl_data_source_destroy(owned_source_);
+        }
+        owned_source_ = source;
+        owned_text_ = std::string(text);
+      }
+
+      wl_data_device_set_selection(data_device_, source, 0);
+      if (wl_display_flush(display_) == -1) {
+        std::lock_guard selection_lock(owned_selection_mutex_);
+        if (owned_source_ == source) {
+          wl_data_source_destroy(owned_source_);
+          owned_source_ = nullptr;
+          owned_text_.clear();
+        }
+        return false;
+      }
+    }
+
+    start_dispatch_thread();
+    return true;
   }
 
  private:
@@ -386,6 +442,156 @@ struct WaylandClipboard::Connection {
     offer.reset();
   }
 
+  void clear_owned_source() {
+    std::lock_guard display_lock(display_mutex_);
+    std::lock_guard selection_lock(owned_selection_mutex_);
+    if (owned_source_ != nullptr) {
+      wl_data_source_destroy(owned_source_);
+      owned_source_ = nullptr;
+    }
+    owned_text_.clear();
+  }
+
+  static bool accepts_text_mime_type(const char* mime_type) {
+    if (mime_type == nullptr) {
+      return false;
+    }
+    const std::string_view value(mime_type);
+    return value == std::string_view{"text/plain;charset=utf-8"} ||
+           value == std::string_view{"text/plain"};
+  }
+
+  static void handle_source_target(
+      void*,
+      wl_data_source*,
+      const char*) {}
+
+  static void handle_source_send(
+      void* data,
+      wl_data_source* source,
+      const char* mime_type,
+      std::int32_t fd) {
+    auto* connection = static_cast<Connection*>(data);
+    if (connection == nullptr || fd < 0) {
+      if (fd >= 0) {
+        close(fd);
+      }
+      return;
+    }
+
+    std::string payload;
+    {
+      std::lock_guard lock(connection->owned_selection_mutex_);
+      if (connection->owned_source_ != source ||
+          !accepts_text_mime_type(mime_type)) {
+        close(fd);
+        return;
+      }
+      payload = connection->owned_text_;
+    }
+
+    write_payload_to_fd(payload, fd);
+  }
+
+  static void handle_source_cancelled(void* data, wl_data_source* source) {
+    auto* connection = static_cast<Connection*>(data);
+    if (connection == nullptr || source == nullptr) {
+      return;
+    }
+
+    bool should_destroy = false;
+    {
+      std::lock_guard lock(connection->owned_selection_mutex_);
+      if (connection->owned_source_ == source) {
+        connection->owned_source_ = nullptr;
+        connection->owned_text_.clear();
+        should_destroy = true;
+      }
+    }
+    if (should_destroy) {
+      wl_data_source_destroy(source);
+    }
+  }
+
+  static void handle_source_drop_performed(void*, wl_data_source*) {}
+  static void handle_source_dnd_finished(void*, wl_data_source*) {}
+  static void handle_source_action(void*, wl_data_source*, std::uint32_t) {}
+
+  static void write_payload_to_fd(const std::string& payload, int fd) {
+    std::size_t written = 0;
+    while (written < payload.size()) {
+      const auto count = write(
+          fd,
+          payload.data() + written,
+          static_cast<unsigned int>(payload.size() - written));
+      if (count == -1 && errno == EINTR) {
+        continue;
+      }
+      if (count <= 0) {
+        break;
+      }
+      written += static_cast<std::size_t>(count);
+    }
+    close(fd);
+  }
+
+  void start_dispatch_thread() {
+    bool expected = false;
+    if (!dispatch_running_.compare_exchange_strong(expected, true)) {
+      return;
+    }
+    dispatch_thread_ = std::thread([this] { dispatch_owned_selection_events(); });
+  }
+
+  void stop_dispatch_thread() {
+    dispatch_running_.store(false);
+    if (dispatch_thread_.joinable()) {
+      dispatch_thread_.join();
+    }
+  }
+
+  void dispatch_owned_selection_events() {
+    if (display_ == nullptr) {
+      dispatch_running_.store(false);
+      return;
+    }
+
+    const int display_fd = wl_display_get_fd(display_);
+    while (dispatch_running_.load()) {
+      std::lock_guard display_lock(display_mutex_);
+      while (wl_display_prepare_read(display_) != 0) {
+        if (wl_display_dispatch_pending(display_) == -1) {
+          dispatch_running_.store(false);
+          return;
+        }
+      }
+      (void)wl_display_flush(display_);
+
+      pollfd descriptor{
+          .fd = display_fd,
+          .events = POLLIN | POLLHUP | POLLERR,
+          .revents = 0,
+      };
+      const int ready = poll(&descriptor, 1, 50);
+      if (ready == -1 && errno == EINTR) {
+        wl_display_cancel_read(display_);
+        continue;
+      }
+      if (ready <= 0 || (descriptor.revents & POLLIN) == 0) {
+        wl_display_cancel_read(display_);
+        continue;
+      }
+      if (wl_display_read_events(display_) == -1) {
+        dispatch_running_.store(false);
+        return;
+      }
+      if (wl_display_dispatch_pending(display_) == -1) {
+        dispatch_running_.store(false);
+        return;
+      }
+    }
+  }
+
   [[nodiscard]] std::optional<std::string> preferred_text_mime_type() const {
     if (selection_offer_ == nullptr) {
       return std::nullopt;
@@ -469,6 +675,12 @@ struct WaylandClipboard::Connection {
   wl_data_device* data_device_ = nullptr;
   std::unique_ptr<Offer> pending_offer_;
   std::unique_ptr<Offer> selection_offer_;
+  wl_data_source* owned_source_ = nullptr;
+  std::string owned_text_;
+  mutable std::mutex display_mutex_;
+  std::mutex owned_selection_mutex_;
+  std::atomic_bool dispatch_running_{false};
+  std::thread dispatch_thread_;
   WaylandClipboardSupport support_ = WaylandClipboardSupport::unsupported;
 };
 #endif
@@ -511,7 +723,11 @@ std::optional<std::string> WaylandClipboard::read_text() const {
 }
 
 bool WaylandClipboard::write_text(std::string_view text) {
-  return fallback_.write_text(text);
+  const bool fallback_written = fallback_.write_text(text);
+  if (connection_ != nullptr && connection_->write_text(text)) {
+    return true;
+  }
+  return fallback_written;
 }
 
 WaylandClipboardSupport WaylandClipboard::support() const {
