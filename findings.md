@@ -3443,3 +3443,21 @@
   paragraph layout, or a persistent preferred visual column. Step 196 can add
   measurement caching without treating these hard-line helpers as full text
   layout.
+
+## 2026-07-03 Text Measurement Cache
+
+- Step 196 adds deterministic text measurement primitives in `ui/text.hpp`:
+  `measure_text(...)`, `TextMeasurementKey`, `TextMeasurement`,
+  `TextMeasurementResult`, and `TextMeasurementCache`.
+- Cache keys cover the current deterministic measurement tuple: text content,
+  font descriptor, font size, and normalized DPI scale. Hits and misses are
+  observable through `cache_hit`, `entry_count()`, `lookup_count()`,
+  `hit_count()`, and `miss_count()`.
+- `PaintList` and `render_view` now accept an optional measurement cache so
+  renderer-facing tests can exercise repeated text paint measurement reuse
+  without changing the default no-cache render path.
+- This remains a deterministic fallback measurement cache over the existing
+  `shape_text(...)` skeleton. It does not add platform shaping, glyph coverage
+  fallback splits, soft wrapping, paragraph layout, cache eviction, or
+  cross-frame runtime ownership yet. Step 197 can build pointer-selection
+  geometry against these reusable measured glyph positions.

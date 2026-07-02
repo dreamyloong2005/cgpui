@@ -6633,3 +6633,61 @@
   this progress log so Step 195 is marked merged and post-merge verified. Step
   196, text measurement cache, is the next implementation slice after docs
   closeout and cleanup.
+
+## 2026-07-03 Step 196 Text Measurement Cache
+
+- Created `.worktrees/text-measurement-cache` on
+  `codex/text-measurement-cache` from `master` at
+  `b7e5ed4 docs: mark step 195 merged`.
+- Baseline targeted tests passed before RED:
+  `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-measurement-cache -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default render_view_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for a wished-for
+  `TextMeasurementCache` and `TextMeasurementResult` API that reports cache
+  misses, hits, entry counts, and measured logical/device sizes for repeated
+  text/font/font-size/scale tuples. Added render-view coverage requiring
+  optional cache injection to reuse measurement records across repeated text
+  renders. RED failed as expected on missing `TextMeasurementCache` and
+  `TextMeasurementResult`.
+- GREEN adds deterministic `measure_text(...)`, `TextMeasurementKey`,
+  `TextMeasurement`, `TextMeasurementResult`, and `TextMeasurementCache`
+  primitives in `include/cgpui/ui/text.hpp`; keys are text, font descriptor,
+  font size, and normalized scale. `PaintList` and `render_view` can now accept
+  an optional measurement cache for text paint measurement reuse while the
+  default no-cache path remains available.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-measurement-cache -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default render_view_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-measurement-cache -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 196 as
+  `31bbe4d feat: add text measurement cache` and fast-forward merged it to
+  `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default render_view_test/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- The first post-merge Windows full debug run saw
+  `clipboard_test/default` fail in the full-suite batch while the other 29
+  tests passed. A targeted rerun of
+  `xmake test -P . clipboard_test/default` passed 1/1, and the immediate full
+  Windows debug rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 196 is marked merged and post-merge verified. Step
+  197, text pointer selection geometry, is the next implementation slice after
+  docs closeout and cleanup.

@@ -390,11 +390,11 @@ targeted rerun and full-suite rerun.
 - Modify: `tests/ui/text_model_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED coverage for cache hits when measuring the same text/font/scale tuple repeatedly.
-- [ ] Expected RED: shaping and measurement are recomputed with no observable cache record.
-- [ ] GREEN: add a small deterministic measurement cache API usable by text elements and renderer tests.
-- [ ] Targeted command: `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for cache hits when measuring the same text/font/scale tuple repeatedly.
+- [x] Expected RED: shaping and measurement are recomputed with no observable cache record.
+- [x] GREEN: add a small deterministic measurement cache API usable by text elements and renderer tests.
+- [x] Targeted command: `xmake test -P . text_model_test/default render_view_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
 
 ## Step 197: Text Pointer Selection Geometry
 
