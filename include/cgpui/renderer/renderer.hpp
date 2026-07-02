@@ -142,11 +142,22 @@ struct RendererUnsupportedCommandDiagnostic {
   std::string message;
 };
 
+struct RendererTextRenderReport {
+  std::size_t text_draw_count = 0;
+  std::size_t glyph_backed_text_draw_count = 0;
+  std::size_t metadata_only_text_draw_count = 0;
+  std::size_t glyph_cache_hit_count = 0;
+  std::size_t rasterized_glyph_count = 0;
+  std::size_t glyph_upload_record_count = 0;
+  std::size_t textured_glyph_quad_count = 0;
+};
+
 struct RendererCommandReport {
   std::vector<RendererCommandBatch> batches;
   std::vector<RendererUnsupportedCommandDiagnostic> unsupported_commands;
   std::size_t supported_command_count = 0;
   std::size_t unsupported_command_count = 0;
+  RendererTextRenderReport text_render;
 
   [[nodiscard]] std::size_t command_count() const {
     return supported_command_count + unsupported_command_count;
@@ -385,6 +396,10 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     GlyphCache& glyph_cache);
 RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const RendererCommandStreamItem> commands);
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws,
+    GlyphCache& glyph_cache);
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
     std::span<const TextDraw> text_draws);

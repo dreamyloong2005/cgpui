@@ -503,6 +503,58 @@ int test_renderer_reports_unsupported_commands_without_dropping_supported() {
              : 21;
 }
 
+int test_renderer_report_counts_textured_glyph_draw_preparation() {
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::SolidRect> rects{
+      cgpui::SolidRect{
+          .rect = {.size = {.width = 12.0F, .height = 8.0F}},
+          .color = {.r = 0.1F, .g = 0.2F, .b = 0.3F, .a = 1.0F},
+      },
+  };
+  const std::vector<cgpui::TextDraw> text_draws{
+      cgpui::TextDraw{
+          .bounds =
+              cgpui::Rect{
+                  .origin = {.x = 4.0F, .y = 6.0F},
+                  .size = {.width = 40.0F, .height = 20.0F},
+              },
+          .color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+          .font = {.family = "Inter"},
+          .content = "ab",
+          .byte_length = 2,
+          .font_size = 20.0F,
+          .device_font_size = 20.0F,
+          .glyphs = cgpui::text_glyph_paint_metadata(
+              cgpui::shape_text(
+                  "ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F),
+              cgpui::Point{.x = 4.0F, .y = 6.0F}),
+      },
+  };
+
+  const cgpui::RendererCommandReport first_report =
+      cgpui::vulkan_build_renderer_command_report(rects, text_draws, cache);
+  if (first_report.supported_command_count != 2 ||
+      first_report.text_render.text_draw_count != 1 ||
+      first_report.text_render.glyph_backed_text_draw_count != 1 ||
+      first_report.text_render.metadata_only_text_draw_count != 0 ||
+      first_report.text_render.glyph_cache_hit_count != 0 ||
+      first_report.text_render.rasterized_glyph_count != 2 ||
+      first_report.text_render.glyph_upload_record_count != 2 ||
+      first_report.text_render.textured_glyph_quad_count != 2) {
+    return 30;
+  }
+
+  const cgpui::RendererCommandReport second_report =
+      cgpui::vulkan_build_renderer_command_report(rects, text_draws, cache);
+  return second_report.text_render.glyph_cache_hit_count == 2 &&
+                 second_report.text_render.rasterized_glyph_count == 0 &&
+                 second_report.text_render.glyph_upload_record_count == 0 &&
+                 second_report.text_render.textured_glyph_quad_count == 2 &&
+                 cache.upload_records().size() == 2
+             ? 0
+             : 31;
+}
+
 } // namespace
 
 int main() {
@@ -531,6 +583,11 @@ int main() {
   }
   if (const int result =
           test_renderer_reports_unsupported_commands_without_dropping_supported();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_renderer_report_counts_textured_glyph_draw_preparation();
       result != 0) {
     return result;
   }

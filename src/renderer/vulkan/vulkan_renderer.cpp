@@ -1453,6 +1453,63 @@ RendererCommandReport vulkan_build_renderer_command_report(
   return report;
 }
 
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws,
+    GlyphCache& glyph_cache) {
+  std::vector<RendererCommandStreamItem> commands;
+  commands.reserve(rects.size() + text_draws.size());
+
+  for (std::size_t index = 0; index < rects.size(); ++index) {
+    const SolidRect& rect = rects[index];
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::solid_rect,
+        .command_index = index,
+        .clip_rect = rect.clip_rect,
+        .metadata = rect.metadata,
+    });
+  }
+
+  for (std::size_t index = 0; index < text_draws.size(); ++index) {
+    const TextDraw& text_draw = text_draws[index];
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::text,
+        .command_index = index,
+        .clip_rect = text_draw.clip_rect,
+        .metadata = text_draw.metadata,
+    });
+  }
+
+  RendererCommandReport report = vulkan_build_renderer_command_report(commands);
+  for (const TextDraw& text_draw : text_draws) {
+    report.text_render.text_draw_count += 1;
+    const std::size_t lookup_begin = glyph_cache.lookups().size();
+    const std::size_t upload_begin = glyph_cache.upload_records().size();
+    const std::vector<TexturedGlyphQuad> quads =
+        vulkan_build_textured_glyph_quads(text_draw, glyph_cache);
+    const std::size_t upload_count =
+        glyph_cache.upload_records().size() - upload_begin;
+
+    for (std::size_t index = lookup_begin; index < glyph_cache.lookups().size();
+         ++index) {
+      if (glyph_cache.lookups()[index].hit) {
+        report.text_render.glyph_cache_hit_count += 1;
+      }
+    }
+
+    report.text_render.rasterized_glyph_count += upload_count;
+    report.text_render.glyph_upload_record_count += upload_count;
+    report.text_render.textured_glyph_quad_count += quads.size();
+    if (quads.empty()) {
+      report.text_render.metadata_only_text_draw_count += 1;
+    } else {
+      report.text_render.glyph_backed_text_draw_count += 1;
+    }
+  }
+
+  return report;
+}
+
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor) {
   if (descriptor.framebuffer_size.width <= 0.0F ||

@@ -48,11 +48,12 @@ desktop integration surfaces remain separate future work.
   style state overlays, style classes, theme tokens, and deterministic cascade
   resolution.
 - Text and renderer command depth: font descriptors, font database skeleton,
-  deterministic fallback shaping, glyph metadata, glyph cache interface, text
-  paint commands, caret/selection metadata, opacity and transform metadata,
+  deterministic fallback shaping and fallback glyph raster data, glyph metadata,
+  glyph cache/atlas allocation records, text paint commands, textured glyph
+  quad records, caret/selection metadata, opacity and transform metadata,
   HiDPI scale propagation, renderer command batching diagnostics, frame
-  statistics, unsupported-command diagnostics, and Vulkan consumption of text
-  draw metadata.
+  statistics, unsupported-command diagnostics, and Vulkan text preparation
+  reports that distinguish glyph-backed work from metadata-only placeholders.
 - Platform hooks on active targets: Win32 cursor application, Win32 clipboard,
   Wayland clipboard skeleton, focused text IME geometry, Win32 IME placement,
   Wayland text-input/IME skeleton, Win32 drag/drop event skeleton, Wayland
@@ -63,10 +64,11 @@ desktop integration surfaces remain separate future work.
 
 ## Partial
 
-- Renderer text is metadata-backed. Vulkan consumes text draw commands and
-  glyph cache metadata, but real glyph rasterization, atlas texture upload,
-  textured glyph quads, subpixel positioning, and font fallback shaping are not
-  complete.
+- Renderer text is CPU fallback-raster/atlas-record-backed. Vulkan consumes
+  text draw commands into glyph cache lookups, fallback rasterized glyphs,
+  upload records, textured glyph quad records, and deterministic text render
+  report counters, but real Vulkan atlas texture objects, GPU uploads, shader
+  sampling, subpixel positioning, and font fallback shaping are not complete.
 - Accessibility is a platform-neutral tree snapshot. Native Windows UIA and
   Linux AT-SPI adapters are not implemented.
 - Wayland clipboard and drag/drop are skeletons. They model capability and
@@ -129,8 +131,10 @@ The Mac handoff requires:
 The next Windows/Linux milestone should be a depth pass, not another surface
 area expansion. Recommended order:
 
-1. Make Vulkan text rendering real: rasterize glyphs, allocate atlas textures,
-   upload glyphs, and draw textured quads from the existing glyph metadata.
+1. Make Vulkan text rendering real: promote the existing fallback rasterized
+   glyphs, atlas allocation records, upload records, textured glyph quads, and
+   text render counters into real Vulkan atlas textures, GPU uploads, shader
+   sampling, and draw calls.
 2. Promote Wayland clipboard, Wayland drag/drop, and Wayland text-input from
    skeleton capability to real data/protocol handling.
 3. Add native accessibility adapters for Windows UIA and Linux AT-SPI using the
