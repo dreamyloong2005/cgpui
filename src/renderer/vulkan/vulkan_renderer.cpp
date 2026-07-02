@@ -1643,6 +1643,12 @@ RendererCommandReport vulkan_build_renderer_command_report(
       report.text_render.metadata_only_text_draw_count += 1;
     } else {
       report.text_render.glyph_backed_text_draw_count += 1;
+      report.text_render.text_sampler_pipeline_descriptor_count = 1;
+      if (report.text_render.text_sampler_pipeline.ready()) {
+        report.text_render.text_sampler_pipeline_ready_text_draw_count += 1;
+      } else {
+        report.text_render.text_sampler_pipeline_pending_text_draw_count += 1;
+      }
     }
   }
 

@@ -110,6 +110,12 @@ int main() {
       .upload_count = texture_plan.created_count,
       .byte_size = upload_region.byte_size,
   };
+  const cgpui::TextSamplerPipelineDescriptor text_sampler_pipeline{
+      .primitive_kind = cgpui::RendererPrimitiveKind::text,
+      .sampled_image_format = cgpui::GlyphAtlasImageFormat::alpha8_unorm,
+      .uses_alpha_sampling = true,
+      .uses_text_color = true,
+  };
   cgpui::GlyphAtlasTextureResourceState texture_state;
   glyph_cache.store(cgpui::GlyphAtlasEntry{
       .key = glyph_key,
@@ -173,9 +179,15 @@ int main() {
                       cgpui::renderer_primitive_kind_name(
                           unsupported_command.primitive_kind)),
               },
-          },
+      },
       .supported_command_count = 1,
       .unsupported_command_count = 1,
+      .text_render =
+          cgpui::RendererTextRenderReport{
+              .text_sampler_pipeline = text_sampler_pipeline,
+              .text_sampler_pipeline_descriptor_count = 1,
+              .text_sampler_pipeline_pending_text_draw_count = 1,
+          },
   };
   cgpui::PlatformAccessibilityTreeUpdate accessibility_update{
       .root_element_id = 2,
@@ -212,6 +224,9 @@ int main() {
                  texture_resource.generation == 1 &&
                  texture_plan.created_count == 1 &&
                  dirty_upload_range.byte_size == upload_region.byte_size &&
+                 !text_sampler_pipeline.ready() &&
+                 text_sampler_pipeline.sampled_image_format ==
+                     cgpui::GlyphAtlasImageFormat::alpha8_unorm &&
                  texture_state.live_resources().empty() &&
                  atlas_pages.size() == 1 &&
                  textured_quad.page_index == 0 &&
@@ -224,6 +239,8 @@ int main() {
                  batch.command_count == 1 &&
                  batch.command_indices.size() == 1 &&
                  report.command_count() == 2 &&
+                 report.text_render
+                         .text_sampler_pipeline_pending_text_draw_count == 1 &&
                  report.unsupported_commands[0].message == "text_caret" &&
                  accessibility_update.root_element_id == 2 &&
                  accessibility_update.node_count == 3 &&

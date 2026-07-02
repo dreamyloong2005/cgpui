@@ -142,6 +142,31 @@ struct RendererUnsupportedCommandDiagnostic {
   std::string message;
 };
 
+enum class GlyphAtlasImageFormat {
+  alpha8_unorm,
+};
+
+struct TextSamplerPipelineDescriptor {
+  RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::text;
+  GlyphAtlasImageFormat sampled_image_format =
+      GlyphAtlasImageFormat::alpha8_unorm;
+  bool uses_alpha_sampling = true;
+  bool uses_text_color = true;
+  bool shader_modules_ready = false;
+  bool descriptor_set_layout_ready = false;
+  bool pipeline_layout_ready = false;
+  bool graphics_pipeline_ready = false;
+
+  [[nodiscard]] constexpr bool ready() const {
+    return shader_modules_ready && descriptor_set_layout_ready &&
+           pipeline_layout_ready && graphics_pipeline_ready;
+  }
+
+  friend bool operator==(
+      const TextSamplerPipelineDescriptor&,
+      const TextSamplerPipelineDescriptor&) = default;
+};
+
 struct RendererTextRenderReport {
   std::size_t text_draw_count = 0;
   std::size_t glyph_backed_text_draw_count = 0;
@@ -150,6 +175,10 @@ struct RendererTextRenderReport {
   std::size_t rasterized_glyph_count = 0;
   std::size_t glyph_upload_record_count = 0;
   std::size_t textured_glyph_quad_count = 0;
+  TextSamplerPipelineDescriptor text_sampler_pipeline;
+  std::size_t text_sampler_pipeline_descriptor_count = 0;
+  std::size_t text_sampler_pipeline_ready_text_draw_count = 0;
+  std::size_t text_sampler_pipeline_pending_text_draw_count = 0;
 };
 
 struct RendererCommandReport {
@@ -190,10 +219,6 @@ struct GlyphUploadRecord {
   std::uint32_t height = 0;
   std::uint32_t stride = 0;
   std::vector<std::uint8_t> alpha;
-};
-
-enum class GlyphAtlasImageFormat {
-  alpha8_unorm,
 };
 
 struct GlyphAtlasImageDescriptor {

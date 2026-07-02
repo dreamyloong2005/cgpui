@@ -740,6 +740,57 @@ int test_renderer_report_counts_textured_glyph_draw_preparation() {
              : 31;
 }
 
+int test_renderer_report_distinguishes_text_sampler_pipeline_readiness() {
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::SolidRect> rects;
+  const std::vector<cgpui::TextDraw> text_draws{
+      cgpui::TextDraw{
+          .bounds =
+              cgpui::Rect{
+                  .origin = {.x = 2.0F, .y = 3.0F},
+                  .size = {.width = 30.0F, .height = 18.0F},
+              },
+          .color = {.r = 0.9F, .g = 0.8F, .b = 0.7F, .a = 1.0F},
+          .font = {.family = "Inter"},
+          .content = "ok",
+          .byte_length = 2,
+          .font_size = 18.0F,
+          .device_font_size = 18.0F,
+          .glyphs = cgpui::text_glyph_paint_metadata(
+              cgpui::shape_text(
+                  "ok", cgpui::FontDescriptor{.family = "Inter"}, 18.0F),
+              cgpui::Point{.x = 2.0F, .y = 3.0F}),
+      },
+  };
+
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(rects, text_draws, cache);
+  if (report.text_render.textured_glyph_quad_count != 2 ||
+      report.text_render.glyph_backed_text_draw_count != 1) {
+    return 43;
+  }
+
+  const cgpui::TextSamplerPipelineDescriptor& descriptor =
+      report.text_render.text_sampler_pipeline;
+  if (descriptor.primitive_kind != cgpui::RendererPrimitiveKind::text ||
+      descriptor.sampled_image_format !=
+          cgpui::GlyphAtlasImageFormat::alpha8_unorm ||
+      !descriptor.uses_alpha_sampling || !descriptor.uses_text_color ||
+      descriptor.shader_modules_ready || descriptor.descriptor_set_layout_ready ||
+      descriptor.pipeline_layout_ready || descriptor.graphics_pipeline_ready ||
+      descriptor.ready()) {
+    return 44;
+  }
+
+  return report.text_render.text_sampler_pipeline_descriptor_count == 1 &&
+                 report.text_render.text_sampler_pipeline_ready_text_draw_count ==
+                     0 &&
+                 report.text_render
+                         .text_sampler_pipeline_pending_text_draw_count == 1
+             ? 0
+             : 45;
+}
+
 } // namespace
 
 int main() {
@@ -788,6 +839,11 @@ int main() {
   }
   if (const int result =
           test_renderer_report_counts_textured_glyph_draw_preparation();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_renderer_report_distinguishes_text_sampler_pipeline_readiness();
       result != 0) {
     return result;
   }
