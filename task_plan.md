@@ -721,7 +721,7 @@ follow-on goal is now complete on the Windows/Linux track.
 198. [x] Soft wrap layout records.
 199. [x] Wayland clipboard ownership and send offers.
 200. [x] Wayland drag action negotiation.
-201. [ ] Wayland cursor theme image state.
+201. [x] Wayland cursor theme image state.
 202. [ ] Wayland XDG configure lifecycle state.
 203. [ ] Win32 OLE drop target skeleton.
 204. [ ] Native menu and accelerator API skeleton.
@@ -745,11 +745,26 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 200, Wayland drag action negotiation, is merged on `master` at
-`d45061c feat: add wayland drag action negotiation` and post-merge verified on
-Windows and WSL Arch Linux. Step 201, Wayland cursor theme image state, is the
-next implementation slice. The track remains Windows/Linux first;
+Step 201, Wayland cursor theme image state, is merged on `master` at
+`2b5dd4a feat: add wayland cursor theme state` and post-merge verified on
+Windows and WSL Arch Linux. Step 202, Wayland XDG configure lifecycle state, is
+the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 201, Wayland cursor theme image state, is merged on `master` at
+`2b5dd4a feat: add wayland cursor theme state`. RED failed as expected on
+missing deterministic Wayland cursor theme/image state markers and cursor-name
+mapping coverage. GREEN adds internal `WaylandCursorThemeState`,
+`WaylandCursorThemeLoadStatus`, `WaylandCursorImageState`, and
+`cursor_name_for_shape(...)` records, maps common public cursor shapes to
+Wayland cursor names, and records graceful unavailable cursor-image state before
+the existing null `wl_pointer_set_cursor` call. Feature-worktree targeted tests
+passed 3/3 on WSL Arch Linux and 2/2 on Windows, `git diff --check` exited 0
+with only expected CRLF warnings, WSL full debug passed 27/27, and Windows full
+debug passed 30/30. Post-merge targeted tests passed 3/3 on WSL Arch Linux and
+2/2 on Windows, `git diff --check` produced no output, WSL full debug passed
+27/27, and Windows full debug passed 30/30. Step 202, Wayland XDG configure
+lifecycle state, is the next implementation slice.
 
 Step 200, Wayland drag action negotiation, is merged on `master` at
 `d45061c feat: add wayland drag action negotiation`. RED failed as expected on

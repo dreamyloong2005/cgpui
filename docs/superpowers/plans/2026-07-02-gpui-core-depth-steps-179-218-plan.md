@@ -495,11 +495,15 @@ rerun and passing full-suite rerun.
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 - Modify: `tests/platform/wayland_pointer_button_test.cpp`
 
-- [ ] Add RED coverage for cursor theme/image state records when runtime applies cursor shapes.
-- [ ] Expected RED: Wayland cursor path only has `wl_pointer.set_cursor` skeleton markers.
-- [ ] GREEN: add deterministic cursor-name mapping, theme-load state, and graceful unavailable behavior.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-cursor-theme-state -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . wayland_window_source_test/default core_header_cleanliness/default`.
+- [x] Add RED coverage for cursor theme/image state records when runtime applies cursor shapes.
+- [x] Expected RED: Wayland cursor path only has `wl_pointer.set_cursor` skeleton markers.
+- [x] GREEN: add deterministic cursor-name mapping, theme-load state, and graceful unavailable behavior.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-cursor-theme-state -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
+- [x] Windows available-target command: `xmake test -P . wayland_window_source_test/default core_header_cleanliness/default`.
+
+**Merged:** `2b5dd4a feat: add wayland cursor theme state`.
+**Post-merge verification:** WSL targeted 3/3, Windows targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 202: Wayland XDG Configure Lifecycle State
 

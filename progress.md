@@ -6907,3 +6907,53 @@
   this progress log so Step 200 is marked merged and post-merge verified. Step
   201, Wayland cursor theme image state, is the next implementation slice after
   docs closeout and cleanup.
+
+## 2026-07-03 Step 201 Wayland Cursor Theme Image State
+
+- Continued `.worktrees/wayland-cursor-theme-state` on
+  `codex/wayland-cursor-theme-state` from `master` at
+  `fa195a7 docs: mark step 200 merged`.
+- Baseline targeted tests had already passed in the handoff state on WSL Arch
+  Linux and Windows available targets.
+- Added RED coverage in `tests/architecture/wayland_window_source_test.cpp`
+  and `tests/platform/wayland_pointer_button_test.cpp` requiring internal
+  Wayland cursor theme/image state records, cursor-name mappings, and an extra
+  pointer cursor set request when drag enter switches to pointing hand. The WSL
+  targeted run failed as expected on the missing source markers.
+- GREEN adds `WaylandCursorThemeState`, `WaylandCursorThemeLoadStatus`,
+  `WaylandCursorImageState`, `WaylandCursorImageStatus`, and
+  `cursor_name_for_shape(...)` in `src/platform/linux/wayland_application.cpp`.
+  `apply_cursor_for(...)` now records the requested shape, mapped cursor name,
+  pointer-enter serial, apply count, and graceful unavailable image state before
+  preserving the existing null `wl_pointer_set_cursor` behavior.
+- Verified feature-worktree targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-cursor-theme-state -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux, and
+  `xmake test -P . wayland_window_source_test/default core_header_cleanliness/default`
+  passed 2/2 on Windows.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-cursor-theme-state -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 201 as
+  `2b5dd4a feat: add wayland cursor theme state` and fast-forward merged it to
+  `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_pointer_button_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 3/3.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . wayland_window_source_test/default core_header_cleanliness/default`
+  passed 2/2.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 201 is marked merged and post-merge verified. Step
+  202, Wayland XDG configure lifecycle state, is the next implementation slice
+  after docs closeout and cleanup.

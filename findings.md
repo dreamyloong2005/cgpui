@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Wayland Cursor Theme Image State
+
+- Step 201 adds deterministic internal Wayland cursor theme/image state records
+  before real cursor-theme loading exists. `WaylandCursorThemeState` records the
+  current theme status, requested shape, mapped cursor name, serial, apply
+  count, hotspot, and graceful unavailable reason.
+- The cursor-shape mapping now has explicit Wayland names for default arrow,
+  pointing hand, text, crosshair, horizontal/vertical resize, and not-allowed
+  cursors. The runtime still calls the existing null `wl_pointer_set_cursor`
+  path, so this slice improves observability and state ownership without
+  claiming loaded cursor images.
+- The Wayland pointer test now requests a pointing-hand cursor during drag
+  enter and expects an additional compositor-visible cursor set request,
+  proving cursor application records are updated outside the initial pointer
+  enter path.
+- Real `libwayland-cursor`/theme loading, cursor surfaces, shared-memory cursor
+  buffers, animated cursors, scale-aware images, and compositor edge cases
+  remain future Wayland platform-depth work. Step 202 moves to XDG configure
+  lifecycle state.
+
 ## 2026-07-03 Wayland Drag Action Negotiation
 
 - Step 200 adds public `DragDropAction::{none, copy, move}` metadata to
