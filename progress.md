@@ -1,5 +1,54 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 211 Accessibility Value And Live Update Events
+
+- Created `.worktrees/accessibility-value-live-events` on
+  `codex/accessibility-value-live-events` from `master` at
+  `3a41708 docs: mark step 210 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/accessibility-value-live-events -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp`,
+  `tests/architecture/win32_window_source_test.cpp`, and
+  `tests/architecture/wayland_window_source_test.cpp`. RED failed as expected
+  on missing `PlatformAccessibilityLiveUpdate`,
+  `PlatformAccessibilityLiveUpdateKind`, and
+  `PlatformAccessibilityTreeUpdate::live_updates`.
+- GREEN adds platform-neutral accessibility live update records for value,
+  text, and focus changes, generated from same-element deltas between the
+  previous and current platform accessibility updates.
+- Win32 UIA and Wayland AT-SPI facades now retain the latest live update batch
+  while remaining internal metadata facades with no production UIA/AT-SPI
+  event emission yet.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and the matching WSL Arch Linux command passed 5/5.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/accessibility-value-live-events -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 211 as
+  `1e51aa8 feat: add accessibility live update records` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and the matching WSL Arch Linux command passed 5/5.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 211 is marked merged and post-merge verified.
+  Step 212, additional window renderer ownership, is the next implementation
+  slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 210 AT-SPI Object Model Facade
 
 - Created `.worktrees/linux-atspi-object-facade` on

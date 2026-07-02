@@ -726,11 +726,15 @@ targeted rerun.
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 
-- [ ] Add RED coverage for value/text-change/focus-change accessibility update events.
-- [ ] Expected RED: platform accessibility updates are full snapshots only.
-- [ ] GREEN: add incremental update records generated from focused text and element snapshot changes.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for value/text-change/focus-change accessibility update events.
+- [x] Expected RED: platform accessibility updates are full snapshots only.
+- [x] GREEN: add incremental update records generated from focused text and element snapshot changes.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `1e51aa8 feat: add accessibility live update records`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 212: Additional Window Renderer Ownership
 

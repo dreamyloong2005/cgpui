@@ -731,7 +731,7 @@ follow-on goal is now complete on the Windows/Linux track.
 208. [x] Platform diagnostics event stream.
 209. [x] UIA provider tree facade.
 210. [x] AT-SPI object model facade.
-211. [ ] Accessibility value and live update events.
+211. [x] Accessibility value and live update events.
 212. [ ] Additional window renderer ownership.
 213. [ ] Additional window event routing.
 214. [ ] Additional window lifecycle cleanup.
@@ -745,12 +745,28 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 210, AT-SPI object model facade, is merged on `master` at
-`069a997 feat: add linux atspi object facade` and post-merge verified on
-Windows and WSL Arch Linux. Step 211, accessibility value and live update
-events, is the next
+Step 211, accessibility value and live update events, is merged on `master` at
+`1e51aa8 feat: add accessibility live update records` and post-merge verified
+on Windows and WSL Arch Linux. Step 212, additional window renderer ownership,
+is the next
 implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 211, accessibility value and live update events, is merged on `master` at
+`1e51aa8 feat: add accessibility live update records`. RED failed as expected
+on missing `PlatformAccessibilityLiveUpdate`,
+`PlatformAccessibilityLiveUpdateKind`, and
+`PlatformAccessibilityTreeUpdate::live_updates` API. GREEN adds
+platform-neutral live update records for value, text, and focus changes,
+generates them by comparing the latest platform accessibility update against
+the previous one, and lets the Win32 UIA and Wayland AT-SPI facades retain the
+latest live update batch without emitting production UIA/AT-SPI events.
+Feature-worktree targeted tests passed 5/5 on Windows and WSL Arch Linux,
+`git diff --check` exited 0 with only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 5/5 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30. Step
+212, additional window renderer ownership, is the next implementation slice.
 
 Step 210, AT-SPI object model facade, is merged on `master` at
 `069a997 feat: add linux atspi object facade`. RED failed as expected on

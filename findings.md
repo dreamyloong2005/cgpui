@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Accessibility Value And Live Update Events
+
+- Step 211 adds `PlatformAccessibilityLiveUpdateKind` and
+  `PlatformAccessibilityLiveUpdate` as platform-neutral event records for
+  value, text, and focus changes at the platform accessibility boundary.
+- `WindowRuntime` now keeps the previous platform accessibility update and
+  emits a `live_updates` batch by comparing same-element node values, text, and
+  focused state across redraw-driven accessibility snapshots.
+- Win32 UIA and Wayland AT-SPI adapters retain the latest live update batch
+  alongside their provider/object facade node records, so later production
+  event bridges can raise UIA/AT-SPI notifications from the same source of
+  truth.
+- This remains deterministic event metadata, not production accessibility
+  event emission. No COM UIA provider events or D-Bus AT-SPI signals are
+  emitted yet. Step 212 moves to additional-window renderer ownership.
+
 ## 2026-07-03 AT-SPI Object Model Facade
 
 - Step 210 mirrors the Step 209 Win32 UIA provider-node facade on
