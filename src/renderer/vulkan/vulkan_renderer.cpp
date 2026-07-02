@@ -105,11 +105,28 @@ Result<WaylandSurfaceHandle> require_wayland_surface(
   return !lhs.has_value() || same_rect(*lhs, *rhs);
 }
 
+[[nodiscard]] bool same_clip_stack(
+    const RendererClipStackRecord& lhs,
+    const RendererClipStackRecord& rhs) {
+  if (lhs.full_depth != rhs.full_depth || lhs.truncated != rhs.truncated ||
+      !same_clip_rect(lhs.current_clip_rect, rhs.current_clip_rect) ||
+      lhs.clips.size() != rhs.clips.size()) {
+    return false;
+  }
+  for (std::size_t index = 0; index < lhs.clips.size(); ++index) {
+    if (!same_rect(lhs.clips[index], rhs.clips[index])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 [[nodiscard]] bool same_batch_key(
     const RendererCommandBatchKey& lhs,
     const RendererCommandBatchKey& rhs) {
   return lhs.primitive_kind == rhs.primitive_kind &&
          same_clip_rect(lhs.clip_rect, rhs.clip_rect) &&
+         same_clip_stack(lhs.clip_stack, rhs.clip_stack) &&
          lhs.metadata == rhs.metadata;
 }
 
@@ -1576,6 +1593,7 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
             atlas_page_size_for(glyph_cache, entry.page_index)),
         .color = text.color,
         .clip_rect = text.clip_rect,
+        .clip_stack = text.clip_stack,
         .metadata = text.metadata,
     });
   }
@@ -1597,6 +1615,7 @@ std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(
         .color = rounded_rect.color,
         .radius = rounded_rect.radius,
         .clip_rect = rounded_rect.clip_rect,
+        .clip_stack = rounded_rect.clip_stack,
         .metadata = rounded_rect.metadata,
         .corner_segment_count =
             rounded_corner_count == 0 ? 0 : kCornerSegmentCount,
@@ -1620,6 +1639,7 @@ std::vector<TextSelectionGeometryRecord> vulkan_build_text_selection_geometry(
         .range = selection.range,
         .font_size = selection.font_size,
         .clip_rect = selection.clip_rect,
+        .clip_stack = selection.clip_stack,
         .metadata = selection.metadata,
         .vertex_count = 4,
         .triangle_count = 2,
@@ -1641,6 +1661,7 @@ std::vector<TextCaretGeometryRecord> vulkan_build_text_caret_geometry(
         .byte_offset = caret.byte_offset,
         .font_size = caret.font_size,
         .clip_rect = caret.clip_rect,
+        .clip_stack = caret.clip_stack,
         .metadata = caret.metadata,
         .vertex_count = 4,
         .triangle_count = 2,
@@ -1667,6 +1688,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .primitive_kind = RendererPrimitiveKind::solid_rect,
         .command_index = index,
         .clip_rect = rect.clip_rect,
+        .clip_stack = rect.clip_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1677,6 +1699,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .primitive_kind = RendererPrimitiveKind::rounded_rect,
         .command_index = index,
         .clip_rect = rect.clip_rect,
+        .clip_stack = rect.clip_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1687,6 +1710,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .primitive_kind = RendererPrimitiveKind::text,
         .command_index = index,
         .clip_rect = text_draw.clip_rect,
+        .clip_stack = text_draw.clip_stack,
         .metadata = text_draw.metadata,
     });
   }
@@ -1697,6 +1721,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .primitive_kind = RendererPrimitiveKind::text_selection,
         .command_index = index,
         .clip_rect = selection.clip_rect,
+        .clip_stack = selection.clip_stack,
         .metadata = selection.metadata,
     });
   }
@@ -1707,6 +1732,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .primitive_kind = RendererPrimitiveKind::text_caret,
         .command_index = index,
         .clip_rect = caret.clip_rect,
+        .clip_stack = caret.clip_stack,
         .metadata = caret.metadata,
     });
   }
@@ -1753,10 +1779,17 @@ RendererCommandReport vulkan_build_renderer_command_report(
         RendererCommandBatchKey{
             .primitive_kind = command.primitive_kind,
             .clip_rect = command.clip_rect,
+            .clip_stack = command.clip_stack,
             .metadata = command.metadata,
         },
         command.command_index);
     report.supported_command_count += 1;
+    if (!command.clip_stack.empty()) {
+      report.clip_stack_record_count += 1;
+      report.max_clip_stack_depth = std::max(
+          report.max_clip_stack_depth,
+          command.clip_stack.full_depth);
+    }
   }
 
   return report;
@@ -1780,6 +1813,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .primitive_kind = RendererPrimitiveKind::solid_rect,
         .command_index = index,
         .clip_rect = rect.clip_rect,
+        .clip_stack = rect.clip_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1790,6 +1824,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .primitive_kind = RendererPrimitiveKind::rounded_rect,
         .command_index = index,
         .clip_rect = rect.clip_rect,
+        .clip_stack = rect.clip_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1800,6 +1835,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .primitive_kind = RendererPrimitiveKind::text,
         .command_index = index,
         .clip_rect = text_draw.clip_rect,
+        .clip_stack = text_draw.clip_stack,
         .metadata = text_draw.metadata,
     });
   }
@@ -1810,6 +1846,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .primitive_kind = RendererPrimitiveKind::text_selection,
         .command_index = index,
         .clip_rect = selection.clip_rect,
+        .clip_stack = selection.clip_stack,
         .metadata = selection.metadata,
     });
   }
@@ -1820,6 +1857,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .primitive_kind = RendererPrimitiveKind::text_caret,
         .command_index = index,
         .clip_rect = caret.clip_rect,
+        .clip_stack = caret.clip_stack,
         .metadata = caret.metadata,
     });
   }

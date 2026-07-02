@@ -201,6 +201,28 @@ class TextSelectionCaretView final : public cgpui::View {
   }
 };
 
+class NestedClipStackView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.push_clip(cgpui::Rect{
+        .origin = {.x = 0.0F, .y = 0.0F},
+        .size = {.width = 128.0F, .height = 64.0F},
+    });
+    paint_list.push_clip(cgpui::Rect{
+        .origin = {.x = 8.0F, .y = 10.0F},
+        .size = {.width = 48.0F, .height = 24.0F},
+    });
+    paint_list.fill_rect(
+        cgpui::Rect{
+            .origin = {.x = 12.0F, .y = 14.0F},
+            .size = {.width = 16.0F, .height = 12.0F},
+        },
+        cgpui::Color{.r = 0.1F, .g = 0.2F, .b = 0.3F, .a = 1.0F});
+    paint_list.pop_clip();
+    paint_list.pop_clip();
+  }
+};
+
 } // namespace
 
 int main() {
@@ -357,9 +379,35 @@ int main() {
     return 17;
   }
 
-  return caret.rect.origin.x == 42.0F && caret.byte_offset == 6 &&
-                 caret.color.a == 1.0F && caret.clip_rect.has_value() &&
-                 caret.metadata.opacity == 0.625F
+  if (caret.rect.origin.x != 42.0F || caret.byte_offset != 6 ||
+      caret.color.a != 1.0F || !caret.clip_rect.has_value() ||
+      caret.metadata.opacity != 0.625F) {
+    return 18;
+  }
+
+  RecordingFrame clip_frame;
+  RecordingRenderer clip_renderer(clip_frame);
+  NestedClipStackView clip_view;
+  cgpui::FrameStatistics clip_stats;
+  const auto clip_result = cgpui::render_view(
+      clip_renderer,
+      clip_view,
+      cgpui::Size{128.0F, 64.0F},
+      cgpui::DpiScale{},
+      &clip_stats);
+  if (!clip_result) {
+    return 19;
+  }
+  if (clip_frame.draw_count != 1 || !clip_frame.last_rect.clip_rect ||
+      clip_frame.last_rect.clip_rect->origin.x != 8.0F ||
+      clip_frame.last_rect.clip_stack.full_depth != 2 ||
+      clip_frame.last_rect.clip_stack.clips.size() != 2 ||
+      !clip_frame.last_rect.clip_stack.current_clip_rect.has_value() ||
+      clip_frame.last_rect.clip_stack.current_clip_rect->size.width != 48.0F) {
+    return 20;
+  }
+  return clip_stats.clip_stack_command_count == 1 &&
+                 clip_stats.max_clip_stack_depth == 2
              ? 0
-             : 18;
+             : 21;
 }

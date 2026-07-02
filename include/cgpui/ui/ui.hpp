@@ -101,6 +101,7 @@ struct PaintCommand {
   TextSelectionPaint text_selection;
   TextCaretPaint text_caret;
   std::optional<Rect> clip_rect;
+  RendererClipStackRecord clip_stack;
   PaintMetadata metadata;
 };
 
@@ -429,6 +430,8 @@ struct FrameStatistics {
   std::size_t text_command_count = 0;
   std::size_t text_selection_command_count = 0;
   std::size_t text_caret_command_count = 0;
+  std::size_t clip_stack_command_count = 0;
+  std::size_t max_clip_stack_depth = 0;
   std::size_t begin_frame_count = 0;
   std::size_t clear_count = 0;
   std::size_t present_count = 0;

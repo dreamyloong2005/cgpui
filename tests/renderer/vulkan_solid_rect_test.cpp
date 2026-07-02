@@ -947,6 +947,69 @@ int test_text_selection_and_caret_build_geometry_records_with_metadata() {
              : 53;
 }
 
+int test_renderer_batches_distinguish_nested_clip_stack_metadata() {
+  const cgpui::Rect outer_a{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 100.0F, .height = 80.0F},
+  };
+  const cgpui::Rect outer_b{
+      .origin = {.x = 4.0F, .y = 6.0F},
+      .size = {.width = 100.0F, .height = 80.0F},
+  };
+  const cgpui::Rect inner{
+      .origin = {.x = 12.0F, .y = 14.0F},
+      .size = {.width = 32.0F, .height = 20.0F},
+  };
+  const std::vector<cgpui::SolidRect> rects{
+      cgpui::SolidRect{
+          .rect = {.origin = {.x = 16.0F, .y = 18.0F},
+                   .size = {.width = 12.0F, .height = 8.0F}},
+          .color = {.r = 0.2F, .g = 0.3F, .b = 0.4F, .a = 1.0F},
+          .clip_rect = inner,
+          .clip_stack =
+              cgpui::RendererClipStackRecord{
+                  .clips = {outer_a, inner},
+                  .full_depth = 2,
+                  .current_clip_rect = inner,
+              },
+      },
+      cgpui::SolidRect{
+          .rect = {.origin = {.x = 30.0F, .y = 18.0F},
+                   .size = {.width = 12.0F, .height = 8.0F}},
+          .color = {.r = 0.2F, .g = 0.3F, .b = 0.4F, .a = 1.0F},
+          .clip_rect = inner,
+          .clip_stack =
+              cgpui::RendererClipStackRecord{
+                  .clips = {outer_b, inner},
+                  .full_depth = 2,
+                  .current_clip_rect = inner,
+              },
+      },
+  };
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::TextDraw> text_draws;
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(rects, text_draws, cache);
+  if (report.supported_command_count != 2 ||
+      report.clip_stack_record_count != 2 ||
+      report.max_clip_stack_depth != 2 ||
+      report.batches.size() != 2) {
+    return 54;
+  }
+  if (!report.batches[0].key.clip_rect.has_value() ||
+      !report.batches[1].key.clip_rect.has_value() ||
+      report.batches[0].key.clip_rect->origin.x != inner.origin.x ||
+      report.batches[1].key.clip_rect->origin.x != inner.origin.x ||
+      report.batches[0].key.clip_stack ==
+          report.batches[1].key.clip_stack) {
+    return 55;
+  }
+  return report.batches[0].key.clip_stack.clips[0].origin.x == 0.0F &&
+                 report.batches[1].key.clip_stack.clips[0].origin.x == 4.0F
+             ? 0
+             : 56;
+}
+
 } // namespace
 
 int main() {
@@ -1010,6 +1073,11 @@ int main() {
   }
   if (const int result =
           test_text_selection_and_caret_build_geometry_records_with_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_renderer_batches_distinguish_nested_clip_stack_metadata();
       result != 0) {
     return result;
   }
