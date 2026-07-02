@@ -395,6 +395,43 @@ int test_text_model_undo_redo_restores_edit_history() {
   return 0;
 }
 
+int test_text_model_deletes_surrounding_text_on_utf8_boundaries() {
+  const std::string text_with_zhong =
+      std::string{"ab"} + "\xE4\xB8\xAD" + "cd";
+
+  cgpui::TextModel model(text_with_zhong);
+  model.set_selection(5, 5);
+  if (!model.delete_surrounding_text(1, 1) ||
+      model.text() != std::string_view{"abd"} || model.cursor() != 2 ||
+      !model.selection().collapsed) {
+    return 127;
+  }
+  if (!model.undo() || model.text() != std::string_view{text_with_zhong} ||
+      model.cursor() != 5) {
+    return 128;
+  }
+
+  cgpui::TextModel forward(text_with_zhong);
+  forward.set_selection(2, 2);
+  if (!forward.delete_surrounding_text(0, 1) ||
+      forward.text() != std::string_view{"abcd"} ||
+      forward.cursor() != 2) {
+    return 129;
+  }
+
+  cgpui::TextModel clamped("abc");
+  clamped.set_selection(1, 1);
+  if (!clamped.delete_surrounding_text(100, 100) ||
+      !clamped.text().empty() || clamped.cursor() != 0) {
+    return 130;
+  }
+  if (clamped.delete_surrounding_text(0, 0)) {
+    return 131;
+  }
+
+  return 0;
+}
+
 int test_text_model_tracks_ime_composition() {
   cgpui::TextModel model("ab");
 
@@ -673,6 +710,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_undo_redo_restores_edit_history();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_deletes_surrounding_text_on_utf8_boundaries();
       result != 0) {
     return result;
   }

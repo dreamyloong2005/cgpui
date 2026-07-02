@@ -868,6 +868,13 @@ class RecordingView final : public cgpui::View {
       ime_composition_saw_keyboard_focus_element_owner =
           context.input.keyboard_focus_element_owner ==
           focused_keyboard_element_id;
+    } else if (std::holds_alternative<cgpui::ImeDeleteSurroundingText>(event)) {
+      ime_delete_surrounding_count += 1;
+      ime_delete_surrounding_saw_keyboard_focus =
+          context.input.keyboard_focused;
+      ime_delete_surrounding_saw_keyboard_focus_element_owner =
+          context.input.keyboard_focus_element_owner ==
+          focused_keyboard_element_id;
     }
 
     if (request_redraw_on_event && event_redraw_requests == 0) {
@@ -895,6 +902,7 @@ class RecordingView final : public cgpui::View {
   int keyboard_key_count = 0;
   int text_input_count = 0;
   int ime_composition_count = 0;
+  int ime_delete_surrounding_count = 0;
   int event_redraw_requests = 0;
   bool request_redraw_on_event = false;
   bool consume_next_event = false;
@@ -974,6 +982,8 @@ class RecordingView final : public cgpui::View {
   bool text_input_saw_keyboard_focus_element_owner = false;
   bool ime_composition_saw_keyboard_focus = false;
   bool ime_composition_saw_keyboard_focus_element_owner = false;
+  bool ime_delete_surrounding_saw_keyboard_focus = false;
+  bool ime_delete_surrounding_saw_keyboard_focus_element_owner = false;
   bool last_event_result_consumed = false;
   bool last_event_result_cancelled = false;
   bool saw_event_route = false;
@@ -8090,6 +8100,81 @@ int test_runtime_routes_ime_composition_to_focused_text_model() {
   return 0;
 }
 
+RuntimeFixture* ime_delete_surrounding_fixture = nullptr;
+
+void dispatch_ime_delete_surrounding_sequence() {
+  auto& callback = ime_delete_surrounding_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::ImeDeleteSurroundingText{
+      .before_length = 1,
+      .after_length = 2});
+}
+
+int test_runtime_routes_ime_delete_surrounding_to_focused_text_model() {
+  RuntimeFixture fixture;
+  ime_delete_surrounding_fixture = &fixture;
+  fixture.app.on_run = &dispatch_ime_delete_surrounding_sequence;
+  fixture.view.focused_keyboard_element_id = cgpui::ElementId{21};
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::TextModel model("abcdef");
+  model.set_selection(3, 3);
+  std::optional<cgpui::EventDispatchRecord> delete_record;
+  bool delete_mutated_text = false;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.bind_text_model(cgpui::ElementId{21}, &model);
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::ime_delete_surrounding_text) {
+          return;
+        }
+        delete_record = record;
+        delete_mutated_text =
+            model.text() == std::string_view{"abf"} && model.cursor() == 2 &&
+            model.selection().collapsed;
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  ime_delete_surrounding_fixture = nullptr;
+
+  if (result != 0) {
+    return 322;
+  }
+  if (fixture.view.keyboard_key_count != 1 ||
+      fixture.view.ime_delete_surrounding_count != 1) {
+    return 323;
+  }
+  if (!delete_record.has_value() ||
+      delete_record->event_kind !=
+          cgpui::EventKind::ime_delete_surrounding_text ||
+      delete_record->route.event_kind !=
+          cgpui::EventKind::ime_delete_surrounding_text) {
+    return 324;
+  }
+  if (!delete_record->route.target_element_id.has_value() ||
+      *delete_record->route.target_element_id != cgpui::ElementId{21}) {
+    return 325;
+  }
+  if (!fixture.view.ime_delete_surrounding_saw_keyboard_focus ||
+      !fixture.view.ime_delete_surrounding_saw_keyboard_focus_element_owner) {
+    return 326;
+  }
+  if (!delete_mutated_text || !model.can_undo()) {
+    return 327;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -8536,6 +8621,11 @@ int main() {
   }
   if (const int result =
           test_runtime_routes_ime_composition_to_focused_text_model();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_routes_ime_delete_surrounding_to_focused_text_model();
       result != 0) {
     return result;
   }

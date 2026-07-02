@@ -167,6 +167,7 @@ constexpr std::uint32_t zwp_text_input_v3_enter = 0;
 constexpr std::uint32_t zwp_text_input_v3_leave = 1;
 constexpr std::uint32_t zwp_text_input_v3_preedit_string = 2;
 constexpr std::uint32_t zwp_text_input_v3_commit_string = 3;
+constexpr std::uint32_t zwp_text_input_v3_delete_surrounding_text = 4;
 constexpr std::uint32_t zwp_text_input_v3_done = 5;
 
 constexpr std::string_view test_keymap = R"(xkb_keymap {
@@ -320,6 +321,11 @@ struct WaylandTestCompositor::State {
     bool control = false;
     bool alt = false;
     bool super = false;
+  };
+
+  struct TextInputDeleteSurroundingRequest {
+    std::uint32_t before_length = 0;
+    std::uint32_t after_length = 0;
   };
 
   explicit State(std::string test_name) {
@@ -543,6 +549,20 @@ struct WaylandTestCompositor::State {
       pending_text_input_preedit = std::move(text);
     }
     text_input_preedit_pending.store(true);
+  }
+
+  void request_text_input_delete_surrounding(
+      std::uint32_t before_length,
+      std::uint32_t after_length) {
+    {
+      std::lock_guard lock(text_input_event_mutex);
+      pending_text_input_delete_surrounding =
+          TextInputDeleteSurroundingRequest{
+              .before_length = before_length,
+              .after_length = after_length,
+          };
+    }
+    text_input_delete_surrounding_pending.store(true);
   }
 
   void request_text_input_commit(std::string text) {
@@ -878,6 +898,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_keyboard_leave();
   void dispatch_pending_text_input_enter();
   void dispatch_pending_text_input_preedit();
+  void dispatch_pending_text_input_delete_surrounding();
   void dispatch_pending_text_input_commit();
   void dispatch_pending_text_input_leave();
   void dispatch_pending_clipboard_selection();
@@ -899,6 +920,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_keyboard_leave();
       dispatch_pending_text_input_enter();
       dispatch_pending_text_input_preedit();
+      dispatch_pending_text_input_delete_surrounding();
       dispatch_pending_text_input_commit();
       dispatch_pending_text_input_leave();
       const int result = wl_event_loop_dispatch(wl_display_get_event_loop(display), 10);
@@ -921,6 +943,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_keyboard_leave();
       dispatch_pending_text_input_enter();
       dispatch_pending_text_input_preedit();
+      dispatch_pending_text_input_delete_surrounding();
       dispatch_pending_text_input_commit();
       dispatch_pending_text_input_leave();
       wl_display_flush_clients(display);
@@ -1024,6 +1047,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool text_input_enter_sent{false};
   std::atomic_bool text_input_preedit_pending{false};
   std::atomic_bool text_input_preedit_sent{false};
+  std::atomic_bool text_input_delete_surrounding_pending{false};
+  std::atomic_bool text_input_delete_surrounding_sent{false};
   std::atomic_bool text_input_commit_pending{false};
   std::atomic_bool text_input_commit_sent{false};
   std::atomic_bool text_input_leave_pending{false};
@@ -1043,6 +1068,7 @@ struct WaylandTestCompositor::State {
   KeyboardModifiersRequest keyboard_modifiers;
   std::mutex text_input_event_mutex;
   std::string pending_text_input_preedit;
+  TextInputDeleteSurroundingRequest pending_text_input_delete_surrounding;
   std::string pending_text_input_commit;
   mutable std::mutex text_input_client_state_mutex;
   WaylandTextInputClientState text_input_client_state;
@@ -1939,6 +1965,34 @@ void WaylandTestCompositor::State::dispatch_pending_text_input_preedit() {
   text_input_preedit_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_text_input_delete_surrounding() {
+  if (!text_input_delete_surrounding_pending.exchange(false)) {
+    return;
+  }
+
+  if (text_input_resource == nullptr || !text_input_entered) {
+    text_input_delete_surrounding_pending.store(true);
+    return;
+  }
+
+  TextInputDeleteSurroundingRequest request{};
+  {
+    std::lock_guard lock(text_input_event_mutex);
+    request = pending_text_input_delete_surrounding;
+  }
+  wl_resource_post_event(
+      text_input_resource,
+      zwp_text_input_v3_delete_surrounding_text,
+      request.before_length,
+      request.after_length);
+  wl_resource_post_event(
+      text_input_resource,
+      zwp_text_input_v3_done,
+      next_text_input_serial++);
+  wl_display_flush_clients(display);
+  text_input_delete_surrounding_sent.store(true);
+}
+
 void WaylandTestCompositor::State::dispatch_pending_text_input_commit() {
   if (!text_input_commit_pending.exchange(false)) {
     return;
@@ -2220,6 +2274,12 @@ void WaylandTestCompositor::request_text_input_preedit(std::string text) {
   state_->request_text_input_preedit(std::move(text));
 }
 
+void WaylandTestCompositor::request_text_input_delete_surrounding(
+    std::uint32_t before_length,
+    std::uint32_t after_length) {
+  state_->request_text_input_delete_surrounding(before_length, after_length);
+}
+
 void WaylandTestCompositor::request_text_input_commit(std::string text) {
   state_->request_text_input_commit(std::move(text));
 }
@@ -2300,6 +2360,10 @@ bool WaylandTestCompositor::wait_for_text_input_enter_sent() const {
 
 bool WaylandTestCompositor::wait_for_text_input_preedit_sent() const {
   return state_->wait_for_flag(state_->text_input_preedit_sent);
+}
+
+bool WaylandTestCompositor::wait_for_text_input_delete_surrounding_sent() const {
+  return state_->wait_for_flag(state_->text_input_delete_surrounding_sent);
 }
 
 bool WaylandTestCompositor::wait_for_text_input_commit_sent() const {

@@ -585,6 +585,35 @@ class TextModel {
     return true;
   }
 
+  [[nodiscard]] bool delete_surrounding_text(
+      std::size_t before_length,
+      std::size_t after_length) {
+    const TextHistorySnapshot before = history_snapshot();
+    const std::size_t cursor = clamp_offset(cursor_);
+    std::size_t start =
+        before_length > cursor ? 0 : cursor - before_length;
+    while (start > 0 && is_utf8_continuation(text_[start])) {
+      start -= 1;
+    }
+
+    const std::size_t available_after = text_.size() - cursor;
+    std::size_t end =
+        cursor + std::min(after_length, available_after);
+    while (end < text_.size() && is_utf8_continuation(text_[end])) {
+      end += 1;
+    }
+
+    if (start == end) {
+      return false;
+    }
+    text_.erase(start, end - start);
+    cursor_ = start;
+    collapse_selection_to_cursor();
+    clear_composition();
+    commit_history_record(before);
+    return true;
+  }
+
   [[nodiscard]] bool apply_edit_action(TextEditAction action) {
     switch (action) {
       case TextEditAction::move_previous:

@@ -133,6 +133,12 @@ struct ImeComposition {
   KeyboardModifiers modifiers;
 };
 
+struct ImeDeleteSurroundingText {
+  std::uint32_t before_length = 0;
+  std::uint32_t after_length = 0;
+  KeyboardModifiers modifiers;
+};
+
 using PlatformEvent = std::variant<
     WindowCloseRequested,
     WindowRedrawRequested,
@@ -151,6 +157,7 @@ using PlatformEvent = std::variant<
     DragExited,
     KeyboardKey,
     TextInput,
-    ImeComposition>;
+    ImeComposition,
+    ImeDeleteSurroundingText>;
 
 } // namespace cgpui

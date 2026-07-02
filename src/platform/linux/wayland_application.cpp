@@ -838,6 +838,16 @@ class WaylandWindow final : public PlatformWindow {
     callback_(text_input_state_.commit(std::move(text), modifiers));
   }
 
+  void text_input_delete_surrounding(
+      std::uint32_t before_length,
+      std::uint32_t after_length,
+      KeyboardModifiers modifiers) {
+    callback_(ImeDeleteSurroundingText{
+        .before_length = before_length,
+        .after_length = after_length,
+        .modifiers = modifiers});
+  }
+
   void text_input_surrounding_text(
       std::string text,
       std::int32_t cursor,
@@ -1024,6 +1034,7 @@ class WaylandTextInput {
     active_window_ = nullptr;
     pending_preedit_.reset();
     pending_commit_.reset();
+    pending_delete_surrounding_.reset();
     if (text_input_ != nullptr) {
       zwp_text_input_v3_destroy(text_input_);
       text_input_ = nullptr;
@@ -1102,6 +1113,7 @@ class WaylandTextInput {
     }
     self->pending_preedit_.reset();
     self->pending_commit_.reset();
+    self->pending_delete_surrounding_.reset();
   }
 
   static void handle_preedit_string(
@@ -1131,10 +1143,13 @@ class WaylandTextInput {
       zwp_text_input_v3* text_input,
       std::uint32_t before_length,
       std::uint32_t after_length) {
-    (void)data;
     (void)text_input;
-    (void)before_length;
-    (void)after_length;
+    auto* self = static_cast<WaylandTextInput*>(data);
+    self->pending_delete_surrounding_ =
+        PendingDeleteSurroundingText{
+            .before_length = before_length,
+            .after_length = after_length,
+        };
   }
 
   static void handle_done(
@@ -1156,6 +1171,12 @@ class WaylandTextInput {
           std::move(*self->pending_preedit_),
           modifiers);
     }
+    if (self->pending_delete_surrounding_.has_value()) {
+      self->active_window_->text_input_delete_surrounding(
+          self->pending_delete_surrounding_->before_length,
+          self->pending_delete_surrounding_->after_length,
+          modifiers);
+    }
     if (self->pending_commit_.has_value()) {
       self->active_window_->text_input_commit(
           std::move(*self->pending_commit_),
@@ -1163,6 +1184,7 @@ class WaylandTextInput {
     }
     self->pending_preedit_.reset();
     self->pending_commit_.reset();
+    self->pending_delete_surrounding_.reset();
   }
 
   [[nodiscard]] KeyboardModifiers current_modifiers() const {
@@ -1175,8 +1197,13 @@ class WaylandTextInput {
   WaylandWindow* active_window_ = nullptr;
   WindowLookup find_window_;
   ModifiersProvider modifiers_;
+  struct PendingDeleteSurroundingText {
+    std::uint32_t before_length = 0;
+    std::uint32_t after_length = 0;
+  };
   std::optional<std::string> pending_preedit_;
   std::optional<std::string> pending_commit_;
+  std::optional<PendingDeleteSurroundingText> pending_delete_surrounding_;
 };
 
 class WaylandDataDevice {

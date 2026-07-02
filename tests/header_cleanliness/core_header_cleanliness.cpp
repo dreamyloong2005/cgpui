@@ -21,6 +21,11 @@ int main() {
       .phase = cgpui::ImeCompositionPhase::update,
       .text = "x"};
   (void)ime_event;
+  cgpui::PlatformEvent ime_delete_event = cgpui::ImeDeleteSurroundingText{
+      .before_length = 1,
+      .after_length = 2,
+  };
+  (void)ime_delete_event;
   cgpui::DragDropPayload drag_payload{
       .kind = cgpui::DragDropPayloadKind::files,
       .text = {},

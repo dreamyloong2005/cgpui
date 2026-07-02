@@ -65,6 +65,9 @@ class WaylandTestCompositor {
   void request_keyboard_leave();
   void request_text_input_enter();
   void request_text_input_preedit(std::string text);
+  void request_text_input_delete_surrounding(
+      std::uint32_t before_length,
+      std::uint32_t after_length);
   void request_text_input_commit(std::string text);
   void request_text_input_leave();
   void set_clipboard_selection(
@@ -88,6 +91,7 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_keyboard_leave_sent() const;
   [[nodiscard]] bool wait_for_text_input_enter_sent() const;
   [[nodiscard]] bool wait_for_text_input_preedit_sent() const;
+  [[nodiscard]] bool wait_for_text_input_delete_surrounding_sent() const;
   [[nodiscard]] bool wait_for_text_input_commit_sent() const;
   [[nodiscard]] bool wait_for_text_input_leave_sent() const;
   [[nodiscard]] bool wait_for_text_input_client_state_committed() const;

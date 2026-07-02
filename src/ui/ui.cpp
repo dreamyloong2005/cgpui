@@ -55,6 +55,9 @@ EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<ImeComposition>(event)) {
     return EventKind::ime_composition;
   }
+  if (std::holds_alternative<ImeDeleteSurroundingText>(event)) {
+    return EventKind::ime_delete_surrounding_text;
+  }
   return EventKind::unknown;
 }
 
@@ -141,7 +144,8 @@ std::optional<Point> pointer_position_for(const PlatformEvent& event) {
 bool is_keyboard_routed_event(const PlatformEvent& event) {
   return std::holds_alternative<KeyboardKey>(event) ||
          std::holds_alternative<TextInput>(event) ||
-         std::holds_alternative<ImeComposition>(event);
+         std::holds_alternative<ImeComposition>(event) ||
+         std::holds_alternative<ImeDeleteSurroundingText>(event);
 }
 
 bool is_focus_activation_event(const PlatformEvent& event) {
@@ -1318,6 +1322,16 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
             model->cancel_composition();
             break;
         }
+      }
+    }
+    if (const auto* delete_surrounding =
+            std::get_if<ImeDeleteSurroundingText>(&event);
+        delete_surrounding != nullptr &&
+        keyboard_focus_element_owner_.has_value()) {
+      if (TextModel* model = focused_text_model(); model != nullptr) {
+        (void)model->delete_surrounding_text(
+            delete_surrounding->before_length,
+            delete_surrounding->after_length);
       }
     }
     EventResult result = EventResult::unhandled();

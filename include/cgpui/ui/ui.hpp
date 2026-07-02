@@ -357,6 +357,7 @@ enum class EventKind {
   keyboard_key,
   text_input,
   ime_composition,
+  ime_delete_surrounding_text,
 };
 
 struct EventRoute {

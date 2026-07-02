@@ -42,6 +42,7 @@ int main() {
   bool key_pressed_with_shift = false;
   bool text_received = false;
   bool ime_preedit_received = false;
+  bool ime_delete_surrounding_received = false;
   bool ime_commit_received = false;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
@@ -80,11 +81,23 @@ int main() {
             ime_commit_received = true;
           }
         }
+        if (const auto* delete_surrounding =
+                std::get_if<cgpui::ImeDeleteSurroundingText>(&event);
+            delete_surrounding != nullptr) {
+          ime_delete_surrounding_received =
+              delete_surrounding->before_length == 2 &&
+              delete_surrounding->after_length == 1 &&
+              delete_surrounding->modifiers.shift &&
+              !delete_surrounding->modifiers.control &&
+              !delete_surrounding->modifiers.alt &&
+              !delete_surrounding->modifiers.super;
+        }
         if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
         if (focused && pressed && released && key_pressed_with_shift &&
-            text_received && ime_preedit_received && ime_commit_received &&
+            text_received && ime_preedit_received &&
+            ime_delete_surrounding_received && ime_commit_received &&
             blurred) {
           (*app)->quit();
         }
@@ -140,6 +153,7 @@ int main() {
   compositor.request_keyboard_key(expected_key, false);
   compositor.request_text_input_enter();
   compositor.request_text_input_preedit("draft");
+  compositor.request_text_input_delete_surrounding(2, 1);
   compositor.request_text_input_commit("\xE4\xB8\xAD");
   compositor.request_text_input_leave();
   compositor.request_keyboard_leave();
@@ -173,6 +187,9 @@ int main() {
   }
   if (!compositor.wait_for_text_input_preedit_sent()) {
     return 18;
+  }
+  if (!compositor.wait_for_text_input_delete_surrounding_sent()) {
+    return 25;
   }
   if (!compositor.wait_for_text_input_commit_sent()) {
     return 19;
@@ -215,6 +232,9 @@ int main() {
   }
   if (!ime_preedit_received) {
     return 23;
+  }
+  if (!ime_delete_surrounding_received) {
+    return 26;
   }
   if (!ime_commit_received) {
     return 24;
