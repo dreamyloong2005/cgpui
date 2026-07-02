@@ -797,7 +797,53 @@ int test_text_hit_geometry_maps_points_to_offsets_and_selection() {
           {49.0F, 10.0F},
           {24.0F, 10.0F});
   return backward.start == 1 && backward.end == 4 && !backward.collapsed ? 0
-                                                                         : 63;
+                                                                          : 63;
+}
+
+int test_text_soft_wrap_records_split_measured_glyphs_by_width() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "abcde",
+      cgpui::FontDescriptor{.family = "Inter"},
+      16.0F);
+  const cgpui::TextWrapLayout layout =
+      cgpui::wrap_text_measurement(measurement, 20.0F);
+
+  if (layout.lines.size() != 3 || layout.logical_size.width != 16.0F ||
+      layout.logical_size.height != 48.0F ||
+      layout.device_size.width != 16.0F ||
+      layout.device_size.height != 48.0F) {
+    return 64;
+  }
+
+  const cgpui::TextWrapLine& first = layout.lines[0];
+  const cgpui::TextWrapLine& second = layout.lines[1];
+  const cgpui::TextWrapLine& third = layout.lines[2];
+  if (first.byte_start != 0 || first.byte_end != 2 ||
+      first.glyph_start != 0 || first.glyph_end != 2 ||
+      first.origin.x != 0.0F || first.origin.y != 0.0F ||
+      first.size.width != 16.0F || first.size.height != 16.0F) {
+    return 65;
+  }
+  if (second.byte_start != 2 || second.byte_end != 4 ||
+      second.glyph_start != 2 || second.glyph_end != 4 ||
+      second.origin.x != 0.0F || second.origin.y != 16.0F ||
+      second.size.width != 16.0F || second.size.height != 16.0F) {
+    return 66;
+  }
+  if (third.byte_start != 4 || third.byte_end != 5 ||
+      third.glyph_start != 4 || third.glyph_end != 5 ||
+      third.origin.x != 0.0F || third.origin.y != 32.0F ||
+      third.size.width != 8.0F || third.size.height != 16.0F) {
+    return 67;
+  }
+
+  const cgpui::TextWrapLayout unwrapped =
+      cgpui::wrap_text_measurement(measurement, 128.0F);
+  return unwrapped.lines.size() == 1 &&
+                 unwrapped.logical_size.width == 40.0F &&
+                 unwrapped.logical_size.height == 16.0F
+             ? 0
+             : 68;
 }
 
 int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
@@ -925,6 +971,11 @@ int main() {
   }
   if (const int result =
           test_text_hit_geometry_maps_points_to_offsets_and_selection();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_soft_wrap_records_split_measured_glyphs_by_width();
       result != 0) {
     return result;
   }

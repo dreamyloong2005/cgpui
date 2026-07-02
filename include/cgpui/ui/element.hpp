@@ -789,12 +789,11 @@ class TextElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const TextShapeRun run =
-        shape_text(text(), font(), font_size(), input.scale);
-    const Size preferred{
-        .width = run.total_advance,
-        .height = run.line_height,
-    };
+    const TextMeasurement measurement =
+        measure_text(text(), font(), font_size(), input.scale);
+    const TextWrapLayout wrap_layout =
+        wrap_text_measurement(measurement, input.constraints.max_size.width);
+    const Size preferred = wrap_layout.logical_size;
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),
     };
@@ -889,12 +888,11 @@ class LabelElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const TextShapeRun run =
-        shape_text(text_, font(), font_size(), input.scale);
-    const Size preferred{
-        .width = run.total_advance,
-        .height = run.line_height,
-    };
+    const TextMeasurement measurement =
+        measure_text(text_, font(), font_size(), input.scale);
+    const TextWrapLayout wrap_layout =
+        wrap_text_measurement(measurement, input.constraints.max_size.width);
+    const Size preferred = wrap_layout.logical_size;
     const LayoutOutput output{
         .size = constrain_size(preferred, input.constraints),
     };

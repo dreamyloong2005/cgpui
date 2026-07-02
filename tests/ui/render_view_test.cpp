@@ -146,6 +146,19 @@ class TextOnlyView final : public cgpui::View {
   }
 };
 
+class WrappedTextView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.fill_text(
+        cgpui::Rect{.origin = {2.0F, 4.0F},
+                    .size = {.width = 16.0F, .height = 16.0F}},
+        cgpui::Color{.r = 0.9F, .g = 0.8F, .b = 0.7F, .a = 1.0F},
+        "abcde",
+        cgpui::FontDescriptor{},
+        16.0F);
+  }
+};
+
 class RoundedBoxView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
@@ -322,6 +335,44 @@ int main() {
       "0 text bounds=(2.0,4.0 24.0x16.0) color=0.800,0.900,1.000,1.000 content=\"abc\" font=<default> size=16.0 device_size=16.0 glyphs=3 clip=none opacity=0.500 transform=[1.0,0.0,0.0,1.0,3.0,4.0]\n";
   if (snapshot != expected) {
     return 10;
+  }
+
+  RecordingFrame wrapped_frame;
+  RecordingRenderer wrapped_renderer(wrapped_frame);
+  WrappedTextView wrapped_view;
+  const auto wrapped_result = cgpui::render_view(
+      wrapped_renderer,
+      wrapped_view,
+      cgpui::Size{64.0F, 64.0F});
+  if (!wrapped_result) {
+    return 28;
+  }
+  if (wrapped_frame.text_draw_count != 1 ||
+      wrapped_frame.last_text.bounds.origin.x != 2.0F ||
+      wrapped_frame.last_text.bounds.origin.y != 4.0F ||
+      wrapped_frame.last_text.bounds.size.width != 16.0F ||
+      wrapped_frame.last_text.bounds.size.height != 48.0F ||
+      wrapped_frame.last_text.lines.size() != 3 ||
+      wrapped_frame.last_text.glyphs.size() != 5) {
+    return 29;
+  }
+  if (wrapped_frame.last_text.lines[0].byte_start != 0 ||
+      wrapped_frame.last_text.lines[0].byte_end != 2 ||
+      wrapped_frame.last_text.lines[1].byte_start != 2 ||
+      wrapped_frame.last_text.lines[1].byte_end != 4 ||
+      wrapped_frame.last_text.lines[2].byte_start != 4 ||
+      wrapped_frame.last_text.lines[2].byte_end != 5) {
+    return 30;
+  }
+  if (wrapped_frame.last_text.glyphs[0].origin.x != 2.0F ||
+      wrapped_frame.last_text.glyphs[0].origin.y != 4.0F ||
+      wrapped_frame.last_text.glyphs[1].origin.x != 10.0F ||
+      wrapped_frame.last_text.glyphs[1].origin.y != 4.0F ||
+      wrapped_frame.last_text.glyphs[2].origin.x != 2.0F ||
+      wrapped_frame.last_text.glyphs[2].origin.y != 20.0F ||
+      wrapped_frame.last_text.glyphs[4].origin.x != 2.0F ||
+      wrapped_frame.last_text.glyphs[4].origin.y != 36.0F) {
+    return 31;
   }
 
   RecordingFrame rounded_frame;

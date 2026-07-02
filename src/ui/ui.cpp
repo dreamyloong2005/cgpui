@@ -468,11 +468,16 @@ void PaintList::fill_text(
             .measurement
       : measure_text(text, font, font_size, scale_);
   const TextShapeRun& shape_run = measurement.shape_run;
+  const TextWrapLayout wrap_layout =
+      wrap_text_measurement(measurement, bounds.size.width);
+  Rect text_bounds = bounds;
+  text_bounds.size.height =
+      std::max(text_bounds.size.height, wrap_layout.logical_size.height);
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::text,
       .text =
           TextPaint{
-              .bounds = bounds,
+              .bounds = text_bounds,
               .color = color,
               .font = shape_run.font,
               .content = std::string(text),
@@ -480,7 +485,11 @@ void PaintList::fill_text(
               .font_size = font_size,
               .scale = scale_,
               .device_font_size = shape_run.device_font_size,
-              .glyphs = text_glyph_paint_metadata(shape_run, bounds.origin),
+              .glyphs = text_glyph_paint_metadata(
+                  shape_run,
+                  wrap_layout.lines,
+                  bounds.origin),
+              .lines = wrap_layout.lines,
           },
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),
@@ -803,6 +812,7 @@ Result<void> render_view(
           .scale = text.scale,
           .device_font_size = text.device_font_size,
           .glyphs = text.glyphs,
+          .lines = text.lines,
           .clip_rect = command.clip_rect,
           .clip_stack = command.clip_stack,
           .composition_stack = command.composition_stack,

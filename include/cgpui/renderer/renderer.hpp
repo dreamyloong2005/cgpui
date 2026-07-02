@@ -179,6 +179,7 @@ struct TextDraw {
   DpiScale scale;
   float device_font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
+  std::vector<TextWrapLine> lines;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
   RendererCompositionStackRecord composition_stack;

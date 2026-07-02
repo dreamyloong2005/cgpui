@@ -71,6 +71,7 @@ struct TextPaint {
   DpiScale scale;
   float device_font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
+  std::vector<TextWrapLine> lines;
 };
 
 struct TextSelectionPaint {
