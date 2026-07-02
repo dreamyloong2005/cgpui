@@ -287,6 +287,72 @@ int test_glyph_upload_records_build_atlas_image_batches() {
              : 35;
 }
 
+int test_glyph_atlas_texture_resources_track_create_reuse_and_drop() {
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F);
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(run);
+
+  cgpui::GlyphCache cache;
+  (void)cache.allocate(cgpui::rasterize_fallback_glyph(glyphs[0]));
+  (void)cache.allocate(cgpui::rasterize_fallback_glyph(glyphs[1]));
+
+  const std::vector<cgpui::GlyphAtlasUploadBatch> batches =
+      cgpui::vulkan_plan_glyph_atlas_uploads(
+          cache.upload_records(),
+          cache.atlas_pages());
+
+  cgpui::GlyphAtlasTextureResourceState texture_resources;
+  const cgpui::GlyphAtlasTextureResourcePlan first_plan =
+      cgpui::vulkan_update_glyph_atlas_texture_resources(
+          texture_resources,
+          batches);
+  if (first_plan.created_count != 1 || first_plan.reused_count != 0 ||
+      first_plan.dropped_count != 0 ||
+      first_plan.live_resources.size() != 1 ||
+      texture_resources.live_resources().size() != 1) {
+    return 36;
+  }
+
+  const cgpui::GlyphAtlasTextureResourceRecord& created =
+      first_plan.live_resources[0];
+  if (created.page_index != 0 ||
+      created.status != cgpui::GlyphAtlasTextureResourceStatus::created ||
+      created.image.size.width != 256.0F ||
+      created.image.upload_count != 2 ||
+      created.generation != 1) {
+    return 37;
+  }
+
+  const cgpui::GlyphAtlasTextureResourcePlan second_plan =
+      cgpui::vulkan_update_glyph_atlas_texture_resources(
+          texture_resources,
+          batches);
+  if (second_plan.created_count != 0 || second_plan.reused_count != 1 ||
+      second_plan.dropped_count != 0 ||
+      second_plan.live_resources.size() != 1 ||
+      second_plan.live_resources[0].status !=
+          cgpui::GlyphAtlasTextureResourceStatus::reused ||
+      second_plan.live_resources[0].generation != 1) {
+    return 38;
+  }
+
+  const std::vector<cgpui::GlyphAtlasUploadBatch> empty_batches;
+  const cgpui::GlyphAtlasTextureResourcePlan third_plan =
+      cgpui::vulkan_update_glyph_atlas_texture_resources(
+          texture_resources,
+          empty_batches);
+  return third_plan.created_count == 0 && third_plan.reused_count == 0 &&
+                 third_plan.dropped_count == 1 &&
+                 third_plan.dropped_resources.size() == 1 &&
+                 third_plan.dropped_resources[0].page_index == 0 &&
+                 third_plan.dropped_resources[0].status ==
+                     cgpui::GlyphAtlasTextureResourceStatus::dropped &&
+                 texture_resources.live_resources().empty()
+             ? 0
+             : 39;
+}
+
 int test_text_draw_uses_glyph_cache_metadata() {
   cgpui::GlyphCache cache;
   cgpui::TextDraw text{
@@ -624,6 +690,11 @@ int main() {
   }
   if (const int result =
           test_glyph_upload_records_build_atlas_image_batches();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_glyph_atlas_texture_resources_track_create_reuse_and_drop();
       result != 0) {
     return result;
   }

@@ -1405,6 +1405,56 @@ std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
   return batches;
 }
 
+GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
+    GlyphAtlasTextureResourceState& state,
+    std::span<const GlyphAtlasUploadBatch> upload_batches) {
+  GlyphAtlasTextureResourcePlan plan;
+  std::vector<GlyphAtlasTextureResourceRecord> next_resources;
+  next_resources.reserve(upload_batches.size());
+
+  for (const GlyphAtlasUploadBatch& batch : upload_batches) {
+    auto existing = std::ranges::find_if(
+        state.resources_,
+        [&](const GlyphAtlasTextureResourceRecord& resource) {
+          return resource.page_index == batch.image.page_index;
+        });
+
+    GlyphAtlasTextureResourceRecord resource{
+        .page_index = batch.image.page_index,
+        .image = batch.image,
+    };
+    resource.image.upload_count = batch.uploads.size();
+
+    if (existing == state.resources_.end()) {
+      resource.status = GlyphAtlasTextureResourceStatus::created;
+      resource.generation = state.next_generation_++;
+      ++plan.created_count;
+    } else {
+      resource.status = GlyphAtlasTextureResourceStatus::reused;
+      resource.generation = existing->generation;
+      ++plan.reused_count;
+    }
+
+    plan.live_resources.push_back(resource);
+    next_resources.push_back(resource);
+  }
+
+  for (GlyphAtlasTextureResourceRecord resource : state.resources_) {
+    const bool still_live =
+        std::ranges::any_of(upload_batches, [&](const auto& batch) {
+          return batch.image.page_index == resource.page_index;
+        });
+    if (!still_live) {
+      resource.status = GlyphAtlasTextureResourceStatus::dropped;
+      plan.dropped_resources.push_back(resource);
+      ++plan.dropped_count;
+    }
+  }
+
+  state.resources_ = std::move(next_resources);
+  return plan;
+}
+
 std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     const TextDraw& text,
     GlyphCache& glyph_cache) {

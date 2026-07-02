@@ -94,6 +94,17 @@ int main() {
       .uploads = {upload_region},
       .alpha = upload_records[0].alpha,
   };
+  const cgpui::GlyphAtlasTextureResourceRecord texture_resource{
+      .page_index = atlas_image.page_index,
+      .image = atlas_image,
+      .status = cgpui::GlyphAtlasTextureResourceStatus::created,
+      .generation = 1,
+  };
+  const cgpui::GlyphAtlasTextureResourcePlan texture_plan{
+      .live_resources = {texture_resource},
+      .created_count = 1,
+  };
+  cgpui::GlyphAtlasTextureResourceState texture_state;
   glyph_cache.store(cgpui::GlyphAtlasEntry{
       .key = glyph_key,
       .atlas_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
@@ -192,6 +203,9 @@ int main() {
                  upload_records.size() == 1 &&
                  upload_region.byte_size == upload_records[0].alpha.size() &&
                  upload_batch.uploads.size() == 1 &&
+                 texture_resource.generation == 1 &&
+                 texture_plan.created_count == 1 &&
+                 texture_state.live_resources().empty() &&
                  atlas_pages.size() == 1 &&
                  textured_quad.page_index == 0 &&
                  textured_quad.atlas_uv_bounds.size.width > 0.0F &&

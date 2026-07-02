@@ -220,6 +220,45 @@ struct GlyphAtlasUploadBatch {
   std::vector<std::uint8_t> alpha;
 };
 
+enum class GlyphAtlasTextureResourceStatus {
+  created,
+  reused,
+  dropped,
+};
+
+struct GlyphAtlasTextureResourceRecord {
+  std::size_t page_index = 0;
+  GlyphAtlasImageDescriptor image;
+  GlyphAtlasTextureResourceStatus status =
+      GlyphAtlasTextureResourceStatus::created;
+  std::size_t generation = 0;
+};
+
+struct GlyphAtlasTextureResourcePlan {
+  std::vector<GlyphAtlasTextureResourceRecord> live_resources;
+  std::vector<GlyphAtlasTextureResourceRecord> dropped_resources;
+  std::size_t created_count = 0;
+  std::size_t reused_count = 0;
+  std::size_t dropped_count = 0;
+};
+
+class GlyphAtlasTextureResourceState {
+ public:
+  [[nodiscard]] std::span<const GlyphAtlasTextureResourceRecord>
+  live_resources() const {
+    return resources_;
+  }
+
+ private:
+  friend GlyphAtlasTextureResourcePlan
+  vulkan_update_glyph_atlas_texture_resources(
+      GlyphAtlasTextureResourceState& state,
+      std::span<const GlyphAtlasUploadBatch> upload_batches);
+
+  std::vector<GlyphAtlasTextureResourceRecord> resources_;
+  std::size_t next_generation_ = 1;
+};
+
 struct GlyphAtlasPage {
   std::size_t page_index = 0;
   Size size{.width = 256.0F, .height = 256.0F};
@@ -422,6 +461,9 @@ void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
 std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
     std::span<const GlyphUploadRecord> upload_records,
     std::span<const GlyphAtlasPage> atlas_pages);
+GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
+    GlyphAtlasTextureResourceState& state,
+    std::span<const GlyphAtlasUploadBatch> upload_batches);
 std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     const TextDraw& text,
     GlyphCache& glyph_cache);
