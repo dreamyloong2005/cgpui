@@ -32,11 +32,15 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
 
-- [ ] Add RED coverage for renderer-facing glyph atlas image descriptors and upload batches derived from `GlyphUploadRecord`.
-- [ ] Expected RED: missing `GlyphAtlasImageDescriptor`, `GlyphAtlasUploadBatch`, and Vulkan atlas image planning APIs.
-- [ ] GREEN: add deterministic image descriptors and upload batches without creating real Vulkan image objects yet.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-image-plan -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+- [x] Add RED coverage for renderer-facing glyph atlas image descriptors and upload batches derived from `GlyphUploadRecord`.
+- [x] Expected RED: missing `GlyphAtlasImageDescriptor`, `GlyphAtlasUploadBatch`, and Vulkan atlas image planning APIs.
+- [x] GREEN: add deterministic image descriptors and upload batches without creating real Vulkan image objects yet.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`.
+- [x] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-image-plan -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+
+**Merged:** `ec1c6b5 feat: add glyph atlas image upload plan`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 1/1,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 180: Vulkan Glyph Atlas Texture Resource Skeleton
 

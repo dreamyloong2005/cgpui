@@ -5729,3 +5729,46 @@
 - Extended `task_plan.md` with the 218-step definition of done, roadmap link,
   and unchecked Step 179-218 queue. Step 179, Vulkan glyph atlas image
   descriptors and upload-batch planning, is the next implementation slice.
+
+## 2026-07-02 Step 179 Vulkan Glyph Atlas Image Upload Plan
+
+- Continued `.worktrees/vulkan-glyph-atlas-image-plan` on
+  `codex/vulkan-glyph-atlas-image-plan` from `master` at
+  `816e5d5 docs: plan steps 179-218`.
+- RED coverage was already present from the interrupted session: the updated
+  renderer test required `GlyphAtlasImageFormat`,
+  `GlyphAtlasImageDescriptor`, `GlyphAtlasUploadRegion`,
+  `GlyphAtlasUploadBatch`, and `vulkan_plan_glyph_atlas_uploads(...)`.
+- GREEN adds public renderer-facing atlas image/upload-batch records and a
+  Vulkan planning helper that groups glyph upload records by page, preserves
+  page image size, concatenates alpha upload bytes, and records per-region
+  byte offsets/sizes without creating real Vulkan image objects yet.
+- Re-verified feature-worktree Windows targeted tests before commit:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Re-verified feature-worktree WSL targeted test:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-image-plan -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Committed Step 179 as
+  `ec1c6b5 feat: add glyph atlas image upload plan` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default core_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted test:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 179 is marked merged and post-merge verified. Step
+  180, Vulkan glyph atlas texture resource lifetime skeleton, is the next
+  implementation slice after docs closeout and cleanup.

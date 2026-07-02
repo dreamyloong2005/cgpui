@@ -3179,3 +3179,17 @@
 - The 179-218 plan intentionally keeps real Vulkan image allocation, production
   UIA/AT-SPI providers, full child-window event loops, and macOS/Cocoa + Metal
   outside Step 179 so the next RED/GREEN slice stays small and verifiable.
+
+## 2026-07-02 Vulkan Glyph Atlas Image Upload Planning
+
+- Step 179 adds renderer-facing glyph atlas image descriptors and upload
+  batches as the bridge between CPU-side `GlyphUploadRecord`s and later Vulkan
+  texture resources.
+- `vulkan_plan_glyph_atlas_uploads(...)` groups upload records by atlas page,
+  keeps deterministic page image metadata, appends alpha payload bytes into a
+  per-page upload buffer, and records each upload region's byte offset and
+  size.
+- This remains a planning slice: it does not allocate Vulkan images, create
+  image views, bind device memory, issue transfer commands, or sample atlas
+  textures. Step 180 should add texture resource lifetime records on top of
+  these batches.
