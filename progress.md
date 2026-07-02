@@ -6523,3 +6523,61 @@
   this progress log so Step 193 is marked merged and post-merge verified. Step
   194, IME delete-surrounding text action, is the next implementation slice
   after docs closeout and cleanup.
+
+## 2026-07-03 Step 194 IME Delete-Surrounding Text Action
+
+- Continued the active Steps 179-218 production-depth goal with Step 194 in
+  `.worktrees/ime-delete-surrounding-text` on
+  `codex/ime-delete-surrounding-text` from `master` at
+  `ea8df5d docs: mark step 193 merged`.
+- Baseline targeted tests before RED passed on Windows:
+  `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4, and on WSL Arch Linux:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/ime-delete-surrounding-text -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default wayland_keyboard_test/default'`
+  passed 5/5.
+- RED coverage added focused runtime routing for
+  `ImeDeleteSurroundingText`, text-model UTF-8 boundary deletion/undo coverage,
+  core header construction coverage, and Wayland text-input v3 compositor
+  coverage. RED failed as expected on missing
+  `TextModel::delete_surrounding_text(...)` after the UTF-8 escape fixture was
+  corrected for MSVC greedy `\x` parsing.
+- GREEN adds the public `ImeDeleteSurroundingText` event, the
+  `ime_delete_surrounding_text` route kind, runtime focused-text-model
+  mutation, `TextModel::delete_surrounding_text(...)` with byte-length
+  clamping to UTF-8 codepoint boundaries and undo history, Wayland pending
+  delete-surrounding handling, and test compositor dispatch for
+  `delete_surrounding_text` followed by `done`.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/ime-delete-surrounding-text -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default wayland_keyboard_test/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/ime-delete-surrounding-text -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 194 as
+  `98c2902 feat: route ime delete surrounding text` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default wayland_keyboard_test/default'`
+  passed 5/5.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- The first post-merge Windows full debug run saw
+  `clipboard_test/default` fail in the full-suite batch while the other 29
+  tests passed. A targeted rerun of
+  `xmake test -P . clipboard_test/default` passed 1/1, and the immediate full
+  Windows debug rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 194 is marked merged and post-merge verified. Step
+  195, multiline text model and line navigation, is the next implementation
+  slice after docs closeout and cleanup.

@@ -3404,3 +3404,26 @@
 - The history cap is currently a deterministic 100 undo records. This is a
   bounded model-level stack, not persistent document history, grouped typing,
   collaborative editing, or platform undo-manager integration.
+
+## 2026-07-03 IME Delete-Surrounding Text Action
+
+- Step 194 adds `ImeDeleteSurroundingText` as a platform event and
+  `EventKind::ime_delete_surrounding_text` as the public runtime route kind, so
+  IME delete-surrounding edits travel through the same keyboard-focused event
+  path as preedit and commit.
+- `TextModel::delete_surrounding_text(...)` interprets before/after lengths as
+  byte lengths around the current cursor and clamps deletion to UTF-8 codepoint
+  boundaries before recording the edit in the existing undo stack. This keeps
+  Wayland text-input v3 byte-oriented semantics deterministic without claiming
+  full grapheme-aware surrounding-text deletion yet.
+- Runtime application is intentionally focused-text-model scoped: the event is
+  still dispatched to the focused route, but model mutation only happens when
+  the keyboard focus has an element owner with a bound or installed text model.
+- The Wayland backend stores pending delete-surrounding protocol events until
+  `done`, then emits them between pending preedit and commit events with the
+  current keyboard modifiers. The test compositor mirrors that protocol shape
+  by sending `delete_surrounding_text` followed by `done`.
+- This slice does not implement Win32 TSF delete-surrounding integration,
+  grapheme-length conversion, grouped IME history, or rich multiline
+  surrounding-text context. Step 195 should build multiline navigation on top
+  of the now-shared text mutation/history surface.

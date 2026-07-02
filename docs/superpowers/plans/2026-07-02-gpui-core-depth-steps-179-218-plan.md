@@ -349,11 +349,17 @@
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `tests/platform/wayland_keyboard_test.cpp`
 
-- [ ] Add RED coverage for IME delete-surrounding events mutating focused text models.
-- [ ] Expected RED: IME commit/preedit exists but delete-surrounding has no public event or routing.
-- [ ] GREEN: add event shape and runtime text-model application with deterministic byte-boundary clamping.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: include `wayland_keyboard_test/default`.
+- [x] Add RED coverage for IME delete-surrounding events mutating focused text models.
+- [x] Expected RED: IME commit/preedit exists but delete-surrounding has no public event or routing.
+- [x] GREEN: add event shape and runtime text-model application with deterministic byte-boundary clamping.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: include `wayland_keyboard_test/default`.
+
+**Merged:** `98c2902 feat: route ime delete surrounding text`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30 after
+isolating one transient `clipboard_test/default` batch failure with a passing
+targeted rerun and full-suite rerun.
 
 ## Step 195: Multiline Text Model And Line Navigation
 

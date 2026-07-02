@@ -714,7 +714,7 @@ follow-on goal is now complete on the Windows/Linux track.
 191. [x] Grapheme-aware cursor movement skeleton.
 192. [x] Word movement and selection actions.
 193. [x] Text undo and redo stack.
-194. [ ] IME delete-surrounding text action.
+194. [x] IME delete-surrounding text action.
 195. [ ] Multiline text model and line navigation.
 196. [ ] Text measurement cache.
 197. [ ] Text pointer selection geometry.
@@ -745,10 +745,10 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 193, text undo and redo stack, is merged on `master` at
-`5406e9a feat: add text undo redo stack` and post-merge verified on Windows
-and WSL Arch Linux. Step 194, IME delete-surrounding text action, is the next
-implementation slice. The track remains Windows/Linux first;
+Step 194, IME delete-surrounding text action, is merged on `master` at
+`98c2902 feat: route ime delete surrounding text` and post-merge verified on
+Windows and WSL Arch Linux. Step 195, multiline text model and line navigation,
+is the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
 
 Step 191, grapheme-aware cursor movement skeleton, is merged on `master` at
@@ -795,8 +795,25 @@ Linux, `git diff --check` reported only expected CRLF warnings, WSL full debug
 passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
 passed 2/2 on Windows and WSL Arch Linux, `git diff --check` produced no
 output, WSL full debug passed 27/27, and Windows full debug passed 30/30.
-Step 194, IME delete-surrounding text action, is the next implementation
+Step 194, IME delete-surrounding text action, was the next implementation
 slice.
+
+Step 194, IME delete-surrounding text action, is merged on `master` at
+`98c2902 feat: route ime delete surrounding text`. RED failed as expected on
+missing delete-surrounding public event, runtime routing, and text-model edit
+API. GREEN adds `ImeDeleteSurroundingText`, maps it to
+`EventKind::ime_delete_surrounding_text`, routes it to the focused text model,
+adds `TextModel::delete_surrounding_text(...)` with UTF-8 boundary clamping and
+undo history, and wires Wayland text-input v3 `delete_surrounding_text` through
+the Linux backend and test compositor. Feature-worktree targeted tests passed
+4/4 on Windows and 5/5 on WSL Arch Linux, `git diff --check` reported only
+expected CRLF warnings, WSL full debug passed 27/27, and Windows full debug
+passed 30/30. Post-merge targeted tests passed 4/4 on Windows and 5/5 on WSL
+Arch Linux, `git diff --check` produced no output, WSL full debug passed
+27/27, and Windows full debug passed 30/30 after isolating a transient
+`clipboard_test/default` batch failure with a passing targeted rerun and a
+passing full-suite rerun. Step 195, multiline text model and line navigation,
+is the next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
