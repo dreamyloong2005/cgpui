@@ -380,6 +380,10 @@ enum class TextEditAction {
   move_next,
   extend_previous,
   extend_next,
+  move_previous_word,
+  move_next_word,
+  extend_previous_word,
+  extend_next_word,
   backspace,
   delete_forward,
 };
@@ -488,6 +492,32 @@ class TextModel {
     return true;
   }
 
+  [[nodiscard]] bool move_cursor_previous_word() {
+    if (cursor_ == 0) {
+      return false;
+    }
+    const std::size_t previous = previous_word_boundary(cursor_);
+    if (previous == cursor_) {
+      return false;
+    }
+    cursor_ = previous;
+    collapse_selection_to_cursor();
+    return true;
+  }
+
+  [[nodiscard]] bool move_cursor_next_word() {
+    if (cursor_ >= text_.size()) {
+      return false;
+    }
+    const std::size_t next = next_word_boundary(cursor_);
+    if (next == cursor_) {
+      return false;
+    }
+    cursor_ = next;
+    collapse_selection_to_cursor();
+    return true;
+  }
+
   [[nodiscard]] bool backspace() {
     if (erase_selection_if_needed()) {
       return true;
@@ -525,6 +555,14 @@ class TextModel {
         return extend_selection_previous();
       case TextEditAction::extend_next:
         return extend_selection_next();
+      case TextEditAction::move_previous_word:
+        return move_cursor_previous_word();
+      case TextEditAction::move_next_word:
+        return move_cursor_next_word();
+      case TextEditAction::extend_previous_word:
+        return extend_selection_previous_word();
+      case TextEditAction::extend_next_word:
+        return extend_selection_next_word();
       case TextEditAction::backspace:
         return backspace();
       case TextEditAction::delete_forward:
@@ -579,6 +617,38 @@ class TextModel {
       return false;
     }
     cursor_ = next_grapheme_boundary(cursor_);
+    selection_head_ = cursor_;
+    return true;
+  }
+
+  [[nodiscard]] bool extend_selection_previous_word() {
+    if (selection().collapsed) {
+      selection_anchor_ = cursor_;
+    }
+    if (cursor_ == 0) {
+      return false;
+    }
+    const std::size_t previous = previous_word_boundary(cursor_);
+    if (previous == cursor_) {
+      return false;
+    }
+    cursor_ = previous;
+    selection_head_ = cursor_;
+    return true;
+  }
+
+  [[nodiscard]] bool extend_selection_next_word() {
+    if (selection().collapsed) {
+      selection_anchor_ = cursor_;
+    }
+    if (cursor_ >= text_.size()) {
+      return false;
+    }
+    const std::size_t next = next_word_boundary(cursor_);
+    if (next == cursor_) {
+      return false;
+    }
+    cursor_ = next;
     selection_head_ = cursor_;
     return true;
   }
@@ -676,6 +746,20 @@ class TextModel {
     return value == 0x200DU;
   }
 
+  [[nodiscard]] static bool is_unicode_space(std::uint32_t value) {
+    return (value >= 0x0009U && value <= 0x000DU) || value == 0x0020U ||
+        value == 0x0085U || value == 0x00A0U || value == 0x1680U ||
+        (value >= 0x2000U && value <= 0x200AU) || value == 0x2028U ||
+        value == 0x2029U || value == 0x202FU || value == 0x205FU ||
+        value == 0x3000U;
+  }
+
+  [[nodiscard]] bool grapheme_at_is_word_separator(
+      std::size_t offset) const {
+    return offset >= text_.size() ||
+        is_unicode_space(codepoint_at(offset).value);
+  }
+
   [[nodiscard]] std::size_t next_grapheme_boundary(std::size_t offset) const {
     const DecodedCodepoint first = codepoint_at(offset);
     if (first.next <= offset || first.next > text_.size()) {
@@ -725,6 +809,36 @@ class TextModel {
       }
     }
     return previous;
+  }
+
+  [[nodiscard]] std::size_t previous_word_boundary(std::size_t offset) const {
+    std::size_t boundary = clamp_offset(offset);
+    while (boundary > 0) {
+      const std::size_t previous = previous_grapheme_boundary(boundary);
+      if (!grapheme_at_is_word_separator(previous)) {
+        break;
+      }
+      boundary = previous;
+    }
+    while (boundary > 0) {
+      const std::size_t previous = previous_grapheme_boundary(boundary);
+      if (grapheme_at_is_word_separator(previous)) {
+        break;
+      }
+      boundary = previous;
+    }
+    return boundary;
+  }
+
+  [[nodiscard]] std::size_t next_word_boundary(std::size_t offset) const {
+    std::size_t boundary = clamp_offset(offset);
+    while (boundary < text_.size() && grapheme_at_is_word_separator(boundary)) {
+      boundary = next_grapheme_boundary(boundary);
+    }
+    while (boundary < text_.size() && !grapheme_at_is_word_separator(boundary)) {
+      boundary = next_grapheme_boundary(boundary);
+    }
+    return boundary;
   }
 
   std::string text_;

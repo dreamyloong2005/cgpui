@@ -225,6 +225,90 @@ int test_text_model_applies_key_edit_actions() {
   return 0;
 }
 
+int test_text_model_applies_word_edit_actions() {
+  cgpui::TextModel model("alpha  beta\tgamma");
+  const std::size_t alpha_start = 0;
+  const std::size_t beta_start = std::string_view{"alpha  "}.size();
+  const std::size_t beta_end = std::string_view{"alpha  beta"}.size();
+  const std::size_t gamma_start = std::string_view{"alpha  beta\t"}.size();
+
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_word) ||
+      model.cursor() != gamma_start || !model.selection().collapsed) {
+    return 99;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_word) ||
+      model.cursor() != beta_start || !model.selection().collapsed) {
+    return 100;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_next_word) ||
+      model.cursor() != beta_end || !model.selection().collapsed) {
+    return 101;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_next_word) ||
+      model.cursor() != model.text().size() || !model.selection().collapsed) {
+    return 102;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_word) ||
+      model.cursor() != gamma_start) {
+    return 103;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_word) ||
+      model.cursor() != beta_start) {
+    return 104;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_word) ||
+      model.cursor() != alpha_start) {
+    return 105;
+  }
+
+  cgpui::TextModel forward_selection("one two");
+  forward_selection.set_selection(0, 0);
+  if (!forward_selection.apply_edit_action(
+          cgpui::TextEditAction::extend_next_word) ||
+      forward_selection.selection_anchor() != 0 ||
+      forward_selection.selection_head() != std::string_view{"one"}.size() ||
+      forward_selection.selected_text() != std::string_view{"one"}) {
+    return 106;
+  }
+  if (!forward_selection.apply_edit_action(
+          cgpui::TextEditAction::extend_next_word) ||
+      forward_selection.selection_anchor() != 0 ||
+      forward_selection.selection_head() != forward_selection.text().size() ||
+      forward_selection.selected_text() != std::string_view{"one two"}) {
+    return 107;
+  }
+
+  cgpui::TextModel backward_selection("one two");
+  if (!backward_selection.apply_edit_action(
+          cgpui::TextEditAction::extend_previous_word) ||
+      backward_selection.selection_anchor() != backward_selection.text().size() ||
+      backward_selection.selection_head() != std::string_view{"one "}.size() ||
+      backward_selection.selected_text() != std::string_view{"two"}) {
+    return 108;
+  }
+  if (!backward_selection.apply_edit_action(
+          cgpui::TextEditAction::extend_previous_word) ||
+      backward_selection.selection_anchor() != backward_selection.text().size() ||
+      backward_selection.selection_head() != 0 ||
+      backward_selection.selected_text() != std::string_view{"one two"}) {
+    return 109;
+  }
+
+  cgpui::TextModel unicode_space("wide\xE3\x80\x80gap");
+  if (!unicode_space.apply_edit_action(
+          cgpui::TextEditAction::move_previous_word) ||
+      unicode_space.cursor() != std::string_view{"wide\xE3\x80\x80"}.size()) {
+    return 110;
+  }
+  if (!unicode_space.apply_edit_action(
+          cgpui::TextEditAction::move_previous_word) ||
+      unicode_space.cursor() != 0) {
+    return 111;
+  }
+
+  return 0;
+}
+
 int test_text_model_tracks_ime_composition() {
   cgpui::TextModel model("ab");
 
@@ -495,6 +579,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_applies_key_edit_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_applies_word_edit_actions();
       result != 0) {
     return result;
   }
