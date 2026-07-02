@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Windows UIA Accessibility Adapter Skeleton
+
+- Step 176 expands the platform accessibility update from a summary-only root
+  id/node count into node records derived from `AccessibilityTreeSnapshot`.
+  Each platform node carries element id, optional parent id, role, name, text,
+  enabled/focusable/focused state, optional layout bounds, and child count.
+- `WindowRuntime::handle_redraw()` now forwards the current accessibility
+  snapshot to `PlatformWindow::update_accessibility_tree(...)` after layout,
+  keeping platform adapters fed by the same tree used by public
+  `accessibility_snapshot()` queries.
+- The Win32 backend now has a `Win32UiaAccessibilityAdapter` skeleton that
+  consumes the platform update and tracks root, total-node, focused-node, and
+  text-input-node counts. This intentionally does not create COM objects,
+  expose `IRawElementProvider*`, or claim production UI Automation parity yet.
+- Step 177 should mirror this boundary on Linux with an AT-SPI adapter
+  skeleton consuming the same platform update rather than adding
+  Linux-specific public accessibility semantics.
+
 ## 2026-07-02 Glyph Bitmap And Fallback Rasterizer
 
 - Step 169 adds CPU-side fallback raster data in `include/cgpui/ui/text.hpp`,

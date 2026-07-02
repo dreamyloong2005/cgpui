@@ -71,8 +71,11 @@ desktop integration surfaces remain separate future work.
   upload records, textured glyph quad records, and deterministic text render
   report counters, but real Vulkan atlas texture objects, GPU uploads, shader
   sampling, subpixel positioning, and font fallback shaping are not complete.
-- Accessibility is a platform-neutral tree snapshot. Native Windows UIA and
-  Linux AT-SPI adapters are not implemented.
+- Accessibility has a platform-neutral tree snapshot and platform update
+  payload. Windows now has a UIA adapter skeleton that consumes snapshot node
+  summaries and tracks root, node, focused-node, and text-input counts, but a
+  production UI Automation COM provider is not implemented. Linux AT-SPI is
+  still not implemented.
 - Wayland clipboard is partially protocol-backed. It can connect to a Wayland
   display, bind data-device state, track selection MIME offers, prefer
   `text/plain;charset=utf-8` over `text/plain`, and read text payload bytes
@@ -155,8 +158,9 @@ area expansion. Recommended order:
    text-input from deterministic protocol slices to production desktop
    handling, including clipboard write/ownership, drag action negotiation, and
    richer text-input editing semantics.
-3. Add native accessibility adapters for Windows UIA and Linux AT-SPI using the
-   existing accessibility snapshot as the source of truth.
+3. Add the Linux AT-SPI adapter skeleton, then deepen Windows UIA and Linux
+   AT-SPI into production accessibility bridges using the existing
+   accessibility snapshot as the source of truth.
 4. Turn multi-window runtime records into native additional windows with owned
    event-loop and renderer lifetimes.
 5. Start a separate macOS/Cocoa + Metal parity track only after the

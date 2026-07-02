@@ -177,11 +177,30 @@
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for a Win32 accessibility adapter update record consuming `AccessibilityTreeSnapshot`.
-- [ ] Expected RED: platform only exposes the neutral no-op update hook.
-- [ ] GREEN: add a Win32 UIA adapter skeleton with stable node id/name/role/focus counts and a source-level guard that keeps COM/UIA details behind Win32 code.
-- [ ] Targeted command: `xmake test -P . win32_window_source_test/default window_runtime_test/default platform_header_cleanliness/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL available-target command: platform-neutral/header coverage only.
+- [x] Add RED coverage for a Win32 accessibility adapter update record consuming `AccessibilityTreeSnapshot`.
+- [x] Expected RED observed: Windows targeted build failed on missing
+  `PlatformAccessibilityNodeUpdate`, `PlatformAccessibilityRole`,
+  `PlatformAccessibilityTreeUpdate::nodes`, and
+  `PlatformAccessibilityTreeUpdate::focused_node_count`.
+- [x] GREEN: added platform-neutral accessibility node update records, role
+  mapping from `AccessibilityTreeSnapshot`, runtime forwarding to
+  `PlatformWindow::update_accessibility_tree(...)`, and a Win32
+  `Win32UiaAccessibilityAdapter` skeleton that consumes the update while
+  keeping production UIA COM/provider details out of public headers.
+- [x] Feature-worktree Windows targeted command passed 4/4:
+  `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] Feature-worktree WSL targeted command passed 4/4:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-uia-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
+- [x] `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- [x] Feature-worktree full debug verification passed: WSL Arch Linux 27/27;
+  Windows 30/30.
+- [x] Merged to `master` as
+  `edd3513 feat: add win32 uia accessibility adapter skeleton`.
+- [x] Post-merge targeted verification passed: WSL Arch Linux 4/4; Windows 4/4.
+- [x] Post-merge `git diff --check` produced no output.
+- [x] Full post-merge verification passed: WSL Arch Linux full debug 27/27;
+  Windows full debug 30/30.
 
 ## Step 177: Linux AT-SPI Accessibility Adapter Skeleton
 
@@ -197,7 +216,7 @@
 - [ ] Add RED coverage for a Linux AT-SPI adapter update record consuming `AccessibilityTreeSnapshot`.
 - [ ] Expected RED: Wayland platform does not record AT-SPI-facing tree updates.
 - [ ] GREEN: add a Wayland/Linux AT-SPI adapter skeleton with stable node id/name/role/focus counts and source isolation from the public UI surface.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default platform_header_cleanliness/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/linux-atspi-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
 - [ ] Windows available-target command: platform-neutral/header coverage only.
 
 ## Step 178: Native Additional Window Creation Slice
@@ -217,7 +236,7 @@
 - [ ] Add RED coverage proving `AppContext::open_window(...)` can create an owned native platform window record beyond the root instead of only registering metadata.
 - [ ] Expected RED: multi-window registry has records but no native child-window creation bridge.
 - [ ] GREEN: add a platform-neutral additional-window creation request, Win32/Wayland skeleton native window creation path, per-window runtime record activation, and graceful unsupported behavior where a backend cannot create the window during tests.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default platform_header_cleanliness/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [ ] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
 - [ ] WSL targeted command: same target set under the Step 178 worktree through WSL.
 
 ## Post-Step-178 Checkpoint

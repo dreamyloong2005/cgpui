@@ -5552,3 +5552,53 @@
   is marked merged and post-merge verified. Step 176, Windows UIA
   accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 176 Windows UIA Accessibility Adapter Skeleton
+
+- Continued Step 176 in `.worktrees/win32-uia-accessibility-adapter` on
+  `codex/win32-uia-accessibility-adapter` from `master` at
+  `1642b23 docs: mark step 175 merged`.
+- RED coverage:
+  Windows targeted build failed as expected on missing
+  `PlatformAccessibilityNodeUpdate`, `PlatformAccessibilityRole`,
+  `PlatformAccessibilityTreeUpdate::nodes`, and
+  `PlatformAccessibilityTreeUpdate::focused_node_count`.
+- GREEN expands `PlatformAccessibilityTreeUpdate` with platform-neutral node
+  records derived from `AccessibilityTreeSnapshot`, adds runtime forwarding to
+  `PlatformWindow::update_accessibility_tree(...)`, and adds a Win32
+  `Win32UiaAccessibilityAdapter` skeleton that consumes root, node,
+  focused-node, and text-input-node summary state without implementing a
+  production UI Automation COM provider.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-uia-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-uia-accessibility-adapter -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Committed Step 176 as
+  `edd3513 feat: add win32 uia accessibility adapter skeleton` and
+  fast-forward merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan,
+  `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 176
+  is marked merged and post-merge verified. Step 177, Linux AT-SPI
+  accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`, is the
+  next implementation slice after docs closeout and cleanup.
