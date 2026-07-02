@@ -7018,3 +7018,55 @@
   this progress log so Step 202 is marked merged and post-merge verified. Step
   203, Win32 OLE drop target skeleton, is the next implementation slice after
   docs closeout and cleanup.
+
+## 2026-07-03 Step 203 Win32 OLE Drop Target Skeleton
+
+- Continued Step 203 in `.worktrees/win32-ole-drop-target` on
+  `codex/win32-ole-drop-target` from `master` at
+  `2414105 docs: mark step 202 merged`.
+- Added RED coverage in `tests/architecture/win32_window_source_test.cpp` for
+  Win32 OLE drop-target source markers, registration diagnostics,
+  `RegisterDragDrop`/`RevokeDragDrop`, `IDataObject` payload conversion, and
+  `DROPEFFECT_COPY`/`DROPEFFECT_MOVE` action mapping. Added RED coverage in
+  `tests/platform/win32_input_event_test.cpp` so the deterministic Win32
+  drag/drop hook carries copy/move drop effects and asserts public
+  `DragDropAction` metadata.
+- RED failed as expected: the Windows targeted run failed only
+  `win32_window_source_test/default` and `win32_input_event_test/default`; the
+  direct binaries returned 58 for missing OLE source markers and 12 for missing
+  drag-enter copy action metadata.
+- GREEN adds internal `Win32OleDropTarget`/`IDropTarget` plumbing, OLE
+  initialization, `RegisterDragDrop`/`RevokeDragDrop` registration diagnostics,
+  `CF_UNICODETEXT` and `CF_HDROP` payload conversion boundaries, `ole32`
+  linkage, and deterministic drop-effect-to-action mapping for Win32 drag
+  events.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . win32_input_event_test/default window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-ole-drop-target -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-ole-drop-target -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 203 as
+  `3f26a33 feat: add win32 ole drop target skeleton` and fast-forward merged
+  it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . win32_input_event_test/default window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 203 is marked merged and post-merge verified. Step
+  204, native menu and accelerator API skeleton, is the next implementation
+  slice after docs closeout and cleanup.

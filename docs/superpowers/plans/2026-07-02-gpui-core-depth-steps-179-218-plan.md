@@ -533,15 +533,20 @@ rerun and passing full-suite rerun.
 
 **Files:**
 - Modify: `src/platform/win32/win32_application.cpp`
+- Modify: `xmake.lua`
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/platform/win32_input_event_test.cpp`
-- Modify: `tests/ui/window_runtime_test.cpp`
+- Existing coverage: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for Win32 OLE drop target registration markers and public drag action metadata.
-- [ ] Expected RED: Win32 drag/drop remains deterministic event hooks without OLE registration state.
-- [ ] GREEN: add an internal OLE drop target skeleton with registration diagnostics and text/file payload conversion boundaries.
-- [ ] Targeted command: `xmake test -P . win32_input_event_test/default window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
-- [ ] WSL available-target command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-ole-drop-target -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
+- [x] Add RED coverage for Win32 OLE drop target registration markers and public drag action metadata.
+- [x] Expected RED: Win32 drag/drop remains deterministic event hooks without OLE registration state.
+- [x] GREEN: add an internal OLE drop target skeleton with registration diagnostics and text/file payload conversion boundaries.
+- [x] Targeted command: `xmake test -P . win32_input_event_test/default window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] WSL available-target command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-ole-drop-target -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
+
+**Merged:** `3f26a33 feat: add win32 ole drop target skeleton`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 204: Native Menu And Accelerator API Skeleton
 

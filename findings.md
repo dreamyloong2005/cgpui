@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Win32 OLE Drop Target Skeleton
+
+- Step 203 adds an internal `Win32OleDropTarget` implementing `IDropTarget`,
+  with `QueryInterface`/`AddRef`/`Release` and `DragEnter`/`DragOver`/
+  `DragLeave`/`Drop` methods that route into the existing platform drag events.
+- `Win32Application` now initializes OLE, `Win32Window` registers and revokes
+  the drop target with per-window `Win32OleDropTargetRegistrationState`
+  diagnostics, and the Win32 platform target links `ole32` alongside the
+  existing Win32 system libraries.
+- `drag_payload_from_ole_data_object(...)` creates the conversion boundary for
+  `CF_UNICODETEXT` and `CF_HDROP`, while `drag_action_from_drop_effect(...)`
+  maps `DROPEFFECT_COPY` and `DROPEFFECT_MOVE` into the public
+  `DragDropAction` metadata added in Step 200.
+- The deterministic Win32 drag/drop test hook now carries a drop effect, so
+  text enter/update and file drop coverage verifies public copy/move action
+  metadata without relying on a real shell drag gesture.
+- This remains a skeleton, not full production OLE drag/drop. Richer effect
+  negotiation, non-text/non-file formats, async shell edge cases, and deeper
+  user-facing drag policy remain future Windows platform-depth work. Step 204
+  moves to native menu and accelerator API scaffolding.
+
 ## 2026-07-03 Wayland XDG Configure Lifecycle State
 
 - Step 202 adds deterministic Wayland XDG configure lifecycle records:

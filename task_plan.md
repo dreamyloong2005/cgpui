@@ -723,7 +723,7 @@ follow-on goal is now complete on the Windows/Linux track.
 200. [x] Wayland drag action negotiation.
 201. [x] Wayland cursor theme image state.
 202. [x] Wayland XDG configure lifecycle state.
-203. [ ] Win32 OLE drop target skeleton.
+203. [x] Win32 OLE drop target skeleton.
 204. [ ] Native menu and accelerator API skeleton.
 205. [ ] Native file dialog API skeleton.
 206. [ ] Window chrome customization skeleton.
@@ -745,11 +745,29 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 202, Wayland XDG configure lifecycle state, is merged on `master` at
-`6c9b867 feat: add wayland configure lifecycle state` and post-merge verified
-on Windows and WSL Arch Linux. Step 203, Win32 OLE drop target skeleton, is the
-next implementation slice. The track remains Windows/Linux first;
+Step 203, Win32 OLE drop target skeleton, is merged on `master` at
+`3f26a33 feat: add win32 ole drop target skeleton` and post-merge verified on
+Windows and WSL Arch Linux. Step 204, native menu and accelerator API skeleton,
+is the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 203, Win32 OLE drop target skeleton, is merged on `master` at
+`3f26a33 feat: add win32 ole drop target skeleton`. RED failed as expected on
+missing Win32 OLE drop-target registration markers and missing drag action
+metadata in the existing deterministic Win32 drag/drop test hook. GREEN adds an
+internal `Win32OleDropTarget` implementing `IDropTarget`, OLE initialization,
+`RegisterDragDrop`/`RevokeDragDrop` registration diagnostics, text/file
+`IDataObject` payload conversion boundaries, and `DROPEFFECT_COPY`/`MOVE`
+mapping into public `DragDropAction` metadata. The Win32 test hook now carries
+drop effects so existing deterministic drag-enter/update/drop coverage checks
+copy/move actions without depending on a real desktop drag gesture. Feature
+worktree targeted tests passed 5/5 on Windows and 4/4 on WSL Arch Linux,
+`git diff --check` exited 0 with only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 5/5 on Windows and 4/4 on WSL Arch Linux, `git diff --check` produced
+no output, WSL full debug passed 27/27, and Windows full debug passed 30/30.
+Step 204, native menu and accelerator API skeleton, is the next implementation
+slice.
 
 Step 202, Wayland XDG configure lifecycle state, is merged on `master` at
 `6c9b867 feat: add wayland configure lifecycle state`. RED failed as expected on
