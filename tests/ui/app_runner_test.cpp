@@ -4,7 +4,9 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 namespace {
 
@@ -152,6 +154,13 @@ class FakeApplication final : public cgpui::PlatformApplication {
       cgpui::PlatformEventCallback callback) override {
     create_window_count += 1;
     last_descriptor = descriptor;
+    created_descriptors.push_back(descriptor);
+    if (!failing_window_title.empty() &&
+        descriptor.title == failing_window_title) {
+      return std::unexpected(cgpui::Error{
+          .code = cgpui::ErrorCode::window_creation_failed,
+          .message = "native child window unsupported"});
+    }
     window_.callback = std::move(callback);
     return std::unique_ptr<cgpui::PlatformWindow>(new BorrowedWindow(window_));
   }
@@ -174,6 +183,8 @@ class FakeApplication final : public cgpui::PlatformApplication {
   int request_wakeup_count = 0;
   int run_result = 0;
   cgpui::WindowDescriptor last_descriptor{};
+  std::vector<cgpui::WindowDescriptor> created_descriptors;
+  std::string failing_window_title;
 
  private:
   class BorrowedWindow final : public cgpui::PlatformWindow {
@@ -412,8 +423,10 @@ int test_window_options_and_app_context_open_window_skeleton() {
       recorded_descriptor.size.height != opened_descriptor.size.height) {
     return 18;
   }
-  if (application.create_window_count != 1 ||
-      application.last_descriptor.title != "CGPUI") {
+  if (application.create_window_count != 2 ||
+      application.created_descriptors.size() != 2 ||
+      application.created_descriptors[0].title != "Secondary Window" ||
+      application.created_descriptors[1].title != "CGPUI") {
     return 19;
   }
   return 0;
@@ -577,7 +590,7 @@ int test_app_opened_window_keeps_root_view_alive_until_run_app_returns() {
   if (!root_destroyed) {
     return 25;
   }
-  if (application.create_window_count != 1) {
+  if (application.create_window_count != 2) {
     return 26;
   }
   return 0;
@@ -660,12 +673,18 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                     second_record->root_view_id == second_opened.root_view_id &&
                     first_record->owns_root_view &&
                     second_record->owns_root_view &&
+                    first_record->window != nullptr &&
+                    second_record->window != nullptr &&
                     first_record->renderer == nullptr &&
                     second_record->renderer == nullptr &&
+                    first_record->owns_window &&
+                    second_record->owns_window &&
                     first_record->owns_renderer &&
                     second_record->owns_renderer &&
-                    !first_record->active &&
-                    !second_record->active &&
+                    first_record->active &&
+                    second_record->active &&
+                    !first_record->native_window_error.has_value() &&
+                    !second_record->native_window_error.has_value() &&
                     context.runtime.app_opened_window_root_view(
                         first_opened.root_view_id) == first_root_ptr &&
                     context.runtime.app_opened_window_root_view(
@@ -699,12 +718,18 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                               first_opened.root_view_id &&
                           second_frame_record->root_view_id ==
                               second_opened.root_view_id &&
+                          first_frame_record->window != nullptr &&
+                          second_frame_record->window != nullptr &&
                           first_frame_record->renderer == nullptr &&
                           second_frame_record->renderer == nullptr &&
+                          first_frame_record->owns_window &&
+                          second_frame_record->owns_window &&
                           first_frame_record->owns_renderer &&
                           second_frame_record->owns_renderer &&
-                          !first_frame_record->active &&
-                          !second_frame_record->active;
+                          first_frame_record->active &&
+                          second_frame_record->active &&
+                          !first_frame_record->native_window_error.has_value() &&
+                          !second_frame_record->native_window_error.has_value();
                     });
               },
       });
@@ -726,8 +751,91 @@ int test_multi_window_registry_owns_independent_runtime_records() {
   if (!first_destroyed || !second_destroyed) {
     return 36;
   }
-  if (application.create_window_count != 1) {
+  if (application.create_window_count != 3 ||
+      application.created_descriptors.size() != 3 ||
+      application.created_descriptors[0].title != "First Child" ||
+      application.created_descriptors[1].title != "Second Child" ||
+      application.created_descriptors[2].title != "CGPUI") {
     return 37;
+  }
+  return 0;
+}
+
+int test_app_opened_window_records_native_creation_error() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  application.failing_window_title = "Unsupported Child";
+  TestView view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  bool setup_called = false;
+  bool after_frame_called = false;
+  bool setup_error_record_ok = false;
+  bool frame_error_record_ok = false;
+  cgpui::AppOpenedWindow opened;
+
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                opened = context.open_window(
+                    cgpui::WindowOptions{}
+                        .title("Unsupported Child")
+                        .size(200.0F, 120.0F));
+                const cgpui::WindowRuntimeRecord* record =
+                    context.runtime.window_runtime_record(opened.runtime_id);
+                setup_error_record_ok =
+                    record != nullptr && record->window == nullptr &&
+                    !record->active &&
+                    record->native_window_error.has_value() &&
+                    record->native_window_error->code ==
+                        cgpui::ErrorCode::window_creation_failed;
+                context.runtime.set_after_frame_callback(
+                    [&](const cgpui::ViewContext& frame_context) {
+                      after_frame_called = true;
+                      const cgpui::WindowRuntimeRecord* record =
+                          frame_context.runtime.window_runtime_record(
+                              opened.runtime_id);
+                      frame_error_record_ok =
+                          record != nullptr && record->window == nullptr &&
+                          !record->active &&
+                          record->native_window_error.has_value() &&
+                          record->native_window_error->message ==
+                              "native child window unsupported";
+                    });
+              },
+      });
+
+  if (result != 0) {
+    return 38;
+  }
+  if (!setup_called || !after_frame_called) {
+    return 39;
+  }
+  if (!setup_error_record_ok || !frame_error_record_ok) {
+    return 40;
+  }
+  if (application.create_window_count != 2 ||
+      application.created_descriptors.size() != 2 ||
+      application.created_descriptors[0].title != "Unsupported Child" ||
+      application.created_descriptors[1].title != "CGPUI") {
+    return 41;
+  }
+  if (renderer_begin_frame_count != 1 || frame.present_count != 1) {
+    return 42;
   }
   return 0;
 }
@@ -759,6 +867,11 @@ int main() {
   }
   if (const int result =
           test_multi_window_registry_owns_independent_runtime_records();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_app_opened_window_records_native_creation_error();
       result != 0) {
     return result;
   }

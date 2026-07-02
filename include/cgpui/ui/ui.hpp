@@ -257,6 +257,7 @@ struct WindowRuntimeRecord {
   bool owns_renderer = false;
   bool owns_root_view = false;
   bool active = false;
+  std::optional<Error> native_window_error;
 };
 
 struct AppContext {
@@ -844,6 +845,11 @@ class WindowRuntime {
   void apply_cursor_shape(CursorShape cursor_shape);
   void apply_focused_text_ime_placement();
   void fail_and_quit(Error error);
+  void activate_native_window_for_record(WindowRuntimeRecord& record);
+  void handle_native_additional_window_event(
+      WindowRuntimeId runtime_id,
+      const PlatformEvent& event);
+  void deactivate_native_additional_windows();
   [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
   [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
       WindowRuntimeId runtime_id);
@@ -968,6 +974,7 @@ class WindowRuntime {
   WindowRuntimeId root_window_runtime_id_{1};
   std::uint64_t next_window_runtime_id_ = 2;
   std::vector<WindowRuntimeRecord> window_runtime_records_;
+  std::vector<std::unique_ptr<PlatformWindow>> native_additional_windows_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;

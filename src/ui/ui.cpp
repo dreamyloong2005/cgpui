@@ -903,6 +903,7 @@ int WindowRuntime::run(
   }
 
   const int run_result = application_.run();
+  deactivate_native_additional_windows();
   if (WindowRuntimeRecord* root_record =
           find_window_runtime_record(root_window_runtime_id_);
       root_record != nullptr) {
@@ -937,6 +938,7 @@ AppOpenedWindow WindowRuntime::open_window(WindowOptions options) {
       .owns_renderer = true,
       .owns_root_view = false,
       .active = false});
+  activate_native_window_for_record(window_runtime_records_.back());
   return opened;
 }
 
@@ -961,6 +963,7 @@ AppOpenedWindow WindowRuntime::open_window(
       .owns_renderer = true,
       .owns_root_view = root_view_id.value != 0,
       .active = false});
+  activate_native_window_for_record(window_runtime_records_.back());
   return opened;
 }
 
@@ -1348,6 +1351,58 @@ void WindowRuntime::fail_and_quit(Error error) {
     error_callback_(error);
   }
   application_.quit();
+}
+
+void WindowRuntime::activate_native_window_for_record(
+    WindowRuntimeRecord& record) {
+  record.native_window_error.reset();
+  auto window_result = application_.create_window(
+      record.descriptor,
+      [this, runtime_id = record.runtime_id](const PlatformEvent& event) {
+        handle_native_additional_window_event(runtime_id, event);
+      });
+  if (!window_result) {
+    record.window = nullptr;
+    record.renderer = nullptr;
+    record.active = false;
+    record.native_window_error = window_result.error();
+    return;
+  }
+
+  std::unique_ptr<PlatformWindow> window = std::move(*window_result);
+  record.window = window.get();
+  record.renderer = nullptr;
+  record.active = true;
+  native_additional_windows_.push_back(std::move(window));
+}
+
+void WindowRuntime::handle_native_additional_window_event(
+    WindowRuntimeId runtime_id,
+    const PlatformEvent& event) {
+  WindowRuntimeRecord* record = find_window_runtime_record(runtime_id);
+  if (record == nullptr) {
+    return;
+  }
+  if (const auto* resized = std::get_if<WindowResized>(&event);
+      resized != nullptr) {
+    record->descriptor.size = resized->size;
+    return;
+  }
+  if (std::holds_alternative<WindowCloseRequested>(event)) {
+    record->active = false;
+  }
+}
+
+void WindowRuntime::deactivate_native_additional_windows() {
+  for (WindowRuntimeRecord& record : window_runtime_records_) {
+    if (record.runtime_id == root_window_runtime_id_) {
+      continue;
+    }
+    record.window = nullptr;
+    record.renderer = nullptr;
+    record.active = false;
+  }
+  native_additional_windows_.clear();
 }
 
 WindowRuntimeId WindowRuntime::allocate_window_runtime_id() {
