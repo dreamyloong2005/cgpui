@@ -179,6 +179,59 @@ int test_glyph_cache_records_lookup_miss_and_hit() {
              : 9;
 }
 
+int test_glyph_cache_allocates_atlas_pages_and_upload_records() {
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F);
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(run);
+  const cgpui::RasterizedGlyph first =
+      cgpui::rasterize_fallback_glyph(glyphs[0]);
+  const cgpui::RasterizedGlyph second =
+      cgpui::rasterize_fallback_glyph(glyphs[1]);
+
+  cgpui::GlyphCache cache;
+  const cgpui::GlyphAtlasAllocation first_allocation =
+      cache.allocate(first);
+  if (!first_allocation.created || first_allocation.page_index != 0 ||
+      first_allocation.atlas_bounds.origin.x != 0.0F ||
+      first_allocation.atlas_bounds.origin.y != 0.0F ||
+      first_allocation.atlas_bounds.size.width != 10.0F ||
+      first_allocation.atlas_bounds.size.height != 20.0F ||
+      cache.atlas_pages().size() != 1 ||
+      cache.upload_records().size() != 1) {
+    return 22;
+  }
+  if (cache.upload_records()[0].key != glyphs[0].key ||
+      cache.upload_records()[0].page_index != 0 ||
+      cache.upload_records()[0].width != first.bitmap.width ||
+      cache.upload_records()[0].height != first.bitmap.height ||
+      cache.upload_records()[0].stride != first.bitmap.stride ||
+      cache.upload_records()[0].alpha != first.bitmap.alpha) {
+    return 23;
+  }
+
+  const cgpui::GlyphAtlasAllocation second_allocation =
+      cache.allocate(second);
+  if (!second_allocation.created || second_allocation.page_index != 0 ||
+      second_allocation.atlas_bounds.origin.x != 10.0F ||
+      second_allocation.atlas_bounds.origin.y != 0.0F ||
+      cache.entries().size() != 2 ||
+      cache.atlas_pages()[0].entries.size() != 2 ||
+      cache.upload_records().size() != 2) {
+    return 24;
+  }
+
+  const cgpui::GlyphAtlasAllocation repeated_allocation =
+      cache.allocate(first);
+  return !repeated_allocation.created &&
+                 repeated_allocation.page_index == 0 &&
+                 repeated_allocation.atlas_bounds.origin.x == 0.0F &&
+                 cache.entries().size() == 2 &&
+                 cache.upload_records().size() == 2
+             ? 0
+             : 25;
+}
+
 int test_text_draw_uses_glyph_cache_metadata() {
   cgpui::GlyphCache cache;
   cgpui::TextDraw text{
@@ -199,7 +252,8 @@ int test_text_draw_uses_glyph_cache_metadata() {
   };
 
   cgpui::vulkan_consume_text_draw(text, cache);
-  if (cache.lookup_count() != 2 || cache.entries().size() != 2) {
+  if (cache.lookup_count() != 2 || cache.entries().size() != 2 ||
+      cache.upload_records().size() != 2) {
     return 10;
   }
   if (cache.lookups()[0].hit || cache.lookups()[1].hit) {
@@ -207,13 +261,15 @@ int test_text_draw_uses_glyph_cache_metadata() {
   }
 
   cgpui::vulkan_consume_text_draw(text, cache);
-  if (cache.lookup_count() != 4 || cache.entries().size() != 2) {
+  if (cache.lookup_count() != 4 || cache.entries().size() != 2 ||
+      cache.upload_records().size() != 2) {
     return 12;
   }
 
   return cache.lookups()[2].hit && cache.lookups()[3].hit &&
-                 cache.entries()[0].atlas_bounds.origin.x == 4.0F &&
-                 cache.entries()[1].atlas_bounds.origin.x == 14.0F
+                 cache.entries()[0].atlas_bounds.origin.x == 0.0F &&
+                 cache.entries()[1].atlas_bounds.origin.x == 10.0F &&
+                 cache.upload_records()[0].alpha.size() == 200
              ? 0
              : 13;
 }
@@ -377,6 +433,11 @@ int test_renderer_reports_unsupported_commands_without_dropping_supported() {
 
 int main() {
   if (const int result = test_glyph_cache_records_lookup_miss_and_hit();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_glyph_cache_allocates_atlas_pages_and_upload_records();
       result != 0) {
     return result;
   }

@@ -68,6 +68,12 @@ int main() {
   };
   const cgpui::RasterizedGlyph rasterized =
       cgpui::rasterize_fallback_glyph(glyph_paint);
+  const cgpui::GlyphAtlasAllocation allocation =
+      glyph_cache.allocate(rasterized);
+  const std::span<const cgpui::GlyphUploadRecord> upload_records =
+      glyph_cache.upload_records();
+  const std::span<const cgpui::GlyphAtlasPage> atlas_pages =
+      glyph_cache.atlas_pages();
   glyph_cache.store(cgpui::GlyphAtlasEntry{
       .key = glyph_key,
       .atlas_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
@@ -138,6 +144,9 @@ int main() {
                  glyph_cache.entries().size() == 1 &&
                  !rasterized.bitmap.empty() &&
                  rasterized.bitmap.width == 9 &&
+                 allocation.created &&
+                 upload_records.size() == 1 &&
+                 atlas_pages.size() == 1 &&
                  text_draw.glyphs.size() == 1 &&
                  text_draw.metadata.transform.translate_x == 4.0F &&
                  text_draw.clip_rect.has_value() &&

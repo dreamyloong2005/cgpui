@@ -1329,19 +1329,7 @@ void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache) {
       continue;
     }
 
-    glyph_cache.store(GlyphAtlasEntry{
-        .key = glyph.key,
-        .atlas_bounds =
-            Rect{
-                .origin = glyph.device_origin,
-                .size =
-                    Size{
-                        .width = glyph.device_advance,
-                        .height = text.device_font_size,
-                    },
-            },
-        .advance = glyph.device_advance,
-    });
+    (void)glyph_cache.allocate(rasterize_fallback_glyph(glyph));
   }
 }
 

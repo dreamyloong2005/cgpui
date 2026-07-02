@@ -7,6 +7,7 @@
 #include "cgpui/ui/text.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <span>
@@ -153,12 +154,38 @@ struct RendererCommandReport {
 
 struct GlyphAtlasEntry {
   GlyphAtlasKey key;
+  std::size_t page_index = 0;
   Rect atlas_bounds;
   float advance = 0.0F;
 
   friend bool operator==(
       const GlyphAtlasEntry&,
       const GlyphAtlasEntry&) = default;
+};
+
+struct GlyphAtlasAllocation {
+  GlyphAtlasKey key;
+  std::size_t page_index = 0;
+  Rect atlas_bounds;
+  bool created = false;
+};
+
+struct GlyphUploadRecord {
+  GlyphAtlasKey key;
+  std::size_t page_index = 0;
+  Rect atlas_bounds;
+  std::uint32_t width = 0;
+  std::uint32_t height = 0;
+  std::uint32_t stride = 0;
+  std::vector<std::uint8_t> alpha;
+};
+
+struct GlyphAtlasPage {
+  std::size_t page_index = 0;
+  Size size{.width = 256.0F, .height = 256.0F};
+  Point cursor;
+  float row_height = 0.0F;
+  std::vector<GlyphAtlasEntry> entries;
 };
 
 struct GlyphCacheRecord {
@@ -186,6 +213,56 @@ class GlyphCache {
     return GlyphCacheLookup{.key = key};
   }
 
+  [[nodiscard]] GlyphAtlasAllocation allocate(const RasterizedGlyph& glyph) {
+    if (const GlyphAtlasEntry* existing = find_entry(glyph.key);
+        existing != nullptr) {
+      return GlyphAtlasAllocation{
+          .key = glyph.key,
+          .page_index = existing->page_index,
+          .atlas_bounds = existing->atlas_bounds,
+      };
+    }
+
+    const Size glyph_size{
+        .width = static_cast<float>(glyph.bitmap.width),
+        .height = static_cast<float>(glyph.bitmap.height),
+    };
+    if (pages_.empty()) {
+      pages_.push_back(make_page(0, glyph_size));
+    }
+
+    Rect atlas_bounds;
+    if (!allocate_from_page(pages_.back(), glyph_size, atlas_bounds)) {
+      pages_.push_back(make_page(pages_.size(), glyph_size));
+      (void)allocate_from_page(pages_.back(), glyph_size, atlas_bounds);
+    }
+
+    GlyphAtlasEntry entry{
+        .key = glyph.key,
+        .page_index = pages_.back().page_index,
+        .atlas_bounds = atlas_bounds,
+        .advance = glyph.advance,
+    };
+    pages_.back().entries.push_back(entry);
+    entries_.push_back(entry);
+    uploads_.push_back(GlyphUploadRecord{
+        .key = glyph.key,
+        .page_index = entry.page_index,
+        .atlas_bounds = atlas_bounds,
+        .width = glyph.bitmap.width,
+        .height = glyph.bitmap.height,
+        .stride = glyph.bitmap.stride,
+        .alpha = glyph.bitmap.alpha,
+    });
+
+    return GlyphAtlasAllocation{
+        .key = glyph.key,
+        .page_index = entry.page_index,
+        .atlas_bounds = atlas_bounds,
+        .created = true,
+    };
+  }
+
   void store(GlyphAtlasEntry entry) {
     for (GlyphAtlasEntry& existing : entries_) {
       if (existing.key == entry.key) {
@@ -208,9 +285,67 @@ class GlyphCache {
     return entries_;
   }
 
+  [[nodiscard]] std::span<const GlyphAtlasPage> atlas_pages() const {
+    return pages_;
+  }
+
+  [[nodiscard]] std::span<const GlyphUploadRecord> upload_records() const {
+    return uploads_;
+  }
+
  private:
+  [[nodiscard]] const GlyphAtlasEntry* find_entry(
+      const GlyphAtlasKey& key) const {
+    for (const GlyphAtlasEntry& entry : entries_) {
+      if (entry.key == key) {
+        return &entry;
+      }
+    }
+    return nullptr;
+  }
+
+  [[nodiscard]] static GlyphAtlasPage make_page(
+      std::size_t page_index,
+      Size minimum_size) {
+    return GlyphAtlasPage{
+        .page_index = page_index,
+        .size =
+            Size{
+                .width = std::max(256.0F, minimum_size.width),
+                .height = std::max(256.0F, minimum_size.height),
+            },
+    };
+  }
+
+  [[nodiscard]] static bool allocate_from_page(
+      GlyphAtlasPage& page,
+      Size glyph_size,
+      Rect& atlas_bounds) {
+    if (glyph_size.width <= 0.0F || glyph_size.height <= 0.0F ||
+        glyph_size.width > page.size.width ||
+        glyph_size.height > page.size.height) {
+      return false;
+    }
+
+    if (page.cursor.x + glyph_size.width > page.size.width) {
+      page.cursor.x = 0.0F;
+      page.cursor.y += page.row_height;
+      page.row_height = 0.0F;
+    }
+    if (page.cursor.y + glyph_size.height > page.size.height) {
+      return false;
+    }
+
+    atlas_bounds = Rect{.origin = page.cursor, .size = glyph_size};
+    page.cursor.x += glyph_size.width;
+    page.row_height = std::max(page.row_height, glyph_size.height);
+    return true;
+  }
+
   std::vector<GlyphAtlasEntry> entries_;
   std::vector<GlyphCacheRecord> lookups_;
+  std::vector<GlyphAtlasPage> pages_;
+  std::vector<GlyphUploadRecord> uploads_;
 };
 
 class RenderFrame {
