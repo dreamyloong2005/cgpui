@@ -161,6 +161,12 @@ int main() {
       !contains(win32_text, "focused = node.focused")) {
     return 66;
   }
+  if (!contains(win32_text, "PlatformAccessibilityLiveUpdate") ||
+      !contains(win32_text, "live_updates_") ||
+      !contains(win32_text, "last_live_updates()") ||
+      !contains(win32_text, "live_updates_ = last_update_.live_updates")) {
+    return 67;
+  }
   if (!contains(win32_text, "DragEntered{") ||
       !contains(win32_text, "DragUpdated{") ||
       !contains(win32_text, "DragDropped{") ||

@@ -680,6 +680,7 @@ class WaylandAtspiAccessibilityAdapter {
  public:
   void update(PlatformAccessibilityTreeUpdate update) {
     last_update_ = std::move(update);
+    live_updates_ = last_update_.live_updates;
     root_element_id_ = last_update_.root_element_id;
     node_count_ = last_update_.node_count;
     focused_node_count_ = last_update_.focused_node_count;
@@ -733,9 +734,15 @@ class WaylandAtspiAccessibilityAdapter {
     return atspi_object_nodes_;
   }
 
+  [[nodiscard]] const std::vector<PlatformAccessibilityLiveUpdate>&
+  last_live_updates() const {
+    return live_updates_;
+  }
+
  private:
   PlatformAccessibilityTreeUpdate last_update_;
   std::vector<WaylandAtspiObjectNode> atspi_object_nodes_;
+  std::vector<PlatformAccessibilityLiveUpdate> live_updates_;
   std::uint64_t root_element_id_ = 0;
   std::size_t node_count_ = 0;
   std::size_t focused_node_count_ = 0;

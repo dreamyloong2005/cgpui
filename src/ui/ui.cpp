@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <expected>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <variant>
 
@@ -157,6 +158,52 @@ PlatformAccessibilityTreeUpdate platform_accessibility_update_from(
     });
   }
   return update;
+}
+
+void append_platform_accessibility_live_updates(
+    PlatformAccessibilityTreeUpdate& update,
+    const PlatformAccessibilityTreeUpdate& previous) {
+  std::unordered_map<std::uint64_t, const PlatformAccessibilityNodeUpdate*>
+      previous_nodes;
+  previous_nodes.reserve(previous.nodes.size());
+  for (const PlatformAccessibilityNodeUpdate& node : previous.nodes) {
+    previous_nodes.emplace(node.element_id, &node);
+  }
+
+  for (const PlatformAccessibilityNodeUpdate& node : update.nodes) {
+    const auto previous_node = previous_nodes.find(node.element_id);
+    if (previous_node == previous_nodes.end()) {
+      continue;
+    }
+    const PlatformAccessibilityNodeUpdate& before = *previous_node->second;
+    if (before.value != node.value) {
+      update.live_updates.push_back(PlatformAccessibilityLiveUpdate{
+          .kind = PlatformAccessibilityLiveUpdateKind::value_changed,
+          .element_id = node.element_id,
+          .value = node.value,
+          .text = node.text,
+          .focused = node.focused,
+      });
+    }
+    if (before.text != node.text) {
+      update.live_updates.push_back(PlatformAccessibilityLiveUpdate{
+          .kind = PlatformAccessibilityLiveUpdateKind::text_changed,
+          .element_id = node.element_id,
+          .value = node.value,
+          .text = node.text,
+          .focused = node.focused,
+      });
+    }
+    if (before.focused != node.focused) {
+      update.live_updates.push_back(PlatformAccessibilityLiveUpdate{
+          .kind = PlatformAccessibilityLiveUpdateKind::focus_changed,
+          .element_id = node.element_id,
+          .value = node.value,
+          .text = node.text,
+          .focused = node.focused,
+      });
+    }
+  }
 }
 
 std::optional<Point> pointer_position_for(const PlatformEvent& event) {
@@ -1093,6 +1140,7 @@ int WindowRuntime::run(
   render_sequence_ = 0;
   frame_index_ = 0;
   applied_ime_text_input_placement_.reset();
+  last_platform_accessibility_update_.reset();
   platform_diagnostics_.clear();
   platform_diagnostic_sequence_ = 0;
 
@@ -2936,8 +2984,7 @@ void WindowRuntime::update_platform_accessibility_tree() {
   if (window_ == nullptr || owned_element_tree_ == nullptr) {
     return;
   }
-  PlatformAccessibilityTreeUpdate update =
-      platform_accessibility_update_from(accessibility_snapshot());
+  PlatformAccessibilityTreeUpdate update = build_platform_accessibility_update();
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::accessibility,
       .backend = "runtime",
@@ -2946,7 +2993,20 @@ void WindowRuntime::update_platform_accessibility_tree() {
       .succeeded = true,
       .value_count = update.node_count,
   });
+  last_platform_accessibility_update_ = update;
   window_->update_accessibility_tree(std::move(update));
+}
+
+PlatformAccessibilityTreeUpdate
+WindowRuntime::build_platform_accessibility_update() const {
+  PlatformAccessibilityTreeUpdate update =
+      platform_accessibility_update_from(accessibility_snapshot());
+  if (last_platform_accessibility_update_.has_value()) {
+    append_platform_accessibility_live_updates(
+        update,
+        *last_platform_accessibility_update_);
+  }
+  return update;
 }
 
 bool WindowRuntime::task_active(TaskId id) const {

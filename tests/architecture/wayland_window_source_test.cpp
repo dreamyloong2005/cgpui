@@ -185,6 +185,12 @@ int main() {
       !contains(text, "focused = node.focused")) {
     return 75;
   }
+  if (!contains(text, "PlatformAccessibilityLiveUpdate") ||
+      !contains(text, "live_updates_") ||
+      !contains(text, "last_live_updates()") ||
+      !contains(text, "live_updates_ = last_update_.live_updates")) {
+    return 76;
+  }
   if (!contains(text, "WaylandDataDevice") ||
       !contains(text, "wl_data_device_manager_get_data_device") ||
       !contains(text, "DragEntered{")) {

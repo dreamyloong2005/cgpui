@@ -897,6 +897,8 @@ class WindowRuntime {
   void drain_deferred_callbacks();
   void fire_due_timers();
   void update_platform_accessibility_tree();
+  [[nodiscard]] PlatformAccessibilityTreeUpdate build_platform_accessibility_update()
+      const;
   [[nodiscard]] bool task_active(TaskId id) const;
   [[nodiscard]] bool task_complete(TaskId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
@@ -1030,6 +1032,8 @@ class WindowRuntime {
   Clipboard* clipboard_ = nullptr;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::optional<ImeTextInputPlacement> applied_ime_text_input_placement_;
+  std::optional<PlatformAccessibilityTreeUpdate>
+      last_platform_accessibility_update_;
   std::vector<PlatformDiagnosticEvent> platform_diagnostics_;
   int platform_diagnostic_sequence_ = 0;
   std::vector<EntitySubscription> entity_subscriptions_;
