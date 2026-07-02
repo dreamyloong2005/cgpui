@@ -308,11 +308,15 @@
 - Modify: `include/cgpui/ui/text.hpp`
 - Modify: `tests/ui/text_model_test.cpp`
 
-- [ ] Add RED coverage for previous/next word cursor movement and word selection extension.
-- [ ] Expected RED: `TextEditAction` has no word navigation variants.
-- [ ] GREEN: add word-boundary actions using deterministic ASCII/Unicode-space classes.
-- [ ] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for previous/next word cursor movement and word selection extension.
+- [x] Expected RED: `TextEditAction` has no word navigation variants.
+- [x] GREEN: add word-boundary actions using deterministic ASCII/Unicode-space classes.
+- [x] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `eaf6907 feat: add text word navigation actions`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 193: Text Undo And Redo Stack
 

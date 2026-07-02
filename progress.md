@@ -6420,3 +6420,54 @@
   this progress log so Step 191 is marked merged and post-merge verified. Step
   192, word movement and selection actions, is the next implementation slice
   after docs closeout and cleanup.
+
+## 2026-07-03 Step 192 Text Word Navigation Actions
+
+- Created `.worktrees/text-word-navigation` on
+  `codex/text-word-navigation` from `master` at
+  `df6ad22 docs: mark step 191 merged`.
+- Baseline targeted tests passed before edits:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-word-navigation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for previous/next word
+  cursor movement, forward/backward word selection extension, tab-separated
+  words, and ideographic-space-separated words. RED failed as expected on
+  missing `TextEditAction::move_previous_word`, `move_next_word`,
+  `extend_previous_word`, and `extend_next_word`.
+- GREEN adds the four word edit actions, public
+  `move_cursor_previous_word()` / `move_cursor_next_word()` helpers, private
+  word-selection extension helpers, Unicode-space classification, and
+  previous/next word boundary helpers that walk existing grapheme boundaries.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-word-navigation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-word-navigation -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 192 as
+  `eaf6907 feat: add text word navigation actions` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 192 is marked merged and post-merge verified. Step
+  193, text undo and redo stack, is the next implementation slice after docs
+  closeout and cleanup.

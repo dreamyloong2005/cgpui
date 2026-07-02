@@ -3369,3 +3369,18 @@
 - Step 192 should build word movement and word-selection actions on top of
   these grapheme-safe cursor primitives rather than reverting to byte or raw
   codepoint stepping.
+
+## 2026-07-03 Text Word Navigation Actions
+
+- Step 192 adds `TextEditAction` variants and public `TextModel` helpers for
+  previous/next word movement plus previous/next word selection extension.
+- Word movement reuses the Step 191 grapheme-boundary helpers. This keeps word
+  navigation from splitting combining marks, regional indicator pairs, or ZWJ
+  skeleton clusters while adding word-level jumps.
+- The current word separator class is intentionally deterministic: ASCII
+  whitespace, C1 next-line, no-break and Ogham spaces, Unicode U+2000 space
+  range, line/paragraph separators, narrow no-break, medium mathematical, and
+  ideographic space. Non-space punctuation remains part of the surrounding
+  non-space run in this skeleton.
+- Step 193 can add undo/redo over the expanded edit-action surface without
+  revisiting word-boundary semantics.
