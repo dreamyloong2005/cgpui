@@ -3164,3 +3164,18 @@
 - This remains partial multi-window parity. Child windows still do not own
   independent renderers, independent render loops, full event routing, or
   production activation/focus/lifecycle behavior.
+
+## 2026-07-02 Steps 179-218 Production-Depth Track
+
+- The next 40-step track should stay Windows/Linux first rather than starting
+  macOS parity. The highest-value ordering is Vulkan text/rendering depth,
+  text/font/editing depth, Win32/Wayland production adapter depth, then
+  accessibility, multi-window, theme, asset, animation, and async depth.
+- Step 179 should start with renderer-facing glyph atlas image descriptors and
+  upload batches. This is the smallest next move from the current text path:
+  glyph bitmap, atlas allocation, upload records, textured quads, and text
+  render reports already exist, but there is no atlas image/upload planning
+  surface yet.
+- The 179-218 plan intentionally keeps real Vulkan image allocation, production
+  UIA/AT-SPI providers, full child-window event loops, and macOS/Cocoa + Metal
+  outside Step 179 so the next RED/GREEN slice stays small and verifiable.

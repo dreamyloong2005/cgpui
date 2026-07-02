@@ -91,6 +91,34 @@ Windows/Linux core API is stable enough for parity work.
 - Each implementation step follows RED/GREEN, feature-worktree isolation,
   merge, Windows verification, and WSL verification.
 
+## Definition Of Done For The 218-Step Production-Depth Goal
+
+- Steps 1-178 remain implemented, merged to `master`, and verified on Windows
+  and WSL Arch Linux.
+- Steps 179-218 are implemented as the next Windows/Linux production-depth
+  pass, not a macOS parity pivot. Windows continues to use Win32 + Vulkan,
+  Linux continues to use Wayland + Vulkan, and macOS/Cocoa + Metal remains a
+  separate track.
+- Vulkan renderer work promotes text and shape paths from deterministic
+  metadata/reporting toward atlas image planning, texture resource lifetime
+  records, dirty uploads, sampler-pipeline readiness, rounded-rect geometry,
+  text selection/caret support, clip/opacity/transform stack reporting, and
+  frame-level renderer reports.
+- Text, font, and IME work deepens fallback resolution, platform font
+  discovery records, grapheme/word navigation, undo/redo, delete-surrounding
+  editing, multiline navigation, measurement caching, pointer selection, and
+  soft-wrap records.
+- Win32 and Wayland platform work promotes clipboard, drag/drop, cursor,
+  configure lifecycle, OLE drag/drop, menus, file dialogs, window chrome,
+  command palette metadata, and platform diagnostics without forking public UI
+  semantics.
+- Accessibility, multi-window, theme, animation, assets, and async work
+  upgrades skeletons into richer provider facades, child-window renderer/event
+  ownership, runtime theme switching, deterministic animations, image assets,
+  and a cancellable threaded executor.
+- Each implementation step follows RED/GREEN, feature-worktree isolation,
+  merge, Windows verification, and WSL verification.
+
 ## Steps 89-128 Execution Roadmap
 
 Detailed execution plan:
@@ -130,6 +158,15 @@ The active track stays Windows/Linux first. The ten-step depth pass prioritizes
 Vulkan text rendering data flow, Wayland data/protocol handling, native
 accessibility adapter boundaries, and native multi-window creation before a
 separate macOS/Cocoa + Metal parity track begins.
+
+## Steps 179-218 Production-Depth Roadmap
+
+Detailed production-depth plan:
+`docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
+The active track remains Windows/Linux first. The forty-step pass is organized
+as Vulkan text/renderer depth, text/font/editing depth, Win32/Wayland native
+platform depth, and accessibility/multi-window/theme/asset/animation/async
+depth before a separate macOS/Cocoa + Metal parity track begins.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
@@ -662,28 +699,59 @@ follow-on goal is now complete on the Windows/Linux track.
 176. [x] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 177. [x] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 178. [x] Native additional-window creation slice over the multi-window runtime registry.
+179. [ ] Vulkan glyph atlas image descriptors and upload-batch planning.
+180. [ ] Vulkan glyph atlas texture resource lifetime skeleton.
+181. [ ] Vulkan glyph upload dirty-range tracking.
+182. [ ] Vulkan text sampler pipeline descriptor and readiness report.
+183. [ ] Vulkan rounded-rect tessellation records.
+184. [ ] Vulkan text selection and caret geometry records.
+185. [ ] Renderer clip stack metadata beyond single optional clips.
+186. [ ] Renderer opacity and transform stack reports.
+187. [ ] Renderer batch submission plan records.
+188. [ ] Renderer frame snapshot report aggregating text, uploads, batches, and gaps.
+189. [ ] Font fallback chain resolution.
+190. [ ] Platform font discovery records for Win32 and Wayland/Linux.
+191. [ ] Grapheme-aware cursor movement skeleton.
+192. [ ] Word movement and selection actions.
+193. [ ] Text undo and redo stack.
+194. [ ] IME delete-surrounding text action.
+195. [ ] Multiline text model and line navigation.
+196. [ ] Text measurement cache.
+197. [ ] Text pointer selection geometry.
+198. [ ] Soft wrap layout records.
+199. [ ] Wayland clipboard ownership and send offers.
+200. [ ] Wayland drag action negotiation.
+201. [ ] Wayland cursor theme image state.
+202. [ ] Wayland XDG configure lifecycle state.
+203. [ ] Win32 OLE drop target skeleton.
+204. [ ] Native menu and accelerator API skeleton.
+205. [ ] Native file dialog API skeleton.
+206. [ ] Window chrome customization skeleton.
+207. [ ] App command palette registry.
+208. [ ] Platform diagnostics event stream.
+209. [ ] UIA provider tree facade.
+210. [ ] AT-SPI object model facade.
+211. [ ] Accessibility value and live update events.
+212. [ ] Additional window renderer ownership.
+213. [ ] Additional window event routing.
+214. [ ] Additional window lifecycle cleanup.
+215. [ ] Runtime theme inheritance and switching.
+216. [ ] Animation clock and tween primitives.
+217. [ ] Asset and image pipeline skeleton.
+218. [ ] Threaded async executor and cancellation.
 
 ## Active Step
 
-Current handoff: Step 178, native additional-window creation slice over the
-multi-window runtime registry, is merged on `master` at
+Current handoff: Steps 179-218 are planned as the next Windows/Linux
+production-depth pass in
+`docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
+Step 178, native additional-window creation slice over the multi-window runtime
+registry, remains merged on `master` at
 `2669512 feat: add native additional window scaffold` and post-merge verified
-on Windows and WSL Arch Linux. RED failed as expected on missing
-`WindowRuntimeRecord::native_window_error` and on app-opened window records
-that only stored metadata instead of activating native platform windows. GREEN
-adds native additional-window ownership inside `WindowRuntime`, records
-platform-window creation errors without failing the root app run, updates
-child-window descriptor state from resize events, deactivates child records on
-close/run shutdown, and preserves the single-window root path. This is a
-scaffold: app-opened child windows have native `PlatformWindow` records, but
-they still do not own independent renderers, independent render loops, or full
-production child-window lifecycle routing. Post-merge targeted coverage passed
-5/5 on Windows and 5/5 on WSL Arch Linux, `git diff --check` produced no
-output, WSL full debug passed 27/27, and Windows full debug passed 30/30 after
-a single transient `clipboard_test/default` failure was cleared by targeted
-rerun and full-suite rerun. Steps 169-178 are now complete as the current
-Windows/Linux depth pass; the next implementation track should continue
-Windows/Linux depth or start a separate macOS/Cocoa + Metal parity run.
+on Windows and WSL Arch Linux. Step 179, Vulkan glyph atlas image descriptors
+and upload-batch planning, is the next implementation slice. The track remains
+Windows/Linux first; macOS/Cocoa + Metal is still deferred to a separate parity
+run.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

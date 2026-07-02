@@ -5711,3 +5711,21 @@
   `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 178
   is marked merged and post-merge verified. Steps 169-178 are now complete as
   the current Windows/Linux depth pass once docs closeout and cleanup finish.
+
+## 2026-07-02 Steps 179-218 Production-Depth Planning
+
+- Started the new goal `往后做40步` from `master` at
+  `76767de docs: mark step 178 merged`.
+- Ran planning-with-files session catchup; it reported only current-turn
+  unsynced context and no code diff. `git status --short --branch` showed
+  `## master` plus the expected untracked `.vscode/`, and `git worktree list`
+  showed only the main worktree.
+- Added
+  `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`
+  as the next Windows/Linux production-depth plan. The plan keeps macOS/Cocoa
+  + Metal deferred and organizes the 40 steps into Vulkan renderer/text depth,
+  text/font/editing depth, Win32/Wayland native platform depth, and
+  accessibility/multi-window/theme/asset/animation/async depth.
+- Extended `task_plan.md` with the 218-step definition of done, roadmap link,
+  and unchecked Step 179-218 queue. Step 179, Vulkan glyph atlas image
+  descriptors and upload-batch planning, is the next implementation slice.
