@@ -182,11 +182,15 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED coverage for report counters over nested opacity and transform stack depth.
-- [ ] Expected RED: renderer reports see final metadata but not stack composition depth.
-- [ ] GREEN: add deterministic composition-stack diagnostics for rect, rounded-rect, text, selection, and caret records.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default`.
+- [x] Add RED coverage for report counters over nested opacity and transform stack depth.
+- [x] Expected RED: renderer reports see final metadata but not stack composition depth.
+- [x] GREEN: add deterministic composition-stack diagnostics for rect, rounded-rect, text, selection, and caret records.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default`.
+
+**Merged:** `36cb483 feat: add renderer composition stack reports`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 187: Renderer Batch Submission Plan
 

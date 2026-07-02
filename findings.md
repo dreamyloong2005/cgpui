@@ -3275,3 +3275,18 @@
 - This remains metadata/reporting work. It does not implement real Vulkan
   scissor-stack command emission or GPU clipping beyond the existing solid
   rectangle clip handling.
+
+## 2026-07-03 Renderer Composition Stack Reports
+
+- Step 186 adds a bounded `RendererCompositionStackRecord` that preserves
+  nested opacity/transform metadata while keeping the existing per-command
+  `metadata` field as the current composed metadata.
+- `PaintList` now records the active metadata stack on paint commands, and
+  `render_view(...)` forwards that stack through solid rect, rounded rect,
+  text, text selection, and caret draw records.
+- Vulkan renderer reports now count composition-stack records, track maximum
+  stack depth, propagate the stack into rounded/text selection/caret geometry,
+  and include the stack in batch keys so otherwise identical commands with
+  different ancestors remain distinguishable.
+- This remains diagnostics/reporting work. It does not implement real Vulkan
+  transform stack emission, opacity compositing, or GPU pipeline state changes.

@@ -6108,3 +6108,54 @@
   this progress log so Step 185 is marked merged and post-merge verified. Step
   186, renderer opacity and transform stack reports, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-03 Step 186 Renderer Opacity And Transform Stack Reports
+
+- Continued `.worktrees/renderer-opacity-transform-stack` on
+  `codex/renderer-opacity-transform-stack` from `master` at
+  `4dbcd51 docs: mark step 185 merged`.
+- RED coverage had already been added for nested opacity/transform stack
+  reporting in `render_view_test/default` and `vulkan_solid_rect_test/default`;
+  it failed as expected on missing composition-stack renderer records, report
+  counters, geometry propagation, and batch-key metadata.
+- GREEN adds a bounded `RendererCompositionStackRecord`, public composition
+  stack helper, composition-stack fields across renderer draw/geometry/command
+  records, paint-list metadata stack capture, render-view forwarding,
+  frame-statistics counters, and Vulkan report/batch aggregation by full
+  composition-stack metadata.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-opacity-transform-stack -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default core_header_cleanliness/default'`
+  passed 2/2 for the available Linux target subset.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-opacity-transform-stack -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/renderer-opacity-transform-stack -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 186 as
+  `36cb483 feat: add renderer composition stack reports` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default core_header_cleanliness/default'`
+  passed 2/2 for the available Linux target subset.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 186 is marked merged and post-merge verified. Step
+  187, renderer batch submission plan records, is the next implementation slice
+  after docs closeout and cleanup.
