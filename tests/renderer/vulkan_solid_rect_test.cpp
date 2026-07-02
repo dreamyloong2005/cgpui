@@ -353,6 +353,70 @@ int test_glyph_atlas_texture_resources_track_create_reuse_and_drop() {
              : 39;
 }
 
+int test_glyph_atlas_dirty_upload_ranges_only_include_new_regions() {
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("abc", cgpui::FontDescriptor{.family = "Inter"}, 20.0F);
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(run);
+
+  cgpui::GlyphCache cache;
+  const cgpui::RasterizedGlyph first =
+      cgpui::rasterize_fallback_glyph(glyphs[0]);
+  const cgpui::RasterizedGlyph second =
+      cgpui::rasterize_fallback_glyph(glyphs[1]);
+  const cgpui::RasterizedGlyph third =
+      cgpui::rasterize_fallback_glyph(glyphs[2]);
+  (void)cache.allocate(first);
+  (void)cache.allocate(second);
+
+  cgpui::GlyphAtlasTextureResourceState texture_resources;
+  const std::vector<cgpui::GlyphAtlasUploadBatch> first_batches =
+      cgpui::vulkan_plan_glyph_atlas_uploads(
+          cache.upload_records(),
+          cache.atlas_pages());
+  const std::vector<cgpui::GlyphAtlasDirtyUploadRange> first_dirty_ranges =
+      cgpui::vulkan_plan_glyph_atlas_dirty_uploads(
+          texture_resources,
+          first_batches);
+  if (first_dirty_ranges.size() != 1 ||
+      first_dirty_ranges[0].page_index != 0 ||
+      first_dirty_ranges[0].first_upload_index != 0 ||
+      first_dirty_ranges[0].upload_count != 2 ||
+      first_dirty_ranges[0].byte_offset != 0 ||
+      first_dirty_ranges[0].byte_size !=
+          first.bitmap.alpha.size() + second.bitmap.alpha.size()) {
+    return 40;
+  }
+
+  const std::vector<cgpui::GlyphAtlasDirtyUploadRange> repeated_dirty_ranges =
+      cgpui::vulkan_plan_glyph_atlas_dirty_uploads(
+          texture_resources,
+          first_batches);
+  if (!repeated_dirty_ranges.empty()) {
+    return 41;
+  }
+
+  (void)cache.allocate(third);
+  const std::vector<cgpui::GlyphAtlasUploadBatch> second_batches =
+      cgpui::vulkan_plan_glyph_atlas_uploads(
+          cache.upload_records(),
+          cache.atlas_pages());
+  const std::vector<cgpui::GlyphAtlasDirtyUploadRange> second_dirty_ranges =
+      cgpui::vulkan_plan_glyph_atlas_dirty_uploads(
+          texture_resources,
+          second_batches);
+  return second_dirty_ranges.size() == 1 &&
+                 second_dirty_ranges[0].page_index == 0 &&
+                 second_dirty_ranges[0].first_upload_index == 2 &&
+                 second_dirty_ranges[0].upload_count == 1 &&
+                 second_dirty_ranges[0].byte_offset ==
+                     first.bitmap.alpha.size() + second.bitmap.alpha.size() &&
+                 second_dirty_ranges[0].byte_size ==
+                     third.bitmap.alpha.size()
+             ? 0
+             : 42;
+}
+
 int test_text_draw_uses_glyph_cache_metadata() {
   cgpui::GlyphCache cache;
   cgpui::TextDraw text{
@@ -695,6 +759,11 @@ int main() {
   }
   if (const int result =
           test_glyph_atlas_texture_resources_track_create_reuse_and_drop();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_glyph_atlas_dirty_upload_ranges_only_include_new_regions();
       result != 0) {
     return result;
   }

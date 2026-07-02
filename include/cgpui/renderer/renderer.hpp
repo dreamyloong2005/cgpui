@@ -242,6 +242,14 @@ struct GlyphAtlasTextureResourcePlan {
   std::size_t dropped_count = 0;
 };
 
+struct GlyphAtlasDirtyUploadRange {
+  std::size_t page_index = 0;
+  std::size_t first_upload_index = 0;
+  std::size_t upload_count = 0;
+  std::size_t byte_offset = 0;
+  std::size_t byte_size = 0;
+};
+
 class GlyphAtlasTextureResourceState {
  public:
   [[nodiscard]] std::span<const GlyphAtlasTextureResourceRecord>
@@ -252,6 +260,10 @@ class GlyphAtlasTextureResourceState {
  private:
   friend GlyphAtlasTextureResourcePlan
   vulkan_update_glyph_atlas_texture_resources(
+      GlyphAtlasTextureResourceState& state,
+      std::span<const GlyphAtlasUploadBatch> upload_batches);
+  friend std::vector<GlyphAtlasDirtyUploadRange>
+  vulkan_plan_glyph_atlas_dirty_uploads(
       GlyphAtlasTextureResourceState& state,
       std::span<const GlyphAtlasUploadBatch> upload_batches);
 
@@ -462,6 +474,9 @@ std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
     std::span<const GlyphUploadRecord> upload_records,
     std::span<const GlyphAtlasPage> atlas_pages);
 GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
+    GlyphAtlasTextureResourceState& state,
+    std::span<const GlyphAtlasUploadBatch> upload_batches);
+std::vector<GlyphAtlasDirtyUploadRange> vulkan_plan_glyph_atlas_dirty_uploads(
     GlyphAtlasTextureResourceState& state,
     std::span<const GlyphAtlasUploadBatch> upload_batches);
 std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(

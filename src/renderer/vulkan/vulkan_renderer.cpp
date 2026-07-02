@@ -1455,6 +1455,44 @@ GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
   return plan;
 }
 
+std::vector<GlyphAtlasDirtyUploadRange> vulkan_plan_glyph_atlas_dirty_uploads(
+    GlyphAtlasTextureResourceState& state,
+    std::span<const GlyphAtlasUploadBatch> upload_batches) {
+  std::vector<GlyphAtlasDirtyUploadRange> dirty_ranges;
+  for (const GlyphAtlasUploadBatch& batch : upload_batches) {
+    auto existing = std::ranges::find_if(
+        state.resources_,
+        [&](const GlyphAtlasTextureResourceRecord& resource) {
+          return resource.page_index == batch.image.page_index;
+        });
+
+    std::size_t first_upload_index = 0;
+    if (existing != state.resources_.end()) {
+      first_upload_index =
+          std::min(existing->image.upload_count, batch.uploads.size());
+    }
+    if (first_upload_index >= batch.uploads.size()) {
+      continue;
+    }
+
+    const GlyphAtlasUploadRegion& first_upload =
+        batch.uploads[first_upload_index];
+    const GlyphAtlasUploadRegion& last_upload = batch.uploads.back();
+    dirty_ranges.push_back(GlyphAtlasDirtyUploadRange{
+        .page_index = batch.image.page_index,
+        .first_upload_index = first_upload_index,
+        .upload_count = batch.uploads.size() - first_upload_index,
+        .byte_offset = first_upload.byte_offset,
+        .byte_size =
+            last_upload.byte_offset + last_upload.byte_size -
+            first_upload.byte_offset,
+    });
+  }
+
+  (void)vulkan_update_glyph_atlas_texture_resources(state, upload_batches);
+  return dirty_ranges;
+}
+
 std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     const TextDraw& text,
     GlyphCache& glyph_cache) {
