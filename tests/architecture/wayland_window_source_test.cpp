@@ -228,6 +228,13 @@ int main() {
       !contains(text, "filter_count")) {
     return 73;
   }
+  if (!contains(text, "WaylandWindowChromeState") ||
+      !contains(text, "apply_window_chrome(") ||
+      !contains(text, "PlatformWindowChromeState") ||
+      !contains(text, "titlebar_visible") ||
+      !contains(text, "transparent_background")) {
+    return 74;
+  }
 
   const std::string xmake_text = read_xmake_source();
   if (xmake_text.empty()) {

@@ -360,6 +360,10 @@ int main() {
       cgpui::WindowOptions{}
           .title("Header Window")
           .size(cgpui::Size{9.0F, 7.0F})
+          .titlebar_visible(false)
+          .decorations(false)
+          .resizable(false)
+          .transparent(true)
           .to_descriptor();
   cgpui::AppRunnerOptions app_options;
   app_options.setup_context = app_setup;
@@ -542,6 +546,10 @@ int main() {
                  static_cast<bool>(app_options.setup_context) &&
                  window_descriptor.title == "Header Window" &&
                  window_descriptor.size.width == 9.0F &&
+                 !window_descriptor.chrome.titlebar_visible &&
+                 !window_descriptor.chrome.decorations &&
+                 !window_descriptor.chrome.resizable &&
+                 window_descriptor.chrome.transparent_background &&
                  resolved.background_color->r == 64.0F / 255.0F &&
                  styled->style_state().hover.background_color.has_value() &&
                  styled->style().preferred_size.width == 1.0F &&

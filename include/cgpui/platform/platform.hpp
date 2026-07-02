@@ -114,6 +114,14 @@ struct NativeFileDialogResult {
   std::size_t filter_count = 0;
 };
 
+struct PlatformWindowChromeState {
+  bool supported = false;
+  std::string backend;
+  WindowChromeOptions requested;
+  WindowChromeOptions applied;
+  std::string reason;
+};
+
 [[nodiscard]] std::size_t native_menu_item_count(
     const NativeMenuModel& model);
 [[nodiscard]] std::size_t native_menu_accelerator_count(
@@ -131,6 +139,8 @@ class PlatformWindow {
   virtual void set_cursor(CursorShape cursor_shape) = 0;
   virtual void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) = 0;
+  virtual PlatformWindowChromeState apply_window_chrome(
+      WindowChromeOptions options);
   virtual void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update);
 };

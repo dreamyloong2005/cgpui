@@ -10,6 +10,12 @@
 
 int main() {
   cgpui::WindowDescriptor descriptor;
+  descriptor.chrome = cgpui::WindowChromeOptions{
+      .titlebar_visible = false,
+      .decorations = false,
+      .resizable = false,
+      .transparent_background = true,
+  };
   cgpui::WindowState state;
   state.framebuffer_size = descriptor.size;
   state.ime_text_input_support = cgpui::ImeTextInputSupport::unsupported;
@@ -318,6 +324,13 @@ int main() {
       .kind = native_file_dialog_options.kind,
       .filter_count = native_file_dialog_options.filters.size(),
   };
+  const cgpui::PlatformWindowChromeState platform_window_chrome{
+      .supported = false,
+      .backend = "test",
+      .requested = descriptor.chrome,
+      .applied = cgpui::WindowChromeOptions{},
+      .reason = "unsupported",
+  };
 
   cgpui::Win32SurfaceHandle win32_surface;
   cgpui::NativeSurfaceHandle surface = win32_surface;
@@ -370,7 +383,9 @@ int main() {
                  native_menu.items[0].action_name == "file.save" &&
                  native_file_dialog_result.kind ==
                      cgpui::NativeFileDialogKind::save_file &&
-                 native_file_dialog_result.filter_count == 1
+                 native_file_dialog_result.filter_count == 1 &&
+                 platform_window_chrome.requested.transparent_background &&
+                 !platform_window_chrome.applied.transparent_background
              ? 0
              : 1;
 }

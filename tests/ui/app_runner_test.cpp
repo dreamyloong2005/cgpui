@@ -388,6 +388,21 @@ int test_window_options_and_app_context_open_window_skeleton() {
       descriptor.size.height != 480.0F) {
     return 13;
   }
+  const cgpui::WindowDescriptor chrome_descriptor =
+      cgpui::WindowOptions{}
+          .title("Palette")
+          .size(400.0F, 320.0F)
+          .titlebar_visible(false)
+          .decorations(false)
+          .resizable(false)
+          .transparent(true)
+          .to_descriptor();
+  if (chrome_descriptor.chrome.titlebar_visible ||
+      chrome_descriptor.chrome.decorations ||
+      chrome_descriptor.chrome.resizable ||
+      !chrome_descriptor.chrome.transparent_background) {
+    return 20;
+  }
 
   FakeWindow window(cgpui::WindowState{
       .framebuffer_size = {.width = 320.0F, .height = 240.0F},
@@ -401,6 +416,8 @@ int test_window_options_and_app_context_open_window_skeleton() {
   bool after_frame_called = false;
   cgpui::WindowDescriptor opened_descriptor;
   cgpui::WindowDescriptor recorded_descriptor;
+  cgpui::WindowDescriptor chrome_opened_descriptor;
+  cgpui::WindowDescriptor chrome_recorded_descriptor;
   std::size_t recorded_count = 0;
 
   const int result = cgpui::run_app(
@@ -423,12 +440,24 @@ int test_window_options_and_app_context_open_window_skeleton() {
                                             .size(cgpui::Size{
                                                 .width = 640.0F,
                                                 .height = 480.0F}));
+                const cgpui::AppOpenedWindow chrome_opened =
+                    context.open_window(cgpui::WindowOptions{}
+                                            .title("Palette")
+                                            .size(400.0F, 320.0F)
+                                            .titlebar_visible(false)
+                                            .decorations(false)
+                                            .resizable(false)
+                                            .transparent(true));
                 opened_descriptor = opened.descriptor;
+                chrome_opened_descriptor = chrome_opened.descriptor;
                 const auto opened_windows =
                     context.runtime.app_opened_windows();
                 recorded_count = opened_windows.size();
                 if (!opened_windows.empty()) {
                   recorded_descriptor = opened_windows.front().descriptor;
+                }
+                if (opened_windows.size() > 1) {
+                  chrome_recorded_descriptor = opened_windows[1].descriptor;
                 }
                 context.runtime.set_after_frame_callback(
                     [&](const cgpui::ViewContext&) {
@@ -443,7 +472,7 @@ int test_window_options_and_app_context_open_window_skeleton() {
   if (!setup_called || !after_frame_called) {
     return 15;
   }
-  if (recorded_count != 1) {
+  if (recorded_count != 2) {
     return 16;
   }
   if (opened_descriptor.title != "Secondary Window" ||
@@ -456,10 +485,21 @@ int test_window_options_and_app_context_open_window_skeleton() {
       recorded_descriptor.size.height != opened_descriptor.size.height) {
     return 18;
   }
-  if (application.create_window_count != 2 ||
-      application.created_descriptors.size() != 2 ||
+  if (chrome_opened_descriptor.chrome.titlebar_visible ||
+      chrome_opened_descriptor.chrome.decorations ||
+      chrome_opened_descriptor.chrome.resizable ||
+      !chrome_opened_descriptor.chrome.transparent_background ||
+      chrome_recorded_descriptor.chrome.titlebar_visible ||
+      chrome_recorded_descriptor.chrome.decorations ||
+      chrome_recorded_descriptor.chrome.resizable ||
+      !chrome_recorded_descriptor.chrome.transparent_background) {
+    return 21;
+  }
+  if (application.create_window_count != 3 ||
+      application.created_descriptors.size() != 3 ||
       application.created_descriptors[0].title != "Secondary Window" ||
-      application.created_descriptors[1].title != "CGPUI") {
+      application.created_descriptors[1].title != "Palette" ||
+      application.created_descriptors[2].title != "CGPUI") {
     return 19;
   }
   return 0;

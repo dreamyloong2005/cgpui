@@ -788,6 +788,11 @@ struct WaylandXdgConfigureState {
   WaylandXdgToplevelState current_toplevel_state;
 };
 
+struct WaylandWindowChromeState {
+  PlatformWindowChromeState platform;
+  bool xdg_decoration_supported = false;
+};
+
 [[nodiscard]] std::string cursor_name_for_shape(CursorShape shape) {
   switch (shape) {
   case CursorShape::default_arrow:
@@ -858,6 +863,7 @@ class WaylandWindow final : public PlatformWindow {
       return std::unexpected(initialized.error());
     }
 
+    window->apply_window_chrome(descriptor.chrome);
     return window;
   }
 
@@ -902,6 +908,28 @@ class WaylandWindow final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override {
     text_input_state_.set_placement(placement);
     sync_text_input_state();
+  }
+
+  PlatformWindowChromeState apply_window_chrome(
+      WindowChromeOptions options) override {
+    const WindowChromeOptions applied{
+        .titlebar_visible = true,
+        .decorations = true,
+        .resizable = true,
+        .transparent_background = false,
+    };
+    chrome_state_ = WaylandWindowChromeState{
+        .platform =
+            PlatformWindowChromeState{
+                .supported = false,
+                .backend = "wayland",
+                .requested = options,
+                .applied = applied,
+                .reason = "xdg-decoration window chrome is not implemented",
+            },
+        .xdg_decoration_supported = false,
+    };
+    return chrome_state_.platform;
   }
 
   void update_accessibility_tree(
@@ -1186,6 +1214,7 @@ class WaylandWindow final : public PlatformWindow {
   WaylandTextInputState text_input_state_;
   WaylandAtspiAccessibilityAdapter atspi_accessibility_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
+  WaylandWindowChromeState chrome_state_;
   WaylandXdgConfigureState pending_configure_;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;
@@ -2673,6 +2702,11 @@ class WaylandApplication final : public PlatformApplication {
     void set_ime_text_input_placement(
         std::optional<ImeTextInputPlacement> placement) override {
       app_.set_window_ime_text_input_placement(*window_, placement);
+    }
+
+    PlatformWindowChromeState apply_window_chrome(
+        WindowChromeOptions options) override {
+      return window_->apply_window_chrome(options);
     }
 
     void update_accessibility_tree(

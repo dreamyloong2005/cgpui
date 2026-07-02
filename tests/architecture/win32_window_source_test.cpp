@@ -213,6 +213,13 @@ int main() {
       !contains(win32_text, "filter_count")) {
     return 64;
   }
+  if (!contains(win32_text, "Win32WindowChromeState") ||
+      !contains(win32_text, "apply_window_chrome(") ||
+      !contains(win32_text, "PlatformWindowChromeState") ||
+      !contains(win32_text, "titlebar_visible") ||
+      !contains(win32_text, "transparent_background")) {
+    return 65;
+  }
 
   const std::string xmake_text = read_source("xmake.lua");
   if (xmake_text.empty()) {

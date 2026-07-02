@@ -399,6 +399,31 @@ const wchar_t* cursor_id_for(CursorShape cursor_shape) {
   return MAKEINTRESOURCEW(32512);
 }
 
+struct Win32WindowChromeState {
+  PlatformWindowChromeState platform;
+  DWORD style = WS_OVERLAPPEDWINDOW;
+  DWORD extended_style = 0;
+};
+
+DWORD win32_window_style_for(const WindowChromeOptions& chrome) {
+  DWORD style = chrome.decorations ? WS_OVERLAPPEDWINDOW : WS_POPUP;
+  if (!chrome.titlebar_visible) {
+    style &= ~WS_CAPTION;
+  }
+  if (!chrome.resizable) {
+    style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
+  }
+  return style;
+}
+
+DWORD win32_window_extended_style_for(const WindowChromeOptions& chrome) {
+  DWORD style = 0;
+  if (chrome.transparent_background) {
+    style |= WS_EX_LAYERED;
+  }
+  return style;
+}
+
 class Win32Window final : public PlatformWindow {
  public:
   Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state)
@@ -461,6 +486,43 @@ class Win32Window final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override {
     state_.ime_text_input_placement = placement;
     apply_ime_text_input_placement();
+  }
+
+  PlatformWindowChromeState apply_window_chrome(
+      WindowChromeOptions options) override {
+    chrome_state_ = Win32WindowChromeState{
+        .platform =
+            PlatformWindowChromeState{
+                .supported = true,
+                .backend = "win32",
+                .requested = options,
+                .applied = options,
+            },
+        .style = win32_window_style_for(options),
+        .extended_style = win32_window_extended_style_for(options),
+    };
+
+    if (hwnd_ != nullptr) {
+      SetWindowLongPtrW(hwnd_, GWL_STYLE, static_cast<LONG_PTR>(chrome_state_.style));
+      SetWindowLongPtrW(
+          hwnd_,
+          GWL_EXSTYLE,
+          static_cast<LONG_PTR>(chrome_state_.extended_style));
+      if (options.transparent_background) {
+        SetLayeredWindowAttributes(hwnd_, 0, 255, LWA_ALPHA);
+      }
+      SetWindowPos(
+          hwnd_,
+          nullptr,
+          0,
+          0,
+          0,
+          0,
+          SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE |
+              SWP_FRAMECHANGED);
+    }
+
+    return chrome_state_.platform;
   }
 
   void update_accessibility_tree(
@@ -732,6 +794,7 @@ class Win32Window final : public PlatformWindow {
   HCURSOR current_cursor_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
+  Win32WindowChromeState chrome_state_;
   Win32UiaAccessibilityAdapter uia_accessibility_;
   std::unique_ptr<Win32OleDropTarget> ole_drop_target_;
   Win32OleDropTargetRegistrationState ole_drop_target_registration_;
@@ -974,11 +1037,14 @@ class Win32Application final : public PlatformApplication {
     auto window = std::make_unique<Win32Window>(instance_, std::move(callback), state);
 
     const auto title = widen(descriptor.title);
+    const DWORD style = win32_window_style_for(descriptor.chrome);
+    const DWORD extended_style =
+        win32_window_extended_style_for(descriptor.chrome);
     HWND hwnd = CreateWindowExW(
-        0,
+        extended_style,
         class_name,
         title.c_str(),
-        WS_OVERLAPPEDWINDOW,
+        style,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
         static_cast<int>(descriptor.size.width),
@@ -993,6 +1059,7 @@ class Win32Application final : public PlatformApplication {
           .message = "CreateWindowExW failed"});
     }
 
+    window->apply_window_chrome(descriptor.chrome);
     ShowWindow(hwnd, SW_SHOW);
     window->update_size();
     windows_.push_back(window.get());

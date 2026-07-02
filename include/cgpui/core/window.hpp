@@ -18,9 +18,17 @@ enum class ImeTextInputSupport {
   available,
 };
 
+struct WindowChromeOptions {
+  bool titlebar_visible = true;
+  bool decorations = true;
+  bool resizable = true;
+  bool transparent_background = false;
+};
+
 struct WindowDescriptor {
   std::string title = "CGPUI";
   Size size{1280.0F, 720.0F};
+  WindowChromeOptions chrome;
 };
 
 struct WindowState {

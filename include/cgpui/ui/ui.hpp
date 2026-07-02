@@ -235,6 +235,10 @@ struct WindowOptions {
   WindowOptions& title(std::string title);
   WindowOptions& size(Size size);
   WindowOptions& size(float width, float height);
+  WindowOptions& titlebar_visible(bool visible);
+  WindowOptions& decorations(bool enabled);
+  WindowOptions& resizable(bool enabled);
+  WindowOptions& transparent(bool enabled);
   [[nodiscard]] WindowDescriptor to_descriptor() const;
 };
 
