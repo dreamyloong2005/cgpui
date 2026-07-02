@@ -51,9 +51,11 @@ desktop integration surfaces remain separate future work.
   deterministic fallback shaping and fallback glyph raster data, glyph metadata,
   glyph cache/atlas allocation records, text paint commands, textured glyph
   quad records, caret/selection metadata, opacity and transform metadata,
-  HiDPI scale propagation, renderer command batching diagnostics, frame
-  statistics, unsupported-command diagnostics, and Vulkan text preparation
-  reports that distinguish glyph-backed work from metadata-only placeholders.
+  HiDPI scale propagation, renderer command batching diagnostics, submission
+  plan records, frame statistics, unsupported-command diagnostics, and
+  frame-level Vulkan text/render reports that distinguish glyph-backed work,
+  planned submissions, and remaining renderer gaps from metadata-only
+  placeholders.
 - Platform hooks on active targets: Win32 cursor application, Win32 clipboard,
   Wayland clipboard support state plus text selection payload extraction,
   focused text IME geometry, Win32 IME placement, Wayland text-input v3

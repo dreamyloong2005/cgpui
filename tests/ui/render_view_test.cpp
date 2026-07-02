@@ -459,8 +459,34 @@ int main() {
           0.25F) {
     return 23;
   }
-  return metadata_stats.composition_stack_command_count == 1 &&
-                 metadata_stats.max_composition_stack_depth == 2
+  if (metadata_stats.composition_stack_command_count != 1 ||
+      metadata_stats.max_composition_stack_depth != 2) {
+    return 24;
+  }
+
+  cgpui::RendererCommandReport command_report;
+  command_report.supported_command_count = metadata_stats.submitted_command_count;
+  command_report.submission_plan_record_count = 1;
+  command_report.submission_plan_records.push_back(
+      cgpui::RendererSubmissionPlanRecord{
+          .key =
+              cgpui::RendererSubmissionPlanKey{
+                  .primitive_kind = cgpui::RendererPrimitiveKind::solid_rect,
+                  .clip_rect = metadata_frame.last_rect.clip_rect,
+                  .clip_stack = metadata_frame.last_rect.clip_stack,
+              },
+          .pipeline =
+              cgpui::TextSamplerPipelineDescriptor{
+                  .primitive_kind = cgpui::RendererPrimitiveKind::solid_rect,
+              },
+          .command_count = metadata_stats.submitted_command_count,
+          .command_indices = {0},
+      });
+  const cgpui::RendererFrameReport frame_report =
+      cgpui::renderer_frame_report_from_command_report(command_report);
+  return frame_report.supported_primitive_count == 1 &&
+                 frame_report.submission_plan_record_count == 1 &&
+                 frame_report.gap_count == 0
              ? 0
-             : 24;
+             : 25;
 }
