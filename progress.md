@@ -1,5 +1,56 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 204 Native Menu And Accelerator API Skeleton
+
+- Continued `.worktrees/native-menu-accelerator-api` on
+  `codex/native-menu-accelerator-api` from `master` at
+  `6f5de49 docs: mark step 203 merged`.
+- Baseline targeted tests had already passed on Windows and WSL Arch Linux in
+  the handoff state.
+- RED coverage had already been added in `tests/ui/app_runner_test.cpp`,
+  `tests/architecture/win32_window_source_test.cpp`,
+  `tests/architecture/wayland_window_source_test.cpp`, and header-cleanliness
+  tests. RED failed as expected on missing `NativeMenuModel`,
+  `NativeMenuItem`, `NativeMenuItemKind`, `NativeMenuAccelerator`,
+  `PlatformMenuInstallationResult`, `native_menu_item_count(...)`, and
+  `native_menu_accelerator_count(...)`.
+- GREEN adds platform-neutral menu and accelerator descriptor types, recursive
+  item/accelerator counters, runtime/context menu installation forwarding,
+  stored `NativeMenuInstallation` state, and inert Win32/Wayland backend
+  diagnostics with backend names and menu/item/accelerator counts.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-menu-accelerator-api -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Feature-worktree Windows full debug initially failed only
+  `clipboard_test/default`; targeted `xmake test -P . clipboard_test/default`
+  passed 1/1, and the Windows full debug rerun passed 30/30.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-menu-accelerator-api -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Committed Step 204 as
+  `25c5e5f feat: add native menu accelerator skeleton` and fast-forward merged
+  it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Post-merge Windows full debug initially failed only
+  `clipboard_test/default`; targeted `xmake test -P . clipboard_test/default`
+  passed 1/1, and the full-suite rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 204 is marked merged and post-merge verified.
+  Step 205, native file dialog API skeleton, is the next implementation slice
+  after docs closeout and cleanup.
+
 ## 2026-07-02 Step 169 Glyph Bitmap And Fallback Rasterizer
 
 - Started Step 169 in `.worktrees/glyph-raster-data-model` on

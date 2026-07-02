@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Native Menu And Accelerator API Skeleton
+
+- Step 204 adds the first platform-neutral native menu surface:
+  `NativeMenuModel`, `NativeMenuItem`, `NativeMenuItemKind`,
+  `NativeMenuAccelerator`, `PlatformMenuInstallationResult`, and
+  `NativeMenuInstallation`.
+- `AppContext`, `WindowRuntimeContext`, and `WindowRuntime` can now install a
+  native menu model and retain the last installation record. The retained model
+  keeps submenu hierarchy, command action names, enabled/checked state, and
+  accelerator metadata visible to later command-palette and native-menu depth
+  work.
+- Win32 and Wayland now both own inert native menu state objects that report
+  backend names, root menu count, recursive item count, and accelerator count
+  while returning `supported = false`. This preserves graceful behavior until
+  real Win32 `HMENU`/accelerator tables and Wayland/desktop-shell menu
+  integration are designed.
+- Recursive `native_menu_item_count(...)` and
+  `native_menu_accelerator_count(...)` live at the platform-neutral boundary,
+  so Step 205 can add file dialog request/result APIs without reopening menu
+  model counting or runtime forwarding.
+
 ## 2026-07-03 Win32 OLE Drop Target Skeleton
 
 - Step 203 adds an internal `Win32OleDropTarget` implementing `IDropTarget`,

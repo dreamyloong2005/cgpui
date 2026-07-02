@@ -563,11 +563,17 @@ rerun and passing full-suite rerun.
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 
-- [ ] Add RED coverage for platform-neutral menu models, accelerator descriptors, and runtime installation.
-- [ ] Expected RED: no menu/accelerator public API or platform hook exists.
-- [ ] GREEN: add inert menu model storage and platform install hooks with Win32/Wayland skeleton diagnostics.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for platform-neutral menu models, accelerator descriptors, and runtime installation.
+- [x] Expected RED: no menu/accelerator public API or platform hook exists.
+- [x] GREEN: add inert menu model storage and platform install hooks with Win32/Wayland skeleton diagnostics.
+- [x] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `25c5e5f feat: add native menu accelerator skeleton`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30 after
+isolating one transient `clipboard_test/default` full-suite failure with a
+passing targeted rerun and passing full-suite rerun.
 
 ## Step 205: Native File Dialog API Skeleton
 

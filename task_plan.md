@@ -724,7 +724,7 @@ follow-on goal is now complete on the Windows/Linux track.
 201. [x] Wayland cursor theme image state.
 202. [x] Wayland XDG configure lifecycle state.
 203. [x] Win32 OLE drop target skeleton.
-204. [ ] Native menu and accelerator API skeleton.
+204. [x] Native menu and accelerator API skeleton.
 205. [ ] Native file dialog API skeleton.
 206. [ ] Window chrome customization skeleton.
 207. [ ] App command palette registry.
@@ -745,11 +745,29 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 203, Win32 OLE drop target skeleton, is merged on `master` at
-`3f26a33 feat: add win32 ole drop target skeleton` and post-merge verified on
-Windows and WSL Arch Linux. Step 204, native menu and accelerator API skeleton,
-is the next implementation slice. The track remains Windows/Linux first;
+Step 204, native menu and accelerator API skeleton, is merged on `master` at
+`25c5e5f feat: add native menu accelerator skeleton` and post-merge verified
+on Windows and WSL Arch Linux. Step 205, native file dialog API skeleton, is
+the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 204, native menu and accelerator API skeleton, is merged on `master` at
+`25c5e5f feat: add native menu accelerator skeleton`. RED failed as expected
+on missing platform-neutral native menu model, accelerator descriptor,
+installation result, runtime forwarding, and Win32/Wayland platform hook APIs.
+GREEN adds `NativeMenuModel`, `NativeMenuItem`, `NativeMenuAccelerator`,
+`PlatformMenuInstallationResult`, `NativeMenuInstallation`, recursive
+item/accelerator counters, `AppContext`/`WindowRuntime` installation helpers,
+and inert Win32/Wayland backend diagnostics that report item and accelerator
+counts while remaining unsupported. Feature-worktree targeted tests passed 5/5
+on Windows and WSL Arch Linux, `git diff --check` exited 0 with only expected
+CRLF warnings, WSL full debug passed 27/27, and Windows full debug passed 30/30
+after isolating a transient `clipboard_test/default` batch failure with a
+passing targeted rerun and full-suite rerun. Post-merge targeted tests passed
+5/5 on Windows and WSL Arch Linux, `git diff --check` produced no output, WSL
+full debug passed 27/27, and Windows full debug passed 30/30 after the same
+clipboard targeted/rerun handling. Step 205, native file dialog API skeleton,
+is the next implementation slice.
 
 Step 203, Win32 OLE drop target skeleton, is merged on `master` at
 `3f26a33 feat: add win32 ole drop target skeleton`. RED failed as expected on
