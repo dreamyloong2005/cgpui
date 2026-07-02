@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <iostream>
 
@@ -1111,6 +1112,102 @@ int test_renderer_reports_nested_opacity_transform_stack_metadata() {
              : 59;
 }
 
+int test_renderer_report_builds_submission_plan_records() {
+  const cgpui::Rect outer_clip{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 128.0F, .height = 96.0F},
+  };
+  const cgpui::Rect inner_clip{
+      .origin = {.x = 4.0F, .y = 6.0F},
+      .size = {.width = 96.0F, .height = 64.0F},
+  };
+  const cgpui::RendererClipStackRecord clip_stack =
+      cgpui::renderer_clip_stack_record(
+          std::array<cgpui::Rect, 2>{outer_clip, inner_clip});
+
+  const std::vector<cgpui::SolidRect> rects{
+      cgpui::SolidRect{
+          .rect = {.origin = {.x = 8.0F, .y = 10.0F},
+                   .size = {.width = 24.0F, .height = 16.0F}},
+          .color = {.r = 0.8F, .g = 0.2F, .b = 0.1F, .a = 1.0F},
+          .clip_rect = inner_clip,
+          .clip_stack = clip_stack,
+      },
+  };
+  const std::vector<cgpui::RoundedRectDraw> rounded_rects{
+      cgpui::RoundedRectDraw{
+          .rect = {.origin = {.x = 36.0F, .y = 10.0F},
+                   .size = {.width = 20.0F, .height = 16.0F}},
+          .color = {.r = 0.1F, .g = 0.5F, .b = 0.8F, .a = 1.0F},
+          .radius = cgpui::BorderRadii::all(4.0F),
+          .clip_rect = inner_clip,
+          .clip_stack = clip_stack,
+      },
+  };
+  const std::vector<cgpui::TextDraw> text_draws{
+      cgpui::TextDraw{
+          .bounds = {.origin = {.x = 8.0F, .y = 32.0F},
+                     .size = {.width = 48.0F, .height = 24.0F}},
+          .color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+          .font = {.family = "Inter"},
+          .content = "ab",
+          .byte_length = 2,
+          .font_size = 20.0F,
+          .device_font_size = 20.0F,
+          .glyphs = cgpui::text_glyph_paint_metadata(
+              cgpui::shape_text(
+                  "ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F),
+              cgpui::Point{.x = 8.0F, .y = 32.0F}),
+          .clip_rect = inner_clip,
+          .clip_stack = clip_stack,
+      },
+  };
+
+  cgpui::GlyphCache cache;
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(
+          rects,
+          rounded_rects,
+          text_draws,
+          cache);
+  if (report.submission_plan_record_count != 3 ||
+      report.submission_plan_records.size() != 3) {
+    return 60;
+  }
+
+  const cgpui::RendererSubmissionPlanRecord& solid_submission =
+      report.submission_plan_records[0];
+  if (solid_submission.key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::solid_rect ||
+      solid_submission.key.atlas_page_index.has_value() ||
+      solid_submission.key.clip_stack.full_depth != 2 ||
+      solid_submission.pipeline.primitive_kind !=
+          cgpui::RendererPrimitiveKind::solid_rect ||
+      solid_submission.command_count != 1 ||
+      solid_submission.command_indices[0] != 0) {
+    return 61;
+  }
+
+  const cgpui::RendererSubmissionPlanRecord& text_submission =
+      report.submission_plan_records[2];
+  if (text_submission.key.primitive_kind != cgpui::RendererPrimitiveKind::text ||
+      !text_submission.key.atlas_page_index.has_value() ||
+      *text_submission.key.atlas_page_index != 0 ||
+      text_submission.key.clip_stack.full_depth != 2 ||
+      text_submission.pipeline != report.text_render.text_sampler_pipeline ||
+      text_submission.glyph_quad_count != 2 ||
+      text_submission.command_count != 1 ||
+      text_submission.command_indices[0] != 0) {
+    return 62;
+  }
+
+  return report.batches.size() == 3 &&
+                 report.batches[2].key.primitive_kind ==
+                     cgpui::RendererPrimitiveKind::text
+             ? 0
+             : 63;
+}
+
 } // namespace
 
 int main() {
@@ -1184,6 +1281,10 @@ int main() {
   }
   if (const int result =
           test_renderer_reports_nested_opacity_transform_stack_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_renderer_report_builds_submission_plan_records();
       result != 0) {
     return result;
   }

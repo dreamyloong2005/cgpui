@@ -150,6 +150,161 @@ void append_command_batch(
   batch.command_indices.push_back(command_index);
 }
 
+struct TextDrawAtlasPageUsage {
+  std::size_t page_index = 0;
+  std::size_t glyph_quad_count = 0;
+};
+
+void append_text_draw_atlas_page_usage(
+    std::vector<TextDrawAtlasPageUsage>& usages,
+    std::size_t page_index) {
+  for (TextDrawAtlasPageUsage& usage : usages) {
+    if (usage.page_index == page_index) {
+      usage.glyph_quad_count += 1;
+      return;
+    }
+  }
+  usages.push_back(TextDrawAtlasPageUsage{
+      .page_index = page_index,
+      .glyph_quad_count = 1,
+  });
+}
+
+[[nodiscard]] TextSamplerPipelineDescriptor submission_pipeline_for(
+    RendererPrimitiveKind primitive_kind,
+    const TextSamplerPipelineDescriptor& text_sampler_pipeline) {
+  if (primitive_kind == RendererPrimitiveKind::text) {
+    return text_sampler_pipeline;
+  }
+
+  return TextSamplerPipelineDescriptor{
+      .primitive_kind = primitive_kind,
+      .uses_alpha_sampling = false,
+      .uses_text_color = true,
+  };
+}
+
+[[nodiscard]] bool same_submission_plan_key(
+    const RendererSubmissionPlanKey& lhs,
+    const RendererSubmissionPlanKey& rhs) {
+  return lhs.primitive_kind == rhs.primitive_kind &&
+         same_clip_rect(lhs.clip_rect, rhs.clip_rect) &&
+         same_clip_stack(lhs.clip_stack, rhs.clip_stack) &&
+         lhs.atlas_page_index == rhs.atlas_page_index;
+}
+
+void append_submission_plan_record(
+    std::vector<RendererSubmissionPlanRecord>& records,
+    RendererSubmissionPlanKey key,
+    TextSamplerPipelineDescriptor pipeline,
+    std::size_t batch_index,
+    const RendererCommandBatch& batch,
+    std::size_t glyph_quad_count) {
+  if (records.empty() ||
+      !same_submission_plan_key(records.back().key, key) ||
+      records.back().pipeline != pipeline) {
+    records.push_back(RendererSubmissionPlanRecord{
+        .key = std::move(key),
+        .pipeline = pipeline,
+    });
+  }
+
+  RendererSubmissionPlanRecord& record = records.back();
+  record.batch_count += 1;
+  record.command_count += batch.command_count;
+  record.glyph_quad_count += glyph_quad_count;
+  record.batch_indices.push_back(batch_index);
+  record.command_indices.insert(
+      record.command_indices.end(),
+      batch.command_indices.begin(),
+      batch.command_indices.end());
+}
+
+[[nodiscard]] std::vector<RendererSubmissionPlanRecord>
+build_renderer_submission_plan(
+    std::span<const RendererCommandBatch> batches,
+    std::span<const std::vector<TextDrawAtlasPageUsage>> text_draw_atlas_pages,
+    const TextSamplerPipelineDescriptor& text_sampler_pipeline) {
+  std::vector<RendererSubmissionPlanRecord> records;
+  records.reserve(batches.size());
+
+  for (std::size_t batch_index = 0; batch_index < batches.size();
+       ++batch_index) {
+    const RendererCommandBatch& batch = batches[batch_index];
+    const TextSamplerPipelineDescriptor pipeline = submission_pipeline_for(
+        batch.key.primitive_kind,
+        text_sampler_pipeline);
+    if (batch.key.primitive_kind != RendererPrimitiveKind::text) {
+      append_submission_plan_record(
+          records,
+          RendererSubmissionPlanKey{
+              .primitive_kind = batch.key.primitive_kind,
+              .clip_rect = batch.key.clip_rect,
+              .clip_stack = batch.key.clip_stack,
+          },
+          pipeline,
+          batch_index,
+          batch,
+          0);
+      continue;
+    }
+
+    bool appended_text_page = false;
+    for (const std::size_t command_index : batch.command_indices) {
+      if (command_index >= text_draw_atlas_pages.size()) {
+        continue;
+      }
+      for (const TextDrawAtlasPageUsage& usage :
+           text_draw_atlas_pages[command_index]) {
+        append_submission_plan_record(
+            records,
+            RendererSubmissionPlanKey{
+                .primitive_kind = batch.key.primitive_kind,
+                .clip_rect = batch.key.clip_rect,
+                .clip_stack = batch.key.clip_stack,
+                .atlas_page_index = usage.page_index,
+            },
+            pipeline,
+            batch_index,
+            RendererCommandBatch{
+                .key = batch.key,
+                .command_count = 1,
+                .command_indices = {command_index},
+            },
+            usage.glyph_quad_count);
+        appended_text_page = true;
+      }
+    }
+
+    if (!appended_text_page) {
+      append_submission_plan_record(
+          records,
+          RendererSubmissionPlanKey{
+              .primitive_kind = batch.key.primitive_kind,
+              .clip_rect = batch.key.clip_rect,
+              .clip_stack = batch.key.clip_stack,
+          },
+          pipeline,
+          batch_index,
+          batch,
+          0);
+    }
+  }
+
+  return records;
+}
+
+void record_submission_plan_statistics(RendererCommandReport& report) {
+  report.submission_plan_record_count = report.submission_plan_records.size();
+  report.submission_plan_command_count = 0;
+  report.submission_plan_glyph_quad_count = 0;
+  for (const RendererSubmissionPlanRecord& record :
+       report.submission_plan_records) {
+    report.submission_plan_command_count += record.command_count;
+    report.submission_plan_glyph_quad_count += record.glyph_quad_count;
+  }
+}
+
 [[nodiscard]] bool is_vulkan_supported_renderer_primitive(
     RendererPrimitiveKind primitive_kind) {
   return primitive_kind == RendererPrimitiveKind::solid_rect ||
@@ -1815,6 +1970,11 @@ RendererCommandReport vulkan_build_renderer_command_report(
     }
   }
 
+  report.submission_plan_records = build_renderer_submission_plan(
+      report.batches,
+      std::span<const std::vector<TextDrawAtlasPageUsage>>{},
+      report.text_render.text_sampler_pipeline);
+  record_submission_plan_statistics(report);
   return report;
 }
 
@@ -1901,7 +2061,11 @@ RendererCommandReport vulkan_build_renderer_command_report(
       report.text_selection_geometries.size();
   report.text_caret_geometries = vulkan_build_text_caret_geometry(carets);
   report.text_caret_geometry_count = report.text_caret_geometries.size();
-  for (const TextDraw& text_draw : text_draws) {
+  std::vector<std::vector<TextDrawAtlasPageUsage>> text_draw_atlas_pages(
+      text_draws.size());
+  for (std::size_t text_index = 0; text_index < text_draws.size();
+       ++text_index) {
+    const TextDraw& text_draw = text_draws[text_index];
     report.text_render.text_draw_count += 1;
     const std::size_t lookup_begin = glyph_cache.lookups().size();
     const std::size_t upload_begin = glyph_cache.upload_records().size();
@@ -1909,6 +2073,11 @@ RendererCommandReport vulkan_build_renderer_command_report(
         vulkan_build_textured_glyph_quads(text_draw, glyph_cache);
     const std::size_t upload_count =
         glyph_cache.upload_records().size() - upload_begin;
+    for (const TexturedGlyphQuad& quad : quads) {
+      append_text_draw_atlas_page_usage(
+          text_draw_atlas_pages[text_index],
+          quad.page_index);
+    }
 
     for (std::size_t index = lookup_begin; index < glyph_cache.lookups().size();
          ++index) {
@@ -1933,6 +2102,11 @@ RendererCommandReport vulkan_build_renderer_command_report(
     }
   }
 
+  report.submission_plan_records = build_renderer_submission_plan(
+      report.batches,
+      text_draw_atlas_pages,
+      report.text_render.text_sampler_pipeline);
+  record_submission_plan_statistics(report);
   return report;
 }
 
