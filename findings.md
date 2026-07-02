@@ -3336,3 +3336,19 @@
 - This is still deterministic fallback planning. It does not perform
   DirectWrite/fontconfig discovery, per-codepoint coverage checks, shaping
   fallback splits, or platform font enumeration.
+
+## 2026-07-03 Platform Font Discovery Records
+
+- Step 190 adds `PlatformApplication::discover_font_records()` as the
+  platform-facing record hook and keeps `discover_fonts()` as the database
+  adapter over those records.
+- Win32 now exposes a deterministic platform `FontFaceDescriptor` for
+  `Segoe UI`; Wayland/Linux exposes a deterministic `sans-serif` fontconfig
+  record. Both records keep `FontSource::platform`, family, postscript/name,
+  and path-like metadata visible to tests without enumerating system fonts.
+- Text helpers now include `font_database_from_discovered_faces(...)`, with
+  `discover_test_fonts(...)` delegating to the same builder so platform and
+  test records preserve source/path/name metadata consistently.
+- This is still conservative discovery plumbing. It is not real DirectWrite or
+  fontconfig enumeration, does not probe files, and does not verify glyph
+  coverage.

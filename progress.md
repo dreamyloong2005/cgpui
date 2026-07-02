@@ -6317,3 +6317,58 @@
   this progress log so Step 189 is marked merged and post-merge verified. Step
   190, platform font discovery records for Win32 and Wayland/Linux, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-03 Step 190 Platform Font Discovery Records
+
+- Created `.worktrees/platform-font-discovery-records` on
+  `codex/platform-font-discovery-records` from `master` at
+  `24be43e docs: mark step 189 merged`.
+- Baseline Windows targeted tests passed 5/5:
+  `xmake test -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- Baseline WSL targeted tests passed 5/5:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-font-discovery-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- RED coverage:
+  `text_model_test/default` failed as expected on missing
+  `font_database_from_discovered_faces(...)`. The architecture tests then
+  failed on missing platform `discover_font_records()` source markers until the
+  Win32 and Wayland records were added.
+- GREEN adds `PlatformApplication::discover_font_records()`,
+  `font_database_from_discovered_faces(...)`, deterministic Win32 `Segoe UI`
+  and Wayland/Linux `sans-serif` records, and source tests for
+  `FontSource::platform`, family, and path/name metadata.
+- A test-only mismatch was found after the first GREEN compile: the architecture
+  tests expected `discover_font_records() const override` on one line while the
+  implementation formatted `const override` on the next line. The assertion was
+  corrected to check the method name and `const override` separately.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-font-discovery-records -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-font-discovery-records -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 190 as
+  `c865dc9 feat: add platform font discovery records` and fast-forward merged
+  it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 190 is marked merged and post-merge verified. Step
+  191, grapheme-aware cursor movement skeleton, is the next implementation
+  slice after docs closeout and cleanup.

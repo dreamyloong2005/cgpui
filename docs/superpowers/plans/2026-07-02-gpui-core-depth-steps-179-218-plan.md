@@ -263,17 +263,22 @@
 
 **Files:**
 - Modify: `include/cgpui/platform/platform.hpp`
+- Modify: `include/cgpui/ui/text.hpp`
 - Modify: `src/platform/win32/win32_application.cpp`
 - Modify: `src/platform/linux/wayland_application.cpp`
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 - Modify: `tests/ui/text_model_test.cpp`
 
-- [ ] Add RED coverage for platform font discovery records with source, family, and path/name metadata.
-- [ ] Expected RED: Win32 and Wayland discovery overrides remain gracefully empty.
-- [ ] GREEN: add deterministic discovery hooks with test-visible records while keeping system font enumeration conservative.
-- [ ] Targeted command: `xmake test -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for platform font discovery records with source, family, and path/name metadata.
+- [x] Expected RED: Win32 and Wayland discovery overrides remain gracefully empty.
+- [x] GREEN: add deterministic discovery hooks with test-visible records while keeping system font enumeration conservative.
+- [x] Targeted command: `xmake test -P . text_model_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `c865dc9 feat: add platform font discovery records`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 191: Grapheme-Aware Cursor Movement Skeleton
 
