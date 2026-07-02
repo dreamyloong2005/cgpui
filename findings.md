@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-02 Glyph Bitmap And Fallback Rasterizer
+
+- Step 169 adds CPU-side fallback raster data in `include/cgpui/ui/text.hpp`,
+  not platform font rasterization or Vulkan texture upload. The new data model
+  is `GlyphBitmap`, `GlyphRasterizerOptions`, and `RasterizedGlyph`.
+- `rasterize_fallback_glyph(...)` consumes the existing `TextGlyphPaint`
+  metadata from Step 151/152. It preserves the `GlyphAtlasKey`, uses
+  `device_advance` for bitmap width, uses `key.device_font_size` for bitmap
+  height, records the same advance/device font size, and derives a stable
+  fallback baseline at 80% of device font size.
+- The fallback bitmap is an alpha-only buffer with deterministic padding and
+  foreground/background alpha options. This is enough for Step 170 to pack and
+  upload bytes into atlas records without depending on DirectWrite,
+  fontconfig, HarfBuzz, or real Vulkan images yet.
+- Header cleanliness coverage now proves the glyph raster data model is usable
+  through both UI text headers and renderer-facing includes. The renderer still
+  stores placeholder atlas bounds until Step 170 teaches the glyph cache to
+  allocate atlas slots from `RasterizedGlyph` bitmap data.
+
 ## 2026-07-02 Steps 169-178 Depth Pass Planning
 
 - The next ten-step track should continue Windows/Linux depth work instead of

@@ -1,5 +1,46 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-02 Step 169 Glyph Bitmap And Fallback Rasterizer
+
+- Started Step 169 in `.worktrees/glyph-raster-data-model` on
+  `codex/glyph-raster-data-model` from `master` at
+  `f430051 docs: plan gpui core depth steps`.
+- Baseline targeted tests passed before edits on Windows and WSL Arch Linux:
+  `text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3 on both platforms.
+- RED coverage was added to `tests/ui/text_model_test.cpp`,
+  `tests/header_cleanliness/ui_header_cleanliness.cpp`, and
+  `tests/header_cleanliness/core_header_cleanliness.cpp`. RED failed as
+  expected on missing `RasterizedGlyph`, `GlyphRasterizerOptions`, and
+  `rasterize_fallback_glyph(...)`.
+- GREEN adds `GlyphBitmap`, `GlyphRasterizerOptions`, `RasterizedGlyph`,
+  `rasterized_glyph_dimension(...)`, and `rasterize_fallback_glyph(...)` to
+  `include/cgpui/ui/text.hpp`. The fallback rasterizer creates deterministic
+  alpha-only bitmap data from existing `TextGlyphPaint` metadata.
+- Verified feature-worktree targeted tests on Windows and WSL Arch Linux:
+  `text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3 on both platforms.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and produced no output after merge on `master`.
+- Verified feature-worktree WSL Arch Linux full debug: 27/27 passed.
+- The first feature-worktree Windows full debug run saw the known
+  `clipboard_test/default` full-suite flake; targeted `clipboard_test/default`
+  passed 1/1 immediately after, and the Windows full debug rerun passed 30/30.
+- Committed Step 169 as `2805ed5 feat: add fallback glyph raster data` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests on Windows and WSL Arch Linux:
+  `text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3 on both platforms.
+- Verified post-merge WSL Arch Linux full debug: 27/27 passed.
+- The first post-merge Windows full debug run again saw only
+  `clipboard_test/default` fail in the full-suite batch; targeted
+  `clipboard_test/default` passed 1/1 and the Windows full debug rerun passed
+  30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan, findings, and this
+  progress log so Step 169 is marked merged and post-merge verified. Step 170,
+  glyph atlas page allocation, slot packing, and upload-record API, is the
+  next implementation slice after docs closeout and cleanup.
+
 ## 2026-07-02 Steps 169-178 Depth Pass Planning
 
 - Continued the active goal "往后做10步" after Step 168.

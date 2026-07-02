@@ -30,11 +30,12 @@
 - Modify: `tests/ui/text_test.cpp` or create this test target if text coverage is split elsewhere
 - Modify: `xmake.lua` only if a new test target is required
 
-- [ ] Add RED coverage for `GlyphBitmap`, `RasterizedGlyph`, `GlyphRasterizerOptions`, and `rasterize_fallback_glyph(...)`.
-- [ ] Expected RED: build fails on missing raster data model APIs.
-- [ ] GREEN: add deterministic alpha bitmap data for each fallback glyph using glyph key, byte length, device font size, advance, width, height, baseline offset, and left/top bearing metadata.
-- [ ] Targeted command: `xmake test -P . text_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/glyph-raster-data-model -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- [x] Add RED coverage for `GlyphBitmap`, `RasterizedGlyph`, `GlyphRasterizerOptions`, and `rasterize_fallback_glyph(...)`.
+- [x] Expected RED: build fails on missing raster data model APIs.
+- [x] GREEN: add deterministic alpha bitmap data for each fallback glyph using glyph key, byte length, device font size, advance, width, height, baseline offset, and left/top bearing metadata.
+- [x] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default` passed 3/3 on Windows after merge.
+- [x] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default core_header_cleanliness/default'` passed 3/3 after merge.
+- [x] Full post-merge verification passed: WSL Arch Linux full debug 27/27; Windows `clipboard_test/default` failed once during a full-suite batch, then targeted `clipboard_test/default` passed 1/1 and Windows full debug rerun passed 30/30.
 
 ## Step 170: Glyph Atlas Slot Allocation And Upload Records
 

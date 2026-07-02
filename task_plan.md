@@ -652,7 +652,7 @@ follow-on goal is now complete on the Windows/Linux track.
 166. [x] Accessibility tree skeleton for labels, buttons, text inputs, and focus state.
 167. [x] Windows/Linux demo smoke tests covering window, input, text, clipboard, and redraw flows.
 168. [x] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
-169. [ ] Glyph bitmap/raster data model and deterministic fallback glyph rasterizer.
+169. [x] Glyph bitmap/raster data model and deterministic fallback glyph rasterizer.
 170. [ ] Glyph atlas page allocation, slot packing, and upload-record API.
 171. [ ] Vulkan textured glyph quad command generation from atlas entries.
 172. [ ] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
@@ -665,15 +665,19 @@ follow-on goal is now complete on the Windows/Linux track.
 
 ## Active Step
 
-Current handoff: Step 168, GPUI-core API parity audit document with remaining
-gaps and Mac parity handoff boundaries, is merged on `master` at
-`c16689e docs: add gpui core api parity audit` and post-merge verified on
-Windows and WSL Arch Linux. The 168-step Windows/Linux follow-on goal is
-complete. The active goal is now Steps 169-178, a Windows/Linux depth pass over
-Vulkan text rendering, Wayland protocol payload handling, native accessibility
-adapters, and native additional-window creation. Step 169, glyph bitmap/raster
-data model and deterministic fallback glyph rasterizer, is the next
-implementation slice.
+Current handoff: Step 169, glyph bitmap/raster data model and deterministic
+fallback glyph rasterizer, is merged on `master` at
+`2805ed5 feat: add fallback glyph raster data` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`RasterizedGlyph`, `GlyphRasterizerOptions`, and
+`rasterize_fallback_glyph(...)`. GREEN adds CPU-side `GlyphBitmap`,
+`RasterizedGlyph`, rasterizer options, and deterministic fallback alpha
+bitmaps derived from existing glyph paint metadata. Post-merge targeted
+coverage passed 3/3 on Windows and 3/3 on WSL Arch Linux, `git diff --check`
+produced no output, WSL full debug passed 27/27, and Windows full debug passed
+30/30 after a single isolated `clipboard_test/default` rerun cleared the known
+full-suite clipboard flake. Step 170, glyph atlas page allocation, slot
+packing, and upload-record API, is the next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
