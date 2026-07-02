@@ -52,11 +52,15 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/renderer/vulkan_frame_lifetime_test.cpp`
 
-- [ ] Add RED coverage for persistent atlas texture resource records keyed by atlas page.
-- [ ] Expected RED: Vulkan renderer reports upload plans but no texture resource lifetime state.
-- [ ] GREEN: add internal resource records for atlas pages with stable create/reuse/drop diagnostics; keep real GPU allocation guarded behind the existing Vulkan surface path.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default vulkan_frame_lifetime_test/default`.
-- [ ] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-texture-resources -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+- [x] Add RED coverage for persistent atlas texture resource records keyed by atlas page.
+- [x] Expected RED: Vulkan renderer reports upload plans but no texture resource lifetime state.
+- [x] GREEN: add internal resource records for atlas pages with stable create/reuse/drop diagnostics; keep real GPU allocation guarded behind the existing Vulkan surface path.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default vulkan_frame_lifetime_test/default`.
+- [x] WSL targeted command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-texture-resources -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+
+**Merged:** `8446fb7 feat: add glyph atlas texture resource state`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 1/1,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 181: Vulkan Glyph Upload Dirty-Range Tracking
 

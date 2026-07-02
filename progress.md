@@ -5772,3 +5772,60 @@
   this progress log so Step 179 is marked merged and post-merge verified. Step
   180, Vulkan glyph atlas texture resource lifetime skeleton, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 180 Vulkan Glyph Atlas Texture Resource State
+
+- Created `.worktrees/vulkan-glyph-atlas-texture-resources` on
+  `codex/vulkan-glyph-atlas-texture-resources` from `master` at
+  `f88c57a docs: mark step 179 merged`.
+- Baseline Windows targeted tests passed 2/2:
+  `xmake test -P . vulkan_solid_rect_test/default vulkan_frame_lifetime_test/default`.
+- Baseline WSL targeted test passed 1/1:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-texture-resources -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`.
+- RED coverage:
+  `vulkan_solid_rect_test/default` failed as expected on missing
+  `GlyphAtlasTextureResourceState`, `GlyphAtlasTextureResourcePlan`,
+  `GlyphAtlasTextureResourceRecord`, `GlyphAtlasTextureResourceStatus`, and
+  `vulkan_update_glyph_atlas_texture_resources(...)`.
+- GREEN adds renderer-facing texture resource lifetime records keyed by atlas
+  page, a persistent `GlyphAtlasTextureResourceState`, and a Vulkan update
+  helper that emits created/reused/dropped diagnostics while preserving stable
+  resource generations.
+- Updated `core_header_cleanliness/default` to instantiate the new public
+  texture resource records without linking Vulkan implementation functions.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default vulkan_frame_lifetime_test/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified feature-worktree WSL targeted test:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-texture-resources -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-texture-resources -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-glyph-atlas-texture-resources -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 180 as
+  `8446fb7 feat: add glyph atlas texture resource state` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default vulkan_frame_lifetime_test/default core_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted test:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . core_header_cleanliness/default'`
+  passed 1/1.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 180 is marked merged and post-merge verified. Step
+  181, Vulkan glyph upload dirty-range tracking, is the next implementation
+  slice after docs closeout and cleanup.

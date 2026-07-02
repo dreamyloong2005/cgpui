@@ -3193,3 +3193,16 @@
   image views, bind device memory, issue transfer commands, or sample atlas
   textures. Step 180 should add texture resource lifetime records on top of
   these batches.
+
+## 2026-07-02 Vulkan Glyph Atlas Texture Resource State
+
+- Step 180 adds a deterministic atlas texture resource state object keyed by
+  atlas page index. It turns Step 179 upload batches into create/reuse/drop
+  diagnostics with stable generations.
+- Repeated updates with the same page reuse the existing record and preserve
+  its generation; updates without a previously live page emit a dropped record
+  and remove it from the live resource span.
+- This is still a resource-lifetime skeleton. It does not create real
+  `VkImage`, `VkImageView`, device memory, staging buffers, descriptor sets, or
+  transfer commands. Step 181 should build dirty-range upload tracking on top
+  of this page-level resource state.
