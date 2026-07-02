@@ -3028,3 +3028,23 @@
 - Step 172 can add render-report counters over cache hits, rasterized glyphs,
   upload records, and emitted quads without yet requiring real GPU texture
   uploads.
+
+## 2026-07-02 Vulkan Text Render Report Counters
+
+- Step 172 adds `RendererTextRenderReport` inside `RendererCommandReport` so
+  text commands can be reported as glyph-backed preparation instead of only
+  generic metadata-backed command batches.
+- The draw-data overload of `vulkan_build_renderer_command_report(...)`
+  consumes solid rects, text draws, and a `GlyphCache`, then reports both the
+  ordinary command batches and text-depth counters.
+- Text-depth counters are delta-based for each report build: cache hits are
+  counted from new lookup records, rasterized glyphs and upload records are
+  counted from new upload records, and textured glyph quads are counted from
+  the emitted quad vector.
+- The parity audit now states the current renderer text status precisely:
+  CPU fallback raster data, atlas allocation/upload records, textured glyph
+  quads, and report counters exist; real Vulkan atlas textures, GPU upload,
+  shader sampling, subpixel positioning, and full font fallback shaping remain
+  incomplete.
+- Step 173 can now pivot away from Vulkan text metadata and start the Wayland
+  clipboard MIME payload extraction path.

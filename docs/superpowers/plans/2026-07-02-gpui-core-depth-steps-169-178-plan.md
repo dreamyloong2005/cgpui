@@ -84,11 +84,12 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `docs/gpui-core-api-parity.md`
 
-- [ ] Add RED coverage proving text commands are reported as glyph-quad-backed work rather than metadata-only placeholders.
-- [ ] Expected RED: report lacks text draw depth/quad/upload counters.
-- [ ] GREEN: add deterministic counters for glyph cache hits, rasterized glyphs, upload records, and emitted glyph quads while keeping actual Vulkan texture objects as a later GPU-integration step if needed.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default desktop_target_readiness_test/default`.
-- [ ] WSL targeted command: same targets under the Step 172 worktree through WSL.
+- [x] Add RED coverage proving text commands are reported as glyph-quad-backed work rather than metadata-only placeholders.
+- [x] Expected RED: report lacks text draw depth/quad/upload counters.
+- [x] GREEN: add deterministic counters for glyph cache hits, rasterized glyphs, upload records, and emitted glyph quads while keeping actual Vulkan texture objects as a later GPU-integration step if needed.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default desktop_target_readiness_test/default` passed 2/2 on Windows after merge.
+- [x] WSL targeted command: available Linux subset `desktop_target_readiness_test/default` passed 1/1 after merge.
+- [x] Full post-merge verification passed: `git diff --check` produced no output, WSL Arch Linux full debug passed 27/27, and Windows full debug passed 30/30.
 
 ## Step 173: Wayland Clipboard MIME Payload Extraction
 

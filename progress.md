@@ -5331,3 +5331,55 @@
   Vulkan text render report distinguishes glyph-backed draw preparation from
   metadata placeholders, is the next implementation slice after docs closeout
   and cleanup.
+
+## 2026-07-02 Step 172 Vulkan Text Render Report Counters
+
+- Created `.worktrees/vulkan-text-render-report` on
+  `codex/vulkan-text-render-report` from `master` at
+  `56a25ae docs: mark step 171 merged`.
+- RED coverage:
+  `xmake test -P . vulkan_solid_rect_test/default` failed as expected because
+  `vulkan_build_renderer_command_report(...)` did not accept draw data plus
+  `GlyphCache`, and `RendererCommandReport` had no `text_render` counters.
+- GREEN adds `RendererTextRenderReport` and a draw-data
+  `vulkan_build_renderer_command_report(...)` overload. The report now counts
+  text draws, glyph-backed versus metadata-only text draws, glyph cache hits,
+  fallback-rasterized glyphs, upload records, and emitted textured glyph
+  quads.
+- Refreshed `docs/gpui-core-api-parity.md` so renderer text is described as
+  CPU fallback-raster/atlas-record-backed while real Vulkan texture objects,
+  GPU uploads, shader sampling, subpixel positioning, and full font fallback
+  shaping remain future work.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default desktop_target_readiness_test/default`
+  passed 2/2.
+- Verified feature-worktree WSL Arch Linux targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-render-report -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . vulkan_solid_rect_test/default desktop_target_readiness_test/default'`
+  ran the available Linux subset and passed 1/1.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-text-render-report -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Committed Step 172 as
+  `20adfab feat: add vulkan text render report counters` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default desktop_target_readiness_test/default`
+  passed 2/2.
+- Verified post-merge WSL Arch Linux targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . vulkan_solid_rect_test/default desktop_target_readiness_test/default'`
+  ran the available Linux subset and passed 1/1.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan, findings, and this
+  progress log so Step 172 is marked merged and post-merge verified. Step 173,
+  Wayland clipboard MIME offer/send/receive test-compositor path with text
+  payload extraction, is the next implementation slice after docs closeout and
+  cleanup.
