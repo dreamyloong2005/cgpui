@@ -192,6 +192,34 @@ struct GlyphUploadRecord {
   std::vector<std::uint8_t> alpha;
 };
 
+enum class GlyphAtlasImageFormat {
+  alpha8_unorm,
+};
+
+struct GlyphAtlasImageDescriptor {
+  std::size_t page_index = 0;
+  Size size{.width = 256.0F, .height = 256.0F};
+  GlyphAtlasImageFormat format = GlyphAtlasImageFormat::alpha8_unorm;
+  std::size_t upload_count = 0;
+};
+
+struct GlyphAtlasUploadRegion {
+  GlyphAtlasKey key;
+  std::size_t page_index = 0;
+  Rect atlas_bounds;
+  std::uint32_t width = 0;
+  std::uint32_t height = 0;
+  std::uint32_t stride = 0;
+  std::size_t byte_offset = 0;
+  std::size_t byte_size = 0;
+};
+
+struct GlyphAtlasUploadBatch {
+  GlyphAtlasImageDescriptor image;
+  std::vector<GlyphAtlasUploadRegion> uploads;
+  std::vector<std::uint8_t> alpha;
+};
+
 struct GlyphAtlasPage {
   std::size_t page_index = 0;
   Size size{.width = 256.0F, .height = 256.0F};
@@ -391,6 +419,9 @@ class Renderer {
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor);
 void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
+std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
+    std::span<const GlyphUploadRecord> upload_records,
+    std::span<const GlyphAtlasPage> atlas_pages);
 std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     const TextDraw& text,
     GlyphCache& glyph_cache);

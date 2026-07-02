@@ -232,6 +232,61 @@ int test_glyph_cache_allocates_atlas_pages_and_upload_records() {
              : 25;
 }
 
+int test_glyph_upload_records_build_atlas_image_batches() {
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F);
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(run);
+
+  cgpui::GlyphCache cache;
+  const cgpui::RasterizedGlyph first =
+      cgpui::rasterize_fallback_glyph(glyphs[0]);
+  const cgpui::RasterizedGlyph second =
+      cgpui::rasterize_fallback_glyph(glyphs[1]);
+  (void)cache.allocate(first);
+  (void)cache.allocate(second);
+
+  const std::vector<cgpui::GlyphAtlasUploadBatch> batches =
+      cgpui::vulkan_plan_glyph_atlas_uploads(
+          cache.upload_records(),
+          cache.atlas_pages());
+  if (batches.size() != 1) {
+    return 32;
+  }
+
+  const cgpui::GlyphAtlasUploadBatch& batch = batches[0];
+  if (batch.image.page_index != 0 ||
+      batch.image.format != cgpui::GlyphAtlasImageFormat::alpha8_unorm ||
+      batch.image.size.width != 256.0F ||
+      batch.image.size.height != 256.0F ||
+      batch.uploads.size() != 2 ||
+      batch.alpha.size() !=
+          first.bitmap.alpha.size() + second.bitmap.alpha.size()) {
+    return 33;
+  }
+
+  const cgpui::GlyphAtlasUploadRegion& first_upload = batch.uploads[0];
+  if (first_upload.key != first.key || first_upload.page_index != 0 ||
+      first_upload.atlas_bounds.origin.x != 0.0F ||
+      first_upload.atlas_bounds.origin.y != 0.0F ||
+      first_upload.width != first.bitmap.width ||
+      first_upload.height != first.bitmap.height ||
+      first_upload.stride != first.bitmap.stride ||
+      first_upload.byte_offset != 0 ||
+      first_upload.byte_size != first.bitmap.alpha.size()) {
+    return 34;
+  }
+
+  const cgpui::GlyphAtlasUploadRegion& second_upload = batch.uploads[1];
+  return second_upload.key == second.key && second_upload.page_index == 0 &&
+                 second_upload.atlas_bounds.origin.x == 10.0F &&
+                 second_upload.byte_offset == first.bitmap.alpha.size() &&
+                 second_upload.byte_size == second.bitmap.alpha.size() &&
+                 batch.image.upload_count == 2
+             ? 0
+             : 35;
+}
+
 int test_text_draw_uses_glyph_cache_metadata() {
   cgpui::GlyphCache cache;
   cgpui::TextDraw text{
@@ -564,6 +619,11 @@ int main() {
   }
   if (const int result =
           test_glyph_cache_allocates_atlas_pages_and_upload_records();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_glyph_upload_records_build_atlas_image_batches();
       result != 0) {
     return result;
   }

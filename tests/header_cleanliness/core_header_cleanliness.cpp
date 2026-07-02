@@ -74,6 +74,26 @@ int main() {
       glyph_cache.upload_records();
   const std::span<const cgpui::GlyphAtlasPage> atlas_pages =
       glyph_cache.atlas_pages();
+  const cgpui::GlyphAtlasImageDescriptor atlas_image{
+      .page_index = allocation.page_index,
+      .size = atlas_pages[0].size,
+      .format = cgpui::GlyphAtlasImageFormat::alpha8_unorm,
+      .upload_count = upload_records.size(),
+  };
+  const cgpui::GlyphAtlasUploadRegion upload_region{
+      .key = upload_records[0].key,
+      .page_index = upload_records[0].page_index,
+      .atlas_bounds = upload_records[0].atlas_bounds,
+      .width = upload_records[0].width,
+      .height = upload_records[0].height,
+      .stride = upload_records[0].stride,
+      .byte_size = upload_records[0].alpha.size(),
+  };
+  const cgpui::GlyphAtlasUploadBatch upload_batch{
+      .image = atlas_image,
+      .uploads = {upload_region},
+      .alpha = upload_records[0].alpha,
+  };
   glyph_cache.store(cgpui::GlyphAtlasEntry{
       .key = glyph_key,
       .atlas_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
@@ -168,7 +188,10 @@ int main() {
                  !rasterized.bitmap.empty() &&
                  rasterized.bitmap.width == 9 &&
                  allocation.created &&
+                 atlas_image.upload_count == 1 &&
                  upload_records.size() == 1 &&
+                 upload_region.byte_size == upload_records[0].alpha.size() &&
+                 upload_batch.uploads.size() == 1 &&
                  atlas_pages.size() == 1 &&
                  textured_quad.page_index == 0 &&
                  textured_quad.atlas_uv_bounds.size.width > 0.0F &&
