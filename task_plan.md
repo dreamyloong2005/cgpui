@@ -711,7 +711,7 @@ follow-on goal is now complete on the Windows/Linux track.
 188. [x] Renderer frame snapshot report aggregating text, uploads, batches, and gaps.
 189. [x] Font fallback chain resolution.
 190. [x] Platform font discovery records for Win32 and Wayland/Linux.
-191. [ ] Grapheme-aware cursor movement skeleton.
+191. [x] Grapheme-aware cursor movement skeleton.
 192. [ ] Word movement and selection actions.
 193. [ ] Text undo and redo stack.
 194. [ ] IME delete-surrounding text action.
@@ -745,13 +745,26 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 190, platform font discovery records for Win32 and Wayland/Linux, is
-merged on `master` at
-`c865dc9 feat: add platform font discovery records` and post-merge verified on
-Windows and WSL Arch Linux. Step 191, grapheme-aware cursor movement skeleton,
-is the next implementation slice. The track
-remains Windows/Linux first; macOS/Cocoa + Metal is still deferred to a
-separate parity run.
+Step 191, grapheme-aware cursor movement skeleton, is merged on `master` at
+`2108199 feat: add grapheme-aware text cursor movement` and post-merge verified
+on Windows and WSL Arch Linux. Step 192, word movement and selection actions,
+is the next implementation slice. The track remains Windows/Linux first;
+macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 191, grapheme-aware cursor movement skeleton, is merged on `master` at
+`2108199 feat: add grapheme-aware text cursor movement`. RED failed as expected
+on raw codepoint-boundary cursor movement through combining-mark clusters.
+GREEN adds deterministic grapheme-boundary helpers for ASCII, combining marks,
+variation selectors, regional indicator pairs, and emoji ZWJ skeleton cases,
+then routes cursor movement, selection extension, backspace, and delete through
+grapheme boundaries. Feature-worktree targeted tests passed 2/2 on Windows and
+WSL Arch Linux, `git diff --check` reported only expected CRLF warnings, WSL
+full debug passed 27/27, and Windows full debug passed 30/30 after isolating a
+transient `clipboard_test/default` batch failure with a passing targeted rerun.
+Post-merge targeted tests passed 2/2 on Windows and WSL Arch Linux,
+`git diff --check` produced no output, WSL full debug passed 27/27, and Windows
+full debug passed 30/30. Step 192, word movement and selection actions, is the
+next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

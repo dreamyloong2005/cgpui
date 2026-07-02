@@ -3352,3 +3352,20 @@
 - This is still conservative discovery plumbing. It is not real DirectWrite or
   fontconfig enumeration, does not probe files, and does not verify glyph
   coverage.
+
+## 2026-07-03 Grapheme-Aware Cursor Movement
+
+- Step 191 moves `TextModel` cursor movement, selection extension, backspace,
+  and delete from raw UTF-8 codepoint boundaries to deterministic grapheme
+  boundaries.
+- The helper intentionally covers the current editing-depth skeleton cases:
+  ASCII, combining-mark clusters, variation selectors, regional indicator
+  pairs, and emoji ZWJ sequences. This is enough to prevent common cursor and
+  delete splits in those clusters without claiming full Unicode UAX #29
+  segmentation.
+- The implementation stays local to `TextModel` and does not introduce a
+  shaping dependency. Later rich text work can replace or extend the boundary
+  helper when full shaping and per-codepoint fallback coverage arrive.
+- Step 192 should build word movement and word-selection actions on top of
+  these grapheme-safe cursor primitives rather than reverting to byte or raw
+  codepoint stepping.

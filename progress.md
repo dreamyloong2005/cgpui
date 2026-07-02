@@ -6372,3 +6372,51 @@
   this progress log so Step 190 is marked merged and post-merge verified. Step
   191, grapheme-aware cursor movement skeleton, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-03 Step 191 Grapheme-Aware Cursor Movement
+
+- Resumed Step 191 in `.worktrees/text-grapheme-cursor` on
+  `codex/text-grapheme-cursor` from `master` at
+  `63daa61 docs: mark step 190 merged`.
+- The existing RED coverage in `tests/ui/text_model_test.cpp` exercises cursor
+  movement through combining-mark clusters, regional indicator flag pairs, and
+  emoji ZWJ skeleton sequences. The resumed handoff recorded the direct RED
+  failure as `text_model_exit=92`, proving the old codepoint-boundary movement
+  split a combining-mark cluster.
+- GREEN in `include/cgpui/ui/text.hpp` adds `TextModel` grapheme-boundary
+  helpers for ASCII, combining marks, variation selectors, regional indicator
+  pairs, and emoji ZWJ skeleton cases, then routes cursor movement, selection
+  extension, backspace, and delete through those helpers.
+- Refreshed feature-worktree targeted verification before commit:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-grapheme-cursor -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-grapheme-cursor -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- The first feature-worktree Windows full debug run saw
+  `clipboard_test/default` fail in the full-suite batch. A targeted rerun of
+  `xmake test -P . clipboard_test/default` passed 1/1, and the immediate full
+  Windows debug rerun `xmake test -P .` passed 30/30.
+- Committed Step 191 as
+  `2108199 feat: add grapheme-aware text cursor movement` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 191 is marked merged and post-merge verified. Step
+  192, word movement and selection actions, is the next implementation slice
+  after docs closeout and cleanup.

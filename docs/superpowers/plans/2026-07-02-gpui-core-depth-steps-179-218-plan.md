@@ -289,11 +289,15 @@
 - Modify: `include/cgpui/ui/text.hpp`
 - Modify: `tests/ui/text_model_test.cpp`
 
-- [ ] Add RED coverage for cursor movement over combining marks and emoji byte sequences.
-- [ ] Expected RED: cursor movement only uses UTF-8 codepoint boundaries.
-- [ ] GREEN: add a deterministic grapheme-boundary helper covering ASCII, combining mark, regional indicator, and emoji ZWJ skeleton cases.
-- [ ] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for cursor movement over combining marks and emoji byte sequences.
+- [x] Expected RED: cursor movement only uses UTF-8 codepoint boundaries.
+- [x] GREEN: add a deterministic grapheme-boundary helper covering ASCII, combining mark, regional indicator, and emoji ZWJ skeleton cases.
+- [x] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `2108199 feat: add grapheme-aware text cursor movement`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 192: Word Movement And Selection Actions
 
