@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Additional Window Renderer Ownership
+
+- Step 212 moves app-opened child windows from native-window-only records to
+  records with independent child renderers created from each child
+  `PlatformWindow` native surface, framebuffer size, and scale.
+- `run_app` now retains all renderers produced by the app renderer factory in a
+  vector, so root and app-opened child renderers share the same ownership
+  boundary without changing the public `RendererFactory` pointer-returning
+  contract.
+- Child renderer creation remains graceful: if the factory fails or returns an
+  empty renderer, the child record stores `native_window_error`, clears the
+  transient window/renderer pointers, and avoids adding the native child window
+  to the active native window list.
+- This still does not implement child-window event routing, render loops, or
+  lifecycle teardown. Step 213 moves to routing pointer, keyboard, focus,
+  redraw, resize, and close events by `WindowRuntimeId`.
+
 ## 2026-07-03 Accessibility Value And Live Update Events
 
 - Step 211 adds `PlatformAccessibilityLiveUpdateKind` and

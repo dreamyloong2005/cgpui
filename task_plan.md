@@ -732,7 +732,7 @@ follow-on goal is now complete on the Windows/Linux track.
 209. [x] UIA provider tree facade.
 210. [x] AT-SPI object model facade.
 211. [x] Accessibility value and live update events.
-212. [ ] Additional window renderer ownership.
+212. [x] Additional window renderer ownership.
 213. [ ] Additional window event routing.
 214. [ ] Additional window lifecycle cleanup.
 215. [ ] Runtime theme inheritance and switching.
@@ -745,12 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 211, accessibility value and live update events, is merged on `master` at
-`1e51aa8 feat: add accessibility live update records` and post-merge verified
-on Windows and WSL Arch Linux. Step 212, additional window renderer ownership,
-is the next
-implementation slice. The track remains Windows/Linux first;
+Step 212, additional window renderer ownership, is merged on `master` at
+`701a2f4 feat: add additional window renderer ownership` and post-merge
+verified on Windows and WSL Arch Linux. Step 213, additional window event
+routing, is the next implementation slice. The track remains
+Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 212, additional window renderer ownership, is merged on `master` at
+`701a2f4 feat: add additional window renderer ownership`. RED failed as
+expected when app-opened child windows still owned native windows but exposed
+null child `renderer` pointers and only invoked the app renderer factory for
+the root window. GREEN makes `run_app` retain all renderers created through the
+app renderer factory, creates app-opened child renderers from each child native
+surface and window state, and preserves graceful per-record
+`native_window_error` storage when child renderer creation fails. Feature
+worktree targeted tests passed 3/3 on Windows and WSL Arch Linux,
+`git diff --check` exited 0 with only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 3/3 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30. Step
+213, additional window event routing, is the next implementation slice.
 
 Step 211, accessibility value and live update events, is merged on `master` at
 `1e51aa8 feat: add accessibility live update records`. RED failed as expected

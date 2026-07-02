@@ -746,11 +746,15 @@ targeted rerun.
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/app_runner_test.cpp`
 
-- [ ] Add RED coverage proving app-opened child windows can own renderers created from their native surfaces.
-- [ ] Expected RED: child windows own native windows but `renderer` remains null.
-- [ ] GREEN: create child renderers through the existing renderer factory boundary and preserve graceful per-record creation errors.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage proving app-opened child windows can own renderers created from their native surfaces.
+- [x] Expected RED: child windows own native windows but `renderer` remains null.
+- [x] GREEN: create child renderers through the existing renderer factory boundary and preserve graceful per-record creation errors.
+- [x] Targeted command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `701a2f4 feat: add additional window renderer ownership`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 213: Additional Window Event Routing
 
