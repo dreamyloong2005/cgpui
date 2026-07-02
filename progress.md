@@ -5660,3 +5660,54 @@
   is marked merged and post-merge verified. Step 178, native additional-window
   creation slice over the multi-window runtime registry, is the next
   implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 178 Native Additional Window Creation Scaffold
+
+- Continued `.worktrees/native-additional-window-creation` on
+  `codex/native-additional-window-creation` from `master` at
+  `3bc8359 docs: mark step 177 merged`.
+- RED coverage:
+  `app_runner_test/default` failed as expected on missing
+  `WindowRuntimeRecord::native_window_error`; the updated app-opened-window
+  tests also required child records to hold native window pointers, active
+  state, ownership flags, and graceful creation-error state.
+- GREEN adds `WindowRuntime::activate_native_window_for_record(...)`,
+  `handle_native_additional_window_event(...)`, and
+  `deactivate_native_additional_windows()`, backed by a vector of owned native
+  child `PlatformWindow` instances.
+- `AppContext::open_window(...)` now registers the child runtime record and
+  immediately attempts native platform-window creation. Creation failure leaves
+  the child inactive with `native_window_error` while the root app run
+  continues.
+- Child window callbacks currently keep descriptor size current on resize and
+  mark child records inactive on close request. Shutdown clears child window
+  and renderer pointers and releases native child windows.
+- Verified fresh feature-worktree Windows targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5.
+- Verified fresh feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-additional-window-creation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Committed Step 178 as
+  `2669512 feat: add native additional window scaffold` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- First post-merge Windows full debug run had one transient
+  `clipboard_test/default` failure while the other 29 tests passed. A targeted
+  rerun of `xmake test -P . clipboard_test/default` passed 1/1, and the full
+  Windows debug rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan,
+  `docs/gpui-core-api-parity.md`, findings, and this progress log so Step 178
+  is marked merged and post-merge verified. Steps 169-178 are now complete as
+  the current Windows/Linux depth pass once docs closeout and cleanup finish.

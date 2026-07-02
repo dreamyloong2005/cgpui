@@ -3146,3 +3146,21 @@
 - This is still partial Wayland IME parity. Production input-method behavior,
   delete-surrounding editing, richer content hints/purposes, serial policy, and
   compositor-specific edge cases remain future work.
+
+## 2026-07-02 Native Additional Window Creation Scaffold
+
+- Step 178 turns app-opened child-window records from metadata-only registry
+  entries into native `PlatformWindow` creation attempts owned by
+  `WindowRuntime`.
+- Additional windows are activated through the existing
+  `PlatformApplication::create_window(...)` boundary, so the slice does not add
+  Win32/Wayland-specific public APIs or fork the GPUI-like authoring surface.
+- `WindowRuntimeRecord::native_window_error` preserves graceful failure
+  semantics for child windows: a backend/test double can fail the child native
+  window creation without failing the root `run_app(...)` path.
+- Child platform-window callbacks currently update descriptor size on resize
+  and mark the child record inactive on close request; shutdown clears child
+  window/renderer pointers and releases the owned native-window vector.
+- This remains partial multi-window parity. Child windows still do not own
+  independent renderers, independent render loops, full event routing, or
+  production activation/focus/lifecycle behavior.

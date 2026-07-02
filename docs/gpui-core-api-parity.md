@@ -59,8 +59,8 @@ desktop integration surfaces remain separate future work.
   focused text IME geometry, Win32 IME placement, Wayland text-input v3
   enter/leave plus preedit/commit event dispatch, Win32 drag/drop event
   skeleton, Wayland data-device drag/drop text and URI-list payload extraction,
-  lifecycle events, multi-window runtime registry, platform wakeups, and
-  accessibility tree snapshots.
+  lifecycle events, multi-window runtime registry, native additional-window
+  creation scaffolding, platform wakeups, and accessibility tree snapshots.
 - Windows/Linux demo smoke coverage exercises window creation, first frame,
   resize, close, text input, clipboard flow, redraw, and bounded shutdown.
 
@@ -98,8 +98,10 @@ desktop integration surfaces remain separate future work.
 - Win32 drag/drop uses deterministic event hooks and public payload shapes, not
   full OLE `IDropTarget` shell integration or drag-effect negotiation.
 - Multi-window support records per-window runtime ownership and app-opened
-  roots, but native creation and independent platform event loops for
-  additional windows are still partial.
+  roots, and app-opened child windows now attempt native `PlatformWindow`
+  creation with graceful per-record `native_window_error` storage. Independent
+  child renderers, child render loops, full event routing, and production
+  lifecycle ownership remain incomplete.
 - Frame timing diagnostics expose stable counters, but real profiler timing
   and production frame pacing are not complete.
 - Font discovery has deterministic abstractions and platform override slots,
@@ -159,7 +161,7 @@ area expansion. Recommended order:
    richer text-input editing semantics.
 3. Deepen Windows UIA and Linux AT-SPI skeletons into production accessibility
    bridges using the existing accessibility snapshot as the source of truth.
-4. Turn multi-window runtime records into native additional windows with owned
-   event-loop and renderer lifetimes.
+4. Promote the native additional-window scaffold into fully owned child-window
+   renderer, event-loop, activation/focus, and lifecycle behavior.
 5. Start a separate macOS/Cocoa + Metal parity track only after the
    Windows/Linux depth pass has stable renderer and native adapter behavior.

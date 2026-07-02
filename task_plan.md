@@ -661,27 +661,29 @@ follow-on goal is now complete on the Windows/Linux track.
 175. [x] Wayland text-input state machine for enter/leave, surrounding text, preedit, and commit.
 176. [x] Windows UIA accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
 177. [x] Linux AT-SPI accessibility adapter skeleton consuming `AccessibilityTreeSnapshot`.
-178. [ ] Native additional-window creation slice over the multi-window runtime registry.
+178. [x] Native additional-window creation slice over the multi-window runtime registry.
 
 ## Active Step
 
-Current handoff: Step 177, Linux AT-SPI accessibility adapter skeleton
-consuming `AccessibilityTreeSnapshot`, is merged on `master` at
-`d03a383 feat: add linux atspi accessibility adapter skeleton` and post-merge
-verified on Windows and WSL Arch Linux. RED failed as expected in the Wayland
-architecture source test on missing Linux AT-SPI adapter markers and wrapper
-forwarding from the registered platform window. GREEN adds an internal
-`WaylandAtspiAccessibilityAdapter` that consumes
-`PlatformAccessibilityTreeUpdate`, tracks root, node, focused-node, and
-text-input counts, stores it in `WaylandWindow`, and forwards
-`RegisteredWaylandWindow::update_accessibility_tree(...)` into the underlying
-Wayland window without exposing D-Bus or AT-SPI provider types in public
-headers. Post-merge targeted coverage passed 4/4 on Windows and 4/4 on WSL
-Arch Linux, `git diff --check` produced no output, WSL full debug passed 27/27,
-and Windows full debug passed 30/30 after a single transient
-`clipboard_test/default` failure was cleared by targeted rerun and full-suite
-rerun. Step 178, native additional-window creation slice over the multi-window
-runtime registry, is the next implementation slice.
+Current handoff: Step 178, native additional-window creation slice over the
+multi-window runtime registry, is merged on `master` at
+`2669512 feat: add native additional window scaffold` and post-merge verified
+on Windows and WSL Arch Linux. RED failed as expected on missing
+`WindowRuntimeRecord::native_window_error` and on app-opened window records
+that only stored metadata instead of activating native platform windows. GREEN
+adds native additional-window ownership inside `WindowRuntime`, records
+platform-window creation errors without failing the root app run, updates
+child-window descriptor state from resize events, deactivates child records on
+close/run shutdown, and preserves the single-window root path. This is a
+scaffold: app-opened child windows have native `PlatformWindow` records, but
+they still do not own independent renderers, independent render loops, or full
+production child-window lifecycle routing. Post-merge targeted coverage passed
+5/5 on Windows and 5/5 on WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30 after
+a single transient `clipboard_test/default` failure was cleared by targeted
+rerun and full-suite rerun. Steps 169-178 are now complete as the current
+Windows/Linux depth pass; the next implementation track should continue
+Windows/Linux depth or start a separate macOS/Cocoa + Metal parity run.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

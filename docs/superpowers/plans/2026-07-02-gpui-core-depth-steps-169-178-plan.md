@@ -253,15 +253,36 @@
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 
-- [ ] Add RED coverage proving `AppContext::open_window(...)` can create an owned native platform window record beyond the root instead of only registering metadata.
-- [ ] Expected RED: multi-window registry has records but no native child-window creation bridge.
-- [ ] GREEN: add a platform-neutral additional-window creation request, Win32/Wayland skeleton native window creation path, per-window runtime record activation, and graceful unsupported behavior where a backend cannot create the window during tests.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set under the Step 178 worktree through WSL.
+- [x] Add RED coverage proving `AppContext::open_window(...)` can create an owned native platform window record beyond the root instead of only registering metadata.
+- [x] Expected RED observed: `app_runner_test/default` failed to compile on
+  missing `WindowRuntimeRecord::native_window_error`; the updated registry
+  checks also expected child records to hold native platform windows and active
+  state instead of metadata-only inactive records.
+- [x] GREEN: added native additional-window ownership in `WindowRuntime`, per
+  child-record activation through `PlatformApplication::create_window(...)`,
+  graceful `native_window_error` recording when creation fails, child resize
+  descriptor updates, close-request deactivation, and shutdown cleanup while
+  preserving the root-window path.
+- [x] Feature-worktree targeted command passed 5/5:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] Feature-worktree WSL targeted command passed 5/5:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-additional-window-creation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`.
+- [x] `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- [x] Feature-worktree full debug verification passed: WSL Arch Linux 27/27;
+  Windows 30/30.
+- [x] Merged to `master` as
+  `2669512 feat: add native additional window scaffold`.
+- [x] Post-merge targeted verification passed: WSL Arch Linux 5/5; Windows 5/5.
+- [x] Post-merge `git diff --check` produced no output.
+- [x] Full post-merge verification passed: WSL Arch Linux full debug 27/27;
+  Windows `clipboard_test/default` failed once during a full-suite batch, then
+  targeted `clipboard_test/default` passed 1/1 and Windows full debug rerun
+  passed 30/30.
 
 ## Post-Step-178 Checkpoint
 
-- [ ] Refresh `docs/gpui-core-api-parity.md` so text rendering, Wayland protocol depth, accessibility adapters, and multi-window state are accurately categorized.
-- [ ] Run Windows full debug: `xmake f -c -m debug -P .; xmake test -P .`.
-- [ ] Run WSL full debug: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
-- [ ] Confirm `git status --short --branch` on `master` has no tracked changes and only the expected untracked `.vscode/`.
+- [x] Refresh `docs/gpui-core-api-parity.md` so text rendering, Wayland protocol depth, accessibility adapters, and multi-window state are accurately categorized.
+- [x] Run Windows full debug: `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Run WSL full debug: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Confirm `git status --short --branch` on `master` has no tracked changes and only the expected untracked `.vscode/`.
