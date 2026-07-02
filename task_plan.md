@@ -727,7 +727,7 @@ follow-on goal is now complete on the Windows/Linux track.
 204. [x] Native menu and accelerator API skeleton.
 205. [x] Native file dialog API skeleton.
 206. [x] Window chrome customization skeleton.
-207. [ ] App command palette registry.
+207. [x] App command palette registry.
 208. [ ] Platform diagnostics event stream.
 209. [ ] UIA provider tree facade.
 210. [ ] AT-SPI object model facade.
@@ -745,11 +745,26 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 206, window chrome customization skeleton, is merged on `master` at
-`6387371 feat: add window chrome customization skeleton` and post-merge
-verified on Windows and WSL Arch Linux. Step 207, app command palette
-registry, is the next implementation slice. The track remains Windows/Linux first;
+Step 207, app command palette registry, is merged on `master` at
+`92e03ea feat: add command palette registry` and post-merge verified on
+Windows and WSL Arch Linux. Step 208, platform diagnostics event stream, is the
+next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 207, app command palette registry, is merged on `master` at
+`92e03ea feat: add command palette registry`. RED failed as expected on
+missing `CommandPaletteEntry` and command-palette registration/query/dispatch
+APIs. GREEN adds `CommandPaletteEntry` metadata, runtime/AppContext/ViewContext
+registration, stable registry and group queries, disabled-command handling, and
+dispatch through the existing scoped action registry. Feature-worktree targeted
+tests passed 3/3 on Windows and WSL Arch Linux, `git diff --check` exited 0
+with only expected CRLF warnings, WSL full debug passed 27/27, and Windows full
+debug passed 30/30. Post-merge targeted tests passed 3/3 on Windows and WSL
+Arch Linux, `git diff --check` produced no output, WSL full debug passed
+27/27, and Windows full debug passed 30/30 after isolating a transient
+`clipboard_test/default` batch failure with a passing targeted rerun and
+full-suite rerun. Step 208, platform diagnostics event stream, is the next
+implementation slice.
 
 Step 206, window chrome customization skeleton, is merged on `master` at
 `6387371 feat: add window chrome customization skeleton`. RED failed as

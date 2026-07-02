@@ -632,12 +632,19 @@ passing targeted rerun and passing full-suite rerun.
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `tests/ui/app_runner_test.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 
-- [ ] Add RED coverage for command palette entries backed by the existing scoped action registry.
-- [ ] Expected RED: actions exist but have no searchable command metadata registry.
-- [ ] GREEN: add command metadata, grouping, enablement, and dispatch through existing action scopes.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default app_runner_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for command palette entries backed by the existing scoped action registry.
+- [x] Expected RED: actions exist but have no searchable command metadata registry.
+- [x] GREEN: add command metadata, grouping, enablement, and dispatch through existing action scopes.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default app_runner_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `92e03ea feat: add command palette registry`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30 after
+isolating a transient `clipboard_test/default` batch failure with a passing
+targeted rerun and full-suite rerun.
 
 ## Step 208: Platform Diagnostics Event Stream
 

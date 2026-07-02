@@ -1,5 +1,51 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 207 App Command Palette Registry
+
+- Continued `.worktrees/app-command-palette-registry` on
+  `codex/app-command-palette-registry` from `master` at
+  `ab38334 docs: mark step 206 merged`.
+- Baseline targeted tests had already passed on Windows and WSL Arch Linux in
+  the handoff state.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp`,
+  `tests/ui/app_runner_test.cpp`, and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp`. RED failed as expected
+  on missing `cgpui::CommandPaletteEntry` and command-palette
+  registration/query/dispatch APIs.
+- GREEN adds `CommandPaletteEntry`, runtime/AppContext/ViewContext forwarding,
+  stable registry enumeration, group filtering, disabled-entry handling, and
+  command palette dispatch through the existing scoped action registry.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . window_runtime_test/default app_runner_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/app-command-palette-registry -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default app_runner_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/app-command-palette-registry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 207 as `92e03ea feat: add command palette registry` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default app_runner_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default app_runner_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Post-merge Windows full debug initially failed only
+  `clipboard_test/default`; targeted `xmake test -P . clipboard_test/default`
+  passed 1/1, and the full-suite rerun `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 207 is marked merged and post-merge verified.
+  Step 208, platform diagnostics event stream, is the next implementation slice
+  after docs closeout and cleanup.
+
 ## 2026-07-03 Step 206 Window Chrome Customization Skeleton
 
 - Continued `.worktrees/window-chrome-customization` on

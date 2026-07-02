@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 App Command Palette Registry
+
+- Step 207 adds `CommandPaletteEntry` as platform-neutral command metadata:
+  action name, title, group, intended action scope, enabled state, and optional
+  view/element ids.
+- `WindowRuntime`, `WindowRuntimeContext`, and `AppContext` can register
+  command palette entries, enumerate the stable registry, filter by group, and
+  dispatch a registered command through the existing scoped action registry.
+- Disabled entries remain searchable but dispatch as unhandled without calling
+  their action handler, and missing palette action names update the last action
+  dispatch with an unhandled result.
+- This is a registry and dispatch layer, not a full command palette UI. Fuzzy
+  search, keyboard palette presentation, menu/palette unification,
+  accelerator display, platform diagnostics, and native command routing remain
+  future work. Step 208 moves to a bounded platform diagnostics event stream.
+
 ## 2026-07-03 Window Chrome Customization Skeleton
 
 - Step 206 adds platform-neutral window chrome metadata:
