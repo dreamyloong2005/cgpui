@@ -717,7 +717,7 @@ follow-on goal is now complete on the Windows/Linux track.
 194. [x] IME delete-surrounding text action.
 195. [x] Multiline text model and line navigation.
 196. [x] Text measurement cache.
-197. [ ] Text pointer selection geometry.
+197. [x] Text pointer selection geometry.
 198. [ ] Soft wrap layout records.
 199. [ ] Wayland clipboard ownership and send offers.
 200. [ ] Wayland drag action negotiation.
@@ -745,11 +745,11 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 196, text measurement cache, is merged on `master` at
-`31bbe4d feat: add text measurement cache` and post-merge verified on Windows
-and WSL Arch Linux. Step 197, text pointer selection geometry, is the next
-implementation slice. The track remains Windows/Linux first;
-macOS/Cocoa + Metal is still deferred to a separate parity run.
+Step 197, text pointer selection geometry, is merged on `master` at
+`7d148c5 feat: add text pointer selection geometry` and post-merge verified on
+Windows and WSL Arch Linux. Step 198, soft wrap layout records, is the next
+implementation slice. The track remains Windows/Linux first; macOS/Cocoa +
+Metal is still deferred to a separate parity run.
 
 Step 191, grapheme-aware cursor movement skeleton, is merged on `master` at
 `2108199 feat: add grapheme-aware text cursor movement`. RED failed as expected

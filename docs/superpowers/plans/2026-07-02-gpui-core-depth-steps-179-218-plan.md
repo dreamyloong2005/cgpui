@@ -407,11 +407,15 @@ targeted rerun and full-suite rerun.
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `tests/ui/text_model_test.cpp`
 
-- [ ] Add RED coverage for hit-testing text glyph positions into cursor offsets and selection ranges.
-- [ ] Expected RED: pointer events focus text inputs but cannot map pointer x/y to text offsets.
-- [ ] GREEN: add deterministic single-line text hit geometry and route pointer drag into selection state.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for hit-testing text glyph positions into cursor offsets and selection ranges.
+- [x] Expected RED: pointer events focus text inputs but cannot map pointer x/y to text offsets.
+- [x] GREEN: add deterministic single-line text hit geometry and route pointer drag into selection state.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `7d148c5 feat: add text pointer selection geometry`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 198: Soft Wrap Layout Records
 

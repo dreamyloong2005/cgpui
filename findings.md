@@ -1,5 +1,21 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Text Pointer Selection Geometry
+
+- Step 197 adds deterministic single-line pointer hit geometry in
+  `include/cgpui/ui/text.hpp`: `TextHitTestResult`,
+  `hit_test_text_position(...)`, and `text_selection_range_from_points(...)`
+  map measured glyph advances to byte offsets and normalized selection ranges.
+- `WindowRuntime` now keeps a small text pointer drag state for text-input
+  elements. Left pointer down focuses the input through the existing focus path
+  and collapses the model selection to the hit offset; pointer move/up continue
+  selecting against the original text-input element even when the pointer moves
+  outside its bounds.
+- The slice intentionally remains single-line and fallback-metric based. It
+  does not add soft wrapping, bidi visual order, grapheme column accounting,
+  paragraph layout, platform shaping, or selection handles. Step 198 can build
+  wrap records on top of the reusable measurement and hit-test primitives.
+
 ## 2026-07-02 Linux AT-SPI Accessibility Adapter Skeleton
 
 - Step 177 mirrors the Step 176 Win32 adapter boundary on Linux/Wayland. The

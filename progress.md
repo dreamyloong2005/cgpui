@@ -6691,3 +6691,57 @@
   this progress log so Step 196 is marked merged and post-merge verified. Step
   197, text pointer selection geometry, is the next implementation slice after
   docs closeout and cleanup.
+
+## 2026-07-03 Step 197 Text Pointer Selection Geometry
+
+- Continued `.worktrees/text-pointer-selection-geometry` on
+  `codex/text-pointer-selection-geometry` from `master` at
+  `e15dcd6 docs: mark step 196 merged`.
+- Baseline targeted tests had already passed before RED:
+  `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-pointer-selection-geometry -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for a wished-for
+  `TextHitTestResult`, `hit_test_text_position(...)`, and
+  `text_selection_range_from_points(...)` API that maps measured glyph
+  positions to byte offsets and selection ranges. Added runtime coverage in
+  `tests/ui/window_runtime_test.cpp` requiring pointer down/move/up on a
+  `text_input` to place the cursor and extend selection. RED failed as expected
+  on missing text hit-test APIs.
+- GREEN adds deterministic single-line text hit geometry in
+  `include/cgpui/ui/text.hpp` and a private `WindowRuntime` text pointer drag
+  state. Left pointer down on a text input collapses selection to the hit
+  offset; pointer move/up keep selecting against the original input element
+  even when the pointer moves outside bounds.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-pointer-selection-geometry -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-pointer-selection-geometry -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 197 as
+  `7d148c5 feat: add text pointer selection geometry` and fast-forward merged
+  it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default text_model_test/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 197 is marked merged and post-merge verified. Step
+  198, soft wrap layout records, is the next implementation slice after docs
+  closeout and cleanup.
