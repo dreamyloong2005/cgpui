@@ -474,7 +474,7 @@ class TextModel {
     if (cursor_ == 0) {
       return false;
     }
-    cursor_ = previous_codepoint_boundary(cursor_);
+    cursor_ = previous_grapheme_boundary(cursor_);
     collapse_selection_to_cursor();
     return true;
   }
@@ -483,7 +483,7 @@ class TextModel {
     if (cursor_ >= text_.size()) {
       return false;
     }
-    cursor_ = next_codepoint_boundary(cursor_);
+    cursor_ = next_grapheme_boundary(cursor_);
     collapse_selection_to_cursor();
     return true;
   }
@@ -495,7 +495,7 @@ class TextModel {
     if (cursor_ == 0) {
       return false;
     }
-    const std::size_t previous = previous_codepoint_boundary(cursor_);
+    const std::size_t previous = previous_grapheme_boundary(cursor_);
     text_.erase(previous, cursor_ - previous);
     cursor_ = previous;
     collapse_selection_to_cursor();
@@ -509,7 +509,7 @@ class TextModel {
     if (cursor_ >= text_.size()) {
       return false;
     }
-    const std::size_t next = next_codepoint_boundary(cursor_);
+    const std::size_t next = next_grapheme_boundary(cursor_);
     text_.erase(cursor_, next - cursor_);
     collapse_selection_to_cursor();
     return true;
@@ -566,7 +566,7 @@ class TextModel {
     if (cursor_ == 0) {
       return false;
     }
-    cursor_ = previous_codepoint_boundary(cursor_);
+    cursor_ = previous_grapheme_boundary(cursor_);
     selection_head_ = cursor_;
     return true;
   }
@@ -578,7 +578,7 @@ class TextModel {
     if (cursor_ >= text_.size()) {
       return false;
     }
-    cursor_ = next_codepoint_boundary(cursor_);
+    cursor_ = next_grapheme_boundary(cursor_);
     selection_head_ = cursor_;
     return true;
   }
@@ -602,6 +602,129 @@ class TextModel {
       index += 1;
     }
     return index;
+  }
+
+  struct DecodedCodepoint {
+    std::uint32_t value = 0;
+    std::size_t next = 0;
+  };
+
+  [[nodiscard]] DecodedCodepoint codepoint_at(std::size_t offset) const {
+    if (offset >= text_.size()) {
+      return {};
+    }
+    const auto first = static_cast<unsigned char>(text_[offset]);
+    if (first < 0x80U) {
+      return DecodedCodepoint{.value = first, .next = offset + 1};
+    }
+
+    const std::size_t next = next_codepoint_boundary(offset);
+    if (next - offset == 2) {
+      const auto second = static_cast<unsigned char>(text_[offset + 1]);
+      return DecodedCodepoint{
+          .value =
+              ((static_cast<std::uint32_t>(first) & 0x1FU) << 6U) |
+              (static_cast<std::uint32_t>(second) & 0x3FU),
+          .next = next,
+      };
+    }
+    if (next - offset == 3) {
+      const auto second = static_cast<unsigned char>(text_[offset + 1]);
+      const auto third = static_cast<unsigned char>(text_[offset + 2]);
+      return DecodedCodepoint{
+          .value =
+              ((static_cast<std::uint32_t>(first) & 0x0FU) << 12U) |
+              ((static_cast<std::uint32_t>(second) & 0x3FU) << 6U) |
+              (static_cast<std::uint32_t>(third) & 0x3FU),
+          .next = next,
+      };
+    }
+    if (next - offset == 4) {
+      const auto second = static_cast<unsigned char>(text_[offset + 1]);
+      const auto third = static_cast<unsigned char>(text_[offset + 2]);
+      const auto fourth = static_cast<unsigned char>(text_[offset + 3]);
+      return DecodedCodepoint{
+          .value =
+              ((static_cast<std::uint32_t>(first) & 0x07U) << 18U) |
+              ((static_cast<std::uint32_t>(second) & 0x3FU) << 12U) |
+              ((static_cast<std::uint32_t>(third) & 0x3FU) << 6U) |
+              (static_cast<std::uint32_t>(fourth) & 0x3FU),
+          .next = next,
+      };
+    }
+    return DecodedCodepoint{.value = first, .next = next};
+  }
+
+  [[nodiscard]] static bool is_combining_mark(std::uint32_t value) {
+    return (value >= 0x0300U && value <= 0x036FU) ||
+        (value >= 0x1AB0U && value <= 0x1AFFU) ||
+        (value >= 0x1DC0U && value <= 0x1DFFU) ||
+        (value >= 0x20D0U && value <= 0x20FFU) ||
+        (value >= 0xFE20U && value <= 0xFE2FU);
+  }
+
+  [[nodiscard]] static bool is_variation_selector(std::uint32_t value) {
+    return (value >= 0xFE00U && value <= 0xFE0FU) ||
+        (value >= 0xE0100U && value <= 0xE01EFU);
+  }
+
+  [[nodiscard]] static bool is_regional_indicator(std::uint32_t value) {
+    return value >= 0x1F1E6U && value <= 0x1F1FFU;
+  }
+
+  [[nodiscard]] static bool is_zero_width_joiner(std::uint32_t value) {
+    return value == 0x200DU;
+  }
+
+  [[nodiscard]] std::size_t next_grapheme_boundary(std::size_t offset) const {
+    const DecodedCodepoint first = codepoint_at(offset);
+    if (first.next <= offset || first.next > text_.size()) {
+      return std::min(offset + 1, text_.size());
+    }
+
+    std::size_t next = first.next;
+    std::size_t regional_indicator_count =
+        is_regional_indicator(first.value) ? 1U : 0U;
+    while (next < text_.size()) {
+      const DecodedCodepoint current = codepoint_at(next);
+      if (current.next <= next || current.next > text_.size()) {
+        break;
+      }
+      if (is_combining_mark(current.value) ||
+          is_variation_selector(current.value)) {
+        next = current.next;
+        continue;
+      }
+      if (is_zero_width_joiner(current.value)) {
+        next = current.next;
+        if (next < text_.size()) {
+          next = codepoint_at(next).next;
+        }
+        continue;
+      }
+      if (regional_indicator_count == 1U &&
+          is_regional_indicator(current.value)) {
+        next = current.next;
+        regional_indicator_count += 1U;
+        continue;
+      }
+      break;
+    }
+    return next;
+  }
+
+  [[nodiscard]] std::size_t previous_grapheme_boundary(
+      std::size_t offset) const {
+    std::size_t previous = 0;
+    std::size_t next = 0;
+    while (next < offset && next < text_.size()) {
+      previous = next;
+      next = next_grapheme_boundary(next);
+      if (next <= previous) {
+        break;
+      }
+    }
+    return previous;
   }
 
   std::string text_;

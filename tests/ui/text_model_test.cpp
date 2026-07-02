@@ -55,6 +55,54 @@ int test_text_model_moves_cursor_by_utf8_codepoints() {
                                                                        : 9;
 }
 
+int test_text_model_moves_cursor_by_grapheme_clusters() {
+  cgpui::TextModel combining_mark("a\xCC\x81" "b");
+  if (combining_mark.cursor() != std::string_view{"a\xCC\x81" "b"}.size()) {
+    return 90;
+  }
+  if (!combining_mark.move_cursor_previous() ||
+      combining_mark.cursor() != std::string_view{"a\xCC\x81"}.size()) {
+    return 91;
+  }
+  if (!combining_mark.move_cursor_previous() ||
+      combining_mark.cursor() != 0) {
+    return 92;
+  }
+  if (!combining_mark.move_cursor_next() ||
+      combining_mark.cursor() != std::string_view{"a\xCC\x81"}.size()) {
+    return 93;
+  }
+
+  cgpui::TextModel flag("\xF0\x9F\x87\xBA\xF0\x9F\x87\xB8" "!");
+  if (!flag.move_cursor_previous() ||
+      flag.cursor() !=
+          std::string_view{"\xF0\x9F\x87\xBA\xF0\x9F\x87\xB8"}.size()) {
+    return 94;
+  }
+  if (!flag.move_cursor_previous() || flag.cursor() != 0) {
+    return 95;
+  }
+
+  cgpui::TextModel zwj("\xF0\x9F\x91\xA9\xE2\x80\x8D\xF0\x9F\x92\xBB" "x");
+  if (!zwj.move_cursor_previous() ||
+      zwj.cursor() !=
+          std::string_view{
+              "\xF0\x9F\x91\xA9\xE2\x80\x8D\xF0\x9F\x92\xBB"}.size()) {
+    return 96;
+  }
+  if (!zwj.move_cursor_previous() || zwj.cursor() != 0) {
+    return 97;
+  }
+  if (!zwj.move_cursor_next() ||
+      zwj.cursor() !=
+          std::string_view{
+              "\xF0\x9F\x91\xA9\xE2\x80\x8D\xF0\x9F\x92\xBB"}.size()) {
+    return 98;
+  }
+
+  return 0;
+}
+
 int test_text_model_backspace_deletes_previous_utf8_codepoint() {
   cgpui::TextModel model("a" "\xE4\xB8\xAD" "b");
   (void)model.move_cursor_previous();
@@ -426,6 +474,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_moves_cursor_by_utf8_codepoints();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_moves_cursor_by_grapheme_clusters();
       result != 0) {
     return result;
   }
