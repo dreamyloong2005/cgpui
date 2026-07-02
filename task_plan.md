@@ -722,7 +722,7 @@ follow-on goal is now complete on the Windows/Linux track.
 199. [x] Wayland clipboard ownership and send offers.
 200. [x] Wayland drag action negotiation.
 201. [x] Wayland cursor theme image state.
-202. [ ] Wayland XDG configure lifecycle state.
+202. [x] Wayland XDG configure lifecycle state.
 203. [ ] Win32 OLE drop target skeleton.
 204. [ ] Native menu and accelerator API skeleton.
 205. [ ] Native file dialog API skeleton.
@@ -745,11 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 201, Wayland cursor theme image state, is merged on `master` at
-`2b5dd4a feat: add wayland cursor theme state` and post-merge verified on
-Windows and WSL Arch Linux. Step 202, Wayland XDG configure lifecycle state, is
-the next implementation slice. The track remains Windows/Linux first;
+Step 202, Wayland XDG configure lifecycle state, is merged on `master` at
+`6c9b867 feat: add wayland configure lifecycle state` and post-merge verified
+on Windows and WSL Arch Linux. Step 203, Win32 OLE drop target skeleton, is the
+next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 202, Wayland XDG configure lifecycle state, is merged on `master` at
+`6c9b867 feat: add wayland configure lifecycle state`. RED failed as expected on
+missing test-compositor helpers for stateful resize configures and last
+configure-state inspection. GREEN adds internal `WaylandXdgConfigureState` and
+`WaylandXdgToplevelState` records, parses activated/maximized/fullscreen
+toplevel states, tracks pending size and last acked configure serial, and
+dispatches existing public lifecycle events for activation/restoration. The
+Wayland test compositor now sends state arrays with resize configures and
+records configure serial/ack state for direct assertions. Feature-worktree
+targeted tests passed 4/4 on WSL Arch Linux and 3/3 on Windows,
+`git diff --check` exited 0 with only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 4/4 on WSL Arch Linux and 3/3 on Windows, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30. Step
+203, Win32 OLE drop target skeleton, is the next implementation slice.
 
 Step 201, Wayland cursor theme image state, is merged on `master` at
 `2b5dd4a feat: add wayland cursor theme state`. RED failed as expected on
@@ -764,7 +780,7 @@ with only expected CRLF warnings, WSL full debug passed 27/27, and Windows full
 debug passed 30/30. Post-merge targeted tests passed 3/3 on WSL Arch Linux and
 2/2 on Windows, `git diff --check` produced no output, WSL full debug passed
 27/27, and Windows full debug passed 30/30. Step 202, Wayland XDG configure
-lifecycle state, is the next implementation slice.
+lifecycle state, followed as the next merged slice.
 
 Step 200, Wayland drag action negotiation, is merged on `master` at
 `d45061c feat: add wayland drag action negotiation`. RED failed as expected on

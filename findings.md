@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Wayland XDG Configure Lifecycle State
+
+- Step 202 adds deterministic Wayland XDG configure lifecycle records:
+  `WaylandXdgConfigureState` tracks pending size, pending serial, last acked
+  serial, and current/pending toplevel state; `WaylandXdgToplevelState` tracks
+  activated, maximized, and fullscreen flags parsed from the compositor state
+  array.
+- `handle_surface_configure(...)` now records the acked serial before updating
+  configured state, and lifecycle dispatch uses existing public events:
+  activation changes emit `WindowActivated`, while leaving maximized/fullscreen
+  state emits `WindowRestored`. Resize delivery still waits for the matching
+  surface configure path.
+- The Wayland test compositor can now send stateful resize configures and
+  report the last configure state, including the serial observed by
+  `ack_configure`. The resize test asserts size, activation, max/fullscreen
+  flags, and exact ack serial instead of only checking a boolean ack.
+- This is still a deterministic lifecycle slice, not full shell-policy
+  integration. It does not yet add native maximize/fullscreen APIs, window
+  state queries in the public `WindowState`, tiled states, compositor serial
+  policy, or production configure-loop edge handling. Step 203 pivots to the
+  Win32 OLE drop target skeleton.
+
 ## 2026-07-03 Wayland Cursor Theme Image State
 
 - Step 201 adds deterministic internal Wayland cursor theme/image state records

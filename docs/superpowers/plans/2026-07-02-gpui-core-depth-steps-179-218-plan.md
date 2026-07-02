@@ -516,11 +516,15 @@ rerun and passing full-suite rerun.
 - Modify: `tests/platform/wayland_test_compositor.cpp`
 - Modify: `tests/platform/wayland_test_compositor.hpp`
 
-- [ ] Add RED coverage for configure serial ack, pending size, activated, maximized, and fullscreen states.
-- [ ] Expected RED: Wayland resize tests see framebuffer size but not full configure lifecycle state.
-- [ ] GREEN: add deterministic xdg configure state records and route lifecycle events into public window events.
-- [ ] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-xdg-configure-lifecycle -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_compositor_resize_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
-- [ ] Windows available-target command: `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`.
+- [x] Add RED coverage for configure serial ack, pending size, activated, maximized, and fullscreen states.
+- [x] Expected RED: Wayland resize tests see framebuffer size but not full configure lifecycle state.
+- [x] GREEN: add deterministic xdg configure state records and route lifecycle events into public window events.
+- [x] Targeted WSL command: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-xdg-configure-lifecycle -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_compositor_resize_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`.
+- [x] Windows available-target command: `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`.
+
+**Merged:** `6c9b867 feat: add wayland configure lifecycle state`.
+**Post-merge verification:** WSL targeted 4/4, Windows targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 203: Win32 OLE Drop Target Skeleton
 

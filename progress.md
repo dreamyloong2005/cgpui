@@ -6957,3 +6957,64 @@
   this progress log so Step 201 is marked merged and post-merge verified. Step
   202, Wayland XDG configure lifecycle state, is the next implementation slice
   after docs closeout and cleanup.
+
+## 2026-07-03 Step 202 Wayland XDG Configure Lifecycle State
+
+- Created `.worktrees/wayland-xdg-configure-lifecycle` on
+  `codex/wayland-xdg-configure-lifecycle` from `master` at
+  `32e0a1e docs: mark step 201 merged`.
+- Verified baseline targeted tests before edits:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-xdg-configure-lifecycle -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_compositor_resize_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux, and
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3 on Windows.
+- Added RED coverage in `tests/platform/wayland_compositor_resize_test.cpp`,
+  `tests/platform/wayland_test_compositor.*`, and
+  `tests/architecture/wayland_window_source_test.cpp` requiring stateful XDG
+  resize configures, activated/maximized/fullscreen flags, exact ack serial
+  inspection, and internal configure lifecycle source markers.
+- RED failed as expected in the WSL targeted run: the test binary could not
+  link because `WaylandTestCompositor::request_resize_configure_state(...)` and
+  `WaylandTestCompositor::last_resize_configure_state() const` were missing.
+- GREEN adds `WaylandXdgConfigureState`, `WaylandXdgToplevelState`, and
+  toplevel-state parsing in `src/platform/linux/wayland_application.cpp`.
+  `handle_toplevel_configure(...)` records pending size and
+  activated/maximized/fullscreen flags, while `handle_surface_configure(...)`
+  tracks the acked serial, commits the current toplevel state, dispatches
+  `WindowActivated` for activation changes, and keeps resize delivery on the
+  surface-configure acknowledgement path.
+- The Wayland test compositor now supports
+  `request_resize_configure_state(...)`, records
+  `WaylandConfigureState`, emits XDG toplevel state arrays, and stores the
+  resize configure serial observed by `ack_configure`.
+- Verified feature-worktree targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-xdg-configure-lifecycle -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_compositor_resize_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux, and
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3 on Windows.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/wayland-xdg-configure-lifecycle -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 202 as
+  `6c9b867 feat: add wayland configure lifecycle state` and fast-forward
+  merged it to `master`.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_compositor_resize_test/default window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default'`
+  passed 4/4.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . window_runtime_test/default wayland_window_source_test/default core_header_cleanliness/default`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 202 is marked merged and post-merge verified. Step
+  203, Win32 OLE drop target skeleton, is the next implementation slice after
+  docs closeout and cleanup.
