@@ -161,6 +161,14 @@ int main() {
       !contains(text, "ImeComposition{")) {
     return 63;
   }
+  if (!contains(text, "WaylandAtspiAccessibilityAdapter") ||
+      !contains(text, "PlatformAccessibilityTreeUpdate") ||
+      !contains(text, "update_accessibility_tree(") ||
+      !contains(text, "focused_node_count") ||
+      !contains(text, "PlatformAccessibilityRole::text_input") ||
+      !contains(text, "window_->update_accessibility_tree(std::move(update))")) {
+    return 66;
+  }
   if (!contains(text, "WaylandDataDevice") ||
       !contains(text, "wl_data_device_manager_get_data_device") ||
       !contains(text, "DragEntered{")) {

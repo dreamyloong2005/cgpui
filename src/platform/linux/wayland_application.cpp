@@ -652,6 +652,45 @@ class WaylandTextInputState {
   std::string committed_text_;
 };
 
+class WaylandAtspiAccessibilityAdapter {
+ public:
+  void update(PlatformAccessibilityTreeUpdate update) {
+    last_update_ = std::move(update);
+    root_element_id_ = last_update_.root_element_id;
+    node_count_ = last_update_.node_count;
+    focused_node_count_ = last_update_.focused_node_count;
+    text_input_node_count_ = 0;
+    for (const PlatformAccessibilityNodeUpdate& node : last_update_.nodes) {
+      if (node.role == PlatformAccessibilityRole::text_input) {
+        text_input_node_count_ += 1;
+      }
+    }
+  }
+
+  [[nodiscard]] std::uint64_t root_element_id() const {
+    return root_element_id_;
+  }
+
+  [[nodiscard]] std::size_t node_count() const {
+    return node_count_;
+  }
+
+  [[nodiscard]] std::size_t focused_node_count() const {
+    return focused_node_count_;
+  }
+
+  [[nodiscard]] std::size_t text_input_node_count() const {
+    return text_input_node_count_;
+  }
+
+ private:
+  PlatformAccessibilityTreeUpdate last_update_;
+  std::uint64_t root_element_id_ = 0;
+  std::size_t node_count_ = 0;
+  std::size_t focused_node_count_ = 0;
+  std::size_t text_input_node_count_ = 0;
+};
+
 class WaylandWindow final : public PlatformWindow {
  public:
   static Result<std::unique_ptr<WaylandWindow>> create(
@@ -718,6 +757,11 @@ class WaylandWindow final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override {
     text_input_state_.set_placement(placement);
     sync_text_input_state();
+  }
+
+  void update_accessibility_tree(
+      PlatformAccessibilityTreeUpdate update) override {
+    atspi_accessibility_.update(std::move(update));
   }
 
   [[nodiscard]] CursorShape cursor_shape() const {
@@ -927,6 +971,7 @@ class WaylandWindow final : public PlatformWindow {
   PlatformEventCallback callback_;
   WindowState state_;
   WaylandTextInputState text_input_state_;
+  WaylandAtspiAccessibilityAdapter atspi_accessibility_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;
@@ -2226,6 +2271,11 @@ class WaylandApplication final : public PlatformApplication {
     void set_ime_text_input_placement(
         std::optional<ImeTextInputPlacement> placement) override {
       app_.set_window_ime_text_input_placement(*window_, placement);
+    }
+
+    void update_accessibility_tree(
+        PlatformAccessibilityTreeUpdate update) override {
+      window_->update_accessibility_tree(std::move(update));
     }
 
    private:
