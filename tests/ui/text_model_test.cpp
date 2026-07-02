@@ -322,6 +322,35 @@ int test_fake_font_discovery_is_deterministic() {
              : 43;
 }
 
+int test_platform_font_discovery_records_preserve_metadata() {
+  const std::vector<cgpui::FontFaceDescriptor> records{
+      cgpui::FontFaceDescriptor{
+          .font = cgpui::FontDescriptor{.family = "Platform Sans"},
+          .postscript_name = "PlatformSans-Regular",
+          .source = cgpui::FontSource::platform,
+          .path = "platform://sans",
+      },
+  };
+
+  const cgpui::FontDatabase database =
+      cgpui::font_database_from_discovered_faces(
+          std::span<const cgpui::FontFaceDescriptor>(
+              records.data(),
+              records.size()));
+  const cgpui::FontFaceDescriptor* resolved =
+      database.resolve(cgpui::FontDescriptor{.family = "Platform Sans"});
+  if (database.face_count() != 1 || resolved == nullptr) {
+    return 90;
+  }
+  if (resolved->source != cgpui::FontSource::platform ||
+      resolved->postscript_name != "PlatformSans-Regular" ||
+      resolved->path != "platform://sans") {
+    return 91;
+  }
+
+  return 0;
+}
+
 int test_shape_text_produces_deterministic_fallback_glyphs() {
   const cgpui::TextShapeRun run = cgpui::shape_text(
       "A\xE4\xB8\xAD",
@@ -430,6 +459,11 @@ int main() {
     return result;
   }
   if (const int result = test_fake_font_discovery_is_deterministic();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_platform_font_discovery_records_preserve_metadata();
       result != 0) {
     return result;
   }

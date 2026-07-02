@@ -5,6 +5,7 @@
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/target.hpp"
+#include "cgpui/ui/text.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -16,8 +17,6 @@
 #include <vector>
 
 namespace cgpui {
-
-class FontDatabase;
 
 enum class PlatformAccessibilityRole {
   generic,
@@ -72,6 +71,8 @@ class PlatformApplication {
   virtual Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) = 0;
+  [[nodiscard]] virtual std::vector<FontFaceDescriptor> discover_font_records()
+      const;
   [[nodiscard]] virtual FontDatabase discover_fonts() const;
   virtual void request_wakeup();
 

@@ -146,9 +146,13 @@ int main() {
   if (!contains(text, "TextInput{")) {
     return 61;
   }
-  if (!contains(text, "discover_fonts() const override") ||
-      !contains(text, "FontDatabase")) {
-    return 62;
+  if (!contains(text, "discover_font_records()") ||
+      !contains(text, "const override") ||
+      !contains(text, "FontFaceDescriptor") ||
+      !contains(text, "FontSource::platform") ||
+      !contains(text, "sans-serif") ||
+      !contains(text, "fontconfig://sans-serif")) {
+    return 67;
   }
   if (!contains(text, "WaylandTextInputState") ||
       !contains(text, "WaylandTextInput") ||

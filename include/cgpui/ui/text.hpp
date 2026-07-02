@@ -149,13 +149,18 @@ class FontDatabase {
   std::vector<std::string> generic_fallback_families_;
 };
 
-[[nodiscard]] inline FontDatabase discover_test_fonts(
+[[nodiscard]] inline FontDatabase font_database_from_discovered_faces(
     std::span<const FontFaceDescriptor> faces) {
   FontDatabase database;
   for (const auto& face : faces) {
     database.add_face(face);
   }
   return database;
+}
+
+[[nodiscard]] inline FontDatabase discover_test_fonts(
+    std::span<const FontFaceDescriptor> faces) {
+  return font_database_from_discovered_faces(faces);
 }
 
 struct TextGlyphRun {

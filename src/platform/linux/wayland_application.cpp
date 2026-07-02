@@ -1667,8 +1667,16 @@ class WaylandApplication final : public PlatformApplication {
     request_wakeup();
   }
 
-  [[nodiscard]] FontDatabase discover_fonts() const override {
-    return {};
+  [[nodiscard]] std::vector<FontFaceDescriptor> discover_font_records()
+      const override {
+    return {
+        FontFaceDescriptor{
+            .font = FontDescriptor{.family = "sans-serif"},
+            .postscript_name = "fontconfig:sans-serif",
+            .source = FontSource::platform,
+            .path = "fontconfig://sans-serif",
+        },
+    };
   }
 
  private:

@@ -164,9 +164,13 @@ int main() {
       !contains(win32_text, "CGPUI.Win32.TestDragExit")) {
     return 54;
   }
-  if (!contains(win32_text, "discover_fonts() const override") ||
-      !contains(win32_text, "FontDatabase")) {
-    return 51;
+  if (!contains(win32_text, "discover_font_records()") ||
+      !contains(win32_text, "const override") ||
+      !contains(win32_text, "FontFaceDescriptor") ||
+      !contains(win32_text, "FontSource::platform") ||
+      !contains(win32_text, "Segoe UI") ||
+      !contains(win32_text, "win32://Segoe UI")) {
+    return 57;
   }
 
   const std::string xmake_text = read_source("xmake.lua");
