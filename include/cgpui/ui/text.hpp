@@ -384,6 +384,14 @@ enum class TextEditAction {
   move_next_word,
   extend_previous_word,
   extend_next_word,
+  move_line_start,
+  move_line_end,
+  move_previous_line,
+  move_next_line,
+  extend_line_start,
+  extend_line_end,
+  extend_previous_line,
+  extend_next_line,
   undo,
   redo,
   backspace,
@@ -439,6 +447,25 @@ class TextModel {
       return {};
     }
     return text_.substr(range.start, range.end - range.start);
+  }
+
+  [[nodiscard]] std::size_t line_count() const {
+    return static_cast<std::size_t>(
+        std::count(text_.begin(), text_.end(), '\n')) + 1U;
+  }
+
+  [[nodiscard]] std::size_t line_index_at(std::size_t offset) const {
+    const std::size_t clamped = clamp_offset(offset);
+    return static_cast<std::size_t>(
+        std::count(text_.begin(), text_.begin() + clamped, '\n'));
+  }
+
+  [[nodiscard]] std::size_t line_start_offset(std::size_t offset) const {
+    return line_start_for_offset(offset);
+  }
+
+  [[nodiscard]] std::size_t line_end_offset(std::size_t offset) const {
+    return line_end_for_offset(offset);
   }
 
   void set_selection(std::size_t anchor, std::size_t head) {
@@ -520,6 +547,30 @@ class TextModel {
     cursor_ = next;
     collapse_selection_to_cursor();
     return true;
+  }
+
+  [[nodiscard]] bool move_cursor_line_start() {
+    return move_cursor_to(line_start_for_offset(cursor_));
+  }
+
+  [[nodiscard]] bool move_cursor_line_end() {
+    return move_cursor_to(line_end_for_offset(cursor_));
+  }
+
+  [[nodiscard]] bool move_cursor_previous_line() {
+    const std::size_t target = previous_line_offset(cursor_);
+    if (target == cursor_) {
+      return false;
+    }
+    return move_cursor_to(target);
+  }
+
+  [[nodiscard]] bool move_cursor_next_line() {
+    const std::size_t target = next_line_offset(cursor_);
+    if (target == cursor_) {
+      return false;
+    }
+    return move_cursor_to(target);
   }
 
   [[nodiscard]] bool can_undo() const {
@@ -632,6 +683,22 @@ class TextModel {
         return extend_selection_previous_word();
       case TextEditAction::extend_next_word:
         return extend_selection_next_word();
+      case TextEditAction::move_line_start:
+        return move_cursor_line_start();
+      case TextEditAction::move_line_end:
+        return move_cursor_line_end();
+      case TextEditAction::move_previous_line:
+        return move_cursor_previous_line();
+      case TextEditAction::move_next_line:
+        return move_cursor_next_line();
+      case TextEditAction::extend_line_start:
+        return extend_selection_line_start();
+      case TextEditAction::extend_line_end:
+        return extend_selection_line_end();
+      case TextEditAction::extend_previous_line:
+        return extend_selection_previous_line();
+      case TextEditAction::extend_next_line:
+        return extend_selection_next_line();
       case TextEditAction::undo:
         return undo();
       case TextEditAction::redo:
@@ -715,6 +782,29 @@ class TextModel {
     selection_head_ = cursor_;
   }
 
+  [[nodiscard]] bool move_cursor_to(std::size_t offset) {
+    const std::size_t target = clamp_offset(offset);
+    if (target == cursor_) {
+      return false;
+    }
+    cursor_ = target;
+    collapse_selection_to_cursor();
+    return true;
+  }
+
+  [[nodiscard]] bool extend_selection_to(std::size_t offset) {
+    if (selection().collapsed) {
+      selection_anchor_ = cursor_;
+    }
+    const std::size_t target = clamp_offset(offset);
+    if (target == cursor_) {
+      return false;
+    }
+    cursor_ = target;
+    selection_head_ = cursor_;
+    return true;
+  }
+
   [[nodiscard]] bool erase_selection_if_needed() {
     const TextSelectionRange range = selection();
     if (range.collapsed) {
@@ -782,8 +872,72 @@ class TextModel {
     return true;
   }
 
+  [[nodiscard]] bool extend_selection_line_start() {
+    return extend_selection_to(line_start_for_offset(cursor_));
+  }
+
+  [[nodiscard]] bool extend_selection_line_end() {
+    return extend_selection_to(line_end_for_offset(cursor_));
+  }
+
+  [[nodiscard]] bool extend_selection_previous_line() {
+    return extend_selection_to(previous_line_offset(cursor_));
+  }
+
+  [[nodiscard]] bool extend_selection_next_line() {
+    return extend_selection_to(next_line_offset(cursor_));
+  }
+
   [[nodiscard]] static bool is_utf8_continuation(char value) {
     return (static_cast<unsigned char>(value) & 0xC0U) == 0x80U;
+  }
+
+  [[nodiscard]] std::size_t line_start_for_offset(std::size_t offset) const {
+    const std::size_t clamped = clamp_offset(offset);
+    if (clamped == 0 || text_.empty()) {
+      return 0;
+    }
+    const std::size_t search_from = clamped - 1;
+    const std::size_t newline = text_.rfind('\n', search_from);
+    return newline == std::string::npos ? 0 : newline + 1;
+  }
+
+  [[nodiscard]] std::size_t line_end_for_offset(std::size_t offset) const {
+    const std::size_t clamped = clamp_offset(offset);
+    const std::size_t newline = text_.find('\n', clamped);
+    return newline == std::string::npos ? text_.size() : newline;
+  }
+
+  [[nodiscard]] std::size_t line_column_for_offset(std::size_t offset) const {
+    const std::size_t clamped = clamp_offset(offset);
+    return clamped - line_start_for_offset(clamped);
+  }
+
+  [[nodiscard]] std::size_t previous_line_offset(std::size_t offset) const {
+    const std::size_t clamped = clamp_offset(offset);
+    const std::size_t current_start = line_start_for_offset(clamped);
+    if (current_start == 0) {
+      return clamped;
+    }
+    const std::size_t column = line_column_for_offset(clamped);
+    const std::size_t previous_line_position = current_start - 1;
+    const std::size_t previous_start =
+        line_start_for_offset(previous_line_position);
+    const std::size_t previous_end =
+        line_end_for_offset(previous_line_position);
+    return std::min(previous_start + column, previous_end);
+  }
+
+  [[nodiscard]] std::size_t next_line_offset(std::size_t offset) const {
+    const std::size_t clamped = clamp_offset(offset);
+    const std::size_t current_end = line_end_for_offset(clamped);
+    if (current_end >= text_.size()) {
+      return clamped;
+    }
+    const std::size_t column = line_column_for_offset(clamped);
+    const std::size_t next_start = current_end + 1;
+    const std::size_t next_end = line_end_for_offset(next_start);
+    return std::min(next_start + column, next_end);
   }
 
   [[nodiscard]] std::size_t previous_codepoint_boundary(

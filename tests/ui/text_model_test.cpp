@@ -309,6 +309,78 @@ int test_text_model_applies_word_edit_actions() {
   return 0;
 }
 
+int test_text_model_navigates_multiline_lines() {
+  cgpui::TextModel model("abc\ndefg\nhi");
+
+  if (model.line_count() != 3 || model.line_index_at(0) != 0 ||
+      model.line_index_at(4) != 1 || model.line_index_at(model.text().size()) != 2 ||
+      model.line_start_offset(6) != 4 || model.line_end_offset(6) != 8 ||
+      model.line_start_offset(model.text().size()) != 9 ||
+      model.line_end_offset(model.text().size()) != model.text().size()) {
+    return 132;
+  }
+
+  model.set_selection(6, 6);
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_line_start) ||
+      model.cursor() != 4 || !model.selection().collapsed) {
+    return 133;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_line_end) ||
+      model.cursor() != 8 || !model.selection().collapsed) {
+    return 134;
+  }
+
+  model.set_selection(7, 7);
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_line) ||
+      model.cursor() != 3 || !model.selection().collapsed) {
+    return 135;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_next_line) ||
+      model.cursor() != 7 || !model.selection().collapsed) {
+    return 136;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_next_line) ||
+      model.cursor() != model.text().size() || !model.selection().collapsed) {
+    return 137;
+  }
+  if (model.apply_edit_action(cgpui::TextEditAction::move_next_line)) {
+    return 138;
+  }
+
+  cgpui::TextModel selection("abc\ndefg\nhi");
+  selection.set_selection(4, 4);
+  if (!selection.apply_edit_action(cgpui::TextEditAction::extend_line_end) ||
+      selection.selection_anchor() != 4 || selection.selection_head() != 8 ||
+      selection.selected_text() != std::string_view{"defg"}) {
+    return 139;
+  }
+  if (!selection.apply_edit_action(cgpui::TextEditAction::extend_next_line) ||
+      selection.selection_anchor() != 4 ||
+      selection.selection_head() != selection.text().size() ||
+      selection.selected_text() != std::string_view{"defg\nhi"}) {
+    return 140;
+  }
+
+  cgpui::TextModel backward_selection("abc\ndefg\nhi");
+  backward_selection.set_selection(10, 10);
+  if (!backward_selection.apply_edit_action(
+          cgpui::TextEditAction::extend_previous_line) ||
+      backward_selection.selection_anchor() != 10 ||
+      backward_selection.selection_head() != 5 ||
+      backward_selection.selected_text() != std::string_view{"efg\nh"}) {
+    return 141;
+  }
+  if (!backward_selection.apply_edit_action(
+          cgpui::TextEditAction::extend_line_start) ||
+      backward_selection.selection_anchor() != 10 ||
+      backward_selection.selection_head() != 4 ||
+      backward_selection.selected_text() != std::string_view{"defg\nh"}) {
+    return 142;
+  }
+
+  return 0;
+}
+
 int test_text_model_undo_redo_restores_edit_history() {
   cgpui::TextModel model;
   if (model.can_undo() || model.can_redo() || model.undo() || model.redo()) {
@@ -706,6 +778,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_applies_word_edit_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_navigates_multiline_lines();
       result != 0) {
     return result;
   }
