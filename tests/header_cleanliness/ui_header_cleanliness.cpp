@@ -98,8 +98,20 @@ class TestView final : public cgpui::View {
     const cgpui::RuntimeDiagnosticsSnapshot runtime_diagnostics =
         context.runtime.diagnostics_snapshot();
     (void)context_diagnostics.entity_count;
+    (void)context_diagnostics.platform_diagnostics;
     (void)runtime_diagnostics.last_render_record;
     (void)runtime_diagnostics.last_frame_statistics;
+    const cgpui::PlatformDiagnosticEvent platform_diagnostic{
+        .kind = cgpui::PlatformDiagnosticKind::clipboard,
+        .event_kind = cgpui::EventKind::unknown,
+        .backend = "header",
+        .operation = "compile",
+        .supported = true,
+        .succeeded = true,
+        .value_count = 1,
+        .sequence = 1,
+    };
+    (void)platform_diagnostic;
     const cgpui::FocusHandle focus_handle =
         context.focus_handle(cgpui::ElementId{4});
     focus_handle.request(context);

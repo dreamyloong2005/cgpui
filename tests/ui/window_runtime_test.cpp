@@ -8,6 +8,7 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -45,6 +46,20 @@ bool equal(cgpui::DpiScale lhs, cgpui::DpiScale rhs) {
 
 bool equal(cgpui::Point lhs, cgpui::Point rhs) {
   return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool has_platform_diagnostic(
+    std::span<const cgpui::PlatformDiagnosticEvent> events,
+    cgpui::PlatformDiagnosticKind kind,
+    std::string_view operation,
+    cgpui::EventKind event_kind = cgpui::EventKind::unknown) {
+  return std::ranges::any_of(
+      events,
+      [&](const cgpui::PlatformDiagnosticEvent& event) {
+        return event.kind == kind && event.operation == operation &&
+               (event_kind == cgpui::EventKind::unknown ||
+                event.event_kind == event_kind);
+      });
 }
 
 class RecordingFrame final : public cgpui::RenderFrame {
@@ -6960,6 +6975,205 @@ int test_runtime_reports_public_diagnostics_snapshot() {
   return 0;
 }
 
+RuntimeFixture* platform_diagnostics_fixture = nullptr;
+
+void dispatch_platform_diagnostics_sequence() {
+  auto& callback = platform_diagnostics_fixture->window.callback;
+  callback(cgpui::WindowActivated{.active = true});
+  callback(cgpui::DragEntered{
+      .position = {5.0F, 5.0F},
+      .payload =
+          cgpui::DragDropPayload{
+              .kind = cgpui::DragDropPayloadKind::text,
+              .text = "Dragged text",
+          },
+      .action = cgpui::DragDropAction::copy,
+  });
+  callback(cgpui::DragDropped{
+      .position = {6.0F, 5.0F},
+      .payload =
+          cgpui::DragDropPayload{
+              .kind = cgpui::DragDropPayloadKind::files,
+              .files = {"C:\\Temp\\first.txt", "C:\\Temp\\second.cpp"},
+          },
+      .action = cgpui::DragDropAction::move,
+  });
+  callback(cgpui::KeyboardKey{
+      .key_code = 84,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::WindowCloseRequested{});
+}
+
+int test_runtime_collects_platform_diagnostics_stream() {
+  RuntimeFixture fixture;
+  platform_diagnostics_fixture = &fixture;
+  fixture.app.on_run = &dispatch_platform_diagnostics_sequence;
+
+  cgpui::TextModel model("abcd");
+  model.set_selection(1, 3);
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId input_id =
+      tree->set_root(cgpui::text_input(model).font_size(20.0F).build());
+  fixture.view.focused_keyboard_element_id = input_id;
+  fixture.view.request_keyboard_focus_element_on_first_key = true;
+
+  cgpui::MemoryClipboard clipboard;
+  (void)clipboard.write_text("!");
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_clipboard(&clipboard);
+
+  bool copied = false;
+  bool pasted = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::keyboard_key) {
+          copied = context.runtime.copy_selection_to_clipboard();
+          pasted = context.runtime.paste_clipboard_text();
+        }
+      });
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  platform_diagnostics_fixture = nullptr;
+
+  if (result != 0) {
+    return 520;
+  }
+  if (!copied || !pasted) {
+    return 521;
+  }
+  if (fixture.window.accessibility_update_count == 0 ||
+      fixture.window.ime_placement_count == 0) {
+    return 522;
+  }
+
+  const cgpui::RuntimeDiagnosticsSnapshot snapshot =
+      runtime.diagnostics_snapshot();
+  const std::span<const cgpui::PlatformDiagnosticEvent> direct_stream =
+      runtime.platform_diagnostics();
+  if (snapshot.platform_diagnostics.empty() ||
+      snapshot.platform_diagnostics.size() != direct_stream.size()) {
+    return 523;
+  }
+
+  if (!has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::accessibility,
+          "update-tree") ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::ime,
+          "set-placement") ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::clipboard,
+          "copy-selection") ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::clipboard,
+          "paste-text") ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::drag_drop,
+          "drag-entered",
+          cgpui::EventKind::drag_entered) ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::drag_drop,
+          "drag-dropped",
+          cgpui::EventKind::drag_dropped) ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::window_lifecycle,
+          "window-lifecycle",
+          cgpui::EventKind::window_activated) ||
+      !has_platform_diagnostic(
+          direct_stream,
+          cgpui::PlatformDiagnosticKind::window_lifecycle,
+          "window-lifecycle",
+          cgpui::EventKind::window_close_requested)) {
+    return 524;
+  }
+
+  const auto accessibility = std::ranges::find_if(
+      direct_stream,
+      [](const cgpui::PlatformDiagnosticEvent& event) {
+        return event.kind == cgpui::PlatformDiagnosticKind::accessibility &&
+               event.operation == "update-tree";
+      });
+  if (accessibility == direct_stream.end() || !accessibility->succeeded ||
+      accessibility->value_count == 0 || accessibility->sequence <= 0) {
+    return 525;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* platform_diagnostics_bound_fixture = nullptr;
+
+void dispatch_platform_diagnostics_bound_sequence() {
+  auto& callback = platform_diagnostics_bound_fixture->window.callback;
+  for (int index = 0; index < 40; ++index) {
+    callback(cgpui::DragUpdated{
+        .position = {static_cast<float>(index), 1.0F},
+        .payload =
+            cgpui::DragDropPayload{
+                .kind = cgpui::DragDropPayloadKind::text,
+                .text = "drag",
+            },
+        .action = cgpui::DragDropAction::copy,
+    });
+  }
+}
+
+int test_runtime_bounds_platform_diagnostics_stream() {
+  RuntimeFixture fixture;
+  platform_diagnostics_bound_fixture = &fixture;
+  fixture.app.on_run = &dispatch_platform_diagnostics_bound_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  platform_diagnostics_bound_fixture = nullptr;
+
+  if (result != 0) {
+    return 526;
+  }
+  const std::span<const cgpui::PlatformDiagnosticEvent> events =
+      runtime.platform_diagnostics();
+  const cgpui::RuntimeDiagnosticsSnapshot snapshot =
+      runtime.diagnostics_snapshot();
+  if (events.size() != 32 || snapshot.platform_diagnostics.size() != 32) {
+    return 527;
+  }
+  if (events.front().sequence != 9 || events.back().sequence != 40) {
+    return 528;
+  }
+  for (const cgpui::PlatformDiagnosticEvent& event : events) {
+    if (event.kind != cgpui::PlatformDiagnosticKind::drag_drop ||
+        event.operation != "drag-updated" ||
+        event.event_kind != cgpui::EventKind::drag_updated ||
+        !event.succeeded || event.value_count != 1) {
+      return 529;
+    }
+  }
+
+  return 0;
+}
+
 class FrameStatisticsView final : public cgpui::View {
  public:
   cgpui::AnyElement render(cgpui::ViewContext&) override {
@@ -8808,6 +9022,14 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_reports_public_diagnostics_snapshot();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_collects_platform_diagnostics_stream();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_bounds_platform_diagnostics_stream();
       result != 0) {
     return result;
   }

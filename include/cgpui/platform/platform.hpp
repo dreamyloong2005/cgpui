@@ -122,6 +122,29 @@ struct PlatformWindowChromeState {
   std::string reason;
 };
 
+enum class PlatformDiagnosticKind {
+  unknown,
+  clipboard,
+  drag_drop,
+  ime,
+  accessibility,
+  window_lifecycle,
+  menu,
+  file_dialog,
+  window_chrome,
+};
+
+struct PlatformDiagnosticEvent {
+  PlatformDiagnosticKind kind = PlatformDiagnosticKind::unknown;
+  EventKind event_kind = EventKind::unknown;
+  std::string backend;
+  std::string operation;
+  bool supported = true;
+  bool succeeded = true;
+  std::size_t value_count = 0;
+  int sequence = 0;
+};
+
 [[nodiscard]] std::size_t native_menu_item_count(
     const NativeMenuModel& model);
 [[nodiscard]] std::size_t native_menu_accelerator_count(

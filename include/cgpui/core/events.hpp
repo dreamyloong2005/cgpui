@@ -170,4 +170,24 @@ using PlatformEvent = std::variant<
     ImeComposition,
     ImeDeleteSurroundingText>;
 
+enum class EventKind {
+  unknown,
+  window_activated,
+  window_focused,
+  window_minimized,
+  window_restored,
+  window_close_requested,
+  pointer_moved,
+  pointer_button,
+  pointer_scrolled,
+  drag_entered,
+  drag_updated,
+  drag_dropped,
+  drag_exited,
+  keyboard_key,
+  text_input,
+  ime_composition,
+  ime_delete_surrounding_text,
+};
+
 } // namespace cgpui

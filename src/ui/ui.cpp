@@ -61,6 +61,54 @@ EventKind event_kind_for(const PlatformEvent& event) {
   return EventKind::unknown;
 }
 
+std::size_t drag_drop_payload_value_count(const DragDropPayload& payload) {
+  switch (payload.kind) {
+    case DragDropPayloadKind::text:
+      return payload.text.empty() ? 0 : 1;
+    case DragDropPayloadKind::files:
+      return payload.files.size();
+    case DragDropPayloadKind::none:
+      return 0;
+  }
+  return 0;
+}
+
+std::size_t drag_drop_payload_value_count(const PlatformEvent& event) {
+  if (const auto* drag_entered = std::get_if<DragEntered>(&event);
+      drag_entered != nullptr) {
+    return drag_drop_payload_value_count(drag_entered->payload);
+  }
+  if (const auto* drag_updated = std::get_if<DragUpdated>(&event);
+      drag_updated != nullptr) {
+    return drag_drop_payload_value_count(drag_updated->payload);
+  }
+  if (const auto* drag_dropped = std::get_if<DragDropped>(&event);
+      drag_dropped != nullptr) {
+    return drag_drop_payload_value_count(drag_dropped->payload);
+  }
+  if (const auto* drag_exited = std::get_if<DragExited>(&event);
+      drag_exited != nullptr) {
+    return drag_drop_payload_value_count(drag_exited->payload);
+  }
+  return 0;
+}
+
+std::string drag_drop_operation_for(const PlatformEvent& event) {
+  if (std::holds_alternative<DragEntered>(event)) {
+    return "drag-entered";
+  }
+  if (std::holds_alternative<DragUpdated>(event)) {
+    return "drag-updated";
+  }
+  if (std::holds_alternative<DragDropped>(event)) {
+    return "drag-dropped";
+  }
+  if (std::holds_alternative<DragExited>(event)) {
+    return "drag-exited";
+  }
+  return "drag-drop";
+}
+
 PlatformAccessibilityRole platform_accessibility_role(
     AccessibilityRole role) {
   switch (role) {
@@ -1043,6 +1091,8 @@ int WindowRuntime::run(
   render_sequence_ = 0;
   frame_index_ = 0;
   applied_ime_text_input_placement_.reset();
+  platform_diagnostics_.clear();
+  platform_diagnostic_sequence_ = 0;
 
   auto window_result = application_.create_window(
       descriptor,
@@ -1307,6 +1357,20 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
                 std::holds_alternative<DragExited>(event))) {
       input_.pointer_position = *drag_position;
     }
+    if (std::holds_alternative<DragEntered>(event) ||
+        std::holds_alternative<DragUpdated>(event) ||
+        std::holds_alternative<DragDropped>(event) ||
+        std::holds_alternative<DragExited>(event)) {
+      record_platform_diagnostic(PlatformDiagnosticEvent{
+          .kind = PlatformDiagnosticKind::drag_drop,
+          .event_kind = event_kind_for(event),
+          .backend = "runtime",
+          .operation = drag_drop_operation_for(event),
+          .supported = true,
+          .succeeded = true,
+          .value_count = drag_drop_payload_value_count(event),
+      });
+    }
     current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
     std::optional<ElementId> hit_element_id;
     if (element_root() != nullptr) {
@@ -1464,6 +1528,15 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
 }
 
 void WindowRuntime::record_lifecycle_event(const PlatformEvent& event) {
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::window_lifecycle,
+      .event_kind = event_kind_for(event),
+      .backend = "runtime",
+      .operation = "window-lifecycle",
+      .supported = true,
+      .succeeded = true,
+      .value_count = 1,
+  });
   current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
   last_event_result_ = EventResult::unhandled();
   last_event_dispatch_ = EventDispatchRecord{
@@ -2346,51 +2419,134 @@ void WindowRuntime::set_clipboard(Clipboard* clipboard) {
 
 bool WindowRuntime::paste_clipboard_text() {
   if (clipboard_ == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "paste-text",
+        .supported = false,
+        .succeeded = false,
+    });
     return false;
   }
 
   const auto text = clipboard_->read_text();
   if (!text.has_value()) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "paste-text",
+        .supported = true,
+        .succeeded = false,
+    });
     return false;
   }
 
   TextModel* model = focused_text_model();
   if (model == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "paste-text",
+        .supported = true,
+        .succeeded = false,
+        .value_count = text->size(),
+    });
     return false;
   }
 
   model->insert_text(*text);
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::clipboard,
+      .backend = "runtime",
+      .operation = "paste-text",
+      .supported = true,
+      .succeeded = true,
+      .value_count = text->size(),
+  });
   return true;
 }
 
 bool WindowRuntime::copy_selection_to_clipboard() {
   if (clipboard_ == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "copy-selection",
+        .supported = false,
+        .succeeded = false,
+    });
     return false;
   }
 
   TextModel* model = focused_text_model();
   if (model == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "copy-selection",
+        .supported = true,
+        .succeeded = false,
+    });
     return false;
   }
 
   const std::string selected_text = model->selected_text();
   if (selected_text.empty()) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "copy-selection",
+        .supported = true,
+        .succeeded = false,
+    });
     return false;
   }
-  return clipboard_->write_text(selected_text);
+  const bool succeeded = clipboard_->write_text(selected_text);
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::clipboard,
+      .backend = "runtime",
+      .operation = "copy-selection",
+      .supported = true,
+      .succeeded = succeeded,
+      .value_count = selected_text.size(),
+  });
+  return succeeded;
 }
 
 bool WindowRuntime::cut_selection_to_clipboard() {
   if (!copy_selection_to_clipboard()) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "cut-selection",
+        .supported = true,
+        .succeeded = false,
+    });
     return false;
   }
 
   TextModel* model = focused_text_model();
   if (model == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "cut-selection",
+        .supported = true,
+        .succeeded = false,
+    });
     return false;
   }
 
-  return model->delete_forward();
+  const bool succeeded = model->delete_forward();
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::clipboard,
+      .backend = "runtime",
+      .operation = "cut-selection",
+      .supported = true,
+      .succeeded = succeeded,
+      .value_count = succeeded ? 1U : 0U,
+  });
+  return succeeded;
 }
 
 void WindowRuntime::set_element_cursor(
@@ -2581,6 +2737,14 @@ NativeMenuInstallation WindowRuntime::install_native_menu(
   NativeMenuModel stored_menu = std::move(menu);
   const PlatformMenuInstallationResult platform_result =
       application_.install_native_menu(stored_menu);
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::menu,
+      .backend = platform_result.backend,
+      .operation = "install-native-menu",
+      .supported = platform_result.supported,
+      .succeeded = platform_result.supported,
+      .value_count = platform_result.item_count,
+  });
   native_menu_installation_ = NativeMenuInstallation{
       .model = std::move(stored_menu),
       .platform = platform_result,
@@ -2596,6 +2760,14 @@ NativeFileDialogResult WindowRuntime::show_native_file_dialog(
     NativeFileDialogOptions options) {
   native_file_dialog_result_ =
       application_.show_native_file_dialog(std::move(options));
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::file_dialog,
+      .backend = native_file_dialog_result_.backend,
+      .operation = "show-native-file-dialog",
+      .supported = native_file_dialog_result_.supported,
+      .succeeded = native_file_dialog_result_.accepted,
+      .value_count = native_file_dialog_result_.paths.size(),
+  });
   return native_file_dialog_result_;
 }
 
@@ -2626,7 +2798,13 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .frame_index = frame_index_,
       .last_render_record = last_render_record_,
       .last_frame_statistics = last_frame_statistics_,
+      .platform_diagnostics = platform_diagnostics_,
   };
+}
+
+std::span<const PlatformDiagnosticEvent> WindowRuntime::platform_diagnostics()
+    const {
+  return platform_diagnostics_;
 }
 
 std::span<const EntitySubscription> WindowRuntime::subscriptions_for_view(
@@ -2756,8 +2934,17 @@ void WindowRuntime::update_platform_accessibility_tree() {
   if (window_ == nullptr || owned_element_tree_ == nullptr) {
     return;
   }
-  window_->update_accessibility_tree(
-      platform_accessibility_update_from(accessibility_snapshot()));
+  PlatformAccessibilityTreeUpdate update =
+      platform_accessibility_update_from(accessibility_snapshot());
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::accessibility,
+      .backend = "runtime",
+      .operation = "update-tree",
+      .supported = true,
+      .succeeded = true,
+      .value_count = update.node_count,
+  });
+  window_->update_accessibility_tree(std::move(update));
 }
 
 bool WindowRuntime::task_active(TaskId id) const {
@@ -2815,8 +3002,30 @@ void WindowRuntime::apply_focused_text_ime_placement() {
 
   applied_ime_text_input_placement_ = placement;
   if (window_ != nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::ime,
+        .backend = "runtime",
+        .operation = placement.has_value() ? "set-placement" :
+                                             "clear-placement",
+        .supported = true,
+        .succeeded = true,
+        .value_count = placement.has_value() ? placement->byte_offset : 0U,
+    });
     window_->set_ime_text_input_placement(placement);
   }
+}
+
+void WindowRuntime::record_platform_diagnostic(
+    PlatformDiagnosticEvent event) {
+  constexpr std::size_t platform_diagnostic_limit = 32;
+  event.sequence = ++platform_diagnostic_sequence_;
+  if (event.backend.empty()) {
+    event.backend = "runtime";
+  }
+  if (platform_diagnostics_.size() >= platform_diagnostic_limit) {
+    platform_diagnostics_.erase(platform_diagnostics_.begin());
+  }
+  platform_diagnostics_.push_back(std::move(event));
 }
 
 ViewId WindowRuntime::allocate_view_id() {
@@ -3139,6 +3348,11 @@ InvalidationState WindowRuntimeContext::invalidation_state() const {
 
 RuntimeDiagnosticsSnapshot WindowRuntimeContext::diagnostics_snapshot() const {
   return runtime.diagnostics_snapshot();
+}
+
+std::span<const PlatformDiagnosticEvent>
+WindowRuntimeContext::platform_diagnostics() const {
+  return runtime.platform_diagnostics();
 }
 
 NativeMenuInstallation WindowRuntimeContext::install_native_menu(

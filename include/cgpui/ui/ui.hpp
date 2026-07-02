@@ -386,26 +386,6 @@ class PointerCaptureOwner {
   Owner owner_;
 };
 
-enum class EventKind {
-  unknown,
-  window_activated,
-  window_focused,
-  window_minimized,
-  window_restored,
-  window_close_requested,
-  pointer_moved,
-  pointer_button,
-  pointer_scrolled,
-  drag_entered,
-  drag_updated,
-  drag_dropped,
-  drag_exited,
-  keyboard_key,
-  text_input,
-  ime_composition,
-  ime_delete_surrounding_text,
-};
-
 struct EventRoute {
   ViewId target_view_id;
   std::optional<ElementId> target_element_id;
@@ -493,6 +473,7 @@ struct RuntimeDiagnosticsSnapshot {
   int frame_index = 0;
   std::optional<RenderRecord> last_render_record;
   std::optional<FrameStatistics> last_frame_statistics;
+  std::vector<PlatformDiagnosticEvent> platform_diagnostics;
 };
 
 struct EntitySubscription {
@@ -640,6 +621,8 @@ struct WindowRuntimeContext {
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
+  [[nodiscard]] std::span<const PlatformDiagnosticEvent>
+  platform_diagnostics() const;
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu) const;
   [[nodiscard]] const NativeMenuInstallation& native_menu_installation() const;
@@ -845,6 +828,8 @@ class WindowRuntime {
       const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
   [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
+  [[nodiscard]] std::span<const PlatformDiagnosticEvent>
+  platform_diagnostics() const;
   [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
       ViewId view_id) const;
   [[nodiscard]] bool subscription_connected(SubscriptionId id) const;
@@ -916,6 +901,7 @@ class WindowRuntime {
   [[nodiscard]] bool task_complete(TaskId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
   void apply_focused_text_ime_placement();
+  void record_platform_diagnostic(PlatformDiagnosticEvent event);
   void fail_and_quit(Error error);
   void activate_native_window_for_record(WindowRuntimeRecord& record);
   void handle_native_additional_window_event(
@@ -1044,6 +1030,8 @@ class WindowRuntime {
   Clipboard* clipboard_ = nullptr;
   std::unordered_map<std::uint64_t, CursorShape> element_cursors_;
   std::optional<ImeTextInputPlacement> applied_ime_text_input_placement_;
+  std::vector<PlatformDiagnosticEvent> platform_diagnostics_;
+  int platform_diagnostic_sequence_ = 0;
   std::vector<EntitySubscription> entity_subscriptions_;
   std::vector<EntityObserver> entity_observers_;
   std::uint64_t next_subscription_id_ = 1;

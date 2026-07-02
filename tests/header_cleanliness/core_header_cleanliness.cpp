@@ -43,6 +43,17 @@ int main() {
       .payload = drag_payload,
       .action = drag_action};
   (void)drag_event;
+  const cgpui::PlatformDiagnosticEvent platform_diagnostic{
+      .kind = cgpui::PlatformDiagnosticKind::drag_drop,
+      .event_kind = cgpui::EventKind::drag_entered,
+      .backend = "header",
+      .operation = "drag-entered",
+      .supported = true,
+      .succeeded = true,
+      .value_count = 1,
+      .sequence = 1,
+  };
+  (void)platform_diagnostic;
 
   cgpui::EntityStore<int> entities;
   const cgpui::Entity<int> entity_id = entities.insert(1);
