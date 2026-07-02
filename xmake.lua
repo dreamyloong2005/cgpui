@@ -28,6 +28,8 @@ target("cgpui_platform")
     add_includedirs(public_includedirs, {public = true})
     if is_plat("windows") then
         add_syslinks("user32")
+    elseif is_plat("linux") then
+        add_packages("wayland")
     end
 
 target("cgpui_platform_fallback")
@@ -211,6 +213,12 @@ target("entity_store_test")
 target("clipboard_test")
     set_kind("binary")
     add_files("tests/platform/clipboard_test.cpp")
+    if is_plat("linux") then
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs("tests/platform")
+    end
     add_deps("cgpui_core", "cgpui_platform")
     add_includedirs(public_includedirs)
     if is_plat("windows") then

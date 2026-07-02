@@ -3,8 +3,14 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace cgpui::test {
+
+struct WaylandClipboardMimePayload {
+  std::string mime_type;
+  std::string payload;
+};
 
 class WaylandTestCompositor {
  public:
@@ -36,6 +42,8 @@ class WaylandTestCompositor {
       bool super);
   void request_keyboard_key(std::uint32_t key, bool pressed);
   void request_keyboard_leave();
+  void set_clipboard_selection(
+      std::vector<WaylandClipboardMimePayload> payloads);
 
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
@@ -53,6 +61,8 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_keyboard_modifiers_sent() const;
   [[nodiscard]] bool wait_for_keyboard_key_sent() const;
   [[nodiscard]] bool wait_for_keyboard_leave_sent() const;
+  [[nodiscard]] bool wait_for_clipboard_selection_sent() const;
+  [[nodiscard]] std::string last_clipboard_receive_mime_type() const;
 
  private:
   struct State;

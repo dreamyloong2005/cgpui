@@ -34,19 +34,25 @@ enum class WaylandClipboardSupport {
 struct WaylandClipboardOptions {
   bool data_device_manager_available = false;
   bool seat_available = false;
+  bool connect_to_display = false;
+  std::string display_name;
 };
 
 class WaylandClipboard final : public Clipboard {
  public:
   WaylandClipboard();
   explicit WaylandClipboard(WaylandClipboardOptions options);
+  ~WaylandClipboard() override;
 
   [[nodiscard]] std::optional<std::string> read_text() const override;
   [[nodiscard]] bool write_text(std::string_view text) override;
   [[nodiscard]] WaylandClipboardSupport support() const;
 
  private:
+  struct Connection;
+
   MemoryClipboard fallback_;
+  mutable std::unique_ptr<Connection> connection_;
   WaylandClipboardSupport support_ = WaylandClipboardSupport::unsupported;
 };
 #endif

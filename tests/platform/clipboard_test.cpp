@@ -1,8 +1,16 @@
 #include "cgpui/platform/clipboard.hpp"
 
+#if defined(__linux__)
+#include "wayland_test_compositor.hpp"
+#endif
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#endif
+
+#if defined(__linux__)
+#include <cstdlib>
 #endif
 
 #include <cstring>
@@ -222,6 +230,114 @@ int test_win32_platform_clipboard_writes_system_utf8_text() {
 }
 #endif
 
+#if defined(__linux__)
+int test_wayland_clipboard_prefers_utf8_text_selection_payload() {
+  cgpui::test::WaylandTestCompositor compositor(
+      "clipboard-selection-preference");
+  compositor.set_clipboard_selection({
+      cgpui::test::WaylandClipboardMimePayload{
+          .mime_type = "text/plain",
+          .payload = "plain payload",
+      },
+      cgpui::test::WaylandClipboardMimePayload{
+          .mime_type = "text/plain;charset=utf-8",
+          .payload = "utf8 payload \xE4\xB8\xAD",
+      },
+  });
+  if (!compositor.start()) {
+    return 26;
+  }
+  setenv("WAYLAND_DISPLAY", compositor.socket_name().c_str(), 1);
+
+  cgpui::WaylandClipboard clipboard(cgpui::WaylandClipboardOptions{
+      .connect_to_display = true,
+  });
+  if (clipboard.support() != cgpui::WaylandClipboardSupport::available) {
+    compositor.stop();
+    return 27;
+  }
+  if (!compositor.wait_for_clipboard_selection_sent()) {
+    compositor.stop();
+    return 28;
+  }
+
+  const auto text = clipboard.read_text();
+  if (!text || *text != std::string_view{"utf8 payload \xE4\xB8\xAD"}) {
+    compositor.stop();
+    return 29;
+  }
+  if (compositor.last_clipboard_receive_mime_type() !=
+      std::string_view{"text/plain;charset=utf-8"}) {
+    compositor.stop();
+    return 30;
+  }
+
+  compositor.stop();
+  return 0;
+}
+
+int test_wayland_clipboard_falls_back_to_plain_text_selection_payload() {
+  cgpui::test::WaylandTestCompositor compositor("clipboard-selection-plain");
+  compositor.set_clipboard_selection({
+      cgpui::test::WaylandClipboardMimePayload{
+          .mime_type = "text/plain",
+          .payload = "plain only \xE4\xB8\xAD",
+      },
+  });
+  if (!compositor.start()) {
+    return 31;
+  }
+  setenv("WAYLAND_DISPLAY", compositor.socket_name().c_str(), 1);
+
+  cgpui::WaylandClipboard clipboard(cgpui::WaylandClipboardOptions{
+      .connect_to_display = true,
+  });
+  const auto text = clipboard.read_text();
+  if (!text || *text != std::string_view{"plain only \xE4\xB8\xAD"}) {
+    compositor.stop();
+    return 32;
+  }
+  if (compositor.last_clipboard_receive_mime_type() !=
+      std::string_view{"text/plain"}) {
+    compositor.stop();
+    return 33;
+  }
+
+  compositor.stop();
+  return 0;
+}
+
+int test_wayland_clipboard_ignores_non_text_selection_payload() {
+  cgpui::test::WaylandTestCompositor compositor("clipboard-selection-image");
+  compositor.set_clipboard_selection({
+      cgpui::test::WaylandClipboardMimePayload{
+          .mime_type = "image/png",
+          .payload = "not text",
+      },
+  });
+  if (!compositor.start()) {
+    return 34;
+  }
+  setenv("WAYLAND_DISPLAY", compositor.socket_name().c_str(), 1);
+
+  cgpui::WaylandClipboard clipboard(cgpui::WaylandClipboardOptions{
+      .connect_to_display = true,
+  });
+  const auto text = clipboard.read_text();
+  if (text.has_value()) {
+    compositor.stop();
+    return 35;
+  }
+  if (!compositor.last_clipboard_receive_mime_type().empty()) {
+    compositor.stop();
+    return 36;
+  }
+
+  compositor.stop();
+  return 0;
+}
+#endif
+
 } // namespace
 
 int main() {
@@ -299,6 +415,21 @@ int main() {
     if (wayland->support() != cgpui::WaylandClipboardSupport::unsupported) {
       return 25;
     }
+  }
+  if (const int result =
+          test_wayland_clipboard_prefers_utf8_text_selection_payload();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_wayland_clipboard_falls_back_to_plain_text_selection_payload();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_wayland_clipboard_ignores_non_text_selection_payload();
+      result != 0) {
+    return result;
   }
 #endif
   return 0;
