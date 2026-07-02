@@ -3008,3 +3008,23 @@
 - Step 171 can build textured glyph quad records from these atlas entries and
   upload records; actual GPU texture creation remains a later renderer
   integration boundary.
+
+## 2026-07-02 Textured Glyph Quad Records
+
+- Step 171 adds a renderer-facing `TexturedGlyphQuad` data record rather than
+  creating Vulkan image/sampler objects. Each quad carries the glyph key,
+  atlas page index, device-space bounds, atlas pixel bounds, normalized atlas
+  UV bounds, color, optional clip rect, and paint metadata.
+- `vulkan_build_textured_glyph_quads(...)` is the bridge from `TextDraw` to
+  render-preparable glyph geometry. It performs the existing glyph-cache lookup
+  and fallback raster allocation path, then derives one stable quad per
+  `TextGlyphPaint`.
+- `vulkan_consume_text_draw(...)` now delegates to the textured-quad builder,
+  so text preparation uses one path for lookup, rasterization, atlas
+  allocation, and quad generation.
+- Header-only/UI tests should instantiate `TexturedGlyphQuad` records directly
+  and avoid calling Vulkan implementation functions unless their xmake target
+  links `cgpui_renderer_vulkan`.
+- Step 172 can add render-report counters over cache hits, rasterized glyphs,
+  upload records, and emitted quads without yet requiring real GPU texture
+  uploads.

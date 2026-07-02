@@ -66,11 +66,12 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED coverage for renderer-facing `TexturedGlyphQuad` records emitted from `TextDraw`.
-- [ ] Expected RED: missing textured glyph quad command API.
-- [ ] GREEN: translate glyph atlas entries into stable device-space quads with atlas UVs, color, clip, opacity, and transform metadata.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same targets under the Step 171 worktree through WSL.
+- [x] Add RED coverage for renderer-facing `TexturedGlyphQuad` records emitted from `TextDraw`.
+- [x] Expected RED: missing textured glyph quad command API.
+- [x] GREEN: translate glyph atlas entries into stable device-space quads with atlas UVs, color, clip, opacity, and transform metadata.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default` passed 4/4 on Windows after merge.
+- [x] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default` passed 3/3 after merge.
+- [x] Full post-merge verification passed: `git diff --check` produced no output, WSL Arch Linux full debug passed 27/27, and Windows full debug passed 30/30.
 
 ## Step 172: Vulkan Text Render Report Distinguishes Real Glyph Draw
 

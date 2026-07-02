@@ -5278,3 +5278,56 @@
   progress log so Step 170 is marked merged and post-merge verified. Step 171,
   Vulkan textured glyph quad command generation from atlas entries, is the
   next implementation slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 171 Textured Glyph Quad Records
+
+- Created `.worktrees/vulkan-textured-glyph-quads` on
+  `codex/vulkan-textured-glyph-quads` from `master` at
+  `e24f836 docs: mark step 170 merged`.
+- RED coverage:
+  `xmake test -P . vulkan_solid_rect_test/default` failed as expected on
+  missing `cgpui::TexturedGlyphQuad` and
+  `cgpui::vulkan_build_textured_glyph_quads(...)`.
+- GREEN adds `TexturedGlyphQuad` and
+  `vulkan_build_textured_glyph_quads(...)`. The builder maps `TextDraw`
+  glyph metadata through `GlyphCache` lookup/allocation into device-space
+  bounds, atlas pixel bounds, normalized atlas UVs, color, clip rect, opacity,
+  and transform metadata.
+- `vulkan_consume_text_draw(...)` now delegates to the quad builder so lookup,
+  fallback rasterization, atlas allocation, upload-record creation, and quad
+  generation stay on one path.
+- Header and render-view tests instantiate `TexturedGlyphQuad` directly to
+  keep non-Vulkan targets from linking the Vulkan backend implementation.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified feature-worktree WSL Arch Linux targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-textured-glyph-quads -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  ran the available Linux subset and passed 3/3.
+- `git diff --check` reported only expected CRLF warnings in the feature
+  worktree and no whitespace errors.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-textured-glyph-quads -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Committed Step 171 as
+  `1204dfd feat: add textured glyph quad records` and fast-forward merged it
+  to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge WSL Arch Linux targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .; xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 169-178 depth plan, findings, and this
+  progress log so Step 171 is marked merged and post-merge verified. Step 172,
+  Vulkan text render report distinguishes glyph-backed draw preparation from
+  metadata placeholders, is the next implementation slice after docs closeout
+  and cleanup.

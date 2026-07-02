@@ -654,7 +654,7 @@ follow-on goal is now complete on the Windows/Linux track.
 168. [x] GPUI-core API parity audit document with remaining gaps and Mac parity handoff boundaries.
 169. [x] Glyph bitmap/raster data model and deterministic fallback glyph rasterizer.
 170. [x] Glyph atlas page allocation, slot packing, and upload-record API.
-171. [ ] Vulkan textured glyph quad command generation from atlas entries.
+171. [x] Vulkan textured glyph quad command generation from atlas entries.
 172. [ ] Vulkan text render report distinguishes glyph-backed draw preparation from metadata placeholders.
 173. [ ] Wayland clipboard MIME offer/send/receive test-compositor path with text payload extraction.
 174. [ ] Wayland drag/drop MIME payload extraction for text and URI-list/file payloads.
@@ -665,19 +665,21 @@ follow-on goal is now complete on the Windows/Linux track.
 
 ## Active Step
 
-Current handoff: Step 170, glyph atlas page allocation, slot packing, and
-upload-record API, is merged on `master` at
-`980ebc7 feat: add glyph atlas upload records` and post-merge verified on
+Current handoff: Step 171, Vulkan textured glyph quad command generation from
+atlas entries, is merged on `master` at
+`1204dfd feat: add textured glyph quad records` and post-merge verified on
 Windows and WSL Arch Linux. RED failed as expected on missing
-`GlyphAtlasAllocation`, `GlyphCache::allocate(...)`, `atlas_pages()`, and
-`upload_records()` APIs. GREEN adds deterministic glyph atlas pages,
-row-packed glyph allocation from `RasterizedGlyph`, upload records carrying
-alpha bitmap bytes, and Vulkan text consumption through fallback rasterized
-glyph allocation without creating Vulkan texture objects yet. Post-merge
-targeted coverage passed 4/4 on Windows and 3/3 on WSL Arch Linux,
+`TexturedGlyphQuad` and `vulkan_build_textured_glyph_quads(...)`. GREEN adds
+renderer-facing textured glyph quad records with glyph key, atlas page,
+device-space bounds, atlas pixel bounds, normalized atlas UV bounds, color,
+clip, and paint metadata; the Vulkan text consume path now builds these quads
+from `TextDraw` through the glyph cache while still leaving real GPU texture
+objects for a later renderer integration slice. Post-merge targeted coverage
+passed 4/4 on Windows and the available 3/3 subset on WSL Arch Linux,
 `git diff --check` produced no output, WSL full debug passed 27/27, and
-Windows full debug passed 30/30. Step 171, Vulkan textured glyph quad command
-generation from atlas entries, is the next implementation slice.
+Windows full debug passed 30/30. Step 172, Vulkan text render report
+distinguishes glyph-backed draw preparation from metadata placeholders, is the
+next implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected
