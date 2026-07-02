@@ -184,7 +184,8 @@ int main() {
       .paint_command_count = 5,
       .submitted_command_count = 3,
       .skipped_command_count = 2,
-      .solid_rect_command_count = 2,
+      .solid_rect_command_count = 1,
+      .rounded_rect_command_count = 1,
       .text_command_count = 1,
       .begin_frame_count = 1,
       .clear_count = 1,
@@ -447,6 +448,7 @@ int main() {
                  lifecycle_context.element_id == header_root_id &&
                  !lifecycle_context.parent_element_id.has_value() &&
                  frame_statistics.paint_command_count == 5 &&
+                 frame_statistics.rounded_rect_command_count == 1 &&
                  render_record.statistics.has_value() &&
                  render_record.statistics->submitted_command_count == 3 &&
                  ime_rect.element_id == cgpui::ElementId{2} &&

@@ -425,6 +425,7 @@ struct FrameStatistics {
   std::size_t submitted_command_count = 0;
   std::size_t skipped_command_count = 0;
   std::size_t solid_rect_command_count = 0;
+  std::size_t rounded_rect_command_count = 0;
   std::size_t text_command_count = 0;
   std::size_t begin_frame_count = 0;
   std::size_t clear_count = 0;

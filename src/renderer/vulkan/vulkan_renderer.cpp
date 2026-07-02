@@ -129,7 +129,26 @@ void append_command_batch(
 [[nodiscard]] bool is_vulkan_supported_renderer_primitive(
     RendererPrimitiveKind primitive_kind) {
   return primitive_kind == RendererPrimitiveKind::solid_rect ||
+         primitive_kind == RendererPrimitiveKind::rounded_rect ||
          primitive_kind == RendererPrimitiveKind::text;
+}
+
+[[nodiscard]] std::size_t positive_rounded_rect_corner_count(
+    BorderRadii radius) {
+  std::size_t count = 0;
+  if (radius.top_left > 0.0F) {
+    ++count;
+  }
+  if (radius.top_right > 0.0F) {
+    ++count;
+  }
+  if (radius.bottom_right > 0.0F) {
+    ++count;
+  }
+  if (radius.bottom_left > 0.0F) {
+    ++count;
+  }
+  return count;
 }
 
 [[nodiscard]] Size atlas_page_size_for(
@@ -182,6 +201,9 @@ class VulkanFrame final : public RenderFrame {
       : state_(std::move(state)) {}
   void clear(Color color) override { clear_color_ = color; }
   void draw_rect(const SolidRect& rect) override { rects_.push_back(rect); }
+  void draw_rounded_rect(const RoundedRectDraw& rect) override {
+    rounded_rects_.push_back(rect);
+  }
   void draw_text(const TextDraw& text) override { text_draws_.push_back(text); }
   Result<void> present() override;
 
@@ -189,6 +211,7 @@ class VulkanFrame final : public RenderFrame {
   std::shared_ptr<VulkanRendererState> state_;
   Color clear_color_{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F};
   std::vector<SolidRect> rects_;
+  std::vector<RoundedRectDraw> rounded_rects_;
   std::vector<TextDraw> text_draws_;
 };
 
@@ -286,6 +309,7 @@ class VulkanRendererState final {
   Result<void> present_frame(
       Color color,
       std::span<const SolidRect> rects,
+      std::span<const RoundedRectDraw> rounded_rects,
       std::span<const TextDraw> text_draws) {
     if (presentation_blocked_) {
       return std::unexpected(vulkan_error(
@@ -297,7 +321,7 @@ class VulkanRendererState final {
       vulkan_consume_text_draw(text_draw, glyph_cache_);
     }
     last_command_batches_ =
-        vulkan_build_renderer_command_batches(rects, text_draws);
+        vulkan_build_renderer_command_batches(rects, rounded_rects, text_draws);
 
     if (auto result = require_vk_success(
             vkWaitForFences(device_, 1, &in_flight_, VK_TRUE, UINT64_MAX),
@@ -1347,7 +1371,7 @@ class VulkanRenderer final : public Renderer {
 } // namespace
 
 Result<void> VulkanFrame::present() {
-  return state_->present_frame(clear_color_, rects_, text_draws_);
+  return state_->present_frame(clear_color_, rects_, rounded_rects_, text_draws_);
 }
 
 void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache) {
@@ -1536,16 +1560,52 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
   return quads;
 }
 
+std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(
+    std::span<const RoundedRectDraw> rounded_rects) {
+  std::vector<RoundedRectTessellationRecord> records;
+  records.reserve(rounded_rects.size());
+
+  for (const RoundedRectDraw& rounded_rect : rounded_rects) {
+    constexpr std::size_t kCornerSegmentCount = 4;
+    const std::size_t rounded_corner_count =
+        positive_rounded_rect_corner_count(rounded_rect.radius);
+    records.push_back(RoundedRectTessellationRecord{
+        .rect = rounded_rect.rect,
+        .color = rounded_rect.color,
+        .radius = rounded_rect.radius,
+        .clip_rect = rounded_rect.clip_rect,
+        .metadata = rounded_rect.metadata,
+        .corner_segment_count =
+            rounded_corner_count == 0 ? 0 : kCornerSegmentCount,
+        .vertex_count = 4 + rounded_corner_count * kCornerSegmentCount,
+        .triangle_count = 2 + rounded_corner_count * kCornerSegmentCount,
+    });
+  }
+
+  return records;
+}
+
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws) {
   std::vector<RendererCommandStreamItem> commands;
-  commands.reserve(rects.size() + text_draws.size());
+  commands.reserve(rects.size() + rounded_rects.size() + text_draws.size());
 
   for (std::size_t index = 0; index < rects.size(); ++index) {
     const SolidRect& rect = rects[index];
     commands.push_back(RendererCommandStreamItem{
         .primitive_kind = RendererPrimitiveKind::solid_rect,
+        .command_index = index,
+        .clip_rect = rect.clip_rect,
+        .metadata = rect.metadata,
+    });
+  }
+
+  for (std::size_t index = 0; index < rounded_rects.size(); ++index) {
+    const RoundedRectDraw& rect = rounded_rects[index];
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::rounded_rect,
         .command_index = index,
         .clip_rect = rect.clip_rect,
         .metadata = rect.metadata,
@@ -1563,6 +1623,15 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
   }
 
   return vulkan_build_renderer_command_report(commands).batches;
+}
+
+std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
+    std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws) {
+  return vulkan_build_renderer_command_batches(
+      rects,
+      std::span<const RoundedRectDraw>{},
+      text_draws);
 }
 
 RendererCommandReport vulkan_build_renderer_command_report(
@@ -1594,15 +1663,26 @@ RendererCommandReport vulkan_build_renderer_command_report(
 
 RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws,
     GlyphCache& glyph_cache) {
   std::vector<RendererCommandStreamItem> commands;
-  commands.reserve(rects.size() + text_draws.size());
+  commands.reserve(rects.size() + rounded_rects.size() + text_draws.size());
 
   for (std::size_t index = 0; index < rects.size(); ++index) {
     const SolidRect& rect = rects[index];
     commands.push_back(RendererCommandStreamItem{
         .primitive_kind = RendererPrimitiveKind::solid_rect,
+        .command_index = index,
+        .clip_rect = rect.clip_rect,
+        .metadata = rect.metadata,
+    });
+  }
+
+  for (std::size_t index = 0; index < rounded_rects.size(); ++index) {
+    const RoundedRectDraw& rect = rounded_rects[index];
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::rounded_rect,
         .command_index = index,
         .clip_rect = rect.clip_rect,
         .metadata = rect.metadata,
@@ -1620,6 +1700,10 @@ RendererCommandReport vulkan_build_renderer_command_report(
   }
 
   RendererCommandReport report = vulkan_build_renderer_command_report(commands);
+  report.rounded_rect_tessellations =
+      vulkan_tessellate_rounded_rects(rounded_rects);
+  report.rounded_rect_tessellation_count =
+      report.rounded_rect_tessellations.size();
   for (const TextDraw& text_draw : text_draws) {
     report.text_render.text_draw_count += 1;
     const std::size_t lookup_begin = glyph_cache.lookups().size();
@@ -1653,6 +1737,17 @@ RendererCommandReport vulkan_build_renderer_command_report(
   }
 
   return report;
+}
+
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws,
+    GlyphCache& glyph_cache) {
+  return vulkan_build_renderer_command_report(
+      rects,
+      std::span<const RoundedRectDraw>{},
+      text_draws,
+      glyph_cache);
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(

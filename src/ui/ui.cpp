@@ -709,6 +709,21 @@ Result<void> render_view(
       }
       continue;
     }
+    if (command.kind == PaintCommandKind::rounded_rect) {
+      const RoundedRect& rect = command.rounded_rect;
+      (*frame)->draw_rounded_rect(RoundedRectDraw{
+          .rect = rect.rect,
+          .color = rect.color,
+          .radius = rect.radius,
+          .clip_rect = command.clip_rect,
+          .metadata = command.metadata,
+      });
+      if (statistics != nullptr) {
+        statistics->submitted_command_count += 1;
+        statistics->rounded_rect_command_count += 1;
+      }
+      continue;
+    }
     SolidRect rect = command.solid_rect;
     rect.clip_rect = command.clip_rect;
     rect.metadata = command.metadata;

@@ -71,6 +71,14 @@ struct SolidRect {
   PaintMetadata metadata;
 };
 
+struct RoundedRectDraw {
+  Rect rect;
+  Color color;
+  BorderRadii radius;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+};
+
 struct TextDraw {
   Rect bounds;
   Color color;
@@ -181,11 +189,24 @@ struct RendererTextRenderReport {
   std::size_t text_sampler_pipeline_pending_text_draw_count = 0;
 };
 
+struct RoundedRectTessellationRecord {
+  Rect rect;
+  Color color;
+  BorderRadii radius;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+  std::size_t corner_segment_count = 0;
+  std::size_t vertex_count = 0;
+  std::size_t triangle_count = 0;
+};
+
 struct RendererCommandReport {
   std::vector<RendererCommandBatch> batches;
   std::vector<RendererUnsupportedCommandDiagnostic> unsupported_commands;
+  std::vector<RoundedRectTessellationRecord> rounded_rect_tessellations;
   std::size_t supported_command_count = 0;
   std::size_t unsupported_command_count = 0;
+  std::size_t rounded_rect_tessellation_count = 0;
   RendererTextRenderReport text_render;
 
   [[nodiscard]] std::size_t command_count() const {
@@ -480,6 +501,7 @@ class RenderFrame {
   virtual ~RenderFrame() = default;
   virtual void clear(Color color) = 0;
   virtual void draw_rect(const SolidRect& rect) = 0;
+  virtual void draw_rounded_rect(const RoundedRectDraw& rect) { (void)rect; }
   virtual void draw_text(const TextDraw& text) { (void)text; }
   virtual Result<void> present() = 0;
 };
@@ -507,14 +529,25 @@ std::vector<GlyphAtlasDirtyUploadRange> vulkan_plan_glyph_atlas_dirty_uploads(
 std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
     const TextDraw& text,
     GlyphCache& glyph_cache);
+std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(
+    std::span<const RoundedRectDraw> rounded_rects);
 RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const RendererCommandStreamItem> commands);
 RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const SolidRect> rects,
     std::span<const TextDraw> text_draws,
     GlyphCache& glyph_cache);
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
+    std::span<const TextDraw> text_draws,
+    GlyphCache& glyph_cache);
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
     std::span<const SolidRect> rects,
+    std::span<const TextDraw> text_draws);
+std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
+    std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws);
 
 } // namespace cgpui

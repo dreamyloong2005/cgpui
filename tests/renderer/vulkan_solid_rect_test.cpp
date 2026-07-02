@@ -655,37 +655,35 @@ int test_renderer_reports_unsupported_commands_without_dropping_supported() {
 
   const cgpui::RendererCommandReport report =
       cgpui::vulkan_build_renderer_command_report(commands);
-  if (report.supported_command_count != 2 ||
-      report.unsupported_command_count != 2 ||
+  if (report.supported_command_count != 3 ||
+      report.unsupported_command_count != 1 ||
       report.command_count() != commands.size()) {
     return 18;
   }
-  if (report.batches.size() != 2 ||
+  if (report.batches.size() != 3 ||
       report.batches[0].key.primitive_kind !=
           cgpui::RendererPrimitiveKind::solid_rect ||
       report.batches[0].command_indices[0] != 0 ||
-      report.batches[1].key.primitive_kind != cgpui::RendererPrimitiveKind::text ||
-      report.batches[1].command_indices[0] != 2) {
+      report.batches[1].key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::rounded_rect ||
+      report.batches[1].command_indices[0] != 1 ||
+      report.batches[2].key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::text ||
+      report.batches[2].command_indices[0] != 2) {
     return 19;
   }
-  if (report.unsupported_commands.size() != 2 ||
+  if (report.unsupported_commands.size() != 1 ||
       report.unsupported_commands[0].primitive_kind !=
-          cgpui::RendererPrimitiveKind::rounded_rect ||
-      report.unsupported_commands[0].command_index != 1 ||
+          cgpui::RendererPrimitiveKind::text_caret ||
+      report.unsupported_commands[0].command_index != 3 ||
       report.unsupported_commands[0].reason !=
           cgpui::RendererUnsupportedCommandReason::unsupported_primitive ||
-      report.unsupported_commands[0].message.find("rounded_rect") ==
+      report.unsupported_commands[0].message.find("text_caret") ==
           std::string::npos) {
     return 20;
   }
 
-  return report.unsupported_commands[1].primitive_kind ==
-                 cgpui::RendererPrimitiveKind::text_caret &&
-                 report.unsupported_commands[1].command_index == 3 &&
-                 report.unsupported_commands[1].message.find("text_caret") !=
-                     std::string::npos
-             ? 0
-             : 21;
+  return 0;
 }
 
 int test_renderer_report_counts_textured_glyph_draw_preparation() {
@@ -791,6 +789,63 @@ int test_renderer_report_distinguishes_text_sampler_pipeline_readiness() {
              : 45;
 }
 
+int test_rounded_rects_build_tessellation_records_with_clip_metadata() {
+  const cgpui::PaintMetadata metadata{
+      .opacity = 0.625F,
+      .transform = cgpui::AffineTransform::translation(5.0F, 7.0F),
+  };
+  const cgpui::Rect clip{
+      .origin = {.x = 1.0F, .y = 2.0F},
+      .size = {.width = 64.0F, .height = 48.0F},
+  };
+  const std::vector<cgpui::RoundedRectDraw> rounded_rects{
+      cgpui::RoundedRectDraw{
+          .rect =
+              cgpui::Rect{
+                  .origin = {.x = 8.0F, .y = 10.0F},
+                  .size = {.width = 40.0F, .height = 20.0F},
+              },
+          .color = {.r = 0.2F, .g = 0.4F, .b = 0.6F, .a = 0.8F},
+          .radius = cgpui::BorderRadii::corners(3.0F, 4.0F, 5.0F, 6.0F),
+          .clip_rect = clip,
+          .metadata = metadata,
+      },
+  };
+
+  const std::vector<cgpui::RoundedRectTessellationRecord> records =
+      cgpui::vulkan_tessellate_rounded_rects(rounded_rects);
+  if (records.size() != 1) {
+    return 46;
+  }
+  const cgpui::RoundedRectTessellationRecord& record = records[0];
+  if (record.rect.origin.x != 8.0F || record.rect.size.width != 40.0F ||
+      record.color.b != 0.6F || record.radius.top_left != 3.0F ||
+      !record.clip_rect.has_value() ||
+      record.clip_rect->size.width != clip.size.width ||
+      record.metadata != metadata || record.corner_segment_count != 4 ||
+      record.vertex_count != 20 || record.triangle_count != 18) {
+    return 47;
+  }
+
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::SolidRect> rects;
+  const std::vector<cgpui::TextDraw> text_draws;
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(
+          rects,
+          rounded_rects,
+          text_draws,
+          cache);
+  return report.supported_command_count == 1 &&
+                 report.unsupported_command_count == 0 &&
+                 report.rounded_rect_tessellation_count == 1 &&
+                 report.rounded_rect_tessellations.size() == 1 &&
+                 report.rounded_rect_tessellations[0].radius.bottom_left ==
+                     6.0F
+             ? 0
+             : 48;
+}
+
 } // namespace
 
 int main() {
@@ -844,6 +899,11 @@ int main() {
   }
   if (const int result =
           test_renderer_report_distinguishes_text_sampler_pipeline_readiness();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_rounded_rects_build_tessellation_records_with_clip_metadata();
       result != 0) {
     return result;
   }

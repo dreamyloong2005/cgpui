@@ -151,12 +151,23 @@ void append_snapshot_text(
 
 [[nodiscard]] std::string snapshot_render_commands(
     std::span<const cgpui::SolidRect> rects,
+    std::span<const cgpui::RoundedRectDraw> rounded_rects,
     std::span<const cgpui::TextDraw> texts) {
   std::ostringstream out;
   std::size_t index = 0;
   for (const cgpui::SolidRect& rect : rects) {
     out << index++ << " solid_rect";
     append_snapshot_rect(out, rect.rect, rect.color);
+    append_snapshot_metadata(out, rect.clip_rect, rect.metadata);
+    out << "\n";
+  }
+  for (const cgpui::RoundedRectDraw& rect : rounded_rects) {
+    out << index++ << " rounded_rect";
+    append_snapshot_rect(out, rect.rect, rect.color);
+    out << " radius=" << snapshot_float(rect.radius.top_left) << ","
+        << snapshot_float(rect.radius.top_right) << ","
+        << snapshot_float(rect.radius.bottom_right) << ","
+        << snapshot_float(rect.radius.bottom_left);
     append_snapshot_metadata(out, rect.clip_rect, rect.metadata);
     out << "\n";
   }
@@ -175,6 +186,15 @@ void append_snapshot_text(
     out << "\n";
   }
   return out.str();
+}
+
+[[nodiscard]] std::string snapshot_render_commands(
+    std::span<const cgpui::SolidRect> rects,
+    std::span<const cgpui::TextDraw> texts) {
+  return snapshot_render_commands(
+      rects,
+      std::span<const cgpui::RoundedRectDraw>{},
+      texts);
 }
 
 } // namespace

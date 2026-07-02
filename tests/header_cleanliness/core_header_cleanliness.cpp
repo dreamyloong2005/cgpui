@@ -150,6 +150,23 @@ int main() {
       .clip_rect = text_draw.clip_rect,
       .metadata = paint_metadata,
   };
+  const cgpui::RoundedRectDraw rounded_rect{
+      .rect = cgpui::Rect{.size = {18.0F, 12.0F}},
+      .color = cgpui::Color{.r = 0.25F, .g = 0.5F, .b = 0.75F, .a = 1.0F},
+      .radius = cgpui::BorderRadii::corners(1.0F, 2.0F, 3.0F, 4.0F),
+      .clip_rect = cgpui::Rect{.size = {20.0F, 14.0F}},
+      .metadata = paint_metadata,
+  };
+  const cgpui::RoundedRectTessellationRecord rounded_tessellation{
+      .rect = rounded_rect.rect,
+      .color = rounded_rect.color,
+      .radius = rounded_rect.radius,
+      .clip_rect = rounded_rect.clip_rect,
+      .metadata = rounded_rect.metadata,
+      .corner_segment_count = 4,
+      .vertex_count = 20,
+      .triangle_count = 18,
+  };
   const cgpui::RendererCommandBatch batch{
       .key =
           cgpui::RendererCommandBatchKey{
@@ -180,8 +197,10 @@ int main() {
                           unsupported_command.primitive_kind)),
               },
       },
+      .rounded_rect_tessellations = {rounded_tessellation},
       .supported_command_count = 1,
       .unsupported_command_count = 1,
+      .rounded_rect_tessellation_count = 1,
       .text_render =
           cgpui::RendererTextRenderReport{
               .text_sampler_pipeline = text_sampler_pipeline,
@@ -231,6 +250,8 @@ int main() {
                  atlas_pages.size() == 1 &&
                  textured_quad.page_index == 0 &&
                  textured_quad.atlas_uv_bounds.size.width > 0.0F &&
+                 rounded_rect.radius.bottom_left == 4.0F &&
+                 rounded_tessellation.vertex_count == 20 &&
                  text_draw.glyphs.size() == 1 &&
                  text_draw.metadata.transform.translate_x == 4.0F &&
                  text_draw.clip_rect.has_value() &&
@@ -239,6 +260,7 @@ int main() {
                  batch.command_count == 1 &&
                  batch.command_indices.size() == 1 &&
                  report.command_count() == 2 &&
+                 report.rounded_rect_tessellation_count == 1 &&
                  report.text_render
                          .text_sampler_pipeline_pending_text_draw_count == 1 &&
                  report.unsupported_commands[0].message == "text_caret" &&
