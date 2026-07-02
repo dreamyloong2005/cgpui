@@ -274,6 +274,80 @@ int test_text_draw_uses_glyph_cache_metadata() {
              : 13;
 }
 
+int test_text_draw_builds_textured_glyph_quads_from_atlas_entries() {
+  cgpui::GlyphCache cache;
+  const cgpui::Rect clip{
+      .origin = {.x = 1.0F, .y = 2.0F},
+      .size = {.width = 32.0F, .height = 18.0F},
+  };
+  const cgpui::PaintMetadata metadata{
+      .opacity = 0.625F,
+      .transform = cgpui::AffineTransform::translation(2.0F, 3.0F),
+  };
+  const cgpui::Color color{.r = 0.25F, .g = 0.5F, .b = 0.75F, .a = 0.8F};
+  cgpui::TextDraw text{
+      .bounds =
+          cgpui::Rect{
+              .origin = {.x = 4.0F, .y = 6.0F},
+              .size = {.width = 40.0F, .height = 20.0F},
+          },
+      .color = color,
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .content = "ab",
+      .byte_length = 2,
+      .font_size = 20.0F,
+      .device_font_size = 20.0F,
+      .glyphs = cgpui::text_glyph_paint_metadata(
+          cgpui::shape_text(
+              "ab", cgpui::FontDescriptor{.family = "Inter"}, 20.0F),
+          cgpui::Point{.x = 4.0F, .y = 6.0F}),
+      .clip_rect = clip,
+      .metadata = metadata,
+  };
+
+  const std::vector<cgpui::TexturedGlyphQuad> quads =
+      cgpui::vulkan_build_textured_glyph_quads(text, cache);
+  if (quads.size() != 2 || cache.entries().size() != 2 ||
+      cache.upload_records().size() != 2) {
+    return 26;
+  }
+
+  const cgpui::TexturedGlyphQuad& first = quads[0];
+  if (first.key != text.glyphs[0].key || first.page_index != 0 ||
+      first.device_bounds.origin.x != 4.0F ||
+      first.device_bounds.origin.y != 6.0F ||
+      first.device_bounds.size.width != 10.0F ||
+      first.device_bounds.size.height != 20.0F ||
+      first.atlas_bounds.origin.x != 0.0F ||
+      first.atlas_bounds.origin.y != 0.0F ||
+      first.atlas_uv_bounds.origin.x != 0.0F ||
+      first.atlas_uv_bounds.origin.y != 0.0F ||
+      first.atlas_uv_bounds.size.width != 10.0F / 256.0F ||
+      first.atlas_uv_bounds.size.height != 20.0F / 256.0F) {
+    return 27;
+  }
+  if (first.color.r != color.r || first.color.g != color.g ||
+      first.color.b != color.b || first.color.a != color.a ||
+      !first.clip_rect.has_value() ||
+      first.clip_rect->origin.x != clip.origin.x ||
+      first.clip_rect->origin.y != clip.origin.y ||
+      first.clip_rect->size.width != clip.size.width ||
+      first.clip_rect->size.height != clip.size.height ||
+      first.metadata != metadata) {
+    return 28;
+  }
+
+  const cgpui::TexturedGlyphQuad& second = quads[1];
+  return second.key == text.glyphs[1].key && second.page_index == 0 &&
+                 second.device_bounds.origin.x == 14.0F &&
+                 second.device_bounds.origin.y == 6.0F &&
+                 second.atlas_bounds.origin.x == 10.0F &&
+                 second.atlas_uv_bounds.origin.x == 10.0F / 256.0F &&
+                 second.color.a == color.a && second.metadata == metadata
+             ? 0
+             : 29;
+}
+
 int test_renderer_batches_by_clip_opacity_transform_and_kind() {
   const cgpui::Rect clip{
       .origin = {.x = 2.0F, .y = 4.0F},
@@ -442,6 +516,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_draw_uses_glyph_cache_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_draw_builds_textured_glyph_quads_from_atlas_entries();
       result != 0) {
     return result;
   }

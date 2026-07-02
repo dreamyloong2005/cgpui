@@ -158,9 +158,32 @@ int main() {
     return 7;
   }
 
+  const cgpui::TexturedGlyphQuad glyph_quad{
+      .key = frame.last_text.glyphs[2].key,
+      .device_bounds =
+          cgpui::Rect{
+              .origin = frame.last_text.glyphs[2].device_origin,
+              .size = {.width = 8.0F, .height = 16.0F},
+          },
+      .atlas_bounds = cgpui::Rect{.size = {.width = 8.0F, .height = 16.0F}},
+      .atlas_uv_bounds =
+          cgpui::Rect{.size = {.width = 8.0F / 256.0F,
+                               .height = 16.0F / 256.0F}},
+      .color = frame.last_text.color,
+      .clip_rect = frame.last_text.clip_rect,
+      .metadata = frame.last_text.metadata,
+  };
+  if (glyph_quad.device_bounds.origin.x != 18.0F ||
+      glyph_quad.metadata.opacity != 0.5F ||
+      !same_transform(
+          glyph_quad.metadata.transform,
+          cgpui::AffineTransform::translation(3.0F, 4.0F))) {
+    return 9;
+  }
+
   const std::string snapshot =
       snapshot_render_commands(frame.rects, frame.texts);
   const std::string expected =
       "0 text bounds=(2.0,4.0 24.0x16.0) color=0.800,0.900,1.000,1.000 content=\"abc\" font=<default> size=16.0 device_size=16.0 glyphs=3 clip=none opacity=0.500 transform=[1.0,0.0,0.0,1.0,3.0,4.0]\n";
-  return snapshot == expected ? 0 : 9;
+  return snapshot == expected ? 0 : 10;
 }

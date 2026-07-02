@@ -97,6 +97,16 @@ int main() {
       .clip_rect = cgpui::Rect{.size = {9.0F, 18.0F}},
       .metadata = paint_metadata,
   };
+  const cgpui::TexturedGlyphQuad textured_quad{
+      .key = glyph_key,
+      .page_index = allocation.page_index,
+      .device_bounds = cgpui::Rect{.size = {9.0F, 18.0F}},
+      .atlas_bounds = allocation.atlas_bounds,
+      .atlas_uv_bounds = cgpui::Rect{.size = {9.0F / 256.0F, 18.0F / 256.0F}},
+      .color = text_draw.color,
+      .clip_rect = text_draw.clip_rect,
+      .metadata = paint_metadata,
+  };
   const cgpui::RendererCommandBatch batch{
       .key =
           cgpui::RendererCommandBatchKey{
@@ -147,6 +157,8 @@ int main() {
                  allocation.created &&
                  upload_records.size() == 1 &&
                  atlas_pages.size() == 1 &&
+                 textured_quad.page_index == 0 &&
+                 textured_quad.atlas_uv_bounds.size.width > 0.0F &&
                  text_draw.glyphs.size() == 1 &&
                  text_draw.metadata.transform.translate_x == 4.0F &&
                  text_draw.clip_rect.has_value() &&

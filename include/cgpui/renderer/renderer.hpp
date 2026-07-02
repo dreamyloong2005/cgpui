@@ -6,6 +6,7 @@
 #include "cgpui/platform/target.hpp"
 #include "cgpui/ui/text.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -188,6 +189,17 @@ struct GlyphAtlasPage {
   std::vector<GlyphAtlasEntry> entries;
 };
 
+struct TexturedGlyphQuad {
+  GlyphAtlasKey key;
+  std::size_t page_index = 0;
+  Rect device_bounds;
+  Rect atlas_bounds;
+  Rect atlas_uv_bounds;
+  Color color;
+  std::optional<Rect> clip_rect;
+  PaintMetadata metadata;
+};
+
 struct GlyphCacheRecord {
   GlyphAtlasKey key;
   bool hit = false;
@@ -368,6 +380,9 @@ class Renderer {
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor);
 void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
+std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
+    const TextDraw& text,
+    GlyphCache& glyph_cache);
 RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const RendererCommandStreamItem> commands);
 std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
