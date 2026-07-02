@@ -33,6 +33,17 @@ struct WaylandTextInputClientState {
   bool enabled = false;
 };
 
+struct WaylandConfigureState {
+  std::int32_t width = 0;
+  std::int32_t height = 0;
+  std::uint32_t serial = 0;
+  std::uint32_t acked_serial = 0;
+  bool activated = false;
+  bool maximized = false;
+  bool fullscreen = false;
+  bool acked = false;
+};
+
 class WaylandTestCompositor {
  public:
   explicit WaylandTestCompositor(std::string name);
@@ -49,6 +60,12 @@ class WaylandTestCompositor {
   void set_close_on_initial_configure_ack(bool enabled);
   void request_close();
   void request_resize_configure(std::int32_t width, std::int32_t height);
+  void request_resize_configure_state(
+      std::int32_t width,
+      std::int32_t height,
+      bool activated,
+      bool maximized,
+      bool fullscreen);
   void request_pointer_move(std::int32_t x, std::int32_t y);
   void request_pointer_button(std::uint32_t button, bool pressed);
   void request_pointer_scroll(float delta_x, float delta_y);
@@ -81,6 +98,7 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_acked() const;
+  [[nodiscard]] WaylandConfigureState last_resize_configure_state() const;
   [[nodiscard]] bool wait_for_pointer_move_sent() const;
   [[nodiscard]] bool wait_for_pointer_button_sent() const;
   [[nodiscard]] bool wait_for_pointer_scroll_sent() const;

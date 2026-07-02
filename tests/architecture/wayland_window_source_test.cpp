@@ -190,6 +190,17 @@ int main() {
       !contains(text, "cursor_image_unavailable")) {
     return 68;
   }
+  if (!contains(text, "WaylandXdgConfigureState") ||
+      !contains(text, "WaylandXdgToplevelState") ||
+      !contains(text, "pending_configure_") ||
+      !contains(text, "last_acked_configure_serial") ||
+      !contains(text, "xdg_toplevel_state_activated") ||
+      !contains(text, "xdg_toplevel_state_maximized") ||
+      !contains(text, "xdg_toplevel_state_fullscreen") ||
+      !contains(text, "record_toplevel_configure_state") ||
+      !contains(text, "dispatch_configure_lifecycle_events")) {
+    return 69;
+  }
   if (!contains(text, "wakeup_pipe_") ||
       !contains(text, "poll(fds.data()") ||
       !contains(text, "WindowWakeupRequested{}")) {

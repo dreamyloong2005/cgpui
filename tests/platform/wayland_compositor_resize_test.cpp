@@ -43,6 +43,7 @@ int main() {
   }
 
   bool resized = false;
+  bool activated = false;
   cgpui::Size observed_size{};
   cgpui::DpiScale observed_scale{};
   auto window = (*app)->create_window(
@@ -56,6 +57,9 @@ int main() {
           observed_size = resize->size;
           observed_scale = resize->scale;
           (*app)->quit();
+        } else if (const auto* activation = std::get_if<cgpui::WindowActivated>(&event);
+                   activation != nullptr && activation->active) {
+          activated = true;
         } else if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
         }
@@ -71,9 +75,12 @@ int main() {
     run_finished.store(true);
   });
 
-  compositor.request_resize_configure(
+  compositor.request_resize_configure_state(
       static_cast<std::int32_t>(requested_size.width),
-      static_cast<std::int32_t>(requested_size.height));
+      static_cast<std::int32_t>(requested_size.height),
+      true,
+      true,
+      true);
 
   if (!wait_for_run_finished(run_finished)) {
     compositor.request_close();
@@ -110,6 +117,19 @@ int main() {
   }
   if (!scale_equals(observed_scale, cgpui::DpiScale{1.0F})) {
     return 12;
+  }
+  if (!activated) {
+    return 13;
+  }
+  const auto configure = compositor.last_resize_configure_state();
+  if (configure.width != static_cast<std::int32_t>(requested_size.width) ||
+      configure.height != static_cast<std::int32_t>(requested_size.height) ||
+      !configure.activated || !configure.maximized || !configure.fullscreen) {
+    return 14;
+  }
+  if (!configure.acked || configure.serial == 0 ||
+      configure.acked_serial != configure.serial) {
+    return 15;
   }
 
   return 0;

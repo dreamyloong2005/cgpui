@@ -61,6 +61,10 @@ const wl_interface xdg_toplevel_interface{
     xdg_toplevel_events,
 };
 
+constexpr std::uint32_t xdg_toplevel_state_maximized = 1;
+constexpr std::uint32_t xdg_toplevel_state_fullscreen = 2;
+constexpr std::uint32_t xdg_toplevel_state_activated = 4;
+
 const wl_interface* xdg_surface_get_toplevel_types[]{
     &xdg_toplevel_interface,
 };
@@ -719,6 +723,23 @@ struct WaylandCursorThemeState {
   std::uint32_t apply_count = 0;
 };
 
+struct WaylandXdgToplevelState {
+  bool activated = false;
+  bool maximized = false;
+  bool fullscreen = false;
+};
+
+struct WaylandXdgConfigureState {
+  std::int32_t pending_width = 0;
+  std::int32_t pending_height = 0;
+  std::uint32_t pending_serial = 0;
+  std::uint32_t last_acked_configure_serial = 0;
+  bool pending_size = false;
+  bool configured = false;
+  WaylandXdgToplevelState pending_toplevel_state;
+  WaylandXdgToplevelState current_toplevel_state;
+};
+
 [[nodiscard]] std::string cursor_name_for_shape(CursorShape shape) {
   switch (shape) {
   case CursorShape::default_arrow:
@@ -737,6 +758,34 @@ struct WaylandCursorThemeState {
     return "not-allowed";
   }
   return "left_ptr";
+}
+
+[[nodiscard]] WaylandXdgToplevelState parse_xdg_toplevel_states(
+    const wl_array* states) {
+  WaylandXdgToplevelState result;
+  if (states == nullptr || states->data == nullptr) {
+    return result;
+  }
+
+  const auto* begin = static_cast<const std::uint32_t*>(states->data);
+  const auto* end = reinterpret_cast<const std::uint32_t*>(
+      static_cast<const char*>(states->data) + states->size);
+  for (const auto* state = begin; state < end; ++state) {
+    switch (*state) {
+    case xdg_toplevel_state_activated:
+      result.activated = true;
+      break;
+    case xdg_toplevel_state_maximized:
+      result.maximized = true;
+      break;
+    case xdg_toplevel_state_fullscreen:
+      result.fullscreen = true;
+      break;
+    default:
+      break;
+    }
+  }
+  return result;
 }
 
 class WaylandWindow final : public PlatformWindow {
@@ -992,15 +1041,59 @@ class WaylandWindow final : public PlatformWindow {
     return {};
   }
 
+  void record_toplevel_configure_state(
+      std::int32_t width,
+      std::int32_t height,
+      wl_array* states) {
+    pending_configure_.pending_width = width;
+    pending_configure_.pending_height = height;
+    pending_configure_.pending_size = width > 0 && height > 0;
+    pending_configure_.pending_toplevel_state =
+        parse_xdg_toplevel_states(states);
+    if (pending_configure_.pending_size) {
+      state_.framebuffer_size =
+          Size{static_cast<float>(width), static_cast<float>(height)};
+      if (configured_) {
+        resize_pending_surface_configure_ = true;
+      }
+    }
+  }
+
+  void acknowledge_configure(std::uint32_t serial) {
+    pending_configure_.pending_serial = serial;
+    pending_configure_.last_acked_configure_serial = serial;
+    pending_configure_.configured = true;
+    pending_configure_.current_toplevel_state =
+        pending_configure_.pending_toplevel_state;
+  }
+
+  void dispatch_configure_lifecycle_events(
+      WaylandXdgToplevelState previous,
+      WaylandXdgToplevelState current) {
+    if (previous.activated != current.activated) {
+      callback_(WindowActivated{.active = current.activated});
+    }
+    if ((previous.maximized || previous.fullscreen) && !current.maximized &&
+        !current.fullscreen) {
+      callback_(WindowRestored{});
+    }
+  }
+
   static void handle_surface_configure(
       void* data,
       xdg_surface* surface,
       std::uint32_t serial) {
     auto* window = static_cast<WaylandWindow*>(data);
     const bool was_configured = window->configured_;
+    const WaylandXdgToplevelState previous_state =
+        window->pending_configure_.current_toplevel_state;
     xdg_surface_ack_configure(surface, serial);
     (void)wl_display_flush(window->display_);
+    window->acknowledge_configure(serial);
     window->configured_ = true;
+    window->dispatch_configure_lifecycle_events(
+        previous_state,
+        window->pending_configure_.current_toplevel_state);
     if (was_configured && window->resize_pending_surface_configure_) {
       window->resize_pending_surface_configure_ = false;
       window->callback_(WindowResized{
@@ -1016,15 +1109,8 @@ class WaylandWindow final : public PlatformWindow {
       std::int32_t height,
       wl_array* states) {
     (void)toplevel;
-    (void)states;
     auto* window = static_cast<WaylandWindow*>(data);
-    if (width > 0 && height > 0) {
-      window->state_.framebuffer_size =
-          Size{static_cast<float>(width), static_cast<float>(height)};
-      if (window->configured_) {
-        window->resize_pending_surface_configure_ = true;
-      }
-    }
+    window->record_toplevel_configure_state(width, height, states);
   }
 
   static void handle_toplevel_close(void* data, xdg_toplevel* toplevel) {
@@ -1052,6 +1138,7 @@ class WaylandWindow final : public PlatformWindow {
   WaylandTextInputState text_input_state_;
   WaylandAtspiAccessibilityAdapter atspi_accessibility_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
+  WaylandXdgConfigureState pending_configure_;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;
 };
