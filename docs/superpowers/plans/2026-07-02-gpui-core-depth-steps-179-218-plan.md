@@ -588,11 +588,15 @@ passing targeted rerun and passing full-suite rerun.
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/architecture/wayland_window_source_test.cpp`
 
-- [ ] Add RED coverage for open/save file dialog request descriptors and graceful unsupported results.
-- [ ] Expected RED: no platform-neutral file dialog request/result API exists.
-- [ ] GREEN: add descriptor/result types, app-context forwarding, and Win32/Wayland skeleton platform hooks.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for open/save file dialog request descriptors and graceful unsupported results.
+- [x] Expected RED: no platform-neutral file dialog request/result API exists.
+- [x] GREEN: add descriptor/result types, app-context forwarding, and Win32/Wayland skeleton platform hooks.
+- [x] Targeted command: `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `a7a2ac5 feat: add native file dialog skeleton`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 206: Window Chrome Customization Skeleton
 

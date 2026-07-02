@@ -1,5 +1,56 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 205 Native File Dialog API Skeleton
+
+- Created `.worktrees/native-file-dialog-api` on
+  `codex/native-file-dialog-api` from `master` at
+  `d1ee7aa docs: mark step 204 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-file-dialog-api -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/app_runner_test.cpp`,
+  `tests/architecture/win32_window_source_test.cpp`,
+  `tests/architecture/wayland_window_source_test.cpp`, and header-cleanliness
+  tests. RED failed as expected on missing `NativeFileDialogOptions`,
+  `NativeFileDialogResult`, `NativeFileDialogFilter`,
+  `NativeFileDialogKind`, and `show_native_file_dialog(...)` APIs.
+- GREEN adds platform-neutral file dialog kind/filter/options/result types,
+  app/runtime/context forwarding, retained last dialog result state, default
+  unsupported platform fallback, and inert Win32/Wayland skeleton diagnostics
+  with backend names, requested kind, and filter count.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-file-dialog-api -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/native-file-dialog-api -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 205 as
+  `a7a2ac5 feat: add native file dialog skeleton` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 205 is marked merged and post-merge verified.
+  Step 206, window chrome customization skeleton, is the next implementation
+  slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 204 Native Menu And Accelerator API Skeleton
 
 - Continued `.worktrees/native-menu-accelerator-api` on

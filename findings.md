@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Native File Dialog API Skeleton
+
+- Step 205 adds platform-neutral native file dialog descriptors:
+  `NativeFileDialogKind`, `NativeFileDialogFilter`,
+  `NativeFileDialogOptions`, and `NativeFileDialogResult`.
+- The public surface can express open-file, open-files, and save-file requests
+  with title, default directory, suggested name, and extension filters. Results
+  carry support/acceptance state, backend name, requested kind, selected paths,
+  optional error text, and filter count diagnostics.
+- `AppContext`, `WindowRuntimeContext`, and `WindowRuntime` now forward
+  `show_native_file_dialog(...)` through `PlatformApplication` and retain the
+  last dialog result for frame/runtime inspection.
+- Win32 and Wayland own inert native file-dialog state objects that report
+  `backend = "win32"` or `backend = "wayland"` plus requested kind and filter
+  count while returning `supported = false`. Real `IFileOpenDialog`/
+  `IFileSaveDialog`, xdg-desktop-portal, non-blocking dialog lifetimes, and
+  sandbox/desktop integration remain future platform-depth work.
+
 ## 2026-07-03 Native Menu And Accelerator API Skeleton
 
 - Step 204 adds the first platform-neutral native menu surface:

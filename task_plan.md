@@ -725,7 +725,7 @@ follow-on goal is now complete on the Windows/Linux track.
 202. [x] Wayland XDG configure lifecycle state.
 203. [x] Win32 OLE drop target skeleton.
 204. [x] Native menu and accelerator API skeleton.
-205. [ ] Native file dialog API skeleton.
+205. [x] Native file dialog API skeleton.
 206. [ ] Window chrome customization skeleton.
 207. [ ] App command palette registry.
 208. [ ] Platform diagnostics event stream.
@@ -745,11 +745,26 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 204, native menu and accelerator API skeleton, is merged on `master` at
-`25c5e5f feat: add native menu accelerator skeleton` and post-merge verified
-on Windows and WSL Arch Linux. Step 205, native file dialog API skeleton, is
+Step 205, native file dialog API skeleton, is merged on `master` at
+`a7a2ac5 feat: add native file dialog skeleton` and post-merge verified on
+Windows and WSL Arch Linux. Step 206, window chrome customization skeleton, is
 the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 205, native file dialog API skeleton, is merged on `master` at
+`a7a2ac5 feat: add native file dialog skeleton`. RED failed as expected on
+missing platform-neutral file dialog request/result/filter/kind types and
+runtime/platform `show_native_file_dialog(...)` forwarding. GREEN adds
+`NativeFileDialogKind`, `NativeFileDialogFilter`, `NativeFileDialogOptions`,
+`NativeFileDialogResult`, `AppContext`/`WindowRuntime` dialog forwarding,
+retained last dialog results, and inert Win32/Wayland skeleton diagnostics that
+report backend, requested kind, and filter count while remaining unsupported.
+Feature-worktree targeted tests passed 5/5 on Windows and WSL Arch Linux,
+`git diff --check` exited 0 with only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 5/5 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30. Step
+206, window chrome customization skeleton, is the next implementation slice.
 
 Step 204, native menu and accelerator API skeleton, is merged on `master` at
 `25c5e5f feat: add native menu accelerator skeleton`. RED failed as expected
