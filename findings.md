@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Platform Diagnostics Event Stream
+
+- Step 208 adds `PlatformDiagnosticKind` and `PlatformDiagnosticEvent` as
+  platform-neutral event metadata for platform-facing runtime hooks.
+- `EventKind` moved from `ui.hpp` to `core/events.hpp`, so platform diagnostic
+  metadata can live at the platform boundary without depending on UI-only
+  declarations.
+- `WindowRuntime` now keeps a bounded 32-event platform diagnostics stream,
+  exposes it through `platform_diagnostics()`, and copies it into
+  `RuntimeDiagnosticsSnapshot`; `WindowRuntimeContext` forwards the same
+  read-only stream.
+- The runtime records deterministic diagnostics for clipboard copy/cut/paste
+  outcomes, drag/drop events and payload counts, IME placement updates,
+  accessibility tree updates, window lifecycle dispatch, native-menu
+  installation, and native file-dialog requests.
+- This is an observability layer, not full native telemetry. Backend names are
+  currently runtime/platform-result summaries, and deeper Win32 UIA, Wayland
+  AT-SPI, menu, dialog, chrome, and renderer-backed diagnostics remain future
+  production-depth work. Step 209 moves to the Win32 UIA provider facade.
+
 ## 2026-07-03 App Command Palette Registry
 
 - Step 207 adds `CommandPaletteEntry` as platform-neutral command metadata:

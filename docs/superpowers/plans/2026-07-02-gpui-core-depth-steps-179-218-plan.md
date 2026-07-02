@@ -652,18 +652,23 @@ targeted rerun and full-suite rerun.
 **Worktree:** `.worktrees/platform-diagnostics-stream`
 
 **Files:**
+- Modify: `include/cgpui/core/events.hpp`
 - Modify: `include/cgpui/platform/platform.hpp`
 - Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
-- Modify: `src/platform/win32/win32_application.cpp`
-- Modify: `src/platform/linux/wayland_application.cpp`
+- Modify: `tests/header_cleanliness/core_header_cleanliness.cpp`
+- Modify: `tests/header_cleanliness/ui_header_cleanliness.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for collecting platform diagnostics from clipboard, DnD, IME, accessibility, and window lifecycle hooks.
-- [ ] Expected RED: diagnostics snapshots cover runtime/frame data but not platform adapter state.
-- [ ] GREEN: add a bounded platform diagnostics stream surfaced through runtime diagnostics snapshots.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for collecting platform diagnostics from clipboard, DnD, IME, accessibility, and window lifecycle hooks.
+- [x] Expected RED: diagnostics snapshots cover runtime/frame data but not platform adapter state.
+- [x] GREEN: add a bounded platform diagnostics stream surfaced through runtime diagnostics snapshots.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `6ff6b0f feat: add platform diagnostics stream`.
+**Post-merge verification:** Windows targeted 5/5, WSL targeted 5/5,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Band L: Accessibility, Multi-Window, Theme, Assets, Animation, Async
 

@@ -728,7 +728,7 @@ follow-on goal is now complete on the Windows/Linux track.
 205. [x] Native file dialog API skeleton.
 206. [x] Window chrome customization skeleton.
 207. [x] App command palette registry.
-208. [ ] Platform diagnostics event stream.
+208. [x] Platform diagnostics event stream.
 209. [ ] UIA provider tree facade.
 210. [ ] AT-SPI object model facade.
 211. [ ] Accessibility value and live update events.
@@ -745,11 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 207, app command palette registry, is merged on `master` at
-`92e03ea feat: add command palette registry` and post-merge verified on
-Windows and WSL Arch Linux. Step 208, platform diagnostics event stream, is the
-next implementation slice. The track remains Windows/Linux first;
+Step 208, platform diagnostics event stream, is merged on `master` at
+`6ff6b0f feat: add platform diagnostics stream` and post-merge verified on
+Windows and WSL Arch Linux. Step 209, UIA provider tree facade, is the next
+implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 208, platform diagnostics event stream, is merged on `master` at
+`6ff6b0f feat: add platform diagnostics stream`. RED failed as expected on
+missing `PlatformDiagnosticEvent`, `PlatformDiagnosticKind`, snapshot
+diagnostics storage, and runtime stream APIs. GREEN lifts `EventKind` to the
+core event boundary, adds platform diagnostic event metadata, surfaces a
+bounded 32-event diagnostics stream through `WindowRuntime`,
+`WindowRuntimeContext`, and `RuntimeDiagnosticsSnapshot`, and records
+clipboard, drag/drop, IME placement, accessibility tree, lifecycle,
+native-menu, and file-dialog platform-facing hooks. Feature-worktree targeted
+tests passed 5/5 on Windows and WSL Arch Linux, `git diff --check` exited 0
+with only expected CRLF warnings, WSL full debug passed 27/27, and Windows
+full debug passed 30/30. Post-merge targeted tests passed 5/5 on Windows and
+WSL Arch Linux, `git diff --check` produced no output, WSL full debug passed
+27/27, and Windows full debug passed 30/30. Step 209, UIA provider tree
+facade, is the next implementation slice.
 
 Step 207, app command palette registry, is merged on `master` at
 `92e03ea feat: add command palette registry`. RED failed as expected on

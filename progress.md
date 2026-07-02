@@ -1,5 +1,56 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 208 Platform Diagnostics Event Stream
+
+- Continued `.worktrees/platform-diagnostics-stream` on
+  `codex/platform-diagnostics-stream` from `master` at
+  `d822fa4 docs: mark step 207 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-diagnostics-stream -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` and header
+  cleanliness tests. RED failed as expected on missing
+  `PlatformDiagnosticEvent`, `PlatformDiagnosticKind`, and runtime
+  `platform_diagnostics()`/snapshot APIs.
+- GREEN lifts `EventKind` into `core/events.hpp`, adds platform diagnostic
+  event metadata, and surfaces a bounded 32-event stream through
+  `WindowRuntime`, `WindowRuntimeContext`, and `RuntimeDiagnosticsSnapshot`.
+- The runtime now records clipboard copy/cut/paste outcomes, drag/drop events
+  and payload counts, IME placement updates, accessibility tree updates,
+  lifecycle dispatch, native-menu installation, and native file-dialog
+  requests.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-diagnostics-stream -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/platform-diagnostics-stream -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 208 as `6ff6b0f feat: add platform diagnostics stream` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 5/5 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default win32_window_source_test/default wayland_window_source_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 5/5 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 208 is marked merged and post-merge verified.
+  Step 209, UIA provider tree facade, is the next implementation slice after
+  docs closeout and cleanup.
+
 ## 2026-07-03 Step 207 App Command Palette Registry
 
 - Continued `.worktrees/app-command-palette-registry` on
