@@ -1010,6 +1010,107 @@ int test_renderer_batches_distinguish_nested_clip_stack_metadata() {
              : 56;
 }
 
+int test_renderer_reports_nested_opacity_transform_stack_metadata() {
+  const cgpui::PaintMetadata first{
+      .opacity = 0.5F,
+      .transform = cgpui::AffineTransform::translation(2.0F, 3.0F),
+  };
+  const cgpui::PaintMetadata second{
+      .opacity = 0.25F,
+      .transform = cgpui::AffineTransform::translation(6.0F, 8.0F),
+  };
+  const cgpui::RendererCompositionStackRecord stack{
+      .entries = {first, second},
+      .full_depth = 2,
+      .current_metadata = second,
+  };
+  const std::vector<cgpui::SolidRect> rects{
+      cgpui::SolidRect{
+          .rect = {.origin = {.x = 2.0F, .y = 4.0F},
+                   .size = {.width = 20.0F, .height = 10.0F}},
+          .color = {.r = 0.4F, .g = 0.5F, .b = 0.6F, .a = 1.0F},
+          .composition_stack = stack,
+          .metadata = second,
+      },
+  };
+  const std::vector<cgpui::RoundedRectDraw> rounded_rects{
+      cgpui::RoundedRectDraw{
+          .rect = {.origin = {.x = 6.0F, .y = 8.0F},
+                   .size = {.width = 18.0F, .height = 12.0F}},
+          .color = {.r = 0.3F, .g = 0.2F, .b = 0.7F, .a = 1.0F},
+          .radius = cgpui::BorderRadii::all(3.0F),
+          .composition_stack = stack,
+          .metadata = second,
+      },
+  };
+  const std::vector<cgpui::TextDraw> text_draws{
+      cgpui::TextDraw{
+          .bounds = {.origin = {.x = 10.0F, .y = 12.0F},
+                     .size = {.width = 24.0F, .height = 16.0F}},
+          .color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+          .font = {.family = "Inter"},
+          .content = "hi",
+          .byte_length = 2,
+          .font_size = 16.0F,
+          .composition_stack = stack,
+          .metadata = second,
+      },
+  };
+  const std::vector<cgpui::TextSelectionDraw> selections{
+      cgpui::TextSelectionDraw{
+          .rect = {.origin = {.x = 10.0F, .y = 12.0F},
+                   .size = {.width = 18.0F, .height = 16.0F}},
+          .color = {.r = 0.2F, .g = 0.4F, .b = 0.8F, .a = 0.5F},
+          .range = {.start = 0, .end = 2, .collapsed = false},
+          .font_size = 16.0F,
+          .composition_stack = stack,
+          .metadata = second,
+      },
+  };
+  const std::vector<cgpui::TextCaretDraw> carets{
+      cgpui::TextCaretDraw{
+          .rect = {.origin = {.x = 28.0F, .y = 12.0F},
+                   .size = {.width = 1.0F, .height = 16.0F}},
+          .color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+          .byte_offset = 2,
+          .font_size = 16.0F,
+          .composition_stack = stack,
+          .metadata = second,
+      },
+  };
+
+  cgpui::GlyphCache cache;
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(
+          rects,
+          rounded_rects,
+          text_draws,
+          selections,
+          carets,
+          cache);
+  if (report.supported_command_count != 5 ||
+      report.composition_stack_record_count != 5 ||
+      report.max_composition_stack_depth != 2 ||
+      report.batches.size() != 5) {
+    return 57;
+  }
+  if (report.batches[0].key.composition_stack.full_depth != 2 ||
+      report.batches[0].key.composition_stack.current_metadata.opacity !=
+          0.25F ||
+      report.rounded_rect_tessellations[0]
+              .composition_stack.current_metadata.opacity != 0.25F ||
+      report.text_selection_geometries[0].composition_stack.full_depth != 2 ||
+      report.text_caret_geometries[0].composition_stack.full_depth != 2) {
+    return 58;
+  }
+  return report.batches[2].key.primitive_kind ==
+                 cgpui::RendererPrimitiveKind::text &&
+                 report.batches[4].key.primitive_kind ==
+                     cgpui::RendererPrimitiveKind::text_caret
+             ? 0
+             : 59;
+}
+
 } // namespace
 
 int main() {
@@ -1078,6 +1179,11 @@ int main() {
   }
   if (const int result =
           test_renderer_batches_distinguish_nested_clip_stack_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_renderer_reports_nested_opacity_transform_stack_metadata();
       result != 0) {
     return result;
   }

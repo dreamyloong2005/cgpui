@@ -119,11 +119,43 @@ struct RendererClipStackRecord {
   return record;
 }
 
+inline constexpr std::size_t kRendererCompositionStackMaxDepth = 8;
+
+struct RendererCompositionStackRecord {
+  std::vector<PaintMetadata> entries;
+  std::size_t full_depth = 0;
+  bool truncated = false;
+  PaintMetadata current_metadata;
+
+  [[nodiscard]] bool empty() const { return full_depth == 0; }
+
+  friend bool operator==(
+      const RendererCompositionStackRecord&,
+      const RendererCompositionStackRecord&) = default;
+};
+
+[[nodiscard]] inline RendererCompositionStackRecord
+renderer_composition_stack_record(std::span<const PaintMetadata> entries) {
+  RendererCompositionStackRecord record;
+  record.full_depth = entries.size();
+  if (entries.empty()) {
+    return record;
+  }
+
+  record.current_metadata = entries.back();
+  record.truncated = entries.size() > kRendererCompositionStackMaxDepth;
+  const std::size_t first_kept =
+      record.truncated ? entries.size() - kRendererCompositionStackMaxDepth : 0;
+  record.entries.assign(entries.begin() + first_kept, entries.end());
+  return record;
+}
+
 struct SolidRect {
   Rect rect;
   Color color;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -133,6 +165,7 @@ struct RoundedRectDraw {
   BorderRadii radius;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -148,6 +181,7 @@ struct TextDraw {
   std::vector<TextGlyphPaint> glyphs;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -158,6 +192,7 @@ struct TextSelectionDraw {
   float font_size = 16.0F;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -168,6 +203,7 @@ struct TextCaretDraw {
   float font_size = 16.0F;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -201,6 +237,7 @@ struct RendererCommandBatchKey {
   RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::solid_rect;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -215,6 +252,7 @@ struct RendererCommandStreamItem {
   std::size_t command_index = 0;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 
@@ -275,6 +313,7 @@ struct RoundedRectTessellationRecord {
   BorderRadii radius;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
   std::size_t corner_segment_count = 0;
   std::size_t vertex_count = 0;
@@ -288,6 +327,7 @@ struct TextSelectionGeometryRecord {
   float font_size = 16.0F;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
   std::size_t vertex_count = 0;
   std::size_t triangle_count = 0;
@@ -300,6 +340,7 @@ struct TextCaretGeometryRecord {
   float font_size = 16.0F;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
   std::size_t vertex_count = 0;
   std::size_t triangle_count = 0;
@@ -318,6 +359,8 @@ struct RendererCommandReport {
   std::size_t text_caret_geometry_count = 0;
   std::size_t clip_stack_record_count = 0;
   std::size_t max_clip_stack_depth = 0;
+  std::size_t composition_stack_record_count = 0;
+  std::size_t max_composition_stack_depth = 0;
   RendererTextRenderReport text_render;
 
   [[nodiscard]] std::size_t command_count() const {
@@ -445,6 +488,7 @@ struct TexturedGlyphQuad {
   Color color;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
 };
 

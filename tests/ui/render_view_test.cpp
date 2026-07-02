@@ -223,6 +223,28 @@ class NestedClipStackView final : public cgpui::View {
   }
 };
 
+class NestedMetadataStackView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.push_metadata(cgpui::PaintMetadata{
+        .opacity = 0.5F,
+        .transform = cgpui::AffineTransform::translation(2.0F, 3.0F),
+    });
+    paint_list.push_metadata(cgpui::PaintMetadata{
+        .opacity = 0.5F,
+        .transform = cgpui::AffineTransform::translation(4.0F, 5.0F),
+    });
+    paint_list.fill_rect(
+        cgpui::Rect{
+            .origin = {.x = 20.0F, .y = 22.0F},
+            .size = {.width = 18.0F, .height = 14.0F},
+        },
+        cgpui::Color{.r = 0.7F, .g = 0.4F, .b = 0.2F, .a = 1.0F});
+    paint_list.pop_metadata();
+    paint_list.pop_metadata();
+  }
+};
+
 } // namespace
 
 int main() {
@@ -406,8 +428,39 @@ int main() {
       clip_frame.last_rect.clip_stack.current_clip_rect->size.width != 48.0F) {
     return 20;
   }
-  return clip_stats.clip_stack_command_count == 1 &&
-                 clip_stats.max_clip_stack_depth == 2
+  if (clip_stats.clip_stack_command_count != 1 ||
+      clip_stats.max_clip_stack_depth != 2) {
+    return 21;
+  }
+
+  RecordingFrame metadata_frame;
+  RecordingRenderer metadata_renderer(metadata_frame);
+  NestedMetadataStackView metadata_view;
+  cgpui::FrameStatistics metadata_stats;
+  const auto metadata_result = cgpui::render_view(
+      metadata_renderer,
+      metadata_view,
+      cgpui::Size{128.0F, 64.0F},
+      cgpui::DpiScale{},
+      &metadata_stats);
+  if (!metadata_result) {
+    return 22;
+  }
+  if (metadata_frame.draw_count != 1 ||
+      metadata_frame.last_rect.metadata.opacity != 0.25F ||
+      !same_transform(
+          metadata_frame.last_rect.metadata.transform,
+          cgpui::AffineTransform::translation(6.0F, 8.0F)) ||
+      metadata_frame.last_rect.composition_stack.full_depth != 2 ||
+      metadata_frame.last_rect.composition_stack.entries.size() != 2 ||
+      metadata_frame.last_rect.composition_stack.entries[0].opacity != 0.5F ||
+      metadata_frame.last_rect.composition_stack.entries[1].opacity != 0.25F ||
+      metadata_frame.last_rect.composition_stack.current_metadata.opacity !=
+          0.25F) {
+    return 23;
+  }
+  return metadata_stats.composition_stack_command_count == 1 &&
+                 metadata_stats.max_composition_stack_depth == 2
              ? 0
-             : 21;
+             : 24;
 }

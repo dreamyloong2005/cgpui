@@ -121,12 +121,19 @@ Result<WaylandSurfaceHandle> require_wayland_surface(
   return true;
 }
 
+[[nodiscard]] bool same_composition_stack(
+    const RendererCompositionStackRecord& lhs,
+    const RendererCompositionStackRecord& rhs) {
+  return lhs == rhs;
+}
+
 [[nodiscard]] bool same_batch_key(
     const RendererCommandBatchKey& lhs,
     const RendererCommandBatchKey& rhs) {
   return lhs.primitive_kind == rhs.primitive_kind &&
          same_clip_rect(lhs.clip_rect, rhs.clip_rect) &&
          same_clip_stack(lhs.clip_stack, rhs.clip_stack) &&
+         same_composition_stack(lhs.composition_stack, rhs.composition_stack) &&
          lhs.metadata == rhs.metadata;
 }
 
@@ -1594,6 +1601,7 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
         .color = text.color,
         .clip_rect = text.clip_rect,
         .clip_stack = text.clip_stack,
+        .composition_stack = text.composition_stack,
         .metadata = text.metadata,
     });
   }
@@ -1616,6 +1624,7 @@ std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(
         .radius = rounded_rect.radius,
         .clip_rect = rounded_rect.clip_rect,
         .clip_stack = rounded_rect.clip_stack,
+        .composition_stack = rounded_rect.composition_stack,
         .metadata = rounded_rect.metadata,
         .corner_segment_count =
             rounded_corner_count == 0 ? 0 : kCornerSegmentCount,
@@ -1640,6 +1649,7 @@ std::vector<TextSelectionGeometryRecord> vulkan_build_text_selection_geometry(
         .font_size = selection.font_size,
         .clip_rect = selection.clip_rect,
         .clip_stack = selection.clip_stack,
+        .composition_stack = selection.composition_stack,
         .metadata = selection.metadata,
         .vertex_count = 4,
         .triangle_count = 2,
@@ -1662,6 +1672,7 @@ std::vector<TextCaretGeometryRecord> vulkan_build_text_caret_geometry(
         .font_size = caret.font_size,
         .clip_rect = caret.clip_rect,
         .clip_stack = caret.clip_stack,
+        .composition_stack = caret.composition_stack,
         .metadata = caret.metadata,
         .vertex_count = 4,
         .triangle_count = 2,
@@ -1689,6 +1700,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .command_index = index,
         .clip_rect = rect.clip_rect,
         .clip_stack = rect.clip_stack,
+        .composition_stack = rect.composition_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1700,6 +1712,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .command_index = index,
         .clip_rect = rect.clip_rect,
         .clip_stack = rect.clip_stack,
+        .composition_stack = rect.composition_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1711,6 +1724,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .command_index = index,
         .clip_rect = text_draw.clip_rect,
         .clip_stack = text_draw.clip_stack,
+        .composition_stack = text_draw.composition_stack,
         .metadata = text_draw.metadata,
     });
   }
@@ -1722,6 +1736,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .command_index = index,
         .clip_rect = selection.clip_rect,
         .clip_stack = selection.clip_stack,
+        .composition_stack = selection.composition_stack,
         .metadata = selection.metadata,
     });
   }
@@ -1733,6 +1748,7 @@ std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
         .command_index = index,
         .clip_rect = caret.clip_rect,
         .clip_stack = caret.clip_stack,
+        .composition_stack = caret.composition_stack,
         .metadata = caret.metadata,
     });
   }
@@ -1780,6 +1796,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
             .primitive_kind = command.primitive_kind,
             .clip_rect = command.clip_rect,
             .clip_stack = command.clip_stack,
+            .composition_stack = command.composition_stack,
             .metadata = command.metadata,
         },
         command.command_index);
@@ -1789,6 +1806,12 @@ RendererCommandReport vulkan_build_renderer_command_report(
       report.max_clip_stack_depth = std::max(
           report.max_clip_stack_depth,
           command.clip_stack.full_depth);
+    }
+    if (!command.composition_stack.empty()) {
+      report.composition_stack_record_count += 1;
+      report.max_composition_stack_depth = std::max(
+          report.max_composition_stack_depth,
+          command.composition_stack.full_depth);
     }
   }
 
@@ -1814,6 +1837,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .command_index = index,
         .clip_rect = rect.clip_rect,
         .clip_stack = rect.clip_stack,
+        .composition_stack = rect.composition_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1825,6 +1849,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .command_index = index,
         .clip_rect = rect.clip_rect,
         .clip_stack = rect.clip_stack,
+        .composition_stack = rect.composition_stack,
         .metadata = rect.metadata,
     });
   }
@@ -1836,6 +1861,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .command_index = index,
         .clip_rect = text_draw.clip_rect,
         .clip_stack = text_draw.clip_stack,
+        .composition_stack = text_draw.composition_stack,
         .metadata = text_draw.metadata,
     });
   }
@@ -1847,6 +1873,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .command_index = index,
         .clip_rect = selection.clip_rect,
         .clip_stack = selection.clip_stack,
+        .composition_stack = selection.composition_stack,
         .metadata = selection.metadata,
     });
   }
@@ -1858,6 +1885,7 @@ RendererCommandReport vulkan_build_renderer_command_report(
         .command_index = index,
         .clip_rect = caret.clip_rect,
         .clip_stack = caret.clip_stack,
+        .composition_stack = caret.composition_stack,
         .metadata = caret.metadata,
     });
   }

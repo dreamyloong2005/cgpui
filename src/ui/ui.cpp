@@ -230,6 +230,12 @@ RendererClipStackRecord clip_stack_record_for(const std::vector<Rect>& clips) {
       std::span<const Rect>{clips.data(), clips.size()});
 }
 
+RendererCompositionStackRecord composition_stack_record_for(
+    const std::vector<PaintMetadata>& entries) {
+  return renderer_composition_stack_record(
+      std::span<const PaintMetadata>{entries.data(), entries.size()});
+}
+
 void record_clip_stack_statistics(
     FrameStatistics& statistics,
     const PaintCommand& command) {
@@ -240,6 +246,18 @@ void record_clip_stack_statistics(
   statistics.max_clip_stack_depth = std::max(
       statistics.max_clip_stack_depth,
       command.clip_stack.full_depth);
+}
+
+void record_composition_stack_statistics(
+    FrameStatistics& statistics,
+    const PaintCommand& command) {
+  if (command.composition_stack.empty()) {
+    return;
+  }
+  statistics.composition_stack_command_count += 1;
+  statistics.max_composition_stack_depth = std::max(
+      statistics.max_composition_stack_depth,
+      command.composition_stack.full_depth);
 }
 
 ElementId hit_test_runtime_element_root(
@@ -408,6 +426,7 @@ void PaintList::fill_rect(Rect rect, Color color) {
       .rounded_rect = RoundedRect{},
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),
+      .composition_stack = composition_stack_record_for(metadata_stack_),
       .metadata = metadata_stack_.empty() ? PaintMetadata{}
                                           : metadata_stack_.back()});
 }
@@ -424,6 +443,7 @@ void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
           },
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),
+      .composition_stack = composition_stack_record_for(metadata_stack_),
       .metadata = metadata_stack_.empty() ? PaintMetadata{}
                                           : metadata_stack_.back()});
 }
@@ -451,6 +471,7 @@ void PaintList::fill_text(
           },
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),
+      .composition_stack = composition_stack_record_for(metadata_stack_),
       .metadata = metadata_stack_.empty() ? PaintMetadata{}
                                           : metadata_stack_.back()});
 }
@@ -471,6 +492,7 @@ void PaintList::fill_text_selection(
           },
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),
+      .composition_stack = composition_stack_record_for(metadata_stack_),
       .metadata = metadata_stack_.empty() ? PaintMetadata{}
                                           : metadata_stack_.back()});
 }
@@ -491,6 +513,7 @@ void PaintList::fill_text_caret(
           },
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),
+      .composition_stack = composition_stack_record_for(metadata_stack_),
       .metadata = metadata_stack_.empty() ? PaintMetadata{}
                                           : metadata_stack_.back()});
 }
@@ -700,6 +723,7 @@ Result<void> render_view(
   for (const auto& command : paint_list.commands()) {
     if (statistics != nullptr) {
       record_clip_stack_statistics(*statistics, command);
+      record_composition_stack_statistics(*statistics, command);
     }
     if (command.kind == PaintCommandKind::text_selection) {
       const TextSelectionPaint& selection = command.text_selection;
@@ -710,6 +734,7 @@ Result<void> render_view(
           .font_size = selection.font_size,
           .clip_rect = command.clip_rect,
           .clip_stack = command.clip_stack,
+          .composition_stack = command.composition_stack,
           .metadata = command.metadata,
       });
       if (statistics != nullptr) {
@@ -727,6 +752,7 @@ Result<void> render_view(
           .font_size = caret.font_size,
           .clip_rect = command.clip_rect,
           .clip_stack = command.clip_stack,
+          .composition_stack = command.composition_stack,
           .metadata = command.metadata,
       });
       if (statistics != nullptr) {
@@ -749,6 +775,7 @@ Result<void> render_view(
           .glyphs = text.glyphs,
           .clip_rect = command.clip_rect,
           .clip_stack = command.clip_stack,
+          .composition_stack = command.composition_stack,
           .metadata = command.metadata,
       });
       if (statistics != nullptr) {
@@ -765,6 +792,7 @@ Result<void> render_view(
           .radius = rect.radius,
           .clip_rect = command.clip_rect,
           .clip_stack = command.clip_stack,
+          .composition_stack = command.composition_stack,
           .metadata = command.metadata,
       });
       if (statistics != nullptr) {
@@ -776,6 +804,7 @@ Result<void> render_view(
     SolidRect rect = command.solid_rect;
     rect.clip_rect = command.clip_rect;
     rect.clip_stack = command.clip_stack;
+    rect.composition_stack = command.composition_stack;
     rect.metadata = command.metadata;
     (*frame)->draw_rect(rect);
     if (statistics != nullptr) {
