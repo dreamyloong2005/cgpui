@@ -514,6 +514,13 @@ struct WaylandTestCompositor::State {
     drag_payloads = std::move(payloads);
   }
 
+  void set_drag_source_actions(
+      std::uint32_t source_actions,
+      std::uint32_t selected_action) {
+    drag_source_actions.store(source_actions);
+    drag_selected_action.store(selected_action);
+  }
+
   void request_keyboard_key(std::uint32_t key, bool pressed) {
     {
       std::lock_guard lock(keyboard_key_mutex);
@@ -907,6 +914,17 @@ struct WaylandTestCompositor::State {
       wl_resource* resource,
       const char* mime_type,
       int fd);
+  static void data_offer_accept(
+      wl_client*,
+      wl_resource* resource,
+      std::uint32_t serial,
+      const char* mime_type);
+  static void data_offer_finish(wl_client*, wl_resource* resource);
+  static void data_offer_set_actions(
+      wl_client*,
+      wl_resource* resource,
+      std::uint32_t dnd_actions,
+      std::uint32_t preferred_action);
   static void pointer_set_cursor(
       wl_client*,
       wl_resource* resource,
@@ -1082,6 +1100,9 @@ struct WaylandTestCompositor::State {
   std::atomic_bool drag_drop_sent{false};
   std::atomic_bool drag_leave_pending{false};
   std::atomic_bool drag_leave_sent{false};
+  std::atomic_bool drag_offer_accepted{false};
+  std::atomic_bool drag_offer_actions_set{false};
+  std::atomic_bool drag_offer_finished{false};
   std::atomic_bool pointer_cursor_set{false};
   std::atomic_uint32_t pointer_cursor_set_count{0};
   std::atomic_bool keyboard_keymap_sent{false};
@@ -1142,6 +1163,16 @@ struct WaylandTestCompositor::State {
   std::vector<WaylandMimePayload> drag_payloads;
   mutable std::mutex drag_receive_mutex;
   std::string last_drag_receive_mime;
+  mutable std::mutex drag_accept_mutex;
+  std::string last_drag_accept_mime;
+  std::atomic_uint32_t drag_source_actions{
+      WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE};
+  std::atomic_uint32_t drag_selected_action{
+      WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE};
+  std::atomic_uint32_t last_drag_offer_actions_value{
+      WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE};
+  std::atomic_uint32_t last_drag_preferred_action_value{
+      WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE};
   std::uint32_t next_configure_serial = 1;
   std::uint32_t resize_configure_serial = 0;
   std::uint32_t next_pointer_serial = 1;
@@ -1500,6 +1531,50 @@ void WaylandTestCompositor::State::data_offer_receive(
   close(fd);
 }
 
+void WaylandTestCompositor::State::data_offer_accept(
+    wl_client*,
+    wl_resource* resource,
+    std::uint32_t serial,
+    const char* mime_type) {
+  (void)serial;
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor == nullptr || resource != compositor->drag_offer_resource) {
+    return;
+  }
+  {
+    std::lock_guard lock(compositor->drag_accept_mutex);
+    compositor->last_drag_accept_mime =
+        mime_type == nullptr ? std::string{} : std::string(mime_type);
+  }
+  compositor->drag_offer_accepted.store(true);
+}
+
+void WaylandTestCompositor::State::data_offer_finish(
+    wl_client*,
+    wl_resource* resource) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor != nullptr && resource == compositor->drag_offer_resource) {
+    compositor->drag_offer_finished.store(true);
+  }
+}
+
+void WaylandTestCompositor::State::data_offer_set_actions(
+    wl_client*,
+    wl_resource* resource,
+    std::uint32_t dnd_actions,
+    std::uint32_t preferred_action) {
+  auto* compositor =
+      static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
+  if (compositor == nullptr || resource != compositor->drag_offer_resource) {
+    return;
+  }
+  compositor->last_drag_offer_actions_value.store(dnd_actions);
+  compositor->last_drag_preferred_action_value.store(preferred_action);
+  compositor->drag_offer_actions_set.store(true);
+}
+
 void WaylandTestCompositor::State::data_device_manager_create_data_source(
     wl_client* client,
     wl_resource* resource,
@@ -1813,6 +1888,8 @@ void WaylandTestCompositor::State::dispatch_pending_drag_enter() {
     for (const auto& payload : payloads) {
       wl_data_offer_send_offer(offer, payload.mime_type.c_str());
     }
+    wl_data_offer_send_source_actions(offer, drag_source_actions.load());
+    wl_data_offer_send_action(offer, drag_selected_action.load());
   }
 
   wl_data_device_send_enter(
@@ -2327,19 +2404,11 @@ const struct wl_data_device_interface
 
 const struct wl_data_offer_interface
     WaylandTestCompositor::State::data_offer_implementation{
-        .accept = [](
-            wl_client*,
-            wl_resource*,
-            std::uint32_t,
-            const char*) {},
+        .accept = &WaylandTestCompositor::State::data_offer_accept,
         .receive = &WaylandTestCompositor::State::data_offer_receive,
         .destroy = destroy_resource,
-        .finish = noop_resource,
-        .set_actions = [](
-            wl_client*,
-            wl_resource*,
-            std::uint32_t,
-            std::uint32_t) {},
+        .finish = &WaylandTestCompositor::State::data_offer_finish,
+        .set_actions = &WaylandTestCompositor::State::data_offer_set_actions,
 };
 
 const struct wl_data_source_interface
@@ -2473,6 +2542,12 @@ void WaylandTestCompositor::set_drag_payloads(
   state_->set_drag_payloads(std::move(payloads));
 }
 
+void WaylandTestCompositor::set_drag_source_actions(
+    std::uint32_t source_actions,
+    std::uint32_t selected_action) {
+  state_->set_drag_source_actions(source_actions, selected_action);
+}
+
 void WaylandTestCompositor::request_keyboard_key(
     std::uint32_t key,
     bool pressed) {
@@ -2561,6 +2636,31 @@ bool WaylandTestCompositor::wait_for_drag_drop_sent() const {
 
 bool WaylandTestCompositor::wait_for_drag_leave_sent() const {
   return state_->wait_for_flag(state_->drag_leave_sent);
+}
+
+bool WaylandTestCompositor::wait_for_drag_offer_accepted() const {
+  return state_->wait_for_flag(state_->drag_offer_accepted);
+}
+
+bool WaylandTestCompositor::wait_for_drag_offer_actions_set() const {
+  return state_->wait_for_flag(state_->drag_offer_actions_set);
+}
+
+bool WaylandTestCompositor::wait_for_drag_offer_finished() const {
+  return state_->wait_for_flag(state_->drag_offer_finished);
+}
+
+std::string WaylandTestCompositor::last_drag_accept_mime_type() const {
+  std::lock_guard lock(state_->drag_accept_mutex);
+  return state_->last_drag_accept_mime;
+}
+
+std::uint32_t WaylandTestCompositor::last_drag_offer_actions() const {
+  return state_->last_drag_offer_actions_value.load();
+}
+
+std::uint32_t WaylandTestCompositor::last_drag_preferred_action() const {
+  return state_->last_drag_preferred_action_value.load();
 }
 
 bool WaylandTestCompositor::wait_for_pointer_cursor_set() const {

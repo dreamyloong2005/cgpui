@@ -57,6 +57,9 @@ class WaylandTestCompositor {
   void request_drag_drop();
   void request_drag_leave();
   void set_drag_payloads(std::vector<WaylandMimePayload> payloads);
+  void set_drag_source_actions(
+      std::uint32_t source_actions,
+      std::uint32_t selected_action);
   void request_keyboard_modifiers(
       bool shift,
       bool control,
@@ -85,6 +88,12 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_drag_motion_sent() const;
   [[nodiscard]] bool wait_for_drag_drop_sent() const;
   [[nodiscard]] bool wait_for_drag_leave_sent() const;
+  [[nodiscard]] bool wait_for_drag_offer_accepted() const;
+  [[nodiscard]] bool wait_for_drag_offer_actions_set() const;
+  [[nodiscard]] bool wait_for_drag_offer_finished() const;
+  [[nodiscard]] std::string last_drag_accept_mime_type() const;
+  [[nodiscard]] std::uint32_t last_drag_offer_actions() const;
+  [[nodiscard]] std::uint32_t last_drag_preferred_action() const;
   [[nodiscard]] bool wait_for_pointer_cursor_set() const;
   [[nodiscard]] bool wait_for_pointer_cursor_set_count(
       std::uint32_t count) const;

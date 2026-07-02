@@ -786,20 +786,41 @@ class WaylandWindow final : public PlatformWindow {
     callback_(PointerScrolled{.delta = delta, .position = position});
   }
 
-  void drag_entered(Point position, DragDropPayload payload) {
-    callback_(DragEntered{.position = position, .payload = std::move(payload)});
+  void drag_entered(
+      Point position,
+      DragDropPayload payload,
+      DragDropAction action) {
+    callback_(DragEntered{
+        .position = position,
+        .payload = std::move(payload),
+        .action = action});
   }
 
-  void drag_updated(Point position, DragDropPayload payload) {
-    callback_(DragUpdated{.position = position, .payload = std::move(payload)});
+  void drag_updated(
+      Point position,
+      DragDropPayload payload,
+      DragDropAction action) {
+    callback_(DragUpdated{
+        .position = position,
+        .payload = std::move(payload),
+        .action = action});
   }
 
-  void drag_dropped(Point position, DragDropPayload payload) {
-    callback_(DragDropped{.position = position, .payload = std::move(payload)});
+  void drag_dropped(
+      Point position,
+      DragDropPayload payload,
+      DragDropAction action) {
+    callback_(DragDropped{
+        .position = position,
+        .payload = std::move(payload),
+        .action = action});
   }
 
   void drag_exited(Point position) {
-    callback_(DragExited{.position = position, .payload = {}});
+    callback_(DragExited{
+        .position = position,
+        .payload = {},
+        .action = DragDropAction::none});
   }
 
   void wakeup_requested() { callback_(WindowWakeupRequested{}); }
@@ -1258,6 +1279,9 @@ class WaylandDataDevice {
   struct Offer {
     wl_data_offer* offer = nullptr;
     std::vector<std::string> mime_types;
+    std::uint32_t source_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+    std::uint32_t selected_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+    bool finished = false;
   };
 
   static void handle_data_offer(
@@ -1291,11 +1315,24 @@ class WaylandDataDevice {
   }
 
   static void handle_offer_source_actions(
-      void*,
+      void* data,
       wl_data_offer*,
-      std::uint32_t) {}
+      std::uint32_t source_actions) {
+    auto* offer = static_cast<Offer*>(data);
+    if (offer != nullptr) {
+      offer->source_actions = source_actions;
+    }
+  }
 
-  static void handle_offer_action(void*, wl_data_offer*, std::uint32_t) {}
+  static void handle_offer_action(
+      void* data,
+      wl_data_offer*,
+      std::uint32_t action) {
+    auto* offer = static_cast<Offer*>(data);
+    if (offer != nullptr) {
+      offer->selected_action = action;
+    }
+  }
 
   static void handle_enter(
       void* data,
@@ -1311,10 +1348,12 @@ class WaylandDataDevice {
     self->drag_window_ = self->find_window_ ? self->find_window_(surface) : nullptr;
     self->last_drag_position_ = point_from_fixed(x, y);
     self->replace_active_offer(offer);
+    self->negotiate_active_offer(serial);
     if (self->drag_window_ != nullptr) {
       self->drag_window_->drag_entered(
           self->last_drag_position_,
-          self->payload_from_active_offer());
+          self->payload_from_active_offer(),
+          self->current_drag_action());
     }
   }
 
@@ -1341,18 +1380,23 @@ class WaylandDataDevice {
     if (self->drag_window_ != nullptr) {
       self->drag_window_->drag_updated(
           self->last_drag_position_,
-          self->payload_from_active_offer());
+          self->payload_from_active_offer(),
+          self->current_drag_action());
     }
   }
 
   static void handle_drop(void* data, wl_data_device* data_device) {
     (void)data_device;
     auto* self = static_cast<WaylandDataDevice*>(data);
+    DragDropPayload payload = self->payload_from_active_offer();
+    const DragDropAction action = self->current_drag_action();
     if (self->drag_window_ != nullptr) {
       self->drag_window_->drag_dropped(
           self->last_drag_position_,
-          self->payload_from_active_offer());
+          std::move(payload),
+          action);
     }
+    self->finish_active_offer();
   }
 
   static void handle_selection(
@@ -1395,6 +1439,115 @@ class WaylandDataDevice {
       wl_data_offer_destroy(offer->offer);
     }
     offer.reset();
+  }
+
+  [[nodiscard]] static std::uint32_t drag_supported_actions() {
+    return WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY |
+           WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
+  }
+
+  [[nodiscard]] static DragDropAction drag_action_from_wayland(
+      std::uint32_t action) {
+    if (action == WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY) {
+      return DragDropAction::copy;
+    }
+    if (action == WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE) {
+      return DragDropAction::move;
+    }
+    return DragDropAction::none;
+  }
+
+  [[nodiscard]] static std::uint32_t data_offer_version(
+      wl_data_offer* offer) {
+    if (offer == nullptr) {
+      return 0;
+    }
+    return wl_proxy_get_version(reinterpret_cast<wl_proxy*>(offer));
+  }
+
+  [[nodiscard]] std::uint32_t active_offer_client_actions() const {
+    if (active_offer_ == nullptr) {
+      return WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+    }
+    return active_offer_->source_actions & drag_supported_actions();
+  }
+
+  [[nodiscard]] std::uint32_t preferred_drag_action() const {
+    if (active_offer_ == nullptr) {
+      return WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+    }
+
+    const std::uint32_t client_actions = active_offer_client_actions();
+    const std::uint32_t selected_action = active_offer_->selected_action;
+    if ((selected_action == WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY ||
+         selected_action == WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE) &&
+        (client_actions & selected_action) != 0) {
+      return selected_action;
+    }
+    if ((client_actions & WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY) != 0) {
+      return WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
+    }
+    if ((client_actions & WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE) != 0) {
+      return WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
+    }
+    return WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+  }
+
+  [[nodiscard]] std::optional<std::string> preferred_drag_mime_type() const {
+    if (active_offer_has_mime("text/plain;charset=utf-8")) {
+      return std::string{"text/plain;charset=utf-8"};
+    }
+    if (active_offer_has_mime("text/plain")) {
+      return std::string{"text/plain"};
+    }
+    if (active_offer_has_mime("text/uri-list")) {
+      return std::string{"text/uri-list"};
+    }
+    return std::nullopt;
+  }
+
+  void negotiate_active_offer(std::uint32_t serial) {
+    if (active_offer_ == nullptr || active_offer_->offer == nullptr) {
+      return;
+    }
+
+    const std::optional<std::string> mime_type = preferred_drag_mime_type();
+    wl_data_offer_accept(
+        active_offer_->offer,
+        serial,
+        mime_type.has_value() ? mime_type->c_str() : nullptr);
+
+    if (data_offer_version(active_offer_->offer) >= 3) {
+      wl_data_offer_set_actions(
+          active_offer_->offer,
+          active_offer_client_actions(),
+          preferred_drag_action());
+    }
+    if (display_ != nullptr) {
+      (void)wl_display_flush(display_);
+    }
+  }
+
+  void finish_active_offer() {
+    if (active_offer_ == nullptr || active_offer_->offer == nullptr ||
+        active_offer_->finished) {
+      return;
+    }
+    if (data_offer_version(active_offer_->offer) < 3) {
+      return;
+    }
+    active_offer_->finished = true;
+    wl_data_offer_finish(active_offer_->offer);
+    if (display_ != nullptr) {
+      (void)wl_display_flush(display_);
+    }
+  }
+
+  [[nodiscard]] DragDropAction current_drag_action() const {
+    if (active_offer_ == nullptr) {
+      return DragDropAction::none;
+    }
+    return drag_action_from_wayland(active_offer_->selected_action);
   }
 
   [[nodiscard]] std::optional<std::string> read_offer_payload(

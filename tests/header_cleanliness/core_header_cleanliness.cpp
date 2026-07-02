@@ -31,9 +31,11 @@ int main() {
       .text = {},
       .files = {"C:\\Temp\\first.txt"},
   };
+  const cgpui::DragDropAction drag_action = cgpui::DragDropAction::copy;
   cgpui::PlatformEvent drag_event = cgpui::DragEntered{
       .position = {1.0F, 2.0F},
-      .payload = drag_payload};
+      .payload = drag_payload,
+      .action = drag_action};
   (void)drag_event;
 
   cgpui::EntityStore<int> entities;

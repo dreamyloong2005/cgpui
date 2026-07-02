@@ -1160,6 +1160,7 @@ class RuntimeEventElement final : public cgpui::FixedSizeElement {
     if (const auto* dropped = std::get_if<cgpui::DragDropped>(&event);
         dropped != nullptr) {
       last_drag_payload = dropped->payload;
+      last_drag_action = dropped->action;
     }
     return result;
   }
@@ -1169,6 +1170,7 @@ class RuntimeEventElement final : public cgpui::FixedSizeElement {
   bool saw_drag_event = false;
   cgpui::ElementId last_target_element_id;
   cgpui::DragDropPayload last_drag_payload;
+  cgpui::DragDropAction last_drag_action = cgpui::DragDropAction::none;
   cgpui::EventResult result = cgpui::EventResult::unhandled();
 };
 
@@ -2840,6 +2842,7 @@ void dispatch_runtime_drag_drop_sequence() {
               .kind = cgpui::DragDropPayloadKind::text,
               .text = "Dragged text",
           },
+      .action = cgpui::DragDropAction::copy,
   });
   callback(cgpui::DragUpdated{
       .position = {6.0F, 5.0F},
@@ -2848,6 +2851,7 @@ void dispatch_runtime_drag_drop_sequence() {
               .kind = cgpui::DragDropPayloadKind::text,
               .text = "Dragged text",
           },
+      .action = cgpui::DragDropAction::move,
   });
   callback(cgpui::DragDropped{
       .position = {7.0F, 5.0F},
@@ -2856,10 +2860,12 @@ void dispatch_runtime_drag_drop_sequence() {
               .kind = cgpui::DragDropPayloadKind::files,
               .files = {"C:\\Temp\\first.txt", "C:\\Temp\\second.cpp"},
           },
+      .action = cgpui::DragDropAction::move,
   });
   callback(cgpui::DragExited{
       .position = {8.0F, 5.0F},
       .payload = {},
+      .action = cgpui::DragDropAction::none,
   });
 }
 
@@ -2927,6 +2933,9 @@ int test_runtime_routes_drag_drop_events_to_hit_element() {
       root_ptr->last_drag_payload.files[0] != "C:\\Temp\\first.txt" ||
       root_ptr->last_drag_payload.files[1] != "C:\\Temp\\second.cpp") {
     return 218;
+  }
+  if (root_ptr->last_drag_action != cgpui::DragDropAction::move) {
+    return 219;
   }
 
   return 0;
