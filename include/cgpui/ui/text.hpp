@@ -384,6 +384,8 @@ enum class TextEditAction {
   move_next_word,
   extend_previous_word,
   extend_next_word,
+  undo,
+  redo,
   backspace,
   delete_forward,
 };
@@ -468,10 +470,12 @@ class TextModel {
   }
 
   void insert_text(std::string_view text) {
+    const TextHistorySnapshot before = history_snapshot();
     (void)erase_selection_if_needed();
     text_.insert(cursor_, text);
     cursor_ += text.size();
     collapse_selection_to_cursor();
+    commit_history_record(before);
   }
 
   [[nodiscard]] bool move_cursor_previous() {
@@ -518,8 +522,40 @@ class TextModel {
     return true;
   }
 
+  [[nodiscard]] bool can_undo() const {
+    return !undo_stack_.empty();
+  }
+
+  [[nodiscard]] bool can_redo() const {
+    return !redo_stack_.empty();
+  }
+
+  [[nodiscard]] bool undo() {
+    if (undo_stack_.empty()) {
+      return false;
+    }
+    const TextEditHistoryRecord record = undo_stack_.back();
+    undo_stack_.pop_back();
+    redo_stack_.push_back(record);
+    restore_history_snapshot(record.before);
+    return true;
+  }
+
+  [[nodiscard]] bool redo() {
+    if (redo_stack_.empty()) {
+      return false;
+    }
+    const TextEditHistoryRecord record = redo_stack_.back();
+    redo_stack_.pop_back();
+    push_undo_record(record);
+    restore_history_snapshot(record.after);
+    return true;
+  }
+
   [[nodiscard]] bool backspace() {
+    const TextHistorySnapshot before = history_snapshot();
     if (erase_selection_if_needed()) {
+      commit_history_record(before);
       return true;
     }
     if (cursor_ == 0) {
@@ -529,11 +565,14 @@ class TextModel {
     text_.erase(previous, cursor_ - previous);
     cursor_ = previous;
     collapse_selection_to_cursor();
+    commit_history_record(before);
     return true;
   }
 
   [[nodiscard]] bool delete_forward() {
+    const TextHistorySnapshot before = history_snapshot();
     if (erase_selection_if_needed()) {
+      commit_history_record(before);
       return true;
     }
     if (cursor_ >= text_.size()) {
@@ -542,6 +581,7 @@ class TextModel {
     const std::size_t next = next_grapheme_boundary(cursor_);
     text_.erase(cursor_, next - cursor_);
     collapse_selection_to_cursor();
+    commit_history_record(before);
     return true;
   }
 
@@ -563,6 +603,10 @@ class TextModel {
         return extend_selection_previous_word();
       case TextEditAction::extend_next_word:
         return extend_selection_next_word();
+      case TextEditAction::undo:
+        return undo();
+      case TextEditAction::redo:
+        return redo();
       case TextEditAction::backspace:
         return backspace();
       case TextEditAction::delete_forward:
@@ -575,6 +619,62 @@ class TextModel {
   void clear_composition() {
     composition_text_.clear();
     has_composition_ = false;
+  }
+
+  struct TextHistorySnapshot {
+    std::string text;
+    std::size_t cursor = 0;
+    std::size_t selection_anchor = 0;
+    std::size_t selection_head = 0;
+  };
+
+  struct TextEditHistoryRecord {
+    TextHistorySnapshot before;
+    TextHistorySnapshot after;
+  };
+
+  [[nodiscard]] TextHistorySnapshot history_snapshot() const {
+    return TextHistorySnapshot{
+        .text = text_,
+        .cursor = cursor_,
+        .selection_anchor = selection_anchor_,
+        .selection_head = selection_head_,
+    };
+  }
+
+  [[nodiscard]] static bool history_snapshots_equal(
+      const TextHistorySnapshot& left,
+      const TextHistorySnapshot& right) {
+    return left.text == right.text && left.cursor == right.cursor &&
+        left.selection_anchor == right.selection_anchor &&
+        left.selection_head == right.selection_head;
+  }
+
+  void restore_history_snapshot(const TextHistorySnapshot& snapshot) {
+    text_ = snapshot.text;
+    cursor_ = std::min(snapshot.cursor, text_.size());
+    selection_anchor_ = std::min(snapshot.selection_anchor, text_.size());
+    selection_head_ = std::min(snapshot.selection_head, text_.size());
+    clear_composition();
+  }
+
+  void push_undo_record(const TextEditHistoryRecord& record) {
+    undo_stack_.push_back(record);
+    if (undo_stack_.size() > max_edit_history_records) {
+      undo_stack_.erase(undo_stack_.begin());
+    }
+  }
+
+  void commit_history_record(TextHistorySnapshot before) {
+    TextEditHistoryRecord record{
+        .before = std::move(before),
+        .after = history_snapshot(),
+    };
+    if (history_snapshots_equal(record.before, record.after)) {
+      return;
+    }
+    push_undo_record(record);
+    redo_stack_.clear();
   }
 
   [[nodiscard]] std::size_t clamp_offset(std::size_t offset) const {
@@ -847,6 +947,9 @@ class TextModel {
   std::size_t selection_anchor_ = 0;
   std::size_t selection_head_ = 0;
   bool has_composition_ = false;
+  std::vector<TextEditHistoryRecord> undo_stack_;
+  std::vector<TextEditHistoryRecord> redo_stack_;
+  static constexpr std::size_t max_edit_history_records = 100;
 };
 
 } // namespace cgpui
