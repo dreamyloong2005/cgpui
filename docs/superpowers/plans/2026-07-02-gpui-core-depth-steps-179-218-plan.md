@@ -113,11 +113,15 @@
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED coverage for rounded-rect geometry records with radius and clip metadata.
-- [ ] Expected RED: rounded rectangles are still unsupported diagnostics or metadata-only commands.
-- [ ] GREEN: translate rounded-rect paint commands into deterministic tessellation records without changing GPU submission.
-- [ ] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] Add RED coverage for rounded-rect geometry records with radius and clip metadata.
+- [x] Expected RED: rounded rectangles are still unsupported diagnostics or metadata-only commands.
+- [x] GREEN: translate rounded-rect paint commands into deterministic tessellation records without changing GPU submission.
+- [x] Targeted command: `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+
+**Merged:** `395af5d feat: add rounded rect tessellation records`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 184: Vulkan Text Selection And Caret Geometry Records
 

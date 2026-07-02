@@ -3231,3 +3231,18 @@
 - This is still a readiness-report slice. It does not create shader modules,
   descriptor set layouts, pipeline layouts, graphics pipelines, descriptor
   sets, or sampled atlas draw calls.
+
+## 2026-07-02 Vulkan Rounded-Rect Tessellation Records
+
+- Step 183 adds renderer-facing rounded-rect draw and tessellation records so
+  rounded rectangles are no longer only unsupported diagnostics or solid-rect
+  fallbacks.
+- `render_view(...)` now forwards rounded-rect paint commands through
+  `RenderFrame::draw_rounded_rect(...)`, preserving bounds, radius, color,
+  clip, opacity, and transform metadata for Vulkan reporting.
+- The Vulkan helper path can build deterministic rounded-rect tessellation
+  records alongside solid rectangles and text draws, and frame statistics now
+  count rounded-rect commands separately.
+- This is still a geometry/reporting slice. It does not create a real Vulkan
+  rounded-rect pipeline, shader path, anti-aliased edge generation, or GPU draw
+  submission.

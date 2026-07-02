@@ -5943,3 +5943,60 @@
   this progress log so Step 182 is marked merged and post-merge verified. Step
   183, Vulkan rounded-rect tessellation records, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-02 Step 183 Vulkan Rounded-Rect Tessellation Records
+
+- Created `.worktrees/vulkan-rounded-rect-tessellation` on
+  `codex/vulkan-rounded-rect-tessellation` from `master` at
+  `21fcd13 docs: mark step 182 merged`.
+- Baseline Windows targeted tests passed 4/4:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- Baseline WSL targeted tests passed 3/3:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-rounded-rect-tessellation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default'`.
+- RED coverage:
+  `vulkan_solid_rect_test/default` failed as expected on missing
+  `RoundedRectDraw`, `RoundedRectTessellationRecord`,
+  `vulkan_tessellate_rounded_rects(...)`, renderer report overloads, and
+  rounded-rect tessellation report fields.
+- GREEN adds public rounded-rect draw/tessellation records, a
+  `RenderFrame::draw_rounded_rect(...)` hook, Vulkan report/batch overloads,
+  rounded-rect command statistics, and render-view forwarding for rounded-rect
+  paint commands.
+- Updated renderer and UI header-cleanliness tests to instantiate the new
+  public rounded-rect records and hooks.
+- Verified feature-worktree Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified feature-worktree WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-rounded-rect-tessellation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` in the feature worktree reported only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-rounded-rect-tessellation -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/vulkan-rounded-rect-tessellation -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 183 as
+  `395af5d feat: add rounded rect tessellation records` and fast-forward
+  merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . vulkan_solid_rect_test/default render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  followed by
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 183 is marked merged and post-merge verified. Step
+  184, Vulkan text selection and caret geometry records, is the next
+  implementation slice after docs closeout and cleanup.
