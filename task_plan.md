@@ -729,7 +729,7 @@ follow-on goal is now complete on the Windows/Linux track.
 206. [x] Window chrome customization skeleton.
 207. [x] App command palette registry.
 208. [x] Platform diagnostics event stream.
-209. [ ] UIA provider tree facade.
+209. [x] UIA provider tree facade.
 210. [ ] AT-SPI object model facade.
 211. [ ] Accessibility value and live update events.
 212. [ ] Additional window renderer ownership.
@@ -745,11 +745,26 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 208, platform diagnostics event stream, is merged on `master` at
-`6ff6b0f feat: add platform diagnostics stream` and post-merge verified on
-Windows and WSL Arch Linux. Step 209, UIA provider tree facade, is the next
+Step 209, UIA provider tree facade, is merged on `master` at
+`2eb0749 feat: add win32 uia provider facade` and post-merge verified on
+Windows and WSL Arch Linux. Step 210, AT-SPI object model facade, is the next
 implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 209, UIA provider tree facade, is merged on `master` at
+`2eb0749 feat: add win32 uia provider facade`. RED failed as expected on
+missing `PlatformAccessibilityNodeUpdate::value` and Win32 UIA provider-node
+facade source markers. GREEN adds a platform accessibility `value` field for
+text-input nodes, maps it from the shared accessibility snapshot, and gives
+the Win32 UIA adapter an internal `Win32UiaProviderNode` facade retaining
+stable node ids, parent ids, role/name/text/value, enabled/focus/focusable
+state, bounds, and child counts without creating COM provider objects yet.
+Feature-worktree targeted tests passed 4/4 on Windows and WSL Arch Linux,
+`git diff --check` exited 0 with only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 4/4 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30.
+Step 210, AT-SPI object model facade, is the next implementation slice.
 
 Step 208, platform diagnostics event stream, is merged on `master` at
 `6ff6b0f feat: add platform diagnostics stream`. RED failed as expected on

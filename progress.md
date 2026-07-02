@@ -1,5 +1,51 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 209 UIA Provider Tree Facade
+
+- Continued `.worktrees/win32-uia-provider-facade` on
+  `codex/win32-uia-provider-facade` from `master` at
+  `fd347cf docs: mark step 208 merged`.
+- Baseline targeted tests had already passed on Windows and WSL Arch Linux in
+  the handoff state.
+- Added RED coverage in `tests/architecture/win32_window_source_test.cpp` and
+  `tests/ui/window_runtime_test.cpp`. RED failed as expected on missing
+  `PlatformAccessibilityNodeUpdate::value` and Win32 UIA provider-node facade
+  source markers.
+- GREEN adds a platform accessibility `value` field for text-input nodes,
+  maps it from the shared accessibility snapshot, and gives
+  `Win32UiaAccessibilityAdapter` internal `Win32UiaProviderNode` records over
+  the latest `PlatformAccessibilityTreeUpdate` without creating COM provider
+  objects yet.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-uia-provider-facade -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/win32-uia-provider-facade -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 209 as `2eb0749 feat: add win32 uia provider facade` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`
+  passed 4/4 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 209 is marked merged and post-merge verified.
+  Step 210, AT-SPI object model facade, is the next implementation slice after
+  docs closeout and cleanup.
+
 ## 2026-07-03 Step 208 Platform Diagnostics Event Stream
 
 - Continued `.worktrees/platform-diagnostics-stream` on

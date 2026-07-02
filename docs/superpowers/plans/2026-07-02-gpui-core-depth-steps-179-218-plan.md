@@ -682,11 +682,15 @@ targeted rerun and full-suite rerun.
 - Modify: `tests/architecture/win32_window_source_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for a UIA provider facade that exposes stable node ids, role/name/text/value, bounds, and focus state.
-- [ ] Expected RED: Win32 UIA adapter only counts nodes.
-- [ ] GREEN: add internal facade records over `PlatformAccessibilityTreeUpdate` without implementing COM provider objects yet.
-- [ ] Targeted command: `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
-- [ ] WSL available-target command: same target set.
+- [x] Add RED coverage for a UIA provider facade that exposes stable node ids, role/name/text/value, bounds, and focus state.
+- [x] Expected RED: Win32 UIA adapter only counts nodes.
+- [x] GREEN: add internal facade records over `PlatformAccessibilityTreeUpdate` without implementing COM provider objects yet.
+- [x] Targeted command: `xmake test -P . win32_window_source_test/default window_runtime_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] WSL available-target command: same target set.
+
+**Merged:** `2eb0749 feat: add win32 uia provider facade`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 210: AT-SPI Object Model Facade
 

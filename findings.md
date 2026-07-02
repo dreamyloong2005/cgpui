@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 UIA Provider Tree Facade
+
+- Step 209 adds `PlatformAccessibilityNodeUpdate::value` so text-input
+  accessibility nodes expose their editable value separately from name/text at
+  the platform boundary.
+- `platform_accessibility_update_from(...)` now maps text-input snapshot text
+  into the platform `value` field while leaving non-text-input values empty.
+- The Win32 UIA adapter now owns internal `Win32UiaProviderNode` records built
+  from the latest `PlatformAccessibilityTreeUpdate`. The facade retains stable
+  element ids, parent ids, role, name, text, value, enabled/focusable/focused
+  state, bounds, and child counts while preserving the existing root/node/focus
+  counters.
+- This remains a facade, not production UI Automation. It does not expose
+  `IRawElementProvider*`, raise UIA events, implement navigation methods, or
+  register COM provider objects. Step 210 mirrors the object-model facade on
+  Linux/Wayland for AT-SPI.
+
 ## 2026-07-03 Platform Diagnostics Event Stream
 
 - Step 208 adds `PlatformDiagnosticKind` and `PlatformDiagnosticEvent` as
