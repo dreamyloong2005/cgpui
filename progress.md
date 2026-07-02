@@ -6581,3 +6581,55 @@
   this progress log so Step 194 is marked merged and post-merge verified. Step
   195, multiline text model and line navigation, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-03 Step 195 Multiline Text Model And Line Navigation
+
+- Created `.worktrees/multiline-text-model` on
+  `codex/multiline-text-model` from `master` at
+  `4d2231c docs: mark step 194 merged`.
+- Baseline targeted tests passed before RED:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/multiline-text-model -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for public line helper
+  APIs, line start/end movement, previous/next line movement with shorter-line
+  clamping, and multiline selection extension. RED failed as expected on
+  missing `TextModel::line_count`, `line_index_at`, `line_start_offset`,
+  `line_end_offset`, and the line-navigation `TextEditAction` variants.
+- GREEN adds LF-delimited line helpers, line start/end movement, previous/next
+  line movement using byte columns clamped to destination line ends, and
+  matching selection extension actions. A failing selection assertion in the
+  new RED test was corrected after direct test-binary evidence showed offset
+  10 to offset 5 selects `efg\nh`, not `fg\nh`.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/multiline-text-model -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/multiline-text-model -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 195 as
+  `715f7bb feat: add multiline text navigation` and fast-forward merged it to
+  `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 195 is marked merged and post-merge verified. Step
+  196, text measurement cache, is the next implementation slice after docs
+  closeout and cleanup.

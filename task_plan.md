@@ -715,7 +715,7 @@ follow-on goal is now complete on the Windows/Linux track.
 192. [x] Word movement and selection actions.
 193. [x] Text undo and redo stack.
 194. [x] IME delete-surrounding text action.
-195. [ ] Multiline text model and line navigation.
+195. [x] Multiline text model and line navigation.
 196. [ ] Text measurement cache.
 197. [ ] Text pointer selection geometry.
 198. [ ] Soft wrap layout records.
@@ -745,10 +745,10 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 194, IME delete-surrounding text action, is merged on `master` at
-`98c2902 feat: route ime delete surrounding text` and post-merge verified on
-Windows and WSL Arch Linux. Step 195, multiline text model and line navigation,
-is the next implementation slice. The track remains Windows/Linux first;
+Step 195, multiline text model and line navigation, is merged on `master` at
+`715f7bb feat: add multiline text navigation` and post-merge verified on
+Windows and WSL Arch Linux. Step 196, text measurement cache, is the next
+implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
 
 Step 191, grapheme-aware cursor movement skeleton, is merged on `master` at
@@ -813,7 +813,21 @@ Arch Linux, `git diff --check` produced no output, WSL full debug passed
 27/27, and Windows full debug passed 30/30 after isolating a transient
 `clipboard_test/default` batch failure with a passing targeted rerun and a
 passing full-suite rerun. Step 195, multiline text model and line navigation,
-is the next implementation slice.
+was the next implementation slice.
+
+Step 195, multiline text model and line navigation, is merged on `master` at
+`715f7bb feat: add multiline text navigation`. RED failed as expected on
+missing line helper APIs and line-navigation edit actions. GREEN adds
+deterministic LF-delimited line helpers (`line_count`, `line_index_at`,
+`line_start_offset`, and `line_end_offset`), line start/end movement, previous
+and next line movement using byte columns clamped to shorter lines, and
+matching selection-extension actions. Feature-worktree targeted tests passed
+2/2 on Windows and WSL Arch Linux, `git diff --check` reported only expected
+CRLF warnings, WSL full debug passed 27/27, and Windows full debug passed
+30/30. Post-merge targeted tests passed 2/2 on Windows and WSL Arch Linux,
+`git diff --check` produced no output, WSL full debug passed 27/27, and Windows
+full debug passed 30/30. Step 196, text measurement cache, is the next
+implementation slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

@@ -3427,3 +3427,19 @@
   grapheme-length conversion, grouped IME history, or rich multiline
   surrounding-text context. Step 195 should build multiline navigation on top
   of the now-shared text mutation/history surface.
+
+## 2026-07-03 Multiline Text Model And Line Navigation
+
+- Step 195 adds deterministic hard-line helpers to `TextModel`:
+  `line_count()`, `line_index_at(...)`, `line_start_offset(...)`, and
+  `line_end_offset(...)`. Lines are currently delimited by LF bytes, and line
+  ends exclude the newline byte.
+- New `TextEditAction` variants cover line start/end movement, previous/next
+  line movement, and matching selection extension. Vertical movement preserves
+  the current byte column and clamps to the destination line end when the target
+  line is shorter.
+- This is intentionally model-level editing depth. It does not implement soft
+  wraps, bidi visual lines, grapheme column accounting, pixel hit testing,
+  paragraph layout, or a persistent preferred visual column. Step 196 can add
+  measurement caching without treating these hard-line helpers as full text
+  layout.

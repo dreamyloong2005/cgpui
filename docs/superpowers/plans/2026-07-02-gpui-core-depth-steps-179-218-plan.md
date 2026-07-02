@@ -370,11 +370,15 @@ targeted rerun and full-suite rerun.
 - Modify: `include/cgpui/ui/text.hpp`
 - Modify: `tests/ui/text_model_test.cpp`
 
-- [ ] Add RED coverage for line start/end, previous/next line, and multiline selection ranges.
-- [ ] Expected RED: text model treats content as one logical line.
-- [ ] GREEN: add deterministic line-index helpers and edit actions without adding full paragraph layout.
-- [ ] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for line start/end, previous/next line, and multiline selection ranges.
+- [x] Expected RED: text model treats content as one logical line.
+- [x] GREEN: add deterministic line-index helpers and edit actions without adding full paragraph layout.
+- [x] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `715f7bb feat: add multiline text navigation`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 196: Text Measurement Cache
 
