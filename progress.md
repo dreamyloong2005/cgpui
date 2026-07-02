@@ -6471,3 +6471,55 @@
   this progress log so Step 192 is marked merged and post-merge verified. Step
   193, text undo and redo stack, is the next implementation slice after docs
   closeout and cleanup.
+
+## 2026-07-03 Step 193 Text Undo And Redo Stack
+
+- Continued the active Steps 179-218 production-depth goal with Step 193 in
+  `.worktrees/text-undo-redo-stack` on `codex/text-undo-redo-stack` from
+  `master` at `b678bf8 docs: mark step 192 merged`.
+- Restored current state from `task_plan.md`, `progress.md`, `findings.md`,
+  and the 179-218 execution plan. The main worktree had no tracked changes and
+  only the expected untracked `.vscode/`; the Step 193 worktree already held
+  the RED/GREEN changes in `include/cgpui/ui/text.hpp` and
+  `tests/ui/text_model_test.cpp`.
+- The RED coverage added `test_text_model_undo_redo_restores_edit_history()`
+  for empty history, insert undo/redo, selection replacement restore,
+  delete-forward undo/redo, composition commit undo/redo, redo invalidation
+  after a new edit, and `TextEditAction::undo` / `redo` dispatch. The expected
+  RED failure was missing `TextModel::can_undo`, `can_redo`, `undo`, `redo`,
+  and the two edit-action variants.
+- GREEN adds bounded edit-history records to `TextModel`, snapshotting text,
+  cursor, selection anchor, and selection head before/after mutating edits.
+  Insert, backspace, forward delete, selection replacement, and composition
+  commit now record history; undo/redo restore snapshots; redo is cleared on a
+  new edit; restore clears composition state.
+- Refreshed feature-worktree targeted verification:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-undo-redo-stack -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2 on WSL Arch Linux.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/text-undo-redo-stack -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 193 as `5406e9a feat: add text undo redo stack` and
+  fast-forward merged it to `master`.
+- Verified post-merge Windows targeted tests:
+  `xmake test -P . text_model_test/default ui_header_cleanliness/default`
+  passed 2/2.
+- Verified post-merge WSL targeted tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . text_model_test/default ui_header_cleanliness/default'`
+  passed 2/2.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 193 is marked merged and post-merge verified. Step
+  194, IME delete-surrounding text action, is the next implementation slice
+  after docs closeout and cleanup.

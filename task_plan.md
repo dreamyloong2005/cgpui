@@ -713,7 +713,7 @@ follow-on goal is now complete on the Windows/Linux track.
 190. [x] Platform font discovery records for Win32 and Wayland/Linux.
 191. [x] Grapheme-aware cursor movement skeleton.
 192. [x] Word movement and selection actions.
-193. [ ] Text undo and redo stack.
+193. [x] Text undo and redo stack.
 194. [ ] IME delete-surrounding text action.
 195. [ ] Multiline text model and line navigation.
 196. [ ] Text measurement cache.
@@ -745,9 +745,9 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 192, word movement and selection actions, is merged on `master` at
-`eaf6907 feat: add text word navigation actions` and post-merge verified on
-Windows and WSL Arch Linux. Step 193, text undo and redo stack, is the next
+Step 193, text undo and redo stack, is merged on `master` at
+`5406e9a feat: add text undo redo stack` and post-merge verified on Windows
+and WSL Arch Linux. Step 194, IME delete-surrounding text action, is the next
 implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
 
@@ -780,6 +780,23 @@ passed 30/30. Post-merge targeted tests passed 2/2 on Windows and WSL Arch
 Linux, `git diff --check` produced no output, WSL full debug passed 27/27, and
 Windows full debug passed 30/30. Step 193, text undo and redo stack, is the
 next implementation slice.
+
+Step 193, text undo and redo stack, is merged on `master` at
+`5406e9a feat: add text undo redo stack`. RED failed as expected on missing
+`TextModel::can_undo`, `can_redo`, `undo`, and `redo`, plus missing
+`TextEditAction::undo` and `redo`. GREEN adds bounded edit-history snapshots
+for text, cursor, and selection state, records insert/delete/selection replace
+and composition commit edits, restores snapshots on undo/redo, clears redo on
+new edits, and keeps composition state cleared when history restores. Tests
+cover insert undo/redo, selection replacement restore, delete undo/redo,
+composition commit undo/redo, redo invalidation after a new edit, and action
+dispatch. Feature-worktree targeted tests passed 2/2 on Windows and WSL Arch
+Linux, `git diff --check` reported only expected CRLF warnings, WSL full debug
+passed 27/27, and Windows full debug passed 30/30. Post-merge targeted tests
+passed 2/2 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30.
+Step 194, IME delete-surrounding text action, is the next implementation
+slice.
 
 Step 115, flex alignment and justification primitives, is merged on `master`
 at `c443592 feat: add flex alignment justification`. RED failed as expected

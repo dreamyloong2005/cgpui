@@ -3384,3 +3384,23 @@
   non-space run in this skeleton.
 - Step 193 can add undo/redo over the expanded edit-action surface without
   revisiting word-boundary semantics.
+
+## 2026-07-03 Text Undo And Redo Stack
+
+- Step 193 adds undo/redo as `TextModel` behavior and `TextEditAction`
+  variants, not as a separate widget-private editor layer. This keeps text
+  input widgets, runtime edit actions, and direct text-model users on one edit
+  history surface.
+- History records snapshot text, cursor, selection anchor, and selection head
+  before and after mutating edits. Insert, selection replacement, backspace,
+  forward delete, and IME composition commit are recorded through the existing
+  mutation paths.
+- Undo restores the before snapshot and moves the record to redo; redo restores
+  the after snapshot and returns the same record to the bounded undo stack.
+  New edits clear redo, matching linear edit-history semantics.
+- Restoring a history snapshot clears composition state. This avoids reviving a
+  stale preedit session after undo/redo and keeps committed composition text as
+  an ordinary edit record for the next IME slice.
+- The history cap is currently a deterministic 100 undo records. This is a
+  bounded model-level stack, not persistent document history, grouped typing,
+  collaborative editing, or platform undo-manager integration.

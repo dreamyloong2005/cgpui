@@ -327,11 +327,15 @@
 - Modify: `include/cgpui/ui/text.hpp`
 - Modify: `tests/ui/text_model_test.cpp`
 
-- [ ] Add RED coverage for undo/redo after insert, delete, selection replace, and composition commit.
-- [ ] Expected RED: `TextModel` has no undo or redo APIs.
-- [ ] GREEN: add bounded edit history records with cursor and selection restoration.
-- [ ] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for undo/redo after insert, delete, selection replace, and composition commit.
+- [x] Expected RED: `TextModel` has no undo or redo APIs.
+- [x] GREEN: add bounded edit history records with cursor and selection restoration.
+- [x] Targeted command: `xmake test -P . text_model_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `5406e9a feat: add text undo redo stack`.
+**Post-merge verification:** Windows targeted 2/2, WSL targeted 2/2,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 194: IME Delete-Surrounding Text Action
 
