@@ -152,6 +152,15 @@ int main() {
       !contains(win32_text, "PlatformAccessibilityRole::text_input")) {
     return 56;
   }
+  if (!contains(win32_text, "struct Win32UiaProviderNode") ||
+      !contains(win32_text, "provider_nodes_") ||
+      !contains(win32_text, "uia_provider_nodes()") ||
+      !contains(win32_text, "std::optional<Rect> bounds") ||
+      !contains(win32_text, "std::string value") ||
+      !contains(win32_text, "role = node.role") ||
+      !contains(win32_text, "focused = node.focused")) {
+    return 66;
+  }
   if (!contains(win32_text, "DragEntered{") ||
       !contains(win32_text, "DragUpdated{") ||
       !contains(win32_text, "DragDropped{") ||

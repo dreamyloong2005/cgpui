@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -282,6 +283,20 @@ class Win32OleDropTarget final : public IDropTarget {
   Win32Window* owner_ = nullptr;
 };
 
+struct Win32UiaProviderNode {
+  std::uint64_t element_id = 0;
+  std::optional<std::uint64_t> parent_element_id;
+  PlatformAccessibilityRole role = PlatformAccessibilityRole::generic;
+  std::string name;
+  std::string text;
+  std::string value;
+  bool enabled = true;
+  bool focusable = false;
+  bool focused = false;
+  std::optional<Rect> bounds;
+  std::size_t child_count = 0;
+};
+
 class Win32UiaAccessibilityAdapter {
  public:
   void update(PlatformAccessibilityTreeUpdate update) {
@@ -290,10 +305,25 @@ class Win32UiaAccessibilityAdapter {
     node_count_ = last_update_.node_count;
     focused_node_count_ = last_update_.focused_node_count;
     text_input_node_count_ = 0;
+    provider_nodes_.clear();
+    provider_nodes_.reserve(last_update_.nodes.size());
     for (const PlatformAccessibilityNodeUpdate& node : last_update_.nodes) {
       if (node.role == PlatformAccessibilityRole::text_input) {
         text_input_node_count_ += 1;
       }
+      provider_nodes_.push_back(Win32UiaProviderNode{
+          .element_id = node.element_id,
+          .parent_element_id = node.parent_element_id,
+          .role = node.role,
+          .name = node.name,
+          .text = node.text,
+          .value = node.value,
+          .enabled = node.enabled,
+          .focusable = node.focusable,
+          .focused = node.focused,
+          .bounds = node.bounds,
+          .child_count = node.child_count,
+      });
     }
   }
 
@@ -313,8 +343,14 @@ class Win32UiaAccessibilityAdapter {
     return text_input_node_count_;
   }
 
+  [[nodiscard]] const std::vector<Win32UiaProviderNode>& uia_provider_nodes()
+      const {
+    return provider_nodes_;
+  }
+
  private:
   PlatformAccessibilityTreeUpdate last_update_;
+  std::vector<Win32UiaProviderNode> provider_nodes_;
   std::uint64_t root_element_id_ = 0;
   std::size_t node_count_ = 0;
   std::size_t focused_node_count_ = 0;

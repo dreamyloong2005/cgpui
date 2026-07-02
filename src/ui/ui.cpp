@@ -147,6 +147,8 @@ PlatformAccessibilityTreeUpdate platform_accessibility_update_from(
         .role = platform_accessibility_role(node.role),
         .name = node.name,
         .text = node.text,
+        .value = node.role == AccessibilityRole::text_input ? node.text
+                                                            : std::string{},
         .enabled = node.enabled,
         .focusable = node.focusable,
         .focused = node.focused,

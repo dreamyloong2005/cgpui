@@ -32,6 +32,7 @@ struct PlatformAccessibilityNodeUpdate {
   PlatformAccessibilityRole role = PlatformAccessibilityRole::generic;
   std::string name;
   std::string text;
+  std::string value;
   bool enabled = true;
   bool focusable = false;
   bool focused = false;

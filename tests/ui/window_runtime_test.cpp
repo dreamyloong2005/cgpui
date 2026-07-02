@@ -7895,7 +7895,7 @@ int test_runtime_sends_accessibility_snapshot_summary_to_platform_window() {
       });
   if (input == update.nodes.end() || input->element_id == 0 ||
       !input->parent_element_id.has_value() || !input->focusable ||
-      input->focused || input->child_count != 0) {
+      input->focused || input->child_count != 0 || input->value != "query") {
     return 330;
   }
 
