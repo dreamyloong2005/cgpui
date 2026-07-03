@@ -831,11 +831,15 @@ targeted rerun.
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `tests/ui/style_test.cpp`
 
-- [ ] Add RED coverage for animation handles, easing, tween progress, and timer-driven redraw.
-- [ ] Expected RED: no animation clock, easing, or style tween API exists.
-- [ ] GREEN: add deterministic animation records driven by the existing timer/wakeup system.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default style_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for animation handles, easing, tween progress, and timer-driven redraw.
+- [x] Expected RED: no animation clock, easing, or style tween API exists.
+- [x] GREEN: add deterministic animation records driven by the existing timer/wakeup system.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default style_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `f9e2f85 feat: add animation clock tween primitives`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 217: Asset And Image Pipeline Skeleton
 

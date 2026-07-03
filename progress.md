@@ -1,5 +1,64 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 216 Animation Clock And Tween Primitives
+
+- Continued `.worktrees/animation-clock-tween` on
+  `codex/animation-clock-tween` from `master` at
+  `b046b78 docs: mark step 215 merged`.
+- Baseline targeted tests had already passed before RED:
+  `xmake test -P . window_runtime_test/default style_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- Added RED coverage in `tests/ui/style_test.cpp` requiring
+  `AnimationEasing`, progress clamping, easing curves, float/color/style tween
+  helpers, and `StyleTween`. Added RED coverage in
+  `tests/ui/window_runtime_test.cpp` requiring animation handles, snapshots,
+  start/snapshot/cancel runtime APIs, timer-driven progress, callback context,
+  completion, cancellation, and redraw behavior.
+- Re-verified RED in this continuation with
+  `xmake test -P . style_test/default window_runtime_test/default ui_header_cleanliness/default`;
+  after the partial header work from the interrupted run, it failed at link
+  time on missing `AnimationHandle` and `WindowRuntime` animation symbols,
+  matching the expected missing implementation.
+- GREEN adds `AnimationEasing`, `clamp_animation_progress(...)`,
+  `ease(...)`, float/color/transform/style `tween(...)`, `StyleTween`,
+  `AnimationId`, `AnimationOptions`, `AnimationSnapshot`, and
+  `AnimationHandle`.
+- `WindowRuntime` now owns deterministic animation records, starts animations
+  through the existing repeating timer path, computes snapshots from
+  `current_time_ms_`, deduplicates repeated timer catch-up callbacks at the
+  same runtime timestamp, marks completion, cancels timers, and forwards
+  animation APIs through `WindowRuntimeContext`.
+- The animation test was corrected to require one redraw/paint per animation
+  tick, matching the callback's explicit `request_render()` behavior. Style
+  opacity tweening now normalizes its final opacity so exact-float regression
+  tests remain deterministic without changing the raw color tween path.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . style_test/default window_runtime_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/animation-clock-tween -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 216 as
+  `f9e2f85 feat: add animation clock tween primitives` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . style_test/default window_runtime_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 216 is marked merged and post-merge verified.
+  Step 217, asset and image pipeline skeleton, is the next implementation
+  slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 215 Runtime Theme Inheritance And Switching
 
 - Continued `.worktrees/runtime-theme-switching` on

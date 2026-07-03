@@ -1,5 +1,31 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Animation Clock And Tween Primitives
+
+- Step 216 adds deterministic animation primitives without introducing a full
+  GPUI animation subsystem yet: `AnimationEasing`, clamped progress, easing,
+  float/color/transform/style tween helpers, and `StyleTween`.
+- Runtime animation state is owned by `WindowRuntime` and driven through the
+  existing deterministic timer path. `AnimationHandle` exposes id, active,
+  completion, snapshot, and cancellation queries; `WindowRuntimeContext`
+  forwards start/snapshot/cancel APIs.
+- Animation snapshots report elapsed duration, linear progress, eased progress,
+  easing mode, and completion. Repeating timer catch-up can invoke the same
+  animation timer more than once for one coarse `advance_time(...)`; the
+  runtime deduplicates callbacks per current runtime timestamp so tests see
+  one animation tick per time advance.
+- Animation callbacks run with the normal root `WindowRuntimeContext`, so
+  callback-driven `request_render()` uses the existing invalidation and redraw
+  path. The current test harness observes one redraw/paint per animation tick.
+- Style opacity tweening normalizes the final opacity to a small decimal grid
+  to keep deterministic exact-float tests stable, while color interpolation
+  keeps the raw float path so color channel fractions remain exact for existing
+  RGB/RGBA expectations.
+- This slice is deterministic clock/tween infrastructure. It does not include
+  transitions attached to element lifecycle, spring animation, compositor
+  frame pacing, cancellation propagation across async work, or a full upstream
+  GPUI animation graph. Step 217 moves to asset and image pipeline skeletons.
+
 ## 2026-07-03 Runtime Theme Inheritance And Switching
 
 - Step 215 adds runtime-owned theme hierarchy on top of the existing inert

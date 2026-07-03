@@ -736,7 +736,7 @@ follow-on goal is now complete on the Windows/Linux track.
 213. [x] Additional window event routing.
 214. [x] Additional window lifecycle cleanup.
 215. [x] Runtime theme inheritance and switching.
-216. [ ] Animation clock and tween primitives.
+216. [x] Animation clock and tween primitives.
 217. [ ] Asset and image pipeline skeleton.
 218. [ ] Threaded async executor and cancellation.
 
@@ -745,11 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 215, runtime theme inheritance and switching, is merged on `master` at
-`46f96e0 feat: add runtime theme switching` and post-merge verified on
-Windows and WSL Arch Linux. Step 216, animation clock and tween primitives, is
-the next implementation slice. The track remains Windows/Linux first;
+Step 216, animation clock and tween primitives, is merged on `master` at
+`f9e2f85 feat: add animation clock tween primitives` and post-merge verified on
+Windows and WSL Arch Linux. Step 217, asset and image pipeline skeleton, is the
+next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 216, animation clock and tween primitives, is merged on `master` at
+`f9e2f85 feat: add animation clock tween primitives`. RED failed as expected
+first on missing easing/tween style primitives and then on unresolved runtime
+animation symbols. GREEN adds `AnimationEasing`, progress clamping, easing,
+float/color/transform/style tween helpers, `StyleTween`, `AnimationId`,
+`AnimationOptions`, `AnimationSnapshot`, `AnimationHandle`, runtime
+start/snapshot/cancel APIs, context forwarding, and deterministic timer-driven
+animation ticks that expose eased progress, completion, cancellation, and
+redraw behavior. Feature-worktree targeted tests passed 3/3 on Windows and WSL
+Arch Linux, `git diff --check` exited 0 with only expected CRLF warnings, WSL
+full debug passed 27/27, and Windows full debug passed 30/30. Post-merge
+targeted tests passed 3/3 on Windows and WSL Arch Linux, `git diff --check`
+produced no output, WSL full debug passed 27/27, and Windows full debug passed
+30/30. Step 217, asset and image pipeline skeleton, is the next implementation
+slice.
 
 Step 215, runtime theme inheritance and switching, is merged on `master` at
 `46f96e0 feat: add runtime theme switching`. RED failed as expected when the
