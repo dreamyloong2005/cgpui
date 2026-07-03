@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Threaded Async Executor And Cancellation
+
+- Step 218 keeps the existing manual `spawn_task(...)` / `complete_task(...)`
+  queue and adds `spawn_background_task(...)` for cancellable background work
+  that completes back on the main runtime queue.
+- `TaskCancellationToken` is a small cooperative token over shared atomic
+  state. `TaskHandle` now reports cancellation and can request cancellation
+  through `cancel()`.
+- Background tasks are backed by `std::jthread`; the runtime protects task
+  records and the completion queue with a task-scoped mutex. Completion
+  callbacks are still copied out and executed without holding that mutex, so
+  callbacks can safely call normal runtime/context APIs.
+- `WindowRuntime::~WindowRuntime()` requests cancellation and joins workers
+  before member teardown, avoiding background threads reaching back into a
+  partially destroyed runtime.
+- Runtime diagnostics now expose task, active, queued, completed, cancelled,
+  and background task counters. This makes the executor visible in the same
+  diagnostics snapshot used by existing frame/platform state.
+- This is a small threaded executor, not a full GPUI async runtime: task pools,
+  priorities, async I/O integration, structured task groups, and cross-thread
+  entity access remain future work.
+
 ## 2026-07-03 Asset And Image Pipeline Skeleton
 
 - Step 217 adds deterministic in-memory RGBA8 bitmap assets, image asset ids,

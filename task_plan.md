@@ -738,18 +738,36 @@ follow-on goal is now complete on the Windows/Linux track.
 215. [x] Runtime theme inheritance and switching.
 216. [x] Animation clock and tween primitives.
 217. [x] Asset and image pipeline skeleton.
-218. [ ] Threaded async executor and cancellation.
+218. [x] Threaded async executor and cancellation.
 
 ## Active Step
 
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 217, asset and image pipeline skeleton, is merged on `master` at
-`7b37744 feat: add asset image pipeline skeleton` and post-merge verified on
-Windows and WSL Arch Linux. Step 218, threaded async executor and cancellation,
-is the next implementation slice. The track remains Windows/Linux first;
-macOS/Cocoa + Metal is still deferred to a separate parity run.
+Step 218, threaded async executor and cancellation, is merged on `master` at
+`a8ebfec feat: add threaded async executor` and post-merge verified on Windows
+and WSL Arch Linux. The Steps 179-218 Windows/Linux production-depth pass is
+now complete; macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 218, threaded async executor and cancellation, is merged on `master` at
+`a8ebfec feat: add threaded async executor`. RED failed as expected on missing
+`TaskCancellationToken`, `spawn_background_task(...)`, task handle
+cancel/cancelled queries, and runtime task diagnostics counters. GREEN adds a
+small `std::jthread`-backed background task executor, cooperative atomic
+cancellation tokens, `TaskHandle::cancel()` / `cancelled()`, mutex-protected
+task registry and completion queue state, runtime diagnostics counters for
+active/queued/completed/cancelled/background tasks, destructor cancellation and
+join cleanup, and main-runtime completion dispatch through the existing task
+queue and platform wakeup path. It also refreshes the GPUI-core parity audit
+to move threaded async out of Missing while keeping full task pools,
+priorities, async I/O integration, and cross-thread entity access as future
+work. Feature-worktree targeted tests passed 4/4 on Windows and WSL Arch
+Linux, `git diff --check` exited 0 with only expected CRLF warnings, WSL full
+debug passed 27/27, and Windows full debug passed 30/30. Post-merge targeted
+tests passed 4/4 on Windows and WSL Arch Linux, `git diff --check` produced no
+output, WSL full debug passed 27/27, and Windows full debug passed 30/30. The
+Steps 179-218 production-depth pass is complete on the Windows/Linux track.
 
 Step 217, asset and image pipeline skeleton, is merged on `master` at
 `7b37744 feat: add asset image pipeline skeleton`. RED failed as expected on

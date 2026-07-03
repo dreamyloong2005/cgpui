@@ -1,5 +1,59 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 218 Threaded Async Executor And Cancellation
+
+- Created `.worktrees/threaded-async-executor` on
+  `codex/threaded-async-executor` from `master` at
+  `d7c7768 docs: mark step 217 merged`.
+- Verified baseline targeted tests before RED:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default desktop_target_readiness_test/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux command passed 4/4.
+- Added RED coverage in `tests/ui/window_runtime_test.cpp` requiring
+  `TaskCancellationToken`, `WindowRuntime::spawn_background_task(...)`,
+  background execution, cooperative cancellation, main-runtime completion
+  dispatch, `TaskHandle::cancel()` / `cancelled()`, and task diagnostics
+  counters. RED failed as expected on missing background task APIs, task
+  cancellation APIs, and diagnostics fields.
+- GREEN adds a small `std::jthread`-backed background executor, cooperative
+  atomic cancellation tokens, task handle cancellation, mutex-protected task
+  registry/completion queue state, destructor cancellation/join cleanup, and
+  diagnostics counters for task, active, queued, completed, cancelled, and
+  background task counts.
+- Completion callbacks still run on the main runtime through the existing
+  task completion queue and platform wakeup path. The task mutex is not held
+  while callbacks execute, so callbacks can call normal runtime/context APIs.
+- `tests/header_cleanliness/ui_header_cleanliness.cpp` now compiles the new
+  public background-task API and diagnostics fields. `docs/gpui-core-api-parity.md`
+  now categorizes threaded async as implemented/partial rather than missing,
+  while leaving full task pools, priorities, async I/O, and cross-thread
+  entity access as future work.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default desktop_target_readiness_test/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux command passed 4/4.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/threaded-async-executor -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 218 as
+  `a8ebfec feat: add threaded async executor` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default desktop_target_readiness_test/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux command passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 218 and the Post-Step-218 checkpoint are marked
+  merged and verified. The Steps 179-218 Windows/Linux production-depth pass
+  is complete after docs closeout and worktree cleanup.
+
 ## 2026-07-03 Step 217 Asset And Image Pipeline Skeleton
 
 - Continued `.worktrees/asset-image-pipeline` on

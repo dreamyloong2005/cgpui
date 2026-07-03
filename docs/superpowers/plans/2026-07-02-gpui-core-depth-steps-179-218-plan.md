@@ -875,15 +875,19 @@ targeted rerun.
 - Modify: `tests/ui/window_runtime_test.cpp`
 - Modify: `docs/gpui-core-api-parity.md`
 
-- [ ] Add RED coverage for background task execution, cancellation, completion dispatch, and diagnostics.
-- [ ] Expected RED: async task handles are skeletons completed manually on the main runtime.
-- [ ] GREEN: add a small threaded executor abstraction with cancellation tokens and main-thread completion dispatch through the existing wakeup path.
-- [ ] Targeted command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default desktop_target_readiness_test/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for background task execution, cancellation, completion dispatch, and diagnostics.
+- [x] Expected RED: async task handles are skeletons completed manually on the main runtime.
+- [x] GREEN: add a small threaded executor abstraction with cancellation tokens and main-thread completion dispatch through the existing wakeup path.
+- [x] Targeted command: `xmake test -P . window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default desktop_target_readiness_test/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `a8ebfec feat: add threaded async executor`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Post-Step-218 Checkpoint
 
-- [ ] Refresh `docs/gpui-core-api-parity.md` so renderer, text, platform, accessibility, multi-window, theme, asset, animation, and async state are accurately categorized.
-- [ ] Run Windows full debug: `xmake f -c -m debug -P .; xmake test -P .`.
-- [ ] Run WSL full debug: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
-- [ ] Confirm `git status --short --branch` on `master` has no tracked changes and only the expected untracked `.vscode/`.
+- [x] Refresh `docs/gpui-core-api-parity.md` so renderer, text, platform, accessibility, multi-window, theme, asset, animation, and async state are accurately categorized.
+- [x] Run Windows full debug: `xmake f -c -m debug -P .; xmake test -P .`.
+- [x] Run WSL full debug: `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`.
+- [x] Confirm `git status --short --branch` on `master` has no tracked changes and only the expected untracked `.vscode/`.
