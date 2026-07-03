@@ -2,6 +2,7 @@
 #include "paint_snapshot.hpp"
 
 #include <functional>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -51,6 +52,12 @@ class RecordingFrame final : public cgpui::RenderFrame {
     text_carets.push_back(caret);
   }
 
+  void draw_image(const cgpui::ImageDraw& image) override {
+    image_draw_count += 1;
+    last_image = image;
+    images.push_back(image);
+  }
+
   cgpui::Result<void> present() override {
     present_count += 1;
     return {};
@@ -62,17 +69,20 @@ class RecordingFrame final : public cgpui::RenderFrame {
   int text_draw_count = 0;
   int text_selection_draw_count = 0;
   int text_caret_draw_count = 0;
+  int image_draw_count = 0;
   int present_count = 0;
   cgpui::SolidRect last_rect;
   cgpui::RoundedRectDraw last_rounded_rect;
   cgpui::TextDraw last_text;
   cgpui::TextSelectionDraw last_text_selection;
   cgpui::TextCaretDraw last_text_caret;
+  cgpui::ImageDraw last_image;
   std::vector<cgpui::SolidRect> rects;
   std::vector<cgpui::RoundedRectDraw> rounded_rects;
   std::vector<cgpui::TextDraw> texts;
   std::vector<cgpui::TextSelectionDraw> text_selections;
   std::vector<cgpui::TextCaretDraw> text_carets;
+  std::vector<cgpui::ImageDraw> images;
 };
 
 class RecordingRenderer final : public cgpui::Renderer {
@@ -107,6 +117,9 @@ class RecordingRenderer final : public cgpui::Renderer {
     }
     void draw_text_caret(const cgpui::TextCaretDraw& caret) override {
       frame_.draw_text_caret(caret);
+    }
+    void draw_image(const cgpui::ImageDraw& image) override {
+      frame_.draw_image(image);
     }
     cgpui::Result<void> present() override { return frame_.present(); }
 
@@ -367,6 +380,48 @@ class NestedMetadataStackView final : public cgpui::View {
     paint_list.pop_metadata();
     paint_list.pop_metadata();
   }
+};
+
+class ImageOnlyView final : public cgpui::View {
+ public:
+  ImageOnlyView()
+      : asset_(cgpui::ImageAsset{
+            .id = cgpui::ImageAssetId{42},
+            .logical_size = {.width = 20.0F, .height = 10.0F},
+            .bitmap =
+                cgpui::DecodedImageBitmap{
+                    .width = 2,
+                    .height = 2,
+                    .stride = 8,
+                    .format = cgpui::ImageFormat::rgba8_unorm,
+                    .pixels =
+                        std::vector<std::uint8_t>{
+                            255, 0, 0, 255, 0, 255, 0, 255,
+                            0, 0, 255, 255, 255, 255, 255, 255},
+                },
+        }) {}
+
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_list.push_clip(cgpui::Rect{
+        .origin = {.x = 3.0F, .y = 4.0F},
+        .size = {.width = 40.0F, .height = 24.0F},
+    });
+    paint_list.push_metadata(cgpui::PaintMetadata{
+        .opacity = 0.625F,
+        .transform = cgpui::AffineTransform::translation(5.0F, 7.0F),
+    });
+    paint_list.draw_image(
+        cgpui::Rect{
+            .origin = {.x = 8.0F, .y = 9.0F},
+            .size = {.width = 20.0F, .height = 10.0F},
+        },
+        cgpui::describe_image_asset(asset_));
+    paint_list.pop_metadata();
+    paint_list.pop_clip();
+  }
+
+ private:
+  cgpui::ImageAsset asset_;
 };
 
 int test_runtime_theme_slots_inherit_and_switch_with_invalidation() {
@@ -743,6 +798,48 @@ int main() {
   if (metadata_stats.composition_stack_command_count != 1 ||
       metadata_stats.max_composition_stack_depth != 2) {
     return 24;
+  }
+
+  RecordingFrame image_frame;
+  RecordingRenderer image_renderer(image_frame);
+  ImageOnlyView image_view;
+  cgpui::FrameStatistics image_stats;
+  const auto image_result = cgpui::render_view(
+      image_renderer,
+      image_view,
+      cgpui::Size{64.0F, 64.0F},
+      cgpui::DpiScale{},
+      &image_stats);
+  if (!image_result) {
+    return 67;
+  }
+  if (image_frame.image_draw_count != 1 || image_frame.draw_count != 0 ||
+      image_frame.text_draw_count != 0 ||
+      image_stats.submitted_command_count != 1 ||
+      image_stats.image_command_count != 1) {
+    return 68;
+  }
+  const cgpui::ImageDraw& image = image_frame.last_image;
+  if (image.bounds.origin.x != 8.0F ||
+      image.bounds.origin.y != 9.0F ||
+      image.bounds.size.width != 20.0F ||
+      image.asset.id.value != 42 ||
+      image.asset.logical_size.width != 20.0F ||
+      image.asset.pixel_width != 2 ||
+      image.asset.pixel_height != 2 ||
+      image.asset.format != cgpui::ImageFormat::rgba8_unorm ||
+      image.asset.byte_size != 16 ||
+      !image.clip_rect.has_value() ||
+      image.clip_rect->size.width != 40.0F) {
+    return 69;
+  }
+  if (image.metadata.opacity != 0.625F ||
+      !same_transform(
+          image.metadata.transform,
+          cgpui::AffineTransform::translation(5.0F, 7.0F)) ||
+      image.clip_stack.full_depth != 1 ||
+      image.composition_stack.full_depth != 1) {
+    return 70;
   }
 
   cgpui::TextMeasurementCache text_measurement_cache;

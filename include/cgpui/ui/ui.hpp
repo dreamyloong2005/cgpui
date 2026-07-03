@@ -54,6 +54,7 @@ enum class PaintCommandKind {
   text,
   text_selection,
   text_caret,
+  image,
 };
 
 struct RoundedRect {
@@ -89,6 +90,12 @@ struct TextCaretPaint {
   float font_size = 16.0F;
 };
 
+struct ImagePaint {
+  Rect bounds;
+  ImageAssetDescriptor asset;
+  std::optional<Rect> source_rect;
+};
+
 struct ImeCandidateRect {
   ElementId element_id;
   Rect rect;
@@ -102,6 +109,7 @@ struct PaintCommand {
   TextPaint text;
   TextSelectionPaint text_selection;
   TextCaretPaint text_caret;
+  ImagePaint image;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
   RendererCompositionStackRecord composition_stack;
@@ -135,6 +143,10 @@ class PaintList {
       Color color,
       std::size_t byte_offset,
       float font_size = 16.0F);
+  void draw_image(
+      Rect bounds,
+      ImageAssetDescriptor asset,
+      std::optional<Rect> source_rect = std::nullopt);
   void set_text_measurement_cache(TextMeasurementCache* cache);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
@@ -501,6 +513,7 @@ struct FrameStatistics {
   std::size_t text_command_count = 0;
   std::size_t text_selection_command_count = 0;
   std::size_t text_caret_command_count = 0;
+  std::size_t image_command_count = 0;
   std::size_t clip_stack_command_count = 0;
   std::size_t max_clip_stack_depth = 0;
   std::size_t composition_stack_command_count = 0;

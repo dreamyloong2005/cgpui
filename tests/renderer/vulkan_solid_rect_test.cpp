@@ -8,6 +8,7 @@
 #include <array>
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 namespace {
 
@@ -416,6 +417,107 @@ int test_glyph_atlas_dirty_upload_ranges_only_include_new_regions() {
                      third.bitmap.alpha.size()
              ? 0
              : 42;
+}
+
+int test_image_assets_build_upload_plans_and_renderer_reports() {
+  const cgpui::ImageAsset asset{
+      .id = cgpui::ImageAssetId{7},
+      .logical_size = {.width = 18.0F, .height = 12.0F},
+      .bitmap =
+          cgpui::DecodedImageBitmap{
+              .width = 2,
+              .height = 2,
+              .stride = 8,
+              .format = cgpui::ImageFormat::rgba8_unorm,
+              .pixels =
+                  std::vector<std::uint8_t>{
+                      255, 0, 0, 255, 0, 255, 0, 255,
+                      0, 0, 255, 255, 255, 255, 255, 255},
+          },
+  };
+  const cgpui::ImageAssetDescriptor descriptor =
+      cgpui::describe_image_asset(asset);
+  if (descriptor.id.value != 7 || descriptor.logical_size.width != 18.0F ||
+      descriptor.pixel_width != 2 || descriptor.pixel_height != 2 ||
+      descriptor.stride != 8 ||
+      descriptor.format != cgpui::ImageFormat::rgba8_unorm ||
+      descriptor.byte_size != 16) {
+    return 67;
+  }
+
+  const std::array<cgpui::ImageAsset, 1> assets{asset};
+  const std::vector<cgpui::ImageUploadBatch> upload_batches =
+      cgpui::vulkan_plan_image_uploads(assets);
+  if (upload_batches.size() != 1 ||
+      upload_batches[0].image.id.value != 7 ||
+      upload_batches[0].image.pixel_width != 2 ||
+      upload_batches[0].uploads.size() != 1 ||
+      upload_batches[0].rgba.size() != 16) {
+    return 68;
+  }
+  const cgpui::ImageUploadRegion& upload = upload_batches[0].uploads[0];
+  if (upload.asset_id.value != 7 || upload.width != 2 ||
+      upload.height != 2 || upload.stride != 8 ||
+      upload.byte_offset != 0 || upload.byte_size != 16) {
+    return 69;
+  }
+
+  const cgpui::Rect clip{
+      .origin = {.x = 2.0F, .y = 3.0F},
+      .size = {.width = 40.0F, .height = 30.0F},
+  };
+  const cgpui::PaintMetadata metadata{
+      .opacity = 0.5F,
+      .transform = cgpui::AffineTransform::translation(4.0F, 6.0F),
+  };
+  const std::vector<cgpui::ImageDraw> image_draws{
+      cgpui::ImageDraw{
+          .bounds = {.origin = {.x = 8.0F, .y = 10.0F},
+                     .size = {.width = 18.0F, .height = 12.0F}},
+          .asset = descriptor,
+          .clip_rect = clip,
+          .clip_stack = cgpui::renderer_clip_stack_record(
+              std::array<cgpui::Rect, 1>{clip}),
+          .metadata = metadata,
+      },
+  };
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::SolidRect> rects;
+  const std::vector<cgpui::RoundedRectDraw> rounded_rects;
+  const std::vector<cgpui::TextDraw> text_draws;
+  const std::vector<cgpui::TextSelectionDraw> selections;
+  const std::vector<cgpui::TextCaretDraw> carets;
+  const cgpui::RendererCommandReport report =
+      cgpui::vulkan_build_renderer_command_report(
+          rects,
+          rounded_rects,
+          text_draws,
+          selections,
+          carets,
+          image_draws,
+          cache);
+  if (report.supported_command_count != 1 ||
+      report.unsupported_command_count != 0 ||
+      report.image_render.image_draw_count != 1 ||
+      report.image_render.image_upload_plan_count != 1 ||
+      report.image_render.image_upload_byte_count != 16 ||
+      report.batches.size() != 1 ||
+      report.batches[0].key.primitive_kind != cgpui::RendererPrimitiveKind::image ||
+      report.batches[0].key.metadata != metadata ||
+      report.submission_plan_record_count != 1 ||
+      report.submission_plan_records[0].key.primitive_kind !=
+          cgpui::RendererPrimitiveKind::image) {
+    return 70;
+  }
+
+  const cgpui::RendererFrameReport frame_report =
+      cgpui::renderer_frame_report_from_command_report(report);
+  return frame_report.supported_primitive_count == 1 &&
+                 frame_report.image_upload_plan_count == 1 &&
+                 frame_report.image_upload_byte_count == 16 &&
+                 frame_report.gap_count == 0
+             ? 0
+             : 71;
 }
 
 int test_text_draw_uses_glyph_cache_metadata() {
@@ -1298,6 +1400,11 @@ int main() {
   }
   if (const int result =
           test_glyph_atlas_dirty_upload_ranges_only_include_new_regions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_image_assets_build_upload_plans_and_renderer_reports();
       result != 0) {
     return result;
   }

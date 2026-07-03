@@ -311,7 +311,8 @@ void record_submission_plan_statistics(RendererCommandReport& report) {
          primitive_kind == RendererPrimitiveKind::rounded_rect ||
          primitive_kind == RendererPrimitiveKind::text ||
          primitive_kind == RendererPrimitiveKind::text_selection ||
-         primitive_kind == RendererPrimitiveKind::text_caret;
+         primitive_kind == RendererPrimitiveKind::text_caret ||
+         primitive_kind == RendererPrimitiveKind::image;
 }
 
 [[nodiscard]] std::size_t positive_rounded_rect_corner_count(
@@ -392,6 +393,9 @@ class VulkanFrame final : public RenderFrame {
   void draw_text_caret(const TextCaretDraw& caret) override {
     text_carets_.push_back(caret);
   }
+  void draw_image(const ImageDraw& image) override {
+    image_draws_.push_back(image);
+  }
   Result<void> present() override;
 
  private:
@@ -402,6 +406,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<TextDraw> text_draws_;
   std::vector<TextSelectionDraw> text_selections_;
   std::vector<TextCaretDraw> text_carets_;
+  std::vector<ImageDraw> image_draws_;
 };
 
 struct QueueFamilies {
@@ -1631,6 +1636,30 @@ std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
   return batches;
 }
 
+std::vector<ImageUploadBatch> vulkan_plan_image_uploads(
+    std::span<const ImageAsset> assets) {
+  std::vector<ImageUploadBatch> batches;
+  batches.reserve(assets.size());
+
+  for (const ImageAsset& asset : assets) {
+    ImageUploadBatch batch{
+        .image = describe_image_asset(asset),
+    };
+    batch.rgba = asset.bitmap.pixels;
+    batch.uploads.push_back(ImageUploadRegion{
+        .asset_id = asset.id,
+        .width = asset.bitmap.width,
+        .height = asset.bitmap.height,
+        .stride = asset.bitmap.stride,
+        .byte_offset = 0,
+        .byte_size = asset.bitmap.pixels.size(),
+    });
+    batches.push_back(std::move(batch));
+  }
+
+  return batches;
+}
+
 GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
     GlyphAtlasTextureResourceState& state,
     std::span<const GlyphAtlasUploadBatch> upload_batches) {
@@ -1985,10 +2014,28 @@ RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const TextSelectionDraw> selections,
     std::span<const TextCaretDraw> carets,
     GlyphCache& glyph_cache) {
+  return vulkan_build_renderer_command_report(
+      rects,
+      rounded_rects,
+      text_draws,
+      selections,
+      carets,
+      std::span<const ImageDraw>{},
+      glyph_cache);
+}
+
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
+    std::span<const TextDraw> text_draws,
+    std::span<const TextSelectionDraw> selections,
+    std::span<const TextCaretDraw> carets,
+    std::span<const ImageDraw> image_draws,
+    GlyphCache& glyph_cache) {
   std::vector<RendererCommandStreamItem> commands;
   commands.reserve(
       rects.size() + rounded_rects.size() + text_draws.size() +
-      selections.size() + carets.size());
+      selections.size() + carets.size() + image_draws.size());
 
   for (std::size_t index = 0; index < rects.size(); ++index) {
     const SolidRect& rect = rects[index];
@@ -2050,6 +2097,18 @@ RendererCommandReport vulkan_build_renderer_command_report(
     });
   }
 
+  for (std::size_t index = 0; index < image_draws.size(); ++index) {
+    const ImageDraw& image = image_draws[index];
+    commands.push_back(RendererCommandStreamItem{
+        .primitive_kind = RendererPrimitiveKind::image,
+        .command_index = index,
+        .clip_rect = image.clip_rect,
+        .clip_stack = image.clip_stack,
+        .composition_stack = image.composition_stack,
+        .metadata = image.metadata,
+    });
+  }
+
   RendererCommandReport report = vulkan_build_renderer_command_report(commands);
   report.rounded_rect_tessellations =
       vulkan_tessellate_rounded_rects(rounded_rects);
@@ -2100,6 +2159,12 @@ RendererCommandReport vulkan_build_renderer_command_report(
         report.text_render.text_sampler_pipeline_pending_text_draw_count += 1;
       }
     }
+  }
+
+  for (const ImageDraw& image_draw : image_draws) {
+    report.image_render.image_draw_count += 1;
+    report.image_render.image_upload_plan_count += 1;
+    report.image_render.image_upload_byte_count += image_draw.asset.byte_size;
   }
 
   report.submission_plan_records = build_renderer_submission_plan(

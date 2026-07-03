@@ -657,6 +657,25 @@ void PaintList::fill_text_caret(
                                           : metadata_stack_.back()});
 }
 
+void PaintList::draw_image(
+    Rect bounds,
+    ImageAssetDescriptor asset,
+    std::optional<Rect> source_rect) {
+  commands_.push_back(PaintCommand{
+      .kind = PaintCommandKind::image,
+      .image =
+          ImagePaint{
+              .bounds = bounds,
+              .asset = asset,
+              .source_rect = source_rect,
+          },
+      .clip_rect = current_clip_rect_for(clip_stack_),
+      .clip_stack = clip_stack_record_for(clip_stack_),
+      .composition_stack = composition_stack_record_for(metadata_stack_),
+      .metadata = metadata_stack_.empty() ? PaintMetadata{}
+                                          : metadata_stack_.back()});
+}
+
 std::span<const PaintCommand> PaintList::commands() const {
   return commands_;
 }
@@ -961,6 +980,23 @@ Result<void> render_view(
     if (statistics != nullptr) {
       record_clip_stack_statistics(*statistics, command);
       record_composition_stack_statistics(*statistics, command);
+    }
+    if (command.kind == PaintCommandKind::image) {
+      const ImagePaint& image = command.image;
+      (*frame)->draw_image(ImageDraw{
+          .bounds = image.bounds,
+          .asset = image.asset,
+          .source_rect = image.source_rect,
+          .clip_rect = command.clip_rect,
+          .clip_stack = command.clip_stack,
+          .composition_stack = command.composition_stack,
+          .metadata = command.metadata,
+      });
+      if (statistics != nullptr) {
+        statistics->submitted_command_count += 1;
+        statistics->image_command_count += 1;
+      }
+      continue;
     }
     if (command.kind == PaintCommandKind::text_selection) {
       const TextSelectionPaint& selection = command.text_selection;

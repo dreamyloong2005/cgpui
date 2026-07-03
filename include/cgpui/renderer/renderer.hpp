@@ -150,6 +150,64 @@ renderer_composition_stack_record(std::span<const PaintMetadata> entries) {
   return record;
 }
 
+enum class ImageFormat {
+  rgba8_unorm,
+};
+
+struct DecodedImageBitmap {
+  std::uint32_t width = 0;
+  std::uint32_t height = 0;
+  std::uint32_t stride = 0;
+  ImageFormat format = ImageFormat::rgba8_unorm;
+  std::vector<std::uint8_t> pixels;
+};
+
+struct ImageAssetId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(ImageAssetId, ImageAssetId) = default;
+};
+
+struct ImageAsset {
+  ImageAssetId id;
+  Size logical_size;
+  DecodedImageBitmap bitmap;
+};
+
+struct ImageAssetDescriptor {
+  ImageAssetId id;
+  Size logical_size;
+  std::uint32_t pixel_width = 0;
+  std::uint32_t pixel_height = 0;
+  std::uint32_t stride = 0;
+  ImageFormat format = ImageFormat::rgba8_unorm;
+  std::size_t byte_size = 0;
+
+  friend bool operator==(
+      const ImageAssetDescriptor&,
+      const ImageAssetDescriptor&) = default;
+};
+
+[[nodiscard]] inline ImageAssetDescriptor describe_image_asset(
+    const ImageAsset& asset) {
+  const Size logical_size =
+      asset.logical_size.width > 0.0F && asset.logical_size.height > 0.0F
+          ? asset.logical_size
+          : Size{
+                .width = static_cast<float>(asset.bitmap.width),
+                .height = static_cast<float>(asset.bitmap.height),
+            };
+  return ImageAssetDescriptor{
+      .id = asset.id,
+      .logical_size = logical_size,
+      .pixel_width = asset.bitmap.width,
+      .pixel_height = asset.bitmap.height,
+      .stride = asset.bitmap.stride,
+      .format = asset.bitmap.format,
+      .byte_size = asset.bitmap.pixels.size(),
+  };
+}
+
 struct SolidRect {
   Rect rect;
   Color color;
@@ -208,12 +266,23 @@ struct TextCaretDraw {
   PaintMetadata metadata;
 };
 
+struct ImageDraw {
+  Rect bounds;
+  ImageAssetDescriptor asset;
+  std::optional<Rect> source_rect;
+  std::optional<Rect> clip_rect;
+  RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
+  PaintMetadata metadata;
+};
+
 enum class RendererPrimitiveKind {
   solid_rect,
   rounded_rect,
   text,
   text_selection,
   text_caret,
+  image,
 };
 
 [[nodiscard]] constexpr std::string_view renderer_primitive_kind_name(
@@ -229,6 +298,8 @@ enum class RendererPrimitiveKind {
       return "text_selection";
     case RendererPrimitiveKind::text_caret:
       return "text_caret";
+    case RendererPrimitiveKind::image:
+      return "image";
   }
 
   return "unknown";
@@ -308,6 +379,12 @@ struct RendererTextRenderReport {
   std::size_t text_sampler_pipeline_pending_text_draw_count = 0;
 };
 
+struct RendererImageRenderReport {
+  std::size_t image_draw_count = 0;
+  std::size_t image_upload_plan_count = 0;
+  std::size_t image_upload_byte_count = 0;
+};
+
 struct RendererSubmissionPlanKey {
   RendererPrimitiveKind primitive_kind = RendererPrimitiveKind::solid_rect;
   std::optional<Rect> clip_rect;
@@ -384,6 +461,7 @@ struct RendererCommandReport {
   std::size_t composition_stack_record_count = 0;
   std::size_t max_composition_stack_depth = 0;
   RendererTextRenderReport text_render;
+  RendererImageRenderReport image_render;
 
   [[nodiscard]] std::size_t command_count() const {
     return supported_command_count + unsupported_command_count;
@@ -412,6 +490,8 @@ struct RendererFrameReport {
   std::size_t submission_plan_record_count = 0;
   std::size_t glyph_upload_record_count = 0;
   std::size_t textured_glyph_quad_count = 0;
+  std::size_t image_upload_plan_count = 0;
+  std::size_t image_upload_byte_count = 0;
   std::size_t gap_count = 0;
   std::vector<RendererFrameGap> gaps;
 
@@ -436,6 +516,10 @@ renderer_frame_report_from_command_report(
       command_report.text_render.glyph_upload_record_count;
   frame_report.textured_glyph_quad_count =
       command_report.text_render.textured_glyph_quad_count;
+  frame_report.image_upload_plan_count =
+      command_report.image_render.image_upload_plan_count;
+  frame_report.image_upload_byte_count =
+      command_report.image_render.image_upload_byte_count;
 
   if (command_report.unsupported_command_count > 0) {
     frame_report.gaps.push_back(RendererFrameGap{
@@ -525,6 +609,21 @@ struct GlyphAtlasUploadBatch {
   GlyphAtlasImageDescriptor image;
   std::vector<GlyphAtlasUploadRegion> uploads;
   std::vector<std::uint8_t> alpha;
+};
+
+struct ImageUploadRegion {
+  ImageAssetId asset_id;
+  std::uint32_t width = 0;
+  std::uint32_t height = 0;
+  std::uint32_t stride = 0;
+  std::size_t byte_offset = 0;
+  std::size_t byte_size = 0;
+};
+
+struct ImageUploadBatch {
+  ImageAssetDescriptor image;
+  std::vector<ImageUploadRegion> uploads;
+  std::vector<std::uint8_t> rgba;
 };
 
 enum class GlyphAtlasTextureResourceStatus {
@@ -770,6 +869,7 @@ class RenderFrame {
     (void)selection;
   }
   virtual void draw_text_caret(const TextCaretDraw& caret) { (void)caret; }
+  virtual void draw_image(const ImageDraw& image) { (void)image; }
   virtual Result<void> present() = 0;
 };
 
@@ -787,6 +887,8 @@ void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
 std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
     std::span<const GlyphUploadRecord> upload_records,
     std::span<const GlyphAtlasPage> atlas_pages);
+std::vector<ImageUploadBatch> vulkan_plan_image_uploads(
+    std::span<const ImageAsset> assets);
 GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
     GlyphAtlasTextureResourceState& state,
     std::span<const GlyphAtlasUploadBatch> upload_batches);
@@ -819,6 +921,14 @@ RendererCommandReport vulkan_build_renderer_command_report(
     std::span<const TextDraw> text_draws,
     std::span<const TextSelectionDraw> selections,
     std::span<const TextCaretDraw> carets,
+    GlyphCache& glyph_cache);
+RendererCommandReport vulkan_build_renderer_command_report(
+    std::span<const SolidRect> rects,
+    std::span<const RoundedRectDraw> rounded_rects,
+    std::span<const TextDraw> text_draws,
+    std::span<const TextSelectionDraw> selections,
+    std::span<const TextCaretDraw> carets,
+    std::span<const ImageDraw> image_draws,
     GlyphCache& glyph_cache);
 RendererFrameReport vulkan_build_renderer_frame_report(
     std::span<const SolidRect> rects,
