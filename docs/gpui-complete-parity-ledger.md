@@ -1,0 +1,146 @@
+# Complete GPUI Parity Ledger
+
+Pinned upstream revision:
+`5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0`.
+
+This ledger is the source of truth for full CGPUI replication work. It maps
+upstream GPUI concepts to the current C++23 surface, assigns a status, and
+records the next phase that must close each required gap.
+
+Status meanings:
+
+- `Required`: must be implemented for the active Windows/Linux target.
+- `Adapted`: GPUI concept exists in C++ form but the spelling or ownership is
+  intentionally C++-native.
+- `Deferred`: real upstream surface, but not active before a later platform or
+  production-depth gate.
+- `Non-goal`: intentionally out of scope for the current user-approved target.
+
+## Platform Targets
+
+- Windows: Win32 + Vulkan.
+- Linux: Wayland + Vulkan.
+- macOS: Cocoa + Metal after Windows/Linux core APIs stabilize.
+- X11 remains deferred unless the user explicitly chooses strict upstream Linux
+  backend parity.
+
+| platform_surface | status |
+|---|---|
+| gpui Windows backend | Required |
+| gpui_platform wayland feature | Required |
+| gpui_platform x11 feature | Deferred |
+| gpui macOS backend | Deferred |
+
+## Required Surface Summary
+
+| upstream_gpui | cgpui_target | status | evidence | next_step |
+|---|---|---|---|---|
+| gpui_platform::application | `create_platform_application` + `run_app` | Adapted | `include/cgpui/platform/platform_application.hpp`, `include/cgpui/ui/runtime_rendering.hpp` | Phase B app facade |
+| gpui::Application | `PlatformApplication` / future `Application` facade | Required | platform abstraction exists, name parity missing | Phase B |
+| gpui::App | `AppContext` | Adapted | `include/cgpui/ui/runtime_app_context.hpp` | Phase B context API |
+| gpui::Window | `WindowRuntimeContext::window` and `PlatformWindow` | Adapted | runtime/window split exists | Phase B/F |
+| gpui::WindowOptions | `WindowOptions` | Adapted | `include/cgpui/ui/runtime_window_options.hpp` | Phase B/F |
+| gpui::Context<T> | `Context<T>` alias to `ViewContext` | Adapted | `include/cgpui/ui/view.hpp` | Phase B context depth |
+| gpui::AsyncApp | async task handles and cancellation | Required | `runtime_tasks.cpp`, not full async app context | Phase G |
+| gpui::AsyncWindowContext | no full equivalent yet | Required | background task skeleton only | Phase G |
+| gpui::TestAppContext | no full equivalent yet | Required | deterministic tests exist but no public test context | Phase B/G |
+| gpui::Entity<T> | `Entity<T>`, `Model<T>`, `WeakEntity<T>` | Adapted | `include/cgpui/core/entity.hpp` | Phase B lifecycle depth |
+| gpui::Render | `View::render(ViewContext&)` | Adapted | `include/cgpui/ui/view.hpp` | Phase B naming and examples |
+| gpui::IntoElement | `AnyElement`, `into_element` | Adapted | `include/cgpui/ui/element_core.hpp` | Phase B/C |
+| gpui::div | `div()` | Adapted | `include/cgpui/ui/element_builder_core.hpp` | Phase C style vocabulary |
+| gpui::prelude | `cgpui/cgpui.hpp` | Adapted | public aggregate exists and is header-tested | Phase B |
+| gpui::actions! / action macro | string action registry | Required | action dispatch exists, typed action parity missing | Phase B |
+| gpui key_context | no key-context tree API yet | Required | key bindings exist without upstream key-context model | Phase B |
+| gpui keymap dispatch | `KeyBinding` + action registry | Required | deterministic key binding exists, grammar incomplete | Phase B |
+| gpui element styling | `Style`, `StyleOverlay`, builders | Required | many primitives exist, tailwind-style vocabulary incomplete | Phase C |
+| gpui uniform_list | `scrollable_list` skeleton | Required | stable items exist, virtualization incomplete | Phase C |
+| gpui text system | `TextModel`, shaping, wrap, glyph records | Required | deterministic text depth exists, production shaping incomplete | Phase D |
+| gpui image assets | image paint/upload skeleton | Required | in-memory RGBA8 only | Phase G |
+| gpui SVG | no production SVG element/render path | Required | SVG is only tracked as future asset path | Phase C/G |
+| gpui animation | deterministic animation clock/tween | Required | upstream animation graph not complete | Phase G |
+| gpui::test | no macro-equivalent, no public test context | Required | internal tests only | Phase G |
+| gpui accessibility | snapshot + UIA/AT-SPI facades | Required | production providers missing | Phase G |
+| gpui platform services | menu/dialog/chrome skeletons | Required | native services not production-depth | Phase F |
+| gpui Windows backend | Win32 + Vulkan | Required | active target | Phase F |
+| gpui_platform wayland feature | Wayland + Vulkan | Required | active Linux target | Phase F |
+| gpui_platform x11 feature | Deferred | Deferred | not active by user decision | Optional Phase I |
+| gpui macOS backend | Cocoa + Metal | Deferred | later platform track | Phase H |
+| gpui wasm backend | Non-goal | Non-goal | not requested for CGPUI desktop target | no active phase |
+
+## Categories
+
+### Application and app context
+
+Required rows: `gpui_platform::application`, `gpui::Application`,
+`gpui::App`, `gpui::Window`, `gpui::WindowOptions`, platform service methods,
+global state, window activation, quit/reopen, and error/result conventions.
+
+### Entities and state
+
+Required rows: `gpui::Entity<T>`, weak handles, reservations, update
+transactions, observers, subscriptions, deletion, window/view observation, and
+async/test context access to entities.
+
+### Views and Render
+
+Required rows: `gpui::Render`, root view creation, view lifecycle, invalidation,
+render-to-element flow, child views, and public examples using only prelude
+APIs.
+
+### Elements and styling
+
+Required rows: `gpui::div`, `IntoElement`, element lifecycle, layout, hit
+testing, focus, pointer capture, scroll, style cascade, shadows, SVG/image
+front-end elements, built-in widgets, and uniform list virtualization.
+
+### Actions and key dispatch
+
+Required rows: typed actions, action macro equivalent, key contexts, keymap
+grammar, focus/key routing, command palette integration, and disabled-context
+behavior.
+
+### Platform services
+
+Required rows: Win32 and Wayland window lifecycle, clipboard, drag/drop, IME,
+menus, file dialogs, window chrome, cursor, accessibility, wakeups, native
+diagnostics, and multi-window routing.
+
+### Async executor
+
+Required rows: app/window async contexts, task pool, priorities, structured
+groups, cancellation propagation, async I/O hooks, and cross-thread entity
+access rules.
+
+### Test support
+
+Required rows: GPUI test macro equivalent, `TestAppContext`, simulated input,
+timer advancement, async advancement, platform service fakes, and example
+smoke/pixel tests.
+
+### Examples
+
+The first example parity target is
+`examples/api_parity/hello_world/main.cpp`, based on
+`examples/hello_world.rs`. The tracked upstream example inventory includes:
+
+- `hello_world`
+- `animation`
+- `gif_viewer`
+- `image`
+- `input`
+- `opacity`
+- `set_menus`
+- `shadow`
+- `svg`
+- `text_wrapper`
+- `uniform_list`
+- `window`
+- `window_positioning`
+- `window_shadow`
+
+## Phase A Closure
+
+Phase A is complete when this ledger, the JSON export, the extractor, the
+first parity example, and `gpui_parity_ledger_test/default` all pass on
+Windows and WSL. Later phases close required rows by moving their `status` or
+`next_step` fields only when tests prove the new behavior.

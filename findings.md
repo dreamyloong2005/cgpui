@@ -4198,3 +4198,28 @@
 - The follow-up verification passed Windows full debug 41/41 and WSL Arch Linux
   full debug 38/38 after the text implementation migration. `git diff --check`
   produced only expected LF-to-CRLF normalization warnings.
+
+## 2026-07-04 GPUI Upstream Parity Ledger Phase A
+
+- The concrete full-replication baseline is now pinned to upstream Zed/GPUI
+  commit `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0`, with recorded crate
+  versions `gpui = 0.2.2` and `gpui_platform = 0.1.0`. This avoids chasing a
+  moving pre-1.0 upstream target while implementing the remaining parity rows.
+- The Phase A ledger establishes four status classes: `Required`, `Adapted`,
+  `Deferred`, and `Non-goal`. Windows Win32 + Vulkan and Linux Wayland +
+  Vulkan are required; macOS Cocoa + Metal is deferred to the later Mac phase;
+  X11 remains deferred unless strict upstream Linux backend parity is
+  explicitly accepted; wasm is a non-goal for the desktop target.
+- The extractor is intentionally best-effort and deterministic. It fetches the
+  pinned upstream crate root and Cargo.toml when network is available, but the
+  example inventory falls back to the pinned default set if the network cannot
+  be reached. On Windows, the fresh snapshot contained 55 public re-exports and
+  20 examples.
+- The first API parity gate is documentation/tooling/example oriented rather
+  than a broad runtime behavior test. It proves the pin, ledger, JSON export,
+  extractor, Phase A plan, xmake targets, and public hello-world parity example
+  are present and wired through the build.
+- Phase B should close ledger rows rather than inventing scope from memory.
+  The immediate next implementation band is public `Application` / `App` /
+  `Window` / `Context<T>` / entity / action / key-dispatch / test-context
+  parity for Windows/Linux.

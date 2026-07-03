@@ -1,0 +1,130 @@
+{
+  "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0",
+  "upstream": {
+    "repository": "https://github.com/zed-industries/zed",
+    "gpui_crate_version": "0.2.2",
+    "gpui_platform_crate_version": "0.1.0"
+  },
+  "platform_targets": {
+    "windows": {
+      "backend": "win32",
+      "renderer": "vulkan",
+      "status": "required"
+    },
+    "linux": {
+      "backend": "wayland",
+      "renderer": "vulkan",
+      "status": "required"
+    },
+    "macos": {
+      "backend": "cocoa",
+      "renderer": "metal",
+      "status": "deferred"
+    },
+    "x11": {
+      "backend": "x11",
+      "renderer": "vulkan",
+      "status": "deferred"
+    },
+    "wasm": {
+      "backend": "web",
+      "renderer": "web",
+      "status": "non_goal"
+    }
+  },
+  "status_counts": {
+    "required": 19,
+    "adapted": 9,
+    "deferred": 2,
+    "non_goal": 1
+  },
+  "categories": [
+    "application_and_app_context",
+    "entities_and_state",
+    "views_and_render",
+    "elements_and_styling",
+    "actions_and_key_dispatch",
+    "platform_services",
+    "async_executor",
+    "test_support",
+    "examples"
+  ],
+  "examples": [
+    "hello_world",
+    "animation",
+    "gif_viewer",
+    "image",
+    "input",
+    "opacity",
+    "set_menus",
+    "shadow",
+    "svg",
+    "text_wrapper",
+    "uniform_list",
+    "window",
+    "window_positioning",
+    "window_shadow"
+  ],
+  "rows": [
+    {
+      "upstream_gpui": "gpui_platform::application",
+      "cgpui_target": "create_platform_application + run_app",
+      "status": "adapted",
+      "next_step": "Phase B"
+    },
+    {
+      "upstream_gpui": "gpui::Application",
+      "cgpui_target": "future Application facade",
+      "status": "required",
+      "next_step": "Phase B"
+    },
+    {
+      "upstream_gpui": "gpui::App",
+      "cgpui_target": "AppContext",
+      "status": "adapted",
+      "next_step": "Phase B"
+    },
+    {
+      "upstream_gpui": "gpui::Window",
+      "cgpui_target": "WindowRuntimeContext and PlatformWindow",
+      "status": "adapted",
+      "next_step": "Phase B/F"
+    },
+    {
+      "upstream_gpui": "gpui::Context<T>",
+      "cgpui_target": "Context<T>",
+      "status": "adapted",
+      "next_step": "Phase B"
+    },
+    {
+      "upstream_gpui": "gpui::Render",
+      "cgpui_target": "View::render",
+      "status": "adapted",
+      "next_step": "Phase B"
+    },
+    {
+      "upstream_gpui": "gpui::div",
+      "cgpui_target": "div",
+      "status": "adapted",
+      "next_step": "Phase C"
+    },
+    {
+      "upstream_gpui": "gpui::test",
+      "cgpui_target": "public test context and macro equivalent",
+      "status": "required",
+      "next_step": "Phase G"
+    },
+    {
+      "upstream_gpui": "gpui_platform wayland feature",
+      "cgpui_target": "Wayland + Vulkan",
+      "status": "required",
+      "next_step": "Phase F"
+    },
+    {
+      "upstream_gpui": "gpui_platform x11 feature",
+      "cgpui_target": "optional X11 backend",
+      "status": "deferred",
+      "next_step": "Optional Phase I"
+    }
+  ]
+}

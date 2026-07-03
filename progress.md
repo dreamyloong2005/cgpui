@@ -8422,3 +8422,41 @@
 - Verified post-merge WSL Arch Linux full debug:
   `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
   passed 38/38.
+
+## 2026-07-04 GPUI Upstream Parity Ledger Phase A
+
+- Continued `codex/gpui-upstream-parity-ledger` in
+  `.worktrees/gpui-upstream-parity-ledger` to close Steps 219-258.
+- Verified the worktree is isolated from `master`; the main checkout remains
+  clean except for the existing untracked `.vscode/`.
+- Fresh Windows extractor verification:
+  `python tools\gpui_parity\extract_upstream_symbols.py --output build\gpui_parity_snapshot.json`
+  exited 0.
+- Fresh Windows JSON validation:
+  `python -m json.tool build\gpui_parity_snapshot.json` exited 0 and printed
+  the pinned snapshot with 55 public re-exports and 20 examples.
+- Fresh Windows focused parity gate:
+  `xmake test -y -P . gpui_parity_ledger_test/default` passed 1/1.
+- Fresh Windows hello-world parity example build:
+  `xmake build -y -P . api_parity_hello_world` exited 0.
+- Fresh WSL extractor verification:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/gpui-upstream-parity-ledger -- bash -lc 'python tools/gpui_parity/extract_upstream_symbols.py --output build/gpui_parity_snapshot_wsl.json'`
+  exited 0.
+- Fresh WSL JSON validation:
+  `python -m json.tool build/gpui_parity_snapshot_wsl.json` exited 0 in WSL.
+- Fresh WSL focused parity gate:
+  `XMAKE_ROOT=y xmake test -y -P . gpui_parity_ledger_test/default` passed
+  1/1.
+- Fresh WSL hello-world parity example build:
+  `XMAKE_ROOT=y xmake build -y -P . api_parity_hello_world` exited 0.
+- Fresh Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 42/42.
+- Fresh WSL full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -y -P .` passed 39/39.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings for `docs/gpui-core-api-parity.md` and `xmake.lua`.
+- Updated
+  `docs/superpowers/plans/2026-07-04-gpui-upstream-parity-ledger-plan.md`,
+  `task_plan.md`, `findings.md`, and `progress.md` with Step 258 closeout
+  evidence. The branch is ready for commit and merge.

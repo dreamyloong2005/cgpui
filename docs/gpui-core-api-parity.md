@@ -1,9 +1,17 @@
 # GPUI-Core API Parity Audit
 
-Step 168 closes the current Windows/Linux GPUI-core track with an API audit.
-The active target is Windows/Win32 + Vulkan and Linux/Wayland + Vulkan. macOS
-Cocoa + Metal remains a handoff boundary, not a parity requirement for this
-track.
+Step 258 establishes the complete-replication parity ledger for a pinned
+upstream GPUI revision:
+`5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0`.
+The detailed source-of-truth ledger is
+`docs/gpui-complete-parity-ledger.md`, with machine-readable status in
+`docs/gpui-complete-parity-ledger.json`.
+
+The active implementation target remains Windows/Win32 + Vulkan and
+Linux/Wayland + Vulkan. macOS Cocoa + Metal remains a later parity track after
+Windows/Linux public APIs and renderer/platform boundaries stabilize. X11 is
+tracked as deferred, not active, unless the user explicitly chooses strict
+upstream Linux backend parity.
 
 ## Windows/Linux Scope
 

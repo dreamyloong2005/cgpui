@@ -173,12 +173,31 @@ depth before a separate macOS/Cocoa + Metal parity track begins.
 Detailed complete-replication roadmap:
 `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 The current baseline is post-Step-218 plus the merged structural optimization
-pass. The next active work should be Phase A, Steps 219-258: pin an upstream
-GPUI revision, generate a complete parity ledger, and add API parity tests.
-Windows/Linux remain first. macOS/Cocoa + Metal starts after Windows/Linux
-public APIs and renderer/platform boundaries are stable. X11 remains out of
-the active track unless the user explicitly chooses strict upstream Linux
-backend parity.
+pass. Phase A, Steps 219-258, is implemented on
+`codex/gpui-upstream-parity-ledger`: the upstream GPUI revision is pinned, a
+complete-replication parity ledger and JSON export exist, the extractor is in
+place, and the first API parity gate plus hello-world parity example are
+registered. Windows/Linux remain first. macOS/Cocoa + Metal starts after
+Windows/Linux public APIs and renderer/platform boundaries are stable. X11
+remains out of the active track unless the user explicitly chooses strict
+upstream Linux backend parity.
+
+Step 258, upstream GPUI parity ledger and first API parity gate, is ready to
+merge on `codex/gpui-upstream-parity-ledger`. The branch pins upstream Zed/GPUI
+at `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0`, records crate versions
+`gpui = 0.2.2` and `gpui_platform = 0.1.0`, adds
+`docs/gpui-complete-parity-ledger.md`,
+`docs/gpui-complete-parity-ledger.json`,
+`tools/gpui_parity/extract_upstream_symbols.py`,
+`tests/api_parity/gpui_parity_ledger_test.cpp`, and
+`examples/api_parity/hello_world/main.cpp`. Feature-worktree verification
+passed: Windows extractor and JSON validation, WSL extractor and JSON
+validation, Windows focused parity test 1/1, WSL focused parity test 1/1,
+Windows hello-world parity build, WSL hello-world parity build, Windows full
+debug 42/42, WSL full debug 39/39, and `git diff --check` exit 0 with only
+expected LF-to-CRLF normalization warnings. Phase B, Steps 259-318, is the next
+implementation phase after merge: public Application, Context, Entity, Action,
+key dispatch, and test-context API parity.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

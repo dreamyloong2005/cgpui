@@ -256,6 +256,29 @@ target("prelude_header_cleanliness")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("gpui_parity_ledger_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/api_parity/gpui_parity_ledger_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("api_parity_hello_world")
+    set_kind("binary")
+    add_files("examples/api_parity/hello_world/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+
 target("render_view_test")
     set_kind("binary")
     add_files("tests/ui/render_view_test.cpp")
