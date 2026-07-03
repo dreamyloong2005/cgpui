@@ -1964,6 +1964,11 @@ void WindowRuntime::handle_native_additional_window_event(
   if (record == nullptr) {
     return;
   }
+  if (std::holds_alternative<WindowCloseRequested>(event)) {
+    record_lifecycle_event_for_record(*record, event);
+    cleanup_closed_additional_window(*record);
+    return;
+  }
   View* view = find_view(record->root_view_id);
   if (view == nullptr) {
     return;
@@ -1995,12 +2000,51 @@ void WindowRuntime::handle_native_additional_window_event(
     record_lifecycle_event_for_record(*record, event);
     return;
   }
-  if (std::holds_alternative<WindowCloseRequested>(event)) {
-    record->active = false;
-    record_lifecycle_event_for_record(*record, event);
+  dispatch_view_event_for_record(*record, *view, event);
+}
+
+void WindowRuntime::cleanup_closed_additional_window(
+    WindowRuntimeRecord& record) {
+  const ViewId root_view_id = record.root_view_id;
+  const PlatformWindow* window = record.window;
+
+  if (window != nullptr) {
+    native_additional_windows_.erase(
+        std::remove_if(
+            native_additional_windows_.begin(),
+            native_additional_windows_.end(),
+            [window](const std::unique_ptr<PlatformWindow>& owned_window) {
+              return owned_window.get() == window;
+            }),
+        native_additional_windows_.end());
+  }
+
+  if (record.owns_root_view && root_view_id.value != 0) {
+    (void)remove_view(root_view_id);
+    remove_subscriptions_for_view(root_view_id);
+  }
+
+  record.window = nullptr;
+  record.renderer = nullptr;
+  record.active = false;
+  record.owns_window = false;
+  record.owns_renderer = false;
+  record.owns_root_view = false;
+}
+
+void WindowRuntime::remove_subscriptions_for_view(ViewId view_id) {
+  if (view_id.value == 0) {
     return;
   }
-  dispatch_view_event_for_record(*record, *view, event);
+
+  entity_subscriptions_.erase(
+      std::remove_if(
+          entity_subscriptions_.begin(),
+          entity_subscriptions_.end(),
+          [view_id](const EntitySubscription& subscription) {
+            return subscription.view_id == view_id;
+          }),
+      entity_subscriptions_.end());
 }
 
 void WindowRuntime::deactivate_native_additional_windows() {

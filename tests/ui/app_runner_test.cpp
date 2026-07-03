@@ -1069,12 +1069,6 @@ int test_app_opened_window_routes_native_events_by_runtime_id() {
                           .scale = cgpui::DpiScale{2.0F}});
                       child_resize_routed = child_renderer_resize_count == 1;
                       routed_child->emit(cgpui::WindowRedrawRequested{});
-                      routed_child->emit(cgpui::WindowCloseRequested{});
-                      const cgpui::WindowRuntimeRecord* record =
-                          runtime->window_runtime_record(opened.runtime_id);
-                      child_close_routed =
-                          record != nullptr && !record->active &&
-                          running_application.quit_count == 0;
                       observed_root_event_count = root_view.event_count;
                       if (child_view != nullptr) {
                         observed_child_event_count = child_view->event_count;
@@ -1086,6 +1080,12 @@ int test_app_opened_window_routes_native_events_by_runtime_id() {
                             child_view->last_context_view_id;
                         observed_child_paint_count = child_view->paint_count;
                       }
+                      routed_child->emit(cgpui::WindowCloseRequested{});
+                      const cgpui::WindowRuntimeRecord* record =
+                          runtime->window_runtime_record(opened.runtime_id);
+                      child_close_routed =
+                          record != nullptr && !record->active &&
+                          running_application.quit_count == 0;
                     };
               },
       });
@@ -1119,6 +1119,117 @@ int test_app_opened_window_routes_native_events_by_runtime_id() {
   if (renderer_factory_count != 2 || renderer_begin_frame_count != 2 ||
       observed_child_paint_count != 1 || frame.present_count != 2) {
     return 48;
+  }
+  return 0;
+}
+
+int test_app_opened_window_close_cleans_runtime_owned_state() {
+  MultiWindowFakeApplication application;
+  TestView root_view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  int renderer_factory_count = 0;
+  bool child_destroyed = false;
+  bool setup_called = false;
+  bool on_run_called = false;
+  bool child_window_found = false;
+  bool subscribed_before_close = false;
+  bool destroyed_after_close = false;
+  bool view_removed_after_close = false;
+  bool subscriptions_removed_after_close = false;
+  bool record_released_after_close = false;
+  bool child_close_did_not_quit_app = false;
+  cgpui::AppOpenedWindow opened;
+
+  const int result = cgpui::run_app(
+      application,
+      root_view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        renderer_factory_count += 1;
+        auto owned =
+            std::make_unique<RecordingRenderer>(frame, renderer_begin_frame_count);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                auto child =
+                    std::make_unique<LifetimeView>(child_destroyed);
+                opened = context.open_window(
+                    cgpui::WindowOptions{}
+                        .title("Lifecycle Child")
+                        .size(320.0F, 200.0F),
+                    std::move(child));
+                const cgpui::Model<AppSettings> settings =
+                    context.runtime.emplace_entity<AppSettings>();
+                context.runtime.subscribe_view_to_entity(
+                    opened.root_view_id,
+                    settings);
+                subscribed_before_close =
+                    context.runtime.subscriptions_for_view(opened.root_view_id)
+                        .size() == 1;
+
+                application.on_run =
+                    [&](MultiWindowFakeApplication& running_application) {
+                      on_run_called = true;
+                      FakeWindow* lifecycle_child =
+                          running_application.window_for_title(
+                              "Lifecycle Child");
+                      child_window_found = lifecycle_child != nullptr;
+                      if (lifecycle_child == nullptr) {
+                        return;
+                      }
+
+                      lifecycle_child->emit(cgpui::WindowCloseRequested{});
+
+                      const cgpui::WindowRuntimeRecord* record =
+                          context.runtime.window_runtime_record(
+                              opened.runtime_id);
+                      destroyed_after_close = child_destroyed;
+                      view_removed_after_close =
+                          context.runtime.find_view(opened.root_view_id) ==
+                              nullptr &&
+                          context.runtime.app_opened_window_root_view(
+                              opened.root_view_id) == nullptr;
+                      subscriptions_removed_after_close =
+                          context.runtime
+                              .subscriptions_for_view(opened.root_view_id)
+                              .empty();
+                      record_released_after_close =
+                          record != nullptr && record->window == nullptr &&
+                          record->renderer == nullptr && !record->active &&
+                          !record->owns_window && !record->owns_renderer &&
+                          !record->owns_root_view;
+                      child_close_did_not_quit_app =
+                          running_application.quit_count == 0;
+                    };
+              },
+      });
+
+  if (result != 0) {
+    return 52;
+  }
+  if (!setup_called || !on_run_called || !child_window_found) {
+    return 53;
+  }
+  if (!subscribed_before_close) {
+    return 54;
+  }
+  if (!destroyed_after_close || !view_removed_after_close) {
+    return 55;
+  }
+  if (!subscriptions_removed_after_close || !record_released_after_close ||
+      !child_close_did_not_quit_app) {
+    return 56;
+  }
+  if (!child_destroyed) {
+    return 57;
+  }
+  if (renderer_factory_count != 2) {
+    return 58;
   }
   return 0;
 }
@@ -1510,6 +1621,11 @@ int main() {
   }
   if (const int result =
           test_app_opened_window_routes_native_events_by_runtime_id();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_app_opened_window_close_cleans_runtime_owned_state();
       result != 0) {
     return result;
   }

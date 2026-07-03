@@ -919,6 +919,8 @@ class WindowRuntime {
   void handle_native_additional_window_event(
       WindowRuntimeId runtime_id,
       const PlatformEvent& event);
+  void cleanup_closed_additional_window(WindowRuntimeRecord& record);
+  void remove_subscriptions_for_view(ViewId view_id);
   void deactivate_native_additional_windows();
   [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
   [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
