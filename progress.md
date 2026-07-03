@@ -1,5 +1,53 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 213 Additional Window Event Routing
+
+- Created `.worktrees/additional-window-event-routing` on
+  `codex/additional-window-event-routing` from `master` at
+  `b5246fa docs: mark step 212 merged`.
+- Verified baseline targeted tests before edits:
+  `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/additional-window-event-routing -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 4/4 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/app_runner_test.cpp` using an owning
+  multi-window fake application. RED failed as expected in
+  `app_runner_test/default`; direct `xmake run -P . app_runner_test` reported
+  marker 46 because child focus, pointer, and keyboard events were not routed
+  to the child root view.
+- GREEN adds record-specific `WindowRuntimeContext` construction, child view
+  event dispatch for focus/pointer/keyboard input, child lifecycle dispatch
+  records, child renderer resize forwarding, and child redraw handling through
+  the child renderer and child root view.
+- The RED test snapshots child-view counters while the runtime is still alive,
+  avoiding a dangling child-view pointer after `run_app` tears down the
+  runtime-owned child root.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux command passed 4/4.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/additional-window-event-routing -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 213 as `d8b86fc feat: route additional window events` and
+  fast-forward merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux command passed 4/4.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 213 is marked merged and post-merge verified.
+  Step 214, additional window lifecycle cleanup, is the next implementation
+  slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 212 Additional Window Renderer Ownership
 
 - Continued `.worktrees/additional-window-renderer-ownership` on

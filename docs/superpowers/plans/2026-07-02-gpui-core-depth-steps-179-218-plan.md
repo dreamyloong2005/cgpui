@@ -767,11 +767,15 @@ targeted rerun.
 - Modify: `tests/ui/app_runner_test.cpp`
 - Modify: `tests/ui/window_runtime_test.cpp`
 
-- [ ] Add RED coverage for routing pointer, keyboard, focus, redraw, resize, and close events by `WindowRuntimeId`.
-- [ ] Expected RED: child platform callback only updates resize and close-active state.
-- [ ] GREEN: route child events through the existing runtime event path with per-window root view lookup.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for routing pointer, keyboard, focus, redraw, resize, and close events by `WindowRuntimeId`.
+- [x] Expected RED: child platform callback only updates resize and close-active state.
+- [x] GREEN: route child events through the existing runtime event path with per-window root view lookup.
+- [x] Targeted command: `xmake test -P . app_runner_test/default window_runtime_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `d8b86fc feat: route additional window events`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 4/4,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 214: Additional Window Lifecycle Cleanup
 

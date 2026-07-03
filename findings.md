@@ -1,5 +1,23 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Additional Window Event Routing
+
+- Step 213 adds record-specific child-window event routing for app-opened
+  native windows keyed by `WindowRuntimeId`.
+- `WindowRuntime` can now build a `WindowRuntimeContext` from a child
+  `WindowRuntimeRecord`, route child focus/pointer/keyboard events to the
+  child root view, and emit `EventDispatchRecord`s whose context and route use
+  the child root `ViewId` instead of the root window view.
+- Child redraw requests now render through the child renderer and child root
+  view, and child resize events forward to the child renderer while updating
+  the child descriptor's logical size. Child close events mark only the child
+  record inactive and emit child-routed lifecycle diagnostics without quitting
+  the app.
+- This is routing, not full child-window lifetime ownership. Closed child
+  roots, subscriptions, native windows, and renderers are still retained until
+  the broader runtime cleanup path runs. Step 214 moves to deterministic
+  child-window lifecycle teardown.
+
 ## 2026-07-03 Additional Window Renderer Ownership
 
 - Step 212 moves app-opened child windows from native-window-only records to

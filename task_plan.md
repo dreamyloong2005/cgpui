@@ -733,7 +733,7 @@ follow-on goal is now complete on the Windows/Linux track.
 210. [x] AT-SPI object model facade.
 211. [x] Accessibility value and live update events.
 212. [x] Additional window renderer ownership.
-213. [ ] Additional window event routing.
+213. [x] Additional window event routing.
 214. [ ] Additional window lifecycle cleanup.
 215. [ ] Runtime theme inheritance and switching.
 216. [ ] Animation clock and tween primitives.
@@ -745,12 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 212, additional window renderer ownership, is merged on `master` at
-`701a2f4 feat: add additional window renderer ownership` and post-merge
-verified on Windows and WSL Arch Linux. Step 213, additional window event
-routing, is the next implementation slice. The track remains
+Step 213, additional window event routing, is merged on `master` at
+`d8b86fc feat: route additional window events` and post-merge verified on
+Windows and WSL Arch Linux. Step 214, additional window lifecycle cleanup, is
+the next implementation slice. The track remains
 Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 213, additional window event routing, is merged on `master` at
+`d8b86fc feat: route additional window events`. RED failed as expected when a
+child platform callback could only update resize/close-active metadata and did
+not route child focus, pointer, keyboard, redraw, resize, or close behavior by
+`WindowRuntimeId`. GREEN adds record-specific runtime contexts, child redraw
+handling through the child renderer and root view, child resize forwarding to
+the child renderer, child lifecycle dispatch records, and view-event dispatch
+to the child root view. Feature-worktree targeted tests passed 4/4 on Windows
+and WSL Arch Linux, `git diff --check` exited 0 with only expected CRLF
+warnings, WSL full debug passed 27/27, and Windows full debug passed 30/30.
+Post-merge targeted tests passed 4/4 on Windows and WSL Arch Linux, the
+`git diff --check` check produced no output, WSL full debug passed 27/27, and
+Windows full debug passed 30/30. Step 214, additional window lifecycle
+cleanup, is the next implementation slice.
 
 Step 212, additional window renderer ownership, is merged on `master` at
 `701a2f4 feat: add additional window renderer ownership`. RED failed as
