@@ -750,6 +750,15 @@ Step 218, threaded async executor and cancellation, is merged on `master` at
 and WSL Arch Linux. The Steps 179-218 Windows/Linux production-depth pass is
 now complete; macOS/Cocoa + Metal is still deferred to a separate parity run.
 
+Post-Step-218 structural refactor, UI runtime structure split, is merged on
+`master` at `6c30f7a refactor: split ui runtime structure` and post-merge
+verified on Windows and WSL Arch Linux. This refactor keeps the public API
+source-compatible through `include/cgpui/ui/ui.hpp`, moves public UI
+declarations into `paint.hpp`, `view.hpp`, and `runtime.hpp`, and splits the
+former `src/ui/ui.cpp` monolith into focused implementation units guarded by
+`ui_source_structure_test`. It does not add new GPUI behavior; it makes the next
+Windows/Linux or macOS parity slice easier to localize.
+
 Step 218, threaded async executor and cancellation, is merged on `master` at
 `a8ebfec feat: add threaded async executor`. RED failed as expected on missing
 `TaskCancellationToken`, `spawn_background_task(...)`, task handle

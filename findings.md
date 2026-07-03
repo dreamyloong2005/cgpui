@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 UI Runtime Structure Split
+
+- `include/cgpui/ui/ui.hpp` is now a compatibility aggregate over
+  `paint.hpp`, `view.hpp`, and `runtime.hpp` instead of owning the full public
+  UI declaration surface.
+- Paint declarations now live with paint command types and `PaintList`; view
+  declarations carry `ViewContext` / `Context<T>` and the `View` base class;
+  runtime declarations keep `WindowRuntime`, `WindowRuntimeContext`,
+  `AppContext`, templates, and runner APIs.
+- The former `src/ui/ui.cpp` monolith is split into focused implementation
+  files. `ui.cpp` is now only the small RAII/handle implementation layer, while
+  paint, render-view, app context, runtime core, events, scheduling,
+  diagnostics, and context forwarding have separate compilation units.
+- `src/ui/ui_internal.hpp` is deliberately private to the UI implementation and
+  keeps shared helper code out of the public headers. This avoids inventing a
+  public helper API just to share render/routing/accessibility internals.
+- `ui_source_structure_test` now guards the split so future work does not
+  silently grow `ui.hpp` or `ui.cpp` back into monoliths.
+- The largest remaining implementation unit is `runtime_events.cpp`; a later
+  structure-only cleanup can split event routing, input/text, clipboard, and
+  action/command-palette logic without changing the public API.
+
 ## 2026-07-03 Threaded Async Executor And Cancellation
 
 - Step 218 keeps the existing manual `spawn_task(...)` / `complete_task(...)`

@@ -1,5 +1,46 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 UI Runtime Structure Split
+
+- Continued from the approved option to split both public UI headers and
+  implementation files in `.worktrees/split-ui-runtime-structure` on
+  `codex/split-ui-runtime-structure` from `master` at
+  `b6b3949 docs: mark step 218 merged`.
+- Added RED architecture coverage in
+  `tests/architecture/ui_source_structure_test.cpp` and the
+  `ui_source_structure_test` xmake target. The test guards that `ui.hpp`
+  remains a compatibility aggregate, that paint/view/runtime declarations live
+  in focused public headers, and that the old `src/ui/ui.cpp` monolith stays
+  thin.
+- GREEN splits the public UI surface into `paint.hpp`, `view.hpp`, and
+  `runtime.hpp`, with `ui.hpp` reduced to the compatibility aggregate.
+- GREEN splits the former `src/ui/ui.cpp` implementation into focused source
+  units for paint, render-view, view defaults, app context, runtime core,
+  runtime events, runtime scheduling, runtime diagnostics, runtime context, and
+  a private `ui_internal.hpp` helper header. The remaining `ui.cpp` now holds
+  only the small handle/RAII implementations.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default window_runtime_test/default render_view_test/default app_runner_test/default`
+  passed 6/6 on Windows.
+- Committed the refactor as
+  `6c30f7a refactor: split ui runtime structure` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default window_runtime_test/default render_view_test/default app_runner_test/default`
+  passed 6/6 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -P . ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default window_runtime_test/default render_view_test/default app_runner_test/default'`
+  passed 6/6 on WSL Arch Linux.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 28/28.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 31/31.
+- This is a structure-only refactor after the Steps 179-218 production-depth
+  pass. If we continue structure cleanup, `runtime_events.cpp` is now the
+  largest remaining implementation unit and can be split into event routing,
+  input/text, and action/command files.
+
 ## 2026-07-03 Step 218 Threaded Async Executor And Cancellation
 
 - Created `.worktrees/threaded-async-executor` on
