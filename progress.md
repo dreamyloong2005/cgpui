@@ -8475,3 +8475,41 @@
   passed 39/39.
 - Step 258 is complete on `master`; Phase B, Steps 259-318, is the next
   implementation phase.
+
+## 2026-07-04 Phase B Step 259 Application Facade
+
+- Continued the interrupted `codex/phase-b-application-facade` worktree.
+- Implemented public app-module facade files:
+  `include/cgpui/app/application.hpp`, `include/cgpui/app/app.hpp`, and
+  `src/app/application.cpp`.
+- Registered `cgpui_app`, `application_facade_test`, and
+  `app_source_structure_test` in `xmake.lua`; `cgpui_app` links the active
+  native platform backend per OS while preserving existing low-level APIs.
+- Updated `include/cgpui/cgpui.hpp` to include the app aggregate and changed
+  `examples/api_parity/hello_world/main.cpp` to use
+  `Application::create()` and `app->run(...)`.
+- Updated parity evidence in `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, the complete replication roadmap,
+  and `tests/api_parity/gpui_parity_ledger_test.cpp`.
+- Diagnosed the WSL `application_facade_test/default` failure. Direct binary
+  execution returned 0, but xmake test returned exit code 5. The failing branch
+  read `renderer_ptr->begin_frame_count` after `run_app` destroyed the renderer
+  owner vector. Replaced the post-return raw pointer read with an external
+  begin-frame counter reference.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . gpui_parity_ledger_test/default prelude_header_cleanliness/default ui_header_cleanliness/default ui_source_structure_test/default app_source_structure_test/default application_facade_test/default`
+  passed 6/6.
+- Fresh Windows hello-world parity build passed:
+  `xmake build -y -P . api_parity_hello_world`.
+- Fresh WSL focused verification passed:
+  `XMAKE_ROOT=y xmake test -y -P . application_facade_test/default app_source_structure_test/default gpui_parity_ledger_test/default prelude_header_cleanliness/default ui_header_cleanliness/default ui_source_structure_test/default`
+  passed 6/6.
+- Fresh WSL hello-world parity build passed:
+  `XMAKE_ROOT=y xmake build -y -P . api_parity_hello_world`.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 44/44.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 41/41.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings for touched text files.

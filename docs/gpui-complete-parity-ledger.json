@@ -33,8 +33,8 @@
     }
   },
   "status_counts": {
-    "required": 19,
-    "adapted": 9,
+    "required": 18,
+    "adapted": 10,
     "deferred": 2,
     "non_goal": 1
   },
@@ -70,13 +70,13 @@
       "upstream_gpui": "gpui_platform::application",
       "cgpui_target": "create_platform_application + run_app",
       "status": "adapted",
-      "next_step": "Phase B"
+      "next_step": "Step 259 facade keeps low-level APIs"
     },
     {
       "upstream_gpui": "gpui::Application",
-      "cgpui_target": "future Application facade",
-      "status": "required",
-      "next_step": "Phase B"
+      "cgpui_target": "Application",
+      "status": "adapted",
+      "next_step": "Step 260 App/Window context depth"
     },
     {
       "upstream_gpui": "gpui::App",

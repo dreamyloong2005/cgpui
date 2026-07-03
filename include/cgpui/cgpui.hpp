@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/app/app.hpp"
 #include "cgpui/core/entity.hpp"
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/events.hpp"

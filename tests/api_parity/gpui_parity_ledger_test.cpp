@@ -177,7 +177,8 @@ int main() {
   if (!contains(example, "class HelloWorldView") ||
       !contains(example, "cgpui::Context<HelloWorldView>") ||
       !contains(example, "cgpui::div()") ||
-      !contains(example, "cgpui::run_app") ||
+      !contains(example, "cgpui::Application::create") ||
+      !contains(example, "app->run") ||
       !contains(example, "GPUI upstream hello_world.rs parity")) {
     return 13;
   }

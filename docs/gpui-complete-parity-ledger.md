@@ -35,8 +35,8 @@ Status meanings:
 
 | upstream_gpui | cgpui_target | status | evidence | next_step |
 |---|---|---|---|---|
-| gpui_platform::application | `create_platform_application` + `run_app` | Adapted | `include/cgpui/platform/platform_application.hpp`, `include/cgpui/ui/runtime_rendering.hpp` | Phase B app facade |
-| gpui::Application | `PlatformApplication` / future `Application` facade | Required | platform abstraction exists, name parity missing | Phase B |
+| gpui_platform::application | `create_platform_application` + `run_app` | Adapted | `include/cgpui/platform/platform_application.hpp`, `include/cgpui/ui/runtime_rendering.hpp` | Step 259 facade keeps low-level APIs |
+| gpui::Application | `Application` | Adapted | `include/cgpui/app/application.hpp`, `src/app/application.cpp`, `tests/api_parity/application_facade_test.cpp` | Step 260 App/Window context depth |
 | gpui::App | `AppContext` | Adapted | `include/cgpui/ui/runtime_app_context.hpp` | Phase B context API |
 | gpui::Window | `WindowRuntimeContext::window` and `PlatformWindow` | Adapted | runtime/window split exists | Phase B/F |
 | gpui::WindowOptions | `WindowOptions` | Adapted | `include/cgpui/ui/runtime_window_options.hpp` | Phase B/F |

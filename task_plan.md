@@ -201,6 +201,27 @@ debug 42/42, and post-merge WSL full debug 39/39. Phase B, Steps 259-318, is
 the next implementation phase: public Application, Context, Entity, Action,
 key dispatch, and test-context API parity.
 
+Step 259, public `Application` facade, is implemented on
+`codex/phase-b-application-facade`. RED failed as expected on missing
+`cgpui::Application`. GREEN adds focused app-module ownership through
+`include/cgpui/app/application.hpp`, `include/cgpui/app/app.hpp`, and
+`src/app/application.cpp`, plus a new `cgpui_app` target. The facade is
+move-only, owns a `PlatformApplication`, exposes `Application::create()`,
+keeps `platform_application()` access for low-level interop, and forwards
+`run(...)` to the existing `run_app(...)` path without removing
+`create_platform_application()` or `run_app(...)`. The public aggregate
+`include/cgpui/cgpui.hpp` now includes `cgpui/app/app.hpp`, and the
+hello-world API parity example uses `Application::create()` plus `app->run`.
+The WSL focused failure during verification was traced to a test use-after-free:
+`application_facade_test` read a renderer pointer after `run_app` had destroyed
+its owned renderer vector. The test now records begin-frame count through an
+external reference, matching the established `app_runner_test` pattern.
+Feature-worktree verification passed Windows focused 6/6, Windows
+`api_parity_hello_world` build, WSL focused 6/6, WSL
+`api_parity_hello_world` build, and `git diff --check` with only expected
+LF-to-CRLF normalization warnings. Step 260 should continue Phase B by
+deepening the public `App`/`Window` context shape.
+
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
 `8695bb1 feat: add keyed element identity` and post-merge verified on Windows

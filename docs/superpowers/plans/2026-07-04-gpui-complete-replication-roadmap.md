@@ -168,7 +168,9 @@ shape before deeper native work expands platform behavior.
 
 - [ ] Steps 259-264: Align public names and C++ idioms for `Application`,
   `App`, `Window`, `Context<T>`, `Render`, `IntoElement`, and `View` without
-  breaking the existing public prelude.
+  breaking the existing public prelude. Step 259 is complete: `Application`
+  now owns a `PlatformApplication`, exposes `Application::create()`, and
+  forwards `run(...)` to the existing app runner from a focused app module.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules.
@@ -492,14 +494,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Start with Phase A, Steps 219-238. The first concrete implementation plan
-should be:
-
-`docs/superpowers/plans/2026-07-04-gpui-upstream-parity-ledger-plan.md`
-
-That plan should create the pinned upstream ledger and the first RED
-`api_parity` tests. No macOS or X11 implementation should start before the
-ledger exists and Windows/Linux public API gaps are ranked.
+Continue Phase B with Step 260 after the Step 259 Application facade merge.
+The next slice should deepen the public `App`/`Window` context shape without
+moving implementation into UI/runtime monoliths or changing the Windows/Linux
+Vulkan and Wayland-first platform targets.
 
 ## Self-Review
 

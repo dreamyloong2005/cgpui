@@ -40,11 +40,11 @@ class HelloWorldView final : public cgpui::View {
 
 int main() {
   // GPUI upstream hello_world.rs parity:
-  // application().run -> create_platform_application + run_app.
+  // application().run -> Application::create + Application::run.
   // App::open_window -> AppRunnerOptions::window.
   // Render for HelloWorld -> View::render(ViewContext&).
   // div()/px()/rgb()/child() keep their C++ public-prelude spelling.
-  auto app = cgpui::create_platform_application();
+  auto app = cgpui::Application::create();
   if (!app) {
     std::cerr << app.error().message << '\n';
     return 1;
@@ -65,8 +65,7 @@ int main() {
         });
   };
 
-  return cgpui::run_app(
-      **app,
+  return app->run(
       view,
       [](const cgpui::RenderSurfaceDescriptor& descriptor) {
         return cgpui::create_renderer(descriptor);

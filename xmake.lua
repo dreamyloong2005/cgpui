@@ -242,6 +242,21 @@ target("cgpui_ui")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
     add_includedirs(public_includedirs, {public = true})
 
+target("cgpui_app")
+    set_kind("static")
+    add_files("src/app/*.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos")
+    else
+        add_deps("cgpui_platform_fallback")
+    end
+    add_includedirs(public_includedirs, {public = true})
+
 target("ui_header_cleanliness")
     set_kind("binary")
     add_files("tests/header_cleanliness/ui_header_cleanliness.cpp")
@@ -263,10 +278,22 @@ target("gpui_parity_ledger_test")
     add_files("tests/api_parity/gpui_parity_ledger_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("application_facade_test")
+    set_kind("binary")
+    add_files("tests/api_parity/application_facade_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("app_source_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/app_source_structure_test.cpp")
+    add_tests("default")
+
 target("api_parity_hello_world")
     set_kind("binary")
     add_files("examples/api_parity/hello_world/main.cpp")
-    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
     elseif is_plat("linux") then

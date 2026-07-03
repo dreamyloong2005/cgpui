@@ -4223,3 +4223,21 @@
   The immediate next implementation band is public `Application` / `App` /
   `Window` / `Context<T>` / entity / action / key-dispatch / test-context
   parity for Windows/Linux.
+
+## 2026-07-04 Phase B Step 259 Application Facade
+
+- `Application` belongs in a new app module, not in `ui.cpp`, runtime
+  implementation files, or platform backends. The Step 259 structure is:
+  `include/cgpui/app/application.hpp`, `include/cgpui/app/app.hpp`, and
+  `src/app/application.cpp`, compiled by the new `cgpui_app` target.
+- The facade intentionally wraps existing primitives instead of replacing them:
+  `Application::create()` delegates to `create_platform_application()`, and
+  `Application::run(...)` delegates to `run_app(...)`. This keeps existing
+  low-level callers source-compatible while adding GPUI-shaped entry spelling.
+- The WSL `application_facade_test/default` failure was a test lifetime bug,
+  not a Linux platform failure. The test kept a raw pointer to a renderer owned
+  by `run_app`'s local renderer vector and read it after `Application::run`
+  returned. Direct execution happened to read stale memory that still looked
+  valid; xmake's test runner exposed the use-after-free. The durable pattern is
+  to record renderer observations through external counters, as
+  `tests/ui/app_runner_test.cpp` already does.
