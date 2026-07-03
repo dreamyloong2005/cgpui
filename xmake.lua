@@ -326,6 +326,11 @@ target("desktop_target_readiness_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("ui_source_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/ui_source_structure_test.cpp")
+    add_tests("default")
+
 if is_plat("windows") then
     target("vulkan_resize_test")
         set_kind("binary")
