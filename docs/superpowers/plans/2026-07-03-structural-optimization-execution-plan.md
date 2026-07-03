@@ -437,3 +437,9 @@ files, and verification commands.
 - Type consistency: all named paths match the current CGPUI directory layout.
 - Scope: structure-only. No macOS parity and no new GPUI behavior are part of
   this plan.
+
+## Merge Closeout
+
+- Merged to `master` as `c6bc9e5 refactor: optimize source structure`.
+- Post-merge Windows full debug passed 41/41.
+- Post-merge WSL Arch Linux full debug passed 38/38.

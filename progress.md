@@ -8384,3 +8384,14 @@
   passed 38/38.
 - `git diff --check` exited 0 with only expected LF-to-CRLF normalization
   warnings and no whitespace errors.
+
+## 2026-07-04 Structural Optimization Merge
+
+- Committed the aggressive structural optimization branch as
+  `c6bc9e5 refactor: optimize source structure`.
+- Fast-forward merged `codex/structural-optimization` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 41/41.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 38/38.
