@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Asset And Image Pipeline Skeleton
+
+- Step 217 adds deterministic in-memory RGBA8 bitmap assets, image asset ids,
+  descriptors, and soft validation metadata without adding external PNG, JPEG,
+  or SVG decoders.
+- Image paint commands now flow through `PaintList::draw_image(...)`,
+  `render_view(...)`, and `RenderFrame::draw_image(...)` with clip stack,
+  composition stack, bounds, sampling, tint, and opacity metadata preserved for
+  renderer-facing records.
+- Frame statistics now count image commands, and the Vulkan diagnostic path
+  treats image commands as a supported primitive for reporting, batching, image
+  render summaries, submission plans, and upload byte/region counters.
+- `vulkan_plan_image_uploads(...)` produces deterministic upload batches and
+  regions from image assets. It is still an upload plan, not real Vulkan image
+  allocation, GPU upload, shader sampling, texture cache lifetime management,
+  or SVG/image decoder integration.
+- Step 218 moves to threaded async executor and cancellation so background work
+  can leave the current main-thread/manual-completion skeleton.
+
 ## 2026-07-03 Animation Clock And Tween Primitives
 
 - Step 216 adds deterministic animation primitives without introducing a full

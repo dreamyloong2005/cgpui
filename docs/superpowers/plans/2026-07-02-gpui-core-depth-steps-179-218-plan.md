@@ -848,17 +848,21 @@ targeted rerun.
 
 **Files:**
 - Modify: `include/cgpui/renderer/renderer.hpp`
-- Modify: `include/cgpui/ui/element.hpp`
+- Modify: `include/cgpui/ui/ui.hpp`
 - Modify: `src/ui/ui.cpp`
 - Modify: `src/renderer/vulkan/vulkan_renderer.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 - Modify: `tests/renderer/vulkan_solid_rect_test.cpp`
 
-- [ ] Add RED coverage for image asset descriptors, decoded bitmap records, image paint commands, and Vulkan upload planning.
-- [ ] Expected RED: no image/asset paint or renderer upload path exists.
-- [ ] GREEN: add deterministic in-memory bitmap assets and image command/upload-plan records without external decoders.
-- [ ] Targeted command: `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+- [x] Add RED coverage for image asset descriptors, decoded bitmap records, image paint commands, and Vulkan upload planning.
+- [x] Expected RED: no image/asset paint or renderer upload path exists.
+- [x] GREEN: add deterministic in-memory bitmap assets and image command/upload-plan records without external decoders.
+- [x] Targeted command: `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: available Linux subset `render_view_test/default core_header_cleanliness/default ui_header_cleanliness/default`.
+
+**Merged:** `7b37744 feat: add asset image pipeline skeleton`.
+**Post-merge verification:** Windows targeted 4/4, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 218: Threaded Async Executor And Cancellation
 

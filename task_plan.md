@@ -737,7 +737,7 @@ follow-on goal is now complete on the Windows/Linux track.
 214. [x] Additional window lifecycle cleanup.
 215. [x] Runtime theme inheritance and switching.
 216. [x] Animation clock and tween primitives.
-217. [ ] Asset and image pipeline skeleton.
+217. [x] Asset and image pipeline skeleton.
 218. [ ] Threaded async executor and cancellation.
 
 ## Active Step
@@ -745,11 +745,27 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 216, animation clock and tween primitives, is merged on `master` at
-`f9e2f85 feat: add animation clock tween primitives` and post-merge verified on
-Windows and WSL Arch Linux. Step 217, asset and image pipeline skeleton, is the
-next implementation slice. The track remains Windows/Linux first;
+Step 217, asset and image pipeline skeleton, is merged on `master` at
+`7b37744 feat: add asset image pipeline skeleton` and post-merge verified on
+Windows and WSL Arch Linux. Step 218, threaded async executor and cancellation,
+is the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 217, asset and image pipeline skeleton, is merged on `master` at
+`7b37744 feat: add asset image pipeline skeleton`. RED failed as expected on
+missing image asset descriptors, decoded RGBA8 bitmap records, image paint
+commands, Vulkan upload planning APIs, renderer image primitive reporting, and
+render-view image forwarding. GREEN adds deterministic in-memory bitmap asset
+descriptors, image paint commands, `RenderFrame::draw_image(...)`, frame image
+statistics, renderer image primitive/report records, and Vulkan-side image
+upload batch/region planning without external decoders or real GPU texture
+allocation. Feature-worktree targeted tests passed 4/4 on Windows and 3/3 on
+WSL Arch Linux, `git diff --check` exited 0 with only expected CRLF warnings,
+WSL full debug passed 27/27, and Windows full debug passed 30/30. Post-merge
+targeted tests passed 4/4 on Windows and 3/3 on WSL Arch Linux,
+`git diff --check` produced no output, WSL full debug passed 27/27, and
+Windows full debug passed 30/30. Step 218, threaded async executor and
+cancellation, is the next implementation slice.
 
 Step 216, animation clock and tween primitives, is merged on `master` at
 `f9e2f85 feat: add animation clock tween primitives`. RED failed as expected

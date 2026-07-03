@@ -1,5 +1,51 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 217 Asset And Image Pipeline Skeleton
+
+- Continued `.worktrees/asset-image-pipeline` on
+  `codex/asset-image-pipeline` from `master` at
+  `ab49773 docs: mark step 216 merged`.
+- RED coverage in `tests/ui/render_view_test.cpp` and
+  `tests/renderer/vulkan_solid_rect_test.cpp` failed as expected on missing
+  image asset descriptors, decoded bitmap records, image paint commands,
+  renderer image primitive reporting, Vulkan upload planning, and render-view
+  image forwarding APIs.
+- GREEN adds `ImageFormat::rgba8_unorm`, `DecodedImageBitmap`,
+  `ImageAssetId`, `ImageAsset`, `ImageAssetDescriptor`,
+  `describe_image_asset(...)`, image paint commands,
+  `RenderFrame::draw_image(...)`, image frame statistics, renderer image
+  primitive/report records, and deterministic Vulkan image upload batches and
+  regions from in-memory bitmap assets.
+- This slice intentionally does not add external image decoders, SVG support,
+  real Vulkan texture allocation/upload, shader sampling, or texture-cache
+  lifetime management.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux subset passed 3/3.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/asset-image-pipeline -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 217 as
+  `7b37744 feat: add asset image pipeline skeleton` and fast-forward merged it
+  to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . render_view_test/default vulkan_solid_rect_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 4/4 on Windows, and the matching WSL Arch Linux subset passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 217 is marked merged and post-merge verified.
+  Step 218, threaded async executor and cancellation, is the next
+  implementation slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 216 Animation Clock And Tween Primitives
 
 - Continued `.worktrees/animation-clock-tween` on
