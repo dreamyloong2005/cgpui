@@ -5,12 +5,15 @@
 #include "cgpui/ui/ui.hpp"
 
 #include <algorithm>
+#include <atomic>
+#include <chrono>
 #include <expected>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -6271,6 +6274,9 @@ cgpui::WindowRuntime* animation_api_runtime = nullptr;
 class AsyncTaskApiView;
 AsyncTaskApiView* async_task_api_view = nullptr;
 cgpui::WindowRuntime* async_task_api_runtime = nullptr;
+class ThreadedAsyncExecutorView;
+ThreadedAsyncExecutorView* threaded_async_executor_view = nullptr;
+cgpui::WindowRuntime* threaded_async_executor_runtime = nullptr;
 RuntimeFixture* platform_wakeup_fixture = nullptr;
 cgpui::WindowRuntime* platform_wakeup_runtime = nullptr;
 class PlatformWakeupQueueView;
@@ -6700,6 +6706,161 @@ int test_async_task_completion_dispatches_on_runtime_queue() {
     return 381;
   }
 
+  return 0;
+}
+
+class ThreadedAsyncExecutorView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {
+    paint_count += 1;
+  }
+
+  cgpui::TaskHandle completed_task;
+  cgpui::TaskHandle cancelled_task;
+  std::atomic<int> worker_start_count = 0;
+  std::atomic<int> worker_finish_count = 0;
+  std::atomic<int> cancellation_seen_count = 0;
+  std::atomic<bool> allow_completed_task_to_finish = false;
+  int completion_count = 0;
+  int paint_count = 0;
+  bool completion_saw_background_result = false;
+  bool cancelled_completion_ran = false;
+  bool active_diagnostics_match = false;
+  bool cancellation_diagnostics_match = false;
+  bool completion_diagnostics_match = false;
+};
+
+void dispatch_threaded_async_executor_sequence() {
+  ThreadedAsyncExecutorView& view = *threaded_async_executor_view;
+  cgpui::WindowRuntime& runtime = *threaded_async_executor_runtime;
+
+  view.completed_task = runtime.spawn_background_task(
+      [](cgpui::TaskCancellationToken token) {
+        threaded_async_executor_view->worker_start_count.fetch_add(1);
+        while (!threaded_async_executor_view->allow_completed_task_to_finish
+                    .load()) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        if (!token.cancellation_requested()) {
+          threaded_async_executor_view->worker_finish_count.fetch_add(1);
+        }
+      },
+      [](const cgpui::WindowRuntimeContext& context) {
+        threaded_async_executor_view->completion_count += 1;
+        threaded_async_executor_view->completion_saw_background_result =
+            threaded_async_executor_view->worker_finish_count.load() == 1;
+        context.request_render();
+      });
+  view.cancelled_task = runtime.spawn_background_task(
+      [](cgpui::TaskCancellationToken token) {
+        threaded_async_executor_view->worker_start_count.fetch_add(1);
+        while (!token.cancellation_requested()) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        threaded_async_executor_view->cancellation_seen_count.fetch_add(1);
+      },
+      [](const cgpui::WindowRuntimeContext&) {
+        threaded_async_executor_view->cancelled_completion_ran = true;
+      });
+
+  for (int attempt = 0; attempt < 200 &&
+                        view.worker_start_count.load() != 2;
+       ++attempt) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+
+  const cgpui::RuntimeDiagnosticsSnapshot active =
+      runtime.diagnostics_snapshot();
+  view.active_diagnostics_match =
+      view.completed_task.id().value != 0 &&
+      view.cancelled_task.id().value != 0 &&
+      view.completed_task.active() && view.cancelled_task.active() &&
+      active.task_count == 2 && active.background_task_count == 2 &&
+      active.active_task_count == 2 && active.completed_task_count == 0 &&
+      active.cancelled_task_count == 0 && active.queued_task_count == 0;
+
+  const bool cancelled = view.cancelled_task.cancel();
+  for (int attempt = 0; attempt < 200 &&
+                        view.cancellation_seen_count.load() != 1;
+       ++attempt) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+
+  const cgpui::RuntimeDiagnosticsSnapshot after_cancel =
+      runtime.diagnostics_snapshot();
+  view.cancellation_diagnostics_match =
+      cancelled && !view.cancelled_task.active() &&
+      view.cancelled_task.cancelled() && !view.cancelled_task.complete() &&
+      !runtime.complete_task(view.cancelled_task.id()) &&
+      after_cancel.task_count == 2 && after_cancel.background_task_count == 2 &&
+      after_cancel.active_task_count == 1 &&
+      after_cancel.cancelled_task_count == 1 &&
+      after_cancel.completed_task_count == 0;
+
+  view.allow_completed_task_to_finish.store(true);
+  for (int attempt = 0; attempt < 200 &&
+                        view.worker_finish_count.load() != 1;
+       ++attempt) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+  for (int attempt = 0; attempt < 200 && view.completed_task.active();
+       ++attempt) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+
+  runtime.drain_task_completions();
+  const cgpui::RuntimeDiagnosticsSnapshot after_completion =
+      runtime.diagnostics_snapshot();
+  view.completion_diagnostics_match =
+      view.completed_task.complete() && !view.completed_task.active() &&
+      view.cancelled_task.cancelled() &&
+      after_completion.task_count == 2 &&
+      after_completion.background_task_count == 2 &&
+      after_completion.active_task_count == 0 &&
+      after_completion.queued_task_count == 0 &&
+      after_completion.completed_task_count == 1 &&
+      after_completion.cancelled_task_count == 1;
+}
+
+int test_threaded_async_executor_runs_cancels_and_dispatches_completion() {
+  RuntimeFixture fixture;
+  ThreadedAsyncExecutorView view;
+  threaded_async_executor_view = &view;
+  fixture.app.on_run = &dispatch_threaded_async_executor_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  threaded_async_executor_runtime = &runtime;
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  threaded_async_executor_view = nullptr;
+  threaded_async_executor_runtime = nullptr;
+  if (result != 0) {
+    return 393;
+  }
+  if (!view.active_diagnostics_match || !view.cancellation_diagnostics_match ||
+      !view.completion_diagnostics_match) {
+    return 394;
+  }
+  if (view.worker_start_count.load() != 2 ||
+      view.worker_finish_count.load() != 1 ||
+      view.cancellation_seen_count.load() != 1) {
+    return 395;
+  }
+  if (view.completion_count != 1 || view.cancelled_completion_ran ||
+      !view.completion_saw_background_result) {
+    return 396;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1 || view.paint_count != 1) {
+    return 397;
+  }
   return 0;
 }
 
@@ -9225,6 +9386,11 @@ int main() {
   }
   if (const int result =
           test_async_task_completion_dispatches_on_runtime_queue();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_threaded_async_executor_runs_cancels_and_dispatches_completion();
       result != 0) {
     return result;
   }

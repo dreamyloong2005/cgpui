@@ -1,8 +1,11 @@
 #include "cgpui/ui/ui.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <expected>
 #include <memory>
+#include <mutex>
+#include <thread>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -481,6 +484,18 @@ bool TaskHandle::active() const {
 
 bool TaskHandle::complete() const {
   return runtime_ != nullptr && runtime_->task_complete(id_);
+}
+
+bool TaskHandle::cancelled() const {
+  return runtime_ != nullptr && runtime_->task_cancelled(id_);
+}
+
+bool TaskHandle::cancel() {
+  return runtime_ != nullptr && runtime_->cancel_task(id_);
+}
+
+bool TaskCancellationToken::cancellation_requested() const {
+  return state_ != nullptr && state_->load();
 }
 
 bool AnimationHandle::active() const {
@@ -1175,6 +1190,26 @@ WindowRuntime::WindowRuntime(
       .owns_renderer = false,
       .owns_root_view = false,
       .active = false});
+}
+
+WindowRuntime::~WindowRuntime() {
+  std::vector<std::jthread> workers;
+  {
+    std::lock_guard lock(tasks_mutex_);
+    for (RuntimeTask& task : tasks_) {
+      if (task.cancellation_requested != nullptr) {
+        task.cancellation_requested->store(true);
+      }
+      if (!task.completed) {
+        task.cancelled = true;
+      }
+      if (task.worker.joinable()) {
+        task.worker.request_stop();
+        workers.push_back(std::move(task.worker));
+      }
+    }
+    task_completion_queue_.clear();
+  }
 }
 
 int WindowRuntime::run(
@@ -3128,13 +3163,68 @@ TaskHandle WindowRuntime::spawn_task(TaskCompletionCallback callback) {
     return {};
   }
 
-  const TaskId id{next_task_id_++};
-  tasks_.push_back(RuntimeTask{
-      .id = id,
-      .callback = std::move(callback),
-      .queued = false,
-      .completed = false,
-  });
+  TaskId id;
+  {
+    std::lock_guard lock(tasks_mutex_);
+    id = TaskId{next_task_id_++};
+    tasks_.push_back(RuntimeTask{
+        .id = id,
+        .callback = std::move(callback),
+        .queued = false,
+        .completed = false,
+    });
+  }
+  return TaskHandle(*this, id);
+}
+
+TaskHandle WindowRuntime::spawn_background_task(
+    BackgroundTaskCallback work,
+    TaskCompletionCallback completion) {
+  if (!work || !completion) {
+    return {};
+  }
+
+  auto cancellation_requested = std::make_shared<std::atomic_bool>(false);
+  TaskId id;
+  {
+    std::lock_guard lock(tasks_mutex_);
+    id = TaskId{next_task_id_++};
+    tasks_.push_back(RuntimeTask{
+        .id = id,
+        .callback = std::move(completion),
+        .queued = false,
+        .completed = false,
+        .cancelled = false,
+        .background = true,
+        .cancellation_requested = cancellation_requested,
+    });
+  }
+
+  std::jthread worker(
+      [this,
+       id,
+       cancellation_requested,
+       work = std::move(work)]() mutable {
+        try {
+          work(TaskCancellationToken(cancellation_requested));
+        } catch (...) {
+        }
+        (void)complete_task(id);
+      });
+
+  {
+    std::lock_guard lock(tasks_mutex_);
+    const auto task = std::find_if(
+        tasks_.begin(),
+        tasks_.end(),
+        [id](const RuntimeTask& task) {
+          return task.id == id;
+        });
+    if (task != tasks_.end()) {
+      task->worker = std::move(worker);
+    }
+  }
+
   return TaskHandle(*this, id);
 }
 
@@ -3143,18 +3233,23 @@ bool WindowRuntime::complete_task(TaskId id) {
     return false;
   }
 
-  const auto task = std::find_if(
-      tasks_.begin(),
-      tasks_.end(),
-      [id](const RuntimeTask& task) {
-        return task.id == id;
-      });
-  if (task == tasks_.end() || task->queued || task->completed) {
-    return false;
+  {
+    std::lock_guard lock(tasks_mutex_);
+    const auto task = std::find_if(
+        tasks_.begin(),
+        tasks_.end(),
+        [id](const RuntimeTask& task) {
+          return task.id == id;
+        });
+    if (task == tasks_.end() || task->queued || task->completed ||
+        task->cancelled) {
+      return false;
+    }
+
+    task->queued = true;
+    task_completion_queue_.push_back(id);
   }
 
-  task->queued = true;
-  task_completion_queue_.push_back(id);
   request_platform_wakeup();
   return true;
 }
@@ -3165,23 +3260,33 @@ void WindowRuntime::drain_task_completions() {
   }
 
   draining_task_completions_ = true;
-  while (!task_completion_queue_.empty() && !should_quit_) {
+  while (!should_quit_) {
     std::vector<TaskId> queued;
-    queued.swap(task_completion_queue_);
-    for (const TaskId id : queued) {
-      const auto task = std::find_if(
-          tasks_.begin(),
-          tasks_.end(),
-          [id](const RuntimeTask& task) {
-            return task.id == id;
-          });
-      if (task == tasks_.end() || task->completed) {
-        continue;
+    {
+      std::lock_guard lock(tasks_mutex_);
+      if (task_completion_queue_.empty()) {
+        break;
       }
+      queued.swap(task_completion_queue_);
+    }
+    for (const TaskId id : queued) {
+      TaskCompletionCallback callback;
+      {
+        std::lock_guard lock(tasks_mutex_);
+        const auto task = std::find_if(
+            tasks_.begin(),
+            tasks_.end(),
+            [id](const RuntimeTask& task) {
+              return task.id == id;
+            });
+        if (task == tasks_.end() || task->completed || task->cancelled) {
+          continue;
+        }
 
-      TaskCompletionCallback callback = task->callback;
-      task->queued = false;
-      task->completed = true;
+        callback = task->callback;
+        task->queued = false;
+        task->completed = true;
+      }
       if (callback) {
         callback(context());
       }
@@ -3333,6 +3438,7 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       connected_subscription_count += 1;
     }
   }
+  const RuntimeTaskDiagnostics task_counts = task_diagnostics();
 
   return RuntimeDiagnosticsSnapshot{
       .entity_store_count = entity_stores_.size(),
@@ -3345,6 +3451,12 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .last_render_record = last_render_record_,
       .last_frame_statistics = last_frame_statistics_,
       .platform_diagnostics = platform_diagnostics_,
+      .task_count = task_counts.task_count,
+      .active_task_count = task_counts.active_task_count,
+      .queued_task_count = task_counts.queued_task_count,
+      .completed_task_count = task_counts.completed_task_count,
+      .cancelled_task_count = task_counts.cancelled_task_count,
+      .background_task_count = task_counts.background_task_count,
   };
 }
 
@@ -3550,13 +3662,15 @@ bool WindowRuntime::task_active(TaskId id) const {
     return false;
   }
 
+  std::lock_guard lock(tasks_mutex_);
   const auto task = std::find_if(
       tasks_.begin(),
       tasks_.end(),
       [id](const RuntimeTask& task) {
         return task.id == id;
       });
-  return task != tasks_.end() && !task->queued && !task->completed;
+  return task != tasks_.end() && !task->queued && !task->completed &&
+         !task->cancelled;
 }
 
 bool WindowRuntime::task_complete(TaskId id) const {
@@ -3564,6 +3678,7 @@ bool WindowRuntime::task_complete(TaskId id) const {
     return false;
   }
 
+  std::lock_guard lock(tasks_mutex_);
   const auto task = std::find_if(
       tasks_.begin(),
       tasks_.end(),
@@ -3571,6 +3686,71 @@ bool WindowRuntime::task_complete(TaskId id) const {
         return task.id == id;
       });
   return task != tasks_.end() && task->completed;
+}
+
+bool WindowRuntime::task_cancelled(TaskId id) const {
+  if (id.value == 0) {
+    return false;
+  }
+
+  std::lock_guard lock(tasks_mutex_);
+  const auto task = std::find_if(
+      tasks_.begin(),
+      tasks_.end(),
+      [id](const RuntimeTask& task) {
+        return task.id == id;
+      });
+  return task != tasks_.end() && task->cancelled;
+}
+
+bool WindowRuntime::cancel_task(TaskId id) {
+  if (id.value == 0) {
+    return false;
+  }
+
+  std::lock_guard lock(tasks_mutex_);
+  const auto task = std::find_if(
+      tasks_.begin(),
+      tasks_.end(),
+      [id](const RuntimeTask& task) {
+        return task.id == id;
+      });
+  if (task == tasks_.end() || task->completed || task->cancelled) {
+    return false;
+  }
+
+  if (task->cancellation_requested != nullptr) {
+    task->cancellation_requested->store(true);
+  }
+  task->cancelled = true;
+  task->queued = false;
+  task_completion_queue_.erase(
+      std::remove(task_completion_queue_.begin(), task_completion_queue_.end(), id),
+      task_completion_queue_.end());
+  return true;
+}
+
+WindowRuntime::RuntimeTaskDiagnostics WindowRuntime::task_diagnostics()
+    const {
+  RuntimeTaskDiagnostics diagnostics;
+  std::lock_guard lock(tasks_mutex_);
+  diagnostics.task_count = tasks_.size();
+  diagnostics.queued_task_count = task_completion_queue_.size();
+  for (const RuntimeTask& task : tasks_) {
+    if (task.background) {
+      diagnostics.background_task_count += 1;
+    }
+    if (task.completed) {
+      diagnostics.completed_task_count += 1;
+    }
+    if (task.cancelled) {
+      diagnostics.cancelled_task_count += 1;
+    }
+    if (!task.queued && !task.completed && !task.cancelled) {
+      diagnostics.active_task_count += 1;
+    }
+  }
+  return diagnostics;
 }
 
 bool WindowRuntime::animation_active(AnimationId id) const {
@@ -3954,6 +4134,14 @@ bool WindowRuntimeContext::cancel_animation(AnimationId id) const {
 TaskHandle WindowRuntimeContext::spawn_task(
     TaskCompletionCallback callback) const {
   return runtime.spawn_task(std::move(callback));
+}
+
+TaskHandle WindowRuntimeContext::spawn_background_task(
+    BackgroundTaskCallback work,
+    TaskCompletionCallback completion) const {
+  return runtime.spawn_background_task(
+      std::move(work),
+      std::move(completion));
 }
 
 void WindowRuntimeContext::batch_updates(

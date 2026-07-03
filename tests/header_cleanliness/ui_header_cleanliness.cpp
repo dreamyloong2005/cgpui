@@ -87,6 +87,15 @@ class TestView final : public cgpui::View {
     (void)task.complete();
     (void)context.runtime.complete_task(task_id);
     context.runtime.drain_task_completions();
+    cgpui::TaskHandle background_task = context.spawn_background_task(
+        [](cgpui::TaskCancellationToken token) {
+          (void)token.cancellation_requested();
+        },
+        [](const cgpui::ViewContext& completion_context) {
+          completion_context.request_render();
+        });
+    (void)background_task.cancel();
+    (void)background_task.cancelled();
     context.batch_updates([](const cgpui::ViewContext& batch_context) {
       batch_context.request_render();
     });
@@ -99,8 +108,14 @@ class TestView final : public cgpui::View {
         context.runtime.diagnostics_snapshot();
     (void)context_diagnostics.entity_count;
     (void)context_diagnostics.platform_diagnostics;
+    (void)context_diagnostics.task_count;
+    (void)context_diagnostics.background_task_count;
+    (void)context_diagnostics.cancelled_task_count;
     (void)runtime_diagnostics.last_render_record;
     (void)runtime_diagnostics.last_frame_statistics;
+    (void)runtime_diagnostics.active_task_count;
+    (void)runtime_diagnostics.completed_task_count;
+    (void)runtime_diagnostics.queued_task_count;
     const cgpui::PlatformDiagnosticEvent platform_diagnostic{
         .kind = cgpui::PlatformDiagnosticKind::clipboard,
         .event_kind = cgpui::EventKind::unknown,

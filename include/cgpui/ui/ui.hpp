@@ -10,14 +10,17 @@
 #include "cgpui/ui/text.hpp"
 
 #include <any>
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
@@ -200,6 +203,23 @@ struct TaskId {
   friend bool operator==(const TaskId&, const TaskId&) = default;
 };
 
+class TaskCancellationToken {
+ public:
+  TaskCancellationToken() = default;
+
+  [[nodiscard]] bool cancellation_requested() const;
+
+ private:
+  friend class WindowRuntime;
+
+  explicit TaskCancellationToken(std::shared_ptr<std::atomic_bool> state)
+      : state_(std::move(state)) {}
+
+  std::shared_ptr<std::atomic_bool> state_;
+};
+
+using BackgroundTaskCallback = std::function<void(TaskCancellationToken)>;
+
 struct AnimationOptions {
   std::uint64_t duration_ms = 0;
   AnimationEasing easing = AnimationEasing::linear;
@@ -253,6 +273,8 @@ class TaskHandle {
 
   [[nodiscard]] bool active() const;
   [[nodiscard]] bool complete() const;
+  [[nodiscard]] bool cancelled() const;
+  [[nodiscard]] bool cancel();
 
  private:
   friend class WindowRuntime;
@@ -546,6 +568,12 @@ struct RuntimeDiagnosticsSnapshot {
   std::optional<RenderRecord> last_render_record;
   std::optional<FrameStatistics> last_frame_statistics;
   std::vector<PlatformDiagnosticEvent> platform_diagnostics;
+  std::size_t task_count = 0;
+  std::size_t active_task_count = 0;
+  std::size_t queued_task_count = 0;
+  std::size_t completed_task_count = 0;
+  std::size_t cancelled_task_count = 0;
+  std::size_t background_task_count = 0;
 };
 
 struct EntitySubscription {
@@ -696,6 +724,9 @@ struct WindowRuntimeContext {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id) const;
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
+  [[nodiscard]] TaskHandle spawn_background_task(
+      BackgroundTaskCallback work,
+      TaskCompletionCallback completion) const;
   void batch_updates(UpdateBatchCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;
@@ -798,6 +829,7 @@ class WindowRuntime {
       PlatformApplication& application,
       View& view,
       RendererFactory renderer_factory);
+  ~WindowRuntime();
 
   [[nodiscard]] int run(
       const WindowDescriptor& descriptor,
@@ -907,6 +939,9 @@ class WindowRuntime {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id);
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
+  [[nodiscard]] TaskHandle spawn_background_task(
+      BackgroundTaskCallback work,
+      TaskCompletionCallback completion);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
   void batch_updates(UpdateBatchCallback callback);
@@ -992,6 +1027,8 @@ class WindowRuntime {
   friend class AnimationHandle;
   friend class TaskHandle;
 
+  struct RuntimeTaskDiagnostics;
+
   void handle_event(const PlatformEvent& event);
   void handle_resize(const WindowResized& event);
   void handle_redraw();
@@ -1007,6 +1044,8 @@ class WindowRuntime {
       const;
   [[nodiscard]] bool task_active(TaskId id) const;
   [[nodiscard]] bool task_complete(TaskId id) const;
+  [[nodiscard]] bool task_cancelled(TaskId id) const;
+  [[nodiscard]] bool cancel_task(TaskId id);
   [[nodiscard]] bool animation_active(AnimationId id) const;
   [[nodiscard]] bool animation_complete(AnimationId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
@@ -1014,6 +1053,7 @@ class WindowRuntime {
   void record_platform_diagnostic(PlatformDiagnosticEvent event);
   void fail_and_quit(Error error);
   void activate_native_window_for_record(WindowRuntimeRecord& record);
+  [[nodiscard]] RuntimeTaskDiagnostics task_diagnostics() const;
   [[nodiscard]] WindowRuntimeContext context_for_record(
       const WindowRuntimeRecord& record);
   void handle_redraw_for_record(WindowRuntimeRecord& record, View& view);
@@ -1099,6 +1139,19 @@ class WindowRuntime {
     TaskCompletionCallback callback;
     bool queued = false;
     bool completed = false;
+    bool cancelled = false;
+    bool background = false;
+    std::shared_ptr<std::atomic_bool> cancellation_requested;
+    std::jthread worker;
+  };
+
+  struct RuntimeTaskDiagnostics {
+    std::size_t task_count = 0;
+    std::size_t active_task_count = 0;
+    std::size_t queued_task_count = 0;
+    std::size_t completed_task_count = 0;
+    std::size_t cancelled_task_count = 0;
+    std::size_t background_task_count = 0;
   };
 
   struct TextPointerSelectionDrag {
@@ -1176,6 +1229,7 @@ class WindowRuntime {
   bool firing_timers_ = false;
   std::vector<RuntimeAnimation> animations_;
   std::uint64_t next_animation_id_ = 1;
+  mutable std::mutex tasks_mutex_;
   std::vector<RuntimeTask> tasks_;
   std::vector<TaskId> task_completion_queue_;
   std::uint64_t next_task_id_ = 1;

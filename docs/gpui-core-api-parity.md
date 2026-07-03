@@ -34,8 +34,10 @@ desktop integration surfaces remain separate future work.
   `Subscription` tokens, update batching, invalidation snapshots, and
   diagnostics snapshots.
 - Runtime scheduling APIs: deferred callbacks, deterministic timers, async
-  task handles with main-thread completion dispatch, and platform wakeup hooks
-  for timers, tasks, and deferred work.
+  task handles with main-thread completion dispatch, cancellable background
+  task execution through a small threaded executor, task cancellation tokens,
+  task diagnostics counters, and platform wakeup hooks for timers, tasks, and
+  deferred work.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -108,6 +110,10 @@ desktop integration surfaces remain separate future work.
   and production frame pacing are not complete.
 - Font discovery has deterministic abstractions and platform override slots,
   but real DirectWrite/fontconfig discovery is not complete.
+- Threaded async now has cancellable background work and main-runtime
+  completion dispatch, but it is still a small executor skeleton rather than a
+  full GPUI async runtime with priorities, structured task groups, pooled
+  scheduling policy, async I/O integration, or cross-thread entity access.
 
 ## Missing
 
@@ -126,8 +132,9 @@ desktop integration surfaces remain separate future work.
   batching.
 - Full layout virtualization and large-list recycling beyond the current
   `scrollable_list` container.
-- Threaded async runtime, cancellation, background executor integration, and
-  cross-thread safety guarantees.
+- Cross-thread entity access guarantees, async I/O integration, task priority
+  scheduling, and a production task-pool runtime beyond the current small
+  threaded executor.
 
 ## Mac/Metal Deferred
 
