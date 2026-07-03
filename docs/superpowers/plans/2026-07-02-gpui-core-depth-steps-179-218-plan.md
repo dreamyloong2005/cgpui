@@ -787,11 +787,15 @@ targeted rerun.
 - Modify: `src/ui/ui.cpp`
 - Modify: `tests/ui/app_runner_test.cpp`
 
-- [ ] Add RED coverage for child window close destroying child root views, subscriptions, renderer ownership, and native window ownership.
-- [ ] Expected RED: shutdown clears pointers but child-close lifecycle does not release owned runtime state.
-- [ ] GREEN: add deterministic child-window close cleanup with root view and subscription teardown.
-- [ ] Targeted command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for child window close destroying child root views, subscriptions, renderer ownership, and native window ownership.
+- [x] Expected RED: shutdown clears pointers but child-close lifecycle does not release owned runtime state.
+- [x] GREEN: add deterministic child-window close cleanup with root view and subscription teardown.
+- [x] Targeted command: `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `437ef5e feat: clean up additional window lifecycle`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 215: Runtime Theme Inheritance And Switching
 

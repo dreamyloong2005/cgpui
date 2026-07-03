@@ -734,7 +734,7 @@ follow-on goal is now complete on the Windows/Linux track.
 211. [x] Accessibility value and live update events.
 212. [x] Additional window renderer ownership.
 213. [x] Additional window event routing.
-214. [ ] Additional window lifecycle cleanup.
+214. [x] Additional window lifecycle cleanup.
 215. [ ] Runtime theme inheritance and switching.
 216. [ ] Animation clock and tween primitives.
 217. [ ] Asset and image pipeline skeleton.
@@ -745,12 +745,30 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 213, additional window event routing, is merged on `master` at
-`d8b86fc feat: route additional window events` and post-merge verified on
-Windows and WSL Arch Linux. Step 214, additional window lifecycle cleanup, is
-the next implementation slice. The track remains
+Step 214, additional window lifecycle cleanup, is merged on `master` at
+`437ef5e feat: clean up additional window lifecycle` and post-merge verified
+on Windows and WSL Arch Linux. Step 215, runtime theme inheritance and
+switching, is the next implementation slice. The track remains
 Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 214, additional window lifecycle cleanup, is merged on `master` at
+`437ef5e feat: clean up additional window lifecycle`. RED failed as expected
+on marker 55 when child-window close left the owned root view alive and
+registered after close. GREEN moves child close through deterministic cleanup:
+the lifecycle dispatch is recorded first, the child native window ownership is
+removed from the runtime-owned native-window list, the owned child root view is
+removed and destroyed, view subscriptions are erased, and the child runtime
+record releases its window, renderer, active, and ownership fields while
+remaining available as historical record metadata. The existing child routing
+test now snapshots child-view counters before close because close legitimately
+destroys the owned child root. Feature-worktree targeted tests passed 3/3 on
+Windows and WSL Arch Linux, `git diff --check` exited 0 with only expected
+CRLF warnings, WSL full debug passed 27/27, and Windows full debug passed
+30/30. Post-merge targeted tests passed 3/3 on Windows and WSL Arch Linux,
+`git diff --check` produced no output, WSL full debug passed 27/27, and
+Windows full debug passed 30/30. Step 215, runtime theme inheritance and
+switching, is the next implementation slice.
 
 Step 213, additional window event routing, is merged on `master` at
 `d8b86fc feat: route additional window events`. RED failed as expected when a

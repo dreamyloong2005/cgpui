@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Additional Window Lifecycle Cleanup
+
+- Step 214 makes app-opened child-window close deterministic instead of only
+  flipping the child record inactive.
+- `WindowRuntime::handle_native_additional_window_event(...)` now records the
+  close lifecycle event before cleanup, so diagnostics still see the child
+  window and renderer context that existed at close time.
+- `cleanup_closed_additional_window(...)` removes the matching owned native
+  child window from `native_additional_windows_`, removes and destroys an owned
+  child root view, erases subscriptions for that root view, and clears the
+  child record's window, renderer, active, and ownership flags while preserving
+  the record as historical runtime metadata.
+- The Step 213 child routing test needed its child-view counter snapshot moved
+  before emitting close, because Step 214 intentionally destroys the owned
+  child root during close. This avoided a WSL-only dangling-read failure while
+  preserving the routing assertions.
+- Renderer objects created by `run_app` still live in the app renderer owner
+  vector until `run_app` exits; Step 214 releases the runtime record's renderer
+  ownership pointer/flag rather than introducing a renderer-owner removal API.
+  Full child render loops and production OS window-loop integration remain
+  future multi-window depth.
+
 ## 2026-07-03 Additional Window Event Routing
 
 - Step 213 adds record-specific child-window event routing for app-opened

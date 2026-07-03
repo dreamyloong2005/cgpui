@@ -1,5 +1,57 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 214 Additional Window Lifecycle Cleanup
+
+- Continued `.worktrees/additional-window-lifecycle-cleanup` on
+  `codex/additional-window-lifecycle-cleanup` from `master` at
+  `cef128d docs: mark step 213 merged`.
+- Re-verified baseline targeted tests before edits:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3 on Windows, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/additional-window-lifecycle-cleanup -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default'`
+  passed 3/3 on WSL Arch Linux.
+- Added RED coverage in `tests/ui/app_runner_test.cpp` proving child-window
+  close should destroy the owned root view, remove it from the runtime view
+  registry, erase its subscriptions, release child native-window and renderer
+  ownership from the runtime record, and avoid quitting the root app.
+- RED failed as expected on Windows and WSL Arch Linux; direct
+  `xmake run -P . app_runner_test` / WSL direct run both reported marker 55
+  because child close left the owned root view alive and registered.
+- GREEN adds `WindowRuntime::cleanup_closed_additional_window(...)` and
+  `remove_subscriptions_for_view(...)`. Child close now records lifecycle
+  diagnostics first, removes the matching runtime-owned native child window,
+  removes and destroys an owned child root view, erases view subscriptions, and
+  clears the child record's window, renderer, active, and ownership fields.
+- The existing child routing test now snapshots child-view counters before
+  emitting close. This matches the new lifecycle behavior and fixed a WSL-only
+  marker 49 dangling-read failure after close destroyed the child root.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/additional-window-lifecycle-cleanup -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 214 as
+  `437ef5e feat: clean up additional window lifecycle` and fast-forward
+  merged it to `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . app_runner_test/default ui_header_cleanliness/default core_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 214 is marked merged and post-merge verified.
+  Step 215, runtime theme inheritance and switching, is the next implementation
+  slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 213 Additional Window Event Routing
 
 - Created `.worktrees/additional-window-event-routing` on
