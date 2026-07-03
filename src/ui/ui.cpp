@@ -726,6 +726,32 @@ ActionDispatchResult AppContext::dispatch_command_palette_action(
   return runtime.dispatch_command_palette_action(std::move(action_name));
 }
 
+void AppContext::set_app_theme(Theme theme) const {
+  runtime.set_app_theme(std::move(theme));
+}
+
+void AppContext::set_window_theme(
+    WindowRuntimeId runtime_id,
+    Theme theme) const {
+  runtime.set_window_theme(runtime_id, std::move(theme));
+}
+
+bool AppContext::clear_window_theme(WindowRuntimeId runtime_id) const {
+  return runtime.clear_window_theme(runtime_id);
+}
+
+std::optional<Color> AppContext::theme_color(
+    WindowRuntimeId runtime_id,
+    const ThemeTokenId& id) const {
+  return runtime.theme_color(runtime_id, id);
+}
+
+std::optional<float> AppContext::theme_spacing(
+    WindowRuntimeId runtime_id,
+    const ThemeTokenId& id) const {
+  return runtime.theme_spacing(runtime_id, id);
+}
+
 void StyledElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   const Style& base_style = style();
@@ -1774,6 +1800,7 @@ WindowRuntimeContext WindowRuntime::context_for_record(
       .application = application_,
       .window = *record.window,
       .renderer = *record.renderer,
+      .window_runtime_id = record.runtime_id,
       .view_id = record.root_view_id,
       .viewport_size = to_logical_pixels(state.framebuffer_size, state.scale),
       .scale = state.scale,
@@ -2291,6 +2318,7 @@ WindowRuntimeContext WindowRuntime::context() {
       .application = application_,
       .window = *window_,
       .renderer = *renderer_,
+      .window_runtime_id = root_window_runtime_id_,
       .view_id = root_view_id_,
       .viewport_size = viewport_size_,
       .scale = scale_,
@@ -3012,6 +3040,8 @@ void WindowRuntime::batch_updates(UpdateBatchCallback callback) {
 
 void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
+  redraw_scheduled_ = false;
+  deferred_redraw_request_ = false;
 }
 
 InvalidationState WindowRuntime::invalidation_state() const {
@@ -3060,6 +3090,70 @@ NativeFileDialogResult WindowRuntime::show_native_file_dialog(
 const NativeFileDialogResult& WindowRuntime::native_file_dialog_result()
     const {
   return native_file_dialog_result_;
+}
+
+void WindowRuntime::set_app_theme(Theme theme) {
+  app_theme_ = std::move(theme);
+  request_render();
+}
+
+const Theme& WindowRuntime::app_theme() const {
+  return app_theme_;
+}
+
+void WindowRuntime::set_window_theme(
+    WindowRuntimeId runtime_id,
+    Theme theme) {
+  if (runtime_id.value == 0) {
+    return;
+  }
+  window_themes_[runtime_id.value] = std::move(theme);
+  request_render();
+}
+
+bool WindowRuntime::clear_window_theme(WindowRuntimeId runtime_id) {
+  if (runtime_id.value == 0) {
+    return false;
+  }
+  const bool erased = window_themes_.erase(runtime_id.value) != 0;
+  if (erased) {
+    request_render();
+  }
+  return erased;
+}
+
+const Theme* WindowRuntime::window_theme(WindowRuntimeId runtime_id) const {
+  if (runtime_id.value == 0) {
+    return nullptr;
+  }
+  const auto theme = window_themes_.find(runtime_id.value);
+  if (theme == window_themes_.end()) {
+    return nullptr;
+  }
+  return &theme->second;
+}
+
+std::optional<Color> WindowRuntime::theme_color(
+    WindowRuntimeId runtime_id,
+    const ThemeTokenId& id) const {
+  if (const Theme* theme = window_theme(runtime_id); theme != nullptr) {
+    if (std::optional<Color> color = theme->color(id); color.has_value()) {
+      return color;
+    }
+  }
+  return app_theme_.color(id);
+}
+
+std::optional<float> WindowRuntime::theme_spacing(
+    WindowRuntimeId runtime_id,
+    const ThemeTokenId& id) const {
+  if (const Theme* theme = window_theme(runtime_id); theme != nullptr) {
+    if (std::optional<float> spacing = theme->spacing(id);
+        spacing.has_value()) {
+      return spacing;
+    }
+  }
+  return app_theme_.spacing(id);
 }
 
 std::optional<RenderRecord> WindowRuntime::last_render_record() const {
@@ -3671,6 +3765,32 @@ NativeFileDialogResult WindowRuntimeContext::show_native_file_dialog(
 const NativeFileDialogResult& WindowRuntimeContext::native_file_dialog_result()
     const {
   return runtime.native_file_dialog_result();
+}
+
+void WindowRuntimeContext::set_window_theme(Theme theme) const {
+  runtime.set_window_theme(window_runtime_id, std::move(theme));
+}
+
+bool WindowRuntimeContext::clear_window_theme() const {
+  return runtime.clear_window_theme(window_runtime_id);
+}
+
+const Theme& WindowRuntimeContext::app_theme() const {
+  return runtime.app_theme();
+}
+
+const Theme* WindowRuntimeContext::window_theme() const {
+  return runtime.window_theme(window_runtime_id);
+}
+
+std::optional<Color> WindowRuntimeContext::theme_color(
+    const ThemeTokenId& id) const {
+  return runtime.theme_color(window_runtime_id, id);
+}
+
+std::optional<float> WindowRuntimeContext::theme_spacing(
+    const ThemeTokenId& id) const {
+  return runtime.theme_spacing(window_runtime_id, id);
 }
 
 } // namespace cgpui

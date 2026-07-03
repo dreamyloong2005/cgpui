@@ -1,8 +1,11 @@
 #include "cgpui/ui/ui.hpp"
 #include "paint_snapshot.hpp"
 
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace {
@@ -123,6 +126,114 @@ class EmptyFrameRenderer final : public cgpui::Renderer {
   cgpui::Result<std::unique_ptr<cgpui::RenderFrame>> begin_frame() override {
     return std::unique_ptr<cgpui::RenderFrame>{};
   }
+};
+
+class ThemeFakeWindow final : public cgpui::PlatformWindow {
+ public:
+  explicit ThemeFakeWindow(cgpui::WindowState state) : state_(state) {}
+
+  [[nodiscard]] cgpui::NativeSurfaceHandle native_surface() const override {
+    return cgpui::Win32SurfaceHandle{};
+  }
+
+  [[nodiscard]] cgpui::WindowState state() const override { return state_; }
+
+  void request_redraw() override { request_redraw_count += 1; }
+  void request_close() override { request_close_count += 1; }
+  void set_title(std::string_view title) override { last_title = title; }
+  void set_cursor(cgpui::CursorShape cursor_shape) override {
+    last_cursor_shape = cursor_shape;
+  }
+  void set_ime_text_input_placement(
+      std::optional<cgpui::ImeTextInputPlacement> placement) override {
+    last_ime_placement = placement;
+  }
+  void update_accessibility_tree(
+      cgpui::PlatformAccessibilityTreeUpdate update) override {
+    last_accessibility_update = std::move(update);
+  }
+  void emit(const cgpui::PlatformEvent& event) {
+    if (callback) {
+      callback(event);
+    }
+  }
+
+  cgpui::PlatformEventCallback callback;
+  int request_redraw_count = 0;
+  int request_close_count = 0;
+  std::string last_title;
+  cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
+  std::optional<cgpui::ImeTextInputPlacement> last_ime_placement;
+  std::optional<cgpui::PlatformAccessibilityTreeUpdate>
+      last_accessibility_update;
+
+ private:
+  cgpui::WindowState state_;
+};
+
+class ThemeFakeApplication final : public cgpui::PlatformApplication {
+ public:
+  explicit ThemeFakeApplication(ThemeFakeWindow& window) : window_(window) {}
+
+  cgpui::Result<std::unique_ptr<cgpui::PlatformWindow>> create_window(
+      const cgpui::WindowDescriptor& descriptor,
+      cgpui::PlatformEventCallback callback) override {
+    create_window_count += 1;
+    last_descriptor = descriptor;
+    window_.callback = std::move(callback);
+    return std::unique_ptr<cgpui::PlatformWindow>(
+        new BorrowedWindow(window_));
+  }
+
+  int run() override {
+    run_count += 1;
+    if (on_run) {
+      on_run();
+    }
+    return run_result;
+  }
+
+  void quit() override { quit_count += 1; }
+
+  ThemeFakeWindow& window_;
+  int create_window_count = 0;
+  int run_count = 0;
+  int quit_count = 0;
+  int run_result = 0;
+  cgpui::WindowDescriptor last_descriptor{};
+  std::function<void()> on_run;
+
+ private:
+  class BorrowedWindow final : public cgpui::PlatformWindow {
+   public:
+    explicit BorrowedWindow(ThemeFakeWindow& window) : window_(window) {}
+
+    [[nodiscard]] cgpui::NativeSurfaceHandle native_surface() const override {
+      return window_.native_surface();
+    }
+    [[nodiscard]] cgpui::WindowState state() const override {
+      return window_.state();
+    }
+    void request_redraw() override { window_.request_redraw(); }
+    void request_close() override { window_.request_close(); }
+    void set_title(std::string_view title) override {
+      window_.set_title(title);
+    }
+    void set_cursor(cgpui::CursorShape cursor_shape) override {
+      window_.set_cursor(cursor_shape);
+    }
+    void set_ime_text_input_placement(
+        std::optional<cgpui::ImeTextInputPlacement> placement) override {
+      window_.set_ime_text_input_placement(placement);
+    }
+    void update_accessibility_tree(
+        cgpui::PlatformAccessibilityTreeUpdate update) override {
+      window_.update_accessibility_tree(std::move(update));
+    }
+
+   private:
+    ThemeFakeWindow& window_;
+  };
 };
 
 class EmptyView final : public cgpui::View {
@@ -258,6 +369,119 @@ class NestedMetadataStackView final : public cgpui::View {
   }
 };
 
+int test_runtime_theme_slots_inherit_and_switch_with_invalidation() {
+  ThemeFakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  ThemeFakeApplication application(window);
+  EmptyView view;
+  RecordingFrame frame;
+  RecordingRenderer renderer(frame);
+  cgpui::WindowRuntime runtime(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&renderer};
+      });
+
+  const cgpui::ThemeTokenId accent = cgpui::theme_token("color.accent");
+  const cgpui::ThemeTokenId gap = cgpui::theme_token("space.gap");
+  const cgpui::ThemeTokenId missing = cgpui::theme_token("missing");
+  bool app_theme_invalidated = false;
+  bool window_theme_invalidated = false;
+  bool clear_theme_invalidated = false;
+  bool window_overrode_app_color = false;
+  bool window_inherited_app_spacing = false;
+  bool clear_fell_back_to_app_color = false;
+  bool context_resolved_current_window = false;
+  bool missing_tokens_softly_failed = false;
+
+  runtime.set_after_frame_callback([&](const cgpui::WindowRuntimeContext& context) {
+    const std::optional<cgpui::Color> context_color =
+        context.theme_color(accent);
+    const std::optional<float> context_spacing = context.theme_spacing(gap);
+    context_resolved_current_window =
+        context.window_runtime_id == runtime.root_window_runtime_id() &&
+        context_color.has_value() && context_color->r == 10.0F / 255.0F &&
+        context_spacing.has_value() && *context_spacing == 8.0F;
+  });
+
+  application.on_run = [&] {
+    cgpui::Theme app_theme;
+    app_theme.set_color(accent, cgpui::rgb(10, 20, 30))
+        .set_spacing(gap, cgpui::px(8.0F));
+    runtime.set_app_theme(app_theme);
+    app_theme_invalidated =
+        runtime.invalidation_state().render &&
+        runtime.invalidation_state().layout &&
+        runtime.invalidation_state().paint &&
+        window.request_redraw_count == 1;
+    runtime.clear_invalidation();
+
+    cgpui::Theme window_theme;
+    window_theme.set_color(accent, cgpui::rgb(40, 50, 60));
+    runtime.set_window_theme(runtime.root_window_runtime_id(), window_theme);
+    window_theme_invalidated =
+        runtime.invalidation_state().render &&
+        runtime.invalidation_state().layout &&
+        runtime.invalidation_state().paint &&
+        window.request_redraw_count == 2;
+
+    const std::optional<cgpui::Color> window_color =
+        runtime.theme_color(runtime.root_window_runtime_id(), accent);
+    const std::optional<float> inherited_spacing =
+        runtime.theme_spacing(runtime.root_window_runtime_id(), gap);
+    window_overrode_app_color =
+        window_color.has_value() && window_color->r == 40.0F / 255.0F;
+    window_inherited_app_spacing =
+        inherited_spacing.has_value() && *inherited_spacing == 8.0F;
+    missing_tokens_softly_failed =
+        !runtime.theme_color(runtime.root_window_runtime_id(), missing)
+             .has_value() &&
+        !runtime.theme_spacing(runtime.root_window_runtime_id(), missing)
+             .has_value();
+    runtime.clear_invalidation();
+
+    clear_theme_invalidated =
+        runtime.clear_window_theme(runtime.root_window_runtime_id()) &&
+        runtime.invalidation_state().render &&
+        runtime.invalidation_state().layout &&
+        runtime.invalidation_state().paint &&
+        window.request_redraw_count == 3;
+    const std::optional<cgpui::Color> fallback_color =
+        runtime.theme_color(runtime.root_window_runtime_id(), accent);
+    clear_fell_back_to_app_color =
+        fallback_color.has_value() && fallback_color->r == 10.0F / 255.0F;
+
+    window.emit(cgpui::WindowRedrawRequested{});
+  };
+
+  const int result = runtime.run(
+      cgpui::WindowDescriptor{
+          .title = "Theme Runtime",
+          .size = {.width = 320.0F, .height = 240.0F}},
+      cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  if (result != 0) {
+    return 39;
+  }
+  if (application.create_window_count != 1 || application.run_count != 1) {
+    return 40;
+  }
+  if (!app_theme_invalidated || !window_theme_invalidated ||
+      !clear_theme_invalidated) {
+    return 41;
+  }
+  if (!window_overrode_app_color || !window_inherited_app_spacing ||
+      !clear_fell_back_to_app_color) {
+    return 42;
+  }
+  if (!context_resolved_current_window || !missing_tokens_softly_failed) {
+    return 43;
+  }
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -373,6 +597,12 @@ int main() {
       wrapped_frame.last_text.glyphs[4].origin.x != 2.0F ||
       wrapped_frame.last_text.glyphs[4].origin.y != 36.0F) {
     return 31;
+  }
+
+  if (const int theme_result =
+          test_runtime_theme_slots_inherit_and_switch_with_invalidation();
+      theme_result != 0) {
+    return theme_result;
   }
 
   RecordingFrame rounded_frame;

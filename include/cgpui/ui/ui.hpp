@@ -315,6 +315,15 @@ struct AppContext {
       const CommandPaletteEntry& entry) const;
   [[nodiscard]] ActionDispatchResult dispatch_command_palette_action(
       std::string action_name) const;
+  void set_app_theme(Theme theme) const;
+  void set_window_theme(WindowRuntimeId runtime_id, Theme theme) const;
+  [[nodiscard]] bool clear_window_theme(WindowRuntimeId runtime_id) const;
+  [[nodiscard]] std::optional<Color> theme_color(
+      WindowRuntimeId runtime_id,
+      const ThemeTokenId& id) const;
+  [[nodiscard]] std::optional<float> theme_spacing(
+      WindowRuntimeId runtime_id,
+      const ThemeTokenId& id) const;
 
   template <typename T>
   void set_global(T global_value) const;
@@ -530,6 +539,7 @@ struct WindowRuntimeContext {
   PlatformApplication& application;
   PlatformWindow& window;
   Renderer& renderer;
+  WindowRuntimeId window_runtime_id;
   ViewId view_id;
   Size viewport_size;
   DpiScale scale;
@@ -630,6 +640,14 @@ struct WindowRuntimeContext {
       NativeFileDialogOptions options) const;
   [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result()
       const;
+  void set_window_theme(Theme theme) const;
+  [[nodiscard]] bool clear_window_theme() const;
+  [[nodiscard]] const Theme& app_theme() const;
+  [[nodiscard]] const Theme* window_theme() const;
+  [[nodiscard]] std::optional<Color> theme_color(
+      const ThemeTokenId& id) const;
+  [[nodiscard]] std::optional<float> theme_spacing(
+      const ThemeTokenId& id) const;
 
   template <typename T>
   void set_global(T global_value) const;
@@ -826,6 +844,17 @@ class WindowRuntime {
       NativeFileDialogOptions options);
   [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result()
       const;
+  void set_app_theme(Theme theme);
+  [[nodiscard]] const Theme& app_theme() const;
+  void set_window_theme(WindowRuntimeId runtime_id, Theme theme);
+  [[nodiscard]] bool clear_window_theme(WindowRuntimeId runtime_id);
+  [[nodiscard]] const Theme* window_theme(WindowRuntimeId runtime_id) const;
+  [[nodiscard]] std::optional<Color> theme_color(
+      WindowRuntimeId runtime_id,
+      const ThemeTokenId& id) const;
+  [[nodiscard]] std::optional<float> theme_spacing(
+      WindowRuntimeId runtime_id,
+      const ThemeTokenId& id) const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
   [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
   [[nodiscard]] std::span<const PlatformDiagnosticEvent>
@@ -1069,6 +1098,8 @@ class WindowRuntime {
   std::vector<std::unique_ptr<PlatformWindow>> native_additional_windows_;
   NativeMenuInstallation native_menu_installation_;
   NativeFileDialogResult native_file_dialog_result_;
+  Theme app_theme_;
+  std::unordered_map<std::uint64_t, Theme> window_themes_;
   mutable std::vector<EntitySubscription> subscription_query_buffer_;
   InvalidationState invalidation_state_;
   bool dispatching_view_event_ = false;
