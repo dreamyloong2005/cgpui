@@ -1764,6 +1764,76 @@ void WindowRuntime::handle_redraw() {
   }
 }
 
+WindowRuntimeContext WindowRuntime::context_for_record(
+    const WindowRuntimeRecord& record) {
+  const WindowState state = record.window->state();
+  const ViewInputState input = input_state();
+
+  return WindowRuntimeContext{
+      .runtime = *this,
+      .application = application_,
+      .window = *record.window,
+      .renderer = *record.renderer,
+      .view_id = record.root_view_id,
+      .viewport_size = to_logical_pixels(state.framebuffer_size, state.scale),
+      .scale = state.scale,
+      .input = input,
+      .event_route = current_event_route_,
+      .last_event_result = last_event_result_,
+      .last_event_dispatch = last_event_dispatch_,
+      .frame_index = frame_index_};
+}
+
+void WindowRuntime::handle_redraw_for_record(
+    WindowRuntimeRecord& record,
+    View& view) {
+  if (!record.active || record.window == nullptr || record.renderer == nullptr ||
+      should_quit_) {
+    return;
+  }
+
+  const WindowState state = record.window->state();
+  const Size viewport_size = to_logical_pixels(state.framebuffer_size, state.scale);
+  FrameStatistics frame_statistics;
+  frame_statistics.render_pass_count = 1;
+
+  ViewContext render_context = context_for_record(record);
+  (void)view.render(render_context);
+
+  last_render_record_ = RenderRecord{
+      .sequence = ++render_sequence_,
+      .view_id = record.root_view_id,
+      .viewport_size = viewport_size,
+  };
+  if (after_render_callback_) {
+    after_render_callback_(context_for_record(record), *last_render_record_);
+  }
+
+  auto result = render_view(
+      *record.renderer,
+      view,
+      viewport_size,
+      state.scale,
+      &frame_statistics);
+  if (!result) {
+    fail_and_quit(result.error());
+    return;
+  }
+
+  clear_invalidation();
+  redraw_scheduled_ = false;
+  deferred_redraw_request_ = false;
+  frame_index_ += 1;
+  frame_statistics.frame_index = frame_index_;
+  if (last_render_record_.has_value()) {
+    last_render_record_->statistics = frame_statistics;
+  }
+  last_frame_statistics_ = frame_statistics;
+  if (after_frame_callback_) {
+    after_frame_callback_(context_for_record(record));
+  }
+}
+
 void WindowRuntime::fail_and_quit(Error error) {
   failed_ = true;
   should_quit_ = true;
@@ -1815,6 +1885,78 @@ void WindowRuntime::activate_native_window_for_record(
   native_additional_windows_.push_back(std::move(window));
 }
 
+void WindowRuntime::dispatch_view_event_for_record(
+    WindowRuntimeRecord& record,
+    View& view,
+    const PlatformEvent& event) {
+  if (!record.active || record.window == nullptr || record.renderer == nullptr) {
+    return;
+  }
+
+  if (const auto* focused = std::get_if<WindowFocused>(&event);
+      focused != nullptr) {
+    input_.focused = focused->focused;
+  } else if (const auto* moved = std::get_if<PointerMoved>(&event);
+             moved != nullptr) {
+    input_.pointer_position = moved->position;
+  } else if (const auto* button = std::get_if<PointerButton>(&event);
+             button != nullptr) {
+    input_.pointer_position = button->position;
+  } else if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
+             scrolled != nullptr) {
+    input_.pointer_position = scrolled->position;
+  }
+
+  current_event_route_ = EventRouter::route_to_root(event, record.root_view_id);
+  refresh_route_ancestry(*current_event_route_);
+  dispatching_view_event_ = true;
+  EventResult result = view.handle_event(event, context_for_record(record));
+  dispatching_view_event_ = false;
+  last_event_result_ = result;
+  last_event_dispatch_ = EventDispatchRecord{
+      .sequence = ++event_dispatch_sequence_,
+      .view_id = current_event_route_->target_view_id,
+      .event_kind = current_event_route_->event_kind,
+      .route = *current_event_route_,
+      .result = last_event_result_};
+  if (after_event_callback_) {
+    after_event_callback_(context_for_record(record), *last_event_dispatch_);
+  }
+  drain_deferred_callbacks();
+  flush_deferred_redraw_request();
+}
+
+void WindowRuntime::record_lifecycle_event_for_record(
+    WindowRuntimeRecord& record,
+    const PlatformEvent& event) {
+  if (record.window == nullptr || record.renderer == nullptr) {
+    return;
+  }
+
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::window_lifecycle,
+      .event_kind = event_kind_for(event),
+      .backend = "runtime",
+      .operation = "window-lifecycle",
+      .supported = true,
+      .succeeded = true,
+      .value_count = 1,
+  });
+  current_event_route_ = EventRouter::route_to_root(event, record.root_view_id);
+  last_event_result_ = EventResult::unhandled();
+  last_event_dispatch_ = EventDispatchRecord{
+      .sequence = ++event_dispatch_sequence_,
+      .view_id = current_event_route_->target_view_id,
+      .event_kind = current_event_route_->event_kind,
+      .route = *current_event_route_,
+      .result = last_event_result_};
+  if (after_event_callback_) {
+    after_event_callback_(context_for_record(record), *last_event_dispatch_);
+  }
+  drain_deferred_callbacks();
+  flush_deferred_redraw_request();
+}
+
 void WindowRuntime::handle_native_additional_window_event(
     WindowRuntimeId runtime_id,
     const PlatformEvent& event) {
@@ -1822,14 +1964,43 @@ void WindowRuntime::handle_native_additional_window_event(
   if (record == nullptr) {
     return;
   }
+  View* view = find_view(record->root_view_id);
+  if (view == nullptr) {
+    return;
+  }
   if (const auto* resized = std::get_if<WindowResized>(&event);
       resized != nullptr) {
-    record->descriptor.size = resized->size;
+    record->descriptor.size = to_logical_pixels(resized->size, resized->scale);
+    if (record->renderer != nullptr) {
+      (void)record->renderer->resize(resized->size, resized->scale);
+    }
+    return;
+  }
+  if (std::holds_alternative<WindowRedrawRequested>(event)) {
+    handle_redraw_for_record(*record, *view);
+    return;
+  }
+  if (std::holds_alternative<WindowActivated>(event) ||
+      std::holds_alternative<WindowMinimized>(event) ||
+      std::holds_alternative<WindowRestored>(event)) {
+    if (const auto* activated = std::get_if<WindowActivated>(&event);
+        activated != nullptr) {
+      input_.focused = activated->active;
+    } else if (const auto* minimized = std::get_if<WindowMinimized>(&event);
+               minimized != nullptr) {
+      input_.focused = !minimized->minimized;
+    } else {
+      input_.focused = false;
+    }
+    record_lifecycle_event_for_record(*record, event);
     return;
   }
   if (std::holds_alternative<WindowCloseRequested>(event)) {
     record->active = false;
+    record_lifecycle_event_for_record(*record, event);
+    return;
   }
+  dispatch_view_event_for_record(*record, *view, event);
 }
 
 void WindowRuntime::deactivate_native_additional_windows() {

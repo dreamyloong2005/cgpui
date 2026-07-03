@@ -906,6 +906,16 @@ class WindowRuntime {
   void record_platform_diagnostic(PlatformDiagnosticEvent event);
   void fail_and_quit(Error error);
   void activate_native_window_for_record(WindowRuntimeRecord& record);
+  [[nodiscard]] WindowRuntimeContext context_for_record(
+      const WindowRuntimeRecord& record);
+  void handle_redraw_for_record(WindowRuntimeRecord& record, View& view);
+  void dispatch_view_event_for_record(
+      WindowRuntimeRecord& record,
+      View& view,
+      const PlatformEvent& event);
+  void record_lifecycle_event_for_record(
+      WindowRuntimeRecord& record,
+      const PlatformEvent& event);
   void handle_native_additional_window_event(
       WindowRuntimeId runtime_id,
       const PlatformEvent& event);

@@ -2,6 +2,7 @@
 #include "cgpui/ui/ui.hpp"
 
 #include <expected>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -26,11 +27,19 @@ class RecordingFrame final : public cgpui::RenderFrame {
 
 class RecordingRenderer final : public cgpui::Renderer {
  public:
-  RecordingRenderer(RecordingFrame& frame, int& begin_frame_count)
-      : frame_(frame), begin_frame_count_(begin_frame_count) {}
+  RecordingRenderer(
+      RecordingFrame& frame,
+      int& begin_frame_count,
+      int* resize_count_out = nullptr)
+      : frame_(frame),
+        begin_frame_count_(begin_frame_count),
+        resize_count_out_(resize_count_out) {}
 
   cgpui::Result<void> resize(cgpui::Size, cgpui::DpiScale) override {
     resize_count += 1;
+    if (resize_count_out_ != nullptr) {
+      *resize_count_out_ += 1;
+    }
     return {};
   }
 
@@ -58,6 +67,7 @@ class RecordingRenderer final : public cgpui::Renderer {
 
   RecordingFrame& frame_;
   int& begin_frame_count_;
+  int* resize_count_out_ = nullptr;
 };
 
 class TestView final : public cgpui::View {
@@ -70,6 +80,38 @@ class TestView final : public cgpui::View {
   }
 
   int paint_count = 0;
+};
+
+class EventCountingView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    paint_count += 1;
+    paint_list.fill_rect(
+        cgpui::Rect{.origin = {}, .size = {.width = 6.0F, .height = 4.0F}},
+        cgpui::Color{.r = 0.2F, .g = 0.3F, .b = 0.4F, .a = 1.0F});
+  }
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    event_count += 1;
+    last_context_view_id = context.view_id;
+    if (std::holds_alternative<cgpui::WindowFocused>(event)) {
+      focus_count += 1;
+    } else if (std::holds_alternative<cgpui::PointerMoved>(event)) {
+      pointer_move_count += 1;
+    } else if (std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      key_count += 1;
+    }
+    return cgpui::EventResult::consumed_event();
+  }
+
+  int paint_count = 0;
+  int event_count = 0;
+  int focus_count = 0;
+  int pointer_move_count = 0;
+  int key_count = 0;
+  cgpui::ViewId last_context_view_id{};
 };
 
 struct AppSettings {
@@ -121,6 +163,12 @@ class FakeWindow final : public cgpui::PlatformWindow {
     request_close_count += 1;
     if (callback) {
       callback(cgpui::WindowCloseRequested{});
+    }
+  }
+
+  void emit(const cgpui::PlatformEvent& event) {
+    if (callback) {
+      callback(event);
     }
   }
 
@@ -251,6 +299,86 @@ class FakeApplication final : public cgpui::PlatformApplication {
   };
 
   FakeWindow& window_;
+};
+
+class MultiWindowFakeApplication final : public cgpui::PlatformApplication {
+ public:
+  cgpui::Result<std::unique_ptr<cgpui::PlatformWindow>> create_window(
+      const cgpui::WindowDescriptor& descriptor,
+      cgpui::PlatformEventCallback callback) override {
+    create_window_count += 1;
+    created_descriptors.push_back(descriptor);
+    auto window = std::make_unique<FakeWindow>(cgpui::WindowState{
+        .framebuffer_size = descriptor.size,
+        .scale = cgpui::DpiScale{1.0F},
+        .close_requested = false});
+    window->callback = std::move(callback);
+    FakeWindow* window_ptr = window.get();
+    created_windows.push_back(std::move(window));
+    return std::unique_ptr<cgpui::PlatformWindow>(
+        new BorrowedWindow(*window_ptr));
+  }
+
+  int run() override {
+    run_count += 1;
+    if (!created_windows.empty()) {
+      created_windows.back()->emit(cgpui::WindowRedrawRequested{});
+    }
+    if (on_run) {
+      on_run(*this);
+    }
+    return run_result;
+  }
+
+  void quit() override { quit_count += 1; }
+
+  FakeWindow* window_for_title(std::string_view title) {
+    for (std::size_t index = 0; index < created_descriptors.size(); ++index) {
+      if (created_descriptors[index].title == title) {
+        return created_windows[index].get();
+      }
+    }
+    return nullptr;
+  }
+
+  int create_window_count = 0;
+  int run_count = 0;
+  int quit_count = 0;
+  int run_result = 0;
+  std::vector<cgpui::WindowDescriptor> created_descriptors;
+  std::vector<std::unique_ptr<FakeWindow>> created_windows;
+  std::function<void(MultiWindowFakeApplication&)> on_run;
+
+ private:
+  class BorrowedWindow final : public cgpui::PlatformWindow {
+   public:
+    explicit BorrowedWindow(FakeWindow& window) : window_(window) {}
+
+    [[nodiscard]] cgpui::NativeSurfaceHandle native_surface()
+        const override {
+      return window_.native_surface();
+    }
+
+    [[nodiscard]] cgpui::WindowState state() const override {
+      return window_.state();
+    }
+
+    void request_redraw() override { window_.request_redraw(); }
+    void request_close() override { window_.request_close(); }
+    void set_title(std::string_view title) override {
+      window_.set_title(title);
+    }
+    void set_cursor(cgpui::CursorShape cursor_shape) override {
+      window_.set_cursor(cursor_shape);
+    }
+    void set_ime_text_input_placement(
+        std::optional<cgpui::ImeTextInputPlacement> placement) override {
+      window_.set_ime_text_input_placement(placement);
+    }
+
+   private:
+    FakeWindow& window_;
+  };
 };
 
 int test_run_app_builds_runtime_and_runs_window() {
@@ -853,6 +981,148 @@ int test_multi_window_registry_owns_independent_runtime_records() {
   return 0;
 }
 
+int test_app_opened_window_routes_native_events_by_runtime_id() {
+  MultiWindowFakeApplication application;
+  EventCountingView root_view;
+  RecordingFrame frame;
+  int renderer_begin_frame_count = 0;
+  int renderer_factory_count = 0;
+  int child_renderer_resize_count = 0;
+  bool setup_called = false;
+  bool on_run_called = false;
+  bool child_window_found = false;
+  bool child_resize_routed = false;
+  bool child_close_routed = false;
+  bool child_dispatch_records_routed = false;
+  cgpui::WindowRuntime* runtime = nullptr;
+  cgpui::AppOpenedWindow opened;
+  EventCountingView* child_view = nullptr;
+  int child_event_dispatch_count = 0;
+  int observed_root_event_count = -1;
+  int observed_child_event_count = -1;
+  int observed_child_focus_count = -1;
+  int observed_child_pointer_move_count = -1;
+  int observed_child_key_count = -1;
+  cgpui::ViewId observed_child_context_view_id{};
+  int observed_child_paint_count = -1;
+
+  const int result = cgpui::run_app(
+      application,
+      root_view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        int* resize_counter =
+            renderer_factory_count == 0 ? &child_renderer_resize_count
+                                        : nullptr;
+        renderer_factory_count += 1;
+        auto owned = std::make_unique<RecordingRenderer>(
+            frame,
+            renderer_begin_frame_count,
+            resize_counter);
+        return owned;
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup_context =
+              [&](cgpui::AppContext& context) {
+                setup_called = true;
+                runtime = &context.runtime;
+                auto child = std::make_unique<EventCountingView>();
+                child_view = child.get();
+                opened = context.open_window(
+                    cgpui::WindowOptions{}
+                        .title("Routed Child")
+                        .size(320.0F, 200.0F),
+                    std::move(child));
+                context.runtime.set_after_event_callback(
+                    [&](const cgpui::WindowRuntimeContext& event_context,
+                        const cgpui::EventDispatchRecord& record) {
+                      if (record.view_id == opened.root_view_id &&
+                          event_context.view_id == opened.root_view_id &&
+                          (record.event_kind ==
+                               cgpui::EventKind::window_focused ||
+                           record.event_kind ==
+                               cgpui::EventKind::pointer_moved ||
+                           record.event_kind ==
+                               cgpui::EventKind::keyboard_key)) {
+                        child_event_dispatch_count += 1;
+                      }
+                    });
+                application.on_run =
+                    [&](MultiWindowFakeApplication& running_application) {
+                      on_run_called = true;
+                      FakeWindow* routed_child =
+                          running_application.window_for_title("Routed Child");
+                      child_window_found = routed_child != nullptr;
+                      if (routed_child == nullptr || runtime == nullptr) {
+                        return;
+                      }
+
+                      routed_child->emit(cgpui::WindowFocused{.focused = true});
+                      routed_child->emit(cgpui::PointerMoved{
+                          .position = {.x = 24.0F, .y = 12.0F}});
+                      routed_child->emit(cgpui::KeyboardKey{
+                          .key_code = 65,
+                          .action = cgpui::KeyAction::pressed});
+                      routed_child->emit(cgpui::WindowResized{
+                          .size = {.width = 640.0F, .height = 480.0F},
+                          .scale = cgpui::DpiScale{2.0F}});
+                      child_resize_routed = child_renderer_resize_count == 1;
+                      routed_child->emit(cgpui::WindowRedrawRequested{});
+                      routed_child->emit(cgpui::WindowCloseRequested{});
+                      const cgpui::WindowRuntimeRecord* record =
+                          runtime->window_runtime_record(opened.runtime_id);
+                      child_close_routed =
+                          record != nullptr && !record->active &&
+                          running_application.quit_count == 0;
+                      observed_root_event_count = root_view.event_count;
+                      if (child_view != nullptr) {
+                        observed_child_event_count = child_view->event_count;
+                        observed_child_focus_count = child_view->focus_count;
+                        observed_child_pointer_move_count =
+                            child_view->pointer_move_count;
+                        observed_child_key_count = child_view->key_count;
+                        observed_child_context_view_id =
+                            child_view->last_context_view_id;
+                        observed_child_paint_count = child_view->paint_count;
+                      }
+                    };
+              },
+      });
+
+  child_dispatch_records_routed = child_event_dispatch_count == 3;
+
+  if (result != 0) {
+    return 44;
+  }
+  if (!setup_called || !on_run_called || !child_window_found ||
+      runtime == nullptr || child_view == nullptr) {
+    return 45;
+  }
+  if (observed_root_event_count != 0) {
+    return 46;
+  }
+  if (observed_child_event_count != 3) {
+    return 49;
+  }
+  if (observed_child_focus_count != 1 ||
+      observed_child_pointer_move_count != 1 || observed_child_key_count != 1) {
+    return 50;
+  }
+  if (observed_child_context_view_id != opened.root_view_id) {
+    return 51;
+  }
+  if (!child_dispatch_records_routed || !child_resize_routed ||
+      !child_close_routed) {
+    return 47;
+  }
+  if (renderer_factory_count != 2 || renderer_begin_frame_count != 2 ||
+      observed_child_paint_count != 1 || frame.present_count != 2) {
+    return 48;
+  }
+  return 0;
+}
+
 int test_app_opened_window_records_native_creation_error() {
   FakeWindow window(cgpui::WindowState{
       .framebuffer_size = {.width = 320.0F, .height = 240.0F},
@@ -1235,6 +1505,11 @@ int main() {
   }
   if (const int result =
           test_multi_window_registry_owns_independent_runtime_records();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_app_opened_window_routes_native_events_by_runtime_id();
       result != 0) {
     return result;
   }
