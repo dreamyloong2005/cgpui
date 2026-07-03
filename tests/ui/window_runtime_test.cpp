@@ -6265,6 +6265,9 @@ RuntimeFixture* deferred_callback_fixture = nullptr;
 class TimerApiView;
 TimerApiView* timer_api_view = nullptr;
 cgpui::WindowRuntime* timer_api_runtime = nullptr;
+class AnimationApiView;
+AnimationApiView* animation_api_view = nullptr;
+cgpui::WindowRuntime* animation_api_runtime = nullptr;
 class AsyncTaskApiView;
 AsyncTaskApiView* async_task_api_view = nullptr;
 cgpui::WindowRuntime* async_task_api_runtime = nullptr;
@@ -6483,6 +6486,127 @@ int test_one_shot_and_repeating_timers_tick_deterministically() {
     return 377;
   }
 
+  return 0;
+}
+
+class AnimationApiView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {
+    paint_count += 1;
+  }
+
+  cgpui::AnimationHandle animation;
+  int tick_count = 0;
+  int paint_count = 0;
+  bool start_snapshot_is_zero = false;
+  bool quarter_snapshot_matches_easing = false;
+  bool half_snapshot_matches_easing = false;
+  bool completion_snapshot_matches = false;
+  bool handle_reports_completion = false;
+  bool callback_saw_context_and_requested_redraw = false;
+  float last_eased_progress = 0.0F;
+};
+
+void dispatch_animation_api_sequence() {
+  const std::optional<cgpui::AnimationSnapshot> start =
+      animation_api_runtime->animation_snapshot(animation_api_view->animation.id());
+  animation_api_view->start_snapshot_is_zero =
+      start.has_value() && !start->complete &&
+      start->linear_progress == 0.0F && start->eased_progress == 0.0F;
+
+  animation_api_runtime->advance_time(25);
+  const std::optional<cgpui::AnimationSnapshot> quarter =
+      animation_api_runtime->animation_snapshot(animation_api_view->animation.id());
+  animation_api_view->quarter_snapshot_matches_easing =
+      quarter.has_value() && !quarter->complete &&
+      quarter->elapsed_ms == 25 && quarter->duration_ms == 100 &&
+      quarter->linear_progress == 0.25F &&
+      quarter->eased_progress == 0.125F;
+
+  animation_api_runtime->advance_time(25);
+  const std::optional<cgpui::AnimationSnapshot> half =
+      animation_api_view->animation.progress();
+  animation_api_view->half_snapshot_matches_easing =
+      half.has_value() && !half->complete &&
+      half->linear_progress == 0.5F && half->eased_progress == 0.5F;
+
+  animation_api_runtime->advance_time(50);
+  const std::optional<cgpui::AnimationSnapshot> completed =
+      animation_api_runtime->animation_snapshot(animation_api_view->animation.id());
+  animation_api_view->completion_snapshot_matches =
+      completed.has_value() && completed->complete &&
+      completed->elapsed_ms == 100 &&
+      completed->linear_progress == 1.0F &&
+      completed->eased_progress == 1.0F;
+  animation_api_view->handle_reports_completion =
+      !animation_api_view->animation.active() &&
+      animation_api_view->animation.complete();
+
+  const int ticks_after_completion = animation_api_view->tick_count;
+  animation_api_runtime->advance_time(100);
+  if (animation_api_view->tick_count != ticks_after_completion) {
+    animation_api_view->handle_reports_completion = false;
+  }
+}
+
+int test_runtime_animation_clock_ticks_tweens_and_redraws() {
+  RuntimeFixture fixture;
+  AnimationApiView view;
+  animation_api_view = &view;
+  fixture.app.on_run = &dispatch_animation_api_sequence;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  animation_api_runtime = &runtime;
+
+  view.animation = runtime.start_animation(
+      cgpui::AnimationOptions{
+          .duration_ms = 100,
+          .easing = cgpui::AnimationEasing::ease_in_out,
+          .tick_interval_ms = 16,
+      },
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::AnimationSnapshot& snapshot) {
+        view.tick_count += 1;
+        view.last_eased_progress = snapshot.eased_progress;
+        view.callback_saw_context_and_requested_redraw =
+            context.window_runtime_id == runtime.root_window_runtime_id();
+        context.request_render();
+      });
+  if (view.animation.id().value == 0 || !view.animation.active() ||
+      view.animation.complete()) {
+    return 387;
+  }
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  animation_api_view = nullptr;
+  animation_api_runtime = nullptr;
+  if (result != 0) {
+    return 388;
+  }
+  if (!view.start_snapshot_is_zero || !view.quarter_snapshot_matches_easing ||
+      !view.half_snapshot_matches_easing ||
+      !view.completion_snapshot_matches ||
+      !view.handle_reports_completion) {
+    return 389;
+  }
+  if (view.tick_count != 3 || view.last_eased_progress != 1.0F ||
+      !view.callback_saw_context_and_requested_redraw) {
+    return 390;
+  }
+  if (fixture.window.request_redraw_count != 3 ||
+      fixture.renderer.begin_frame_count != 3 || view.paint_count != 3) {
+    return 391;
+  }
+  if (runtime.cancel_animation(view.animation.id())) {
+    return 392;
+  }
   return 0;
 }
 
@@ -9091,6 +9215,11 @@ int main() {
   }
   if (const int result =
           test_one_shot_and_repeating_timers_tick_deterministically();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_animation_clock_ticks_tweens_and_redraws();
       result != 0) {
     return result;
   }

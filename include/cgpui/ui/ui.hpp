@@ -6,6 +6,7 @@
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/element.hpp"
+#include "cgpui/ui/style.hpp"
 #include "cgpui/ui/text.hpp"
 
 #include <any>
@@ -175,10 +176,59 @@ struct TimerId {
   friend bool operator==(const TimerId&, const TimerId&) = default;
 };
 
+struct AnimationId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(const AnimationId&, const AnimationId&) = default;
+};
+
 struct TaskId {
   std::uint64_t value = 0;
 
   friend bool operator==(const TaskId&, const TaskId&) = default;
+};
+
+struct AnimationOptions {
+  std::uint64_t duration_ms = 0;
+  AnimationEasing easing = AnimationEasing::linear;
+  std::uint64_t tick_interval_ms = 16;
+};
+
+struct AnimationSnapshot {
+  AnimationId id;
+  std::uint64_t elapsed_ms = 0;
+  std::uint64_t duration_ms = 0;
+  float linear_progress = 0.0F;
+  float eased_progress = 0.0F;
+  AnimationEasing easing = AnimationEasing::linear;
+  bool complete = false;
+};
+
+using AnimationCallback = std::function<void(
+    const WindowRuntimeContext&,
+    const AnimationSnapshot&)>;
+
+class AnimationHandle {
+ public:
+  AnimationHandle() = default;
+
+  [[nodiscard]] AnimationId id() const {
+    return id_;
+  }
+
+  [[nodiscard]] bool active() const;
+  [[nodiscard]] bool complete() const;
+  [[nodiscard]] std::optional<AnimationSnapshot> progress() const;
+  [[nodiscard]] bool cancel();
+
+ private:
+  friend class WindowRuntime;
+
+  AnimationHandle(WindowRuntime& runtime, AnimationId id)
+      : runtime_(&runtime), id_(id) {}
+
+  WindowRuntime* runtime_ = nullptr;
+  AnimationId id_{};
 };
 
 class TaskHandle {
@@ -626,6 +676,12 @@ struct WindowRuntimeContext {
   [[nodiscard]] TimerId schedule_repeating_timer(
       std::uint64_t interval_ms,
       TimerCallback callback) const;
+  [[nodiscard]] AnimationHandle start_animation(
+      AnimationOptions options,
+      AnimationCallback callback) const;
+  [[nodiscard]] std::optional<AnimationSnapshot> animation_snapshot(
+      AnimationId id) const;
+  [[nodiscard]] bool cancel_animation(AnimationId id) const;
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
   void batch_updates(UpdateBatchCallback callback) const;
   void clear_invalidation() const;
@@ -831,6 +887,12 @@ class WindowRuntime {
       TimerCallback callback);
   [[nodiscard]] bool cancel_timer(TimerId id);
   void advance_time(std::uint64_t delta_ms);
+  [[nodiscard]] AnimationHandle start_animation(
+      AnimationOptions options,
+      AnimationCallback callback);
+  [[nodiscard]] std::optional<AnimationSnapshot> animation_snapshot(
+      AnimationId id) const;
+  [[nodiscard]] bool cancel_animation(AnimationId id);
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
@@ -914,6 +976,7 @@ class WindowRuntime {
   bool notify_entity_changed(EntityId<T> entity_id);
 
  private:
+  friend class AnimationHandle;
   friend class TaskHandle;
 
   void handle_event(const PlatformEvent& event);
@@ -925,11 +988,14 @@ class WindowRuntime {
   void handle_wakeup();
   void drain_deferred_callbacks();
   void fire_due_timers();
+  void tick_animation(AnimationId id);
   void update_platform_accessibility_tree();
   [[nodiscard]] PlatformAccessibilityTreeUpdate build_platform_accessibility_update()
       const;
   [[nodiscard]] bool task_active(TaskId id) const;
   [[nodiscard]] bool task_complete(TaskId id) const;
+  [[nodiscard]] bool animation_active(AnimationId id) const;
+  [[nodiscard]] bool animation_complete(AnimationId id) const;
   void apply_cursor_shape(CursorShape cursor_shape);
   void apply_focused_text_ime_placement();
   void record_platform_diagnostic(PlatformDiagnosticEvent event);
@@ -1003,6 +1069,16 @@ class WindowRuntime {
     std::uint64_t interval_ms = 0;
     bool repeating = false;
     TimerCallback callback;
+  };
+
+  struct RuntimeAnimation {
+    AnimationId id;
+    AnimationOptions options;
+    AnimationCallback callback;
+    TimerId timer_id;
+    std::uint64_t started_ms = 0;
+    std::uint64_t last_tick_ms = 0;
+    bool complete = false;
   };
 
   struct RuntimeTask {
@@ -1085,6 +1161,8 @@ class WindowRuntime {
   std::uint64_t next_timer_id_ = 1;
   std::uint64_t current_time_ms_ = 0;
   bool firing_timers_ = false;
+  std::vector<RuntimeAnimation> animations_;
+  std::uint64_t next_animation_id_ = 1;
   std::vector<RuntimeTask> tasks_;
   std::vector<TaskId> task_completion_queue_;
   std::uint64_t next_task_id_ = 1;

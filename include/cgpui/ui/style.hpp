@@ -3,6 +3,7 @@
 #include "cgpui/core/geometry.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <optional>
 #include <span>
@@ -123,6 +124,13 @@ enum class Position {
   absolute,
 };
 
+enum class AnimationEasing {
+  linear,
+  ease_in,
+  ease_out,
+  ease_in_out,
+};
+
 [[nodiscard]] constexpr float px(float value) {
   return value;
 }
@@ -146,6 +154,64 @@ enum class Position {
       .g = static_cast<float>(green) / 255.0F,
       .b = static_cast<float>(blue) / 255.0F,
       .a = alpha,
+  };
+}
+
+[[nodiscard]] inline float clamp_animation_progress(float progress) {
+  return std::clamp(progress, 0.0F, 1.0F);
+}
+
+[[nodiscard]] inline float ease(AnimationEasing easing, float progress) {
+  const float clamped = clamp_animation_progress(progress);
+  switch (easing) {
+    case AnimationEasing::ease_in:
+      return clamped * clamped;
+    case AnimationEasing::ease_out:
+      return 1.0F - (1.0F - clamped) * (1.0F - clamped);
+    case AnimationEasing::ease_in_out:
+      if (clamped < 0.5F) {
+        return 2.0F * clamped * clamped;
+      }
+      return 1.0F - 2.0F * (1.0F - clamped) * (1.0F - clamped);
+    case AnimationEasing::linear:
+    default:
+      return clamped;
+  }
+}
+
+[[nodiscard]] inline float tween(float from, float to, float progress) {
+  const double clamped =
+      static_cast<double>(clamp_animation_progress(progress));
+  return static_cast<float>(
+      static_cast<double>(from) +
+      (static_cast<double>(to) - static_cast<double>(from)) * clamped);
+}
+
+[[nodiscard]] inline float tween_opacity(float from, float to, float progress) {
+  const double value = static_cast<double>(tween(from, to, progress));
+  return static_cast<float>(std::round(value * 1'000'000.0) / 1'000'000.0);
+}
+
+[[nodiscard]] inline Color tween(Color from, Color to, float progress) {
+  return Color{
+      .r = tween(from.r, to.r, progress),
+      .g = tween(from.g, to.g, progress),
+      .b = tween(from.b, to.b, progress),
+      .a = tween(from.a, to.a, progress),
+  };
+}
+
+[[nodiscard]] inline AffineTransform tween(
+    AffineTransform from,
+    AffineTransform to,
+    float progress) {
+  return AffineTransform{
+      .scale_x = tween(from.scale_x, to.scale_x, progress),
+      .skew_y = tween(from.skew_y, to.skew_y, progress),
+      .skew_x = tween(from.skew_x, to.skew_x, progress),
+      .scale_y = tween(from.scale_y, to.scale_y, progress),
+      .translate_x = tween(from.translate_x, to.translate_x, progress),
+      .translate_y = tween(from.translate_y, to.translate_y, progress),
   };
 }
 
@@ -405,6 +471,38 @@ struct Style {
     Style style = *this;
     style.transform = value;
     return style;
+  }
+};
+
+[[nodiscard]] inline Style tween(
+    const Style& from,
+    const Style& to,
+    float progress) {
+  const float clamped = clamp_animation_progress(progress);
+  Style style = clamped < 1.0F ? from : to;
+  if (from.background_color.has_value() && to.background_color.has_value()) {
+    style.background_color =
+        tween(*from.background_color, *to.background_color, clamped);
+  }
+  if (from.foreground_color.has_value() && to.foreground_color.has_value()) {
+    style.foreground_color =
+        tween(*from.foreground_color, *to.foreground_color, clamped);
+  }
+  if (from.border_color.has_value() && to.border_color.has_value()) {
+    style.border_color = tween(*from.border_color, *to.border_color, clamped);
+  }
+  style.opacity = tween_opacity(from.opacity, to.opacity, clamped);
+  style.transform = tween(from.transform, to.transform, clamped);
+  return style;
+}
+
+struct StyleTween {
+  Style from;
+  Style to;
+  AnimationEasing easing = AnimationEasing::linear;
+
+  [[nodiscard]] Style value_at(float progress) const {
+    return tween(from, to, ease(easing, progress));
   }
 };
 

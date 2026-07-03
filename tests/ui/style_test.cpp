@@ -701,6 +701,60 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
              : 77;
 }
 
+int test_animation_easing_and_style_tween_primitives() {
+  if (!same(cgpui::clamp_animation_progress(-0.5F), 0.0F) ||
+      !same(cgpui::clamp_animation_progress(1.5F), 1.0F)) {
+    return 82;
+  }
+  if (!same(cgpui::ease(cgpui::AnimationEasing::linear, 0.25F), 0.25F) ||
+      !same(cgpui::ease(cgpui::AnimationEasing::ease_in, 0.5F), 0.25F) ||
+      !same(cgpui::ease(cgpui::AnimationEasing::ease_out, 0.5F), 0.75F) ||
+      !same(cgpui::ease(cgpui::AnimationEasing::ease_in_out, 0.25F), 0.125F) ||
+      !same(cgpui::ease(cgpui::AnimationEasing::ease_in_out, 0.75F), 0.875F)) {
+    return 83;
+  }
+
+  if (!same(cgpui::tween(10.0F, 20.0F, 0.25F), 12.5F)) {
+    return 84;
+  }
+  const cgpui::Color mixed_color =
+      cgpui::tween(cgpui::rgba(0, 0, 0, 0.25F),
+                   cgpui::rgba(255, 128, 64, 0.75F),
+                   0.5F);
+  if (!same(mixed_color.r, 0.5F) ||
+      !same(mixed_color.g, 64.0F / 255.0F) ||
+      !same(mixed_color.b, 32.0F / 255.0F) ||
+      !same(mixed_color.a, 0.5F)) {
+    return 85;
+  }
+
+  const cgpui::Style start =
+      cgpui::Style{}
+          .with_background_color(cgpui::rgb(0, 0, 0))
+          .with_opacity(0.2F)
+          .with_transform(cgpui::AffineTransform::translation(0.0F, 10.0F));
+  const cgpui::Style end =
+      cgpui::Style{}
+          .with_background_color(cgpui::rgb(100, 50, 0))
+          .with_opacity(0.8F)
+          .with_transform(cgpui::AffineTransform::translation(10.0F, 30.0F));
+  const cgpui::StyleTween tween{
+      .from = start,
+      .to = end,
+      .easing = cgpui::AnimationEasing::ease_out,
+  };
+  const cgpui::Style middle = tween.value_at(0.5F);
+  if (!middle.background_color.has_value() ||
+      !same(middle.background_color->r, 75.0F / 255.0F) ||
+      !same(middle.opacity, 0.65F) ||
+      !same_transform(
+          middle.transform,
+          cgpui::AffineTransform::translation(7.5F, 25.0F))) {
+    return 86;
+  }
+  return 0;
+}
+
 } // namespace
 
 static_assert(std::same_as<decltype(cgpui::EdgeSizes{}.top), float>);
@@ -745,6 +799,12 @@ static_assert(std::same_as<decltype(cgpui::theme_token("x")), cgpui::ThemeTokenI
 static_assert(std::same_as<
               decltype(cgpui::StyleCascade{}.class_style(cgpui::style_class("x"))),
               const cgpui::StyleState*>);
+static_assert(std::same_as<
+              decltype(cgpui::ease(cgpui::AnimationEasing::linear, 0.0F)),
+              float>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleTween{}.value_at(0.5F)),
+              cgpui::Style>);
 
 int main() {
   if (const int result = test_edge_sizes_default_to_zero(); result != 0) {
@@ -794,6 +854,10 @@ int main() {
   }
   if (const int result =
           test_style_cascade_resolves_base_classes_state_and_inline_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_animation_easing_and_style_tween_primitives();
       result != 0) {
     return result;
   }

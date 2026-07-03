@@ -483,6 +483,25 @@ bool TaskHandle::complete() const {
   return runtime_ != nullptr && runtime_->task_complete(id_);
 }
 
+bool AnimationHandle::active() const {
+  return runtime_ != nullptr && runtime_->animation_active(id_);
+}
+
+bool AnimationHandle::complete() const {
+  return runtime_ != nullptr && runtime_->animation_complete(id_);
+}
+
+std::optional<AnimationSnapshot> AnimationHandle::progress() const {
+  if (runtime_ == nullptr) {
+    return std::nullopt;
+  }
+  return runtime_->animation_snapshot(id_);
+}
+
+bool AnimationHandle::cancel() {
+  return runtime_ != nullptr && runtime_->cancel_animation(id_);
+}
+
 void PaintList::clear() {
   commands_.clear();
   clip_stack_.clear();
@@ -2957,6 +2976,117 @@ void WindowRuntime::advance_time(std::uint64_t delta_ms) {
   flush_deferred_redraw_request();
 }
 
+AnimationHandle WindowRuntime::start_animation(
+    AnimationOptions options,
+    AnimationCallback callback) {
+  if (!callback) {
+    return {};
+  }
+
+  if (options.tick_interval_ms == 0) {
+    options.tick_interval_ms = 16;
+  }
+
+  const AnimationId id{next_animation_id_++};
+  animations_.push_back(RuntimeAnimation{
+      .id = id,
+      .options = options,
+      .callback = std::move(callback),
+      .started_ms = current_time_ms_,
+      .last_tick_ms = current_time_ms_,
+      .complete = options.duration_ms == 0,
+  });
+
+  if (options.duration_ms != 0) {
+    const TimerId timer_id = schedule_repeating_timer(
+        options.tick_interval_ms,
+        [this, id](const WindowRuntimeContext&) {
+          tick_animation(id);
+        });
+    auto stored = std::find_if(
+        animations_.begin(),
+        animations_.end(),
+        [id](const RuntimeAnimation& animation) {
+          return animation.id == id;
+        });
+    if (stored != animations_.end()) {
+      stored->timer_id = timer_id;
+    }
+  }
+
+  return AnimationHandle(*this, id);
+}
+
+std::optional<AnimationSnapshot> WindowRuntime::animation_snapshot(
+    AnimationId id) const {
+  if (id.value == 0) {
+    return std::nullopt;
+  }
+
+  const auto animation = std::find_if(
+      animations_.begin(),
+      animations_.end(),
+      [id](const RuntimeAnimation& animation) {
+        return animation.id == id;
+      });
+  if (animation == animations_.end()) {
+    return std::nullopt;
+  }
+
+  const std::uint64_t duration_ms = animation->options.duration_ms;
+  const std::uint64_t raw_elapsed_ms =
+      current_time_ms_ >= animation->started_ms
+          ? current_time_ms_ - animation->started_ms
+          : 0;
+  const std::uint64_t elapsed_ms =
+      duration_ms == 0 ? 0 : std::min(raw_elapsed_ms, duration_ms);
+  const float linear_progress =
+      duration_ms == 0
+          ? 1.0F
+          : clamp_animation_progress(
+                static_cast<float>(elapsed_ms) /
+                static_cast<float>(duration_ms));
+  const float eased_progress =
+      ease(animation->options.easing, linear_progress);
+
+  return AnimationSnapshot{
+      .id = animation->id,
+      .elapsed_ms = elapsed_ms,
+      .duration_ms = duration_ms,
+      .linear_progress = linear_progress,
+      .eased_progress = eased_progress,
+      .easing = animation->options.easing,
+      .complete = animation->complete || linear_progress >= 1.0F,
+  };
+}
+
+bool WindowRuntime::cancel_animation(AnimationId id) {
+  if (id.value == 0) {
+    return false;
+  }
+
+  const auto animation = std::find_if(
+      animations_.begin(),
+      animations_.end(),
+      [id](const RuntimeAnimation& animation) {
+        return animation.id == id;
+      });
+  if (animation == animations_.end()) {
+    return false;
+  }
+  const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
+  if (animation->complete || !snapshot.has_value() || snapshot->complete) {
+    return false;
+  }
+
+  animation->complete = true;
+  if (animation->timer_id.value != 0) {
+    (void)cancel_timer(animation->timer_id);
+    animation->timer_id = {};
+  }
+  return true;
+}
+
 TaskHandle WindowRuntime::spawn_task(TaskCompletionCallback callback) {
   if (!callback) {
     return {};
@@ -3310,6 +3440,46 @@ void WindowRuntime::fire_due_timers() {
   firing_timers_ = false;
 }
 
+void WindowRuntime::tick_animation(AnimationId id) {
+  const auto animation = std::find_if(
+      animations_.begin(),
+      animations_.end(),
+      [id](const RuntimeAnimation& animation) {
+        return animation.id == id;
+      });
+  if (animation == animations_.end() || animation->complete ||
+      animation->last_tick_ms == current_time_ms_) {
+    return;
+  }
+
+  animation->last_tick_ms = current_time_ms_;
+  const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
+  if (!snapshot.has_value()) {
+    return;
+  }
+
+  AnimationCallback callback = animation->callback;
+  if (callback) {
+    callback(context(), *snapshot);
+  }
+
+  if (snapshot->complete) {
+    const auto completed = std::find_if(
+        animations_.begin(),
+        animations_.end(),
+        [id](const RuntimeAnimation& animation) {
+          return animation.id == id;
+        });
+    if (completed != animations_.end()) {
+      completed->complete = true;
+      if (completed->timer_id.value != 0) {
+        (void)cancel_timer(completed->timer_id);
+        completed->timer_id = {};
+      }
+    }
+  }
+}
+
 void WindowRuntime::update_platform_accessibility_tree() {
   if (window_ == nullptr || owned_element_tree_ == nullptr) {
     return;
@@ -3365,6 +3535,16 @@ bool WindowRuntime::task_complete(TaskId id) const {
         return task.id == id;
       });
   return task != tasks_.end() && task->completed;
+}
+
+bool WindowRuntime::animation_active(AnimationId id) const {
+  const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
+  return snapshot.has_value() && !snapshot->complete;
+}
+
+bool WindowRuntime::animation_complete(AnimationId id) const {
+  const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
+  return snapshot.has_value() && snapshot->complete;
 }
 
 void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
@@ -3718,6 +3898,21 @@ TimerId WindowRuntimeContext::schedule_repeating_timer(
     std::uint64_t interval_ms,
     TimerCallback callback) const {
   return runtime.schedule_repeating_timer(interval_ms, std::move(callback));
+}
+
+AnimationHandle WindowRuntimeContext::start_animation(
+    AnimationOptions options,
+    AnimationCallback callback) const {
+  return runtime.start_animation(options, std::move(callback));
+}
+
+std::optional<AnimationSnapshot> WindowRuntimeContext::animation_snapshot(
+    AnimationId id) const {
+  return runtime.animation_snapshot(id);
+}
+
+bool WindowRuntimeContext::cancel_animation(AnimationId id) const {
+  return runtime.cancel_animation(id);
 }
 
 TaskHandle WindowRuntimeContext::spawn_task(
