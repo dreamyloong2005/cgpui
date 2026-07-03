@@ -8460,3 +8460,18 @@
   `docs/superpowers/plans/2026-07-04-gpui-upstream-parity-ledger-plan.md`,
   `task_plan.md`, `findings.md`, and `progress.md` with Step 258 closeout
   evidence. The branch is ready for commit and merge.
+
+## 2026-07-04 GPUI Upstream Parity Ledger Merge
+
+- Committed the Phase A branch as
+  `2a21b68 docs: add gpui upstream parity ledger`.
+- Fast-forward merged `codex/gpui-upstream-parity-ledger` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 42/42.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P .'`
+  exited 0, then
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake test -y -P .'`
+  passed 39/39.
+- Step 258 is complete on `master`; Phase B, Steps 259-318, is the next
+  implementation phase.

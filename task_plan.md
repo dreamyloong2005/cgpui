@@ -182,21 +182,23 @@ Windows/Linux public APIs and renderer/platform boundaries are stable. X11
 remains out of the active track unless the user explicitly chooses strict
 upstream Linux backend parity.
 
-Step 258, upstream GPUI parity ledger and first API parity gate, is ready to
-merge on `codex/gpui-upstream-parity-ledger`. The branch pins upstream Zed/GPUI
-at `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0`, records crate versions
+Step 258, upstream GPUI parity ledger and first API parity gate, is merged on
+`master` at `2a21b68 docs: add gpui upstream parity ledger` and post-merge
+verified on Windows and WSL Arch Linux. The branch pins upstream Zed/GPUI at
+`5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0`, records crate versions
 `gpui = 0.2.2` and `gpui_platform = 0.1.0`, adds
 `docs/gpui-complete-parity-ledger.md`,
 `docs/gpui-complete-parity-ledger.json`,
 `tools/gpui_parity/extract_upstream_symbols.py`,
 `tests/api_parity/gpui_parity_ledger_test.cpp`, and
-`examples/api_parity/hello_world/main.cpp`. Feature-worktree verification
-passed: Windows extractor and JSON validation, WSL extractor and JSON
-validation, Windows focused parity test 1/1, WSL focused parity test 1/1,
-Windows hello-world parity build, WSL hello-world parity build, Windows full
-debug 42/42, WSL full debug 39/39, and `git diff --check` exit 0 with only
-expected LF-to-CRLF normalization warnings. Phase B, Steps 259-318, is the next
-implementation phase after merge: public Application, Context, Entity, Action,
+`examples/api_parity/hello_world/main.cpp`. Verification passed: Windows
+extractor and JSON validation, WSL extractor and JSON validation, Windows
+focused parity test 1/1, WSL focused parity test 1/1, Windows hello-world
+parity build, WSL hello-world parity build, feature-worktree Windows full
+debug 42/42, feature-worktree WSL full debug 39/39, `git diff --check` exit 0
+with only expected LF-to-CRLF normalization warnings, post-merge Windows full
+debug 42/42, and post-merge WSL full debug 39/39. Phase B, Steps 259-318, is
+the next implementation phase: public Application, Context, Entity, Action,
 key dispatch, and test-context API parity.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
