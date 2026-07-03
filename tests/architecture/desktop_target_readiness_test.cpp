@@ -87,11 +87,21 @@ int main() {
   if (renderer_text.empty()) {
     return 10;
   }
-  if (!contains(renderer_text, "enum class RendererBackendTarget")) {
+  if (!contains(renderer_text,
+                "#include \"cgpui/renderer/renderer_types.hpp\"")) {
     return 11;
   }
-  if (!contains(renderer_text, "vulkan") ||
-      !contains(renderer_text, "metal")) {
+
+  const std::string renderer_types_text =
+      read_source("include/cgpui/renderer/renderer_types.hpp");
+  if (renderer_types_text.empty()) {
+    return 22;
+  }
+  if (!contains(renderer_types_text, "enum class RendererBackendTarget")) {
+    return 23;
+  }
+  if (!contains(renderer_types_text, "vulkan") ||
+      !contains(renderer_types_text, "metal")) {
     return 12;
   }
 

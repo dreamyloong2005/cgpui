@@ -206,9 +206,10 @@ int main() {
     return 52;
   }
 
-  std::ifstream platform_source("include/cgpui/platform/platform.hpp");
+  std::ifstream platform_source("include/cgpui/platform/platform_window.hpp");
   if (!platform_source) {
-    platform_source.open("../../../../include/cgpui/platform/platform.hpp");
+    platform_source.open(
+        "../../../../include/cgpui/platform/platform_window.hpp");
   }
   if (!platform_source) {
     return 16;

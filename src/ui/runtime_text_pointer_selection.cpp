@@ -1,0 +1,87 @@
+#include "ui_internal.hpp"
+
+namespace cgpui {
+
+bool WindowRuntime::apply_text_pointer_selection(
+    const PlatformEvent& event,
+    const EventRoute& route) {
+  if (const auto* button = std::get_if<PointerButton>(&event);
+      button != nullptr && button->button == MouseButton::left) {
+    if (button->pressed) {
+      text_pointer_selection_drag_.reset();
+      if (!route.target_element_id.has_value()) {
+        return false;
+      }
+
+      TextInputElement* input = routed_text_input(*route.target_element_id);
+      if (input == nullptr || !input->enabled() || input->model() == nullptr) {
+        return false;
+      }
+
+      const std::optional<std::size_t> offset =
+          text_offset_for_point(*input, button->position);
+      if (!offset.has_value()) {
+        return false;
+      }
+
+      input->model()->set_selection(*offset, *offset);
+      text_pointer_selection_drag_ = TextPointerSelectionDrag{
+          .element_id = *route.target_element_id,
+          .anchor_offset = *offset,
+      };
+      return false;
+    }
+
+    if (!text_pointer_selection_drag_.has_value()) {
+      return false;
+    }
+
+    const TextPointerSelectionDrag drag = *text_pointer_selection_drag_;
+    text_pointer_selection_drag_.reset();
+    TextInputElement* input = routed_text_input(drag.element_id);
+    if (input == nullptr || input->model() == nullptr) {
+      return true;
+    }
+
+    const std::optional<std::size_t> offset =
+        text_offset_for_point(*input, button->position);
+    if (offset.has_value()) {
+      input->model()->set_selection(drag.anchor_offset, *offset);
+    }
+    return true;
+  }
+
+  if (const auto* moved = std::get_if<PointerMoved>(&event);
+      moved != nullptr && text_pointer_selection_drag_.has_value()) {
+    const TextPointerSelectionDrag drag = *text_pointer_selection_drag_;
+    TextInputElement* input = routed_text_input(drag.element_id);
+    if (input == nullptr || input->model() == nullptr) {
+      text_pointer_selection_drag_.reset();
+      return false;
+    }
+
+    const std::optional<std::size_t> offset =
+        text_offset_for_point(*input, moved->position);
+    if (offset.has_value()) {
+      input->model()->set_selection(drag.anchor_offset, *offset);
+    }
+    return true;
+  }
+
+  return false;
+}
+
+std::optional<std::size_t> WindowRuntime::text_offset_for_point(
+    const TextElement& element,
+    Point point) const {
+  const std::optional<Rect> bounds = element.layout_bounds();
+  if (!bounds.has_value()) {
+    return {};
+  }
+
+  const TextMeasurement measurement =
+      measure_text(element.text(), element.font(), element.font_size(), scale_);
+  return hit_test_text_position(measurement, *bounds, point).byte_offset;
+}
+
+} // namespace cgpui

@@ -1,5 +1,234 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Aggressive Structural Optimization Planning
+
+- Continued the structural optimization audit after the user clarified that the
+  target is thorough optimization even if the split carries higher source or
+  compatibility risk.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, then ran the planning-with-files session catchup helper. It
+  produced no additional output.
+- Re-scanned current line counts in `.worktrees/structural-optimization`.
+  Implementation/private source hotspots are now modest: Linux max 177 lines,
+  Vulkan max 151, UI max 128, Win32 max 149, and generic platform max 121.
+  Public UI headers are the main remaining hotspot: 6252 total lines, 13
+  headers over 200 lines, and 11 headers over 300 lines.
+- Inspected the top private headers and long bridge files:
+  `wayland_application_internal.hpp`, `vulkan_internal.hpp`,
+  `wayland_window_internal.hpp`, `win32_window_proc.cpp`,
+  `vulkan_swapchain_create.cpp`, and `vulkan_report_submission.cpp`.
+  The first three need declaration/state boundary surgery; the bridge files can
+  be split after that by dispatcher or helper responsibility.
+- Wrote the aggressive design to
+  `docs/superpowers/specs/2026-07-03-structural-optimization-design.md` and
+  wrote the execution plan to
+  `docs/superpowers/plans/2026-07-03-structural-optimization-execution-plan.md`.
+
+## 2026-07-03 Structural Optimization Continuation
+
+- Continued the aggressive structure pass after the latest interruption with
+  the explicit user direction that optimization should be thorough even if the
+  split is higher-risk than the earlier conservative pass.
+- Verified the previous in-flight split first: Windows focused
+  `xmake test -y -P . platform_source_structure_test/default wayland_window_source_test/default ui_source_structure_test/default clipboard_test/default window_runtime_test/default render_view_test/default text_model_test/default`
+  passed 7/7, and WSL Arch Linux focused
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . platform_source_structure_test/default wayland_window_source_test/default ui_source_structure_test/default clipboard_test/default wayland_pointer_button_test/default wayland_pointer_scroll_test/default wayland_keyboard_test/default wayland_vulkan_surface_test/default window_runtime_test/default render_view_test/default text_model_test/default'`
+  passed 11/11.
+- Added RED architecture coverage, then GREEN split Wayland text-input protocol
+  bindings into `wayland_protocol_text_input_interfaces.cpp`,
+  `wayland_protocol_text_input_manager.cpp`, and
+  `wayland_protocol_text_input_requests.cpp`; the old
+  `wayland_protocol_text_input.cpp` is now a 1-line placeholder.
+- Added RED architecture coverage, then GREEN split Wayland data-device DnD
+  event entry points and action negotiation into
+  `wayland_data_device_drag_events.cpp` and
+  `wayland_data_device_drag_actions.cpp`; the old
+  `wayland_data_device_drag.cpp` is now a 1-line placeholder.
+- Added RED architecture coverage, then GREEN split runtime animation start,
+  state/cancel/query, and tick dispatch into `runtime_animation_start.cpp`,
+  `runtime_animation_state.cpp`, and `runtime_animation_tick.cpp`; the old
+  `runtime_animations.cpp` is now a 1-line placeholder.
+- Added RED architecture coverage, then GREEN split Vulkan presentation
+  recovery into `vulkan_presentation_recovery.cpp` and swapchain creation into
+  `vulkan_swapchain_create.cpp`; `vulkan_swapchain.cpp` is now a 1-line
+  placeholder and `vulkan_presentation.cpp` is focused on frame presentation.
+- Added RED architecture coverage, then GREEN split Win32 window chrome and
+  size/DPI handling into `win32_window_chrome.cpp` and
+  `win32_window_size.cpp`; `win32_window.cpp` is now the lifecycle/basic
+  platform-window layer.
+- Added RED architecture coverage, then GREEN split Wayland window event
+  forwarding into `wayland_window_input_events.cpp`,
+  `wayland_window_drag_events.cpp`, and `wayland_window_text_events.cpp`;
+  `wayland_window_events.cpp` now keeps only cursor/configured/wakeup/focus
+  state forwarding.
+- Added RED architecture coverage, then GREEN split `app_context.cpp` into
+  window options, services, command-palette forwarding, theme forwarding, and
+  `run_app` entry files. `app_context.cpp` is now a 1-line placeholder.
+- Added RED architecture coverage, then GREEN split Win32 clipboard into
+  `clipboard_win32_internal.hpp`, text conversion, read, write, and factory
+  files. The focused Windows clipboard test passed, and the Linux build proved
+  the `_WIN32` fragments are safe as empty translation units under WSL.
+- Verified Windows aggregation:
+  `xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default win32_input_event_test/default win32_text_input_test/default win32_dpi_scale_test/default win32_focus_event_test/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default win32_vulkan_surface_test/default`
+  passed 20/20.
+- Verified WSL Arch Linux aggregation:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default wayland_pointer_button_test/default wayland_pointer_scroll_test/default wayland_keyboard_test/default wayland_vulkan_surface_test/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default'`
+  passed 15/15 reported tests.
+- `git diff --check` exited 0 with only expected CRLF normalization warnings.
+
+- Continued `.worktrees/structural-optimization` on
+  `codex/structural-optimization` with the explicit direction that structural
+  optimization should be aggressive rather than conservative.
+- Continued the aggressive structure pass after interruption and completed
+  additional renderer, UI, Wayland, and Win32 implementation splits.
+- Vulkan swapchain lifecycle moved from `vulkan_swapchain.cpp` into
+  `vulkan_swapchain_lifecycle.cpp`; swapchain image, render-pass/framebuffer,
+  and command-buffer responsibilities remain in their focused files. The main
+  swapchain resource creator is now 161 lines.
+- `render_view.cpp` was split into `element_paint.cpp` for element paint
+  methods and `render_view_commands.cpp` for paint-command-to-render-frame
+  submission. `render_view.cpp` is now the frame lifecycle/render orchestration
+  entry and is 74 lines.
+- `vulkan_state.cpp` was split into state lifecycle/create, resize,
+  presentation/recovery, and sync/command-pool files:
+  `vulkan_resize.cpp`, `vulkan_presentation.cpp`, and `vulkan_sync.cpp`.
+  `vulkan_state.cpp` is now 55 lines.
+- `runtime_diagnostics.cpp` was reduced to a thin placeholder and split into
+  `runtime_diagnostic_snapshot.cpp`, `runtime_platform_services.cpp`,
+  `runtime_theme.cpp`, and `runtime_accessibility.cpp`.
+- Wayland text-input moved its private class definition to
+  `wayland_text_input_internal.hpp` and split core binding/reset, protocol
+  requests, and listener events into `wayland_text_input_core.cpp`,
+  `wayland_text_input_requests.cpp`, and `wayland_text_input_events.cpp`.
+- Additional-window runtime code moved native activation, record/cleanup
+  management, and child redraw into `runtime_window_activation.cpp`,
+  `runtime_window_records.cpp`, and `runtime_window_rendering.cpp`.
+  `runtime_windows.cpp` is now the public `open_window` entry layer.
+- Win32 helpers split UTF conversion, drag/drop helper conversion, and
+  input/cursor/window-style helpers into `win32_string.cpp`,
+  `win32_drag_drop_helpers.cpp`, and `win32_input_helpers.cpp`.
+- Vulkan helper/device layers split error/surface validation, surface
+  selection, command recording, instance/surface creation, physical-device
+  selection, and logical-device creation into focused renderer files.
+- Added RED architecture coverage in
+  `tests/architecture/wayland_window_source_test.cpp` and
+  `tests/architecture/platform_source_structure_test.cpp` requiring
+  `WaylandApplication` lifecycle, platform services, and factory entry points
+  to leave `wayland_application.cpp`. RED failed as expected before the split.
+- GREEN splits `src/platform/linux/wayland_application.cpp` so it now owns
+  only construction/destruction and initialization sequencing. Window creation
+  moved to `wayland_application_windows.cpp`, event-loop forwarding moved to
+  `wayland_application_lifecycle.cpp`, native menu/file-dialog/font discovery
+  moved to `wayland_application_services.cpp`, and the platform factory moved
+  to `wayland_application_factory.cpp`. `wayland_application.cpp` is now 91
+  lines.
+- Verified Windows Wayland/platform structure focused tests:
+  `xmake test -y -P . wayland_window_source_test/default platform_source_structure_test/default`
+  passed 2/2.
+- Verified WSL Arch Linux Wayland focused tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . wayland_window_source_test/default platform_source_structure_test/default wayland_pointer_button_test/default wayland_vulkan_surface_test/default'`
+  passed 4/4 and compiled the new Wayland application split files into
+  `cgpui_platform_linux_wayland`.
+- Added RED architecture coverage requiring renderer report key comparison
+  helpers to leave `vulkan_report_commands.cpp` and
+  `vulkan_report_submission.cpp`; requiring Wayland pointer axis/scroll logic
+  to leave `wayland_application_pointer.cpp`; and requiring `PaintList` text
+  and image command emission to leave `paint.cpp`. RED failed as expected.
+- GREEN adds `vulkan_report_keys.cpp`,
+  `wayland_application_pointer_scroll.cpp`, `paint_text.cpp`, and
+  `paint_image.cpp`. The resulting focused files are now
+  `vulkan_report_submission.cpp` 153 LF, `vulkan_report_commands.cpp` 135 LF,
+  `wayland_application_pointer.cpp` 65 LF, `wayland_application_pointer_scroll.cpp`
+  92 LF, `paint.cpp` 67 LF, `paint_text.cpp` 84 LF, and `paint_image.cpp` 21
+  LF.
+- Added RED architecture coverage requiring `WindowRuntime` run/shutdown logic
+  to leave `runtime_core.cpp`, and requiring Win32 drag/drop message/action
+  helpers to separate from test-hook and OLE payload extraction. RED failed as
+  expected.
+- GREEN adds `runtime_run.cpp`, `runtime_shutdown.cpp`,
+  `win32_drag_drop_payload.cpp`, and `win32_drag_drop_ole_payload.cpp`.
+  `runtime_core.cpp` is now the constructor-only core, and Win32 drag/drop is
+  split into message/action helpers, deterministic test payload conversion,
+  and OLE `IDataObject` payload conversion.
+- Verified Windows focused tests:
+  `xmake test -y -P . renderer_source_structure_test/default wayland_window_source_test/default platform_source_structure_test/default ui_source_structure_test/default window_runtime_test/default render_view_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default`
+  passed 10/10, and
+  `xmake test -y -P . ui_source_structure_test/default win32_window_source_test/default platform_source_structure_test/default window_runtime_test/default app_runner_test/default render_view_test/default win32_input_event_test/default`
+  passed 7/7.
+- Verified WSL Arch Linux focused tests:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . renderer_source_structure_test/default wayland_window_source_test/default platform_source_structure_test/default ui_source_structure_test/default wayland_pointer_button_test/default wayland_pointer_scroll_test/default wayland_vulkan_surface_test/default window_runtime_test/default render_view_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default'`
+  passed 9 reported tests, and
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . ui_source_structure_test/default platform_source_structure_test/default win32_window_source_test/default window_runtime_test/default app_runner_test/default render_view_test/default'`
+  passed 6/6.
+- Verified final Windows aggregation:
+  `xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default win32_input_event_test/default win32_text_input_test/default win32_dpi_scale_test/default win32_focus_event_test/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default win32_vulkan_surface_test/default`
+  passed 20/20.
+- Verified final WSL Arch Linux aggregation:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default wayland_pointer_button_test/default wayland_pointer_scroll_test/default wayland_keyboard_test/default wayland_vulkan_surface_test/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default'`
+  passed 15 reported tests.
+- `git diff --check` exited 0 with only expected CRLF normalization warnings,
+  and a modified/untracked text-file scan found no trailing whitespace.
+- Final implementation-source hotspot scan is now led by protocol/private
+  boundary files: `wayland_protocol_xdg.cpp` 188 LF,
+  `wayland_application_internal.hpp` 186 LF, `clipboard_wayland_read.cpp`
+  177 LF, `wayland_protocol_text_input.cpp` 173 LF, `runtime_text.cpp` 172 LF,
+  and `vulkan_internal.hpp` 170 LF.
+- Verified Windows aggregation:
+  `xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default win32_input_event_test/default win32_text_input_test/default win32_dpi_scale_test/default win32_focus_event_test/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default win32_vulkan_surface_test/default`
+  passed 20/20.
+- Verified WSL Arch Linux aggregation:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default wayland_pointer_button_test/default wayland_pointer_scroll_test/default wayland_keyboard_test/default wayland_vulkan_surface_test/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default'`
+  passed 15/15 reported tests.
+- `git diff --check` exited 0 with only expected CRLF normalization warnings,
+  and the untracked source trailing-whitespace scan reported no trailing
+  whitespace.
+- Added RED architecture coverage in
+  `tests/architecture/win32_window_source_test.cpp` requiring
+  `Win32Window` to leave `win32_application.cpp`, requiring a private
+  `win32_window_internal.hpp`, requiring focused Win32 window implementation
+  files, and lowering the Win32 application source threshold to 220 lines.
+  RED failed as expected before the split.
+- GREEN splits Win32 window ownership out of
+  `src/platform/win32/win32_application.cpp` into
+  `win32_window_internal.hpp`, `win32_window.cpp`,
+  `win32_window_events.cpp`, `win32_window_ime.cpp`, and
+  `win32_window_drag_drop.cpp`. `win32_application.cpp` now keeps the
+  application loop, window-class registration, native window creation,
+  wakeup dispatch, menu/dialog forwarding, font discovery, and factory only.
+- Fixed a split-introduced regression where deterministic Win32 drag-exit
+  events briefly used cached OLE drag position instead of the test payload
+  position. The focused Win32 input test caught it, and the rerun passed.
+- Added RED architecture coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `WindowRuntimeContext` forwarding methods to leave
+  `runtime_context.cpp` and live in focused input, action, text, scheduling,
+  and platform files. RED failed as expected before the split.
+- GREEN splits `src/ui/runtime_context.cpp` into the context constructor plus
+  `runtime_context_input.cpp`, `runtime_context_actions.cpp`,
+  `runtime_context_text.cpp`, `runtime_context_scheduling.cpp`, and
+  `runtime_context_platform.cpp`.
+- Verified Windows focused Win32:
+  `xmake test -y -P . win32_window_source_test/default win32_input_event_test/default win32_text_input_test/default win32_dpi_scale_test/default win32_focus_event_test/default win32_vulkan_surface_test/default`
+  passed 6/6 after fixing drag-exit position.
+- Verified WSL Arch Linux structure subset:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default platform_source_structure_test/default'`
+  passed 2/2.
+- Verified Windows focused UI:
+  `xmake test -y -P . ui_source_structure_test/default window_runtime_test/default app_runner_test/default render_view_test/default text_model_test/default`
+  passed 5/5.
+- Verified WSL Arch Linux focused UI:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . ui_source_structure_test/default window_runtime_test/default app_runner_test/default render_view_test/default text_model_test/default'`
+  passed 5/5.
+- Verified WSL Arch Linux aggregation:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default ui_source_structure_test/default clipboard_test/default wayland_window_source_test/default wayland_pointer_button_test/default wayland_pointer_scroll_test/default wayland_keyboard_test/default wayland_vulkan_surface_test/default window_runtime_test/default text_model_test/default app_runner_test/default style_test/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default'`
+  exited 0 with 13/13 reported tests passed.
+- Windows aggregation first failed only `clipboard_test/default`; immediate
+  targeted rerun passed 1/1, matching the known transient clipboard behavior.
+  The full Windows aggregation rerun passed 18/18.
+- `git diff --check` exited 0 with only CRLF normalization warnings, and the
+  explicit untracked source-file trailing-whitespace scan reported no trailing
+  whitespace.
+
 ## 2026-07-03 UI Runtime Structure Split
 
 - Continued from the approved option to split both public UI headers and
@@ -7863,3 +8092,295 @@
   this progress log so Step 203 is marked merged and post-merge verified. Step
   204, native menu and accelerator API skeleton, is the next implementation
   slice after docs closeout and cleanup.
+
+## 2026-07-03 Structural Optimization Task 1 Private Header Surgery
+
+- Continued `.worktrees/structural-optimization` on
+  `codex/structural-optimization` with the user's risk posture updated to
+  prefer thorough structure optimization over compatibility-preserving
+  conservatism.
+- Added RED architecture coverage requiring focused Wayland application,
+  Wayland window, and Vulkan private headers plus thin old aggregate headers.
+  The RED command
+  `xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default wayland_window_source_test/default`
+  failed as expected; direct binary exit codes were 1 for platform source
+  structure, 37 for renderer source structure, and 2 for Wayland source
+  structure, all consistent with missing required split headers.
+- GREEN split Wayland application declarations into
+  `wayland_application_core_internal.hpp`,
+  `wayland_application_registry_internal.hpp`,
+  `wayland_application_input_internal.hpp`, and
+  `wayland_application_cursor_internal.hpp`; split Wayland window declarations
+  into `wayland_registered_window_internal.hpp` and
+  `wayland_window_configure_internal.hpp`; and split Vulkan private declarations
+  into `vulkan_platform_internal.hpp`, `vulkan_device_internal.hpp`,
+  `vulkan_swapchain_internal.hpp`, and `vulkan_state_internal.hpp`.
+- Old aggregate line counts after the split are:
+  `wayland_application_internal.hpp` 2 lines,
+  `wayland_window_internal.hpp` 94 lines, and
+  `vulkan_internal.hpp` 5 lines. Focused leaf counts are currently:
+  Wayland app core/registry/input/cursor 54/20/103/6 lines and Vulkan
+  platform/state/swapchain/device 56/80/14/14 lines.
+- Verified Windows focused GREEN:
+  `xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default wayland_window_source_test/default win32_window_source_test/default wayland_pointer_button_test/default wayland_vulkan_surface_test/default vulkan_surface_validation_test/default vulkan_resize_test/default`
+  passed 6/6 available Windows targets.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . platform_source_structure_test/default renderer_source_structure_test/default wayland_window_source_test/default wayland_pointer_button_test/default wayland_vulkan_surface_test/default vulkan_surface_validation_test/default vulkan_resize_test/default'`
+  passed 5/5 available Linux targets.
+- `git diff --check` exited 0 with only existing CRLF normalization warnings
+  and no whitespace errors.
+- Updated
+  `docs/superpowers/plans/2026-07-03-structural-optimization-execution-plan.md`
+  so Task 1's four checklist items are complete. Task 2, remaining long
+  implementation bridges, is the next structural optimization task.
+
+## 2026-07-03 Structural Optimization Task 2 Bridge Implementation Split
+
+- Added RED architecture coverage for remaining long bridge implementation
+  files. The RED command
+  `xmake test -y -P . win32_window_source_test/default platform_source_structure_test/default renderer_source_structure_test/default`
+  failed as expected; direct binary exit codes were 2 for Win32 source
+  structure, 1 for platform source structure, and 58 for renderer source
+  structure, matching missing new split files.
+- GREEN split Win32 window proc dispatch into
+  `win32_window_proc_drag.cpp`, `win32_window_proc_lifecycle.cpp`,
+  `win32_window_proc_pointer.cpp`, and `win32_window_proc_keyboard.cpp`.
+  `win32_window_proc.cpp` is now a 33-line dispatcher.
+- GREEN split Wayland application window handling into
+  `wayland_application_window_registry.cpp` and
+  `wayland_application_window_creation.cpp`, moved cursor and IME placement
+  setters to their cursor/input owners, and reduced
+  `wayland_application_windows.cpp` to 5 lines.
+- GREEN split Vulkan swapchain creation into
+  `vulkan_swapchain_query.cpp` and `vulkan_swapchain_create_info.cpp`, reducing
+  `vulkan_swapchain_create.cpp` to 65 lines. Renderer submission planning now
+  has `vulkan_report_text_submission.cpp` and
+  `vulkan_report_submission_stats.cpp`, with
+  `vulkan_report_submission.cpp` at the 100-line threshold.
+- Verified Windows focused GREEN:
+  `xmake test -y -P . win32_window_source_test/default win32_input_event_test/default win32_text_input_test/default platform_source_structure_test/default renderer_source_structure_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default`
+  passed 7/7.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . win32_window_source_test/default platform_source_structure_test/default renderer_source_structure_test/default vulkan_resize_test/default vulkan_frame_lifetime_test/default wayland_window_source_test/default wayland_pointer_button_test/default wayland_vulkan_surface_test/default'`
+  passed 6/6 available Linux targets.
+- `git diff --check` exited 0 with only existing CRLF normalization warnings
+  and no whitespace errors. Task 3, public UI header surgery, is next.
+
+## 2026-07-03 Structural Optimization Task 3 Public UI Header Surgery
+
+- Added RED coverage in `tests/architecture/ui_source_structure_test.cpp` and
+  `tests/header_cleanliness/ui_header_cleanliness.cpp` requiring focused text
+  and runtime public headers, `src/ui/window_runtime_internal.hpp`, and 220-line
+  limits for `text_model.hpp`, `text_layout.hpp`, `runtime_types.hpp`, and
+  `window_runtime.hpp`.
+- RED command
+  `xmake test -y -P . ui_source_structure_test/default ui_header_cleanliness/default text_model_test/default window_runtime_test/default`
+  failed as expected on missing split headers before the production split.
+- GREEN split text layout declarations into `text_shape.hpp`,
+  `text_glyphs.hpp`, `text_measurement.hpp`, `text_wrapping.hpp`, and
+  `text_hit_testing.hpp`; moved `TextEditAction` to `text_edit_actions.hpp`;
+  and reduced `text_layout.hpp` to a 6-line aggregate.
+- GREEN moved `TextModel` non-template method bodies into
+  `src/ui/text_model.cpp`, `src/ui/text_model_history.cpp`,
+  `src/ui/text_model_navigation.cpp`, and `src/ui/text_model_selection.cpp`.
+  `text_model.hpp` is now a 118-line declaration header.
+- GREEN split runtime public declarations into `runtime_callbacks.hpp`,
+  `runtime_ids.hpp`, `runtime_handles.hpp`, `runtime_window_options.hpp`,
+  `runtime_app_context.hpp`, `runtime_actions.hpp`, `runtime_events.hpp`,
+  `runtime_diagnostics.hpp`, `runtime_input_state.hpp`,
+  `runtime_context.hpp`, and `runtime_rendering.hpp`. `runtime_types.hpp` is
+  now an 11-line aggregate.
+- GREEN moved `WindowRuntime` private helper/member declarations into
+  `src/ui/window_runtime_internal.hpp`. `window_runtime.hpp` is now 207 lines;
+  the internal class-body declaration slice is 235 lines.
+- Verified Windows focused GREEN:
+  `xmake test -y -P . ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default`
+  passed 8/8.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default window_runtime_test/default text_model_test/default app_runner_test/default render_view_test/default style_test/default'`
+  passed 8/8.
+- `git diff --check` exited 0 with only existing CRLF normalization warnings
+  and no whitespace errors. Task 4, public element and style header surgery,
+  is next.
+
+## 2026-07-03 Structural Optimization Task 4 Public Element And Style Header Surgery
+
+- Added RED architecture and header-cleanliness coverage for element/style
+  leaf headers, thin compatibility aggregates, and the extra implementation
+  split guard that prevents newly created element/style `.cpp` files from
+  becoming replacement monoliths. RED first failed on the missing
+  `element_builder_core.hpp`, then later failed on the deliberately oversized
+  `element_flex_node.cpp` split point before the flex layout was separated.
+- GREEN split element public headers into layout, style, pointer, focus,
+  button, builder-core, widget-builder, and tree-template leaves. The old
+  `element_containers.hpp`, `element_interaction_nodes.hpp`,
+  `element_builder.hpp`, and `widget_builders.hpp` are now compatibility
+  aggregates.
+- GREEN split style public headers into `style_box.hpp`, `style_text.hpp`,
+  `style_layout.hpp`, `style_animation.hpp`, `style_overlay.hpp`, and
+  `style_state.hpp`, with `style_core.hpp` reduced to an 8-line aggregate.
+  Non-template style setters and style tween helpers now live in `.cpp` files.
+- Because the user requested thorough optimization, the implementation split
+  went beyond the original header-only Task 4 scope: `ElementTree` bodies moved
+  to focused `element_tree_*` files, `ElementBuilder` moved to factories/style/
+  layout/interaction/build/finish files, flex layout moved out of the flex node
+  shell, and element paint moved into styled/button/scroll/text paint files.
+- Current Task 4 line counts are: `element_tree.hpp` 104,
+  `element_containers.hpp` 4, `element_interaction_nodes.hpp` 5,
+  `element_builder.hpp` 3, `widget_builders.hpp` 6, `style_core.hpp` 8,
+  `element_builder_core.hpp` 117, `style_box.hpp` 59, `style_overlay.hpp` 59,
+  `element_layout_nodes.hpp` 65, and `element_style_nodes.hpp` 44.
+  The old implementation entry files `element_tree.cpp`,
+  `element_builder.cpp`, `element_layout_nodes.cpp`, and `element_paint.cpp`
+  are each 1 line; the largest focused split files are
+  `element_flex_layout.cpp` 144 and `element_tree_reconcile.cpp` 124.
+- Verified Windows focused GREEN:
+  `xmake test -y -P . ui_source_structure_test/default ui_header_cleanliness/default element_test/default style_test/default render_view_test/default window_runtime_test/default`
+  passed 6/6.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . ui_source_structure_test/default ui_header_cleanliness/default element_test/default style_test/default render_view_test/default window_runtime_test/default'`
+  passed 6/6.
+- `git diff --check` exited 0 with only existing CRLF normalization warnings
+  and no whitespace errors. Task 5, renderer/platform/core public header
+  surgery, is next.
+
+## 2026-07-04 Structural Optimization Task 5 Renderer Platform Core Header Surgery
+
+- Resumed Task 5 after the interruption with the RED coverage and production
+  split partially present. The first Windows GREEN attempt failed during
+  `core_header_cleanliness` because `renderer_frame_reports.hpp` declared
+  overloads that took `GlyphCache&` without directly including
+  `glyph_cache.hpp`.
+- Fixed the header-cleanliness break by making renderer report/cache leaf
+  dependencies self-contained: `renderer_frame_reports.hpp` now includes
+  `glyph_cache.hpp`, and `glyph_cache.hpp` directly includes
+  `renderer_commands.hpp` for `TextDraw` and `TexturedGlyphQuad`.
+- GREEN split the renderer public surface into thin aggregates plus focused
+  glyph atlas and report headers. Final line counts are:
+  `renderer.hpp` 7, `glyph_atlas.hpp` 7, `glyph_atlas_types.hpp` 55,
+  `glyph_uploads.hpp` 50, `image_uploads.hpp` 30,
+  `glyph_texture_resources.hpp` 69, `glyph_cache.hpp` 180,
+  `renderer_reports.hpp` 7, `renderer_text_reports.hpp` 45,
+  `renderer_image_reports.hpp` 13, `renderer_submission_reports.hpp` 29,
+  `renderer_geometry_reports.hpp` 58, and `renderer_frame_reports.hpp` 184.
+- GREEN split the platform public surface into focused accessibility,
+  application, diagnostics, file-dialog, native-menu, window, and window-chrome
+  headers. Final line counts are: `platform.hpp` 9,
+  `platform_accessibility.hpp` 58, `platform_application.hpp` 37,
+  `platform_diagnostics.hpp` 33, `platform_file_dialog.hpp` 38,
+  `platform_native_menu.hpp` 57, `platform_window.hpp` 35, and
+  `platform_window_chrome.hpp` 17.
+- GREEN split the core event public surface into window, pointer, drag/drop,
+  keyboard, text/IME, and platform-event headers. Final line counts are:
+  `events.hpp` 8, `event_window.hpp` 32, `event_pointer.hpp` 39,
+  `event_drag_drop.hpp` 52, `event_keyboard.hpp` 25, `event_text.hpp` 33, and
+  `event_platform.hpp` 54.
+- Verified Windows focused GREEN:
+  `xmake test -y -P . renderer_source_structure_test/default core_header_cleanliness/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default`
+  passed 8/8.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . renderer_source_structure_test/default core_header_cleanliness/default vulkan_solid_rect_test/default vulkan_surface_validation_test/default vulkan_resize_test/default win32_window_source_test/default wayland_window_source_test/default clipboard_test/default'`
+  passed 5/5 available Linux targets.
+
+## 2026-07-04 Structural Optimization Task 6 Test Suite Structure Split
+
+- Added RED architecture coverage requiring the window-runtime test split files
+  to exist and requiring the old `tests/ui/window_runtime_test.cpp` to shrink
+  below 260 lines. The RED command
+  `xmake test -y -P . ui_source_structure_test/default window_runtime_test/default`
+  failed as expected: `ui_source_structure_test/default` failed while the old
+  monolithic `window_runtime_test/default` still passed.
+- GREEN split the 9523-line `window_runtime_test.cpp` into a 41-line smoke,
+  a shared `window_runtime_test_support.hpp`, and focused runtime-domain test
+  binaries: input, focus, actions, text, rendering, scheduling, multiwindow,
+  and theme.
+- Registered the new xmake targets:
+  `window_runtime_input_test`, `window_runtime_focus_test`,
+  `window_runtime_actions_test`, `window_runtime_text_test`,
+  `window_runtime_rendering_test`, `window_runtime_scheduling_test`,
+  `window_runtime_multiwindow_test`, and `window_runtime_theme_test`.
+- Final Task 6 line counts are: `window_runtime_test.cpp` 41,
+  `window_runtime_test_support.hpp` 1485,
+  `window_runtime_input_test.cpp` 1984,
+  `window_runtime_focus_test.cpp` 849,
+  `window_runtime_actions_test.cpp` 1084,
+  `window_runtime_text_test.cpp` 1554,
+  `window_runtime_rendering_test.cpp` 904,
+  `window_runtime_scheduling_test.cpp` 1239,
+  `window_runtime_multiwindow_test.cpp` 344, and
+  `window_runtime_theme_test.cpp` 96.
+- Added a small theme-domain regression in `window_runtime_theme_test.cpp` so
+  the theme target exercises real runtime/context theme override and fallback
+  behavior instead of being an empty target.
+- Verified Windows focused GREEN:
+  `xmake test -y -P . window_runtime_test/default window_runtime_input_test/default window_runtime_focus_test/default window_runtime_actions_test/default window_runtime_text_test/default window_runtime_rendering_test/default window_runtime_scheduling_test/default window_runtime_multiwindow_test/default window_runtime_theme_test/default ui_source_structure_test/default`
+  passed 10/10.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . window_runtime_test/default window_runtime_input_test/default window_runtime_focus_test/default window_runtime_actions_test/default window_runtime_text_test/default window_runtime_rendering_test/default window_runtime_scheduling_test/default window_runtime_multiwindow_test/default window_runtime_theme_test/default ui_source_structure_test/default'`
+  passed 10/10.
+
+## 2026-07-04 Structural Optimization Task 7 Final Aggregation
+
+- Rechecked the previously failing `vulkan_solid_rect_test/default` before
+  starting final aggregation. The focused fresh run passed, so the earlier
+  exit-5 visible-window pixel sample failure was not reproducible in the
+  current worktree state.
+- Verified Windows full debug aggregation:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 41/41.
+  The run included the full architecture/header-cleanliness suite, Win32
+  platform tests, Vulkan renderer tests, hello-window smoke flows, and every
+  split window-runtime test target.
+- Verified WSL Arch Linux full debug aggregation:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 38/38. The run covered Linux hello-window flows, Wayland compositor
+  tests, Wayland input tests, Wayland Vulkan surface validation, architecture
+  tests, header-cleanliness tests, and the split window-runtime test targets.
+- `git diff --check` exited 0 with only expected CRLF normalization warnings.
+- Final representative structure counts are:
+  `text_model.hpp` 131, `text_layout.hpp` 7, `runtime_types.hpp` 12,
+  `window_runtime.hpp` 219, `element_tree.hpp` 104,
+  `style_core.hpp` 8, `renderer.hpp` 7, `platform.hpp` 10,
+  `events.hpp` 8, `wayland_application_internal.hpp` 3,
+  `wayland_window_internal.hpp` 107, `vulkan_internal.hpp` 6,
+  `win32_window_proc.cpp` 33, `wayland_application_windows.cpp` 5,
+  `vulkan_swapchain_create.cpp` 65,
+  `vulkan_report_submission.cpp` 100, and
+  `tests/ui/window_runtime_test.cpp` 41.
+- Updated
+  `docs/superpowers/plans/2026-07-03-structural-optimization-execution-plan.md`
+  so Task 7 is fully checked off. The aggressive Windows/Linux structural
+  optimization plan is now merge-ready pending the user's merge instruction.
+
+## 2026-07-04 Structural Optimization Task 3 Follow-up Completion Patch
+
+- Re-audited Task 3 after review found the public text header surgery was
+  incomplete: `text_shape.hpp`, `text_glyphs.hpp`, `text_measurement.hpp`,
+  `text_wrapping.hpp`, and `text_hit_testing.hpp` still needed matching
+  implementation translation units and explicit structure coverage.
+- Added RED coverage in `tests/architecture/ui_source_structure_test.cpp`
+  requiring `src/ui/text_shape.cpp`, `src/ui/text_glyph_raster.cpp`,
+  `src/ui/text_measurement.cpp`, `src/ui/text_wrapping.cpp`, and
+  `src/ui/text_hit_testing.cpp`, and rejecting the `" inline "` token in the
+  five public text leaf headers. The RED command
+  `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
+  failed as expected before the completion patch.
+- GREEN moved the remaining non-template text layout/glyph/measurement/wrap
+  and hit-testing bodies into the five focused `.cpp` files. Final line counts
+  are `text_shape.cpp` 52, `text_glyph_raster.cpp` 104,
+  `text_measurement.cpp` 84, `text_wrapping.cpp` 110, and
+  `text_hit_testing.cpp` 69; the five public text headers no longer contain
+  the `" inline "` token.
+- The new text implementation files are compiled into `cgpui_renderer` and
+  removed from `cgpui_ui` in `xmake.lua`, because the Vulkan renderer already
+  directly consumes fallback glyph rasterization/text paint metadata and the
+  alternative would force a renderer-to-UI dependency.
+- Verified WSL Arch Linux focused GREEN:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake test -y -P . ui_source_structure_test/default ui_header_cleanliness/default text_model_test/default render_view_test/default vulkan_solid_rect_test/default wayland_vulkan_surface_test/default'`
+  passed 5/5 available Linux targets.
+- Verified Windows full debug aggregation:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 41/41.
+- Verified WSL Arch Linux full debug aggregation:
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/structural-optimization -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 38/38.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings and no whitespace errors.

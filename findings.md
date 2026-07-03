@@ -1,5 +1,78 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Aggressive Structural Optimization Plan
+
+- The user clarified that the optimization target should be thorough even when
+  the risk is higher than the earlier conservative structure pass. The next
+  plan should therefore optimize for long-term file boundaries over short-term
+  source compatibility.
+- A fresh scan of `.worktrees/structural-optimization` shows implementation
+  files are no longer the main problem: `src/platform/linux` has a 177-line
+  maximum with four files over 120 lines, `src/renderer/vulkan` has a 151-line
+  maximum with four files over 120 lines, `src/ui` has a 128-line maximum, and
+  `src/platform/win32` has a 149-line maximum.
+- The dominant remaining issue is public header size. `include/cgpui/ui` has
+  29 headers, 6252 total lines, 13 headers over 200 lines, and 11 headers over
+  300 lines. The biggest are `text_model.hpp` 688 lines,
+  `runtime_types.hpp` 567, `text_layout.hpp` 481, `window_runtime.hpp` 464,
+  and `element_tree.hpp` 461.
+- The preferred aggressive sequence is private declaration surgery first,
+  remaining long bridge implementation files second, public API header surgery
+  third, and test-suite structure fourth. This avoids starting with public API
+  churn while private implementation boundaries are still broad.
+- The public header pass should move non-template inline bodies out of headers,
+  split template implementation headers by domain, keep compatibility
+  aggregate headers under 40 lines, and reduce public leaf headers toward a
+  220-line ceiling. For especially large public classes, PIMPL/private state or
+  focused facade domains are acceptable because compatibility is not the top
+  constraint for this pass.
+- A standalone design was written to
+  `docs/superpowers/specs/2026-07-03-structural-optimization-design.md`, and
+  an executable plan was written to
+  `docs/superpowers/plans/2026-07-03-structural-optimization-execution-plan.md`.
+
+## 2026-07-03 Structural Optimization Audit
+
+- With the latest aggressive split, `win32_application.cpp` is no longer a
+  Win32 window monolith. It is now the Win32 application/factory layer; window
+  lifecycle/chrome/DPI, input/test drag hooks, IME placement, and OLE drag-drop
+  ownership have separate files guarded by `win32_window_source_test`.
+- `runtime_context.cpp` was a pure forwarding pile. It now only constructs
+  `WindowRuntimeContext`; input/focus/tree forwarding, action/command
+  forwarding, text/clipboard forwarding, scheduling/diagnostics forwarding,
+  and native platform/theme forwarding are separate files guarded by
+  `ui_source_structure_test`.
+- This continuation also split `WaylandApplication` construction from window
+  creation, event-loop forwarding, platform service facades, and the platform
+  factory; split renderer report key comparison helpers out of command and
+  submission planning; split Wayland pointer axis/scroll handling from
+  enter/move/button handling; split `PaintList` text/image command emission
+  from core paint stack commands; split `WindowRuntime` run/shutdown from the
+  constructor; and split Win32 drag/drop payload extraction by source.
+- The later aggressive pass then split Wayland text-input protocol bindings,
+  Wayland DnD drag actions/events, runtime animation start/state/tick,
+  Vulkan presentation recovery, Vulkan swapchain creation, Win32 window
+  chrome/size handling, Wayland window input/drag/text event forwarding,
+  AppContext/run_app responsibilities, and Win32 clipboard text/read/write
+  responsibilities. The old aggregate files for those areas are now 1-line or
+  very small placeholders guarded by architecture tests.
+- After the latest scan, the implementation-oriented files still above about
+  150 LF are `wayland_application_internal.hpp` (186),
+  `vulkan_internal.hpp` (170), `vulkan_swapchain_create.cpp` (161),
+  `win32_application.cpp` (159), `wayland_window.cpp` (156),
+  `wayland_application_windows.cpp` (155), `wayland_window_internal.hpp` (154),
+  `win32_window_proc.cpp` (154), and `vulkan_report_submission.cpp` (153).
+  These are now mostly private declaration headers, single long lifecycle
+  flows, or platform message bridges rather than old mixed-responsibility
+  monoliths.
+- The next implementation-file optimization pass should focus on private
+  declaration surgery (`wayland_application_internal.hpp`,
+  `vulkan_internal.hpp`, `wayland_window_internal.hpp`) and then decide whether
+  single-flow files like `vulkan_swapchain_create.cpp` should be split by
+  helper extraction or left intact for readability. The remaining large public
+  headers are a separate public API surgery pass with higher include-order and
+  source-compatibility blast radius.
+
 ## 2026-07-03 UI Runtime Structure Split
 
 - `include/cgpui/ui/ui.hpp` is now a compatibility aggregate over
@@ -3918,3 +3991,188 @@
   fallback splits, soft wrapping, paragraph layout, cache eviction, or
   cross-frame runtime ownership yet. Step 197 can build pointer-selection
   geometry against these reusable measured glyph positions.
+
+## 2026-07-03 Structural Optimization Task 1 Private Header Surgery
+
+- The first aggressive optimization pass moves the largest private declaration
+  clusters out of old internal aggregate headers. The remaining aggregates are
+  intentionally compatibility entry points, not ownership locations:
+  `wayland_application_internal.hpp` is 2 lines,
+  `wayland_window_internal.hpp` is 94 lines, and `vulkan_internal.hpp` is 5
+  lines.
+- Because C++ class declarations are single continuous declarations, the
+  Wayland application/window splits use class-body declaration slices for
+  private member groups. The actual ownership boundaries are now visible in
+  focused headers: application registry/input/cursor, registered window,
+  window configure lifecycle, Vulkan platform helpers, Vulkan state, Vulkan
+  swapchain resources, and Vulkan device queue search types.
+- Task 1 stayed structure-only. No runtime behavior was intended to change.
+  Windows focused verification passed 6/6 available targets, WSL Arch Linux
+  focused verification passed 5/5 available targets, and `git diff --check`
+  exited 0 with only existing CRLF normalization warnings.
+- Task 2 should now attack the remaining long bridge implementation files:
+  Win32 window proc dispatch, Wayland application window registry/creation,
+  Vulkan swapchain creation, and Vulkan report submission.
+
+## 2026-07-03 Structural Optimization Task 2 Bridge Implementation Split
+
+- Remaining long bridge files can be split without changing public behavior by
+  introducing focused helper implementation files and keeping the old files as
+  dispatch-only compatibility points.
+- Win32 `win32_window_proc.cpp` is now a 33-line dispatcher. Test drag/drop,
+  lifecycle/paint/destroy, pointer, and keyboard/text messages live in their
+  own `win32_window_proc_*` files.
+- Wayland `wayland_application_windows.cpp` is now a 5-line placeholder entry.
+  Registry lookup/global handling lives in
+  `wayland_application_window_registry.cpp`; window creation lives in
+  `wayland_application_window_creation.cpp`; cursor and IME placement setters
+  moved back to cursor/input owners.
+- Vulkan `vulkan_swapchain_create.cpp` now delegates surface querying and
+  create-info construction to focused helpers. The create-info helper must keep
+  `VkSurfaceTransformFlagBitsKHR pre_transform` in the plan so returned
+  `VkSwapchainCreateInfoKHR` does not depend on discarded surface-capability
+  storage.
+- Vulkan report submission now keeps batch aggregation in
+  `vulkan_report_submission.cpp`, text page expansion in
+  `vulkan_report_text_submission.cpp`, and summary counters in
+  `vulkan_report_submission_stats.cpp`.
+
+## 2026-07-03 Structural Optimization Task 3 Public UI Header Surgery
+
+- Public text APIs now have focused leaf headers. `text_layout.hpp` is only the
+  compatibility aggregate over shape, glyph, measurement, wrapping, and
+  hit-testing domains, while `TextEditAction` is no longer owned by
+  `text_model.hpp`.
+- `TextModel` is now closer to a normal public class declaration:
+  construction, editing, history, navigation, and selection behavior live in
+  focused `src/ui/text_model*.cpp` units. The header keeps private helper
+  declarations because the class is still value-owned rather than PIMPL-backed.
+- Runtime public types are no longer concentrated in `runtime_types.hpp`.
+  The new runtime leaf headers map to callbacks, ids, handles, window options,
+  app context, actions, events, diagnostics, input state, runtime context, and
+  rendering/app-runner free functions.
+- `WindowRuntime` private data and helper declarations are now isolated in
+  `src/ui/window_runtime_internal.hpp` as a class-body declaration slice. This
+  avoids a full storage/PIMPL migration while still removing the private bulk
+  from the public facade header.
+- Current Task 3 line counts are: `text_layout.hpp` 6,
+  `text_model.hpp` 118, `runtime_types.hpp` 11, `window_runtime.hpp` 207,
+  and `src/ui/window_runtime_internal.hpp` 235. The largest new text leaf is
+  `text_glyphs.hpp` at 133 lines, and the largest new runtime leaf is
+  `runtime_context.hpp` at 166 lines.
+- Windows and WSL Arch Linux focused public-header verification both passed
+  8/8, and `git diff --check` exited 0 with only existing CRLF normalization
+  warnings.
+
+## 2026-07-03 Structural Optimization Task 4 Public Element And Style Header Surgery
+
+- The public element/style surface now uses thin compatibility aggregates plus
+  focused leaves. The key old public headers are all below the 220-line guard:
+  `element_tree.hpp` 104, `element_containers.hpp` 4,
+  `element_interaction_nodes.hpp` 5, `element_builder.hpp` 3,
+  `widget_builders.hpp` 6, and `style_core.hpp` 8.
+- Moving only the public header declarations was not enough for the user's
+  "thorough optimization" bar, because it created large replacement
+  implementation files. The architecture test now also guards the new
+  element/style implementation split: old implementation entry files stay
+  1-line shells, `element_tree_reconcile.cpp` is 124 LF, and
+  `element_flex_layout.cpp` is 144 LF after the second split.
+- `Style` and `StyleOverlay` chain setters are no longer inline in the public
+  headers. This intentionally trades some constexpr/header-only behavior for
+  cleaner ABI and compile boundaries, matching the stated preference to
+  optimize structure over compatibility conservatism.
+- Windows and WSL Arch Linux focused verification for Task 4 both passed 6/6:
+  `ui_source_structure_test`, `ui_header_cleanliness`, `element_test`,
+  `style_test`, `render_view_test`, and `window_runtime_test`.
+- `git diff --check` exited 0 with only existing CRLF normalization warnings
+  and no whitespace errors after the Task 4 split.
+
+## 2026-07-04 Structural Optimization Task 5 Renderer Platform Core Header Surgery
+
+- Renderer, platform, and core public headers now follow the same aggregate plus
+  leaf-header structure as the UI surface. The compatibility aggregates are
+  intentionally tiny: `renderer.hpp` 7 lines, `glyph_atlas.hpp` 7,
+  `renderer_reports.hpp` 7, `platform.hpp` 9, and `events.hpp` 8.
+- The largest Task 5 renderer leaf headers are still comfortably under the
+  220-line public-leaf target: `renderer_frame_reports.hpp` 184 and
+  `glyph_cache.hpp` 180. Platform and core event leaves are all under 60 lines.
+- Header-cleanliness verification caught two real split-boundary problems:
+  `renderer_frame_reports.hpp` depended on `GlyphCache` without a direct
+  include, and `glyph_cache.hpp` exposed command-facing signatures without
+  directly including `renderer_commands.hpp`. The fix keeps leaf headers
+  self-contained instead of relying on aggregate include order.
+- The renderer/platform/core split stayed structure-only. Windows focused Task
+  5 verification passed 8/8, WSL Arch Linux focused verification passed 5/5
+  available targets, and Task 6 can now move to splitting the oversized
+  `tests/ui/window_runtime_test.cpp` by runtime domain.
+
+## 2026-07-04 Structural Optimization Task 6 Test Suite Structure Split
+
+- `tests/ui/window_runtime_test.cpp` is no longer the runtime-test monolith. It
+  is now a 41-line smoke target, while the behavioral coverage lives in focused
+  binaries for input, focus, actions, text, rendering, scheduling, multiwindow,
+  and theme domains.
+- A shared `window_runtime_test_support.hpp` carries the common fake
+  platform/renderer/view fixture. It is still the largest test-support file at
+  1485 lines, but it replaces repeated fixture copies while the actual test
+  ownership is now distributed across independently runnable targets.
+- The split exposed two mechanical boundary hazards that are worth remembering:
+  dispatch helper globals must move with their dispatch functions, and the last
+  extracted range must not include the original file's anonymous-namespace
+  closing brace when the new wrapper closes its own namespace.
+- `window_runtime_focus_test.cpp` was added beyond the original seven-file
+  plan because focus, tab traversal, keyboard-focus ownership, and scroll
+  routing were large enough to deserve their own domain instead of inflating
+  `window_runtime_input_test.cpp`.
+- Windows and WSL Arch Linux focused Task 6 verification both passed 10/10,
+  including `ui_source_structure_test` and every split runtime test target.
+  Task 7 can now run final aggregation on Windows and WSL.
+
+## 2026-07-04 Structural Optimization Task 7 Final Aggregation
+
+- The earlier handoff-reported `vulkan_solid_rect_test/default` exit-5 failure
+  was not reproducible in the final verification state. A focused rerun passed,
+  and the full Windows aggregation later passed the same target as part of
+  41/41 tests. No production Vulkan synchronization change was made without a
+  reproducible root cause.
+- Windows full debug verification passed 41/41 after `xmake f -c -m debug -P .`
+  and `xmake test -P .`. WSL Arch Linux full debug verification passed 38/38
+  after the corresponding `XMAKE_ROOT=y xmake f -y -c -m debug -P .` and
+  `XMAKE_ROOT=y xmake test -y -P .` run.
+- `git diff --check` exits 0 for the final structural branch. The only output
+  is Git's expected LF-to-CRLF normalization warnings for touched text files.
+- The aggressive structure pass leaves the old public and private aggregates
+  thin while keeping leaf files under the encoded guards: public UI hot headers
+  are now `text_model.hpp` 131, `runtime_types.hpp` 12,
+  `text_layout.hpp` 7, `window_runtime.hpp` 219,
+  `element_tree.hpp` 104, and `style_core.hpp` 8; renderer/platform/core
+  aggregates are `renderer.hpp` 7, `platform.hpp` 10, and `events.hpp` 8.
+- The main private/bridge hotspots are also reduced to small dispatch or
+  declaration boundaries: `wayland_application_internal.hpp` 3,
+  `wayland_window_internal.hpp` 107, `vulkan_internal.hpp` 6,
+  `win32_window_proc.cpp` 33, `wayland_application_windows.cpp` 5,
+  `vulkan_swapchain_create.cpp` 65, and
+  `vulkan_report_submission.cpp` 100.
+- The remaining large files are intentionally concentrated in test fixture
+  support and split test domains rather than production API or implementation
+  monoliths. `tests/ui/window_runtime_test.cpp` is now 41 lines, while
+  `window_runtime_test_support.hpp` and the focused runtime test targets carry
+  the detailed behavioral coverage.
+
+## 2026-07-04 Structural Optimization Task 3 Follow-up Audit
+
+- Task 3's public text header split was not complete until the text layout
+  helper implementations also moved out of public leaf headers. The durable
+  guard is now in `ui_source_structure_test`: it requires
+  `src/ui/text_shape.cpp`, `src/ui/text_glyph_raster.cpp`,
+  `src/ui/text_measurement.cpp`, `src/ui/text_wrapping.cpp`, and
+  `src/ui/text_hit_testing.cpp`, and it rejects the `" inline "` token in the
+  matching public text headers.
+- The focused text implementation files intentionally live under `src/ui/` to
+  match the Task 3 structure boundary, but they are compiled into the
+  `cgpui_renderer` target. The Vulkan renderer consumes glyph rasterization and
+  text paint metadata directly, so compiling them only into `cgpui_ui` would
+  invert the dependency boundary.
+- The follow-up verification passed Windows full debug 41/41 and WSL Arch Linux
+  full debug 38/38 after the text implementation migration. `git diff --check`
+  produced only expected LF-to-CRLF normalization warnings.

@@ -1,0 +1,110 @@
+#include "cgpui/ui/text_wrapping.hpp"
+
+#include <algorithm>
+
+namespace cgpui {
+
+TextWrapLine text_wrap_line_for_range(
+    const TextShapeRun& run,
+    std::size_t glyph_start,
+    std::size_t glyph_end,
+    float y,
+    float width) {
+  TextWrapLine line{
+      .glyph_start = glyph_start,
+      .glyph_end = glyph_end,
+      .origin = {.x = 0.0F, .y = y},
+      .size = {.width = width, .height = run.line_height},
+  };
+  if (glyph_start < glyph_end && glyph_end <= run.glyphs.size()) {
+    line.byte_start = run.glyphs[glyph_start].byte_offset;
+    const TextGlyphRun& last = run.glyphs[glyph_end - 1U];
+    line.byte_end = last.byte_offset + last.byte_length;
+  } else {
+    line.byte_start = run.byte_length;
+    line.byte_end = run.byte_length;
+  }
+  return line;
+}
+
+TextWrapLayout wrap_text_measurement(
+    const TextMeasurement& measurement,
+    float max_width) {
+  const TextShapeRun& run = measurement.shape_run;
+  TextWrapLayout layout{.max_width = max_width};
+
+  const auto append_line =
+      [&](std::size_t glyph_start,
+          std::size_t glyph_end,
+          float y,
+          float width) {
+        layout.lines.push_back(
+            text_wrap_line_for_range(run, glyph_start, glyph_end, y, width));
+        layout.logical_size.width = std::max(layout.logical_size.width, width);
+      };
+
+  if (run.glyphs.empty() || max_width <= 0.0F ||
+      run.total_advance <= max_width) {
+    append_line(0, run.glyphs.size(), 0.0F, run.total_advance);
+    layout.logical_size.height = run.line_height;
+    layout.device_size = to_device_pixels(layout.logical_size, run.scale);
+    return layout;
+  }
+
+  std::size_t line_start = 0;
+  float line_width = 0.0F;
+  float y = 0.0F;
+  for (std::size_t index = 0; index < run.glyphs.size(); ++index) {
+    const float advance = run.glyphs[index].advance;
+    if (index > line_start && line_width + advance > max_width) {
+      append_line(line_start, index, y, line_width);
+      y += run.line_height;
+      line_start = index;
+      line_width = 0.0F;
+    }
+    line_width += advance;
+  }
+
+  append_line(line_start, run.glyphs.size(), y, line_width);
+  layout.logical_size.height =
+      layout.lines.empty() ? 0.0F : layout.lines.back().origin.y + run.line_height;
+  layout.device_size = to_device_pixels(layout.logical_size, run.scale);
+  return layout;
+}
+
+std::vector<TextGlyphPaint> text_glyph_paint_metadata(
+    const TextShapeRun& run,
+    std::span<const TextWrapLine> lines,
+    Point origin) {
+  std::vector<TextGlyphPaint> glyphs;
+  glyphs.reserve(run.glyphs.size());
+  for (const TextWrapLine& line : lines) {
+    float x = origin.x + line.origin.x;
+    const float y = origin.y + line.origin.y;
+    const std::size_t glyph_end = std::min(line.glyph_end, run.glyphs.size());
+    for (std::size_t index = line.glyph_start; index < glyph_end; ++index) {
+      const TextGlyphRun& glyph = run.glyphs[index];
+      const Point logical_origin{.x = x, .y = y};
+      glyphs.push_back(TextGlyphPaint{
+          .key =
+              GlyphAtlasKey{
+                  .font_family = run.font.family,
+                  .font_size = run.font_size,
+                  .scale = normalized_scale(run.scale),
+                  .device_font_size = run.device_font_size,
+                  .glyph_index = index,
+                  .byte_offset = glyph.byte_offset,
+                  .byte_length = glyph.byte_length,
+              },
+          .origin = logical_origin,
+          .advance = glyph.advance,
+          .device_origin = to_device_pixels(logical_origin, run.scale),
+          .device_advance = glyph.advance * normalized_scale(run.scale),
+      });
+      x += glyph.advance;
+    }
+  }
+  return glyphs;
+}
+
+} // namespace cgpui

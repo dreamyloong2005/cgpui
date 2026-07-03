@@ -1,0 +1,61 @@
+#pragma once
+
+#include "wayland_internal.hpp"
+
+namespace cgpui {
+
+class WaylandApplication final : public PlatformApplication {
+ public:
+  WaylandApplication();
+  ~WaylandApplication() override;
+
+  Result<std::unique_ptr<PlatformWindow>> create_window(
+      const WindowDescriptor& descriptor,
+      PlatformEventCallback callback) override;
+  int run() override;
+  void request_wakeup() override;
+  void quit() override;
+  PlatformMenuInstallationResult install_native_menu(
+      NativeMenuModel menu) override;
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) override;
+  [[nodiscard]] std::vector<FontFaceDescriptor> discover_font_records()
+      const override;
+
+ private:
+#include "wayland_application_registry_internal.hpp"
+#include "wayland_application_input_internal.hpp"
+#include "wayland_application_cursor_internal.hpp"
+
+  wl_display* display_ = nullptr;
+  wl_registry* registry_ = nullptr;
+  wl_compositor* compositor_ = nullptr;
+  xdg_wm_base* shell_ = nullptr;
+  wl_seat* seat_ = nullptr;
+  wl_data_device_manager* data_device_manager_ = nullptr;
+  zwp_text_input_manager_v3* text_input_manager_ = nullptr;
+  wl_pointer* pointer_ = nullptr;
+  wl_keyboard* keyboard_ = nullptr;
+  WaylandDataDevicePtr data_device_;
+  WaylandTextInputPtr text_input_;
+  WaylandNativeMenuStatePtr native_menu_state_;
+  PlatformMenuInstallationResult last_menu_installation_;
+  WaylandNativeFileDialogStatePtr native_file_dialog_state_;
+  NativeFileDialogResult last_file_dialog_result_;
+  WaylandKeyboardState keyboard_state_;
+  std::vector<WaylandWindow*> windows_;
+  WaylandWindow* pointer_window_ = nullptr;
+  WaylandWindow* keyboard_window_ = nullptr;
+  int wakeup_pipe_[2] = {-1, -1};
+  Point pointer_position_{};
+  Point pending_scroll_delta_{};
+  std::string initialization_error_;
+  bool running_ = true;
+  bool pointer_scroll_pending_ = false;
+  WaylandCursorThemeLoadStatus cursor_theme_status_ =
+      WaylandCursorThemeLoadStatus::unavailable;
+  WaylandCursorThemeState cursor_theme_state_;
+  std::uint32_t pointer_enter_serial_ = 0;
+};
+
+} // namespace cgpui

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -21,6 +22,54 @@ std::string read_source(const char* path) {
 
 bool contains(const std::string& text, const char* value) {
   return text.find(value) != std::string::npos;
+}
+
+std::size_t line_count(const std::string& text) {
+  return static_cast<std::size_t>(
+      std::count(text.begin(), text.end(), '\n'));
+}
+
+std::string read_win32_source() {
+  const std::vector<const char*> win32_files{
+      "src/platform/win32/win32_internal.hpp",
+      "src/platform/win32/win32_accessibility_internal.hpp",
+      "src/platform/win32/win32_drag_drop_internal.hpp",
+      "src/platform/win32/win32_native_internal.hpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_accessibility.cpp",
+      "src/platform/win32/win32_helpers.cpp",
+      "src/platform/win32/win32_string.cpp",
+      "src/platform/win32/win32_drag_drop_helpers.cpp",
+      "src/platform/win32/win32_drag_drop_payload.cpp",
+      "src/platform/win32/win32_drag_drop_ole_payload.cpp",
+      "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_native.cpp",
+      "src/platform/win32/win32_ole_drop_target.cpp",
+      "src/platform/win32/win32_window.cpp",
+      "src/platform/win32/win32_window_chrome.cpp",
+      "src/platform/win32/win32_window_size.cpp",
+      "src/platform/win32/win32_window_drag_drop.cpp",
+      "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_ime.cpp",
+      "src/platform/win32/win32_window_proc.cpp",
+      "src/platform/win32/win32_window_proc_drag.cpp",
+      "src/platform/win32/win32_window_proc_lifecycle.cpp",
+      "src/platform/win32/win32_window_proc_pointer.cpp",
+      "src/platform/win32/win32_window_proc_keyboard.cpp",
+  };
+
+  std::string text;
+  for (const char* path : win32_files) {
+    const std::string source = read_source(path);
+    if (source.empty()) {
+      return {};
+    }
+    text += source;
+    text += '\n';
+  }
+  return text;
 }
 
 std::string target_block(const std::string& xmake_text, const char* target_name) {
@@ -86,8 +135,7 @@ std::string platform_branch(const std::string& target_text, const char* platform
 } // namespace
 
 int main() {
-  const std::string win32_text =
-      read_source("src/platform/win32/win32_application.cpp");
+  const std::string win32_text = read_win32_source();
   if (win32_text.empty()) {
     return 2;
   }
@@ -234,6 +282,289 @@ int main() {
       !contains(win32_text, "titlebar_visible") ||
       !contains(win32_text, "transparent_background")) {
     return 65;
+  }
+
+  const std::string win32_application =
+      read_source("src/platform/win32/win32_application.cpp");
+  const std::string win32_internal =
+      read_source("src/platform/win32/win32_internal.hpp");
+  const std::string win32_accessibility_internal =
+      read_source("src/platform/win32/win32_accessibility_internal.hpp");
+  const std::string win32_drag_drop_internal =
+      read_source("src/platform/win32/win32_drag_drop_internal.hpp");
+  const std::string win32_native_internal =
+      read_source("src/platform/win32/win32_native_internal.hpp");
+  const std::string win32_window_message_internal =
+      read_source("src/platform/win32/win32_window_message_internal.hpp");
+  const std::string win32_window_internal =
+      read_source("src/platform/win32/win32_window_internal.hpp");
+  const std::string win32_accessibility =
+      read_source("src/platform/win32/win32_accessibility.cpp");
+  const std::string win32_helpers =
+      read_source("src/platform/win32/win32_helpers.cpp");
+  const std::string win32_string =
+      read_source("src/platform/win32/win32_string.cpp");
+  const std::string win32_drag_drop_helpers =
+      read_source("src/platform/win32/win32_drag_drop_helpers.cpp");
+  const std::string win32_drag_drop_payload =
+      read_source("src/platform/win32/win32_drag_drop_payload.cpp");
+  const std::string win32_drag_drop_ole_payload =
+      read_source("src/platform/win32/win32_drag_drop_ole_payload.cpp");
+  const std::string win32_input_helpers =
+      read_source("src/platform/win32/win32_input_helpers.cpp");
+  const std::string win32_native =
+      read_source("src/platform/win32/win32_native.cpp");
+  const std::string win32_ole_drop_target =
+      read_source("src/platform/win32/win32_ole_drop_target.cpp");
+  const std::string win32_window =
+      read_source("src/platform/win32/win32_window.cpp");
+  const std::string win32_window_chrome =
+      read_source("src/platform/win32/win32_window_chrome.cpp");
+  const std::string win32_window_size =
+      read_source("src/platform/win32/win32_window_size.cpp");
+  const std::string win32_window_drag_drop =
+      read_source("src/platform/win32/win32_window_drag_drop.cpp");
+  const std::string win32_window_events =
+      read_source("src/platform/win32/win32_window_events.cpp");
+  const std::string win32_window_ime =
+      read_source("src/platform/win32/win32_window_ime.cpp");
+  const std::string win32_window_proc =
+      read_source("src/platform/win32/win32_window_proc.cpp");
+  const std::string win32_window_proc_drag =
+      read_source("src/platform/win32/win32_window_proc_drag.cpp");
+  const std::string win32_window_proc_lifecycle =
+      read_source("src/platform/win32/win32_window_proc_lifecycle.cpp");
+  const std::string win32_window_proc_pointer =
+      read_source("src/platform/win32/win32_window_proc_pointer.cpp");
+  const std::string win32_window_proc_keyboard =
+      read_source("src/platform/win32/win32_window_proc_keyboard.cpp");
+  if (win32_application.empty() || win32_internal.empty() ||
+      win32_accessibility_internal.empty() ||
+      win32_drag_drop_internal.empty() || win32_native_internal.empty() ||
+      win32_window_message_internal.empty() ||
+      win32_window_internal.empty() ||
+      win32_accessibility.empty() || win32_helpers.empty() ||
+      win32_string.empty() || win32_drag_drop_helpers.empty() ||
+      win32_drag_drop_payload.empty() ||
+      win32_drag_drop_ole_payload.empty() ||
+      win32_input_helpers.empty() || win32_native.empty() ||
+      win32_ole_drop_target.empty() || win32_window.empty() ||
+      win32_window_chrome.empty() || win32_window_size.empty() ||
+      win32_window_drag_drop.empty() || win32_window_events.empty() ||
+      win32_window_ime.empty() || win32_window_proc.empty() ||
+      win32_window_proc_drag.empty() ||
+      win32_window_proc_lifecycle.empty() ||
+      win32_window_proc_pointer.empty() ||
+      win32_window_proc_keyboard.empty()) {
+    return 68;
+  }
+  if (line_count(win32_internal) > 80 ||
+      !contains(win32_internal, "#include \"win32_accessibility_internal.hpp\"") ||
+      !contains(win32_internal, "#include \"win32_drag_drop_internal.hpp\"") ||
+      !contains(win32_internal, "#include \"win32_native_internal.hpp\"") ||
+      !contains(win32_internal,
+                "#include \"win32_window_message_internal.hpp\"") ||
+      contains(win32_internal, "class Win32OleDropTarget final") ||
+      contains(win32_internal, "class Win32UiaAccessibilityAdapter") ||
+      contains(win32_internal, "class Win32NativeMenuState")) {
+    return 85;
+  }
+  if (line_count(win32_accessibility_internal) > 80 ||
+      !contains(win32_accessibility_internal, "struct Win32UiaProviderNode") ||
+      !contains(
+          win32_accessibility_internal,
+          "class Win32UiaAccessibilityAdapter") ||
+      contains(win32_accessibility_internal, "class Win32OleDropTarget")) {
+    return 86;
+  }
+  if (line_count(win32_drag_drop_internal) > 110 ||
+      !contains(win32_drag_drop_internal, "Win32TestDragDropPayload") ||
+      !contains(win32_drag_drop_internal,
+                "class Win32OleDropTarget final") ||
+      !contains(win32_drag_drop_internal,
+                "class Win32OleDropTargetOwner") ||
+      contains(win32_drag_drop_internal, "class Win32NativeMenuState")) {
+    return 87;
+  }
+  if (line_count(win32_native_internal) > 70 ||
+      !contains(win32_native_internal, "class Win32NativeMenuState") ||
+      !contains(win32_native_internal, "class Win32NativeFileDialogState") ||
+      contains(win32_native_internal, "class Win32OleDropTarget")) {
+    return 88;
+  }
+  if (line_count(win32_window_message_internal) > 90 ||
+      !contains(win32_window_message_internal, "Win32WindowChromeState") ||
+      !contains(win32_window_message_internal,
+                "class Win32WindowMessageTarget") ||
+      contains(win32_window_message_internal, "class Win32NativeMenuState")) {
+    return 89;
+  }
+  if (line_count(win32_application) > 220) {
+    return 69;
+  }
+  if (contains(win32_application, "class Win32Window final") ||
+      contains(win32_application, "Win32Window::") ||
+      contains(win32_application, "class Win32OleDropTarget final") ||
+      contains(win32_application, "class Win32UiaAccessibilityAdapter") ||
+      contains(win32_application, "class Win32NativeMenuState") ||
+      contains(win32_application, "class Win32NativeFileDialogState") ||
+      contains(win32_application, "LRESULT CALLBACK window_proc(")) {
+    return 70;
+  }
+  if (line_count(win32_helpers) > 60 ||
+      contains(win32_helpers, "std::wstring widen(") ||
+      contains(win32_helpers, "KeyboardModifiers current_modifiers()") ||
+      contains(win32_helpers,
+               "DragDropPayload drag_payload_from_ole_data_object(")) {
+    return 81;
+  }
+  if (!contains(win32_string, "std::wstring widen(") ||
+      !contains(win32_string, "std::string utf8_from_utf16(") ||
+      contains(win32_string, "drag_payload_from_ole_data_object(")) {
+    return 82;
+  }
+  if (line_count(win32_drag_drop_helpers) > 90 ||
+      !contains(win32_drag_drop_helpers, "test_drag_enter_message(") ||
+      !contains(win32_drag_drop_helpers,
+                "DragDropAction drag_action_from_test_hook(") ||
+      !contains(win32_drag_drop_helpers, "choose_ole_drop_effect(") ||
+      contains(win32_drag_drop_helpers,
+               "DragDropPayload drag_payload_from_test_hook(") ||
+      contains(win32_drag_drop_helpers,
+               "DragDropPayload drag_payload_from_ole_data_object(") ||
+      contains(win32_drag_drop_helpers, "KeyboardModifiers current_modifiers(")) {
+    return 83;
+  }
+  if (line_count(win32_drag_drop_payload) > 50 ||
+      !contains(win32_drag_drop_payload,
+                "DragDropPayload drag_payload_from_test_hook(") ||
+      !contains(win32_drag_drop_payload,
+                "Point drag_position_from_test_hook(") ||
+      contains(win32_drag_drop_payload,
+               "DragDropPayload drag_payload_from_ole_data_object(") ||
+      contains(win32_drag_drop_payload, "choose_ole_drop_effect(") ||
+      contains(win32_drag_drop_payload, "RegisterWindowMessageW(")) {
+    return 85;
+  }
+  if (line_count(win32_drag_drop_ole_payload) > 90 ||
+      !contains(win32_drag_drop_ole_payload,
+                "DragDropPayload drag_payload_from_ole_data_object(") ||
+      !contains(win32_drag_drop_ole_payload, "CF_UNICODETEXT") ||
+      !contains(win32_drag_drop_ole_payload, "CF_HDROP") ||
+      contains(win32_drag_drop_ole_payload,
+               "DragDropPayload drag_payload_from_test_hook(") ||
+      contains(win32_drag_drop_ole_payload, "choose_ole_drop_effect(")) {
+    return 86;
+  }
+  if (!contains(win32_input_helpers, "KeyboardModifiers current_modifiers()") ||
+      !contains(win32_input_helpers, "const wchar_t* cursor_id_for(") ||
+      !contains(win32_input_helpers, "DWORD win32_window_style_for(") ||
+      contains(win32_input_helpers,
+               "DragDropPayload drag_payload_from_ole_data_object(")) {
+    return 84;
+  }
+  if (!contains(win32_window_internal, "class Win32Window final") ||
+      !contains(win32_window_internal, "public PlatformWindow") ||
+      !contains(win32_window_internal, "public Win32OleDropTargetOwner") ||
+      !contains(win32_window_internal, "public Win32WindowMessageTarget")) {
+    return 75;
+  }
+  if (!contains(win32_window, "Win32Window::Win32Window(") ||
+      !contains(win32_window, "Win32Window::~Win32Window()") ||
+      !contains(win32_window, "Win32Window::native_surface() const") ||
+      contains(win32_window, "Win32Window::apply_window_chrome(") ||
+      contains(win32_window, "Win32Window::dpi_changed(") ||
+      contains(win32_window, "Win32Window::update_size(")) {
+    return 76;
+  }
+  if (!contains(win32_window_chrome,
+                "Win32Window::apply_window_chrome(") ||
+      !contains(win32_window_chrome, "win32_window_style_for(") ||
+      !contains(win32_window_chrome, "SetWindowLongPtrW") ||
+      !contains(win32_window_chrome, "transparent_background") ||
+      contains(win32_window_chrome, "Win32Window::dpi_changed(") ||
+      contains(win32_window_chrome, "Win32Window::pointer_moved(")) {
+    return 90;
+  }
+  if (!contains(win32_window_size, "Win32Window::update_size()") ||
+      !contains(win32_window_size, "Win32Window::update_size_for_dpi(") ||
+      !contains(win32_window_size, "Win32Window::dpi_changed(") ||
+      !contains(win32_window_size, "WindowResized{") ||
+      contains(win32_window_size, "Win32Window::apply_window_chrome(") ||
+      contains(win32_window_size, "Win32Window::pointer_moved(")) {
+    return 91;
+  }
+  if (!contains(win32_window_events, "Win32Window::pointer_moved(") ||
+      !contains(win32_window_events, "Win32Window::pointer_button(") ||
+      !contains(win32_window_events, "Win32Window::pointer_scrolled(") ||
+      !contains(win32_window_events, "Win32Window::key_event(") ||
+      !contains(win32_window_events, "Win32Window::text_input(") ||
+      !contains(win32_window_events, "Win32Window::drag_dropped(")) {
+    return 77;
+  }
+  if (!contains(win32_window_ime, "Win32Window::ime_start_composition()") ||
+      !contains(win32_window_ime, "Win32Window::apply_ime_text_input_placement()") ||
+      !contains(win32_window_ime, "ImmSetCompositionWindow(") ||
+      !contains(win32_window_ime, "ImmSetCandidateWindow(")) {
+    return 78;
+  }
+  if (!contains(win32_window_drag_drop, "Win32Window::ole_drag_entered(") ||
+      !contains(win32_window_drag_drop, "Win32Window::ole_drag_dropped(") ||
+      !contains(win32_window_drag_drop, "Win32Window::register_drop_target(") ||
+      !contains(win32_window_drag_drop, "Win32Window::revoke_drop_target()") ||
+      !contains(win32_window_drag_drop, "Win32Window::client_position_from_screen(")) {
+    return 79;
+  }
+  if (line_count(win32_window) > 130 ||
+      line_count(win32_window_chrome) > 90 ||
+      line_count(win32_window_size) > 80 ||
+      line_count(win32_window_events) > 180 ||
+      line_count(win32_window_ime) > 90 ||
+      line_count(win32_window_drag_drop) > 170) {
+    return 80;
+  }
+  if (!contains(win32_accessibility, "Win32UiaAccessibilityAdapter::update(") ||
+      !contains(win32_accessibility, "Win32UiaProviderNode{") ||
+      !contains(win32_accessibility, "text_input_node_count_")) {
+    return 71;
+  }
+  if (!contains(win32_native, "Win32NativeMenuState::install_native_menu(") ||
+      !contains(win32_native, "Win32NativeFileDialogState::show_native_file_dialog(") ||
+      !contains(win32_native, "backend = \"win32\"")) {
+    return 72;
+  }
+  if (!contains(win32_ole_drop_target, "Win32OleDropTarget::DragEnter(") ||
+      !contains(win32_ole_drop_target, "Win32OleDropTargetOwner") ||
+      !contains(win32_ole_drop_target, "owner_->ole_drag_entered(")) {
+    return 73;
+  }
+  if (!contains(win32_window_proc, "LRESULT CALLBACK win32_window_proc(") ||
+      !contains(win32_window_proc, "Win32WindowMessageTarget") ||
+      !contains(win32_window_proc, "win32_window_proc_handle_test_drag(") ||
+      !contains(win32_window_proc, "win32_window_proc_handle_lifecycle(") ||
+      !contains(win32_window_proc, "win32_window_proc_handle_pointer(") ||
+      !contains(win32_window_proc, "win32_window_proc_handle_keyboard(") ||
+      !contains(win32_application, "win32_window_proc")) {
+    return 74;
+  }
+  if (line_count(win32_window_proc) > 80 ||
+      contains(win32_window_proc, "test_drag_enter_message()") ||
+      contains(win32_window_proc, "WM_NCCREATE") ||
+      contains(win32_window_proc, "WM_MOUSEWHEEL") ||
+      contains(win32_window_proc, "WM_KEYDOWN") ||
+      contains(win32_window_proc, "WM_CHAR")) {
+    return 92;
+  }
+  if (!contains(win32_window_proc_drag, "test_drag_enter_message()") ||
+      !contains(win32_window_proc_drag, "drag_entered(") ||
+      !contains(win32_window_proc_lifecycle, "WM_NCCREATE") ||
+      !contains(win32_window_proc_lifecycle, "WM_PAINT") ||
+      !contains(win32_window_proc_lifecycle, "WM_NCDESTROY") ||
+      !contains(win32_window_proc_pointer, "WM_MOUSEWHEEL") ||
+      !contains(win32_window_proc_pointer, "WM_LBUTTONDOWN") ||
+      !contains(win32_window_proc_keyboard, "WM_KEYDOWN") ||
+      !contains(win32_window_proc_keyboard, "WM_CHAR")) {
+    return 93;
   }
 
   const std::string xmake_text = read_source("xmake.lua");

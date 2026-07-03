@@ -1,0 +1,22 @@
+#include "wayland_application_internal.hpp"
+
+namespace cgpui {
+
+int WaylandApplication::run() {
+  return wayland_run_event_loop(
+      display_,
+      wakeup_pipe_[0],
+      running_,
+      windows_);
+}
+
+void WaylandApplication::request_wakeup() {
+  wayland_request_wakeup(wakeup_pipe_[1]);
+}
+
+void WaylandApplication::quit() {
+  running_ = false;
+  request_wakeup();
+}
+
+} // namespace cgpui

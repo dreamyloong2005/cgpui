@@ -1,0 +1,90 @@
+#include "win32_window_internal.hpp"
+
+#include <utility>
+
+namespace cgpui {
+
+void Win32Window::pointer_moved(LPARAM lparam) {
+  callback_(PointerMoved{.position = Point{
+      static_cast<float>(GET_X_LPARAM(lparam)),
+      static_cast<float>(GET_Y_LPARAM(lparam))}});
+}
+
+void Win32Window::pointer_button(
+    MouseButton button,
+    bool pressed,
+    LPARAM lparam) {
+  callback_(PointerButton{
+      .button = button,
+      .pressed = pressed,
+      .position = Point{
+          static_cast<float>(GET_X_LPARAM(lparam)),
+          static_cast<float>(GET_Y_LPARAM(lparam))}});
+}
+
+void Win32Window::pointer_scrolled(WPARAM wparam, LPARAM lparam) {
+  POINT point{
+      .x = GET_X_LPARAM(lparam),
+      .y = GET_Y_LPARAM(lparam),
+  };
+  ScreenToClient(hwnd_, &point);
+  callback_(PointerScrolled{
+      .delta = Point{
+          0.0F,
+          static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) /
+              static_cast<float>(WHEEL_DELTA)},
+      .position = Point{
+          static_cast<float>(point.x),
+          static_cast<float>(point.y)}});
+}
+
+void Win32Window::key_event(WPARAM wparam, KeyAction action) {
+  callback_(KeyboardKey{
+      .key_code = static_cast<std::uint32_t>(wparam),
+      .action = action,
+      .modifiers = current_modifiers()});
+}
+
+void Win32Window::text_input(WPARAM wparam) {
+  const wchar_t character = static_cast<wchar_t>(wparam);
+  auto text = utf8_from_utf16(std::wstring_view(&character, 1));
+  if (!text.empty()) {
+    callback_(TextInput{
+        .text = std::move(text),
+        .modifiers = current_modifiers()});
+  }
+}
+
+void Win32Window::focus_changed(bool focused) {
+  callback_(WindowFocused{.focused = focused});
+}
+
+void Win32Window::drag_entered(const Win32TestDragDropPayload* payload) {
+  callback_(DragEntered{
+      .position = drag_position_from_test_hook(payload),
+      .payload = drag_payload_from_test_hook(payload),
+      .action = drag_action_from_test_hook(payload)});
+}
+
+void Win32Window::drag_updated(const Win32TestDragDropPayload* payload) {
+  callback_(DragUpdated{
+      .position = drag_position_from_test_hook(payload),
+      .payload = drag_payload_from_test_hook(payload),
+      .action = drag_action_from_test_hook(payload)});
+}
+
+void Win32Window::drag_dropped(const Win32TestDragDropPayload* payload) {
+  callback_(DragDropped{
+      .position = drag_position_from_test_hook(payload),
+      .payload = drag_payload_from_test_hook(payload),
+      .action = drag_action_from_test_hook(payload)});
+}
+
+void Win32Window::drag_exited(const Win32TestDragDropPayload* payload) {
+  callback_(DragExited{
+      .position = drag_position_from_test_hook(payload),
+      .payload = {},
+      .action = DragDropAction::none});
+}
+
+} // namespace cgpui
