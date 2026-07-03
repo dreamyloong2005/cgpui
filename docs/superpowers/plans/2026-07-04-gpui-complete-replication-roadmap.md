@@ -1,0 +1,517 @@
+# CGPUI Complete GPUI Replication Roadmap Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Drive CGPUI from the current post-Step-218 Windows/Linux GPUI-core state to a complete, audited GPUI replication in C++23.
+
+**Architecture:** Pin an upstream GPUI revision, maintain a parity ledger, then close each API and behavior gap with RED/GREEN implementation slices. Windows and Linux continue on Vulkan, Linux remains Wayland-first, macOS starts later with Cocoa + Metal, and every new feature must land in its intended leaf module from the first version.
+
+**Tech Stack:** C++23, Xmake, Win32 + Vulkan, Wayland + Vulkan, Cocoa + Metal, DirectWrite, fontconfig/FreeType/HarfBuzz, CoreText, architecture/header-cleanliness tests, Windows and WSL Arch Linux verification.
+
+---
+
+## Source Baseline
+
+Upstream GPUI remains pre-1.0 and can break between versions, so "complete"
+must mean complete against a pinned upstream revision, not a moving target.
+The current official sources checked for this roadmap are:
+
+- Zed GPUI README: `https://github.com/zed-industries/zed/blob/main/crates/gpui/README.md`
+- GPUI website and examples index: `https://gpui.rs/`
+- GPUI crate root: `https://github.com/zed-industries/zed/blob/main/crates/gpui/src/gpui.rs`
+- Context docs: `https://github.com/zed-industries/zed/blob/main/crates/gpui/docs/contexts.md`
+- Key dispatch docs: `https://github.com/zed-industries/zed/blob/main/crates/gpui/docs/key_dispatch.md`
+
+The official surface to replicate includes the three GPUI registers:
+entities/state, views/rendering, and low-level elements. It also includes
+actions/key dispatch, platform services, async executor integration, test
+context support, and examples such as hello world, animation, image/GIF, input,
+opacity, menus, shadow, SVG, text wrapping, uniform lists, and window behavior.
+
+## Current CGPUI Baseline
+
+- Steps 1-218 are merged to `master`.
+- The latest completed production-depth step is Step 218, threaded async
+  executor and cancellation.
+- The aggressive structural optimization pass is merged and post-merge
+  verified: Windows full debug passed 41/41, WSL Arch Linux full debug passed
+  38/38.
+- `AGENTS.md` is now authoritative for future development: implement in the
+  intended module from the first version, keep aggregate headers thin, avoid
+  dumping into `ui.cpp` or broad runtime/platform/renderer files, and add
+  structure tests whenever boundaries matter.
+- Windows and Linux are the active targets. Windows uses Win32 + Vulkan.
+  Linux uses Wayland + Vulkan. macOS uses Cocoa + Metal later.
+- X11 is not part of the active Windows/Linux core track. If "full GPUI
+  platform matrix parity" is later interpreted literally, X11 should be added
+  as a late optional backend after Wayland production behavior is stable.
+
+## Completion Definition
+
+CGPUI is not "fully replicated" until all of these are true:
+
+- [ ] A pinned upstream GPUI revision is recorded and every public upstream
+  module, type, trait concept, function, method, macro-equivalent, example, and
+  documented behavior has a C++ parity status.
+- [ ] Every required GPUI public API has a C++23 equivalent or a documented
+  intentional C++ adaptation with compatibility tests.
+- [ ] The examples from `gpui.rs` compile and run through public CGPUI APIs on
+  Windows and Linux, and later on macOS after the Mac track opens.
+- [ ] Windows full debug passes after every merge.
+- [ ] WSL Arch Linux full debug passes after every shared, renderer, Wayland,
+  or platform-facing merge.
+- [ ] macOS full debug passes after the Mac track opens.
+- [ ] Architecture/header-cleanliness tests prove new work did not collapse
+  back into broad files or fat aggregate headers.
+- [ ] Renderer output is no longer metadata-only for core primitives: solid
+  rect, rounded rect, text glyphs, images/SVG, clips, opacity, transforms, and
+  batching all reach real backend draw/upload paths.
+- [ ] Win32 and Wayland have production native behavior for window lifecycle,
+  input, IME, clipboard, drag/drop, menus, dialogs, accessibility, cursors,
+  multi-window, and platform diagnostics.
+- [ ] Cocoa + Metal reaches the same public behavior as Windows/Linux.
+- [ ] The parity ledger has no required gaps. Any non-goal, such as active X11
+  exclusion, is explicitly accepted by the user.
+
+## Step Count Estimate
+
+The current codebase is close to a GPUI-core-shaped API, but not close to a
+complete upstream GPUI replication. From Step 218:
+
+- Windows/Linux requested-target production parity is roughly Steps 219-678.
+- macOS Cocoa + Metal parity is roughly Steps 679-758.
+- Strict upstream X11 platform parity, if accepted later, is roughly
+  Steps 759-798.
+- Final upstream audit closure and release hardening is roughly Steps 799-840+.
+
+That means about 460 implementation slices remain for strong Windows/Linux
+production parity, about 540 slices for Windows/Linux plus macOS, and about
+580-620 slices for a strict "everything upstream GPUI exposes" interpretation.
+The exact count must be corrected after the pinned upstream parity ledger is
+generated in Phase A.
+
+## Universal Execution Protocol
+
+Every implementation slice below follows the same loop:
+
+- [ ] Start in a feature worktree under `.worktrees/`.
+- [ ] Decide the ownership boundary before writing code: public leaf header,
+  compatibility aggregate, private/internal header, and focused `.cpp` file.
+- [ ] Add RED behavior or structure coverage first.
+- [ ] Implement the smallest GREEN slice in the intended module.
+- [ ] Run targeted Windows tests.
+- [ ] Run WSL tests when the slice touches shared UI, renderer, platform,
+  Wayland, build, or headers.
+- [ ] Run `git diff --check`.
+- [ ] Fast-forward merge to `master`.
+- [ ] Run post-merge Windows full debug and required WSL full debug.
+- [ ] Update `task_plan.md`, `findings.md`, `progress.md`, and the parity
+  ledger before deleting the feature worktree.
+
+## Phase A: Steps 219-258 - Upstream Parity Ledger
+
+**Goal:** Stop estimating from memory and create the source-of-truth gap list
+for full replication.
+
+**Primary files:**
+- Create: `docs/gpui-upstream-pinned-revision.md`
+- Create: `docs/gpui-complete-parity-ledger.md`
+- Create: `tools/gpui_parity/README.md`
+- Create: `tools/gpui_parity/extract_upstream_symbols.*`
+- Modify: `docs/gpui-core-api-parity.md`
+- Add tests under: `tests/architecture/`, `tests/header_cleanliness/`,
+  `tests/api_parity/`
+
+- [ ] Steps 219-222: Pin the upstream Zed/GPUI revision, record URLs, commit
+  hash, crate versions if available, and the exact docs/examples snapshot used
+  for parity.
+- [ ] Steps 223-226: Build a symbol and docs extractor for upstream GPUI public
+  modules, re-exports, examples, documented concepts, and platform services.
+- [ ] Steps 227-230: Build the C++ API ledger by mapping each upstream concept
+  to a CGPUI header, source file, test target, status, and missing behavior.
+- [ ] Steps 231-234: Add `api_parity` tests that fail when required public
+  leaf headers are missing, when aggregate headers grow, or when examples avoid
+  the public prelude.
+- [ ] Steps 235-238: Split the ledger into required, adapted, deferred, and
+  non-goal categories. X11 must stay deferred unless the user explicitly
+  chooses strict upstream Linux backend parity.
+- [ ] Steps 239-242: Update `docs/gpui-core-api-parity.md` from the new
+  ledger, replacing stale Step 168 wording and distinguishing Step 218
+  skeletons from production behavior.
+- [ ] Steps 243-246: Add a `hello_world` API parity example that mirrors the
+  official GPUI hello-world shape in C++ terms: `Application`, `App`, `Window`,
+  `Context<T>`, `Render`, `div`, pixels, colors, bounds, and children.
+- [ ] Steps 247-250: Add parity gates for official example inventory:
+  animation, GIF, image, input, opacity, menus, shadow, SVG, text wrapping,
+  uniform list, window positioning, window shadow, and window operations.
+- [ ] Steps 251-254: Add a machine-readable status export so later phases can
+  close one ledger row per implementation slice.
+- [ ] Steps 255-258: Run full Windows and WSL verification, then mark Phase A
+  complete only when the ledger is good enough to drive the remaining phases.
+
+## Phase B: Steps 259-318 - Public Application, Context, Entity, And Action API
+
+**Goal:** Bring the public C++ authoring model close to GPUI's app/context
+shape before deeper native work expands platform behavior.
+
+**Primary modules:**
+- `include/cgpui/cgpui.hpp`
+- `include/cgpui/app/*`
+- `include/cgpui/ui/runtime_*`
+- `include/cgpui/ui/view*`
+- `include/cgpui/ui/entity*`
+- `include/cgpui/ui/action*`
+- `src/ui/runtime_*`
+- `src/ui/app_context_*`
+- `tests/api_parity/*`
+- `tests/ui/*`
+
+- [ ] Steps 259-264: Align public names and C++ idioms for `Application`,
+  `App`, `Window`, `Context<T>`, `Render`, `IntoElement`, and `View` without
+  breaking the existing public prelude.
+- [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
+  handles, observation, update transactions, invalidation, deletion, and
+  cross-context access rules.
+- [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
+  app context, view context, window context, element context, async context,
+  and test context.
+- [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
+  entity-to-entity observation, window/view observation, and deterministic
+  unsubscribe behavior.
+- [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
+  action registration, action dispatch, action scope, command metadata,
+  enablement, and bubbling through focused routes.
+- [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
+  platform modifiers, keymap contexts, partial matches, disabled scopes, and
+  command palette integration.
+- [ ] Steps 295-300: Implement test-context equivalents for simulating
+  keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
+  redraws.
+- [ ] Steps 301-306: Add public error/result conventions for window opening,
+  platform services, async spawn, and renderer creation.
+- [ ] Steps 307-312: Add API compatibility examples that compile without
+  private headers and fail if they touch `WindowRuntime` internals directly.
+- [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
+  authoring vocabulary before Phase C.
+
+## Phase C: Steps 319-378 - Elements, Style, Layout, Widgets, And Uniform Lists
+
+**Goal:** Fill the high-level declarative element system that real GPUI apps
+expect, keeping each widget in its own module from the first version.
+
+**Primary modules:**
+- `include/cgpui/ui/element_*`
+- `include/cgpui/ui/style_*`
+- `include/cgpui/ui/*_builder.hpp`
+- `src/ui/element_*`
+- `src/ui/style_*`
+- `src/ui/widgets/*`
+- `tests/ui/element_*`
+- `tests/ui/style_*`
+- `tests/examples/*`
+
+- [ ] Steps 319-324: Add the upstream-style `div` element vocabulary:
+  child/children handling, flex helpers, sizing, colors, borders, radius,
+  shadow, text styling, overflow, and layout shortcuts.
+- [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
+  min/max constraints, percentage-like sizing, margins, padding, gaps,
+  absolute/fixed positioning, overlay layers, and nested scroll clipping.
+- [ ] Steps 331-336: Add style cascade depth: pseudo/state selectors,
+  class-like reuse, theme token fallback, inherited text style, and dynamic
+  invalidation when style-affecting state changes.
+- [ ] Steps 337-342: Complete focusable/interactable element semantics:
+  hover, active, disabled, tab order, focus ring metadata, pointer capture,
+  click/drag gestures, and keyboard activation.
+- [ ] Steps 343-348: Expand built-in widgets: button, label, text input,
+  checkbox, radio, switch, slider, list item, menu item, icon/image, and
+  container primitives.
+- [ ] Steps 349-354: Implement uniform list parity: stable item identity,
+  virtualized range calculation, scroll anchoring, item measurement cache,
+  large-list recycling, and keyboard/pointer selection.
+- [ ] Steps 355-360: Implement window/examples widgets for menu demos, shadow,
+  window positioning, window shadow, and input examples using public APIs.
+- [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
+  pipeline without adding renderer details to public element headers.
+- [ ] Steps 367-372: Add structure tests requiring every widget family to have
+  a public leaf header, a focused source file, and focused behavior tests.
+- [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
+  so element/style/widget rows are either complete or explicitly deferred.
+
+## Phase D: Steps 379-458 - Text, Font, Editing, IME, And Rich Text
+
+**Goal:** Move from deterministic text skeletons to production-grade text
+behavior that can support GPUI examples and editor-like widgets.
+
+**Primary modules:**
+- `include/cgpui/ui/text_*`
+- `src/ui/text_*`
+- `src/platform/win32/*text*`
+- `src/platform/linux/*text*`
+- `src/platform/macos/*text*` after Phase H opens
+- `tests/ui/text_*`
+- `tests/platform/*text*`
+
+- [ ] Steps 379-386: Replace fallback-only shaping with HarfBuzz-backed
+  shaping on Windows/Linux while preserving deterministic test fallbacks.
+- [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
+  Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
+- [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
+  font coverage checks, emoji/color glyph planning, and missing-glyph
+  diagnostics.
+- [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
+  soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
+  ascent/descent, and paragraph caches.
+- [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
+  double/triple click, word/line selection, scroll-to-caret, preferred column,
+  selection painting, and clipboard integration.
+- [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
+  undo manager integration points, redo invalidation, and edit transaction
+  diagnostics.
+- [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
+  Wayland text-input v3 surrounding text, delete-surrounding, content hints,
+  serial policy, preedit styling, and candidate placement.
+- [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
+  color-like attributes, underline/strikethrough, background, and hit testing.
+- [ ] Steps 443-450: Add text input parity examples and API compatibility
+  tests for the official input and text wrapper examples.
+- [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
+  the parity ledger, and document which Unicode/IME behaviors are complete.
+
+## Phase E: Steps 459-538 - Vulkan Renderer Production Path
+
+**Goal:** Convert renderer reports and records into real GPU resources and
+draw calls for the Windows/Linux renderer.
+
+**Primary modules:**
+- `include/cgpui/renderer/*`
+- `src/renderer/vulkan/*`
+- `tests/renderer/*`
+- `tests/examples/*`
+
+- [ ] Steps 459-466: Create real Vulkan glyph atlas images, memory allocation,
+  image views, samplers, descriptor sets, and dirty upload command paths.
+- [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured
+  glyph draw calls, subpixel positioning policy, and gamma/alpha handling.
+- [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,
+  anti-aliasing strategy, border radius clipping, border stroke, and fill
+  variants.
+- [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
+  strategy, nested opacity, transform composition, and z/layer ordering in
+  actual command recording.
+- [ ] Steps 491-498: Build image texture resources, upload staging, sampler
+  modes, tint/opacity support, cache lifetime, and invalidation.
+- [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
+  boundary, including cache, scaling, recolor/tint, and examples.
+- [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
+  command reuse, pipeline switches, resource barriers, swapchain recovery, and
+  present pacing.
+- [ ] Steps 515-522: Add renderer diagnostics that compare planned work with
+  submitted GPU work, including upload bytes, draw counts, dropped resources,
+  and frame timing.
+- [ ] Steps 523-530: Add pixel/screenshot tests for text, rounded rects,
+  images, clips, transforms, opacity, and resizing on Windows and Wayland.
+- [ ] Steps 531-538: Run full Windows/WSL verification and mark the Vulkan
+  renderer production path complete for required primitives.
+
+## Phase F: Steps 539-618 - Win32 And Wayland Platform Production Depth
+
+**Goal:** Make active desktop platforms behave like real application backends,
+not protocol/test skeletons.
+
+**Primary modules:**
+- `include/cgpui/platform/*`
+- `src/platform/win32/*`
+- `src/platform/linux/*`
+- `tests/platform/*`
+- `tests/examples/*`
+
+- [ ] Steps 539-546: Complete window lifecycle: creation, activation, focus,
+  resize, scale changes, close policy, fullscreen, minimize/maximize, window
+  positioning, transparent/decorated windows, and child-window ownership.
+- [ ] Steps 547-554: Complete Win32 input: pointer, wheel, high precision
+  scroll, keyboard, dead keys, text input, cursor theme/system cursors,
+  capture, drag, and DPI changes.
+- [ ] Steps 555-562: Complete Wayland input: seat capability changes,
+  keyboard layout/modifiers, pointer enter/leave/motion/buttons/axis,
+  fractional scale, configure lifecycle, cursor theme loading, and wakeups.
+- [ ] Steps 563-570: Complete clipboard: Win32 Unicode/text/files where
+  applicable, Wayland selection ownership/write/read, MIME negotiation,
+  incremental transfer, failure handling, and diagnostics.
+- [ ] Steps 571-578: Complete drag/drop: Win32 OLE drop target/source,
+  Wayland data-device accept/action/finish negotiation, text/files/URI-list,
+  non-local URI policy, and cancellation.
+- [ ] Steps 579-586: Complete native menus and accelerators: menu tree,
+  check/radio/enabled state, dynamic updates, accelerator display, dispatch,
+  and platform diagnostics.
+- [ ] Steps 587-594: Complete dialogs and platform services: open/save file,
+  directory picker, message dialogs, open URL, quit/reopen behavior, and
+  unsupported-result policy.
+- [ ] Steps 595-602: Complete multi-window event loops: independent renderers,
+  routing, activation/focus transfer, lifecycle cleanup, per-window themes,
+  per-window accessibility, and child-window tests.
+- [ ] Steps 603-610: Add production platform diagnostics and stress tests for
+  window churn, clipboard ownership, DnD cancellation, IME, scale changes, and
+  timer/task wakeups.
+- [ ] Steps 611-618: Run full Windows/WSL verification and mark active
+  platform production behavior complete.
+
+## Phase G: Steps 619-678 - Accessibility, Async Runtime, Assets, Animation, And Test Macro Parity
+
+**Goal:** Finish the cross-cutting systems that make GPUI usable for complex
+apps rather than only demo windows.
+
+**Primary modules:**
+- `include/cgpui/accessibility/*`
+- `include/cgpui/ui/runtime_*`
+- `include/cgpui/ui/animation_*`
+- `include/cgpui/assets/*`
+- `src/ui/*`
+- `src/platform/*accessibility*`
+- `tests/accessibility/*`
+- `tests/async/*`
+- `tests/assets/*`
+
+- [ ] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
+  patterns, live events, focus/value/text changes, and provider lifetime.
+- [ ] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree
+  navigation, roles/states, text/value events, focus events, and bus lifecycle.
+- [ ] Steps 635-642: Complete async runtime: task pool, priorities, structured
+  groups, cancellation propagation, async I/O hooks, timer integration, and
+  cross-thread entity access rules.
+- [ ] Steps 643-650: Complete animation: transitions, element lifecycle
+  animations, spring/tween variants, cancellation, frame pacing, style
+  interpolation, and the official animation/opacity examples.
+- [ ] Steps 651-658: Complete assets: file-backed loading, PNG/JPEG/GIF/SVG
+  decode boundaries, cache keys, reload invalidation, async loading, and
+  image/GIF examples.
+- [ ] Steps 659-666: Add GPUI-style test macro/context equivalents in C++:
+  app setup, window setup, simulated input, timers, async, rendering, and
+  platform service fakes.
+- [ ] Steps 667-672: Add packaging and CI coverage for Windows and Linux:
+  debug/release builds, examples, smoke tests, architecture/header tests, and
+  reproducible dependency setup.
+- [ ] Steps 673-678: Run full Windows/WSL verification and declare
+  Windows/Linux "requested target parity candidate" only if the parity ledger
+  has no required Windows/Linux gaps.
+
+## Phase H: Steps 679-758 - macOS Cocoa + Metal Parity
+
+**Goal:** Bring macOS to the same public API and behavior after Windows/Linux
+stabilize, without forking public authoring semantics.
+
+**Mac start gate:**
+- [ ] Windows full debug and WSL full debug have passed after Phase G.
+- [ ] Public authoring APIs are stable enough that a Mac port will not chase
+  large context/element/runtime churn.
+- [ ] Renderer command boundaries are stable enough to map to Metal.
+- [ ] A Mac host with Xcode and command-line tools is available for verification.
+
+**Primary modules:**
+- `src/platform/macos/*`
+- `src/renderer/metal/*`
+- `include/cgpui/platform/*`
+- `include/cgpui/renderer/*`
+- `tests/platform/macos/*`
+- `tests/renderer/metal/*`
+- `examples/*`
+
+- [ ] Steps 679-686: Add Cocoa application and NSWindow lifecycle:
+  app delegate, run loop, window creation, close policy, activation, scaling,
+  resize, cursor, and wakeups.
+- [ ] Steps 687-694: Add CAMetalLayer and Metal renderer bootstrap:
+  device, command queue, drawable lifecycle, resize, frame pacing, and
+  diagnostics.
+- [ ] Steps 695-702: Port renderer primitives to Metal: solid rect,
+  rounded rect, text glyph atlas, images/SVG, clip stack, opacity, transform,
+  batching, and frame statistics.
+- [ ] Steps 703-710: Add macOS input: mouse, trackpad scrolling, keyboard,
+  modifiers, text input, focus, cursor, capture, drag gestures, and scale.
+- [ ] Steps 711-718: Add macOS text and fonts: CoreText font discovery,
+  shaping/rasterization integration, IME candidate placement, marked text,
+  delete-surrounding equivalent behavior, and text services diagnostics.
+- [ ] Steps 719-726: Add macOS clipboard and drag/drop:
+  NSPasteboard text/files/images, drag source/target, operation negotiation,
+  cancellation, and diagnostics.
+- [ ] Steps 727-734: Add macOS menus, accelerators, file dialogs, message
+  dialogs, open URL, quit/reopen, window chrome, and platform services.
+- [ ] Steps 735-742: Add macOS accessibility: NSAccessibility tree, roles,
+  values, focus, text/value events, live updates, and provider lifetime.
+- [ ] Steps 743-750: Port all public examples and smoke tests to macOS using
+  the same public API as Windows/Linux.
+- [ ] Steps 751-758: Run macOS full debug plus Windows/WSL regression suites,
+  then mark Mac parity complete in the ledger.
+
+## Phase I: Steps 759-798 - Optional X11 Backend For Strict Upstream Platform Matrix
+
+**Goal:** Only if the user wants literal upstream Linux backend parity, add X11
+after Wayland is production-grade. Do not let X11 slow the active Wayland path.
+
+**Activation rule:** Leave this phase unchecked and inactive unless the user
+explicitly accepts X11 as part of the full replication target.
+
+- [ ] Steps 759-764: Add X11/XCB platform boundary, source layout, build flags,
+  architecture tests, and backend selection without changing public APIs.
+- [ ] Steps 765-770: Implement X11 window lifecycle, Vulkan surface creation,
+  resize/scale, focus, close, and event loop wakeups.
+- [ ] Steps 771-776: Implement X11 input: pointer, wheel, keyboard, text,
+  cursor, capture, and keymap modifiers.
+- [ ] Steps 777-782: Implement X11 clipboard and drag/drop using selection
+  ownership, MIME conversion, file/text payloads, and diagnostics.
+- [ ] Steps 783-788: Implement X11 menus/dialog service policy, accessibility
+  boundary, platform diagnostics, and smoke tests.
+- [ ] Steps 789-794: Run Linux matrix verification for Wayland and X11 without
+  regressing Windows or macOS.
+- [ ] Steps 795-798: Update the parity ledger to show strict Linux backend
+  parity complete.
+
+## Phase J: Steps 799-840+ - Final Upstream Audit Closure And Release Hardening
+
+**Goal:** Close every required row in the parity ledger and make the result
+usable as a C++23 GPUI replacement.
+
+- [ ] Steps 799-804: Re-run upstream extractor against the pinned revision and
+  fail if any required API row lacks a C++ equivalent or accepted adaptation.
+- [ ] Steps 805-810: Compile every official example equivalent on every active
+  platform and run smoke/pixel/input tests where possible.
+- [ ] Steps 811-816: Add performance baselines: startup, first frame, resize,
+  text layout, list scrolling, image loading, async wakeups, and frame pacing.
+- [ ] Steps 817-822: Add stress tests: window churn, many entities, large
+  uniform lists, IME composition, clipboard ownership changes, DnD cancel,
+  asset reload, and task cancellation.
+- [ ] Steps 823-828: Complete documentation: getting started, architecture,
+  platform dependencies, examples, migration notes from GPUI concepts to
+  C++23 concepts, and non-goal list.
+- [ ] Steps 829-834: Package Windows/Linux/macOS builds, CI jobs, dependency
+  bootstrap scripts, and release artifacts.
+- [ ] Steps 835-840: Run final full matrix verification and lock the parity
+  ledger. Any remaining unchecked required row blocks the "fully replicated"
+  claim.
+- [ ] Steps 841+: Reserve for upstream drift. If upstream GPUI changes after
+  the pinned revision, add a new parity delta plan instead of mutating the
+  completed roadmap.
+
+## Immediate Next Slice
+
+Start with Phase A, Steps 219-238. The first concrete implementation plan
+should be:
+
+`docs/superpowers/plans/2026-07-04-gpui-upstream-parity-ledger-plan.md`
+
+That plan should create the pinned upstream ledger and the first RED
+`api_parity` tests. No macOS or X11 implementation should start before the
+ledger exists and Windows/Linux public API gaps are ranked.
+
+## Self-Review
+
+- Spec coverage: covers Windows/Linux Vulkan, Wayland-first Linux, deferred
+  Cocoa + Metal macOS, optional X11, upstream API audit, examples, renderer,
+  platform, text, accessibility, async, assets, animation, tests, docs, and
+  final release gates.
+- Placeholder scan: no unresolved placeholder tokens are used. Deferred work
+  is represented as explicit phase gates.
+- Type consistency: all CGPUI paths follow the current modular leaf/aggregate
+  layout policy from `AGENTS.md`; future exact file names should be finalized
+  in each phase-specific implementation plan before code changes.
+- Risk control: full replication is tied to a pinned upstream revision, so the
+  project can finish a concrete target while still allowing later upstream
+  drift delta plans.

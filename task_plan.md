@@ -168,6 +168,18 @@ as Vulkan text/renderer depth, text/font/editing depth, Win32/Wayland native
 platform depth, and accessibility/multi-window/theme/asset/animation/async
 depth before a separate macOS/Cocoa + Metal parity track begins.
 
+## Complete GPUI Replication Roadmap
+
+Detailed complete-replication roadmap:
+`docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+The current baseline is post-Step-218 plus the merged structural optimization
+pass. The next active work should be Phase A, Steps 219-258: pin an upstream
+GPUI revision, generate a complete parity ledger, and add API parity tests.
+Windows/Linux remain first. macOS/Cocoa + Metal starts after Windows/Linux
+public APIs and renderer/platform boundaries are stable. X11 remains out of
+the active track unless the user explicitly chooses strict upstream Linux
+backend parity.
+
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
 `8695bb1 feat: add keyed element identity` and post-merge verified on Windows

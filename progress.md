@@ -1,5 +1,32 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-04 Complete GPUI Replication Roadmap
+
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, then ran the planning-with-files session catchup helper. The
+  catchup reported the current handoff context and recommended the standard
+  `git diff --stat` check; `git diff --stat` produced no output.
+- Confirmed the current branch is `master`, the tracked worktree is clean, and
+  only the existing untracked `.vscode/` directory is present.
+- Checked the latest commits: `9a18eee docs: add modular development
+  instructions`, `30f869c docs: mark structural optimization merged`, and
+  `c6bc9e5 refactor: optimize source structure`.
+- Reviewed the Step 179-218 plan, the structural optimization plan,
+  `AGENTS.md`, and `docs/gpui-core-api-parity.md` before creating the
+  complete-replication roadmap.
+- Checked current official GPUI sources for planning context: the Zed GPUI
+  README, gpui.rs, the GPUI crate root, context docs, and key dispatch docs.
+- Added
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`,
+  covering Phase A through final upstream audit closure: upstream parity
+  ledger, Windows/Linux public API depth, element/style/widget parity, text and
+  renderer production depth, Win32/Wayland production platform behavior,
+  accessibility/async/assets/animation/test parity, macOS Cocoa + Metal, an
+  optional X11 strict-parity phase, and final release hardening.
+- Updated `task_plan.md` with a pointer to the new complete roadmap and the
+  next active recommendation: start Phase A, Steps 219-258, with the upstream
+  parity ledger before opening macOS or X11 work.
+
 ## 2026-07-03 Aggressive Structural Optimization Planning
 
 - Continued the structural optimization audit after the user clarified that the

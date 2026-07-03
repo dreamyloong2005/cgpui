@@ -1,5 +1,27 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-04 Complete GPUI Replication Planning
+
+- Official GPUI sources checked for the roadmap were the Zed GPUI README,
+  gpui.rs, the GPUI crate root, context docs, and key dispatch docs. The useful
+  planning conclusion is that full replication must be pinned to a specific
+  upstream revision because upstream GPUI is pre-1.0 and can break between
+  versions.
+- The official scope is broader than the current CGPUI Step 218 core: it
+  covers state/entities, views/rendering, low-level elements, contexts,
+  actions/key dispatch, platform services, async executor integration, test
+  context support, and the public example set.
+- The roadmap should not start macOS or X11 immediately. The durable order is
+  upstream parity ledger first, Windows/Linux production parity second,
+  macOS/Cocoa + Metal third, and optional X11 only if the user later wants
+  strict upstream Linux backend matrix parity.
+- A complete roadmap was written to
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+  It estimates roughly 460 more slices for strong Windows/Linux production
+  parity, roughly 540 for Windows/Linux plus macOS, and roughly 580-620 for a
+  strict all-upstream-platform interpretation, with the exact count corrected
+  after Phase A generates the parity ledger.
+
 ## 2026-07-03 Aggressive Structural Optimization Plan
 
 - The user clarified that the optimization target should be thorough even when
