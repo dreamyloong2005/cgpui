@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-03 Runtime Theme Inheritance And Switching
+
+- Step 215 adds runtime-owned theme hierarchy on top of the existing inert
+  `Theme` token map: an app theme provides defaults and per-window themes
+  override individual color/spacing tokens by `WindowRuntimeId`.
+- `WindowRuntimeContext` now carries its `window_runtime_id`, so root and
+  additional-window contexts can resolve theme tokens through the same
+  window-then-app fallback path.
+- `AppContext`, `WindowRuntime`, and `WindowRuntimeContext` all expose theme
+  setters, clearers, and token lookups. Missing tokens continue to soft-fail
+  with `std::nullopt`.
+- Theme changes request full render/layout/paint invalidation and redraw.
+  `clear_invalidation()` now also clears pending redraw bookkeeping, making it
+  a complete observable reset point for tests and diagnostics between theme
+  changes.
+- This is runtime theme storage and lookup, not a full design-system cascade
+  installation into every element style. Step 216 moves to deterministic
+  animation clock and tween primitives.
+
 ## 2026-07-03 Additional Window Lifecycle Cleanup
 
 - Step 214 makes app-opened child-window close deterministic instead of only

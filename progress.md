@@ -1,5 +1,56 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-03 Step 215 Runtime Theme Inheritance And Switching
+
+- Continued `.worktrees/runtime-theme-switching` on
+  `codex/runtime-theme-switching` from `master` at
+  `36a9747 docs: mark step 214 merged`.
+- Baseline targeted tests had already passed before RED:
+  `xmake test -P . style_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- Added RED coverage in `tests/ui/render_view_test.cpp` proving app/window
+  theme storage, window-over-app token inheritance, missing-token soft
+  failure, `WindowRuntimeContext::window_runtime_id`, context token lookup,
+  and dynamic theme-switch invalidation/redraw behavior.
+- Re-verified RED in this continuation with
+  `xmake test -P . render_view_test/default`; it failed at link time with
+  missing `WindowRuntime` and `WindowRuntimeContext` theme APIs, matching the
+  expected missing implementation.
+- GREEN adds `WindowRuntime::set_app_theme`, `set_window_theme`,
+  `clear_window_theme`, `app_theme`, `window_theme`, `theme_color`, and
+  `theme_spacing`, plus `AppContext` and `WindowRuntimeContext` forwarding.
+  Root and record-specific contexts now carry `window_runtime_id`.
+- Theme changes call the existing render invalidation path, and
+  `clear_invalidation()` now clears pending redraw bookkeeping alongside
+  render/layout/paint flags so repeated theme switches can be observed
+  deterministically.
+- Verified feature-worktree targeted tests:
+  `xmake test -P . style_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- `git diff --check` in the feature worktree exited 0 with only expected CRLF
+  warnings and no whitespace errors.
+- Verified feature-worktree WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui/.worktrees/runtime-theme-switching -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified feature-worktree Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Committed Step 215 as
+  `46f96e0 feat: add runtime theme switching` and fast-forward merged it to
+  `master`.
+- Verified post-merge targeted tests:
+  `xmake test -P . style_test/default render_view_test/default ui_header_cleanliness/default`
+  passed 3/3 on Windows, and the matching WSL Arch Linux command passed 3/3.
+- `git diff --check` produced no output after merge on `master`.
+- Verified post-merge WSL Arch Linux full debug:
+  `wsl -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc 'XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'`
+  passed 27/27.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` followed by `xmake test -P .` passed 30/30.
+- Refreshed `task_plan.md`, the 179-218 production-depth plan, findings, and
+  this progress log so Step 215 is marked merged and post-merge verified.
+  Step 216, animation clock and tween primitives, is the next implementation
+  slice after docs closeout and cleanup.
+
 ## 2026-07-03 Step 214 Additional Window Lifecycle Cleanup
 
 - Continued `.worktrees/additional-window-lifecycle-cleanup` on

@@ -735,7 +735,7 @@ follow-on goal is now complete on the Windows/Linux track.
 212. [x] Additional window renderer ownership.
 213. [x] Additional window event routing.
 214. [x] Additional window lifecycle cleanup.
-215. [ ] Runtime theme inheritance and switching.
+215. [x] Runtime theme inheritance and switching.
 216. [ ] Animation clock and tween primitives.
 217. [ ] Asset and image pipeline skeleton.
 218. [ ] Threaded async executor and cancellation.
@@ -745,12 +745,29 @@ follow-on goal is now complete on the Windows/Linux track.
 Current handoff: Steps 179-218 are the active Windows/Linux production-depth
 pass in
 `docs/superpowers/plans/2026-07-02-gpui-core-depth-steps-179-218-plan.md`.
-Step 214, additional window lifecycle cleanup, is merged on `master` at
-`437ef5e feat: clean up additional window lifecycle` and post-merge verified
-on Windows and WSL Arch Linux. Step 215, runtime theme inheritance and
-switching, is the next implementation slice. The track remains
-Windows/Linux first;
+Step 215, runtime theme inheritance and switching, is merged on `master` at
+`46f96e0 feat: add runtime theme switching` and post-merge verified on
+Windows and WSL Arch Linux. Step 216, animation clock and tween primitives, is
+the next implementation slice. The track remains Windows/Linux first;
 macOS/Cocoa + Metal is still deferred to a separate parity run.
+
+Step 215, runtime theme inheritance and switching, is merged on `master` at
+`46f96e0 feat: add runtime theme switching`. RED failed as expected when the
+runtime exposed theme token primitives but no app/window theme slots,
+inherited token lookup, or theme-switch invalidation API. GREEN adds
+runtime-owned app theme storage, per-`WindowRuntimeId` theme overrides,
+window-then-app color/spacing token resolution, `AppContext` and
+`WindowRuntimeContext` forwarding, and context-level `window_runtime_id`
+propagation for root and child runtime records. Theme changes now request full
+render/layout/paint invalidation and redraw; explicit invalidation clearing
+also clears pending redraw bookkeeping so tests and diagnostics can reset the
+observable scheduling state between changes. Feature-worktree targeted tests
+passed 3/3 on Windows and WSL Arch Linux, `git diff --check` exited 0 with
+only expected CRLF warnings, WSL full debug passed 27/27, and Windows full
+debug passed 30/30. Post-merge targeted tests passed 3/3 on Windows and WSL
+Arch Linux, `git diff --check` produced no output, WSL full debug passed
+27/27, and Windows full debug passed 30/30. Step 216, animation clock and
+tween primitives, is the next implementation slice.
 
 Step 214, additional window lifecycle cleanup, is merged on `master` at
 `437ef5e feat: clean up additional window lifecycle`. RED failed as expected

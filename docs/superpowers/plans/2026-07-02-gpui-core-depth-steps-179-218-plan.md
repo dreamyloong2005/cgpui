@@ -809,11 +809,15 @@ targeted rerun.
 - Modify: `tests/ui/style_test.cpp`
 - Modify: `tests/ui/render_view_test.cpp`
 
-- [ ] Add RED coverage for app/window theme storage, inherited token lookup, and dynamic theme switching invalidation.
-- [ ] Expected RED: theme token storage exists but no runtime theme hierarchy or switch invalidation exists.
-- [ ] GREEN: add runtime theme slots, inherited resolution, and redraw invalidation on theme changes.
-- [ ] Targeted command: `xmake test -P . style_test/default render_view_test/default ui_header_cleanliness/default`.
-- [ ] WSL targeted command: same target set.
+- [x] Add RED coverage for app/window theme storage, inherited token lookup, and dynamic theme switching invalidation.
+- [x] Expected RED: theme token storage exists but no runtime theme hierarchy or switch invalidation exists.
+- [x] GREEN: add runtime theme slots, inherited resolution, and redraw invalidation on theme changes.
+- [x] Targeted command: `xmake test -P . style_test/default render_view_test/default ui_header_cleanliness/default`.
+- [x] WSL targeted command: same target set.
+
+**Merged:** `46f96e0 feat: add runtime theme switching`.
+**Post-merge verification:** Windows targeted 3/3, WSL targeted 3/3,
+`git diff --check`, WSL full debug 27/27, and Windows full debug 30/30.
 
 ## Step 216: Animation Clock And Tween Primitives
 
