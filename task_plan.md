@@ -373,14 +373,17 @@ Linux full debug 53/53. Post-merge verification passed Windows full debug
 56/56 and WSL Arch Linux full debug 53/53. Step 271, GPUI-like context
 capabilities by domain, is the next Phase B slice.
 
-Step 271, app-context capability domain, is implemented and under verification
-on `codex/phase-b-app-context-capability`. RED failed as expected on missing
+Step 271, app-context capability domain, is merged on `master` at
+`29bc73a feat: add app context capability`. RED failed as expected on missing
 `WindowRuntimeContext::app_context()`. GREEN adds
 `Context<T>::app_context() -> AppContext`, reusing the existing app-domain
 facade for app/global/theme/window-opening capability access from authoring
 contexts. Runtime coverage verifies the app-context capability shares the same
-root window and global state as the current frame context. Step 272, the
-view-context capability domain, is the next Phase B slice after Step 271 lands.
+root window and global state as the current frame context. Feature-worktree
+verification passed Windows focused 12/12, WSL Arch Linux focused 12/12,
+Windows full debug 57/57, and WSL Arch Linux full debug 54/54. Post-merge
+verification passed Windows full debug 57/57 and WSL Arch Linux full debug
+54/54. Step 272, the view-context capability domain, is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

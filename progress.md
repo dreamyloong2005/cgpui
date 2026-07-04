@@ -9121,3 +9121,32 @@
   state. The first attempt mutated globals from after-frame and stack-overflowed
   through synchronous fake redraw; the fixed test seeds the global in setup and
   reads through the app-context capability during the frame callback.
+- Fresh Windows focused verification passed 12/12:
+  `xmake test -y -P . app_context_capability_test/default app_window_context_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default ui_source_structure_test/default app_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default entity_deletion_test/default window_runtime_actions_test/default`.
+- Fresh WSL Arch Linux focused verification passed 12/12:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . app_context_capability_test/default app_window_context_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default ui_source_structure_test/default app_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default entity_deletion_test/default window_runtime_actions_test/default`.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 57/57.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 54/54.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Step 271 is implemented and verified on
+  `codex/phase-b-app-context-capability`; it is ready for merge verification.
+
+## 2026-07-04 Phase B Step 271 Merge
+
+- Committed the app-context capability branch as
+  `29bc73a feat: add app context capability`.
+- Fast-forward merged `codex/phase-b-app-context-capability` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 57/57.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 54/54.
+- Step 271 is complete on `master`; Step 272 view-context capability domain is
+  the next Phase B slice.
