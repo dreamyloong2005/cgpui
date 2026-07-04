@@ -9795,3 +9795,18 @@
 - Step 282 is implemented and focused/full verified on
   `codex/phase-b-observation-closure-audit`; it is ready for merge
   verification.
+
+## 2026-07-05 Phase B Step 282 Merge
+
+- Committed the observation/subscription closure branch as
+  `4a8d837 feat: close observation subscription cleanup`.
+- Fast-forward merged `codex/phase-b-observation-closure-audit` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 68/68.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 65/65.
+- Step 282 is complete on `master`; Step 283 typed-action parity is the next
+  Phase B slice before key dispatch and fuller test-context simulation.

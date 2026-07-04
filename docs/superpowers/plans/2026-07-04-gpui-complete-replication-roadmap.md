@@ -240,7 +240,7 @@ shape before deeper native work expands platform behavior.
   grouping existing deterministic runtime observability and queue controls
   without claiming the later Step 295-300 simulated input, clipboard, timer,
   async, and redraw behavior band.
-- [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
+- [x] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
   entity-to-entity observation, window/view observation, and deterministic
   unsubscribe behavior. Step 277 adds deterministic `Subscription` lifetime:
   explicit `release()` removes observer records once, moved-from subscriptions
@@ -263,11 +263,11 @@ shape before deeper native work expands platform behavior.
   ownership paths. Step 281 adds runtime-token boundaries to `ViewHandle<T>`,
   `WeakViewHandle<T>`, and `WeakView`, so read, weak upgrade, and observation
   helpers reject handles captured from a different `WindowRuntime` even when
-  numeric `ViewId` values collide. Step 282 should close the
-  observation/subscription band with a focused parity audit and any missing
-  public guard coverage before actions and key dispatch begin; its first
-  closure guard verifies removed views release both view observers and
-  view-owned entity subscriptions.
+  numeric `ViewId` values collide. Step 282 closes the
+  observation/subscription band with a focused parity audit and
+  `WindowRuntime::remove_view(...)` cleanup for removed-view subscriptions;
+  its guard verifies removed views release both view observers and view-owned
+  entity subscriptions before actions and key dispatch begin.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -582,10 +582,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 282 observation/subscription closure audit is in progress on
-`codex/phase-b-observation-closure-audit`. Keep it scoped to closing the
-observation/subscription band before starting the later action/key-dispatch
-and fuller test-context behavior bands.
+Step 282 observation/subscription closure audit is merged on `master` at
+`4a8d837 feat: close observation subscription cleanup` and post-merge verified
+on Windows and WSL Arch Linux. Continue Phase B with Step 283, starting the
+typed-action parity band without pulling key dispatch or fuller test-context
+simulation forward.
 
 ## Self-Review
 

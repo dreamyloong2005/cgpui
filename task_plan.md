@@ -1672,6 +1672,7 @@ implementation slice.
   and WSL full-debug verification. Phase B Step 281, view-handle runtime-token
   boundaries for cross-runtime read/upgrade/observation rejection, is complete
   on `master` after post-merge Windows and WSL full-debug verification. Phase
-  B Step 282 observation/subscription closure audit is in progress on
-  `codex/phase-b-observation-closure-audit` before starting the
-  action/key-dispatch band.
+  B Step 282 observation/subscription closure audit is complete on `master`
+  after post-merge Windows and WSL full-debug verification. Phase B Step 283
+  starts the typed-action parity band before key-dispatch and fuller
+  test-context behavior.
