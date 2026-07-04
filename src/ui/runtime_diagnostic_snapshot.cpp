@@ -13,6 +13,16 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       connected_subscription_count += 1;
     }
   }
+  for (const WindowObserver& observer : window_observers_) {
+    if (observer.subscription_id.value != 0 && observer.callback) {
+      connected_subscription_count += 1;
+    }
+  }
+  for (const ViewObserver& observer : view_observers_) {
+    if (observer.subscription_id.value != 0 && observer.callback) {
+      connected_subscription_count += 1;
+    }
+  }
   const RuntimeTaskDiagnostics task_counts = task_diagnostics();
 
   return RuntimeDiagnosticsSnapshot{

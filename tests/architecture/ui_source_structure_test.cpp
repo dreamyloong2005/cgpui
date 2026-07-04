@@ -436,14 +436,21 @@ int main() {
       !contains(view_context_header, "ViewId view_id() const") ||
       !contains(view_context_header, "ViewHandle<T> view() const") ||
       !contains(view_context_header, "WeakViewHandle<T> weak_view() const") ||
+      !contains(view_context_header, "bool observe(") ||
+      !contains(view_context_header, "Subscription observe_subscription(") ||
       !contains(view_context_header, "const T* current() const") ||
       !contains(view_handle_header, "class WeakView") ||
       !contains(view_handle_header, "class ViewHandle") ||
       !contains(view_handle_header, "class WeakViewHandle") ||
+      !contains(view_handle_header, "bool observe(") ||
+      !contains(view_handle_header, "Subscription observe_subscription(") ||
       !contains(window_context_header, "class WindowContextCapability") ||
       !contains(window_context_header, "Window window() const") ||
       !contains(window_context_header, "Window current_window() const") ||
       !contains(window_context_header, "WindowRuntimeId runtime_id() const") ||
+      !contains(window_context_header, "bool observe(") ||
+      !contains(window_context_header,
+                "Subscription observe_subscription(") ||
       !contains(window_context_header, "void request_render() const") ||
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
@@ -459,9 +466,21 @@ int main() {
       !contains(runtime_context_header,
                 "ViewContextCapability<T> view_context() const") ||
       !contains(runtime_context_header, "ViewHandle<T> view() const") ||
+      !contains(runtime_context_header, "bool observe_window(") ||
+      !contains(runtime_context_header,
+                "Subscription observe_window_subscription(") ||
+      !contains(runtime_context_header, "bool observe_view(") ||
+      !contains(runtime_context_header,
+                "Subscription observe_view_subscription(") ||
       !contains(runtime_templates_header,
                 "ViewContextCapability<T> "
                 "WindowRuntimeContext::view_context() const") ||
+      !contains(runtime_templates_header,
+                "WindowRuntimeContext::observe_window(") ||
+      !contains(runtime_templates_header,
+                "WindowRuntimeContext::observe_view(") ||
+      !contains(runtime_templates_header,
+                "ViewContextCapability<T>::observe(") ||
       !contains(runtime_templates_header,
                 "const T* ViewContextCapability<T>::current() const") ||
       !contains(runtime_templates_header,
@@ -536,7 +555,7 @@ int main() {
       line_count(element_context_header) > 120 ||
       line_count(view_handle_header) > 180 ||
       line_count(window_context_header) > 120 ||
-      line_count(window_runtime_header) > 220 ||
+      line_count(window_runtime_header) > 240 ||
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
       contains(runtime_types_header, "struct AppContext") ||
@@ -904,6 +923,8 @@ int main() {
       "src/ui/runtime_window_activation.cpp",
       "src/ui/runtime_window_records.cpp",
       "src/ui/runtime_window_rendering.cpp",
+      "src/ui/window.cpp",
+      "src/ui/window_context.cpp",
       "src/ui/runtime_theme.cpp",
       "src/ui/runtime_text.cpp",
       "src/ui/runtime_text_focus.cpp",
@@ -1202,6 +1223,27 @@ int main() {
       contains(runtime_window_records_source,
                "AppOpenedWindow WindowRuntime::open_window(")) {
     return 67;
+  }
+
+  const std::string window_source = read_source("src/ui/window.cpp");
+  const std::string window_context_source =
+      read_source("src/ui/window_context.cpp");
+  if (!contains(window_source, "Window::descriptor()") ||
+      !contains(window_source, "Window::viewport_size()") ||
+      !contains(window_context_source, "WindowContextCapability::window()") ||
+      !contains(window_context_source,
+                "WindowContextCapability::current_window()") ||
+      !contains(window_context_source,
+                "WindowContextCapability::request_render()") ||
+      !contains(window_context_source,
+                "WindowRuntimeContext::window()") ||
+      !contains(window_context_source,
+                "WindowRuntimeContext::current_window()") ||
+      !contains(window_context_source,
+                "WindowRuntimeContext::window_context()") ||
+      line_count(window_source) > 120 ||
+      line_count(window_context_source) > 120) {
+    return 68;
   }
 
   const std::string runtime_events_source =

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/app/window.hpp"
+#include "cgpui/ui/runtime_handles.hpp"
 
 namespace cgpui {
 
@@ -21,6 +22,11 @@ class WindowContextCapability {
   [[nodiscard]] DpiScale scale() const;
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] bool focused() const;
+
+  template <typename Observer>
+  bool observe(Observer&& observer) const;
+  template <typename Observer>
+  [[nodiscard]] Subscription observe_subscription(Observer&& observer) const;
 
   void request_render() const;
   void request_layout() const;

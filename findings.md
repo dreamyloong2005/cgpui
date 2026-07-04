@@ -4250,9 +4250,10 @@
   while moving the authoring surface closer to upstream GPUI spelling.
 - The Step 260 ownership boundary is:
   `include/cgpui/app/app_facade.hpp`, `include/cgpui/app/window.hpp`,
-  `src/app/app_facade.cpp`, `src/app/window.cpp`, and
-  `src/app/app_context_facade.cpp`. The app aggregate remains thin, and
-  `cgpui_app` is the build target that owns the facade implementation.
+  `src/app/app_facade.cpp`, and `src/app/app_context_facade.cpp`; after
+  Step 279, `Window` implementation lives in `src/ui/window.cpp` so UI headers
+  link through `cgpui_ui`. The app aggregate remains thin, and `cgpui_app`
+  owns only the app-facade implementation.
 - `AppContext::app()` and `WindowRuntimeContext::app()` intentionally return
   lightweight facade handles over the current runtime. `WindowRuntimeContext`
   also exposes `current_window()` so frame/update code can inspect the active
@@ -4484,15 +4485,16 @@
   groups the existing current-window facade queries and request helpers under
   one author-facing domain.
 - The implementation belongs in the focused UI public leaf
-  `include/cgpui/ui/window_context.hpp` and the focused app facade source
-  `src/app/window_context.cpp`. It should not grow `ui.cpp`,
+  `include/cgpui/ui/window_context.hpp` and the focused UI source
+  `src/ui/window_context.cpp`. It should not grow `ui.cpp`,
   `runtime_context.cpp`, or the broader app-context bridge file.
 - This is a facade over the existing `Window` runtime facade, not a new native
   window lifecycle. Native child-window creation, event routing depth, and
   platform behavior remain later Phase B/F work.
-- Header cleanliness coverage should only prove the public type is visible in
-  leaf includes. Non-template `WindowContextCapability` methods require the
-  `cgpui_app` target and belong in the dedicated API parity test.
+- Header cleanliness coverage should prove the public type and template
+  observation helpers are usable from UI leaf includes. Non-template
+  `WindowContextCapability` methods now live in `cgpui_ui` so the UI target
+  owns the symbols its public headers instantiate.
 
 ## 2026-07-04 Phase B Step 274 Element Context Capability
 
@@ -4590,3 +4592,26 @@
   runtime token, or when the observer entity is missing. If the observer entity
   is removed after registration, callbacks skip it; deterministic unsubscribe
   remains owned by Step 277's `Subscription::release()` path.
+
+## 2026-07-04 Phase B Step 279 Window/View Observation
+
+- Step 279 should stay scoped to public window/view observation spelling:
+  `Context<T>::observe_window(...)`, `Context<T>::observe_view(...)`,
+  `WindowContextCapability::observe(...)`,
+  `ViewContextCapability<T>::observe(...)`, and
+  `ViewHandle<T>::observe(...)`, each with subscription-returning variants.
+- Runtime observer storage belongs in the focused
+  `src/ui/runtime_observations.cpp` implementation, with scheduling triggers
+  in `src/ui/runtime_scheduling.cpp` and subscription erasure in
+  `src/ui/runtime_subscriptions.cpp`. It should not grow `ui.cpp` or turn
+  diagnostics snapshot construction into observer ownership code.
+- `Window` and `WindowContextCapability` non-template implementation belongs
+  in `cgpui_ui` (`src/ui/window.cpp` and `src/ui/window_context.cpp`) because
+  the public UI templates instantiate those symbols. Keeping them in
+  `cgpui_app` makes UI-header users depend on an app target just to link an
+  observation callback.
+- Window/view observers are tied to the existing invalidation/request flow:
+  `request_render`, `request_layout`, and `request_paint` notify observers
+  before scheduling redraw. `Subscription::release()` removes window and view
+  observer records through the same deterministic token path as entity
+  observers, and removed view records drop their view observers.

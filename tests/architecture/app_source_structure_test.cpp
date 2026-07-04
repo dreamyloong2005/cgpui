@@ -46,9 +46,9 @@ int main() {
   const std::string application_source = read_source("src/app/application.cpp");
   const std::string app_facade_source =
       read_source("src/app/app_facade.cpp");
-  const std::string window_source = read_source("src/app/window.cpp");
+  const std::string window_source = read_source("src/ui/window.cpp");
   const std::string window_context_source =
-      read_source("src/app/window_context.cpp");
+      read_source("src/ui/window_context.cpp");
   const std::string app_context_source =
       read_source("src/app/app_context_facade.cpp");
 
@@ -129,13 +129,17 @@ int main() {
                 "WindowContextCapability::request_render()") ||
       !contains(window_context_source,
                 "WindowRuntimeContext::window_context()") ||
+      !contains(window_context_source,
+                "WindowRuntimeContext::window()") ||
+      !contains(window_context_source,
+                "WindowRuntimeContext::current_window()") ||
       !contains(app_context_source, "AppContext::app()") ||
-      !contains(app_context_source, "WindowRuntimeContext::app_context()") ||
-      !contains(app_context_source, "WindowRuntimeContext::window()") ||
-      !contains(app_context_source, "WindowRuntimeContext::current_window()")) {
+      !contains(app_context_source, "WindowRuntimeContext::app_context()")) {
     return 12;
   }
   if (line_count(window_context_source) > 120 ||
+      contains(app_context_source, "WindowRuntimeContext::window()") ||
+      contains(app_context_source, "WindowRuntimeContext::current_window()") ||
       contains(app_context_source, "WindowRuntimeContext::window_context()")) {
     return 14;
   }

@@ -58,6 +58,17 @@ struct WindowRuntimeContext {
       WeakViewHandle<T> view) const;
   template <typename T>
   [[nodiscard]] const T* read_view(ViewHandle<T> view) const;
+  template <typename Observer>
+  bool observe_window(Observer&& observer) const;
+  template <typename Observer>
+  [[nodiscard]] Subscription observe_window_subscription(
+      Observer&& observer) const;
+  template <typename T, typename Observer>
+  bool observe_view(ViewHandle<T> view, Observer&& observer) const;
+  template <typename T, typename Observer>
+  [[nodiscard]] Subscription observe_view_subscription(
+      ViewHandle<T> view,
+      Observer&& observer) const;
   void capture_pointer(PointerCaptureOwner owner) const;
   void capture_pointer(ElementId element_id) const;
   void release_pointer(PointerCaptureOwner owner) const;

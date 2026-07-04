@@ -6,17 +6,23 @@ void WindowRuntime::request_render() {
   invalidation_state_.render = true;
   invalidation_state_.layout = true;
   invalidation_state_.paint = true;
+  notify_window_observers();
+  notify_view_observers(root_view_id_);
   schedule_redraw();
 }
 
 void WindowRuntime::request_layout() {
   invalidation_state_.layout = true;
   invalidation_state_.paint = true;
+  notify_window_observers();
+  notify_view_observers(root_view_id_);
   schedule_redraw();
 }
 
 void WindowRuntime::request_paint() {
   invalidation_state_.paint = true;
+  notify_window_observers();
+  notify_view_observers(root_view_id_);
   schedule_redraw();
 }
 

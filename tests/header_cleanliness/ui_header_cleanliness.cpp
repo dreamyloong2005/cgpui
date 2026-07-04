@@ -126,6 +126,32 @@ class TestView final : public cgpui::View {
     (void)view_context.current();
     (void)view_handle.read(context);
     (void)context.upgrade_view(weak_view_handle);
+    (void)context.observe_window(
+        [](const cgpui::Context<TestView>&,
+           cgpui::WindowContextCapability window) {
+          (void)window.runtime_id();
+        });
+    cgpui::Subscription window_observation =
+        context.observe_window_subscription(
+            [](const cgpui::Context<TestView>&,
+               cgpui::WindowContextCapability window) {
+              (void)window.viewport_size();
+            });
+    (void)window_observation.release();
+    (void)view_handle.observe(
+        context,
+        [](const cgpui::Context<TestView>&,
+           cgpui::ViewHandle<TestView> observed) {
+          (void)observed.id();
+        });
+    cgpui::Subscription view_observation =
+        view_context.observe_subscription(
+            view_handle,
+            [](const cgpui::Context<TestView>&,
+               cgpui::ViewHandle<TestView> observed) {
+              (void)observed.empty();
+            });
+    (void)view_observation.release();
     cgpui::WindowContextCapability window_context;
     (void)window_context;
     (void)context.observe_model(

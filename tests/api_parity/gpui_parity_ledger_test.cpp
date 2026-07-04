@@ -140,6 +140,7 @@ int main() {
       !contains(ledger, "`observe_entity(...)` helpers") ||
       !contains(ledger, "entity observation helpers") ||
       !contains(ledger, "entity-to-entity observation helpers") ||
+      !contains(ledger, "window/view observation helpers") ||
       !contains(ledger, "`update_entity(...)` transaction helpers") ||
       !contains(ledger, "value-returning update transactions") ||
       !contains(ledger, "`invalidate_entity(...)` helpers") ||
@@ -183,6 +184,8 @@ int main() {
                 "tests/api_parity/entity_observation_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/entity_to_entity_observation_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/window_view_observation_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/subscription_lifetime_test.cpp") ||
       !contains(ledger,
@@ -234,6 +237,7 @@ int main() {
               "deterministic subscription lifetime/unsubscribe behavior",
               "deterministic Subscription lifetime/unsubscribe behavior",
               "entity-to-entity observation helpers",
+              "window/view observation helpers",
               "invalidate_entity helpers",
               "entity deletion helpers",
               "\"x11\"",
@@ -393,6 +397,29 @@ int main() {
       contains(entity_to_entity_observation, "ViewContext") ||
       contains(entity_to_entity_observation, "PlatformWindow")) {
     return 55;
+  }
+
+  const std::string window_view_observation =
+      read_source("tests/api_parity/window_view_observation_test.cpp");
+  if (window_view_observation.empty()) {
+    return 56;
+  }
+  if (!contains(window_view_observation, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(window_view_observation, "context.observe_window(") ||
+      !contains(window_view_observation,
+                "observe_window_subscription") ||
+      !contains(window_view_observation, "window_context.observe") ||
+      !contains(window_view_observation, "view.observe(") ||
+      !contains(window_view_observation, "view_context.observe") ||
+      !contains(window_view_observation,
+                "cgpui::Render<WindowViewObservationView>")) {
+    return 57;
+  }
+  if (contains(window_view_observation, "WindowRuntimeContext") ||
+      contains(window_view_observation, "WindowRuntime") ||
+      contains(window_view_observation, "AppContext") ||
+      contains(window_view_observation, "PlatformWindow")) {
+    return 58;
   }
 
   const std::string subscription_lifetime =

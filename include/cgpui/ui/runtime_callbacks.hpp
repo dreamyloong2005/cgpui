@@ -40,5 +40,9 @@ using WindowRuntimeEventCallback =
 using WindowRuntimeErrorCallback = std::function<void(const Error&)>;
 using AppSetupCallback = std::function<void(WindowRuntime&)>;
 using AppContextSetupCallback = std::function<void(AppContext&)>;
+using WindowObservationCallback =
+    std::function<void(const WindowRuntimeContext&)>;
+using ViewObservationCallback =
+    std::function<void(const WindowRuntimeContext&, ViewId)>;
 
 } // namespace cgpui

@@ -227,10 +227,11 @@ Step 260, public `App` and `Window` context facades, is merged on `master` at
 `d3a501c feat: add app window context facades`. RED failed as expected on
 missing `cgpui::App`, `cgpui::Window`, `AppContext::app()`,
 `WindowRuntimeContext::app()`, and `WindowRuntimeContext::current_window()`.
-GREEN adds app-module ownership through `include/cgpui/app/app_facade.hpp`,
-`include/cgpui/app/window.hpp`, `src/app/app_facade.cpp`,
-`src/app/window.cpp`, and `src/app/app_context_facade.cpp`; `cgpui_app`
-compiles the new files; `include/cgpui/app/app.hpp` remains a thin aggregate.
+GREEN added app-module ownership through `include/cgpui/app/app_facade.hpp`,
+`include/cgpui/app/window.hpp`, `src/app/app_facade.cpp`, and
+`src/app/app_context_facade.cpp`; after Step 279, `Window` implementation
+lives in `src/ui/window.cpp` so UI headers link through `cgpui_ui`.
+`include/cgpui/app/app.hpp` remains a thin aggregate.
 The slice preserves low-level runtime entrypoints and exposes narrow facade
 queries for `open_window`, `root_window`, `window(runtime_id)`, descriptor,
 viewport, scale, focus, and invalidation forwarding. Windows and WSL focused
@@ -404,7 +405,7 @@ Step 273, window-context capability domain, is merged on `master` at
 missing `cgpui::WindowContextCapability` and
 `Context<T>::window_context()`. GREEN adds the focused public leaf
 `include/cgpui/ui/window_context.hpp`, the focused implementation
-`src/app/window_context.cpp`, and
+`src/ui/window_context.cpp`, and
 `Context<T>::window_context() -> WindowContextCapability`, grouping existing
 `Window` facade queries plus render/layout/paint requests without adding new
 native lifecycle state. Feature-worktree verification passed Windows focused
@@ -1665,4 +1666,6 @@ implementation slice.
   `master` after post-merge Windows and WSL full-debug verification. Phase B
   Step 278, entity-to-entity observation, is complete on `master` after
   post-merge Windows and WSL full-debug verification. Phase B Step 279,
-  window/view observation, is the next implementation slice.
+  window/view observation, is implemented on
+  `codex/phase-b-window-view-observation` and is in verification. Step 280 is
+  the next observation/subscription slice after Step 279 merges.

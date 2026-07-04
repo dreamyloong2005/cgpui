@@ -242,6 +242,44 @@ const T* ViewContextCapability<T>::current() const {
 }
 
 template <typename T>
+template <typename Observer>
+bool ViewContextCapability<T>::observe(
+    ViewHandle<T> view,
+    Observer&& observer) const {
+  return context_ != nullptr &&
+         context_->observe_view(view, std::forward<Observer>(observer));
+}
+
+template <typename T>
+template <typename Observer>
+Subscription ViewContextCapability<T>::observe_subscription(
+    ViewHandle<T> view,
+    Observer&& observer) const {
+  if (context_ == nullptr) {
+    return {};
+  }
+  return context_->observe_view_subscription(
+      view,
+      std::forward<Observer>(observer));
+}
+
+template <typename Observer>
+bool WindowContextCapability::observe(Observer&& observer) const {
+  return context_ != nullptr &&
+         context_->observe_window(std::forward<Observer>(observer));
+}
+
+template <typename Observer>
+Subscription WindowContextCapability::observe_subscription(
+    Observer&& observer) const {
+  if (context_ == nullptr) {
+    return {};
+  }
+  return context_->observe_window_subscription(
+      std::forward<Observer>(observer));
+}
+
+template <typename T>
 ViewContextCapability<T> WindowRuntimeContext::view_context() const {
   return ViewContextCapability<T>(*this);
 }
@@ -269,6 +307,77 @@ std::optional<ViewHandle<T>> WindowRuntimeContext::upgrade_view(
 template <typename T>
 const T* WindowRuntimeContext::read_view(ViewHandle<T> view) const {
   return dynamic_cast<const T*>(runtime.find_view(view.id()));
+}
+
+template <typename Observer>
+bool WindowRuntimeContext::observe_window(Observer&& observer) const {
+  return runtime.observe_window(
+      [observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context) mutable {
+        observer(context, context.window_context());
+      });
+}
+
+template <typename Observer>
+Subscription WindowRuntimeContext::observe_window_subscription(
+    Observer&& observer) const {
+  return runtime.observe_window_subscription(
+      [observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context) mutable {
+        observer(context, context.window_context());
+      });
+}
+
+template <typename T, typename Observer>
+bool WindowRuntimeContext::observe_view(
+    ViewHandle<T> view,
+    Observer&& observer) const {
+  if (view.empty() || read_view(view) == nullptr) {
+    return false;
+  }
+
+  return runtime.observe_view(
+      view.id(),
+      [observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context,
+          ViewId view_id) mutable {
+        observer(context, ViewHandle<T>(view_id));
+      });
+}
+
+template <typename T, typename Observer>
+Subscription WindowRuntimeContext::observe_view_subscription(
+    ViewHandle<T> view,
+    Observer&& observer) const {
+  if (view.empty() || read_view(view) == nullptr) {
+    return {};
+  }
+
+  return runtime.observe_view_subscription(
+      view.id(),
+      [observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context,
+          ViewId view_id) mutable {
+        observer(context, ViewHandle<T>(view_id));
+      });
+}
+
+template <typename T>
+template <typename Context, typename Observer>
+bool ViewHandle<T>::observe(
+    const Context& context,
+    Observer&& observer) const {
+  return context.observe_view(*this, std::forward<Observer>(observer));
+}
+
+template <typename T>
+template <typename Context, typename Observer>
+Subscription ViewHandle<T>::observe_subscription(
+    const Context& context,
+    Observer&& observer) const {
+  return context.observe_view_subscription(
+      *this,
+      std::forward<Observer>(observer));
 }
 
 template <typename T>
@@ -590,6 +699,70 @@ Subscription WindowRuntime::observe_model_subscription(
               std::uint64_t entity_id_value) {
             observer(context, Model<T>{entity_id_value});
           },
+  });
+  return Subscription(*this, subscription_id);
+}
+
+template <typename Observer>
+bool WindowRuntime::observe_window(Observer&& observer) {
+  WindowObservationCallback observer_fn{std::forward<Observer>(observer)};
+  if (!observer_fn) {
+    return false;
+  }
+
+  window_observers_.push_back(WindowObserver{
+      .subscription_id = {},
+      .runtime_id = root_window_runtime_id_,
+      .callback = std::move(observer_fn),
+  });
+  return true;
+}
+
+template <typename Observer>
+Subscription WindowRuntime::observe_window_subscription(Observer&& observer) {
+  WindowObservationCallback observer_fn{std::forward<Observer>(observer)};
+  if (!observer_fn) {
+    return {};
+  }
+
+  const SubscriptionId subscription_id{next_subscription_id_++};
+  window_observers_.push_back(WindowObserver{
+      .subscription_id = subscription_id,
+      .runtime_id = root_window_runtime_id_,
+      .callback = std::move(observer_fn),
+  });
+  return Subscription(*this, subscription_id);
+}
+
+template <typename Observer>
+bool WindowRuntime::observe_view(ViewId view_id, Observer&& observer) {
+  ViewObservationCallback observer_fn{std::forward<Observer>(observer)};
+  if (!observer_fn || view_id.value == 0 || find_view(view_id) == nullptr) {
+    return false;
+  }
+
+  view_observers_.push_back(ViewObserver{
+      .subscription_id = {},
+      .view_id = view_id,
+      .callback = std::move(observer_fn),
+  });
+  return true;
+}
+
+template <typename Observer>
+Subscription WindowRuntime::observe_view_subscription(
+    ViewId view_id,
+    Observer&& observer) {
+  ViewObservationCallback observer_fn{std::forward<Observer>(observer)};
+  if (!observer_fn || view_id.value == 0 || find_view(view_id) == nullptr) {
+    return {};
+  }
+
+  const SubscriptionId subscription_id{next_subscription_id_++};
+  view_observers_.push_back(ViewObserver{
+      .subscription_id = subscription_id,
+      .view_id = view_id,
+      .callback = std::move(observer_fn),
   });
   return Subscription(*this, subscription_id);
 }

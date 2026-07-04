@@ -618,6 +618,62 @@ int test_entity_can_observe_another_entity() {
   return 0;
 }
 
+int test_window_and_view_observation_helpers() {
+  RuntimeFixture fixture;
+  entity_handle_fixture = &fixture;
+  fixture.app.on_run = &dispatch_entity_handle_sequence;
+  fixture.view.exercise_window_view_observation = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  entity_handle_fixture = nullptr;
+
+  if (result != 0) {
+    return 340;
+  }
+  if (!fixture.view.window_observed ||
+      !fixture.view.window_observation_subscription_connected ||
+      fixture.view.window_observer_saw_runtime_id !=
+          cgpui::WindowRuntimeId{1} ||
+      fixture.view.window_subscription_saw_runtime_id !=
+          cgpui::WindowRuntimeId{1} ||
+      fixture.view.window_observer_saw_view_id != cgpui::ViewId{1}) {
+    return 341;
+  }
+  if (!fixture.view.view_observed ||
+      !fixture.view.view_observation_subscription_connected ||
+      fixture.view.view_observer_saw_context_view_id != cgpui::ViewId{1} ||
+      fixture.view.view_observer_saw_view_id != cgpui::ViewId{1} ||
+      fixture.view.view_subscription_saw_view_id != cgpui::ViewId{1}) {
+    return 342;
+  }
+  if (!fixture.view.window_observer_saw_paint ||
+      fixture.view.window_observer_count_after_paint != 1 ||
+      fixture.view.window_subscription_count_after_paint != 1 ||
+      !fixture.view.view_observer_saw_layout ||
+      fixture.view.view_observer_count_after_paint != 1 ||
+      fixture.view.view_subscription_count_after_paint != 1) {
+    return 343;
+  }
+  if (!fixture.view.window_observation_release ||
+      !fixture.view.view_observation_release ||
+      fixture.view.window_observer_count_after_release != 2 ||
+      fixture.view.window_subscription_count_after_release != 1 ||
+      fixture.view.view_observer_count_after_release != 2 ||
+      fixture.view.view_subscription_count_after_release != 1) {
+    return 344;
+  }
+  return 0;
+}
+
 int test_entity_handles_do_not_cross_runtime_boundaries() {
   RuntimeFixture first_fixture;
   CrossRuntimeEntityBoundaryView first_view;
@@ -1350,6 +1406,9 @@ int main() {
     return result;
   }
   if (const int result = test_entity_can_observe_another_entity(); result != 0) {
+    return result;
+  }
+  if (const int result = test_window_and_view_observation_helpers(); result != 0) {
     return result;
   }
   if (const int result = test_entity_handles_do_not_cross_runtime_boundaries(); result != 0) {

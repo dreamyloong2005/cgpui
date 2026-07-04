@@ -218,7 +218,7 @@ shape before deeper native work expands platform behavior.
   `Context<T>::remove_entity(handle)` deletion helpers plus runtime-token
   cross-context boundaries so context-created handles soft-fail when used
   against another runtime, even when the typed numeric id matches.
-- [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
+- [x] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
   and test context. Step 271 starts this band with
   `Context<T>::app_context() -> AppContext`, reusing the existing app-domain
@@ -250,7 +250,13 @@ shape before deeper native work expands platform behavior.
   observation: an `EntityHandle<ObserverT>` can observe another
   `EntityHandle<ObservedT>`, callbacks receive mutable observer state, the
   observed handle, and the current context, and subscription lifetime continues
-  to use the Step 277 token path.
+  to use the Step 277 token path. Step 279 adds window/view observation
+  helpers through `Context<T>::observe_window(...)`,
+  `Context<T>::observe_view(...)`, `WindowContextCapability::observe(...)`,
+  `ViewContextCapability<T>::observe(...)`, and `ViewHandle<T>::observe(...)`,
+  with deterministic `Subscription::release()` cleanup through the same
+  subscription path and focused runtime storage in
+  `src/ui/runtime_observations.cpp`.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -565,9 +571,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 279 after the Step 278 entity-to-entity observation
-slice. The next slice should deepen window/view observation without starting
-the later action/key-dispatch or fuller test-context behavior bands.
+Continue Phase B with Step 280 after the Step 279 window/view observation
+slice. The next slice should deepen remaining observation/subscription
+behavior without starting the later action/key-dispatch or fuller test-context
+behavior bands.
 
 ## Self-Review
 

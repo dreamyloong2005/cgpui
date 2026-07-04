@@ -180,6 +180,17 @@ class WindowRuntime {
   [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
   Result<void> resize_surface(Size size, DpiScale scale);
 
+  template <typename Observer>
+  bool observe_window(Observer&& observer);
+  template <typename Observer>
+  [[nodiscard]] Subscription observe_window_subscription(Observer&& observer);
+  template <typename Observer>
+  bool observe_view(ViewId view_id, Observer&& observer);
+  template <typename Observer>
+  [[nodiscard]] Subscription observe_view_subscription(
+      ViewId view_id,
+      Observer&& observer);
+
   template <typename T>
   void set_global(T global_value);
   template <typename T>

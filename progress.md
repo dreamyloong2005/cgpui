@@ -8534,8 +8534,9 @@
   `WindowRuntimeContext::current_window()`.
 - Implemented focused app-module facade files:
   `include/cgpui/app/app_facade.hpp`, `include/cgpui/app/window.hpp`,
-  `src/app/app_facade.cpp`, `src/app/window.cpp`, and
-  `src/app/app_context_facade.cpp`.
+  `src/app/app_facade.cpp`, and `src/app/app_context_facade.cpp`. After
+  Step 279, `Window` implementation lives in `src/ui/window.cpp` so UI headers
+  link through `cgpui_ui`.
 - Kept `include/cgpui/app/app.hpp` as the thin app aggregate and registered
   the new `cgpui_app` sources plus `app_window_context_test` and
   `app_header_cleanliness` in `xmake.lua`.
@@ -9218,7 +9219,7 @@
   `Context<T>::window_context()`.
 - GREEN added the focused public leaf
   `include/cgpui/ui/window_context.hpp`, the focused implementation
-  `src/app/window_context.cpp`, the aggregate include in
+  `src/ui/window_context.cpp`, the aggregate include in
   `include/cgpui/ui/ui.hpp`, and
   `WindowRuntimeContext::window_context() -> WindowContextCapability`.
 - The capability deliberately wraps the existing `Window` facade and exposes
@@ -9573,3 +9574,58 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 61/61.
 - Step 278 is complete on `master`; Step 279 window/view observation is the
   next Phase B slice.
+
+## 2026-07-04 Phase B Step 279 Window/View Observation
+
+- Continued `codex/phase-b-window-view-observation` from `master` at
+  `be66ef8 docs: mark step 278 merged`.
+- RED was already confirmed with `xmake -y -P . window_view_observation_test`:
+  the new public API parity test failed on missing window/view observation
+  helpers across `Context<T>`, `WindowContextCapability`,
+  `ViewContextCapability<T>`, and `ViewHandle<T>`.
+- GREEN adds public observation helpers in
+  `include/cgpui/ui/runtime_context.hpp`,
+  `include/cgpui/ui/window_context.hpp`,
+  `include/cgpui/ui/view_context.hpp`,
+  `include/cgpui/ui/view_handle.hpp`, and
+  `include/cgpui/ui/runtime_templates.hpp`, with runtime storage/notification
+  in the focused `src/ui/runtime_observations.cpp`.
+- Runtime notifications are attached to the existing invalidation request path:
+  `request_render`, `request_layout`, and `request_paint` notify window
+  observers and root-view observers before scheduling redraw. View removal and
+  closed additional-window cleanup remove matching view observers.
+- While fixing the focused link failure, `Window` and
+  `WindowContextCapability` implementation moved from `src/app/window.cpp` and
+  `src/app/window_context.cpp` to `src/ui/window.cpp` and
+  `src/ui/window_context.cpp`, with `WindowRuntimeContext::window()` and
+  `current_window()` split out of `src/app/app_context_facade.cpp`. This keeps
+  UI public headers linkable through `cgpui_ui` instead of requiring app
+  target linkage for UI-template instantiations.
+- Fresh Windows focused build verification passed:
+  `xmake -y -P . window_runtime_actions_test`,
+  `xmake -y -P . window_view_observation_test`,
+  `xmake -y -P . ui_source_structure_test`,
+  `xmake -y -P . app_source_structure_test`,
+  `xmake -y -P . ui_header_cleanliness`, and
+  `xmake -y -P . gpui_parity_ledger_test`.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, explicit builds
+  for 16 Step 279 targets, and
+  `xmake test -y -P . window_view_observation_test/default window_runtime_actions_test/default view_context_capability_test/default window_context_capability_test/default view_handle_spelling_test/default subscription_lifetime_test/default entity_to_entity_observation_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default app_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default window_runtime_scheduling_test/default`
+  passed 16/16.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, debug
+  reconfiguration, explicit builds for the same 16 targets, and
+  `XMAKE_ROOT=y xmake test -y -P . window_view_observation_test/default window_runtime_actions_test/default view_context_capability_test/default window_context_capability_test/default view_handle_spelling_test/default subscription_lifetime_test/default entity_to_entity_observation_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default app_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default window_runtime_scheduling_test/default`
+  passed 16/16.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 65/65.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 62/62.
+- Step 279 is implemented and focused/full verified on
+  `codex/phase-b-window-view-observation`; it is ready for merge
+  verification.

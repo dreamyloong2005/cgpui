@@ -85,4 +85,16 @@ struct EntityObserver {
   std::function<void(const WindowRuntimeContext&, std::uint64_t)> callback;
 };
 
+struct WindowObserver {
+  SubscriptionId subscription_id;
+  WindowRuntimeId runtime_id;
+  std::function<void(const WindowRuntimeContext&)> callback;
+};
+
+struct ViewObserver {
+  SubscriptionId subscription_id;
+  ViewId view_id;
+  std::function<void(const WindowRuntimeContext&, ViewId)> callback;
+};
+
 } // namespace cgpui

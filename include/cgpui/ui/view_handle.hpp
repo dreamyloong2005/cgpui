@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/element_core.hpp"
+#include "cgpui/ui/runtime_handles.hpp"
 
 namespace cgpui {
 
@@ -53,6 +54,14 @@ class ViewHandle {
   [[nodiscard]] const T* read(const Context& context) const {
     return context.template read_view<T>(*this);
   }
+
+  template <typename Context, typename Observer>
+  bool observe(const Context& context, Observer&& observer) const;
+
+  template <typename Context, typename Observer>
+  [[nodiscard]] Subscription observe_subscription(
+      const Context& context,
+      Observer&& observer) const;
 
   friend bool operator==(const ViewHandle&, const ViewHandle&) = default;
 

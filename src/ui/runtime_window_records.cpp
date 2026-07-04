@@ -61,6 +61,7 @@ void WindowRuntime::cleanup_closed_additional_window(
   if (record.owns_root_view && root_view_id.value != 0) {
     (void)remove_view(root_view_id);
     remove_subscriptions_for_view(root_view_id);
+    remove_observers_for_view(root_view_id);
   }
 
   record.window = nullptr;

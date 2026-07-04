@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/view_handle.hpp"
 
 #include <optional>
@@ -23,6 +24,12 @@ class ViewContextCapability {
       WeakViewHandle<T> view) const;
   [[nodiscard]] const T* read(ViewHandle<T> view) const;
   [[nodiscard]] const T* current() const;
+  template <typename Observer>
+  bool observe(ViewHandle<T> view, Observer&& observer) const;
+  template <typename Observer>
+  [[nodiscard]] Subscription observe_subscription(
+      ViewHandle<T> view,
+      Observer&& observer) const;
 
  private:
   const WindowRuntimeContext* context_ = nullptr;

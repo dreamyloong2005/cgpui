@@ -60,6 +60,14 @@ void WindowContextCapability::request_paint() const {
   window().request_paint();
 }
 
+Window WindowRuntimeContext::window() const {
+  return current_window();
+}
+
+Window WindowRuntimeContext::current_window() const {
+  return Window(runtime, window_runtime_id);
+}
+
 WindowContextCapability WindowRuntimeContext::window_context() const {
   return WindowContextCapability(*this);
 }

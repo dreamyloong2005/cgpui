@@ -59,6 +59,9 @@ void handle_native_additional_window_event(
     const PlatformEvent& event);
 void cleanup_closed_additional_window(WindowRuntimeRecord& record);
 void remove_subscriptions_for_view(ViewId view_id);
+void remove_observers_for_view(ViewId view_id);
+void notify_window_observers();
+void notify_view_observers(ViewId view_id);
 void deactivate_native_additional_windows();
 [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
 [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
@@ -210,6 +213,8 @@ std::vector<PlatformDiagnosticEvent> platform_diagnostics_;
 int platform_diagnostic_sequence_ = 0;
 std::vector<EntitySubscription> entity_subscriptions_;
 std::vector<EntityObserver> entity_observers_;
+std::vector<WindowObserver> window_observers_;
+std::vector<ViewObserver> view_observers_;
 std::uint64_t next_subscription_id_ = 1;
 std::vector<DeferredCallback> deferred_callbacks_;
 std::vector<RuntimeTimer> timers_;

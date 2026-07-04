@@ -742,6 +742,63 @@ class RecordingView final : public cgpui::View {
             observer_after_release == nullptr ? -1
                                               : observer_after_release->value;
       }
+      if (exercise_window_view_observation && keyboard_key_count == 1) {
+        const cgpui::Context<RecordingView>& author_context = context;
+        const cgpui::WindowContextCapability window_context =
+            author_context.window_context();
+        const cgpui::ViewHandle<RecordingView> observed_view =
+            author_context.view<RecordingView>();
+        window_observed =
+            author_context.observe_window(
+                [this](const cgpui::Context<RecordingView>& observe_context,
+                       cgpui::WindowContextCapability window) {
+                  window_observer_count += 1;
+                  window_observer_saw_runtime_id = window.runtime_id();
+                  window_observer_saw_view_id = observe_context.view_id;
+                  window_observer_saw_paint = observe_context.invalidation_state().paint;
+                });
+        cgpui::Subscription window_subscription =
+            window_context.observe_subscription(
+                [this](const cgpui::Context<RecordingView>&,
+                       cgpui::WindowContextCapability window) {
+                  window_subscription_count += 1;
+                  window_subscription_saw_runtime_id = window.runtime_id();
+                });
+        window_observation_subscription_connected =
+            window_subscription.connected();
+        view_observed =
+            observed_view.observe(
+                author_context,
+                [this](const cgpui::Context<RecordingView>& observe_context,
+                       cgpui::ViewHandle<RecordingView> view) {
+                  view_observer_count += 1;
+                  view_observer_saw_context_view_id = observe_context.view_id;
+                  view_observer_saw_view_id = view.id();
+                  view_observer_saw_layout = observe_context.invalidation_state().layout;
+                });
+        cgpui::Subscription view_subscription =
+            author_context.observe_view_subscription(
+                observed_view,
+                [this](const cgpui::Context<RecordingView>&,
+                       cgpui::ViewHandle<RecordingView> view) {
+                  view_subscription_count += 1;
+                  view_subscription_saw_view_id = view.id();
+                });
+        view_observation_subscription_connected =
+            view_subscription.connected();
+        author_context.request_paint();
+        window_observer_count_after_paint = window_observer_count;
+        window_subscription_count_after_paint = window_subscription_count;
+        view_observer_count_after_paint = view_observer_count;
+        view_subscription_count_after_paint = view_subscription_count;
+        window_observation_release = window_subscription.release();
+        view_observation_release = view_subscription.release();
+        author_context.request_layout();
+        window_observer_count_after_release = window_observer_count;
+        window_subscription_count_after_release = window_subscription_count;
+        view_observer_count_after_release = view_observer_count;
+        view_subscription_count_after_release = view_subscription_count;
+      }
       if (exercise_global_state_helpers && keyboard_key_count == 1) {
         const cgpui::Context<RecordingView>& author_context = context;
         global_missing_before_set =
@@ -1116,6 +1173,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_entity_handle_helpers = false;
   bool exercise_entity_invalidation_helpers = false;
   bool exercise_entity_to_entity_observation = false;
+  bool exercise_window_view_observation = false;
   bool exercise_global_state_helpers = false;
   bool exercise_weak_entity_and_view_handles = false;
   bool exercise_view_identity_allocation = false;
@@ -1261,6 +1319,32 @@ class RecordingView final : public cgpui::View {
   int entity_to_entity_subscription_count_after_update = 0;
   int entity_to_entity_observer_value_after_update = -1;
   int entity_to_entity_observer_value_after_release = -1;
+  bool window_observed = false;
+  bool window_observation_subscription_connected = false;
+  bool window_observation_release = false;
+  int window_observer_count = 0;
+  int window_subscription_count = 0;
+  int window_observer_count_after_paint = 0;
+  int window_subscription_count_after_paint = 0;
+  int window_observer_count_after_release = 0;
+  int window_subscription_count_after_release = 0;
+  cgpui::WindowRuntimeId window_observer_saw_runtime_id{};
+  cgpui::WindowRuntimeId window_subscription_saw_runtime_id{};
+  cgpui::ViewId window_observer_saw_view_id{};
+  bool window_observer_saw_paint = false;
+  bool view_observed = false;
+  bool view_observation_subscription_connected = false;
+  bool view_observation_release = false;
+  int view_observer_count = 0;
+  int view_subscription_count = 0;
+  int view_observer_count_after_paint = 0;
+  int view_subscription_count_after_paint = 0;
+  int view_observer_count_after_release = 0;
+  int view_subscription_count_after_release = 0;
+  cgpui::ViewId view_observer_saw_context_view_id{};
+  cgpui::ViewId view_observer_saw_view_id{};
+  cgpui::ViewId view_subscription_saw_view_id{};
+  bool view_observer_saw_layout = false;
   bool global_missing_before_set = false;
   bool global_update = false;
   bool global_missing_update = true;
