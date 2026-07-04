@@ -119,6 +119,14 @@ int main() {
       !contains(ledger, "tests/api_parity/app_window_context_test.cpp")) {
     return 15;
   }
+  if (!contains(ledger, "`Context<T>` alias to `ViewContext`") ||
+      !contains(ledger, "`Render<T>` concept over") ||
+      !contains(ledger, "`IntoElement` alias plus `into_element`") ||
+      !contains(ledger, "include/cgpui/ui/render.hpp") ||
+      !contains(ledger,
+                "tests/api_parity/context_render_spelling_test.cpp")) {
+    return 16;
+  }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
       !contains(ledger, "| gpui_platform wayland feature | Required |") ||
       !contains(ledger, "| gpui Windows backend | Required |")) {
@@ -181,7 +189,9 @@ int main() {
     return 12;
   }
   if (!contains(example, "class HelloWorldView") ||
-      !contains(example, "cgpui::Context<HelloWorldView>") ||
+      !contains(example, "cgpui::Context<HelloWorldView>&") ||
+      !contains(example, "cgpui::IntoElement render") ||
+      !contains(example, "cgpui::Render<HelloWorldView>") ||
       !contains(example, "cgpui::div()") ||
       !contains(example, "cgpui::Application::create") ||
       !contains(example, "app->run") ||
@@ -191,8 +201,10 @@ int main() {
 
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
+      !contains(xmake, "target(\"context_render_spelling_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
+      !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

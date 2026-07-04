@@ -34,7 +34,7 @@
   },
   "status_counts": {
     "required": 18,
-    "adapted": 10,
+    "adapted": 11,
     "deferred": 2,
     "non_goal": 1
   },
@@ -76,7 +76,7 @@
       "upstream_gpui": "gpui::Application",
       "cgpui_target": "Application",
       "status": "adapted",
-      "next_step": "Step 261 context/render spelling depth"
+      "next_step": "Phase B app service depth"
     },
     {
       "upstream_gpui": "gpui::App",
@@ -94,13 +94,19 @@
       "upstream_gpui": "gpui::Context<T>",
       "cgpui_target": "Context<T>",
       "status": "adapted",
-      "next_step": "Phase B"
+      "next_step": "Phase B context capability depth"
     },
     {
       "upstream_gpui": "gpui::Render",
-      "cgpui_target": "View::render",
+      "cgpui_target": "Render<T> concept over View::render(Context<T>&)",
       "status": "adapted",
-      "next_step": "Phase B"
+      "next_step": "Phase B view lifecycle depth"
+    },
+    {
+      "upstream_gpui": "gpui::IntoElement",
+      "cgpui_target": "IntoElement alias plus into_element builders",
+      "status": "adapted",
+      "next_step": "Phase C"
     },
     {
       "upstream_gpui": "gpui::div",

@@ -36,17 +36,17 @@ Status meanings:
 | upstream_gpui | cgpui_target | status | evidence | next_step |
 |---|---|---|---|---|
 | gpui_platform::application | `create_platform_application` + `run_app` | Adapted | `include/cgpui/platform/platform_application.hpp`, `include/cgpui/ui/runtime_rendering.hpp` | Step 259 facade keeps low-level APIs |
-| gpui::Application | `Application` | Adapted | `include/cgpui/app/application.hpp`, `src/app/application.cpp`, `tests/api_parity/application_facade_test.cpp` | Step 261 context/render spelling depth |
+| gpui::Application | `Application` | Adapted | `include/cgpui/app/application.hpp`, `src/app/application.cpp`, `tests/api_parity/application_facade_test.cpp` | Phase B app service depth |
 | gpui::App | `App` facade from `AppContext::app()` | Adapted | `include/cgpui/app/app_facade.hpp`, `src/app/app_facade.cpp`, `src/app/app_context_facade.cpp`, `tests/api_parity/app_window_context_test.cpp` | Phase B context API depth |
 | gpui::Window | `Window` facade from `WindowRuntimeContext::current_window()` | Adapted | `include/cgpui/app/window.hpp`, `src/app/window.cpp`, `tests/api_parity/app_window_context_test.cpp` | Phase B/F window service depth |
 | gpui::WindowOptions | `WindowOptions` | Adapted | `include/cgpui/ui/runtime_window_options.hpp` | Phase B/F |
-| gpui::Context<T> | `Context<T>` alias to `ViewContext` | Adapted | `include/cgpui/ui/view.hpp` | Phase B context depth |
+| gpui::Context<T> | `Context<T>` alias to `ViewContext` | Adapted | `include/cgpui/ui/render.hpp`, `tests/api_parity/context_render_spelling_test.cpp` | Phase B context capability depth |
 | gpui::AsyncApp | async task handles and cancellation | Required | `runtime_tasks.cpp`, not full async app context | Phase G |
 | gpui::AsyncWindowContext | no full equivalent yet | Required | background task skeleton only | Phase G |
 | gpui::TestAppContext | no full equivalent yet | Required | deterministic tests exist but no public test context | Phase B/G |
 | gpui::Entity<T> | `Entity<T>`, `Model<T>`, `WeakEntity<T>` | Adapted | `include/cgpui/core/entity.hpp` | Phase B lifecycle depth |
-| gpui::Render | `View::render(ViewContext&)` | Adapted | `include/cgpui/ui/view.hpp` | Phase B naming and examples |
-| gpui::IntoElement | `AnyElement`, `into_element` | Adapted | `include/cgpui/ui/element_core.hpp` | Phase B/C |
+| gpui::Render | `Render<T>` concept over `View::render(Context<T>&)` | Adapted | `include/cgpui/ui/render.hpp`, `include/cgpui/ui/view.hpp`, `tests/api_parity/context_render_spelling_test.cpp` | Phase B view lifecycle depth |
+| gpui::IntoElement | `IntoElement` alias plus `into_element` builders | Adapted | `include/cgpui/ui/render.hpp`, `include/cgpui/ui/element_builder_core.hpp`, `tests/api_parity/context_render_spelling_test.cpp` | Phase C |
 | gpui::div | `div()` | Adapted | `include/cgpui/ui/element_builder_core.hpp` | Phase C style vocabulary |
 | gpui::prelude | `cgpui/cgpui.hpp` | Adapted | public aggregate exists and is header-tested | Phase B |
 | gpui::actions! / action macro | string action registry | Required | action dispatch exists, typed action parity missing | Phase B |

@@ -12,10 +12,7 @@ class HelloWorldView final : public cgpui::View {
 
   void paint(cgpui::PaintList&, cgpui::Size) override {}
 
-  cgpui::AnyElement render(cgpui::ViewContext& context) override {
-    cgpui::Context<HelloWorldView>& typed_context = context;
-    (void)typed_context;
-
+  cgpui::IntoElement render(cgpui::Context<HelloWorldView>& context) override {
     return cgpui::into_element(
         cgpui::div()
             .size(context.viewport_size)
@@ -38,11 +35,13 @@ class HelloWorldView final : public cgpui::View {
   std::string text_;
 };
 
+static_assert(cgpui::Render<HelloWorldView>);
+
 int main() {
   // GPUI upstream hello_world.rs parity:
   // application().run -> Application::create + Application::run.
   // App::open_window -> AppRunnerOptions::window.
-  // Render for HelloWorld -> View::render(ViewContext&).
+  // Render for HelloWorld -> Render<T> + Context<T> + IntoElement.
   // div()/px()/rgb()/child() keep their C++ public-prelude spelling.
   auto app = cgpui::Application::create();
   if (!app) {

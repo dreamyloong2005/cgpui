@@ -38,6 +38,7 @@ std::size_t line_count(const std::string& text) {
 int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/paint.hpp",
+      "include/cgpui/ui/render.hpp",
       "include/cgpui/ui/view.hpp",
       "include/cgpui/ui/style_tokens.hpp",
       "include/cgpui/ui/style_values.hpp",
@@ -160,6 +161,7 @@ int main() {
     return 2;
   }
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/runtime.hpp\"")) {
     return 3;
@@ -177,10 +179,26 @@ int main() {
     return 5;
   }
 
-  const std::string view_header = read_source("include/cgpui/ui/view.hpp");
-  if (!contains(view_header, "class View") ||
-      !contains(view_header, "using ViewContext = WindowRuntimeContext")) {
+  const std::string render_header = read_source("include/cgpui/ui/render.hpp");
+  if (!contains(render_header, "using ViewContext = WindowRuntimeContext") ||
+      !contains(render_header, "using Context = ViewContext") ||
+      !contains(render_header, "using IntoElement = AnyElement") ||
+      !contains(render_header, "concept Render")) {
     return 6;
+  }
+  if (line_count(render_header) > 80 ||
+      contains(render_header, "class View")) {
+    return 115;
+  }
+
+  const std::string view_header = read_source("include/cgpui/ui/view.hpp");
+  if (!contains(view_header, "#include \"cgpui/ui/render.hpp\"") ||
+      !contains(view_header, "class View")) {
+    return 116;
+  }
+  if (contains(view_header, "using IntoElement") ||
+      contains(view_header, "concept Render")) {
+    return 117;
   }
 
   const std::string style_header = read_source("include/cgpui/ui/style.hpp");

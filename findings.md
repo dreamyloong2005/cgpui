@@ -4266,3 +4266,21 @@
   `WindowRuntime::open_window` was fixed to require `runtime_->open_window`,
   which proves the facade still forwards through `WindowRuntime` while matching
   the implementation style.
+
+## 2026-07-04 Phase B Step 261 Context Render Spelling
+
+- `Context<T>`, `IntoElement`, and `Render<T>` belong in a focused public UI
+  render leaf, not in `view.hpp` or a broad aggregate. `view.hpp` should remain
+  the `View` base-class owner and consume `render.hpp`.
+- The C++ adaptation for upstream `gpui::Render` is a concept:
+  `Render<T>` requires `view.render(Context<T>&)` to return `IntoElement`.
+  Because `Context<T>` is still an alias to `ViewContext`, existing
+  `View::render(ViewContext&)` overrides remain source-compatible.
+- `IntoElement` is intentionally an alias over `AnyElement` for this slice,
+  paired with the existing `into_element(...)` builder functions. This gives
+  public GPUI-shaped spelling without introducing a wrapper or changing
+  element ownership semantics.
+- The hello-world parity example is now the durable author-facing sample for
+  this spelling: it returns `cgpui::IntoElement`, takes
+  `cgpui::Context<HelloWorldView>&`, and asserts
+  `cgpui::Render<HelloWorldView>`.

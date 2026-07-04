@@ -10,6 +10,7 @@
 #include "cgpui/ui/button_builder.hpp"
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/render.hpp"
 #include "cgpui/ui/runtime_actions.hpp"
 #include "cgpui/ui/runtime_app_context.hpp"
 #include "cgpui/ui/runtime_callbacks.hpp"

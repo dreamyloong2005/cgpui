@@ -175,6 +175,10 @@ shape before deeper native work expands platform behavior.
   `WindowRuntimeContext::app()`, and `WindowRuntimeContext::current_window()`
   return public `App`/`Window` facades for window opening and runtime window
   inspection without moving implementation into UI/runtime monoliths.
+  Step 261 adds the focused public render spelling leaf
+  `include/cgpui/ui/render.hpp`, exposing `Context<T>`, `IntoElement`, and the
+  `Render<T>` concept while keeping `View` in `view.hpp` and preserving the
+  existing `ViewContext` ABI spelling.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules.
@@ -498,11 +502,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 261 after the Step 260 App/Window context facade
-merge. The next slice should deepen public context/render naming around
-`Context<T>`, `Render`, `IntoElement`, and `View` while preserving the focused
-app-module facade boundary and the Windows/Linux Vulkan plus Wayland-first
-platform targets.
+Continue Phase B with Step 262 after the Step 261 context/render spelling
+slice. The next slice should deepen `Context<T>` capabilities exposed through
+the public authoring surface, especially app/window/entity access patterns,
+while preserving the focused app/UI leaf boundaries and the Windows/Linux
+Vulkan plus Wayland-first platform targets.
 
 ## Self-Review
 

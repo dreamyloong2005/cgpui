@@ -8578,3 +8578,42 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 43/43.
 - Step 260 is complete on `master`; Step 261 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 261 Context Render Spelling
+
+- Created `codex/phase-b-context-render-spelling` in
+  `.worktrees/phase-b-context-render-spelling`.
+- Added RED API/structure coverage:
+  `tests/api_parity/context_render_spelling_test.cpp` requires
+  `cgpui::Context<T>`, `cgpui::IntoElement`, and `cgpui::Render<T>` from
+  `cgpui/ui/render.hpp`; `ui_source_structure_test` requires that render leaf
+  and keeps `View` ownership in `view.hpp`.
+- RED failed as expected:
+  `xmake test -y -P . context_render_spelling_test/default ui_source_structure_test/default ui_header_cleanliness/default`
+  stopped on missing `cgpui/ui/render.hpp`.
+- GREEN added `include/cgpui/ui/render.hpp`, moved `Context<T>` /
+  `ViewContext` spelling there, added `IntoElement` and `Render<T>`, kept
+  `view.hpp` as the `View` base-class header, and added `render.hpp` to the
+  thin `ui.hpp` aggregate.
+- Updated `examples/api_parity/hello_world/main.cpp` to return
+  `cgpui::IntoElement`, take `cgpui::Context<HelloWorldView>&`, and assert
+  `cgpui::Render<HelloWorldView>`.
+- Updated the parity ledger, JSON export, roadmap, and parity ledger test with
+  Step 261 evidence.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . context_render_spelling_test/default gpui_parity_ledger_test/default prelude_header_cleanliness/default ui_header_cleanliness/default ui_source_structure_test/default`
+  passed 5/5.
+- Fresh Windows hello-world parity build passed:
+  `xmake build -y -P . api_parity_hello_world`.
+- Fresh WSL Arch Linux focused verification passed:
+  `XMAKE_ROOT=y xmake test -y -P . context_render_spelling_test/default gpui_parity_ledger_test/default prelude_header_cleanliness/default ui_header_cleanliness/default ui_source_structure_test/default`
+  passed 5/5.
+- Fresh WSL Arch Linux hello-world parity build passed:
+  `XMAKE_ROOT=y xmake build -y -P . api_parity_hello_world`.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 47/47.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 44/44.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings for touched text files.

@@ -1,14 +1,9 @@
 #pragma once
 
 #include "cgpui/ui/paint.hpp"
+#include "cgpui/ui/render.hpp"
 
 namespace cgpui {
-
-struct WindowRuntimeContext;
-using ViewContext = WindowRuntimeContext;
-
-template <typename T>
-using Context = ViewContext;
 
 class View {
  public:
