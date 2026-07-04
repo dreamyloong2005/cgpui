@@ -215,13 +215,18 @@ int main() {
       !contains(ledger, "`action_name<T>()`") ||
       !contains(ledger, "typed register/dispatch overloads") ||
       !contains(ledger, "action registration metadata") ||
+      !contains(ledger, "action enablement metadata") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
+      !contains(ledger,
+                "include/cgpui/ui/runtime_action_enablement_templates.hpp") ||
       !contains(ledger, "src/ui/runtime_action_metadata.cpp") ||
+      !contains(ledger, "src/ui/runtime_action_registration.cpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(ledger, "tests/ui/action_scope_metadata_test.cpp") ||
+      !contains(ledger, "tests/ui/action_enablement_metadata_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -248,7 +253,11 @@ int main() {
               "\"gpui::actions! / action macro\"",
               "Action<T> typed action concept",
               "action_name<T>",
+              "action enablement metadata",
               "typed_action_surface_test",
+              "action_enablement_metadata_test",
+              "runtime_action_enablement_templates.hpp",
+              "runtime_action_registration.cpp",
               "WindowContextCapability",
               "window_context",
               "AsyncContextCapability",
@@ -729,6 +738,27 @@ int main() {
       contains(typed_command_metadata, "KeyBinding")) {
     return 71;
   }
+  const std::string action_enablement =
+      read_source("tests/ui/action_enablement_metadata_test.cpp");
+  const std::string runtime_action_enablement_templates =
+      read_source("include/cgpui/ui/runtime_action_enablement_templates.hpp");
+  const std::string runtime_action_registration =
+      read_source("src/ui/runtime_action_registration.cpp");
+  if (action_enablement.empty() ||
+      runtime_action_enablement_templates.empty() ||
+      runtime_action_registration.empty()) {
+    return 72;
+  }
+  if (!contains(action_enablement, "ActionRegistrationOptions{.enabled = true}") ||
+      !contains(action_enablement, "ActionRegistrationOptions{.enabled = false}") ||
+      !contains(action_enablement, "action_registrations_for_enabled(false)") ||
+      !contains(action_enablement, "runtime_disabled_result.handled") ||
+      !contains(runtime_action_enablement_templates,
+                "ActionRegistrationOptions options") ||
+      !contains(runtime_action_registration, ".enabled = options.enabled") ||
+      contains(action_enablement, "KeyBinding")) {
+    return 73;
+  }
 
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
@@ -751,6 +781,7 @@ int main() {
       !contains(xmake, "target(\"typed_action_surface_test\")") ||
       !contains(xmake, "target(\"typed_action_dispatch_test\")") ||
       !contains(xmake, "target(\"action_scope_metadata_test\")") ||
+      !contains(xmake, "target(\"action_enablement_metadata_test\")") ||
       !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -785,6 +816,8 @@ int main() {
                 "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(xmake,
                 "tests/ui/action_scope_metadata_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/action_enablement_metadata_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {

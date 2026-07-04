@@ -104,6 +104,7 @@ int main() {
       "include/cgpui/ui/window_runtime.hpp",
       "include/cgpui/ui/runtime_rendering.hpp",
       "include/cgpui/ui/runtime_templates.hpp",
+      "include/cgpui/ui/runtime_action_enablement_templates.hpp",
       "include/cgpui/ui/runtime_command_palette_templates.hpp",
       "include/cgpui/ui/runtime.hpp",
   };
@@ -360,6 +361,8 @@ int main() {
       !contains(runtime_header,
                 "#include \"cgpui/ui/runtime_action_templates.hpp\"") ||
       !contains(runtime_header,
+                "#include \"cgpui/ui/runtime_action_enablement_templates.hpp\"") ||
+      !contains(runtime_header,
                 "#include \"cgpui/ui/runtime_command_palette_templates.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_templates.hpp\"")) {
     return 7;
@@ -429,6 +432,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_rendering.hpp");
   const std::string runtime_action_templates_header =
       read_source("include/cgpui/ui/runtime_action_templates.hpp");
+  const std::string runtime_action_enablement_templates_header =
+      read_source("include/cgpui/ui/runtime_action_enablement_templates.hpp");
   const std::string runtime_command_palette_templates_header =
       read_source("include/cgpui/ui/runtime_command_palette_templates.hpp");
   const std::string runtime_templates_header =
@@ -439,7 +444,9 @@ int main() {
       !contains(runtime_window_options_header, "struct WindowOptions") ||
       !contains(runtime_app_context_header, "struct AppContext") ||
       !contains(runtime_actions_header, "enum class ActionRegistrationScope") ||
+      !contains(runtime_actions_header, "struct ActionRegistrationOptions") ||
       !contains(runtime_actions_header, "struct ActionRegistration") ||
+      !contains(runtime_actions_header, "bool enabled = true") ||
       !contains(runtime_actions_header, "struct CommandPaletteEntry") ||
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
@@ -580,6 +587,12 @@ int main() {
                 "WindowRuntimeContext::register_action(ActionHandler handler) const") ||
       !contains(runtime_action_templates_header,
                 "WindowRuntimeContext::dispatch_action() const") ||
+      !contains(runtime_action_enablement_templates_header,
+                "WindowRuntime::register_action(") ||
+      !contains(runtime_action_enablement_templates_header,
+                "ActionRegistrationOptions options") ||
+      !contains(runtime_action_enablement_templates_header,
+                "WindowRuntimeContext::register_action(") ||
       !contains(runtime_command_palette_templates_header,
                 "CommandPaletteEntry command_palette_entry(") ||
       !contains(runtime_command_palette_templates_header,
@@ -589,7 +602,9 @@ int main() {
       !contains(runtime_command_palette_templates_header,
                 "AppContext::register_command_palette_entry(") ||
       !contains(window_runtime_header, "action_registrations() const") ||
+      !contains(window_runtime_header, "action_registrations_for_enabled(") ||
       !contains(runtime_context_header, "action_registrations()") ||
+      !contains(runtime_context_header, "action_registrations_for_enabled(") ||
       !contains(runtime_templates_header,
                 "void WindowRuntimeContext::set_global") ||
       !contains(runtime_templates_header,
@@ -604,6 +619,7 @@ int main() {
       line_count(window_context_header) > 120 ||
       line_count(window_runtime_header) > 240 ||
       line_count(runtime_action_templates_header) > 120 ||
+      line_count(runtime_action_enablement_templates_header) > 100 ||
       line_count(runtime_command_palette_templates_header) > 80 ||
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
@@ -611,8 +627,11 @@ int main() {
       contains(runtime_input_state_header, "class WeakView") ||
       contains(runtime_context_header, "PlatformWindow& window") ||
       contains(runtime_action_templates_header, "CommandPaletteEntry") ||
+      contains(runtime_action_enablement_templates_header,
+               "CommandPaletteEntry") ||
       contains(runtime_command_palette_templates_header, "KeyBinding") ||
       contains(runtime_action_templates_header, "KeyBinding") ||
+      contains(runtime_action_enablement_templates_header, "KeyBinding") ||
       contains(window_runtime_header, "PlatformApplication& application_") ||
       contains(window_runtime_header, "std::vector<RuntimeTask> tasks_")) {
     return 100;
@@ -968,6 +987,8 @@ int main() {
       "src/ui/runtime_event_routes.cpp",
       "src/ui/runtime_actions.cpp",
       "src/ui/runtime_action_dispatch.cpp",
+      "src/ui/runtime_action_registration.cpp",
+      "src/ui/runtime_action_metadata.cpp",
       "src/ui/runtime_command_palette.cpp",
       "src/ui/runtime_focus.cpp",
       "src/ui/runtime_key_bindings.cpp",
@@ -1650,19 +1671,23 @@ int main() {
 
   const std::string runtime_action_dispatch_source =
       read_source("src/ui/runtime_action_dispatch.cpp");
+  const std::string runtime_action_registration_source =
+      read_source("src/ui/runtime_action_registration.cpp");
   const std::string runtime_action_metadata_source =
       read_source("src/ui/runtime_action_metadata.cpp");
-  if (line_count(runtime_action_dispatch_source) > 130 ||
-      !contains(runtime_action_dispatch_source,
-                "void WindowRuntime::register_action(") ||
-      !contains(runtime_action_dispatch_source,
-                "void WindowRuntime::register_view_action(") ||
-      !contains(runtime_action_dispatch_source,
-                "void WindowRuntime::register_focused_element_action(") ||
+  if (line_count(runtime_action_dispatch_source) > 100 ||
       !contains(runtime_action_dispatch_source,
                 "ActionDispatchResult WindowRuntime::dispatch_action(") ||
       !contains(runtime_action_dispatch_source,
                 "WindowRuntime::last_action_dispatch(") ||
+      !contains(runtime_action_dispatch_source,
+                "action_registration_enabled(") ||
+      contains(runtime_action_dispatch_source,
+               "void WindowRuntime::register_action(") ||
+      contains(runtime_action_dispatch_source,
+               "void WindowRuntime::register_view_action(") ||
+      contains(runtime_action_dispatch_source,
+               "void WindowRuntime::register_focused_element_action(") ||
       contains(runtime_action_dispatch_source,
                "register_command_palette_entry(") ||
       contains(runtime_action_dispatch_source,
@@ -1670,13 +1695,36 @@ int main() {
       contains(runtime_action_dispatch_source, "bind_text_edit_action(")) {
     return 74;
   }
-  if (line_count(runtime_action_metadata_source) > 80 ||
+  if (line_count(runtime_action_registration_source) > 120 ||
+      !contains(runtime_action_registration_source,
+                "void WindowRuntime::register_action(") ||
+      !contains(runtime_action_registration_source,
+                "void WindowRuntime::register_view_action(") ||
+      !contains(runtime_action_registration_source,
+                "void WindowRuntime::register_focused_element_action(") ||
+      !contains(runtime_action_registration_source,
+                "ActionRegistrationOptions options") ||
+      !contains(runtime_action_registration_source, ".enabled = options.enabled") ||
+      contains(runtime_action_registration_source,
+               "ActionDispatchResult WindowRuntime::dispatch_action(") ||
+      contains(runtime_action_registration_source,
+               "register_command_palette_entry(") ||
+      contains(runtime_action_registration_source,
+               "action_registrations_for_scope(") ||
+      contains(runtime_action_registration_source, "bind_text_edit_action(")) {
+    return 77;
+  }
+  if (line_count(runtime_action_metadata_source) > 90 ||
       !contains(runtime_action_metadata_source,
                 "WindowRuntime::upsert_action_registration(") ||
       !contains(runtime_action_metadata_source,
                 "WindowRuntime::action_registrations()") ||
       !contains(runtime_action_metadata_source,
                 "WindowRuntime::action_registrations_for_scope(") ||
+      !contains(runtime_action_metadata_source,
+                "WindowRuntime::action_registrations_for_enabled(") ||
+      !contains(runtime_action_metadata_source,
+                "WindowRuntime::action_registration_enabled(") ||
       contains(runtime_action_metadata_source,
                "ActionDispatchResult WindowRuntime::dispatch_action(") ||
       contains(runtime_action_metadata_source,

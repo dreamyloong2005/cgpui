@@ -7,45 +7,103 @@ namespace cgpui {
 void WindowRuntimeContext::register_action(
     std::string name,
     ActionHandler handler) const {
-  runtime.register_action(std::move(name), std::move(handler));
+  register_action(std::move(name), std::move(handler), {});
+}
+
+void WindowRuntimeContext::register_action(
+    std::string name,
+    ActionHandler handler,
+    ActionRegistrationOptions options) const {
+  runtime.register_action(std::move(name), std::move(handler), options);
 }
 
 void WindowRuntimeContext::register_app_action(
     std::string name,
     ActionHandler handler) const {
-  runtime.register_app_action(std::move(name), std::move(handler));
+  register_app_action(std::move(name), std::move(handler), {});
+}
+
+void WindowRuntimeContext::register_app_action(
+    std::string name,
+    ActionHandler handler,
+    ActionRegistrationOptions options) const {
+  runtime.register_app_action(std::move(name), std::move(handler), options);
 }
 
 void WindowRuntimeContext::register_window_action(
     std::string name,
     ActionHandler handler) const {
-  runtime.register_window_action(std::move(name), std::move(handler));
+  register_window_action(std::move(name), std::move(handler), {});
+}
+
+void WindowRuntimeContext::register_window_action(
+    std::string name,
+    ActionHandler handler,
+    ActionRegistrationOptions options) const {
+  runtime.register_window_action(std::move(name), std::move(handler), options);
 }
 
 void WindowRuntimeContext::register_view_action(
     std::string name,
     ActionHandler handler) const {
-  runtime.register_view_action(view_id, std::move(name), std::move(handler));
+  register_view_action(std::move(name), std::move(handler), {});
+}
+
+void WindowRuntimeContext::register_view_action(
+    std::string name,
+    ActionHandler handler,
+    ActionRegistrationOptions options) const {
+  runtime.register_view_action(
+      view_id,
+      std::move(name),
+      std::move(handler),
+      options);
 }
 
 void WindowRuntimeContext::register_view_action(
     ViewId target_view_id,
     std::string name,
     ActionHandler handler) const {
+  register_view_action(
+      target_view_id,
+      std::move(name),
+      std::move(handler),
+      {});
+}
+
+void WindowRuntimeContext::register_view_action(
+    ViewId target_view_id,
+    std::string name,
+    ActionHandler handler,
+    ActionRegistrationOptions options) const {
   runtime.register_view_action(
       target_view_id,
       std::move(name),
-      std::move(handler));
+      std::move(handler),
+      options);
 }
 
 void WindowRuntimeContext::register_focused_element_action(
     ElementId element_id,
     std::string name,
     ActionHandler handler) const {
+  register_focused_element_action(
+      element_id,
+      std::move(name),
+      std::move(handler),
+      {});
+}
+
+void WindowRuntimeContext::register_focused_element_action(
+    ElementId element_id,
+    std::string name,
+    ActionHandler handler,
+    ActionRegistrationOptions options) const {
   runtime.register_focused_element_action(
       element_id,
       std::move(name),
-      std::move(handler));
+      std::move(handler),
+      options);
 }
 
 ActionDispatchResult WindowRuntimeContext::dispatch_action(
@@ -67,6 +125,11 @@ std::vector<ActionRegistration>
 WindowRuntimeContext::action_registrations_for_scope(
     ActionRegistrationScope scope) const {
   return runtime.action_registrations_for_scope(scope);
+}
+
+std::vector<ActionRegistration>
+WindowRuntimeContext::action_registrations_for_enabled(bool enabled) const {
+  return runtime.action_registrations_for_enabled(enabled);
 }
 
 void WindowRuntimeContext::register_command_palette_entry(

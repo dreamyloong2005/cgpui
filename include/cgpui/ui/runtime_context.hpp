@@ -97,25 +97,47 @@ struct WindowRuntimeContext {
       Args&&... args) const;
 
   void register_action(std::string name, ActionHandler handler) const;
+  void register_action(std::string name, ActionHandler handler, ActionRegistrationOptions options) const;
   template <Action T> void register_action(ActionHandler handler) const;
+  template <Action T> void register_action(ActionHandler handler, ActionRegistrationOptions options) const;
   void register_app_action(std::string name, ActionHandler handler) const;
+  void register_app_action(std::string name, ActionHandler handler, ActionRegistrationOptions options) const;
   template <Action T> void register_app_action(ActionHandler handler) const;
+  template <Action T> void register_app_action(ActionHandler handler, ActionRegistrationOptions options) const;
   void register_window_action(std::string name, ActionHandler handler) const;
+  void register_window_action(std::string name, ActionHandler handler, ActionRegistrationOptions options) const;
   template <Action T> void register_window_action(ActionHandler handler) const;
+  template <Action T> void register_window_action(ActionHandler handler, ActionRegistrationOptions options) const;
   void register_view_action(std::string name, ActionHandler handler) const;
+  void register_view_action(std::string name, ActionHandler handler, ActionRegistrationOptions options) const;
   template <Action T> void register_view_action(ActionHandler handler) const;
+  template <Action T> void register_view_action(ActionHandler handler, ActionRegistrationOptions options) const;
   void register_view_action(
       ViewId view_id,
       std::string name,
       ActionHandler handler) const;
+  void register_view_action(
+      ViewId view_id,
+      std::string name,
+      ActionHandler handler,
+      ActionRegistrationOptions options) const;
   template <Action T> void register_view_action(
       ViewId view_id, ActionHandler handler) const;
+  template <Action T> void register_view_action(
+      ViewId view_id, ActionHandler handler, ActionRegistrationOptions options) const;
   void register_focused_element_action(
       ElementId element_id,
       std::string name,
       ActionHandler handler) const;
+  void register_focused_element_action(
+      ElementId element_id,
+      std::string name,
+      ActionHandler handler,
+      ActionRegistrationOptions options) const;
   template <Action T> void register_focused_element_action(
       ElementId element_id, ActionHandler handler) const;
+  template <Action T> void register_focused_element_action(
+      ElementId element_id, ActionHandler handler, ActionRegistrationOptions options) const;
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
   template <Action T> [[nodiscard]] ActionDispatchResult dispatch_action() const;
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
@@ -123,6 +145,7 @@ struct WindowRuntimeContext {
       const;
   [[nodiscard]] std::vector<ActionRegistration>
   action_registrations_for_scope(ActionRegistrationScope scope) const;
+  [[nodiscard]] std::vector<ActionRegistration> action_registrations_for_enabled(bool enabled) const;
   void register_command_palette_entry(CommandPaletteEntry entry) const;
   template <Action T>
   void register_command_palette_entry(CommandPaletteEntry entry) const;

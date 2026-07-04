@@ -17,10 +17,12 @@ bool same_action_registration_key(
 
 void WindowRuntime::upsert_action_registration(
     ActionRegistration registration) {
-  for (ActionRegistration& existing : action_registrations_) {
-    if (same_action_registration_key(existing, registration)) {
-      existing = std::move(registration);
-      return;
+  for (auto existing = action_registrations_.begin();
+       existing != action_registrations_.end();
+       ++existing) {
+    if (same_action_registration_key(*existing, registration)) {
+      action_registrations_.erase(existing);
+      break;
     }
   }
   action_registrations_.push_back(std::move(registration));
@@ -40,6 +42,35 @@ std::vector<ActionRegistration> WindowRuntime::action_registrations_for_scope(
     }
   }
   return registrations;
+}
+
+std::vector<ActionRegistration> WindowRuntime::action_registrations_for_enabled(
+    bool enabled) const {
+  std::vector<ActionRegistration> registrations;
+  for (const ActionRegistration& registration : action_registrations_) {
+    if (registration.enabled == enabled) {
+      registrations.push_back(registration);
+    }
+  }
+  return registrations;
+}
+
+std::optional<bool> WindowRuntime::action_registration_enabled(
+    std::string_view name,
+    ActionScope dispatch_scope,
+    std::optional<ViewId> view_id,
+    std::optional<ElementId> element_id) const {
+  for (auto registration = action_registrations_.rbegin();
+       registration != action_registrations_.rend();
+       ++registration) {
+    if (registration->name == name &&
+        registration->dispatch_scope == dispatch_scope &&
+        registration->view_id == view_id &&
+        registration->element_id == element_id) {
+      return registration->enabled;
+    }
+  }
+  return std::nullopt;
 }
 
 } // namespace cgpui

@@ -64,6 +64,11 @@ void notify_window_observers();
 void notify_view_observers(ViewId view_id);
 void deactivate_native_additional_windows();
 void upsert_action_registration(ActionRegistration registration);
+[[nodiscard]] std::optional<bool> action_registration_enabled(
+    std::string_view name,
+    ActionScope dispatch_scope,
+    std::optional<ViewId> view_id,
+    std::optional<ElementId> element_id) const;
 [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
 [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
     WindowRuntimeId runtime_id);

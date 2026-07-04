@@ -4736,3 +4736,28 @@
 - Tests that call `Context<T>::app_context()` or `WindowRuntimeContext::app_context()`
   need to link `cgpui_app`; plain UI runtime tests that do not cross into the
   app facade can continue to link only `cgpui_ui`.
+
+## 2026-07-05 Phase B Step 287 Action Enablement Metadata
+
+- Step 287 should stay scoped to action registration enablement metadata and
+  dispatch suppression. It should not start action payload macros, key routing,
+  key grammar, focused-route bubbling, or fuller simulated test-context input.
+- The ownership boundary is `include/cgpui/ui/runtime_actions.hpp` for
+  `ActionRegistrationOptions` and `ActionRegistration::enabled`,
+  `include/cgpui/ui/runtime_action_enablement_templates.hpp` for typed
+  overloads that accept options, `src/ui/runtime_action_registration.cpp` for
+  non-template registration, and `src/ui/runtime_action_metadata.cpp` for
+  enabled-state queries and dispatch lookup.
+- `src/ui/runtime_action_dispatch.cpp` should remain dispatch-only. It may ask
+  metadata whether a candidate handler is enabled, but registration upsert,
+  enabled-state filtering, command palette metadata, key bindings, and text
+  action helpers belong elsewhere.
+- Disabled registrations suppress handler invocation and produce an unhandled
+  dispatch result at that scope. This is enablement metadata, not full GPUI
+  action bubbling yet; Step 288 should decide how disabled focused/view/window
+  handlers interact with route bubbling.
+- Same-dispatch-key registrations must align enablement lookup with the
+  existing handler-map behavior where the latest registration wins. The durable
+  fix is for `upsert_action_registration(...)` to keep refreshed keys at the
+  newest position and for `action_registration_enabled(...)` to search matching
+  dispatch keys from newest to oldest.

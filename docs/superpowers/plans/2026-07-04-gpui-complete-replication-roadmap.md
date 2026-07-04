@@ -279,9 +279,12 @@ shape before deeper native work expands platform behavior.
   `include/cgpui/ui/runtime_actions.hpp` and
   `src/ui/runtime_action_metadata.cpp`; Step 286 adds typed action
   command-palette metadata binding in
-  `include/cgpui/ui/runtime_command_palette_templates.hpp`. Key dispatch,
-  key grammar, enablement, bubbling, and fuller test-context simulation remain
-  later work.
+  `include/cgpui/ui/runtime_command_palette_templates.hpp`; Step 287 adds
+  action enablement metadata through `ActionRegistrationOptions`,
+  `include/cgpui/ui/runtime_action_enablement_templates.hpp`,
+  `src/ui/runtime_action_registration.cpp`, and disabled-dispatch coverage.
+  Key dispatch, key grammar, bubbling, and fuller test-context simulation
+  remain later work.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration.
@@ -593,13 +596,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 287 action enablement metadata is next after Step 286 typed action
-command metadata binding merged on `master` at
-`43c6040 feat: add typed action command metadata` with post-merge Windows
-full-debug 72/72 and WSL Arch Linux full-debug 69/69 verification. Step 286
-binds typed action names into command-palette metadata through a focused
-template leaf without starting key dispatch, key grammar, action enablement,
-bubbling, or fuller test-context simulation.
+Step 288 action bubbling through focused routes is next after Step 287 action
+enablement metadata. Step 287 records `ActionRegistrationOptions::enabled`,
+filters registrations by enabled state, suppresses disabled action dispatch,
+and keeps key dispatch, key grammar, bubbling, and fuller test-context
+simulation out of scope.
 
 ## Self-Review
 

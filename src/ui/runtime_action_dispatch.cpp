@@ -2,66 +2,6 @@
 
 namespace cgpui {
 
-void WindowRuntime::register_action(std::string name, ActionHandler handler) {
-  if (!name.empty() && handler) {
-    upsert_action_registration(ActionRegistration{
-        .name = name,
-        .registration_scope = ActionRegistrationScope::general,
-        .dispatch_scope = ActionScope::app});
-    action_handlers_[std::move(name)] = std::move(handler);
-  }
-}
-
-void WindowRuntime::register_app_action(std::string name, ActionHandler handler) {
-  if (!name.empty() && handler) {
-    upsert_action_registration(ActionRegistration{
-        .name = name,
-        .registration_scope = ActionRegistrationScope::app,
-        .dispatch_scope = ActionScope::app});
-    action_handlers_[std::move(name)] = std::move(handler);
-  }
-}
-
-void WindowRuntime::register_window_action(std::string name, ActionHandler handler) {
-  if (!name.empty() && handler) {
-    upsert_action_registration(ActionRegistration{
-        .name = name,
-        .registration_scope = ActionRegistrationScope::window,
-        .dispatch_scope = ActionScope::window});
-    window_action_handlers_[std::move(name)] = std::move(handler);
-  }
-}
-
-void WindowRuntime::register_view_action(
-    ViewId view_id,
-    std::string name,
-    ActionHandler handler) {
-  if (view_id.value != 0 && !name.empty() && handler) {
-    upsert_action_registration(ActionRegistration{
-        .name = name,
-        .registration_scope = ActionRegistrationScope::view,
-        .dispatch_scope = ActionScope::view,
-        .view_id = view_id});
-    view_action_handlers_[view_id.value][std::move(name)] =
-        std::move(handler);
-  }
-}
-
-void WindowRuntime::register_focused_element_action(
-    ElementId element_id,
-    std::string name,
-    ActionHandler handler) {
-  if (element_id.value != 0 && !name.empty() && handler) {
-    upsert_action_registration(ActionRegistration{
-        .name = name,
-        .registration_scope = ActionRegistrationScope::focused_element,
-        .dispatch_scope = ActionScope::focused_element,
-        .element_id = element_id});
-    focused_element_action_handlers_[element_id.value][std::move(name)] =
-        std::move(handler);
-  }
-}
-
 ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
   ActionDispatchResult dispatch{
       .name = std::move(name),
@@ -72,7 +12,13 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
         keyboard_focus_element_owner_->value);
     if (owner != focused_element_action_handlers_.end()) {
       const auto handler = owner->second.find(dispatch.name);
-      if (handler != owner->second.end()) {
+      if (handler != owner->second.end() &&
+          action_registration_enabled(
+              dispatch.name,
+              ActionScope::focused_element,
+              std::nullopt,
+              keyboard_focus_element_owner_)
+              .value_or(true)) {
         dispatch.handled = true;
         dispatch.scope = ActionScope::focused_element;
         dispatch.element_id = keyboard_focus_element_owner_;
@@ -88,7 +34,13 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
     const auto owner = view_action_handlers_.find(view_id->value);
     if (owner != view_action_handlers_.end()) {
       const auto handler = owner->second.find(dispatch.name);
-      if (handler != owner->second.end()) {
+      if (handler != owner->second.end() &&
+          action_registration_enabled(
+              dispatch.name,
+              ActionScope::view,
+              view_id,
+              std::nullopt)
+              .value_or(true)) {
         dispatch.handled = true;
         dispatch.scope = ActionScope::view;
         dispatch.view_id = view_id;
@@ -100,7 +52,13 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
   }
 
   if (const auto handler = window_action_handlers_.find(dispatch.name);
-      handler != window_action_handlers_.end()) {
+      handler != window_action_handlers_.end() &&
+      action_registration_enabled(
+          dispatch.name,
+          ActionScope::window,
+          std::nullopt,
+          std::nullopt)
+          .value_or(true)) {
     dispatch.handled = true;
     dispatch.scope = ActionScope::window;
     dispatch.result = handler->second(context());
@@ -109,7 +67,13 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
   }
 
   if (const auto handler = action_handlers_.find(dispatch.name);
-      handler != action_handlers_.end()) {
+      handler != action_handlers_.end() &&
+      action_registration_enabled(
+          dispatch.name,
+          ActionScope::app,
+          std::nullopt,
+          std::nullopt)
+          .value_or(true)) {
     dispatch.handled = true;
     dispatch.scope = ActionScope::app;
     dispatch.result = handler->second(context());

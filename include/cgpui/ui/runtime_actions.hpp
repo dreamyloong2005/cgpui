@@ -25,10 +25,15 @@ enum class ActionRegistrationScope {
   focused_element,
 };
 
+struct ActionRegistrationOptions {
+  bool enabled = true;
+};
+
 struct ActionRegistration {
   std::string name;
   ActionRegistrationScope registration_scope = ActionRegistrationScope::general;
   ActionScope dispatch_scope = ActionScope::app;
+  bool enabled = true;
   std::optional<ViewId> view_id;
   std::optional<ElementId> element_id;
 };

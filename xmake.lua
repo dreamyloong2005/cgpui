@@ -453,6 +453,13 @@ target("action_scope_metadata_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("action_enablement_metadata_test")
+    set_kind("binary")
+    add_files("tests/ui/action_enablement_metadata_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("typed_action_command_metadata_test")
     set_kind("binary")
     add_files("tests/ui/typed_action_command_metadata_test.cpp")

@@ -15,5 +15,6 @@
 #include "cgpui/ui/window_runtime.hpp"
 #include "cgpui/ui/runtime_rendering.hpp"
 #include "cgpui/ui/runtime_action_templates.hpp"
+#include "cgpui/ui/runtime_action_enablement_templates.hpp"
 #include "cgpui/ui/runtime_command_palette_templates.hpp"
 #include "cgpui/ui/runtime_templates.hpp"

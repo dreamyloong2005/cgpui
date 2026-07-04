@@ -10041,3 +10041,53 @@
 - Step 286 is complete on `master`; Step 287 action enablement metadata is the
   next action-band slice before key dispatch, key grammar, bubbling, and fuller
   test-context simulation.
+
+## 2026-07-05 Phase B Step 287 Action Enablement Metadata
+
+- Continued `codex/phase-b-action-enablement-metadata` in
+  `.worktrees/phase-b-action-enablement-metadata` from `master` after Step 286.
+- Added `ActionRegistrationOptions{.enabled = ...}` and
+  `ActionRegistration::enabled` to the focused runtime action metadata
+  boundary, plus runtime/context typed overloads through the new
+  `include/cgpui/ui/runtime_action_enablement_templates.hpp` leaf.
+- Split non-template action registration into
+  `src/ui/runtime_action_registration.cpp`, keeping
+  `src/ui/runtime_action_dispatch.cpp` dispatch-only and
+  `src/ui/runtime_action_metadata.cpp` responsible for registration
+  upsert/query behavior.
+- Added `action_registrations_for_enabled(...)` queries and dispatch-time
+  suppression for disabled registrations while leaving key routing, key
+  grammar, action bubbling, and fuller test-context simulation out of scope.
+- Added RED/GREEN behavior coverage in
+  `tests/ui/action_enablement_metadata_test.cpp` and registered
+  `action_enablement_metadata_test` in `xmake.lua`. The original RED failed as
+  expected before `ActionRegistrationOptions`,
+  `ActionRegistration::enabled`, and enabled-state queries existed.
+- Added an extra RED regression assertion for same-dispatch-key action
+  re-registration: a disabled general registration followed by an enabled app
+  registration must use the latest matching enablement metadata, matching the
+  existing handler-map "last registration wins" behavior. The test failed
+  before `action_registration_enabled(...)` searched registrations from newest
+  to oldest and `upsert_action_registration(...)` moved refreshed keys to the
+  latest position.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . action_enablement_metadata_test/default action_scope_metadata_test/default typed_action_command_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 10/10.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . action_enablement_metadata_test/default action_scope_metadata_test/default typed_action_command_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 10/10.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 73/73.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 70/70.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Step 287 is implemented and focused/full verified on
+  `codex/phase-b-action-enablement-metadata`; it is ready for merge
+  verification. Step 288 action bubbling through focused routes is the next
+  action-band slice.

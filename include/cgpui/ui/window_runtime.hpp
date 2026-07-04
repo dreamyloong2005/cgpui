@@ -46,12 +46,9 @@ class WindowRuntime {
       std::unique_ptr<View> root_view);
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
   [[nodiscard]] WindowRuntimeId root_window_runtime_id() const;
-  [[nodiscard]] std::span<const WindowRuntimeRecord>
-  window_runtime_records() const;
-  [[nodiscard]] const WindowRuntimeRecord* window_runtime_record(
-      WindowRuntimeId runtime_id) const;
-  [[nodiscard]] const View* app_opened_window_root_view(
-      ViewId root_view_id) const;
+  [[nodiscard]] std::span<const WindowRuntimeRecord> window_runtime_records() const;
+  [[nodiscard]] const WindowRuntimeRecord* window_runtime_record(WindowRuntimeId runtime_id) const;
+  [[nodiscard]] const View* app_opened_window_root_view(ViewId root_view_id) const;
   [[nodiscard]] View* root_view();
   [[nodiscard]] const View* root_view() const;
   [[nodiscard]] ViewId register_view(View& view);
@@ -90,28 +87,35 @@ class WindowRuntime {
   [[nodiscard]] FocusHandle focus_handle(ElementId element_id) const;
   [[nodiscard]] ViewInputState input_state() const;
   void register_action(std::string name, ActionHandler handler);
+  void register_action(std::string name, ActionHandler handler, ActionRegistrationOptions options);
   template <Action T> void register_action(ActionHandler handler);
+  template <Action T> void register_action(ActionHandler handler, ActionRegistrationOptions options);
   void register_app_action(std::string name, ActionHandler handler);
+  void register_app_action(std::string name, ActionHandler handler, ActionRegistrationOptions options);
   template <Action T> void register_app_action(ActionHandler handler);
+  template <Action T> void register_app_action(ActionHandler handler, ActionRegistrationOptions options);
   void register_window_action(std::string name, ActionHandler handler);
+  void register_window_action(std::string name, ActionHandler handler, ActionRegistrationOptions options);
   template <Action T> void register_window_action(ActionHandler handler);
+  template <Action T> void register_window_action(ActionHandler handler, ActionRegistrationOptions options);
   void register_view_action(ViewId view_id, std::string name, ActionHandler handler);
+  void register_view_action(ViewId view_id, std::string name, ActionHandler handler, ActionRegistrationOptions options);
   template <Action T> void register_view_action(ViewId view_id, ActionHandler handler);
+  template <Action T> void register_view_action(ViewId view_id, ActionHandler handler, ActionRegistrationOptions options);
   void register_focused_element_action(ElementId element_id, std::string name, ActionHandler handler);
-  template <Action T> void register_focused_element_action(
-      ElementId element_id, ActionHandler handler);
+  void register_focused_element_action(ElementId element_id, std::string name, ActionHandler handler, ActionRegistrationOptions options);
+  template <Action T> void register_focused_element_action(ElementId element_id, ActionHandler handler);
+  template <Action T> void register_focused_element_action(ElementId element_id, ActionHandler handler, ActionRegistrationOptions options);
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
   template <Action T> [[nodiscard]] ActionDispatchResult dispatch_action();
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   [[nodiscard]] std::span<const ActionRegistration> action_registrations() const;
-  [[nodiscard]] std::vector<ActionRegistration>
-  action_registrations_for_scope(ActionRegistrationScope scope) const;
+  [[nodiscard]] std::vector<ActionRegistration> action_registrations_for_scope(ActionRegistrationScope scope) const;
+  [[nodiscard]] std::vector<ActionRegistration> action_registrations_for_enabled(bool enabled) const;
   void register_command_palette_entry(CommandPaletteEntry entry);
   template <Action T> void register_command_palette_entry(CommandPaletteEntry entry);
-  [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
-      const;
-  [[nodiscard]] std::vector<CommandPaletteEntry>
-  command_palette_entries_for_group(std::string_view group) const;
+  [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries() const;
+  [[nodiscard]] std::vector<CommandPaletteEntry> command_palette_entries_for_group(std::string_view group) const;
   [[nodiscard]] ActionDispatchResult dispatch_command_palette_entry(
       const CommandPaletteEntry& entry);
   [[nodiscard]] ActionDispatchResult dispatch_command_palette_action(
@@ -175,8 +179,7 @@ class WindowRuntime {
       const ThemeTokenId& id) const;
   [[nodiscard]] std::optional<RenderRecord> last_render_record() const;
   [[nodiscard]] RuntimeDiagnosticsSnapshot diagnostics_snapshot() const;
-  [[nodiscard]] std::span<const PlatformDiagnosticEvent>
-  platform_diagnostics() const;
+  [[nodiscard]] std::span<const PlatformDiagnosticEvent> platform_diagnostics() const;
   [[nodiscard]] std::span<const EntitySubscription> subscriptions_for_view(
       ViewId view_id) const;
   [[nodiscard]] bool subscription_connected(SubscriptionId id) const;
