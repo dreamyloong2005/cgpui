@@ -49,6 +49,10 @@ class TestContextCapability {
       bool pressed,
       Point position) const;
   void dispatch_pointer_scroll(Point delta, Point position) const;
+  void dispatch_window_activation(bool active) const;
+  void dispatch_window_focus(bool focused) const;
+  void focus(ElementId element_id) const;
+  void release_focus(ElementId element_id) const;
 
  private:
   const WindowRuntimeContext* context_ = nullptr;

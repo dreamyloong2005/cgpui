@@ -10748,3 +10748,64 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 79/79.
 - Step 296 is complete on `master`; Step 297 focus/window activation
   simulation is the next slice in the Step 295-300 test-context behavior band.
+
+## 2026-07-05 Phase B Step 297 Test-Context Focus Activation
+
+- Created feature worktree `.worktrees/phase-b-test-context-focus-activation`
+  on `codex/phase-b-test-context-focus-activation` from
+  `c99dace docs: mark step 296 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_focus_test/default window_runtime_input_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default` passed
+  7/7.
+- RED added `TestContextCapability` API assertions,
+  `tests/ui/test_context_focus_activation_test.cpp`, xmake registration, and
+  structure guards. After forcing xmake reconfigure, RED failed as expected on
+  missing `dispatch_window_activation(...)`, `dispatch_window_focus(...)`,
+  `focus(ElementId)`, and `release_focus(ElementId)`.
+- GREEN added those helpers in `include/cgpui/ui/test_context.hpp` and focused
+  implementation in `src/ui/test_context_focus.cpp`. Window activation/focus
+  helpers dispatch through `WindowActivated` / `WindowFocused` runtime events,
+  while element focus helpers reuse runtime keyboard focus APIs.
+- The first GREEN behavior run failed with return code 5 because
+  `TestContextCapability::input_state()` read the original
+  `WindowRuntimeContext` snapshot after focus was mutated. The fix was to make
+  test-context input observability read live `context_->runtime.input_state()`
+  while leaving ordinary `WindowRuntimeContext::input_state()` snapshot
+  semantics intact.
+- Focused Windows verification passed:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_focus_activation_test/default ui_source_structure_test/default`
+  passed 3/3.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . test_context_focus_activation_test/default
+  test_context_capability_test/default test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default window_runtime_focus_test/default
+  window_runtime_input_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 10/10.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 83/83.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  test_context_focus_activation_test/default
+  test_context_capability_test/default test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default window_runtime_focus_test/default
+  window_runtime_input_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 10/10.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 80/80.
+- Step 297 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 298 clipboard
+  helpers is the next slice after Step 297 lands on `master`.

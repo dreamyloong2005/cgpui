@@ -206,9 +206,14 @@ int main() {
   }
   if (!contains(ledger, "| gpui::TestAppContext |") ||
       !contains(ledger, "`TestContextCapability` groups runtime id/view id") ||
+      !contains(ledger, "live input/event/action observability") ||
       !contains(ledger, "direct pointer move/button/scroll simulation") ||
+      !contains(ledger, "direct window activation/focus dispatch") ||
+      !contains(ledger, "element focus/release helpers") ||
       !contains(ledger, "src/ui/test_context_pointer.cpp") ||
+      !contains(ledger, "src/ui/test_context_focus.cpp") ||
       !contains(ledger, "tests/ui/test_context_pointer_simulation_test.cpp") ||
+      !contains(ledger, "tests/ui/test_context_focus_activation_test.cpp") ||
       !contains(ledger,
                 "Phase G fuller simulated input/test macro depth")) {
     return 18;
@@ -299,6 +304,7 @@ int main() {
               "command_palette_key_integration_test",
               "test_context_keystroke_simulation_test",
               "test_context_pointer_simulation_test",
+              "test_context_focus_activation_test",
               "key_binding.hpp",
               "runtime_key_binding_grammar.cpp",
               "runtime_key_binding_modifiers.cpp",
@@ -307,7 +313,9 @@ int main() {
               "runtime_command_palette_keys.cpp",
               "test_context_keystrokes.cpp",
               "test_context_pointer.cpp",
+              "test_context_focus.cpp",
               "dispatch_pointer_* helpers",
+              "dispatch_window_* helpers",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",

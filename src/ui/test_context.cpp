@@ -18,7 +18,7 @@ int TestContextCapability::frame_index() const {
 }
 
 ViewInputState TestContextCapability::input_state() const {
-  return context_->input_state();
+  return context_->runtime.input_state();
 }
 
 std::optional<EventRoute> TestContextCapability::current_event_route() const {

@@ -4953,3 +4953,28 @@
   pointer move/button/scroll helpers update input state, emit the expected
   `EventKind` records, and preserve hit-test routing through the real runtime
   dispatch path.
+
+## 2026-07-05 Phase B Step 297 Test-Context Focus Activation
+
+- Step 297 stays scoped to focus/window activation simulation on the public
+  `TestContextCapability`. It should not start clipboard helpers,
+  timer/async advancement, redraw pumping, `gpui::test` macro equivalents, or
+  action payload macro work.
+- Window activation/focus simulation belongs in a focused
+  `src/ui/test_context_focus.cpp` source and should dispatch
+  `WindowActivated` / `WindowFocused` through
+  `context_->runtime.handle_event(...)`, matching native window lifecycle and
+  focus event paths.
+- Element focus helpers should call the existing runtime focus APIs:
+  `request_keyboard_focus(ElementId)` and `release_keyboard_focus(ElementId)`.
+  They should not invent test-only focus storage.
+- The concrete debugging finding was that `WindowRuntimeContext::input_state()`
+  is an event-context snapshot, while `TestContextCapability::input_state()`
+  needs to observe live runtime state after simulation helpers mutate focus or
+  input. The durable fix is for the test-context capability to read
+  `context_->runtime.input_state()`.
+- The behavior guard belongs in
+  `tests/ui/test_context_focus_activation_test.cpp`: it should prove window
+  activation/focus dispatch produces runtime event records, element focus
+  routes keyboard events to the focused element, and release clears keyboard
+  focus.

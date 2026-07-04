@@ -140,6 +140,7 @@ int main() {
       "tests/ui/window_runtime_theme_test.cpp",
       "tests/ui/test_context_keystroke_simulation_test.cpp",
       "tests/ui/test_context_pointer_simulation_test.cpp",
+      "tests/ui/test_context_focus_activation_test.cpp",
   };
   for (const char* test_file : runtime_test_files) {
     if (read_source(test_file).empty()) {
@@ -168,6 +169,8 @@ int main() {
       line_count(read_source("tests/ui/test_context_keystroke_simulation_test.cpp")) >
           180 ||
       line_count(read_source("tests/ui/test_context_pointer_simulation_test.cpp")) >
+          240 ||
+      line_count(read_source("tests/ui/test_context_focus_activation_test.cpp")) >
           240) {
     return 112;
   }
@@ -505,6 +508,10 @@ int main() {
       !contains(test_context_header, "void dispatch_pointer_move(") ||
       !contains(test_context_header, "void dispatch_pointer_button(") ||
       !contains(test_context_header, "void dispatch_pointer_scroll(") ||
+      !contains(test_context_header, "void dispatch_window_activation(") ||
+      !contains(test_context_header, "void dispatch_window_focus(") ||
+      !contains(test_context_header, "void focus(ElementId") ||
+      !contains(test_context_header, "void release_focus(ElementId") ||
       !contains(element_context_header, "class ElementContextCapability") ||
       !contains(element_context_header, "ElementId element_id() const") ||
       !contains(element_context_header, "void capture_pointer() const") ||
@@ -1598,6 +1605,8 @@ int main() {
       read_source("src/ui/test_context_keystrokes.cpp");
   const std::string test_context_pointer_source =
       read_source("src/ui/test_context_pointer.cpp");
+  const std::string test_context_focus_source =
+      read_source("src/ui/test_context_focus.cpp");
   if (!contains(test_context_source,
                 "WindowRuntimeId TestContextCapability::runtime_id() const") ||
       !contains(test_context_source,
@@ -1644,6 +1653,29 @@ int main() {
       contains(test_context_pointer_source, "AsyncContextCapability") ||
       contains(test_context_pointer_source, "ElementContextCapability")) {
     return 134;
+  }
+  if (!contains(test_context_focus_source,
+                "void TestContextCapability::dispatch_window_activation(") ||
+      !contains(test_context_focus_source,
+                "void TestContextCapability::dispatch_window_focus(") ||
+      !contains(test_context_focus_source,
+                "void TestContextCapability::focus(") ||
+      !contains(test_context_focus_source,
+                "void TestContextCapability::release_focus(") ||
+      !contains(test_context_focus_source, "WindowActivated{") ||
+      !contains(test_context_focus_source, "WindowFocused{") ||
+      !contains(test_context_focus_source,
+                "context_->runtime.handle_event(") ||
+      !contains(test_context_focus_source,
+                "context_->runtime.request_keyboard_focus(") ||
+      !contains(test_context_focus_source,
+                "context_->runtime.release_keyboard_focus(") ||
+      contains(test_context_source, "dispatch_window_activation(") ||
+      contains(test_context_source, "dispatch_window_focus(") ||
+      line_count(test_context_focus_source) > 90 ||
+      contains(test_context_focus_source, "AsyncContextCapability") ||
+      contains(test_context_focus_source, "ElementContextCapability")) {
+    return 135;
   }
 
   const std::string element_context_source =

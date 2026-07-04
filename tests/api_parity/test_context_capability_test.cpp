@@ -122,6 +122,18 @@ static_assert(std::same_as<decltype(std::declval<Capability>()
                                             std::declval<cgpui::Point>(),
                                             std::declval<cgpui::Point>())),
                            void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .dispatch_window_activation(bool{})),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .dispatch_window_focus(bool{})),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>().focus(
+                               std::declval<cgpui::ElementId>())),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>().release_focus(
+                               std::declval<cgpui::ElementId>())),
+                           void>);
 static_assert(std::is_copy_constructible_v<Capability>);
 static_assert(cgpui::Render<TestContextCapabilityView>);
 
