@@ -263,15 +263,19 @@ verification passed Windows 7/7 and WSL Arch Linux 11/11. Feature-worktree
 full debug passed Windows 48/48 and WSL Arch Linux 45/45. Post-merge
 verification passed Windows 48/48 and WSL Arch Linux 45/45.
 
-Step 263, public typed view handle spelling, is in progress on
-`codex/phase-b-view-handles`. RED failed as expected on missing
-`cgpui::ViewHandle<T>`, `cgpui::WeakViewHandle<T>`, `Context<T>::view<T>()`,
-and `Context<T>::read_view(...)`. GREEN adds a focused
+Step 263, public typed view handle spelling, is merged on `master` at
+`65d75ea feat: add typed view handles` and post-merge verified on Windows and
+WSL Arch Linux. RED failed as expected on missing `cgpui::ViewHandle<T>`,
+`cgpui::WeakViewHandle<T>`, `Context<T>::view<T>()`, and
+`Context<T>::read_view(...)`. GREEN adds a focused
 `include/cgpui/ui/view_handle.hpp` public leaf, moves the existing untyped
 `WeakView` there, adds typed handle wrappers over `ViewId`, and adds current
 view, weak-view, typed upgrade, and read-only lookup helpers in
 `WindowRuntimeContext` templates. This is author-facing handle spelling over
-the existing registry, not full view lifecycle parity yet.
+the existing registry, not full view lifecycle parity yet. Feature-worktree
+verification passed Windows focused 8/8, Windows full debug 49/49, and WSL
+Arch Linux full debug 46/46. Post-merge verification passed Windows full debug
+49/49 and WSL Arch Linux full debug 46/46. Step 264 is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
