@@ -39,6 +39,7 @@ int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/render.hpp",
+      "include/cgpui/ui/view_handle.hpp",
       "include/cgpui/ui/view.hpp",
       "include/cgpui/ui/style_tokens.hpp",
       "include/cgpui/ui/style_values.hpp",
@@ -373,6 +374,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_diagnostics.hpp");
   const std::string runtime_input_state_header =
       read_source("include/cgpui/ui/runtime_input_state.hpp");
+  const std::string view_handle_header =
+      read_source("include/cgpui/ui/view_handle.hpp");
   const std::string runtime_context_header =
       read_source("include/cgpui/ui/runtime_context.hpp");
   const std::string window_runtime_header =
@@ -392,8 +395,16 @@ int main() {
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
                 "struct RuntimeDiagnosticsSnapshot") ||
+      !contains(view_handle_header, "class WeakView") ||
+      !contains(view_handle_header, "class ViewHandle") ||
+      !contains(view_handle_header, "class WeakViewHandle") ||
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
+      !contains(runtime_context_header, "ViewHandle<T> view() const") ||
+      !contains(runtime_templates_header,
+                "ViewHandle<T> WindowRuntimeContext::view() const") ||
+      !contains(runtime_templates_header,
+                "WeakViewHandle<T> WindowRuntimeContext::weak_view() const") ||
       !contains(runtime_context_header, "PlatformWindow& platform_window") ||
       !contains(runtime_context_header, "Window window() const") ||
       !contains(runtime_templates_header,
@@ -414,10 +425,12 @@ int main() {
     return 20;
   }
   if (line_count(runtime_types_header) > 220 ||
+      line_count(view_handle_header) > 180 ||
       line_count(window_runtime_header) > 220 ||
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
       contains(runtime_types_header, "struct AppContext") ||
+      contains(runtime_input_state_header, "class WeakView") ||
       contains(runtime_context_header, "PlatformWindow& window") ||
       contains(window_runtime_header, "PlatformApplication& application_") ||
       contains(window_runtime_header, "std::vector<RuntimeTask> tasks_")) {

@@ -36,6 +36,15 @@ struct WindowRuntimeContext {
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
+  template <typename T>
+  [[nodiscard]] ViewHandle<T> view() const;
+  template <typename T>
+  [[nodiscard]] WeakViewHandle<T> weak_view() const;
+  template <typename T>
+  [[nodiscard]] std::optional<ViewHandle<T>> upgrade_view(
+      WeakViewHandle<T> view) const;
+  template <typename T>
+  [[nodiscard]] const T* read_view(ViewHandle<T> view) const;
   void capture_pointer(PointerCaptureOwner owner) const;
   void capture_pointer(ElementId element_id) const;
   void release_pointer(PointerCaptureOwner owner) const;

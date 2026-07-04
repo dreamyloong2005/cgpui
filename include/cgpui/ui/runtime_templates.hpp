@@ -100,6 +100,31 @@ const T* WindowRuntimeContext::read_model(Model<T> model) const {
 }
 
 template <typename T>
+ViewHandle<T> WindowRuntimeContext::view() const {
+  return ViewHandle<T>(view_id);
+}
+
+template <typename T>
+WeakViewHandle<T> WindowRuntimeContext::weak_view() const {
+  return WeakViewHandle<T>(view_id);
+}
+
+template <typename T>
+std::optional<ViewHandle<T>> WindowRuntimeContext::upgrade_view(
+    WeakViewHandle<T> view) const {
+  const std::optional<ViewId> upgraded = runtime.upgrade_view(view.untyped());
+  if (!upgraded.has_value()) {
+    return std::nullopt;
+  }
+  return ViewHandle<T>(*upgraded);
+}
+
+template <typename T>
+const T* WindowRuntimeContext::read_view(ViewHandle<T> view) const {
+  return dynamic_cast<const T*>(runtime.find_view(view.id()));
+}
+
+template <typename T>
 EntityHandle<T> WindowRuntimeContext::entity(EntityId<T> id) const {
   return EntityHandle<T>(id);
 }

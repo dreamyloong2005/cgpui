@@ -107,6 +107,7 @@ int main() {
       !contains(ledger, "| gpui::App |") ||
       !contains(ledger, "| gpui::Window |") ||
       !contains(ledger, "| gpui::Context<T> |") ||
+      !contains(ledger, "| gpui::View<T> |") ||
       !contains(ledger, "| gpui::Render |") ||
       !contains(ledger, "| gpui::div |") ||
       !contains(ledger, "| gpui::test |") ||
@@ -121,11 +122,15 @@ int main() {
   }
   if (!contains(ledger, "`Context<T>` alias with app/window/entity helpers") ||
       !contains(ledger, "`EntityHandle<T>`") ||
+      !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
       !contains(ledger, "include/cgpui/ui/render.hpp") ||
+      !contains(ledger, "include/cgpui/ui/view_handle.hpp") ||
       !contains(ledger,
-                "tests/api_parity/context_capabilities_test.cpp")) {
+                "tests/api_parity/context_capabilities_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/view_handle_spelling_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -204,10 +209,12 @@ int main() {
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
       !contains(xmake, "target(\"context_capabilities_test\")") ||
+      !contains(xmake, "target(\"view_handle_spelling_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
+      !contains(xmake, "tests/api_parity/view_handle_spelling_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

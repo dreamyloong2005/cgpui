@@ -4301,3 +4301,16 @@
   `weak_entity(EntityId<T>)` returns `WeakEntity<T>`. This improves authoring
   shape without claiming the later lifecycle, transaction, and subscription
   work from Steps 265-282 is complete.
+
+## 2026-07-04 Phase B Step 263 View Handles
+
+- Typed view handle spelling belongs in a focused public leaf,
+  `include/cgpui/ui/view_handle.hpp`, rather than in `ui.hpp`, `view.hpp`, or
+  runtime input state. The compatibility aggregate only includes the leaf.
+- `ViewHandle<T>` and `WeakViewHandle<T>` intentionally wrap the existing
+  `ViewId` registry. They provide typed author-facing spelling, downgrade,
+  typed upgrade, and read-only lookup, but they do not create a new view
+  lifecycle or ownership model in this slice.
+- Moving untyped `WeakView` out of `runtime_input_state.hpp` keeps pointer
+  capture/input state focused while preserving the existing
+  `WindowRuntimeContext::upgrade_view(WeakView)` compatibility path.

@@ -182,7 +182,11 @@ shape before deeper native work expands platform behavior.
   `Context<T>` authoring helpers for `window()`, entity handles, and weak
   entity creation; the lower-level `PlatformWindow&` field is now named
   `platform_window` so the GPUI-shaped `window()` facade spelling is available
-  without losing explicit platform access.
+  without losing explicit platform access. Step 263 adds a focused
+  `view_handle.hpp` public leaf with typed `ViewHandle<T>` and
+  `WeakViewHandle<T>` wrappers over the existing `ViewId` registry, plus
+  context helpers for current-view handle creation, weak handles, typed
+  upgrade, and read-only lookup.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules.

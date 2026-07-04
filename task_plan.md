@@ -261,8 +261,17 @@ entity/weak-entity helpers over the existing runtime entity store without
 claiming full entity lifecycle parity yet. Feature-worktree focused
 verification passed Windows 7/7 and WSL Arch Linux 11/11. Feature-worktree
 full debug passed Windows 48/48 and WSL Arch Linux 45/45. Post-merge
-verification passed Windows 48/48 and WSL Arch Linux 45/45. Step 263 is the
-next Phase B slice.
+verification passed Windows 48/48 and WSL Arch Linux 45/45.
+
+Step 263, public typed view handle spelling, is in progress on
+`codex/phase-b-view-handles`. RED failed as expected on missing
+`cgpui::ViewHandle<T>`, `cgpui::WeakViewHandle<T>`, `Context<T>::view<T>()`,
+and `Context<T>::read_view(...)`. GREEN adds a focused
+`include/cgpui/ui/view_handle.hpp` public leaf, moves the existing untyped
+`WeakView` there, adds typed handle wrappers over `ViewId`, and adds current
+view, weak-view, typed upgrade, and read-only lookup helpers in
+`WindowRuntimeContext` templates. This is author-facing handle spelling over
+the existing registry, not full view lifecycle parity yet.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

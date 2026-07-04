@@ -41,6 +41,7 @@ Status meanings:
 | gpui::Window | `Window` facade from `WindowRuntimeContext::window()` / `current_window()` | Adapted | `include/cgpui/app/window.hpp`, `src/app/window.cpp`, `tests/api_parity/app_window_context_test.cpp`, `tests/api_parity/context_capabilities_test.cpp` | Phase B/F window service depth |
 | gpui::WindowOptions | `WindowOptions` | Adapted | `include/cgpui/ui/runtime_window_options.hpp` | Phase B/F |
 | gpui::Context<T> | `Context<T>` alias with app/window/entity helpers | Adapted | `include/cgpui/ui/render.hpp`, `include/cgpui/ui/runtime_context.hpp`, `include/cgpui/ui/runtime_templates.hpp`, `tests/api_parity/context_capabilities_test.cpp` | Phase B context capability depth |
+| gpui::View<T> | `ViewHandle<T>` and `WeakViewHandle<T>` over `ViewId` | Adapted | `include/cgpui/ui/view_handle.hpp`, `include/cgpui/ui/runtime_templates.hpp`, `tests/api_parity/view_handle_spelling_test.cpp` | Phase B view lifecycle depth |
 | gpui::AsyncApp | async task handles and cancellation | Required | `runtime_tasks.cpp`, not full async app context | Phase G |
 | gpui::AsyncWindowContext | no full equivalent yet | Required | background task skeleton only | Phase G |
 | gpui::TestAppContext | no full equivalent yet | Required | deterministic tests exist but no public test context | Phase B/G |

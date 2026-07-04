@@ -34,7 +34,7 @@
   },
   "status_counts": {
     "required": 18,
-    "adapted": 11,
+    "adapted": 12,
     "deferred": 2,
     "non_goal": 1
   },
@@ -95,6 +95,12 @@
       "cgpui_target": "Context<T> alias with app/window/entity helpers",
       "status": "adapted",
       "next_step": "Phase B context capability depth"
+    },
+    {
+      "upstream_gpui": "gpui::View<T>",
+      "cgpui_target": "ViewHandle<T> and WeakViewHandle<T> over ViewId",
+      "status": "adapted",
+      "next_step": "Phase B view lifecycle depth"
     },
     {
       "upstream_gpui": "gpui::Render",

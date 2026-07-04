@@ -1,25 +1,12 @@
 #pragma once
 
 #include "cgpui/ui/runtime_diagnostics.hpp"
+#include "cgpui/ui/view_handle.hpp"
 
 #include <optional>
 #include <variant>
 
 namespace cgpui {
-
-class WeakView {
- public:
-  constexpr WeakView() = default;
-  constexpr explicit WeakView(ViewId id) : id_(id) {}
-
-  [[nodiscard]] constexpr ViewId id() const { return id_; }
-  [[nodiscard]] constexpr bool empty() const { return id_.value == 0; }
-
-  friend bool operator==(const WeakView&, const WeakView&) = default;
-
- private:
-  ViewId id_;
-};
 
 class PointerCaptureOwner {
  public:
