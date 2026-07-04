@@ -128,6 +128,8 @@ int main() {
       !contains(ledger, "`Context<T>::app_context()`") ||
       !contains(ledger, "`Context<T>::view_context<T>()`") ||
       !contains(ledger, "`Context<T>::window_context()`") ||
+      !contains(ledger, "`Context<T>::element_context(ElementId)`") ||
+      !contains(ledger, "`ElementContextCapability`") ||
       !contains(ledger, "`EntityHandle<T>`") ||
       !contains(ledger, "`Context<T>::new_entity<T>(...)`") ||
       !contains(ledger, "weak upgrade/read semantics") ||
@@ -144,6 +146,7 @@ int main() {
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
       !contains(ledger, "include/cgpui/ui/render.hpp") ||
+      !contains(ledger, "include/cgpui/ui/element_context.hpp") ||
       !contains(ledger, "include/cgpui/ui/view_handle.hpp") ||
       !contains(ledger, "include/cgpui/ui/window_context.hpp") ||
       !contains(ledger, "include/cgpui/prelude.hpp") ||
@@ -155,6 +158,8 @@ int main() {
                 "tests/api_parity/view_context_capability_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/window_context_capability_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/element_context_capability_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/public_authoring_surface_test.cpp") ||
       !contains(ledger,
@@ -474,6 +479,31 @@ int main() {
     return 46;
   }
 
+  const std::string element_context_capability =
+      read_source("tests/api_parity/element_context_capability_test.cpp");
+  if (element_context_capability.empty()) {
+    return 47;
+  }
+  if (!contains(element_context_capability, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(element_context_capability, "context.element_context") ||
+      !contains(element_context_capability, "cgpui::ElementContextCapability") ||
+      !contains(element_context_capability, "element_context.element_id()") ||
+      !contains(element_context_capability,
+                "element_context.request_keyboard_focus()") ||
+      !contains(element_context_capability,
+                "element_context.capture_pointer()") ||
+      !contains(element_context_capability, "element_context.set_cursor") ||
+      !contains(element_context_capability, "element_context.state") ||
+      !contains(element_context_capability, "std::same_as") ||
+      !contains(element_context_capability,
+                "cgpui::Render<ElementContextCapabilityView>")) {
+    return 48;
+  }
+  if (contains(element_context_capability, "WindowRuntimeContext") ||
+      contains(element_context_capability, "PlatformWindow")) {
+    return 49;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -481,6 +511,7 @@ int main() {
       !contains(xmake, "target(\"app_context_capability_test\")") ||
       !contains(xmake, "target(\"view_context_capability_test\")") ||
       !contains(xmake, "target(\"window_context_capability_test\")") ||
+      !contains(xmake, "target(\"element_context_capability_test\")") ||
       !contains(xmake, "target(\"view_handle_spelling_test\")") ||
       !contains(xmake, "target(\"public_authoring_surface_test\")") ||
       !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
@@ -499,6 +530,8 @@ int main() {
                 "tests/api_parity/view_context_capability_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/window_context_capability_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/element_context_capability_test.cpp") ||
       !contains(xmake, "tests/api_parity/view_handle_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/public_authoring_surface_test.cpp") ||
       !contains(xmake, "tests/api_parity/entity_lifecycle_creation_test.cpp") ||

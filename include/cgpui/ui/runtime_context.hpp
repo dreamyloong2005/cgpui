@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/runtime_app_context.hpp"
+#include "cgpui/ui/element_context.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
 #include "cgpui/ui/view_context.hpp"
@@ -36,6 +37,8 @@ struct WindowRuntimeContext {
   [[nodiscard]] Window window() const;
   [[nodiscard]] Window current_window() const;
   [[nodiscard]] WindowContextCapability window_context() const;
+  [[nodiscard]] ElementContextCapability element_context(
+      ElementId element_id) const;
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;

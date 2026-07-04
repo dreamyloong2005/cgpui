@@ -92,7 +92,7 @@
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, ElementContextCapability from Context<T>::element_context(ElementId), new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
       "status": "adapted",
       "next_step": "Phase B context capability depth"
     },

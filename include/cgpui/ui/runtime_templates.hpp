@@ -110,6 +110,25 @@ T* WindowRuntimeContext::element_state_or_init(
 }
 
 template <typename T>
+T* ElementContextCapability::state() const {
+  return context_->template element_state<T>(element_id_);
+}
+
+template <typename T, typename... Args>
+T* ElementContextCapability::emplace_state(Args&&... args) const {
+  return context_->template emplace_element_state<T>(
+      element_id_,
+      std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+T* ElementContextCapability::state_or_init(Args&&... args) const {
+  return context_->template element_state_or_init<T>(
+      element_id_,
+      std::forward<Args>(args)...);
+}
+
+template <typename T>
 EntityId<T> WindowRuntimeContext::insert_entity(T entity) const {
   return runtime.insert_entity<T>(std::move(entity));
 }

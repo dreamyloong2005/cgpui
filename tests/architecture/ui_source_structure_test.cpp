@@ -39,6 +39,7 @@ int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/render.hpp",
+      "include/cgpui/ui/element_context.hpp",
       "include/cgpui/ui/view_context.hpp",
       "include/cgpui/ui/view_handle.hpp",
       "include/cgpui/ui/window_context.hpp",
@@ -165,6 +166,7 @@ int main() {
   }
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/element_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/window_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view.hpp\"") ||
@@ -378,6 +380,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_diagnostics.hpp");
   const std::string runtime_input_state_header =
       read_source("include/cgpui/ui/runtime_input_state.hpp");
+  const std::string element_context_header =
+      read_source("include/cgpui/ui/element_context.hpp");
   const std::string view_context_header =
       read_source("include/cgpui/ui/view_context.hpp");
   const std::string view_handle_header =
@@ -403,6 +407,11 @@ int main() {
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
                 "struct RuntimeDiagnosticsSnapshot") ||
+      !contains(element_context_header, "class ElementContextCapability") ||
+      !contains(element_context_header, "ElementId element_id() const") ||
+      !contains(element_context_header, "void capture_pointer() const") ||
+      !contains(element_context_header, "void set_cursor(") ||
+      !contains(element_context_header, "T* state() const") ||
       !contains(view_context_header, "class ViewContextCapability") ||
       !contains(view_context_header, "ViewId view_id() const") ||
       !contains(view_context_header, "ViewHandle<T> view() const") ||
@@ -422,6 +431,8 @@ int main() {
       !contains(runtime_context_header,
                 "WindowContextCapability window_context() const") ||
       !contains(runtime_context_header,
+                "ElementContextCapability element_context(") ||
+      !contains(runtime_context_header,
                 "ViewContextCapability<T> view_context() const") ||
       !contains(runtime_context_header, "ViewHandle<T> view() const") ||
       !contains(runtime_templates_header,
@@ -433,6 +444,12 @@ int main() {
                 "ViewHandle<T> WindowRuntimeContext::view() const") ||
       !contains(runtime_templates_header,
                 "WeakViewHandle<T> WindowRuntimeContext::weak_view() const") ||
+      !contains(runtime_templates_header,
+                "T* ElementContextCapability::state() const") ||
+      !contains(runtime_templates_header,
+                "T* ElementContextCapability::emplace_state(") ||
+      !contains(runtime_templates_header,
+                "T* ElementContextCapability::state_or_init(") ||
       !contains(runtime_context_header, "PlatformWindow& platform_window") ||
       !contains(runtime_context_header, "Window window() const") ||
       !contains(runtime_context_header, "EntityHandle<T> new_entity(") ||
@@ -479,6 +496,7 @@ int main() {
     return 20;
   }
   if (line_count(runtime_types_header) > 220 ||
+      line_count(element_context_header) > 120 ||
       line_count(view_handle_header) > 180 ||
       line_count(window_context_header) > 120 ||
       line_count(window_runtime_header) > 220 ||
@@ -1338,6 +1356,21 @@ int main() {
       !contains(runtime_context_input_source,
                 "FocusHandle WindowRuntimeContext::focus_handle(")) {
     return 47;
+  }
+
+  const std::string element_context_source =
+      read_source("src/ui/element_context.cpp");
+  if (!contains(element_context_source,
+                "ElementId ElementContextCapability::element_id() const") ||
+      !contains(element_context_source,
+                "void ElementContextCapability::capture_pointer() const") ||
+      !contains(element_context_source,
+                "void ElementContextCapability::set_cursor(") ||
+      !contains(element_context_source,
+                "ElementContextCapability WindowRuntimeContext::element_context(") ||
+      line_count(element_context_source) > 80 ||
+      contains(element_context_source, "WindowContextCapability")) {
+    return 118;
   }
 
   const std::string runtime_context_actions_source =

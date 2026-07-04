@@ -4493,3 +4493,21 @@
 - Header cleanliness coverage should only prove the public type is visible in
   leaf includes. Non-template `WindowContextCapability` methods require the
   `cgpui_app` target and belong in the dedicated API parity test.
+
+## 2026-07-04 Phase B Step 274 Element Context Capability
+
+- Step 274 should stay scoped to public element-domain capability spelling:
+  `Context<T>::element_context(ElementId) -> ElementContextCapability`. The
+  capability groups existing element focus, keyboard focus, pointer capture,
+  cursor, focus-handle, and typed element state helpers.
+- The implementation belongs in a focused public UI leaf,
+  `include/cgpui/ui/element_context.hpp`, with non-template forwarding in
+  `src/ui/element_context.cpp` and template state helpers in
+  `include/cgpui/ui/runtime_templates.hpp`. It should not grow `ui.cpp`,
+  `runtime_context.cpp`, or broad runtime implementation files.
+- The API is a facade over existing `WindowRuntimeContext` element helpers. It
+  does not introduce new element tree ownership, event routing, view lifecycle,
+  or entity context-token behavior; those remain separate slices.
+- Keep tests aligned with the existing cursor vocabulary:
+  `CursorShape::pointing_hand` is the current public spelling for pointer-like
+  cursor behavior, so Step 274 does not add a `CursorShape::pointer` alias.

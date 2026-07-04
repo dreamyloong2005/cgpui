@@ -1625,3 +1625,10 @@ implementation slice.
   general enough to survive later view/model lifecycle work.
 - Keep renderer work command-driven and platform-neutral first, then teach the
   Vulkan backend to consume the new commands.
+
+## Active Extension Note
+
+- Phase B Step 274, `Context<T>::element_context(ElementId) ->
+  ElementContextCapability`, is implemented and focused-verified on
+  `codex/phase-b-element-context-capability`. Full debug verification and
+  merge cleanup remain before marking the slice complete on `master`.
