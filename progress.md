@@ -8629,3 +8629,33 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 44/44.
 - Step 261 is complete on `master`; Step 262 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 262 Context Capability Helpers
+
+- Created `codex/phase-b-context-capabilities` in
+  `.worktrees/phase-b-context-capabilities`.
+- Added RED API coverage in
+  `tests/api_parity/context_capabilities_test.cpp` and registered
+  `context_capabilities_test` in `xmake.lua`.
+- RED failed as expected:
+  `xmake test -y -P . context_capabilities_test/default` stopped on missing
+  `WindowRuntimeContext::window()`, `entity(...)`, and `weak_entity(...)`.
+- GREEN added `WindowRuntimeContext::window()` as a public `Window` facade
+  alias, renamed the low-level `PlatformWindow&` context field to
+  `platform_window`, and added `entity(...)` / `weak_entity(...)` template
+  helpers in `runtime_templates.hpp`.
+- Updated the hello-window smoke example and structure tests for the renamed
+  low-level platform-window field.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . context_capabilities_test/default ui_source_structure_test/default app_source_structure_test/default hello_window_lifetime_test/default app_runner_test/default window_runtime_rendering_test/default window_runtime_theme_test/default`
+  passed 7/7.
+- Fresh WSL Arch Linux focused verification passed:
+  `XMAKE_ROOT=y xmake test -y -P . context_capabilities_test/default context_render_spelling_test/default app_window_context_test/default app_source_structure_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default hello_window_lifetime_test/default app_runner_test/default window_runtime_rendering_test/default window_runtime_theme_test/default`
+  passed 11/11.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 45/45.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 48/48.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings for touched text files.

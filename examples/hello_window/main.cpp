@@ -254,7 +254,7 @@ int main() {
               return;
             }
             if (close_after_first_frame) {
-              context.window.request_close();
+              context.platform_window.request_close();
               return;
             }
             if (resize_after_first_frame) {
@@ -271,13 +271,13 @@ int main() {
                 return;
               }
               resize_requested_after_first_frame = true;
-              context.window.request_redraw();
+              context.platform_window.request_redraw();
               return;
             }
           } else {
             second_frame_presented = true;
             if (demo_smoke_flow && !demo_smoke_close_requested) {
-              context.window.request_close();
+              context.platform_window.request_close();
               demo_smoke_close_requested = true;
               return;
             }

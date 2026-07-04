@@ -29,7 +29,7 @@ WindowRuntimeContext WindowRuntime::context_for_record(
   return WindowRuntimeContext{
       .runtime = *this,
       .application = application_,
-      .window = *record.window,
+      .platform_window = *record.window,
       .renderer = *record.renderer,
       .window_runtime_id = record.runtime_id,
       .view_id = record.root_view_id,

@@ -8,7 +8,7 @@ WindowRuntimeContext WindowRuntime::context() {
   return WindowRuntimeContext{
       .runtime = *this,
       .application = application_,
-      .window = *window_,
+      .platform_window = *window_,
       .renderer = *renderer_,
       .window_runtime_id = root_window_runtime_id_,
       .view_id = root_view_id_,

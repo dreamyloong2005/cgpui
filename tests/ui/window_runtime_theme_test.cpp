@@ -25,7 +25,7 @@ int test_window_context_theme_helpers_override_and_fallback() {
   cgpui::WindowRuntimeContext context{
       .runtime = runtime,
       .application = fixture.app,
-      .window = fixture.window,
+      .platform_window = fixture.window,
       .renderer = fixture.renderer,
       .window_runtime_id = runtime.root_window_runtime_id(),
       .view_id = cgpui::ViewId{1},

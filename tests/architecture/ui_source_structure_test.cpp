@@ -394,6 +394,12 @@ int main() {
                 "struct RuntimeDiagnosticsSnapshot") ||
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
+      !contains(runtime_context_header, "PlatformWindow& platform_window") ||
+      !contains(runtime_context_header, "Window window() const") ||
+      !contains(runtime_templates_header,
+                "EntityHandle<T> WindowRuntimeContext::entity(") ||
+      !contains(runtime_templates_header,
+                "WeakEntity<T> WindowRuntimeContext::weak_entity(") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
       !contains(window_runtime_header, "struct AppRunnerOptions") ||
@@ -412,6 +418,7 @@ int main() {
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
       contains(runtime_types_header, "struct AppContext") ||
+      contains(runtime_context_header, "PlatformWindow& window") ||
       contains(window_runtime_header, "PlatformApplication& application_") ||
       contains(window_runtime_header, "std::vector<RuntimeTask> tasks_")) {
     return 100;

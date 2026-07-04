@@ -178,7 +178,11 @@ shape before deeper native work expands platform behavior.
   Step 261 adds the focused public render spelling leaf
   `include/cgpui/ui/render.hpp`, exposing `Context<T>`, `IntoElement`, and the
   `Render<T>` concept while keeping `View` in `view.hpp` and preserving the
-  existing `ViewContext` ABI spelling.
+  existing `ViewContext` ABI spelling. Step 262 adds public
+  `Context<T>` authoring helpers for `window()`, entity handles, and weak
+  entity creation; the lower-level `PlatformWindow&` field is now named
+  `platform_window` so the GPUI-shaped `window()` facade spelling is available
+  without losing explicit platform access.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules.

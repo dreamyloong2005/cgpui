@@ -12,6 +12,10 @@ App WindowRuntimeContext::app() const {
   return App(runtime);
 }
 
+Window WindowRuntimeContext::window() const {
+  return current_window();
+}
+
 Window WindowRuntimeContext::current_window() const {
   return Window(runtime, window_runtime_id);
 }

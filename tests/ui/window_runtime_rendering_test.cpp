@@ -56,7 +56,7 @@ int test_view_render_hook_defaults_empty_and_can_be_overridden() {
   cgpui::WindowRuntimeContext context{
       .runtime = runtime,
       .application = fixture.app,
-      .window = fixture.window,
+      .platform_window = fixture.window,
       .renderer = fixture.renderer,
       .view_id = cgpui::ViewId{9},
       .viewport_size = cgpui::Size{123.0F, 45.0F},

@@ -16,7 +16,7 @@ namespace cgpui {
 struct WindowRuntimeContext {
   WindowRuntime& runtime;
   PlatformApplication& application;
-  PlatformWindow& window;
+  PlatformWindow& platform_window;
   Renderer& renderer;
   WindowRuntimeId window_runtime_id;
   ViewId view_id;
@@ -30,6 +30,7 @@ struct WindowRuntimeContext {
 
   [[nodiscard]] std::optional<EventRoute> current_event_route() const;
   [[nodiscard]] App app() const;
+  [[nodiscard]] Window window() const;
   [[nodiscard]] Window current_window() const;
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] ViewId allocate_view_id() const;
@@ -147,6 +148,10 @@ struct WindowRuntimeContext {
   Model<T> new_model(Args&&... args) const;
   template <typename T>
   [[nodiscard]] const T* read_model(Model<T> model) const;
+  template <typename T>
+  [[nodiscard]] EntityHandle<T> entity(EntityId<T> id) const;
+  template <typename T>
+  [[nodiscard]] WeakEntity<T> weak_entity(EntityId<T> id) const;
   template <typename T>
   [[nodiscard]] std::optional<Model<T>> upgrade_entity(
       WeakEntity<T> entity) const;

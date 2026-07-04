@@ -142,7 +142,8 @@ int main() {
   if (text.find("second_frame_presented") == std::string::npos) {
     return 10;
   }
-  if (text.find("context.window.request_redraw();") == std::string::npos) {
+  if (text.find("context.platform_window.request_redraw();") ==
+      std::string::npos) {
     return 11;
   }
   if (text.find("CGPUI_CLOSE_AFTER_FIRST_FRAME") == std::string::npos) {
@@ -154,7 +155,8 @@ int main() {
   if (text.find("close_requested_after_first_frame") == std::string::npos) {
     return 14;
   }
-  if (text.find("context.window.request_close();") == std::string::npos) {
+  if (text.find("context.platform_window.request_close();") ==
+      std::string::npos) {
     return 15;
   }
   if (text.find("cgpui::ElementTree") != std::string::npos) {

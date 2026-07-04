@@ -100,6 +100,16 @@ const T* WindowRuntimeContext::read_model(Model<T> model) const {
 }
 
 template <typename T>
+EntityHandle<T> WindowRuntimeContext::entity(EntityId<T> id) const {
+  return EntityHandle<T>(id);
+}
+
+template <typename T>
+WeakEntity<T> WindowRuntimeContext::weak_entity(EntityId<T> id) const {
+  return WeakEntity<T>(id);
+}
+
+template <typename T>
 std::optional<Model<T>> WindowRuntimeContext::upgrade_entity(
     WeakEntity<T> entity) const {
   return runtime.upgrade_entity(entity);

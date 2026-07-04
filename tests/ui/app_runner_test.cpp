@@ -914,7 +914,8 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                           root_record != nullptr &&
                           root_record->active &&
                           root_record->root_view_id == frame_context.view_id &&
-                          root_record->window == &frame_context.window &&
+                          root_record->window ==
+                              &frame_context.platform_window &&
                           root_record->renderer == &frame_context.renderer &&
                           root_record->owns_window &&
                           !root_record->owns_renderer &&

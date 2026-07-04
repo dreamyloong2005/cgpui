@@ -899,7 +899,7 @@ class RecordingView final : public cgpui::View {
 
     if (request_redraw_on_event && event_redraw_requests == 0) {
       event_redraw_requests += 1;
-      context.window.request_redraw();
+      context.platform_window.request_redraw();
     }
 
     if (consume_next_event) {

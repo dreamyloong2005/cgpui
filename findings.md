@@ -4284,3 +4284,20 @@
   this spelling: it returns `cgpui::IntoElement`, takes
   `cgpui::Context<HelloWorldView>&`, and asserts
   `cgpui::Render<HelloWorldView>`.
+
+## 2026-07-04 Phase B Step 262 Context Capability Helpers
+
+- `WindowRuntimeContext` already had the runtime machinery for app, current
+  window, and entities, but the author-facing `Context<T>` spelling lacked
+  GPUI-shaped helper names for `window()`, `entity(...)`, and
+  `weak_entity(...)`.
+- C++ cannot expose both a public data member named `window` and a member
+  function named `window()`. The low-level platform window reference is now
+  explicitly named `platform_window`, leaving `window()` free to return the
+  public `cgpui::Window` facade while still preserving direct platform access
+  for low-level tests and examples.
+- Entity helpers intentionally wrap existing storage semantics:
+  `entity(EntityId<T>)` returns `EntityHandle<T>` and
+  `weak_entity(EntityId<T>)` returns `WeakEntity<T>`. This improves authoring
+  shape without claiming the later lifecycle, transaction, and subscription
+  work from Steps 265-282 is complete.

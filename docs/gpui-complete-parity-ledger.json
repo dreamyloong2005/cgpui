@@ -86,13 +86,13 @@
     },
     {
       "upstream_gpui": "gpui::Window",
-      "cgpui_target": "Window facade from WindowRuntimeContext::current_window()",
+      "cgpui_target": "Window facade from WindowRuntimeContext::window() / current_window()",
       "status": "adapted",
       "next_step": "Phase B/F window service depth"
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T>",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers",
       "status": "adapted",
       "next_step": "Phase B context capability depth"
     },
