@@ -1666,6 +1666,6 @@ implementation slice.
   `master` after post-merge Windows and WSL full-debug verification. Phase B
   Step 278, entity-to-entity observation, is complete on `master` after
   post-merge Windows and WSL full-debug verification. Phase B Step 279,
-  window/view observation, is implemented on
-  `codex/phase-b-window-view-observation` and is in verification. Step 280 is
-  the next observation/subscription slice after Step 279 merges.
+  window/view observation, is complete on `master` after post-merge Windows
+  and WSL full-debug verification. Step 280 remaining observation/subscription
+  behavior is the next Phase B slice.

@@ -9629,3 +9629,17 @@
 - Step 279 is implemented and focused/full verified on
   `codex/phase-b-window-view-observation`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 279 Merge
+
+- Committed the window/view observation branch as
+  `52eedb1 feat: add window view observation`.
+- Fast-forward merged `codex/phase-b-window-view-observation` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 65/65.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 62/62.
+- Step 279 is complete on `master`; Step 280 remaining
+  observation/subscription behavior is the next Phase B slice.

@@ -571,10 +571,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 280 after the Step 279 window/view observation
-slice. The next slice should deepen remaining observation/subscription
-behavior without starting the later action/key-dispatch or fuller test-context
-behavior bands.
+Step 279 window/view observation is merged and post-merge verified on Windows
+and WSL Arch Linux. Continue Phase B with Step 280: deepen remaining
+observation/subscription behavior without starting the later action/key-dispatch
+or fuller test-context behavior bands.
 
 ## Self-Review
 
