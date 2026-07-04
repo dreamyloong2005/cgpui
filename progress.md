@@ -8803,3 +8803,16 @@
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 48/48.
+
+## 2026-07-04 Phase B Step 265 Merge
+
+- Committed the entity lifecycle creation branch as
+  `f77f30a feat: add entity lifecycle creation handles`.
+- Fast-forward merged `codex/phase-b-entity-lifecycle-creation` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 51/51.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 48/48.
+- Step 265 is complete on `master`; Step 266 is the next Phase B slice.
