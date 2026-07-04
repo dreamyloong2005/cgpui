@@ -591,11 +591,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 286 typed action command metadata binding is next after Step 285 merge
-verification. Step 285 action scope metadata is implemented and focused/full
-verified on `codex/phase-b-action-scope-metadata`; it exposes
-`ActionRegistration` records for general, app, window, view, and
-focused-element registration sources over the existing action registry.
+Step 286 typed action command metadata binding is next after Step 285 merged
+on `master` at `266c032 feat: add action scope metadata` with post-merge
+Windows full-debug 71/71 and WSL Arch Linux full-debug 68/68 verification.
+Step 285 exposes `ActionRegistration` records for general, app, window, view,
+and focused-element registration sources over the existing action registry.
 
 The Step 286 guard should bind typed action names into command-palette metadata
 without starting key dispatch, key grammar, action enablement, bubbling, or

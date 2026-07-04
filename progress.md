@@ -9968,3 +9968,17 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 68/68.
 - Step 285 is implemented and focused/full verified on
   `codex/phase-b-action-scope-metadata`; it is ready for merge verification.
+
+## 2026-07-05 Phase B Step 285 Merge
+
+- Fast-forward merged `codex/phase-b-action-scope-metadata` into `master` at
+  `266c032 feat: add action scope metadata`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 71/71.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 68/68.
+- Step 285 is complete on `master`; Step 286 typed action command metadata
+  binding is the next action-band slice before key dispatch, key grammar,
+  enablement, bubbling, and fuller test-context simulation.
