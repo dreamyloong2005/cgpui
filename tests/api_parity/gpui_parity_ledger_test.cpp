@@ -125,6 +125,8 @@ int main() {
       !contains(ledger, "`EntityHandle<T>`") ||
       !contains(ledger, "`Context<T>::new_entity<T>(...)`") ||
       !contains(ledger, "weak upgrade/read semantics") ||
+      !contains(ledger, "`observe_entity(...)` helpers") ||
+      !contains(ledger, "entity observation helpers") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
@@ -140,7 +142,9 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
       !contains(ledger,
-                "tests/api_parity/entity_weak_handle_semantics_test.cpp")) {
+                "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/entity_observation_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -279,6 +283,30 @@ int main() {
     return 25;
   }
 
+  const std::string entity_observation =
+      read_source("tests/api_parity/entity_observation_test.cpp");
+  if (entity_observation.empty()) {
+    return 26;
+  }
+  if (!contains(entity_observation, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(entity_observation, "entity.observe(") ||
+      !contains(entity_observation, "entity.observe_subscription(") ||
+      !contains(entity_observation, "context.observe_entity(") ||
+      !contains(entity_observation, "context.observe_entity_subscription") ||
+      !contains(entity_observation,
+                "cgpui::EntityHandle<ObservedState>") ||
+      !contains(entity_observation,
+                "cgpui::Render<EntityObservationView>")) {
+    return 27;
+  }
+  if (contains(entity_observation, "WindowRuntimeContext") ||
+      contains(entity_observation, "WindowRuntime") ||
+      contains(entity_observation, "AppContext") ||
+      contains(entity_observation, "ViewContext") ||
+      contains(entity_observation, "PlatformWindow")) {
+    return 28;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -287,6 +315,7 @@ int main() {
       !contains(xmake, "target(\"public_authoring_surface_test\")") ||
       !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
       !contains(xmake, "target(\"entity_weak_handle_semantics_test\")") ||
+      !contains(xmake, "target(\"entity_observation_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -296,6 +325,8 @@ int main() {
       !contains(xmake, "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/entity_observation_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

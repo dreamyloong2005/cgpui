@@ -313,7 +313,22 @@ keeps observation, update transactions, deletion, and cross-context rules out
 of Step 266. Feature-worktree verification passed Windows focused 10/10, WSL
 Arch Linux focused 10/10, Windows full debug 52/52, and WSL Arch Linux full
 debug 49/49. Post-merge verification passed Windows full debug 52/52 and WSL
-Arch Linux full debug 49/49. Step 267 is the next Phase B slice.
+Arch Linux full debug 49/49.
+
+Step 267, public entity observation helpers, is implemented and feature-tree
+verified on `codex/phase-b-entity-observation`. RED failed as expected on
+missing `EntityHandle<T>::observe(...)`,
+`EntityHandle<T>::observe_subscription(...)`, and
+`Context<T>::observe_entity(...)`. GREEN adds public handle convenience
+methods in `include/cgpui/core/entity.hpp` and context forwarding methods in
+`include/cgpui/ui/runtime_context.hpp` /
+`include/cgpui/ui/runtime_templates.hpp`, adapting the existing
+`observe_model(...)` storage to callback with `EntityHandle<T>` spelling.
+Runtime coverage in `window_runtime_actions_test` verifies notifications
+through `EntityHandle<T>::update(...)`. Feature-worktree verification passed
+Windows focused 11/11, WSL Arch Linux focused 11/11, Windows full debug 53/53,
+and WSL Arch Linux full debug 50/50. Step 268, entity update transactions, is
+the next Phase B slice after Step 267 is merged.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

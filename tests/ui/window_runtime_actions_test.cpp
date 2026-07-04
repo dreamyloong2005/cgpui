@@ -385,6 +385,18 @@ int test_entity_handle_read_update_and_downgrade() {
       fixture.view.entity_handle_missing_update) {
     return 280;
   }
+  if (!fixture.view.entity_handle_observed) {
+    return 284;
+  }
+  if (!fixture.view.entity_handle_subscription_connected) {
+    return 285;
+  }
+  if (fixture.view.entity_handle_observer_count_after_update != 2) {
+    return 286;
+  }
+  if (fixture.view.entity_handle_observer_value_sum_after_update != 178) {
+    return 287;
+  }
   if (!fixture.view.invalidation_after_model_update.render ||
       !fixture.view.invalidation_after_model_update.layout ||
       !fixture.view.invalidation_after_model_update.paint) {

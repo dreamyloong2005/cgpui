@@ -105,6 +105,9 @@ class TestView final : public cgpui::View {
     (void)context.observe_model(
         model,
         [](const cgpui::ViewContext&, cgpui::Model<TestModel>) {});
+    (void)entity.observe(
+        context,
+        [](const cgpui::ViewContext&, cgpui::EntityHandle<TestModel>) {});
     cgpui::Subscription subscription =
         context.observe_model_subscription(
             model,
@@ -113,6 +116,13 @@ class TestView final : public cgpui::View {
     (void)subscription.connected();
     (void)context.runtime.remove_subscription(subscription_id);
     (void)subscription.release();
+    cgpui::Subscription entity_subscription =
+        entity.observe_subscription(
+            context,
+            [](const cgpui::ViewContext&,
+               cgpui::EntityHandle<TestModel>) {});
+    (void)entity_subscription.connected();
+    (void)entity_subscription.release();
     context.defer([](const cgpui::ViewContext& deferred_context) {
       deferred_context.request_paint();
     });

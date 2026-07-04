@@ -177,6 +177,40 @@ Subscription WindowRuntimeContext::observe_model_subscription(
       std::forward<Observer>(observer));
 }
 
+template <typename T, typename Observer>
+bool WindowRuntimeContext::observe_entity(
+    EntityHandle<T> entity,
+    Observer&& observer) const {
+  if (entity.empty()) {
+    return false;
+  }
+
+  return observe_model(
+      entity.id(),
+      [observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context,
+          Model<T> model) mutable {
+        observer(context, EntityHandle<T>(model));
+      });
+}
+
+template <typename T, typename Observer>
+Subscription WindowRuntimeContext::observe_entity_subscription(
+    EntityHandle<T> entity,
+    Observer&& observer) const {
+  if (entity.empty()) {
+    return {};
+  }
+
+  return observe_model_subscription(
+      entity.id(),
+      [observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context,
+          Model<T> model) mutable {
+        observer(context, EntityHandle<T>(model));
+      });
+}
+
 template <typename T>
 bool WindowRuntimeContext::remove_model(Model<T> model) const {
   return runtime.remove_entity(model);

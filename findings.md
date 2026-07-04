@@ -4362,3 +4362,21 @@
   upgrade or read itself. The GREEN path wraps the upgraded id back into an
   `EntityHandle<T>` and soft-fails with `std::nullopt` / `nullptr` when the
   entity is empty or no longer present.
+
+## 2026-07-04 Phase B Step 267 Entity Observation
+
+- Step 267 should stay scoped to public entity observation spelling. The
+  durable shape is `EntityHandle<T>::observe(context, observer) -> bool`,
+  `EntityHandle<T>::observe_subscription(context, observer) -> Subscription`,
+  and matching `Context<T>::observe_entity(...)` /
+  `observe_entity_subscription(...)` helpers.
+- The implementation belongs in the existing public handle and context
+  template boundaries: `include/cgpui/core/entity.hpp` owns the handle
+  convenience methods, while `include/cgpui/ui/runtime_context.hpp` and
+  `include/cgpui/ui/runtime_templates.hpp` own the context forwarding layer.
+  No new observer storage, `ui.cpp` implementation, or broad runtime file
+  change is needed for this slice.
+- The GREEN path deliberately adapts existing `observe_model(...)` storage by
+  wrapping callback ids back into `EntityHandle<T>`. Update transactions,
+  deletion semantics, deterministic unsubscribe behavior, and cross-context
+  access rules remain later slices.

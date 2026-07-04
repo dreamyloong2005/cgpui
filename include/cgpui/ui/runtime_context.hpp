@@ -176,6 +176,12 @@ struct WindowRuntimeContext {
   [[nodiscard]] Subscription observe_model_subscription(
       Model<T> model,
       Observer&& observer) const;
+  template <typename T, typename Observer>
+  bool observe_entity(EntityHandle<T> entity, Observer&& observer) const;
+  template <typename T, typename Observer>
+  [[nodiscard]] Subscription observe_entity_subscription(
+      EntityHandle<T> entity,
+      Observer&& observer) const;
   template <typename T>
   bool remove_model(Model<T> model) const;
   template <typename T>

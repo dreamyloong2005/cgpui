@@ -200,7 +200,12 @@ shape before deeper native work expands platform behavior.
   later slices in this band. Step 266 adds public
   `WeakEntity<T>::upgrade(context) -> std::optional<EntityHandle<T>>` and
   `WeakEntity<T>::read(context)` soft-failure semantics on top of the existing
-  runtime weak lookup.
+  runtime weak lookup. Step 267 adds public entity observation helpers through
+  `EntityHandle<T>::observe(...)`, `EntityHandle<T>::observe_subscription(...)`,
+  `Context<T>::observe_entity(...)`, and
+  `Context<T>::observe_entity_subscription(...)`, delegating to the existing
+  runtime observer path without pulling update transactions, deletion, or
+  cross-context access rules forward.
 - [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
   and test context.
@@ -521,9 +526,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 267 after the Step 266 weak entity handle semantics
-slice. The next slice should deepen entity observation without pulling update
-transactions, deletion, or cross-context access rules ahead of their own tests.
+Continue Phase B with Step 268 after the Step 267 entity observation helper
+slice. The next slice should deepen entity update transactions without pulling
+invalidation, deletion, or cross-context access rules ahead of their own tests.
 
 ## Self-Review
 

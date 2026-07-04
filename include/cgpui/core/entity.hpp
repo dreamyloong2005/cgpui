@@ -49,6 +49,20 @@ class EntityHandle {
     return context.update_model(id_, std::forward<Update>(update));
   }
 
+  template <typename Context, typename Observer>
+  bool observe(const Context& context, Observer&& observer) const {
+    return context.observe_entity(*this, std::forward<Observer>(observer));
+  }
+
+  template <typename Context, typename Observer>
+  [[nodiscard]] auto observe_subscription(
+      const Context& context,
+      Observer&& observer) const {
+    return context.observe_entity_subscription(
+        *this,
+        std::forward<Observer>(observer));
+  }
+
   friend bool operator==(const EntityHandle&, const EntityHandle&) = default;
 
  private:

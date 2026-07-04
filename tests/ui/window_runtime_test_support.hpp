@@ -540,6 +540,27 @@ class RecordingView final : public cgpui::View {
         author_context.subscribe_view_to_entity(
             author_context.view_id,
             entity_handle.id());
+        entity_handle_observed = entity_handle.observe(
+            author_context,
+            [this](const cgpui::Context<RecordingView>& observe_context,
+                   cgpui::EntityHandle<RuntimeEntity> observed) {
+              const RuntimeEntity* entity = observed.read(observe_context);
+              entity_handle_observer_count += 1;
+              entity_handle_observer_value_sum +=
+                  entity == nullptr ? -100 : entity->value;
+            });
+        cgpui::Subscription entity_subscription =
+            entity_handle.observe_subscription(
+                author_context,
+                [this](const cgpui::Context<RecordingView>& observe_context,
+                       cgpui::EntityHandle<RuntimeEntity> observed) {
+                  const RuntimeEntity* entity = observed.read(observe_context);
+                  entity_handle_observer_count += 1;
+                  entity_handle_observer_value_sum +=
+                      entity == nullptr ? -100 : entity->value;
+                });
+        entity_handle_subscription_connected =
+            entity_subscription.connected();
         entity_handle_update = entity_handle.update(
             author_context,
             [](RuntimeEntity& entity) {
@@ -547,6 +568,10 @@ class RecordingView final : public cgpui::View {
             });
         invalidation_after_model_update =
             author_context.runtime.invalidation_state();
+        entity_handle_observer_count_after_update =
+            entity_handle_observer_count;
+        entity_handle_observer_value_sum_after_update =
+            entity_handle_observer_value_sum;
         const RuntimeEntity* updated = entity_handle.read(author_context);
         entity_handle_updated_value =
             updated == nullptr ? -1 : updated->value;
@@ -1043,6 +1068,12 @@ class RecordingView final : public cgpui::View {
   bool entity_handle_update = false;
   bool entity_handle_missing_update = true;
   bool entity_handle_missing_read = false;
+  bool entity_handle_observed = false;
+  bool entity_handle_subscription_connected = false;
+  int entity_handle_observer_count = 0;
+  int entity_handle_observer_value_sum = 0;
+  int entity_handle_observer_count_after_update = 0;
+  int entity_handle_observer_value_sum_after_update = 0;
   bool global_missing_before_set = false;
   bool global_update = false;
   bool global_missing_update = true;

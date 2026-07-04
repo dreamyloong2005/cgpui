@@ -92,13 +92,13 @@
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, new_entity creation, and weak entity upgrades",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, new_entity creation, weak entity upgrades, and observe_entity helpers",
       "status": "adapted",
       "next_step": "Phase B entity lifecycle depth"
     },
     {
       "upstream_gpui": "gpui::Entity<T>",
-      "cgpui_target": "Entity<T>, Model<T>, EntityHandle<T>, WeakEntity<T>, Context<T>::new_entity<T>(...) creation, and weak upgrade/read semantics",
+      "cgpui_target": "Entity<T>, Model<T>, EntityHandle<T>, WeakEntity<T>, Context<T>::new_entity<T>(...) creation, weak upgrade/read semantics, and entity observation helpers",
       "status": "adapted",
       "next_step": "Phase B lifecycle depth"
     },
