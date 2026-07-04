@@ -413,6 +413,34 @@ Linux full debug 56/56. Post-merge verification passed Windows full debug
 59/59 and WSL Arch Linux full debug 56/56. Step 274, the element-context
 capability domain, is the next Phase B slice.
 
+Step 274, element-context capability domain, is merged on `master` at
+`fea090d feat: add element context capability`. RED failed as expected on
+missing `cgpui::ElementContextCapability` and
+`Context<T>::element_context(ElementId)`. GREEN adds the focused public leaf
+`include/cgpui/ui/element_context.hpp`, the focused implementation
+`src/ui/element_context.cpp`, and
+`Context<T>::element_context(ElementId) -> ElementContextCapability`,
+grouping existing element focus, keyboard focus, pointer capture/release,
+cursor, focus-handle, and typed element state helpers without adding runtime
+state or weakening entity runtime-token boundaries. Feature-worktree
+verification passed Windows focused 16/16, WSL Arch Linux focused 16/16,
+Windows full debug 60/60, and WSL Arch Linux full debug 57/57. Post-merge
+verification passed Windows full debug 60/60 and WSL Arch Linux full debug
+57/57. Step 275, the async-context capability domain, is the next Phase B
+slice.
+
+Step 275, async-context capability domain, is implemented and focused-verified
+on `codex/phase-b-async-context-capability`. RED failed as expected on
+missing `cgpui::AsyncContextCapability` and `Context<T>::async_context()`.
+GREEN adds the focused public leaf `include/cgpui/ui/async_context.hpp`, the
+focused implementation `src/ui/async_context.cpp`, and
+`Context<T>::async_context() -> AsyncContextCapability`, grouping existing
+defer, timer, animation, foreground task, background task, and update-batch
+scheduling without moving executor state, weakening entity runtime-token
+boundaries, or growing broad UI runtime files. Focused verification passed
+Windows 13/13 and WSL Arch Linux 13/13. Full debug verification and merge
+cleanup remain before marking the slice complete on `master`.
+
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
 `8695bb1 feat: add keyed element identity` and post-merge verified on Windows
@@ -1628,7 +1656,7 @@ implementation slice.
 
 ## Active Extension Note
 
-- Phase B Step 274, `Context<T>::element_context(ElementId) ->
-  ElementContextCapability`, is merged and post-merge verified on `master` at
-  `fea090d feat: add element context capability`. Step 275 async context
-  capability domain is the next Phase B slice.
+- Phase B Step 275, `Context<T>::async_context() ->
+  AsyncContextCapability`, is implemented and full-debug verified on
+  `codex/phase-b-async-context-capability`. It is ready for merge
+  verification and cleanup before marking the slice complete on `master`.

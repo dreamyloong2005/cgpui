@@ -341,6 +341,13 @@ target("element_context_capability_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("async_context_capability_test")
+    set_kind("binary")
+    add_files("tests/api_parity/async_context_capability_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("view_handle_spelling_test")
     set_kind("binary")
     add_files("tests/api_parity/view_handle_spelling_test.cpp")

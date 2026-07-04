@@ -4511,3 +4511,23 @@
 - Keep tests aligned with the existing cursor vocabulary:
   `CursorShape::pointing_hand` is the current public spelling for pointer-like
   cursor behavior, so Step 274 does not add a `CursorShape::pointer` alias.
+
+## 2026-07-04 Phase B Step 275 Async Context Capability
+
+- Step 275 should stay scoped to public async-domain capability spelling:
+  `Context<T>::async_context() -> AsyncContextCapability`. The capability
+  groups existing runtime scheduling helpers: `defer`, one-shot/repeating
+  timers, animation start/snapshot/cancel, foreground task completion,
+  background task spawning, and update batches.
+- The implementation belongs in a focused public UI leaf,
+  `include/cgpui/ui/async_context.hpp`, with non-template forwarding in
+  `src/ui/async_context.cpp`. It should not grow `ui.cpp`,
+  `runtime_context.cpp`, or `runtime_context_scheduling.cpp`; those remain the
+  lower-level runtime forwarding boundary.
+- This is a facade over the existing manual/runtime task executor and
+  deterministic timer/animation queues. It does not add task pools, priorities,
+  structured task groups, async I/O hooks, or cross-thread entity access
+  semantics; those stay in the later full async executor phase.
+- The AsyncWindowContext ledger row can move to `Adapted` for this partial
+  public capability, but its next step must still point to Phase G full async
+  executor depth.

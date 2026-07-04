@@ -232,7 +232,10 @@ shape before deeper native work expands platform behavior.
   adding native window lifecycle state. Step 274 adds
   `Context<T>::element_context(ElementId) -> ElementContextCapability`,
   grouping existing element focus, pointer capture, cursor, and state helpers
-  without weakening runtime-token entity boundaries.
+  without weakening runtime-token entity boundaries. Step 275 adds
+  `Context<T>::async_context() -> AsyncContextCapability`, grouping existing
+  defer, timer, animation, foreground task, background task, and update-batch
+  scheduling without moving executor state or runtime-token entity rules.
 - [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
   entity-to-entity observation, window/view observation, and deterministic
   unsubscribe behavior.
@@ -550,9 +553,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 275 after the Step 274 element-context capability
-slice. The next slice should add the async-context capability domain without
-weakening the runtime-token entity boundary or growing broad UI runtime files.
+Continue Phase B with Step 276 after the Step 275 async-context capability
+slice. The next slice should add the test-context capability domain without
+claiming the fuller Step 295-300 test-context behavior band yet.
 
 ## Self-Review
 

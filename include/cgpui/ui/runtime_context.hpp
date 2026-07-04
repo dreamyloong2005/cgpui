@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/runtime_app_context.hpp"
 #include "cgpui/ui/element_context.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
@@ -36,6 +37,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] App app() const;
   [[nodiscard]] Window window() const;
   [[nodiscard]] Window current_window() const;
+  [[nodiscard]] AsyncContextCapability async_context() const;
   [[nodiscard]] WindowContextCapability window_context() const;
   [[nodiscard]] ElementContextCapability element_context(
       ElementId element_id) const;

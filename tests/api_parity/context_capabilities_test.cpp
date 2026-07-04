@@ -20,9 +20,12 @@ class ContextCapabilitiesView final : public cgpui::View {
     const cgpui::App app = context.app();
     const cgpui::Window window = context.window();
     const cgpui::Window current_window = context.current_window();
+    const cgpui::AsyncContextCapability async_context =
+        context.async_context();
     (void)app;
     (void)window;
     (void)current_window;
+    (void)async_context;
 
     const cgpui::Model<ContextState> model =
         context.new_model<ContextState>(7);
@@ -59,6 +62,8 @@ static_assert(std::same_as<decltype(std::declval<ContextRef>().window()),
 static_assert(
     std::same_as<decltype(std::declval<ContextRef>().current_window()),
                  cgpui::Window>);
+static_assert(std::same_as<decltype(std::declval<ContextRef>().async_context()),
+                           cgpui::AsyncContextCapability>);
 static_assert(std::same_as<
               decltype(std::declval<ContextRef>().entity(
                   cgpui::Model<ContextState>{1})),

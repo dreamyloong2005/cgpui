@@ -38,6 +38,7 @@ std::size_t line_count(const std::string& text) {
 int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/paint.hpp",
+      "include/cgpui/ui/async_context.hpp",
       "include/cgpui/ui/render.hpp",
       "include/cgpui/ui/element_context.hpp",
       "include/cgpui/ui/view_context.hpp",
@@ -165,6 +166,7 @@ int main() {
     return 2;
   }
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/async_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/element_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
@@ -380,6 +382,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_diagnostics.hpp");
   const std::string runtime_input_state_header =
       read_source("include/cgpui/ui/runtime_input_state.hpp");
+  const std::string async_context_header =
+      read_source("include/cgpui/ui/async_context.hpp");
   const std::string element_context_header =
       read_source("include/cgpui/ui/element_context.hpp");
   const std::string view_context_header =
@@ -407,6 +411,12 @@ int main() {
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
                 "struct RuntimeDiagnosticsSnapshot") ||
+      !contains(async_context_header, "class AsyncContextCapability") ||
+      !contains(async_context_header, "void defer(") ||
+      !contains(async_context_header, "TimerId schedule_timer(") ||
+      !contains(async_context_header, "AnimationHandle start_animation(") ||
+      !contains(async_context_header, "TaskHandle spawn_background_task(") ||
+      !contains(async_context_header, "void batch_updates(") ||
       !contains(element_context_header, "class ElementContextCapability") ||
       !contains(element_context_header, "ElementId element_id() const") ||
       !contains(element_context_header, "void capture_pointer() const") ||
@@ -428,6 +438,8 @@ int main() {
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
       !contains(runtime_context_header, "AppContext app_context() const") ||
+      !contains(runtime_context_header,
+                "AsyncContextCapability async_context() const") ||
       !contains(runtime_context_header,
                 "WindowContextCapability window_context() const") ||
       !contains(runtime_context_header,
@@ -496,6 +508,7 @@ int main() {
     return 20;
   }
   if (line_count(runtime_types_header) > 220 ||
+      line_count(async_context_header) > 120 ||
       line_count(element_context_header) > 120 ||
       line_count(view_handle_header) > 180 ||
       line_count(window_context_header) > 120 ||
@@ -1356,6 +1369,23 @@ int main() {
       !contains(runtime_context_input_source,
                 "FocusHandle WindowRuntimeContext::focus_handle(")) {
     return 47;
+  }
+
+  const std::string async_context_source =
+      read_source("src/ui/async_context.cpp");
+  if (!contains(async_context_source,
+                "void AsyncContextCapability::defer(") ||
+      !contains(async_context_source,
+                "TimerId AsyncContextCapability::schedule_timer(") ||
+      !contains(async_context_source,
+                "AnimationHandle AsyncContextCapability::start_animation(") ||
+      !contains(async_context_source,
+                "TaskHandle AsyncContextCapability::spawn_background_task(") ||
+      !contains(async_context_source,
+                "AsyncContextCapability WindowRuntimeContext::async_context() const") ||
+      line_count(async_context_source) > 110 ||
+      contains(async_context_source, "ElementContextCapability")) {
+    return 119;
   }
 
   const std::string element_context_source =
