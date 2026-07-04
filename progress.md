@@ -9495,3 +9495,17 @@
 - Step 277 is implemented and focused/full verified on
   `codex/phase-b-subscription-lifetime`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 277 Merge
+
+- Committed the subscription lifetime branch as
+  `0261c4a feat: add deterministic subscription lifetime`.
+- Fast-forward merged `codex/phase-b-subscription-lifetime` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 63/63.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 60/60.
+- Step 277 is complete on `master`; Step 278 entity-to-entity observation is
+  the next Phase B slice.

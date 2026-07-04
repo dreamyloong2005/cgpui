@@ -1661,6 +1661,6 @@ implementation slice.
   and WSL full-debug verification. Phase B Step 276,
   `Context<T>::test_context() -> TestContextCapability`, is complete on
   `master` after post-merge Windows and WSL full-debug verification. Phase B
-  Step 277, subscription lifetime / deterministic unsubscribe, is implemented
-  and focused/full verified on `codex/phase-b-subscription-lifetime`; merge
-  and post-merge Windows/WSL full-debug verification are pending.
+  Step 277, subscription lifetime / deterministic unsubscribe, is complete on
+  `master` after post-merge Windows and WSL full-debug verification. Phase B
+  Step 278, entity-to-entity observation, is the next implementation slice.
