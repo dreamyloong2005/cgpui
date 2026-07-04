@@ -359,9 +359,9 @@ and WSL Arch Linux full debug 52/52. Post-merge verification passed Windows
 full debug 55/55 and WSL Arch Linux full debug 52/52. Step 270 entity deletion
 and cross-context boundaries are the next Phase B slice.
 
-Step 270, entity deletion and cross-context boundaries, is implemented and
-verified on `codex/phase-b-entity-deletion`. RED failed as expected on missing
-`EntityHandle<T>::remove(...)` and
+Step 270, entity deletion and cross-context boundaries, is merged on `master`
+at `90c05d7 feat: add entity deletion boundaries`. RED failed as expected on
+missing `EntityHandle<T>::remove(...)` and
 `Context<T>::remove_entity(EntityHandle<T>)`. GREEN adds public deletion
 helpers in the focused entity/context template boundary, binds context-created
 entity and weak handles to a runtime token, and preserves unbound
@@ -369,8 +369,9 @@ entity and weak handles to a runtime token, and preserves unbound
 deleted, and wrong-runtime handles soft-fail without touching a same-numeric-id
 entity in another runtime. Feature-worktree verification passed Windows focused
 14/14, WSL Arch Linux focused 14/14, Windows full debug 56/56, and WSL Arch
-Linux full debug 53/53. Step 271, GPUI-like context capabilities by domain, is
-the next Phase B slice.
+Linux full debug 53/53. Post-merge verification passed Windows full debug
+56/56 and WSL Arch Linux full debug 53/53. Step 271, GPUI-like context
+capabilities by domain, is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

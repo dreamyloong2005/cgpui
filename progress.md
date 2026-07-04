@@ -9081,3 +9081,17 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 53/53.
 - Step 270 is implemented and verified on `codex/phase-b-entity-deletion`; it
   is ready for merge verification.
+
+## 2026-07-04 Phase B Step 270 Merge
+
+- Committed the entity deletion branch as
+  `90c05d7 feat: add entity deletion boundaries`.
+- Fast-forward merged `codex/phase-b-entity-deletion` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 56/56.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 53/53.
+- Step 270 is complete on `master`; Step 271 GPUI-like context capabilities by
+  domain is the next Phase B slice.
