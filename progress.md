@@ -9249,3 +9249,20 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 56/56.
 - Step 273 is ready for merge verification.
+
+## 2026-07-04 Phase B Step 273 Merge
+
+- The first Windows `cmd` commit attempt split the quoted commit message into
+  pathspecs. The staged tree was unchanged; rerunning the same commit through
+  PowerShell succeeded.
+- Committed the window-context capability branch as
+  `c19939b feat: add window context capability`.
+- Fast-forward merged `codex/phase-b-window-context-capability` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 59/59.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 56/56.
+- Step 273 is complete on `master`; Step 274 element-context capability
+  domain is the next Phase B slice.

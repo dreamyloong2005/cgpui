@@ -399,18 +399,19 @@ Post-merge verification passed Windows full debug 58/58 and WSL Arch Linux
 full debug 55/55. Step 273, the window-context capability domain, is the next
 Phase B slice.
 
-Step 273, window-context capability domain, is implemented and feature-worktree
-verified on `codex/phase-b-window-context-capability`. RED failed as expected
-on missing `cgpui::WindowContextCapability` and
+Step 273, window-context capability domain, is merged on `master` at
+`c19939b feat: add window context capability`. RED failed as expected on
+missing `cgpui::WindowContextCapability` and
 `Context<T>::window_context()`. GREEN adds the focused public leaf
 `include/cgpui/ui/window_context.hpp`, the focused implementation
 `src/app/window_context.cpp`, and
 `Context<T>::window_context() -> WindowContextCapability`, grouping existing
 `Window` facade queries plus render/layout/paint requests without adding new
-native lifecycle state. Feature-worktree verification has passed Windows
-focused 15/15, WSL Arch Linux focused 15/15, Windows full debug 59/59, and
-WSL Arch Linux full debug 56/56; post-merge verification remains before
-closing the slice.
+native lifecycle state. Feature-worktree verification passed Windows focused
+15/15, WSL Arch Linux focused 15/15, Windows full debug 59/59, and WSL Arch
+Linux full debug 56/56. Post-merge verification passed Windows full debug
+59/59 and WSL Arch Linux full debug 56/56. Step 274, the element-context
+capability domain, is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
