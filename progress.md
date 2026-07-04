@@ -8566,3 +8566,15 @@
   warnings for touched text files.
 - Updated the complete parity ledger, JSON export, roadmap, task plan,
   findings, and progress notes so Step 261 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 260 Merge
+
+- Committed the App/Window context facade branch as
+  `d3a501c feat: add app window context facades`.
+- Fast-forward merged `codex/phase-b-app-window-context` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 46/46.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 43/43.
+- Step 260 is complete on `master`; Step 261 is the next Phase B slice.

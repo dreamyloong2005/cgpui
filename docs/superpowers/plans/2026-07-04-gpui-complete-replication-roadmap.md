@@ -171,7 +171,7 @@ shape before deeper native work expands platform behavior.
   breaking the existing public prelude. Step 259 is complete: `Application`
   now owns a `PlatformApplication`, exposes `Application::create()`, and
   forwards `run(...)` to the existing app runner from a focused app module.
-  Step 260 is implemented in the app module: `AppContext::app()`,
+  Step 260 is merged on `master` at `d3a501c`: `AppContext::app()`,
   `WindowRuntimeContext::app()`, and `WindowRuntimeContext::current_window()`
   return public `App`/`Window` facades for window opening and runtime window
   inspection without moving implementation into UI/runtime monoliths.

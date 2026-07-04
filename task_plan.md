@@ -223,8 +223,8 @@ LF-to-CRLF normalization warnings. Feature-worktree full debug passed Windows
 44/44 and WSL Arch Linux 41/41. Post-merge verification passed Windows full
 debug 44/44 and WSL Arch Linux full debug 41/41.
 
-Step 260, public `App` and `Window` context facades, is implemented in the
-feature worktree `codex/phase-b-app-window-context`. RED failed as expected on
+Step 260, public `App` and `Window` context facades, is merged on `master` at
+`d3a501c feat: add app window context facades`. RED failed as expected on
 missing `cgpui::App`, `cgpui::Window`, `AppContext::app()`,
 `WindowRuntimeContext::app()`, and `WindowRuntimeContext::current_window()`.
 GREEN adds app-module ownership through `include/cgpui/app/app_facade.hpp`,
@@ -235,9 +235,10 @@ The slice preserves low-level runtime entrypoints and exposes narrow facade
 queries for `open_window`, `root_window`, `window(runtime_id)`, descriptor,
 viewport, scale, focus, and invalidation forwarding. Windows and WSL focused
 verification passed 8/8 each. Feature-worktree full debug passed Windows
-46/46 and WSL Arch Linux 43/43. Step 261 should continue Phase B with
-`Context<T>`/`Render`/`IntoElement`/`View` public spelling depth rather than
-entity, keymap, action, or test-context semantics.
+46/46 and WSL Arch Linux 43/43. Post-merge verification passed Windows full
+debug 46/46 and WSL Arch Linux full debug 43/43. Step 261 should continue
+Phase B with `Context<T>`/`Render`/`IntoElement`/`View` public spelling depth
+rather than entity, keymap, action, or test-context semantics.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
