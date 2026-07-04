@@ -10613,3 +10613,53 @@
   stale worktree records. A fresh final Windows root full-debug rerun also
   passed 80/80 after the docs closeout commit; final status shows only the
   pre-existing untracked `.vscode/`.
+
+## 2026-07-05 Phase B Step 295 Test-Context Keystroke Simulation
+
+- Continued the existing `.worktrees/phase-b-test-context-keystrokes` feature
+  worktree on `codex/phase-b-test-context-keystrokes` from
+  `5086c1a docs: mark step 294 merged`.
+- Baseline focused verification and RED/GREEN were already established before
+  this continuation: the API/behavior tests failed as expected while
+  `TestContextCapability::dispatch_keystroke(...)` and
+  `simulate_keystrokes(...)` were missing, then GREEN added the APIs and the
+  focused `src/ui/test_context_keystrokes.cpp` implementation.
+- The implementation uses the existing `parse_key_binding(...)` grammar,
+  converts parsed chords into `KeyboardKey`, and dispatches each key through
+  `context_->runtime.handle_event(PlatformEvent{key})`, so simulation exercises
+  the real runtime keyboard, key binding, partial sequence, and action dispatch
+  path.
+- Added/updated parity and structure guards in
+  `tests/api_parity/test_context_capability_test.cpp`,
+  `tests/ui/test_context_keystroke_simulation_test.cpp`,
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`, `xmake.lua`, and
+  `docs/gpui-complete-parity-ledger.*`.
+- Updated the complete-replication roadmap to record Step 295 and to split the
+  remaining Step 296-300 queue into pointer input simulation, focus/window
+  activation simulation, clipboard helpers, timer/async advancement helpers,
+  and redraw/frame pump simulation.
+- Fresh `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 81/81.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  test_context_keystroke_simulation_test/default
+  test_context_capability_test/default
+  command_palette_key_integration_test/default
+  key_binding_partial_match_test/default keymap_context_test/default
+  action_bubbling_test/default typed_action_dispatch_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  11/11.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 78/78.
+- Step 295 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 296
+  test-context pointer input simulation is the next slice after Step 295 lands
+  on `master`.

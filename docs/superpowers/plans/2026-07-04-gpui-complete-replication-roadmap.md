@@ -311,7 +311,15 @@ shape before deeper native work expands platform behavior.
   simulation for later slices.
 - [ ] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
-  redraws.
+  redraws. Step 295 is implemented on
+  `codex/phase-b-test-context-keystrokes`: `TestContextCapability` now exposes
+  direct `dispatch_keystroke(...)` plus grammar-backed
+  `simulate_keystrokes(...)`, with the implementation isolated in
+  `src/ui/test_context_keystrokes.cpp` and verified through the real runtime
+  keyboard/keymap/action dispatch path. The remaining queue is Step 296
+  pointer input simulation, Step 297 focus/window activation simulation,
+  Step 298 clipboard helpers, Step 299 timer and async advancement helpers,
+  and Step 300 redraw/frame pump simulation.
 - [ ] Steps 301-306: Add public error/result conventions for window opening,
   platform services, async spawn, and renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
@@ -617,10 +625,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 295 test-context keystroke simulation is next after Step 294 command
-palette key integration. Step 294 records command-palette-owned key grammar and
-key-context metadata while keeping action macro payloads and fuller
-test-context clipboard/timer/async/redraw behavior out of scope.
+Step 296 test-context pointer input simulation is next after Step 295
+keystroke simulation lands on `master`. Step 295 records direct and
+grammar-backed keyboard simulation through the existing runtime event path
+while keeping pointer input, focus/window activation, clipboard helpers,
+timer/async advancement, redraw/frame pumping, and action macro payloads out of
+scope.
 
 ## Self-Review
 

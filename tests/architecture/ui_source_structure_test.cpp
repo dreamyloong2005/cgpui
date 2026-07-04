@@ -138,6 +138,7 @@ int main() {
       "tests/ui/window_runtime_scheduling_test.cpp",
       "tests/ui/window_runtime_multiwindow_test.cpp",
       "tests/ui/window_runtime_theme_test.cpp",
+      "tests/ui/test_context_keystroke_simulation_test.cpp",
   };
   for (const char* test_file : runtime_test_files) {
     if (read_source(test_file).empty()) {
@@ -162,7 +163,9 @@ int main() {
           1800 ||
       line_count(read_source("tests/ui/window_runtime_multiwindow_test.cpp")) >
           900 ||
-      line_count(read_source("tests/ui/window_runtime_theme_test.cpp")) > 500) {
+      line_count(read_source("tests/ui/window_runtime_theme_test.cpp")) > 500 ||
+      line_count(read_source("tests/ui/test_context_keystroke_simulation_test.cpp")) >
+          180) {
     return 112;
   }
 
@@ -494,6 +497,8 @@ int main() {
       !contains(test_context_header, "void advance_time(") ||
       !contains(test_context_header, "bool complete_task(") ||
       !contains(test_context_header, "void drain_task_completions(") ||
+      !contains(test_context_header, "void dispatch_keystroke(") ||
+      !contains(test_context_header, "bool simulate_keystrokes(") ||
       !contains(element_context_header, "class ElementContextCapability") ||
       !contains(element_context_header, "ElementId element_id() const") ||
       !contains(element_context_header, "void capture_pointer() const") ||
@@ -1583,6 +1588,8 @@ int main() {
 
   const std::string test_context_source =
       read_source("src/ui/test_context.cpp");
+  const std::string test_context_keystrokes_source =
+      read_source("src/ui/test_context_keystrokes.cpp");
   if (!contains(test_context_source,
                 "WindowRuntimeId TestContextCapability::runtime_id() const") ||
       !contains(test_context_source,
@@ -1597,6 +1604,19 @@ int main() {
       contains(test_context_source, "AsyncContextCapability") ||
       contains(test_context_source, "ElementContextCapability")) {
     return 120;
+  }
+  if (!contains(test_context_keystrokes_source,
+                "void TestContextCapability::dispatch_keystroke(") ||
+      !contains(test_context_keystrokes_source,
+                "bool TestContextCapability::simulate_keystrokes(") ||
+      !contains(test_context_keystrokes_source, "parse_key_binding(") ||
+      !contains(test_context_keystrokes_source,
+                "context_->runtime.handle_event(") ||
+      contains(test_context_source, "simulate_keystrokes(") ||
+      line_count(test_context_keystrokes_source) > 80 ||
+      contains(test_context_keystrokes_source, "AsyncContextCapability") ||
+      contains(test_context_keystrokes_source, "ElementContextCapability")) {
+    return 121;
   }
 
   const std::string element_context_source =

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -98,6 +99,14 @@ static_assert(std::same_as<decltype(std::declval<Capability>().complete_task(
 static_assert(std::same_as<decltype(std::declval<Capability>()
                                         .drain_task_completions()),
                            void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .dispatch_keystroke(
+                                            std::declval<cgpui::KeyboardKey>())),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .simulate_keystrokes(
+                                            std::declval<std::string_view>())),
+                           bool>);
 static_assert(std::is_copy_constructible_v<Capability>);
 static_assert(cgpui::Render<TestContextCapabilityView>);
 

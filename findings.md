@@ -4902,3 +4902,33 @@
   file should call a narrow private `WindowRuntime::command_palette_key_binding`
   helper but should not own `parse_key_binding(...)` or `KeyBindingContext`
   derivation logic.
+
+## 2026-07-05 Phase B Step 295 Test-Context Keystroke Simulation
+
+- Step 295 should stay scoped to keyboard simulation on the public
+  `TestContextCapability`. It should not start pointer simulation, focus/window
+  activation simulation, clipboard helpers, timer/async advancement, redraw
+  pumping, `gpui::test` macro equivalents, or action payload macro work.
+- The correct runtime path is to parse GPUI-style key grammar with the existing
+  `parse_key_binding(...)`, convert each parsed chord to `KeyboardKey`, and
+  call `WindowRuntime::handle_event(PlatformEvent{key})`. This keeps simulated
+  keystrokes on the same event/keymap/action path as native keyboard input and
+  avoids a test-only shortcut into `dispatch_action(...)`.
+- Implementation ownership belongs in the focused
+  `src/ui/test_context_keystrokes.cpp` leaf. `src/ui/test_context.cpp` remains
+  the observability/queue-control capability file, and
+  `src/ui/window_runtime_internal.hpp` should not grow beyond the existing
+  structure guard just to expose test-only hooks.
+- The behavior guard belongs in
+  `tests/ui/test_context_keystroke_simulation_test.cpp`: it should prove
+  grammar-backed single-chord and multi-chord simulation, invalid grammar soft
+  failure, direct `dispatch_keystroke(...)`, action dispatch observability, and
+  real keyboard event delivery through the runtime.
+- Step 296-300 should continue the same modular-first pattern: Step 296 pointer
+  input simulation in a focused test-context pointer source, Step 297
+  focus/window activation simulation in a focused focus/window source, Step 298
+  clipboard helpers in a focused test-context clipboard source, Step 299
+  timer/async advancement helpers in focused scheduling/test-context sources,
+  and Step 300 redraw/frame pump simulation in a focused rendering/test-context
+  source. Do not add these follow-on behaviors to `ui.cpp` or the broad
+  `test_context.cpp` file after the fact.

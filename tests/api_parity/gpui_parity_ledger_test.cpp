@@ -249,6 +249,8 @@ int main() {
       !contains(ledger, "tests/ui/key_binding_disabled_scope_test.cpp") ||
       !contains(ledger,
                 "tests/ui/command_palette_key_integration_test.cpp") ||
+      !contains(ledger,
+                "tests/ui/test_context_keystroke_simulation_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -292,12 +294,14 @@ int main() {
               "key_binding_partial_match_test",
               "key_binding_disabled_scope_test",
               "command_palette_key_integration_test",
+              "test_context_keystroke_simulation_test",
               "key_binding.hpp",
               "runtime_key_binding_grammar.cpp",
               "runtime_key_binding_modifiers.cpp",
               "runtime_key_binding_contexts.cpp",
               "runtime_key_binding_sequences.cpp",
               "runtime_command_palette_keys.cpp",
+              "test_context_keystrokes.cpp",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -916,6 +920,8 @@ int main() {
       !contains(xmake, "target(\"keymap_context_test\")") ||
       !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
       !contains(xmake, "target(\"command_palette_key_integration_test\")") ||
+      !contains(xmake,
+                "target(\"test_context_keystroke_simulation_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -967,6 +973,8 @@ int main() {
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake,
                 "tests/ui/command_palette_key_integration_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/test_context_keystroke_simulation_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

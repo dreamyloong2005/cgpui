@@ -122,7 +122,7 @@
     },
     {
       "upstream_gpui": "gpui::TestAppContext",
-      "cgpui_target": "TestContextCapability groups runtime id/view id, input/event/action observability, invalidation/diagnostics snapshots with entity/window/view observer counts, timer advancement, timer cancellation, and task completion draining from Context<T>::test_context()",
+      "cgpui_target": "TestContextCapability groups runtime id/view id, input/event/action observability, invalidation/diagnostics snapshots with entity/window/view observer counts, timer advancement, timer cancellation, task completion draining, direct dispatch_keystroke(...), and grammar-backed simulate_keystrokes(...) from Context<T>::test_context(), covered by src/ui/test_context_keystrokes.cpp and tests/ui/test_context_keystroke_simulation_test.cpp",
       "status": "adapted",
       "next_step": "Phase G fuller simulated input/test macro depth"
     },
@@ -152,7 +152,7 @@
     },
     {
       "upstream_gpui": "gpui::test",
-      "cgpui_target": "TestContextCapability exists, but upstream-style test macro and full simulation helpers remain missing",
+      "cgpui_target": "TestContextCapability exists with simulate_keystrokes(...), but upstream-style test macro and fuller simulation helpers remain missing",
       "status": "required",
       "next_step": "Phase G"
     },

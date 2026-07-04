@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <string_view>
 
 namespace cgpui {
 
@@ -40,6 +41,8 @@ class TestContextCapability {
   [[nodiscard]] bool cancel_timer(TimerId id) const;
   [[nodiscard]] bool complete_task(TaskId id) const;
   void drain_task_completions() const;
+  void dispatch_keystroke(KeyboardKey key) const;
+  [[nodiscard]] bool simulate_keystrokes(std::string_view keystrokes) const;
 
  private:
   const WindowRuntimeContext* context_ = nullptr;

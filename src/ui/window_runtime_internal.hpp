@@ -1,5 +1,4 @@
-friend class AnimationHandle;
-friend class TaskHandle;
+friend class AnimationHandle; friend class TestContextCapability; friend class TaskHandle;
 
 struct RuntimeTaskDiagnostics;
 
