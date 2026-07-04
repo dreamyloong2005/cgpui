@@ -263,7 +263,9 @@ shape before deeper native work expands platform behavior.
   ownership paths. Step 281 adds runtime-token boundaries to `ViewHandle<T>`,
   `WeakViewHandle<T>`, and `WeakView`, so read, weak upgrade, and observation
   helpers reject handles captured from a different `WindowRuntime` even when
-  numeric `ViewId` values collide.
+  numeric `ViewId` values collide. Step 282 should close the
+  observation/subscription band with a focused parity audit and any missing
+  public guard coverage before actions and key dispatch begin.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -578,10 +580,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 281 view-handle runtime-token boundaries are in progress on
-`codex/phase-b-view-handle-runtime-token`. Continue verifying that slice before
-starting Step 282 or the later action/key-dispatch and fuller test-context
-behavior bands.
+Step 281 view-handle runtime-token boundaries are merged on `master` at
+`1b9bf43 feat: add view handle runtime tokens` and post-merge verified on
+Windows and WSL Arch Linux. Continue Phase B with Step 282 as the
+observation/subscription closure audit before starting the later
+action/key-dispatch and fuller test-context behavior bands.
 
 ## Self-Review
 

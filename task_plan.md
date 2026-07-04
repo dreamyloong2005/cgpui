@@ -1670,5 +1670,7 @@ implementation slice.
   and WSL full-debug verification. Phase B Step 280, observer diagnostics for
   window/view subscriptions, is complete on `master` after post-merge Windows
   and WSL full-debug verification. Phase B Step 281, view-handle runtime-token
-  boundaries for cross-runtime read/upgrade/observation rejection, is in
-  progress on `codex/phase-b-view-handle-runtime-token`.
+  boundaries for cross-runtime read/upgrade/observation rejection, is complete
+  on `master` after post-merge Windows and WSL full-debug verification. Phase
+  B Step 282 observation/subscription closure audit is the next Phase B slice
+  before starting the action/key-dispatch band.

@@ -9740,3 +9740,18 @@
 - Step 281 is implemented and focused/full verified on
   `codex/phase-b-view-handle-runtime-token`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 281 Merge
+
+- Committed the view-handle runtime-token branch as
+  `1b9bf43 feat: add view handle runtime tokens`.
+- Fast-forward merged `codex/phase-b-view-handle-runtime-token` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 67/67.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 64/64.
+- Step 281 is complete on `master`; Step 282 observation/subscription closure
+  audit is the next Phase B slice before the action/key-dispatch band.
