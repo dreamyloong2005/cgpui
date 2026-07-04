@@ -9558,3 +9558,18 @@
 - Step 278 is implemented and focused/full verified on
   `codex/phase-b-entity-to-entity-observation`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 278 Merge
+
+- Committed the entity-to-entity observation branch as
+  `08a98a8 feat: add entity-to-entity observation`.
+- Fast-forward merged `codex/phase-b-entity-to-entity-observation` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 64/64.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 61/61.
+- Step 278 is complete on `master`; Step 279 window/view observation is the
+  next Phase B slice.
