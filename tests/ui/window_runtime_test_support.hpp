@@ -529,6 +529,30 @@ class RecordingView final : public cgpui::View {
         missing_subscription_release =
             !context.runtime.remove_subscription(cgpui::SubscriptionId{
                 removed_subscription_id.value + 100});
+
+        cgpui::Subscription moved_from =
+            context.observe_model_subscription(
+                model_id,
+                [this](const cgpui::ViewContext&,
+                       cgpui::Model<RuntimeEntity>) {
+                  model_observer_count += 10;
+                });
+        moved_subscription_id = moved_from.id();
+        moved_subscription_connected_before_move = moved_from.connected();
+        cgpui::Subscription moved_to = std::move(moved_from);
+        moved_subscription_source_connected_after_move =
+            moved_from.connected();
+        moved_subscription_source_release_after_move = moved_from.release();
+        moved_subscription_target_connected_after_move = moved_to.connected();
+        moved_subscription_release = moved_to.release();
+        moved_subscription_connected_after_release = moved_to.connected();
+        moved_subscription_duplicate_release = moved_to.release();
+        notified_after_move_release = context.update_model(
+            model_id,
+            [](RuntimeEntity& model) {
+              model.value = 104;
+            });
+        observer_count_after_move_release = model_observer_count;
       }
       if (exercise_entity_handle_helpers && keyboard_key_count == 1) {
         const cgpui::Context<RecordingView>& author_context = context;
@@ -1132,6 +1156,7 @@ class RecordingView final : public cgpui::View {
   int observer_count_after_update = 0;
   int observer_count_after_remove = 0;
   int observer_count_after_drop = 0;
+  int observer_count_after_move_release = 0;
   int observer_value_after_update = -1;
   int observer_value_after_remove = -1;
   int entity_handle_read_value = -1;
@@ -1169,6 +1194,14 @@ class RecordingView final : public cgpui::View {
   bool removed_subscription_release_after_remove = true;
   bool notified_after_remove = true;
   bool missing_subscription_release = false;
+  bool moved_subscription_connected_before_move = false;
+  bool moved_subscription_source_connected_after_move = true;
+  bool moved_subscription_source_release_after_move = true;
+  bool moved_subscription_target_connected_after_move = false;
+  bool moved_subscription_release = false;
+  bool moved_subscription_connected_after_release = true;
+  bool moved_subscription_duplicate_release = true;
+  bool notified_after_move_release = true;
   int global_first_read_value = -1;
   int global_updated_value = -1;
   int global_replaced_value = -1;
@@ -1180,6 +1213,7 @@ class RecordingView final : public cgpui::View {
   cgpui::Model<RuntimeEntity> model_id{};
   cgpui::SubscriptionId owned_subscription_id{};
   cgpui::SubscriptionId removed_subscription_id{};
+  cgpui::SubscriptionId moved_subscription_id{};
   cgpui::WeakEntity<RuntimeEntity> weak_model{};
   cgpui::WeakView weak_view{};
   bool root_view_id_was_allocated = false;

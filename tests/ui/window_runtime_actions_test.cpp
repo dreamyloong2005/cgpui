@@ -284,6 +284,26 @@ int test_subscription_token_disconnects_observers_on_drop_and_removal() {
       fixture.view.observer_count_after_remove != 1) {
     return 278;
   }
+  if (fixture.view.moved_subscription_id.value == 0 ||
+      !fixture.view.moved_subscription_connected_before_move ||
+      fixture.view.moved_subscription_source_connected_after_move ||
+      fixture.view.moved_subscription_source_release_after_move ||
+      !fixture.view.moved_subscription_target_connected_after_move ||
+      !fixture.view.moved_subscription_release ||
+      fixture.view.moved_subscription_connected_after_release ||
+      fixture.view.moved_subscription_duplicate_release) {
+    return 398;
+  }
+  if (fixture.view.notified_after_move_release ||
+      fixture.view.observer_count_after_move_release != 1) {
+    return 399;
+  }
+  const cgpui::RuntimeDiagnosticsSnapshot diagnostics =
+      runtime.diagnostics_snapshot();
+  if (diagnostics.entity_observer_count != 0 ||
+      diagnostics.connected_subscription_count != 0) {
+    return 400;
+  }
 
   return 0;
 }

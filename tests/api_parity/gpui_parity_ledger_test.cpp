@@ -144,6 +144,8 @@ int main() {
       !contains(ledger, "`invalidate_entity(...)` helpers") ||
       !contains(ledger, "entity invalidation helpers") ||
       !contains(ledger, "entity deletion helpers") ||
+      !contains(ledger, "deterministic subscription lifetime/unsubscribe behavior") ||
+      !contains(ledger, "deterministic `Subscription` lifetime/unsubscribe behavior") ||
       !contains(ledger, "runtime-token cross-context boundaries") ||
       !contains(ledger, "`ViewContextCapability<T>`") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
@@ -178,6 +180,8 @@ int main() {
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/entity_observation_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/subscription_lifetime_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/entity_transaction_test.cpp") ||
       !contains(ledger,
@@ -224,6 +228,8 @@ int main() {
               "TestContextCapability",
               "test_context",
               "gpui::TestAppContext",
+              "deterministic subscription lifetime/unsubscribe behavior",
+              "deterministic Subscription lifetime/unsubscribe behavior",
               "invalidate_entity helpers",
               "entity deletion helpers",
               "\"x11\"",
@@ -359,6 +365,27 @@ int main() {
       contains(entity_observation, "ViewContext") ||
       contains(entity_observation, "PlatformWindow")) {
     return 28;
+  }
+
+  const std::string subscription_lifetime =
+      read_source("tests/api_parity/subscription_lifetime_test.cpp");
+  if (subscription_lifetime.empty()) {
+    return 50;
+  }
+  if (!contains(subscription_lifetime, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(subscription_lifetime, "subscription.release()") ||
+      !contains(subscription_lifetime, "context.observe_entity_subscription") ||
+      !contains(subscription_lifetime, "std::move(moved_from)") ||
+      !contains(subscription_lifetime,
+                "cgpui::Render<SubscriptionLifetimeView>")) {
+    return 51;
+  }
+  if (contains(subscription_lifetime, "WindowRuntimeContext") ||
+      contains(subscription_lifetime, "WindowRuntime") ||
+      contains(subscription_lifetime, "AppContext") ||
+      contains(subscription_lifetime, "ViewContext") ||
+      contains(subscription_lifetime, "PlatformWindow")) {
+    return 52;
   }
 
   const std::string entity_transaction =

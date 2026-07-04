@@ -4548,3 +4548,24 @@
   does not add simulated keyboard/pointer input, focus/clipboard helpers,
   redraw simulation, an upstream-style `gpui::test` macro, or a new harness;
   those remain in the later Step 295-300 / Phase G test behavior band.
+
+## 2026-07-04 Phase B Step 277 Subscription Lifetime
+
+- Step 277 should stay scoped to deterministic `Subscription` lifetime and
+  unsubscribe behavior. It does not start entity-to-entity observation,
+  window/view observation, action dispatch, key dispatch, or fuller test
+  context simulation.
+- The durable ownership boundary is `src/ui/subscription.cpp` for the public
+  move-only RAII token and `src/ui/runtime_subscriptions.cpp` for runtime
+  subscription lookup/removal. `src/ui/ui.cpp` should not own
+  `Subscription::` methods, and diagnostics snapshot construction should not
+  own subscription removal.
+- Deterministic unsubscribe now means explicit `release()`, move-assignment
+  release, and scoped destruction remove the observer record from
+  `entity_observers_` once. Duplicate release, moved-from release, missing ids,
+  and release after external removal soft-fail with `false`.
+- Because `remove_subscription(...)` erases observer records, entity-change
+  notification should not iterate by live vector reference while callbacks run.
+  The implementation builds a pending callback list and rechecks subscribed
+  observer ids before invocation, so callbacks can release subscriptions
+  without invalidating the active traversal.

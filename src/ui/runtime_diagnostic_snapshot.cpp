@@ -40,44 +40,6 @@ std::span<const PlatformDiagnosticEvent> WindowRuntime::platform_diagnostics()
   return platform_diagnostics_;
 }
 
-std::span<const EntitySubscription> WindowRuntime::subscriptions_for_view(
-    ViewId view_id) const {
-  subscription_query_buffer_.clear();
-  for (const EntitySubscription& subscription : entity_subscriptions_) {
-    if (subscription.view_id == view_id) {
-      subscription_query_buffer_.push_back(subscription);
-    }
-  }
-  return subscription_query_buffer_;
-}
-
-bool WindowRuntime::subscription_connected(SubscriptionId id) const {
-  if (id.value == 0) {
-    return false;
-  }
-
-  for (const EntityObserver& observer : entity_observers_) {
-    if (observer.subscription_id == id && observer.callback) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool WindowRuntime::remove_subscription(SubscriptionId id) {
-  if (id.value == 0) {
-    return false;
-  }
-
-  for (EntityObserver& observer : entity_observers_) {
-    if (observer.subscription_id == id && observer.callback) {
-      observer.callback = {};
-      return true;
-    }
-  }
-  return false;
-}
-
 WindowRuntime::RuntimeTaskDiagnostics WindowRuntime::task_diagnostics() const {
   RuntimeTaskDiagnostics diagnostics;
   std::lock_guard lock(tasks_mutex_);

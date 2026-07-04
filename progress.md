@@ -9441,3 +9441,57 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 59/59.
 - Step 276 is complete on `master`; Step 277 subscription lifetime /
   deterministic unsubscribe is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 277 Subscription Lifetime
+
+- Continued `codex/phase-b-subscription-lifetime` in
+  `.worktrees/phase-b-subscription-lifetime` from `master` at
+  `6e901fb docs: mark step 276 merged`.
+- Added RED coverage in
+  `tests/api_parity/subscription_lifetime_test.cpp`, registered
+  `subscription_lifetime_test` in `xmake.lua`, extended
+  `window_runtime_actions_test` to require move-transfer release semantics and
+  zero observer diagnostics after unsubscribe, and extended
+  `ui_source_structure_test` to require `src/ui/subscription.cpp` and
+  `src/ui/runtime_subscriptions.cpp`.
+- RED was confirmed after `xmake f -c -m debug -P .` and explicit target
+  rebuilds: `subscription_lifetime_test/default` passed as a public API compile
+  gate, while `window_runtime_actions_test/default` failed with exit 400
+  because disconnected observer records were still retained, and
+  `ui_source_structure_test/default` failed with exit 8 because the focused
+  source files did not exist.
+- GREEN moved `Subscription` RAII/move/release methods from `src/ui/ui.cpp` to
+  `src/ui/subscription.cpp`, moved subscription query/connected/remove runtime
+  methods from `src/ui/runtime_diagnostic_snapshot.cpp` to
+  `src/ui/runtime_subscriptions.cpp`, changed `remove_subscription(...)` to
+  erase observer records, and updated entity-change notification to recheck
+  subscribed observer ids before invoking callbacks.
+- Fresh Windows focused verification passed:
+  `xmake -y -P . subscription_lifetime_test`, `xmake -y -P . ui_source_structure_test`,
+  `xmake -y -P . window_runtime_actions_test`, then
+  `xmake test -y -P . subscription_lifetime_test/default ui_source_structure_test/default window_runtime_actions_test/default`
+  passed 3/3.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus explicit
+  rebuilds for `subscription_lifetime_test`, entity/context/public-surface
+  parity tests, ledger/structure/header-cleanliness tests, and runtime
+  action/scheduling tests, then
+  `xmake test -y -P . subscription_lifetime_test/default entity_observation_test/default entity_deletion_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default window_runtime_actions_test/default window_runtime_scheduling_test/default`
+  passed 12/12.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, explicit rebuilds for the same
+  12 focused targets, and
+  `XMAKE_ROOT=y xmake test -y -P . subscription_lifetime_test/default entity_observation_test/default entity_deletion_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default window_runtime_actions_test/default window_runtime_scheduling_test/default`
+  passed 12/12.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 63/63.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 60/60.
+- Step 277 is implemented and focused/full verified on
+  `codex/phase-b-subscription-lifetime`; it is ready for merge
+  verification.

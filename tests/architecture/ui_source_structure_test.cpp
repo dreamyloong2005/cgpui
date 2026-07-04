@@ -915,6 +915,8 @@ int main() {
       "src/ui/runtime_context_platform.cpp",
       "src/ui/runtime_context_scheduling.cpp",
       "src/ui/runtime_context_text.cpp",
+      "src/ui/subscription.cpp",
+      "src/ui/runtime_subscriptions.cpp",
       "src/ui/app_context_window_options.cpp",
       "src/ui/app_context_services.cpp",
       "src/ui/app_context_commands.cpp",
@@ -937,10 +939,26 @@ int main() {
   }
   if (contains(ui_source, "PaintList::") ||
       contains(ui_source, "Result<RenderRecord> render_view") ||
+      contains(ui_source, "Subscription::") ||
       contains(ui_source, "WindowRuntime::run") ||
       contains(ui_source, "WindowRuntimeContext::") ||
       contains(ui_source, "AppContext::")) {
     return 11;
+  }
+
+  const std::string subscription_source =
+      read_source("src/ui/subscription.cpp");
+  if (!contains(subscription_source, "Subscription::~Subscription()") ||
+      !contains(subscription_source,
+                "Subscription::Subscription(Subscription&& other)") ||
+      !contains(subscription_source,
+                "Subscription& Subscription::operator=(") ||
+      !contains(subscription_source, "bool Subscription::connected() const") ||
+      !contains(subscription_source, "bool Subscription::release()") ||
+      line_count(subscription_source) > 80 ||
+      contains(subscription_source, "TaskHandle::") ||
+      contains(subscription_source, "AnimationHandle::")) {
+    return 122;
   }
 
   const std::string paint_source = read_source("src/ui/paint.cpp");
@@ -1773,14 +1791,34 @@ int main() {
       !contains(runtime_diagnostic_snapshot_source,
                 "WindowRuntime::RuntimeTaskDiagnostics "
                 "WindowRuntime::task_diagnostics(") ||
-      !contains(runtime_diagnostic_snapshot_source,
-                "std::span<const EntitySubscription> "
-                "WindowRuntime::subscriptions_for_view(") ||
+      contains(runtime_diagnostic_snapshot_source,
+               "WindowRuntime::subscriptions_for_view(") ||
+      contains(runtime_diagnostic_snapshot_source,
+               "WindowRuntime::subscription_connected(") ||
+      contains(runtime_diagnostic_snapshot_source,
+               "WindowRuntime::remove_subscription(") ||
       contains(runtime_diagnostic_snapshot_source,
                "WindowRuntime::install_native_menu(") ||
       contains(runtime_diagnostic_snapshot_source,
                "WindowRuntime::set_app_theme(")) {
     return 61;
+  }
+
+  const std::string runtime_subscriptions_source =
+      read_source("src/ui/runtime_subscriptions.cpp");
+  if (line_count(runtime_subscriptions_source) > 110 ||
+      !contains(runtime_subscriptions_source,
+                "std::span<const EntitySubscription> "
+                "WindowRuntime::subscriptions_for_view(") ||
+      !contains(runtime_subscriptions_source,
+                "bool WindowRuntime::subscription_connected(") ||
+      !contains(runtime_subscriptions_source,
+                "bool WindowRuntime::remove_subscription(") ||
+      contains(runtime_subscriptions_source,
+               "RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot(") ||
+      contains(runtime_subscriptions_source,
+               "WindowRuntime::task_diagnostics(")) {
+    return 123;
   }
 
   const std::string runtime_platform_services_source =
