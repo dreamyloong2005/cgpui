@@ -265,7 +265,9 @@ shape before deeper native work expands platform behavior.
   helpers reject handles captured from a different `WindowRuntime` even when
   numeric `ViewId` values collide. Step 282 should close the
   observation/subscription band with a focused parity audit and any missing
-  public guard coverage before actions and key dispatch begin.
+  public guard coverage before actions and key dispatch begin; its first
+  closure guard verifies removed views release both view observers and
+  view-owned entity subscriptions.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -580,11 +582,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 281 view-handle runtime-token boundaries are merged on `master` at
-`1b9bf43 feat: add view handle runtime tokens` and post-merge verified on
-Windows and WSL Arch Linux. Continue Phase B with Step 282 as the
-observation/subscription closure audit before starting the later
-action/key-dispatch and fuller test-context behavior bands.
+Step 282 observation/subscription closure audit is in progress on
+`codex/phase-b-observation-closure-audit`. Keep it scoped to closing the
+observation/subscription band before starting the later action/key-dispatch
+and fuller test-context behavior bands.
 
 ## Self-Review
 

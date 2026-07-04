@@ -92,7 +92,7 @@
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, ElementContextCapability from Context<T>::element_context(ElementId), AsyncContextCapability from Context<T>::async_context(), TestContextCapability from Context<T>::test_context(), new_entity creation, weak entity upgrades, observe_entity helpers, entity-to-entity observation helpers, window/view observation helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, deterministic subscription lifetime/unsubscribe behavior, and runtime-token cross-context boundaries",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, ElementContextCapability from Context<T>::element_context(ElementId), AsyncContextCapability from Context<T>::async_context(), TestContextCapability from Context<T>::test_context(), new_entity creation, weak entity upgrades, observe_entity helpers, entity-to-entity observation helpers, window/view observation helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, deterministic subscription lifetime/unsubscribe behavior, view-removal subscription cleanup, and runtime-token cross-context boundaries",
       "status": "adapted",
       "next_step": "Phase B observation depth"
     },
@@ -104,7 +104,7 @@
     },
     {
       "upstream_gpui": "gpui::View<T>",
-      "cgpui_target": "ViewContextCapability<T> plus runtime-token-scoped ViewHandle<T> and WeakViewHandle<T> over ViewId, with view observation helpers",
+      "cgpui_target": "ViewContextCapability<T> plus runtime-token-scoped ViewHandle<T> and WeakViewHandle<T> over ViewId, with view observation helpers and view-removal subscription cleanup",
       "status": "adapted",
       "next_step": "Phase B view lifecycle depth"
     },

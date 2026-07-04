@@ -9755,3 +9755,43 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 64/64.
 - Step 281 is complete on `master`; Step 282 observation/subscription closure
   audit is the next Phase B slice before the action/key-dispatch band.
+
+## 2026-07-05 Phase B Step 282 Observation/Subscription Closure
+
+- Created `codex/phase-b-observation-closure-audit` in
+  `.worktrees/phase-b-observation-closure-audit` from `master` at
+  `2ce9073 docs: mark step 281 merged`.
+- Baseline Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake f -c -m debug -P .`, then
+  `xmake test -y -P . subscription_lifetime_test/default entity_to_entity_observation_test/default window_view_observation_test/default window_runtime_observation_diagnostics_test/default window_runtime_view_handle_token_test/default view_handle_spelling_test/default window_runtime_multiwindow_test/default ui_header_cleanliness/default ui_source_structure_test/default gpui_parity_ledger_test/default`
+  passed 10/10.
+- Added RED coverage in
+  `tests/ui/window_runtime_observation_closure_test.cpp` and registered
+  `window_runtime_observation_closure_test` in `xmake.lua`. RED built, then
+  `xmake test -y -P . window_runtime_observation_closure_test/default`
+  failed; the direct binary exit code was 6, proving removed views left stale
+  `subscriptions_for_view(...)` state.
+- GREEN updates `WindowRuntime::remove_view(...)` to remove view-owned entity
+  subscriptions before removing view observers. Fresh focused verification:
+  `xmake -y -P . window_runtime_observation_closure_test`, then
+  `xmake test -y -P . window_runtime_observation_closure_test/default`
+  passed 1/1.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . window_runtime_observation_closure_test/default subscription_lifetime_test/default entity_to_entity_observation_test/default window_view_observation_test/default window_runtime_observation_diagnostics_test/default window_runtime_view_handle_token_test/default view_handle_spelling_test/default window_runtime_multiwindow_test/default ui_header_cleanliness/default ui_source_structure_test/default gpui_parity_ledger_test/default`
+  passed 11/11.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . window_runtime_observation_closure_test/default subscription_lifetime_test/default entity_to_entity_observation_test/default window_view_observation_test/default window_runtime_observation_diagnostics_test/default window_runtime_view_handle_token_test/default view_handle_spelling_test/default window_runtime_multiwindow_test/default ui_header_cleanliness/default ui_source_structure_test/default gpui_parity_ledger_test/default`
+  passed 11/11.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 68/68.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 65/65.
+- Step 282 is implemented and focused/full verified on
+  `codex/phase-b-observation-closure-audit`; it is ready for merge
+  verification.

@@ -148,6 +148,7 @@ int main() {
       !contains(ledger, "entity deletion helpers") ||
       !contains(ledger, "deterministic subscription lifetime/unsubscribe behavior") ||
       !contains(ledger, "deterministic `Subscription` lifetime/unsubscribe behavior") ||
+      !contains(ledger, "view-removal subscription cleanup") ||
       !contains(ledger, "runtime-token cross-context boundaries") ||
       !contains(ledger, "`ViewContextCapability<T>`") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
@@ -188,6 +189,8 @@ int main() {
                 "tests/api_parity/window_view_observation_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/subscription_lifetime_test.cpp") ||
+      !contains(ledger,
+                "tests/ui/window_runtime_observation_closure_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/entity_transaction_test.cpp") ||
       !contains(ledger,
@@ -443,6 +446,24 @@ int main() {
     return 52;
   }
 
+  const std::string observation_closure =
+      read_source("tests/ui/window_runtime_observation_closure_test.cpp");
+  if (observation_closure.empty()) {
+    return 59;
+  }
+  if (!contains(observation_closure, "runtime.remove_view(child_view_id)") ||
+      !contains(observation_closure,
+                "runtime.subscriptions_for_view(child_view_id).empty()") ||
+      !contains(observation_closure, "RuntimeDiagnosticsSnapshot") ||
+      !contains(observation_closure, "view_subscription.release()")) {
+    return 60;
+  }
+  if (contains(observation_closure, "Action") ||
+      contains(observation_closure, "KeyBinding") ||
+      contains(observation_closure, "key_dispatch")) {
+    return 61;
+  }
+
   const std::string entity_transaction =
       read_source("tests/api_parity/entity_transaction_test.cpp");
   if (entity_transaction.empty()) {
@@ -620,6 +641,8 @@ int main() {
       !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
       !contains(xmake, "target(\"entity_weak_handle_semantics_test\")") ||
       !contains(xmake, "target(\"entity_observation_test\")") ||
+      !contains(xmake,
+                "target(\"window_runtime_observation_closure_test\")") ||
       !contains(xmake, "target(\"entity_transaction_test\")") ||
       !contains(xmake, "target(\"entity_invalidation_test\")") ||
       !contains(xmake, "target(\"entity_deletion_test\")") ||
@@ -642,6 +665,8 @@ int main() {
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_observation_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/window_runtime_observation_closure_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_transaction_test.cpp") ||
       !contains(xmake,

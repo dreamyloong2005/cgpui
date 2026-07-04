@@ -532,6 +532,13 @@ target("window_runtime_observation_diagnostics_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("window_runtime_observation_closure_test")
+    set_kind("binary")
+    add_files("tests/ui/window_runtime_observation_closure_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("window_runtime_view_handle_token_test")
     set_kind("binary")
     add_files("tests/ui/window_runtime_view_handle_token_test.cpp")

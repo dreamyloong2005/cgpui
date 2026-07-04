@@ -4648,3 +4648,22 @@
 - The behavior test belongs in a focused
   `tests/ui/window_runtime_view_handle_token_test.cpp` target rather than
   broadening `window_runtime_actions_test.cpp` or `window_runtime_multiwindow_test.cpp`.
+
+## 2026-07-05 Phase B Step 282 Observation/Subscription Closure
+
+- Step 282 should close the observation/subscription band before action/key
+  dispatch begins. It should stay scoped to stale observer/subscription state,
+  parity ledger evidence, and focused runtime guards.
+- The concrete gap found in the closure audit was that `WindowRuntime::remove_view(...)`
+  cleared view observers but left view-owned entity subscriptions in
+  `entity_subscriptions_`, so `subscriptions_for_view(removed_view)` and
+  `RuntimeDiagnosticsSnapshot::view_entity_subscription_count` could retain
+  stale state after a view was removed.
+- The implementation belongs in `src/ui/runtime_views.cpp` at the existing
+  view-removal ownership boundary by calling `remove_subscriptions_for_view`
+  before `remove_observers_for_view`. It should not move subscription storage
+  out of `src/ui/runtime_subscriptions.cpp` or broaden observer storage.
+- The behavior guard belongs in a focused
+  `tests/ui/window_runtime_observation_closure_test.cpp` target so the
+  runtime-level lifecycle cleanup is covered without growing API parity
+  compile-only tests.

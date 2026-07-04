@@ -57,6 +57,7 @@ bool WindowRuntime::remove_view(ViewId view_id) {
   }
   view_registry_.erase(entry);
   removed_view_ids_.insert(view_id.value);
+  remove_subscriptions_for_view(view_id);
   remove_observers_for_view(view_id);
   return true;
 }
