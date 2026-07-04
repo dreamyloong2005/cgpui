@@ -8854,3 +8854,16 @@
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 49/49.
+
+## 2026-07-04 Phase B Step 266 Merge
+
+- Committed the weak entity handle branch as
+  `d466a48 feat: add weak entity handle semantics`.
+- Fast-forward merged `codex/phase-b-entity-weak-handles` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 52/52.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 49/49.
+- Step 266 is complete on `master`; Step 267 entity observation is the next
+  Phase B slice.

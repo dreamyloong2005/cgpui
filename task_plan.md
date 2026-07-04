@@ -302,8 +302,8 @@ Feature-worktree verification passed Windows full debug 51/51 and WSL Arch
 Linux full debug 48/48. Post-merge verification passed Windows full debug
 51/51 and WSL Arch Linux full debug 48/48. Step 266 is the next Phase B slice.
 
-Step 266, weak entity handle semantics, is implemented on
-`codex/phase-b-entity-weak-handles` and ready for merge verification. RED
+Step 266, weak entity handle semantics, is merged on `master` at
+`d466a48 feat: add weak entity handle semantics`. RED
 failed as expected on missing `WeakEntity<T>::upgrade(...)` and
 `WeakEntity<T>::read(...)`. GREEN adds those public convenience methods in the
 focused `include/cgpui/core/entity.hpp` leaf, returning
@@ -312,7 +312,8 @@ existing `WindowRuntimeContext::upgrade_entity(...)` compatibility path. This
 keeps observation, update transactions, deletion, and cross-context rules out
 of Step 266. Feature-worktree verification passed Windows focused 10/10, WSL
 Arch Linux focused 10/10, Windows full debug 52/52, and WSL Arch Linux full
-debug 49/49. Step 267 is the next Phase B slice.
+debug 49/49. Post-merge verification passed Windows full debug 52/52 and WSL
+Arch Linux full debug 49/49. Step 267 is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
