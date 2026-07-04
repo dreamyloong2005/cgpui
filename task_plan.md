@@ -1689,8 +1689,8 @@ implementation slice.
   `43c6040` after post-merge Windows full-debug 72/72 and WSL Arch Linux
   full-debug 69/69 verification; it keeps command template helpers in
   `include/cgpui/ui/runtime_command_palette_templates.hpp`. Phase B Step 287
-  action enablement metadata is implemented and feature-worktree verified on
-  `codex/phase-b-action-enablement-metadata` after Windows full-debug 73/73
-  and WSL Arch Linux full-debug 70/70 verification. Phase B Step 288 action
-  bubbling through focused routes is next. Keep key dispatch, key grammar, and
-  fuller test-context behavior in later slices.
+  action enablement metadata is complete on `master` at `5b1a873` after
+  post-merge Windows full-debug 73/73 and WSL Arch Linux full-debug 70/70
+  verification. Phase B Step 288 action bubbling through focused routes is
+  next. Keep key dispatch, key grammar, and fuller test-context behavior in
+  later slices.

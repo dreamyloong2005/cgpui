@@ -10091,3 +10091,17 @@
   `codex/phase-b-action-enablement-metadata`; it is ready for merge
   verification. Step 288 action bubbling through focused routes is the next
   action-band slice.
+
+## 2026-07-05 Phase B Step 287 Merge
+
+- Fast-forward merged `codex/phase-b-action-enablement-metadata` into
+  `master` at `5b1a873 feat: add action enablement metadata`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 73/73.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 70/70.
+- Step 287 is complete on `master`; Step 288 action bubbling through focused
+  routes is the next action-band slice before key dispatch, key grammar, and
+  fuller test-context simulation.
