@@ -1705,6 +1705,11 @@ implementation slice.
   The slice maps `secondary-*` to Ctrl on Windows/Linux and Super on macOS,
   maps `platform-*` / `cmd-*` / `win-*` to the platform key, rejects duplicate
   semantic modifiers, and keeps the ownership boundary in focused key-binding
-  parser/modifier files. Phase B Step 291 keymap contexts is the next
-  key-dispatch slice before partial matches, disabled scopes, command palette
-  integration, and fuller test-context behavior.
+  parser/modifier files. Phase B Step 291 keymap contexts is complete on
+  `master` at `e94b801` after post-merge Windows full-debug 77/77 and WSL
+  Arch Linux full-debug 74/74 verification. The slice adds
+  `KeyBindingContext`, context-aware `bind_key(...)`, and focused-element >
+  view > window > app binding selection in a focused runtime key-binding
+  context module. Phase B Step 292 partial key matches is the next
+  key-dispatch slice before disabled scopes, command palette integration, and
+  fuller test-context behavior.

@@ -10366,3 +10366,17 @@
   `codex/phase-b-keymap-contexts`; it is ready for feature commit and merge
   verification. Step 292 partial key matches remains the next key-dispatch
   slice after Step 291 lands on `master`.
+
+## 2026-07-05 Phase B Step 291 Merge
+
+- Fast-forward merged `codex/phase-b-keymap-contexts` into `master` at
+  `e94b801 feat: add keymap contexts`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 77/77.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 74/74.
+- Step 291 is complete on `master`; Step 292 partial key matches is the next
+  key-dispatch slice before disabled scopes, command palette integration, and
+  fuller test-context simulation.
