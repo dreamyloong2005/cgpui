@@ -9810,3 +9810,52 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 65/65.
 - Step 282 is complete on `master`; Step 283 typed-action parity is the next
   Phase B slice before key dispatch and fuller test-context simulation.
+
+## 2026-07-05 Phase B Step 283 Typed Action Surface
+
+- Continued `codex/phase-b-typed-action-surface` from the existing worktree at
+  `.worktrees/phase-b-typed-action-surface`.
+- Restored `task_plan.md`, `progress.md`, and `findings.md`; the planning
+  catchup helper succeeded from the actual `.codex` skill path and produced no
+  additional output. The sample `.claude` catchup path failed because this
+  machine has the skill installed under `.codex`.
+- Recorded two environment/path notes to avoid repeated failures: the
+  superpowers skill cache currently lives under `d6169bef`, not the stale
+  `3fdeeb49` path from the session metadata; and PowerShell should use
+  `Select-Object -First` instead of unavailable `head -n`.
+- Added RED API parity coverage in
+  `tests/api_parity/typed_action_surface_test.cpp` and registered
+  `typed_action_surface_test` in `xmake.lua`. RED failed as expected on
+  missing `cgpui::Action`, `cgpui::action_name_v`, and
+  `cgpui::action_name<T>()`.
+- GREEN added the focused public leaf `include/cgpui/ui/action.hpp` with
+  `Action<T>`, `action_name_v<T>`, and `action_name<T>()`, then exposed it
+  through `include/cgpui/ui/ui.hpp` and `include/cgpui/ui/runtime.hpp`.
+- Fresh Windows verification so far:
+  `xmake -y -P . typed_action_surface_test` built successfully,
+  `xmake test -y -P . typed_action_surface_test/default` passed 1/1, and
+  `xmake test -y -P . ui_source_structure_test/default` passed 1/1.
+- The first expanded Windows focused run found one ledger sync miss:
+  `gpui_parity_ledger_test/default` failed with exit code 8 because the JSON
+  action row did not include the new typed-action test evidence string. The
+  JSON row now names `include/cgpui/ui/action.hpp` and
+  `tests/api_parity/typed_action_surface_test.cpp`.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 5/5.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 5/5.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 69/69.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 66/66.
+- Step 283 is implemented and focused/full verified on
+  `codex/phase-b-typed-action-surface`; it is ready for merge verification.

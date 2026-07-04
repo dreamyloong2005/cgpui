@@ -1673,6 +1673,9 @@ implementation slice.
   boundaries for cross-runtime read/upgrade/observation rejection, is complete
   on `master` after post-merge Windows and WSL full-debug verification. Phase
   B Step 282 observation/subscription closure audit is complete on `master`
-  after post-merge Windows and WSL full-debug verification. Phase B Step 283
-  starts the typed-action parity band before key-dispatch and fuller
-  test-context behavior.
+  after post-merge Windows and WSL full-debug verification. Phase B Step 283,
+  public typed-action authoring surface, is implemented and feature-worktree
+  verified on `codex/phase-b-typed-action-surface`; the ownership boundary is
+  the focused `include/cgpui/ui/action.hpp` leaf with prelude exposure, while
+  typed registration/dispatch, key dispatch, and fuller test-context behavior
+  stay in later slices.

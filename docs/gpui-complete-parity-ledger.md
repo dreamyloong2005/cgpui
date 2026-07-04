@@ -50,7 +50,7 @@ Status meanings:
 | gpui::IntoElement | `IntoElement` alias plus `into_element` builders | Adapted | `include/cgpui/ui/render.hpp`, `include/cgpui/ui/element_builder_core.hpp`, `tests/api_parity/context_render_spelling_test.cpp` | Phase C |
 | gpui::div | `div()` | Adapted | `include/cgpui/ui/element_builder_core.hpp` | Phase C style vocabulary |
 | gpui::prelude | `cgpui/prelude.hpp` plus thin `cgpui/cgpui.hpp` compatibility aggregate | Adapted | `include/cgpui/prelude.hpp`, `include/cgpui/cgpui.hpp`, `tests/api_parity/public_authoring_surface_test.cpp`, `tests/header_cleanliness/prelude_header_cleanliness.cpp` | Phase B public authoring surface gate |
-| gpui::actions! / action macro | string action registry | Required | action dispatch exists, typed action parity missing | Phase B |
+| gpui::actions! / action macro | `Action<T>` typed action concept plus `action_name<T>()` / `action_name_v<T>` over the existing string action registry | Required | `include/cgpui/ui/action.hpp`, `tests/api_parity/typed_action_surface_test.cpp`; typed registration/dispatch still missing | Phase B typed registration/dispatch depth |
 | gpui key_context | no key-context tree API yet | Required | key bindings exist without upstream key-context model | Phase B |
 | gpui keymap dispatch | `KeyBinding` + action registry | Required | deterministic key binding exists, grammar incomplete | Phase B |
 | gpui element styling | `Style`, `StyleOverlay`, builders | Required | many primitives exist, tailwind-style vocabulary incomplete | Phase C |
@@ -96,9 +96,9 @@ front-end elements, built-in widgets, and uniform list virtualization.
 
 ### Actions and key dispatch
 
-Required rows: typed actions, action macro equivalent, key contexts, keymap
-grammar, focus/key routing, command palette integration, and disabled-context
-behavior.
+Required rows: typed action authoring surface, typed registration and dispatch,
+action macro equivalent, key contexts, keymap grammar, focus/key routing,
+command palette integration, and disabled-context behavior.
 
 ### Platform services
 

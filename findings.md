@@ -4667,3 +4667,21 @@
   `tests/ui/window_runtime_observation_closure_test.cpp` target so the
   runtime-level lifecycle cleanup is covered without growing API parity
   compile-only tests.
+
+## 2026-07-05 Phase B Step 283 Typed Action Surface
+
+- Step 283 should stay scoped to public typed-action authoring. The durable
+  first surface is `Action<T>`, `action_name<T>()`, and `action_name_v<T>` for
+  action structs that expose a static `std::string_view name`.
+- The implementation belongs in the focused public UI leaf
+  `include/cgpui/ui/action.hpp`, with `include/cgpui/ui/ui.hpp` and
+  `include/cgpui/ui/runtime.hpp` acting only as thin aggregates. It should not
+  add a `.cpp`, grow `ui.cpp`, or move string registry types out of
+  `runtime_actions.hpp` in this slice.
+- The public API parity guard belongs in
+  `tests/api_parity/typed_action_surface_test.cpp` and should include only
+  `cgpui/prelude.hpp`; it must not pull in `WindowRuntimeContext`,
+  `WindowRuntime`, platform types, `KeyBinding`, or dispatch behavior.
+- Keep typed registration/dispatch overloads, command metadata binding, key
+  context grammar, key routing, and fuller simulated test-context input for the
+  next action/key-dispatch slices.

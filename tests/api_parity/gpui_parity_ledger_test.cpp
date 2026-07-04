@@ -210,6 +210,15 @@ int main() {
                 "Phase G fuller simulated input/test macro depth")) {
     return 18;
   }
+  if (!contains(ledger, "| gpui::actions! / action macro |") ||
+      !contains(ledger, "`Action<T>` typed action concept") ||
+      !contains(ledger, "`action_name<T>()`") ||
+      !contains(ledger, "include/cgpui/ui/action.hpp") ||
+      !contains(ledger,
+                "tests/api_parity/typed_action_surface_test.cpp") ||
+      !contains(ledger, "Phase B typed registration/dispatch depth")) {
+    return 62;
+  }
 
   const std::string status_json =
       read_source("docs/gpui-complete-parity-ledger.json");
@@ -230,6 +239,10 @@ int main() {
               "\"uniform_list\"",
               "\"window_shadow\"",
               "\"gpui::prelude\"",
+              "\"gpui::actions! / action macro\"",
+              "Action<T> typed action concept",
+              "action_name<T>",
+              "typed_action_surface_test",
               "WindowContextCapability",
               "window_context",
               "AsyncContextCapability",
@@ -628,6 +641,30 @@ int main() {
     return 49;
   }
 
+  const std::string typed_action =
+      read_source("tests/api_parity/typed_action_surface_test.cpp");
+  if (typed_action.empty()) {
+    return 63;
+  }
+  if (!contains(typed_action, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(typed_action, "struct SaveAction") ||
+      !contains(typed_action, "static constexpr std::string_view name") ||
+      !contains(typed_action, "cgpui::Action<SaveAction>") ||
+      !contains(typed_action, "!cgpui::Action<MissingActionName>") ||
+      !contains(typed_action, "cgpui::action_name_v<SaveAction>") ||
+      !contains(typed_action, "cgpui::action_name<CloseWindowAction>()")) {
+    return 64;
+  }
+  if (contains(typed_action, "WindowRuntimeContext") ||
+      contains(typed_action, "WindowRuntime") ||
+      contains(typed_action, "AppContext") ||
+      contains(typed_action, "ViewContext") ||
+      contains(typed_action, "PlatformWindow") ||
+      contains(typed_action, "KeyBinding") ||
+      contains(typed_action, "dispatch_action")) {
+    return 65;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -646,6 +683,7 @@ int main() {
       !contains(xmake, "target(\"entity_transaction_test\")") ||
       !contains(xmake, "target(\"entity_invalidation_test\")") ||
       !contains(xmake, "target(\"entity_deletion_test\")") ||
+      !contains(xmake, "target(\"typed_action_surface_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -673,6 +711,8 @@ int main() {
                 "tests/api_parity/entity_invalidation_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_deletion_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

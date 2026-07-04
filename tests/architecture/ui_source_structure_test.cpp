@@ -37,6 +37,7 @@ std::size_t line_count(const std::string& text) {
 
 int main() {
   const std::vector<const char*> public_headers{
+      "include/cgpui/ui/action.hpp",
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/async_context.hpp",
       "include/cgpui/ui/test_context.hpp",
@@ -167,6 +168,7 @@ int main() {
     return 2;
   }
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/action.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/async_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/test_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
@@ -336,7 +338,8 @@ int main() {
 
   const std::string runtime_header =
       read_source("include/cgpui/ui/runtime.hpp");
-  if (!contains(runtime_header, "#include \"cgpui/ui/runtime_callbacks.hpp\"") ||
+  if (!contains(runtime_header, "#include \"cgpui/ui/action.hpp\"") ||
+      !contains(runtime_header, "#include \"cgpui/ui/runtime_callbacks.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_ids.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_handles.hpp\"") ||
       !contains(runtime_header,
@@ -362,6 +365,21 @@ int main() {
       contains(runtime_header, "struct AppContext") ||
       contains(runtime_header, "template <typename T>")) {
     return 19;
+  }
+
+  const std::string action_header = read_source("include/cgpui/ui/action.hpp");
+  if (!contains(action_header, "concept Action") ||
+      !contains(action_header, "action_name_v") ||
+      !contains(action_header, "action_name()") ||
+      !contains(action_header, "std::string_view")) {
+    return 124;
+  }
+  if (line_count(action_header) > 80 ||
+      contains(action_header, "struct CommandPaletteEntry") ||
+      contains(action_header, "KeyBinding") ||
+      contains(action_header, "class WindowRuntime") ||
+      contains(action_header, "struct WindowRuntimeContext")) {
+    return 125;
   }
 
   const std::string runtime_types_header =

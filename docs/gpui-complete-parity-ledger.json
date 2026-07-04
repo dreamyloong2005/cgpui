@@ -139,6 +139,12 @@
       "next_step": "Phase B public authoring surface gate"
     },
     {
+      "upstream_gpui": "gpui::actions! / action macro",
+      "cgpui_target": "Action<T> typed action concept plus action_name<T>() / action_name_v<T> over the existing string action registry, covered by include/cgpui/ui/action.hpp and tests/api_parity/typed_action_surface_test.cpp",
+      "status": "required",
+      "next_step": "Phase B typed registration/dispatch depth"
+    },
+    {
       "upstream_gpui": "gpui::div",
       "cgpui_target": "div",
       "status": "adapted",
