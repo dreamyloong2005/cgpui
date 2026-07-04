@@ -4346,3 +4346,19 @@
   reuses `EntityHandle<T>::read(...)` and `EntityHandle<T>::update(...)`, so
   the slice demonstrates creation plus basic read/update handle ergonomics
   without claiming the rest of entity lifecycle parity.
+
+## 2026-07-04 Phase B Step 266 Weak Entity Handles
+
+- Step 266 should stay scoped to public weak-handle semantics. The durable
+  shape is `WeakEntity<T>::upgrade(context) -> std::optional<EntityHandle<T>>`
+  and `WeakEntity<T>::read(context) -> const T*`, layered over the existing
+  `context.upgrade_entity(weak) -> std::optional<Model<T>>` runtime path.
+- The implementation belongs in the focused public entity leaf
+  `include/cgpui/core/entity.hpp`. The context/runtime compatibility methods
+  already exist and do not need to move into `ui.cpp`, `runtime_entities.cpp`,
+  or broader runtime files for this slice.
+- The RED test proved the intended public gap: a prelude-only authoring view
+  could downgrade an `EntityHandle<T>` but could not ask the `WeakEntity<T>` to
+  upgrade or read itself. The GREEN path wraps the upgraded id back into an
+  `EntityHandle<T>` and soft-fails with `std::nullopt` / `nullptr` when the
+  entity is empty or no longer present.

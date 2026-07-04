@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
@@ -20,24 +21,7 @@ template <typename T>
 using Model = EntityId<T>;
 
 template <typename T>
-class WeakEntity {
- public:
-  constexpr WeakEntity() = default;
-  constexpr explicit WeakEntity(EntityId<T> id) : id_(id) {}
-
-  [[nodiscard]] constexpr EntityId<T> id() const {
-    return id_;
-  }
-
-  [[nodiscard]] constexpr bool empty() const {
-    return id_.value == 0;
-  }
-
-  friend bool operator==(const WeakEntity&, const WeakEntity&) = default;
-
- private:
-  EntityId<T> id_;
-};
+class WeakEntity;
 
 template <typename T>
 class EntityHandle {
@@ -53,9 +37,7 @@ class EntityHandle {
     return id_.value == 0;
   }
 
-  [[nodiscard]] constexpr WeakEntity<T> downgrade() const {
-    return WeakEntity<T>(id_);
-  }
+  [[nodiscard]] constexpr WeakEntity<T> downgrade() const;
 
   template <typename Context>
   [[nodiscard]] const T* read(const Context& context) const {
@@ -72,6 +54,50 @@ class EntityHandle {
  private:
   EntityId<T> id_;
 };
+
+template <typename T>
+class WeakEntity {
+ public:
+  constexpr WeakEntity() = default;
+  constexpr explicit WeakEntity(EntityId<T> id) : id_(id) {}
+
+  [[nodiscard]] constexpr EntityId<T> id() const {
+    return id_;
+  }
+
+  [[nodiscard]] constexpr bool empty() const {
+    return id_.value == 0;
+  }
+
+  template <typename Context>
+  [[nodiscard]] std::optional<EntityHandle<T>> upgrade(
+      const Context& context) const {
+    const auto upgraded = context.upgrade_entity(*this);
+    if (!upgraded.has_value()) {
+      return std::nullopt;
+    }
+    return EntityHandle<T>(*upgraded);
+  }
+
+  template <typename Context>
+  [[nodiscard]] const T* read(const Context& context) const {
+    const std::optional<EntityHandle<T>> upgraded = upgrade(context);
+    if (!upgraded.has_value()) {
+      return nullptr;
+    }
+    return upgraded->read(context);
+  }
+
+  friend bool operator==(const WeakEntity&, const WeakEntity&) = default;
+
+ private:
+  EntityId<T> id_;
+};
+
+template <typename T>
+constexpr WeakEntity<T> EntityHandle<T>::downgrade() const {
+  return WeakEntity<T>(id_);
+}
 
 template <typename T>
 class EntityStore {

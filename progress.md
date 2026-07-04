@@ -8816,3 +8816,41 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 48/48.
 - Step 265 is complete on `master`; Step 266 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 266 Weak Entity Handles
+
+- Created `codex/phase-b-entity-weak-handles` in
+  `.worktrees/phase-b-entity-weak-handles` from `master` at
+  `71d4151 docs: mark step 265 merged`.
+- Restored planning context, ran the planning-with-files catchup helper, and
+  confirmed the main checkout was tracked-clean with only the pre-existing
+  untracked `.vscode/` directory.
+- Baseline Windows focused verification passed:
+  `xmake test -y -P . entity_store_test/default entity_lifecycle_creation_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 8/8.
+- Added RED API coverage in
+  `tests/api_parity/entity_weak_handle_semantics_test.cpp` and registered
+  `entity_weak_handle_semantics_test` in `xmake.lua`.
+- RED failed as expected:
+  `xmake test -y -P . entity_weak_handle_semantics_test/default` stopped on
+  missing `WeakEntity<T>::upgrade(...)` and `WeakEntity<T>::read(...)`.
+- GREEN added public weak-handle convenience methods in
+  `include/cgpui/core/entity.hpp`:
+  `WeakEntity<T>::upgrade(context) -> std::optional<EntityHandle<T>>` and
+  `WeakEntity<T>::read(context) -> const T*`, while keeping the existing
+  `WindowRuntimeContext::upgrade_entity(...) -> std::optional<Model<T>>`
+  compatibility path intact.
+- Fresh Windows minimal GREEN passed:
+  `xmake test -y -P . entity_weak_handle_semantics_test/default` passed 1/1.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default entity_store_test/default gpui_parity_ledger_test/default public_authoring_surface_test/default context_capabilities_test/default core_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default`
+  passed 10/10.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default entity_store_test/default gpui_parity_ledger_test/default public_authoring_surface_test/default context_capabilities_test/default core_header_cleanliness/default ui_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default`
+  passed 10/10.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 52/52.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 49/49.
