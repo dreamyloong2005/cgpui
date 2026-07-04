@@ -385,6 +385,19 @@ Windows full debug 57/57, and WSL Arch Linux full debug 54/54. Post-merge
 verification passed Windows full debug 57/57 and WSL Arch Linux full debug
 54/54. Step 272, the view-context capability domain, is the next Phase B slice.
 
+Step 272, view-context capability domain, is implemented and verified on
+`codex/phase-b-view-context-capability`. RED failed as expected on missing
+`cgpui::ViewContextCapability<T>` and `Context<T>::view_context<T>()`. GREEN
+adds the focused public leaf `include/cgpui/ui/view_context.hpp`, exposes
+`Context<T>::view_context<T>() -> ViewContextCapability<T>`, and layers
+`view_id()`, `view()`, `weak_view()`, `upgrade(...)`, `read(...)`, and
+`current()` over the existing typed view handle/registry machinery. This slice
+does not add new view lifecycle, observation, subscription, or runtime state.
+Feature-worktree verification passed Windows focused 13/13, WSL Arch Linux
+focused 13/13, Windows full debug 58/58, and WSL Arch Linux full debug 55/55.
+Step 273, the window-context capability domain, is the next Phase B slice after
+merge.
+
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
 `8695bb1 feat: add keyed element identity` and post-merge verified on Windows

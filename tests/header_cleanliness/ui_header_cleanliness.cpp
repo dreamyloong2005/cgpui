@@ -11,6 +11,7 @@
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/render.hpp"
+#include "cgpui/ui/view_context.hpp"
 #include "cgpui/ui/view_handle.hpp"
 #include "cgpui/ui/runtime_actions.hpp"
 #include "cgpui/ui/runtime_app_context.hpp"
@@ -97,9 +98,16 @@ class TestView final : public cgpui::View {
     (void)context.upgrade_entity(weak_entity);
     const cgpui::WeakView weak_view(context.view_id);
     (void)context.upgrade_view(weak_view);
+    const cgpui::ViewContextCapability<TestView> view_context =
+        context.view_context<TestView>();
     const cgpui::ViewHandle<TestView> view_handle = context.view<TestView>();
     const cgpui::WeakViewHandle<TestView> weak_view_handle =
         view_handle.downgrade();
+    (void)view_context.view_id();
+    (void)view_context.view();
+    (void)view_context.weak_view();
+    (void)view_context.upgrade(weak_view_handle);
+    (void)view_context.current();
     (void)view_handle.read(context);
     (void)context.upgrade_view(weak_view_handle);
     (void)context.observe_model(

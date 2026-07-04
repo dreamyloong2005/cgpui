@@ -223,7 +223,10 @@ shape before deeper native work expands platform behavior.
   and test context. Step 271 starts this band with
   `Context<T>::app_context() -> AppContext`, reusing the existing app-domain
   facade for app/global/theme/window-opening capability access from authoring
-  contexts.
+  contexts. Step 272 adds the view-domain capability
+  `Context<T>::view_context<T>() -> ViewContextCapability<T>`, layered over
+  the existing typed view handle registry without introducing new view
+  lifecycle or subscription semantics.
 - [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
   entity-to-entity observation, window/view observation, and deterministic
   unsubscribe behavior.
@@ -541,8 +544,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 272 after the Step 271 app-context capability
-slice. The next slice should add the view-context capability domain without
+Continue Phase B with Step 273 after the Step 272 view-context capability
+slice. The next slice should add the window-context capability domain without
 weakening the runtime-token entity boundary.
 
 ## Self-Review

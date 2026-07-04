@@ -4458,3 +4458,21 @@
   synchronously, so doing that inside after-frame recurses until stack
   overflow. Seed globals in setup, then read through `context.app_context()` in
   the frame callback.
+
+## 2026-07-04 Phase B Step 272 View Context Capability
+
+- Step 272 should stay scoped to public view-domain capability spelling:
+  `Context<T>::view_context<T>() -> ViewContextCapability<T>`. The capability
+  exposes the current `ViewId`, typed `ViewHandle<T>`, typed
+  `WeakViewHandle<T>`, weak upgrade, read-only lookup, and current-view read.
+- The implementation belongs in a focused public UI leaf,
+  `include/cgpui/ui/view_context.hpp`, with template bodies in
+  `include/cgpui/ui/runtime_templates.hpp`. It should not add a `.cpp`, grow
+  `ui.cpp`, or introduce new runtime state for this slice.
+- This is a facade over Step 263's typed view handle machinery. It does not
+  claim view lifecycle, view observation, subscriptions, child-view ownership,
+  or cross-runtime view-token behavior; those remain later Phase B slices.
+- Parity guards that reject low-level authoring leaks must not reject the
+  intentional public spelling `ViewContextCapability<T>`. Guard for
+  `WindowRuntimeContext`, `WindowRuntime`, `AppContext`, and platform types
+  instead.

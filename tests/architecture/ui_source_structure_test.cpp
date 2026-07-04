@@ -39,6 +39,7 @@ int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/render.hpp",
+      "include/cgpui/ui/view_context.hpp",
       "include/cgpui/ui/view_handle.hpp",
       "include/cgpui/ui/view.hpp",
       "include/cgpui/ui/style_tokens.hpp",
@@ -163,6 +164,7 @@ int main() {
   }
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/runtime.hpp\"")) {
     return 3;
@@ -374,6 +376,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_diagnostics.hpp");
   const std::string runtime_input_state_header =
       read_source("include/cgpui/ui/runtime_input_state.hpp");
+  const std::string view_context_header =
+      read_source("include/cgpui/ui/view_context.hpp");
   const std::string view_handle_header =
       read_source("include/cgpui/ui/view_handle.hpp");
   const std::string runtime_context_header =
@@ -395,13 +399,25 @@ int main() {
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
                 "struct RuntimeDiagnosticsSnapshot") ||
+      !contains(view_context_header, "class ViewContextCapability") ||
+      !contains(view_context_header, "ViewId view_id() const") ||
+      !contains(view_context_header, "ViewHandle<T> view() const") ||
+      !contains(view_context_header, "WeakViewHandle<T> weak_view() const") ||
+      !contains(view_context_header, "const T* current() const") ||
       !contains(view_handle_header, "class WeakView") ||
       !contains(view_handle_header, "class ViewHandle") ||
       !contains(view_handle_header, "class WeakViewHandle") ||
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
       !contains(runtime_context_header, "AppContext app_context() const") ||
+      !contains(runtime_context_header,
+                "ViewContextCapability<T> view_context() const") ||
       !contains(runtime_context_header, "ViewHandle<T> view() const") ||
+      !contains(runtime_templates_header,
+                "ViewContextCapability<T> "
+                "WindowRuntimeContext::view_context() const") ||
+      !contains(runtime_templates_header,
+                "const T* ViewContextCapability<T>::current() const") ||
       !contains(runtime_templates_header,
                 "ViewHandle<T> WindowRuntimeContext::view() const") ||
       !contains(runtime_templates_header,

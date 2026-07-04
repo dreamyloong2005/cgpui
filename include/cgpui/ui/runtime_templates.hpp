@@ -169,6 +169,42 @@ const T* WindowRuntimeContext::read_model(Model<T> model) const {
 }
 
 template <typename T>
+ViewId ViewContextCapability<T>::view_id() const {
+  return context_->view_id;
+}
+
+template <typename T>
+ViewHandle<T> ViewContextCapability<T>::view() const {
+  return context_->template view<T>();
+}
+
+template <typename T>
+WeakViewHandle<T> ViewContextCapability<T>::weak_view() const {
+  return context_->template weak_view<T>();
+}
+
+template <typename T>
+std::optional<ViewHandle<T>> ViewContextCapability<T>::upgrade(
+    WeakViewHandle<T> view) const {
+  return context_->template upgrade_view<T>(view);
+}
+
+template <typename T>
+const T* ViewContextCapability<T>::read(ViewHandle<T> view) const {
+  return context_->template read_view<T>(view);
+}
+
+template <typename T>
+const T* ViewContextCapability<T>::current() const {
+  return read(view());
+}
+
+template <typename T>
+ViewContextCapability<T> WindowRuntimeContext::view_context() const {
+  return ViewContextCapability<T>(*this);
+}
+
+template <typename T>
 ViewHandle<T> WindowRuntimeContext::view() const {
   return ViewHandle<T>(view_id);
 }

@@ -9150,3 +9150,42 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 54/54.
 - Step 271 is complete on `master`; Step 272 view-context capability domain is
   the next Phase B slice.
+
+## 2026-07-04 Phase B Step 272 View Context Capability
+
+- Continued `codex/phase-b-view-context-capability` in
+  `.worktrees/phase-b-view-context-capability` from `master` at
+  `26c4c42 docs: mark step 271 merged`.
+- Baseline Windows focused verification passed 12/12 before RED:
+  `app_context_capability_test/default view_handle_spelling_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default entity_deletion_test/default window_runtime_actions_test/default`.
+- Added RED API coverage in
+  `tests/api_parity/view_context_capability_test.cpp` and registered
+  `view_context_capability_test` in `xmake.lua`. RED failed as expected on
+  missing `cgpui::ViewContextCapability<T>` and
+  `Context<T>::view_context<T>()`.
+- GREEN added the focused public leaf
+  `include/cgpui/ui/view_context.hpp`, aggregated it through
+  `include/cgpui/ui/ui.hpp`, declared `Context<T>::view_context<T>()` in
+  `include/cgpui/ui/runtime_context.hpp`, and implemented the template
+  capability methods in `include/cgpui/ui/runtime_templates.hpp`.
+- Updated `ui_header_cleanliness`, `ui_source_structure_test`,
+  `gpui_parity_ledger_test`, the Markdown/JSON parity ledger, and the complete
+  replication roadmap so the new view-domain capability is guarded and
+  documented. The ledger guard was narrowed so it no longer rejects the
+  intentional `ViewContextCapability<T>` public spelling.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus
+  `xmake test -y -P . view_context_capability_test/default view_handle_spelling_test/default app_context_capability_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default entity_deletion_test/default window_runtime_actions_test/default`
+  passed 13/13.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . view_context_capability_test/default view_handle_spelling_test/default app_context_capability_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default entity_deletion_test/default window_runtime_actions_test/default`
+  passed 13/13.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 58/58.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 55/55.
+- Step 272 is implemented and verified on
+  `codex/phase-b-view-context-capability`; it is ready for merge verification.

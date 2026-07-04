@@ -3,6 +3,7 @@
 #include "cgpui/ui/runtime_app_context.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
+#include "cgpui/ui/view_context.hpp"
 
 #include <memory>
 #include <optional>
@@ -37,6 +38,8 @@ struct WindowRuntimeContext {
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
+  template <typename T>
+  [[nodiscard]] ViewContextCapability<T> view_context() const;
   template <typename T>
   [[nodiscard]] ViewHandle<T> view() const;
   template <typename T>
