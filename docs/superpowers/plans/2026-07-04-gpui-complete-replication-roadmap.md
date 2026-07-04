@@ -273,9 +273,10 @@ shape before deeper native work expands platform behavior.
   enablement, and bubbling through focused routes. Step 283 landed the public
   `Action<T>` typed action concept and `action_name<T>()` authoring surface in
   `include/cgpui/ui/action.hpp`; Step 284 adds typed action
-  registration/dispatch overloads over the existing string registry while
-  keeping key dispatch, key grammar, command metadata, and fuller test-context
-  simulation for later slices.
+  registration/dispatch overloads through
+  `include/cgpui/ui/runtime_action_templates.hpp` over the existing string
+  registry while keeping key dispatch, key grammar, command metadata, and
+  fuller test-context simulation for later slices.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration.
@@ -587,17 +588,16 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 283 public typed-action authoring surface is merged on `master` at
-`6b383e4 feat: add typed action surface` and post-merge verified on Windows and
-WSL Arch Linux. Continue Phase B with Step 284 typed action
-registration/dispatch overloads over the existing string registry, without
-pulling key dispatch, key grammar, command metadata, or fuller test-context
-simulation forward.
+Step 284 typed action registration/dispatch overloads is implemented and
+focused/full verified on `codex/phase-b-typed-action-dispatch`. It uses
+`include/cgpui/ui/action.hpp` for typed authoring helpers,
+`include/cgpui/ui/runtime_action_templates.hpp` for overload definitions, and
+the existing string action registry as the storage/dispatch backend.
 
-Step 284 should use `include/cgpui/ui/action.hpp` for typed authoring helpers
-and the existing action runtime boundary for overloads. The guard should prove
-typed registration/dispatch works while preserving string action behavior and
-last-dispatch observability.
+The Step 284 guard proves typed runtime/context registration and typed dispatch
+work while preserving string action behavior and last-dispatch observability.
+Continue to merge verification on `master`; keep key dispatch, key grammar,
+command metadata, and fuller test-context simulation for later slices.
 
 ## Self-Review
 

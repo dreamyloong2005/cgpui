@@ -140,9 +140,9 @@
     },
     {
       "upstream_gpui": "gpui::actions! / action macro",
-      "cgpui_target": "Action<T> typed action concept plus action_name<T>() / action_name_v<T> over the existing string action registry, covered by include/cgpui/ui/action.hpp and tests/api_parity/typed_action_surface_test.cpp",
+      "cgpui_target": "Action<T> typed action concept, action_name<T>() / action_name_v<T>, and typed register/dispatch overloads over the existing string action registry, covered by include/cgpui/ui/action.hpp, include/cgpui/ui/runtime_action_templates.hpp, tests/api_parity/typed_action_surface_test.cpp, and tests/ui/typed_action_dispatch_test.cpp; action macro payloads, command metadata, key routing, and bubbling remain missing",
       "status": "required",
-      "next_step": "Phase B typed registration/dispatch depth"
+      "next_step": "Phase B action metadata/key dispatch depth"
     },
     {
       "upstream_gpui": "gpui::div",

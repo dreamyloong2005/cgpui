@@ -356,6 +356,8 @@ int main() {
       !contains(runtime_header, "#include \"cgpui/ui/runtime_types.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/window_runtime.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_rendering.hpp\"") ||
+      !contains(runtime_header,
+                "#include \"cgpui/ui/runtime_action_templates.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_templates.hpp\"")) {
     return 7;
   }
@@ -422,6 +424,8 @@ int main() {
       read_source("src/ui/window_runtime_internal.hpp");
   const std::string runtime_rendering_header =
       read_source("include/cgpui/ui/runtime_rendering.hpp");
+  const std::string runtime_action_templates_header =
+      read_source("include/cgpui/ui/runtime_action_templates.hpp");
   const std::string runtime_templates_header =
       read_source("include/cgpui/ui/runtime_templates.hpp");
   if (!contains(runtime_callbacks_header, "using ActionHandler") ||
@@ -561,6 +565,14 @@ int main() {
       !contains(window_runtime_internal_header, "PlatformApplication& application_") ||
       !contains(runtime_rendering_header, "Result<void> render_view(") ||
       !contains(runtime_rendering_header, "int run_app(") ||
+      !contains(runtime_action_templates_header,
+                "WindowRuntime::register_action(ActionHandler handler)") ||
+      !contains(runtime_action_templates_header,
+                "WindowRuntime::dispatch_action()") ||
+      !contains(runtime_action_templates_header,
+                "WindowRuntimeContext::register_action(ActionHandler handler) const") ||
+      !contains(runtime_action_templates_header,
+                "WindowRuntimeContext::dispatch_action() const") ||
       !contains(runtime_templates_header,
                 "void WindowRuntimeContext::set_global") ||
       !contains(runtime_templates_header,
@@ -574,11 +586,14 @@ int main() {
       line_count(view_handle_header) > 180 ||
       line_count(window_context_header) > 120 ||
       line_count(window_runtime_header) > 240 ||
+      line_count(runtime_action_templates_header) > 120 ||
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
       contains(runtime_types_header, "struct AppContext") ||
       contains(runtime_input_state_header, "class WeakView") ||
       contains(runtime_context_header, "PlatformWindow& window") ||
+      contains(runtime_action_templates_header, "CommandPaletteEntry") ||
+      contains(runtime_action_templates_header, "KeyBinding") ||
       contains(window_runtime_header, "PlatformApplication& application_") ||
       contains(window_runtime_header, "std::vector<RuntimeTask> tasks_")) {
     return 100;

@@ -213,10 +213,13 @@ int main() {
   if (!contains(ledger, "| gpui::actions! / action macro |") ||
       !contains(ledger, "`Action<T>` typed action concept") ||
       !contains(ledger, "`action_name<T>()`") ||
+      !contains(ledger, "typed register/dispatch overloads") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
+      !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
-      !contains(ledger, "Phase B typed registration/dispatch depth")) {
+      !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
+      !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
 
@@ -665,6 +668,24 @@ int main() {
     return 65;
   }
 
+  const std::string typed_dispatch =
+      read_source("tests/ui/typed_action_dispatch_test.cpp");
+  if (typed_dispatch.empty()) {
+    return 66;
+  }
+  if (!contains(typed_dispatch, "RuntimeSaveAction") ||
+      !contains(typed_dispatch,
+                "context.runtime.register_action<RuntimeSaveAction>") ||
+      !contains(typed_dispatch,
+                "context.runtime.dispatch_action<RuntimeSaveAction>()") ||
+      !contains(typed_dispatch,
+                "context.register_action<ContextLegacyAction>") ||
+      !contains(typed_dispatch,
+                "context.dispatch_action<ContextLegacyAction>()") ||
+      !contains(typed_dispatch, "typed.runtime.string")) {
+    return 67;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -684,6 +705,7 @@ int main() {
       !contains(xmake, "target(\"entity_invalidation_test\")") ||
       !contains(xmake, "target(\"entity_deletion_test\")") ||
       !contains(xmake, "target(\"typed_action_surface_test\")") ||
+      !contains(xmake, "target(\"typed_action_dispatch_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -713,6 +735,8 @@ int main() {
                 "tests/api_parity/entity_deletion_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

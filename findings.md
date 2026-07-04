@@ -4692,9 +4692,11 @@
   overloads over the existing string-keyed action registry. It should not start
   key dispatch, key grammar, command metadata, enablement, bubbling, or fuller
   test-context input.
-- Keep typed authoring helpers in `include/cgpui/ui/action.hpp`; add overloads
-  at the existing action ownership boundary instead of introducing another
-  registry. Aggregate headers should remain thin.
+- Keep typed authoring helpers in `include/cgpui/ui/action.hpp`; add overload
+  declarations at the existing runtime/context action ownership boundary and
+  put the template definitions in a focused
+  `include/cgpui/ui/runtime_action_templates.hpp` leaf instead of introducing
+  another registry. Aggregate headers should remain thin.
 - Behavior coverage should prove that an action struct with `static
   std::string_view name` can be registered and dispatched through the typed API,
   while preserving existing string action behavior and last-dispatch

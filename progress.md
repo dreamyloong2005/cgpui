@@ -9874,3 +9874,42 @@
   registration/dispatch overloads is the next action-band slice, without
   pulling key dispatch, key grammar, command metadata, or fuller test-context
   behavior forward.
+
+## 2026-07-05 Phase B Step 284 Typed Action Dispatch
+
+- Created `codex/phase-b-typed-action-dispatch` in
+  `.worktrees/phase-b-typed-action-dispatch` from `8a70980`.
+- Baseline Windows focused verification passed:
+  `xmake test -y -P . typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 5/5.
+- Added RED behavior coverage in `tests/ui/typed_action_dispatch_test.cpp` and
+  registered `typed_action_dispatch_test` in `xmake.lua`. RED failed as
+  expected because `WindowRuntime` and `WindowRuntimeContext` had no
+  `register_action<T>()`, scoped typed registration overloads, or
+  `dispatch_action<T>()`.
+- GREEN added typed overload declarations to `include/cgpui/ui/window_runtime.hpp`
+  and `include/cgpui/ui/runtime_context.hpp`, then kept the template
+  implementations in the focused `include/cgpui/ui/runtime_action_templates.hpp`
+  leaf and exposed it through `include/cgpui/ui/runtime.hpp`.
+- Updated the parity ledger and structure guards so typed registration/dispatch
+  evidence names `runtime_action_templates.hpp`,
+  `typed_action_dispatch_test.cpp`, and the xmake target while still leaving
+  action payloads, command metadata, key routing, bubbling, and fuller
+  test-context simulation for later slices.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . typed_action_dispatch_test/default typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 6/6.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . typed_action_dispatch_test/default typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 6/6.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 70/70.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 67/67.
+- Step 284 is implemented and focused/full verified on
+  `codex/phase-b-typed-action-dispatch`; it is ready for merge verification.

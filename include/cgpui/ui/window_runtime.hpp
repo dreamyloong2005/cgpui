@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/action.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 
 #include <any>
@@ -89,17 +90,24 @@ class WindowRuntime {
   [[nodiscard]] FocusHandle focus_handle(ElementId element_id) const;
   [[nodiscard]] ViewInputState input_state() const;
   void register_action(std::string name, ActionHandler handler);
+  template <Action T> void register_action(ActionHandler handler);
   void register_app_action(std::string name, ActionHandler handler);
+  template <Action T> void register_app_action(ActionHandler handler);
   void register_window_action(std::string name, ActionHandler handler);
+  template <Action T> void register_window_action(ActionHandler handler);
   void register_view_action(
       ViewId view_id,
       std::string name,
       ActionHandler handler);
+  template <Action T> void register_view_action(ViewId view_id, ActionHandler handler);
   void register_focused_element_action(
       ElementId element_id,
       std::string name,
       ActionHandler handler);
+  template <Action T> void register_focused_element_action(
+      ElementId element_id, ActionHandler handler);
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name);
+  template <Action T> [[nodiscard]] ActionDispatchResult dispatch_action();
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void register_command_palette_entry(CommandPaletteEntry entry);
   [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/action.hpp"
 #include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/runtime_app_context.hpp"
 #include "cgpui/ui/element_context.hpp"
@@ -96,18 +97,27 @@ struct WindowRuntimeContext {
       Args&&... args) const;
 
   void register_action(std::string name, ActionHandler handler) const;
+  template <Action T> void register_action(ActionHandler handler) const;
   void register_app_action(std::string name, ActionHandler handler) const;
+  template <Action T> void register_app_action(ActionHandler handler) const;
   void register_window_action(std::string name, ActionHandler handler) const;
+  template <Action T> void register_window_action(ActionHandler handler) const;
   void register_view_action(std::string name, ActionHandler handler) const;
+  template <Action T> void register_view_action(ActionHandler handler) const;
   void register_view_action(
       ViewId view_id,
       std::string name,
       ActionHandler handler) const;
+  template <Action T> void register_view_action(
+      ViewId view_id, ActionHandler handler) const;
   void register_focused_element_action(
       ElementId element_id,
       std::string name,
       ActionHandler handler) const;
+  template <Action T> void register_focused_element_action(
+      ElementId element_id, ActionHandler handler) const;
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
+  template <Action T> [[nodiscard]] ActionDispatchResult dispatch_action() const;
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
   void register_command_palette_entry(CommandPaletteEntry entry) const;
   [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
