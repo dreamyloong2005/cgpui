@@ -277,14 +277,18 @@ verification passed Windows focused 8/8, Windows full debug 49/49, and WSL
 Arch Linux full debug 46/46. Post-merge verification passed Windows full debug
 49/49 and WSL Arch Linux full debug 46/46. Step 264 is the next Phase B slice.
 
-Step 264, public prelude authoring surface gate, is in progress on
-`codex/phase-b-public-authoring-surface`. RED failed as expected on missing
-`cgpui/prelude.hpp`. GREEN adds that public aggregate, keeps
+Step 264, public prelude authoring surface gate, is merged on `master` at
+`e4ed147 feat: add public prelude authoring gate` and post-merge verified on
+Windows and WSL Arch Linux. RED failed as expected on missing
+`cgpui/prelude.hpp`. GREEN added that public aggregate, keeps
 `include/cgpui/cgpui.hpp` as a thin compatibility wrapper, and adds
 `tests/api_parity/public_authoring_surface_test.cpp` so an author-facing view
 can compile using only the public prelude for `Application`, `App`, `Window`,
 `Context<T>`, `Render`, `IntoElement`, and typed view/entity handles. This
 closes the Steps 259-264 public-name band before entity lifecycle work starts.
+Feature-worktree verification passed Windows full debug 50/50 and WSL Arch
+Linux full debug 47/47. Post-merge verification passed Windows full debug
+50/50 and WSL Arch Linux full debug 47/47. Step 265 is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
