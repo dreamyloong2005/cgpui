@@ -1658,7 +1658,8 @@ implementation slice.
 
 - Phase B Step 275, `Context<T>::async_context() ->
   AsyncContextCapability`, is complete on `master` after post-merge Windows
-  and WSL full-debug verification. Phase B Step 276, test-context capability
-  domain, is the next implementation slice; keep it scoped to public
-  test-context access and do not claim the fuller Step 295-300 test behavior
-  band yet.
+  and WSL full-debug verification. Phase B Step 276,
+  `Context<T>::test_context() -> TestContextCapability`, is implemented and
+  feature-worktree verified on `codex/phase-b-test-context-capability`; merge
+  verification and cleanup remain before moving the active note to Step 277
+  subscription lifetime / deterministic unsubscribe.

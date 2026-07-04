@@ -130,8 +130,10 @@ int main() {
       !contains(ledger, "`Context<T>::window_context()`") ||
       !contains(ledger, "`Context<T>::element_context(ElementId)`") ||
       !contains(ledger, "`Context<T>::async_context()`") ||
+      !contains(ledger, "`Context<T>::test_context()`") ||
       !contains(ledger, "`ElementContextCapability`") ||
       !contains(ledger, "`AsyncContextCapability`") ||
+      !contains(ledger, "`TestContextCapability`") ||
       !contains(ledger, "`EntityHandle<T>`") ||
       !contains(ledger, "`Context<T>::new_entity<T>(...)`") ||
       !contains(ledger, "weak upgrade/read semantics") ||
@@ -149,6 +151,7 @@ int main() {
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
       !contains(ledger, "include/cgpui/ui/render.hpp") ||
       !contains(ledger, "include/cgpui/ui/async_context.hpp") ||
+      !contains(ledger, "include/cgpui/ui/test_context.hpp") ||
       !contains(ledger, "include/cgpui/ui/element_context.hpp") ||
       !contains(ledger, "include/cgpui/ui/view_handle.hpp") ||
       !contains(ledger, "include/cgpui/ui/window_context.hpp") ||
@@ -165,6 +168,8 @@ int main() {
                 "tests/api_parity/element_context_capability_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/async_context_capability_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/test_context_capability_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/public_authoring_surface_test.cpp") ||
       !contains(ledger,
@@ -185,6 +190,12 @@ int main() {
       !contains(ledger, "| gpui_platform wayland feature | Required |") ||
       !contains(ledger, "| gpui Windows backend | Required |")) {
     return 6;
+  }
+  if (!contains(ledger, "| gpui::TestAppContext |") ||
+      !contains(ledger, "`TestContextCapability` groups runtime id/view id") ||
+      !contains(ledger,
+                "Phase G fuller simulated input/test macro depth")) {
+    return 18;
   }
 
   const std::string status_json =
@@ -210,6 +221,9 @@ int main() {
               "window_context",
               "AsyncContextCapability",
               "async_context",
+              "TestContextCapability",
+              "test_context",
+              "gpui::TestAppContext",
               "invalidate_entity helpers",
               "entity deletion helpers",
               "\"x11\"",

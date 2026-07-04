@@ -11,6 +11,7 @@
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/async_context.hpp"
+#include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/render.hpp"
 #include "cgpui/ui/element_context.hpp"
 #include "cgpui/ui/view_context.hpp"
@@ -109,6 +110,10 @@ class TestView final : public cgpui::View {
     const cgpui::AsyncContextCapability async_context =
         context.async_context();
     (void)async_context;
+    const cgpui::TestContextCapability test_context =
+        context.test_context();
+    (void)test_context.runtime_id();
+    (void)test_context.input_state();
     const cgpui::ViewContextCapability<TestView> view_context =
         context.view_context<TestView>();
     const cgpui::ViewHandle<TestView> view_handle = context.view<TestView>();

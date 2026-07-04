@@ -33,8 +33,8 @@
     }
   },
   "status_counts": {
-    "required": 17,
-    "adapted": 14,
+    "required": 16,
+    "adapted": 15,
     "deferred": 2,
     "non_goal": 1
   },
@@ -92,7 +92,7 @@
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, ElementContextCapability from Context<T>::element_context(ElementId), AsyncContextCapability from Context<T>::async_context(), new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, ElementContextCapability from Context<T>::element_context(ElementId), AsyncContextCapability from Context<T>::async_context(), TestContextCapability from Context<T>::test_context(), new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
       "status": "adapted",
       "next_step": "Phase B context capability depth"
     },
@@ -121,6 +121,12 @@
       "next_step": "Phase G full async executor depth"
     },
     {
+      "upstream_gpui": "gpui::TestAppContext",
+      "cgpui_target": "TestContextCapability groups runtime id/view id, input/event/action observability, invalidation/diagnostics snapshots, timer advancement, timer cancellation, and task completion draining from Context<T>::test_context()",
+      "status": "adapted",
+      "next_step": "Phase G fuller simulated input/test macro depth"
+    },
+    {
       "upstream_gpui": "gpui::IntoElement",
       "cgpui_target": "IntoElement alias plus into_element builders",
       "status": "adapted",
@@ -140,7 +146,7 @@
     },
     {
       "upstream_gpui": "gpui::test",
-      "cgpui_target": "public test context and macro equivalent",
+      "cgpui_target": "TestContextCapability exists, but upstream-style test macro and full simulation helpers remain missing",
       "status": "required",
       "next_step": "Phase G"
     },

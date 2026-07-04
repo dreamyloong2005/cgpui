@@ -236,6 +236,10 @@ shape before deeper native work expands platform behavior.
   `Context<T>::async_context() -> AsyncContextCapability`, grouping existing
   defer, timer, animation, foreground task, background task, and update-batch
   scheduling without moving executor state or runtime-token entity rules.
+  Step 276 adds `Context<T>::test_context() -> TestContextCapability`,
+  grouping existing deterministic runtime observability and queue controls
+  without claiming the later Step 295-300 simulated input, clipboard, timer,
+  async, and redraw behavior band.
 - [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
   entity-to-entity observation, window/view observation, and deterministic
   unsubscribe behavior.
@@ -553,9 +557,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 276 after the Step 275 async-context capability
-slice. The next slice should add the test-context capability domain without
-claiming the fuller Step 295-300 test-context behavior band yet.
+Continue Phase B with Step 277 after the Step 276 test-context capability
+slice. The next slice should deepen subscription lifetime and deterministic
+unsubscribe behavior without starting the later action/key-dispatch or
+fuller test-context behavior bands.
 
 ## Self-Review
 

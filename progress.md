@@ -9382,3 +9382,48 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 58/58.
 - Step 275 is complete on `master`; Step 276 test-context capability domain
   is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 276 Test Context Capability
+
+- Continued `codex/phase-b-test-context-capability` in
+  `.worktrees/phase-b-test-context-capability` from `master` at
+  `57fc086 docs: mark step 275 merged`.
+- Baseline Windows focused verification had passed 14/14 before RED:
+  `context_capabilities_test/default app_context_capability_test/default view_context_capability_test/default window_context_capability_test/default element_context_capability_test/default async_context_capability_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default window_runtime_scheduling_test/default`.
+- Added RED coverage in
+  `tests/api_parity/test_context_capability_test.cpp` and registered
+  `test_context_capability_test` in `xmake.lua`. RED failed as expected on
+  missing `cgpui::TestContextCapability` and
+  `WindowRuntimeContext::test_context()`.
+- GREEN added the focused public leaf
+  `include/cgpui/ui/test_context.hpp`, the focused implementation
+  `src/ui/test_context.cpp`, the aggregate include in
+  `include/cgpui/ui/ui.hpp`, and
+  `WindowRuntimeContext::test_context()`.
+- The capability groups existing deterministic test-facing runtime
+  observability and queue controls without adding simulated input,
+  focus/clipboard helpers, redraw simulation, a test macro, a new harness, or
+  new runtime state.
+- Updated `context_capabilities_test`, `ui_header_cleanliness`,
+  `ui_source_structure_test`, `gpui_parity_ledger_test`, the Markdown/JSON
+  parity ledger, and the complete replication roadmap so the test-context
+  capability is guarded and documented.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus
+  `xmake test -y -P . test_context_capability_test/default context_capabilities_test/default app_context_capability_test/default view_context_capability_test/default window_context_capability_test/default element_context_capability_test/default async_context_capability_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default window_runtime_scheduling_test/default`
+  passed 15/15.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . test_context_capability_test/default context_capabilities_test/default app_context_capability_test/default view_context_capability_test/default window_context_capability_test/default element_context_capability_test/default async_context_capability_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default window_runtime_scheduling_test/default`
+  passed 15/15.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 62/62.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 59/59.
+- Step 276 is implemented and focused-verified on
+  `codex/phase-b-test-context-capability`; it is ready for merge
+  verification.

@@ -4531,3 +4531,20 @@
 - The AsyncWindowContext ledger row can move to `Adapted` for this partial
   public capability, but its next step must still point to Phase G full async
   executor depth.
+
+## 2026-07-04 Phase B Step 276 Test Context Capability
+
+- Step 276 should stay scoped to public test-context capability spelling:
+  `Context<T>::test_context() -> TestContextCapability`. The capability
+  groups deterministic test-facing runtime observability and queue controls:
+  runtime/view/frame ids, input/event/action snapshots, invalidation reset,
+  diagnostics, timer advancement/cancellation, task completion, and task
+  completion draining.
+- The implementation belongs in a focused public UI leaf,
+  `include/cgpui/ui/test_context.hpp`, with non-template forwarding in
+  `src/ui/test_context.cpp`. It should not grow `ui.cpp`,
+  `runtime_context.cpp`, or lower-level scheduling files.
+- This is a facade over existing deterministic runtime hooks. It deliberately
+  does not add simulated keyboard/pointer input, focus/clipboard helpers,
+  redraw simulation, an upstream-style `gpui::test` macro, or a new harness;
+  those remain in the later Step 295-300 / Phase G test behavior band.

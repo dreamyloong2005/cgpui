@@ -5,6 +5,7 @@
 #include "cgpui/ui/element_context.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
+#include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/view_context.hpp"
 #include "cgpui/ui/window_context.hpp"
 
@@ -38,6 +39,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] Window window() const;
   [[nodiscard]] Window current_window() const;
   [[nodiscard]] AsyncContextCapability async_context() const;
+  [[nodiscard]] TestContextCapability test_context() const;
   [[nodiscard]] WindowContextCapability window_context() const;
   [[nodiscard]] ElementContextCapability element_context(
       ElementId element_id) const;

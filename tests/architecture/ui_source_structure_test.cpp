@@ -39,6 +39,7 @@ int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/async_context.hpp",
+      "include/cgpui/ui/test_context.hpp",
       "include/cgpui/ui/render.hpp",
       "include/cgpui/ui/element_context.hpp",
       "include/cgpui/ui/view_context.hpp",
@@ -167,6 +168,7 @@ int main() {
   }
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/async_context.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/test_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/element_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
@@ -384,6 +386,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_input_state.hpp");
   const std::string async_context_header =
       read_source("include/cgpui/ui/async_context.hpp");
+  const std::string test_context_header =
+      read_source("include/cgpui/ui/test_context.hpp");
   const std::string element_context_header =
       read_source("include/cgpui/ui/element_context.hpp");
   const std::string view_context_header =
@@ -417,6 +421,12 @@ int main() {
       !contains(async_context_header, "AnimationHandle start_animation(") ||
       !contains(async_context_header, "TaskHandle spawn_background_task(") ||
       !contains(async_context_header, "void batch_updates(") ||
+      !contains(test_context_header, "class TestContextCapability") ||
+      !contains(test_context_header, "WindowRuntimeId runtime_id() const") ||
+      !contains(test_context_header, "ViewInputState input_state() const") ||
+      !contains(test_context_header, "void advance_time(") ||
+      !contains(test_context_header, "bool complete_task(") ||
+      !contains(test_context_header, "void drain_task_completions(") ||
       !contains(element_context_header, "class ElementContextCapability") ||
       !contains(element_context_header, "ElementId element_id() const") ||
       !contains(element_context_header, "void capture_pointer() const") ||
@@ -440,6 +450,8 @@ int main() {
       !contains(runtime_context_header, "AppContext app_context() const") ||
       !contains(runtime_context_header,
                 "AsyncContextCapability async_context() const") ||
+      !contains(runtime_context_header,
+                "TestContextCapability test_context() const") ||
       !contains(runtime_context_header,
                 "WindowContextCapability window_context() const") ||
       !contains(runtime_context_header,
@@ -509,6 +521,7 @@ int main() {
   }
   if (line_count(runtime_types_header) > 220 ||
       line_count(async_context_header) > 120 ||
+      line_count(test_context_header) > 120 ||
       line_count(element_context_header) > 120 ||
       line_count(view_handle_header) > 180 ||
       line_count(window_context_header) > 120 ||
@@ -1386,6 +1399,24 @@ int main() {
       line_count(async_context_source) > 110 ||
       contains(async_context_source, "ElementContextCapability")) {
     return 119;
+  }
+
+  const std::string test_context_source =
+      read_source("src/ui/test_context.cpp");
+  if (!contains(test_context_source,
+                "WindowRuntimeId TestContextCapability::runtime_id() const") ||
+      !contains(test_context_source,
+                "ViewInputState TestContextCapability::input_state() const") ||
+      !contains(test_context_source,
+                "void TestContextCapability::advance_time(") ||
+      !contains(test_context_source,
+                "bool TestContextCapability::complete_task(") ||
+      !contains(test_context_source,
+                "TestContextCapability WindowRuntimeContext::test_context() const") ||
+      line_count(test_context_source) > 110 ||
+      contains(test_context_source, "AsyncContextCapability") ||
+      contains(test_context_source, "ElementContextCapability")) {
+    return 120;
   }
 
   const std::string element_context_source =
