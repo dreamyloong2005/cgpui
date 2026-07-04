@@ -94,6 +94,17 @@ Model<T> WindowRuntimeContext::new_model(Args&&... args) const {
   return runtime.emplace_entity<T>(std::forward<Args>(args)...);
 }
 
+template <typename T, typename... Args>
+EntityHandle<T> WindowRuntimeContext::new_entity(Args&&... args) const {
+  return EntityHandle<T>(
+      runtime.emplace_entity<T>(std::forward<Args>(args)...));
+}
+
+template <typename T>
+EntityHandle<T> WindowRuntimeContext::insert_entity_handle(T entity) const {
+  return EntityHandle<T>(runtime.insert_entity<T>(std::move(entity)));
+}
+
 template <typename T>
 const T* WindowRuntimeContext::read_model(Model<T> model) const {
   return runtime.read_entity(model);

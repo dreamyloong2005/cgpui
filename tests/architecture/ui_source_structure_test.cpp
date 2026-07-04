@@ -407,6 +407,11 @@ int main() {
                 "WeakViewHandle<T> WindowRuntimeContext::weak_view() const") ||
       !contains(runtime_context_header, "PlatformWindow& platform_window") ||
       !contains(runtime_context_header, "Window window() const") ||
+      !contains(runtime_context_header, "EntityHandle<T> new_entity(") ||
+      !contains(runtime_templates_header,
+                "EntityHandle<T> WindowRuntimeContext::new_entity(") ||
+      !contains(runtime_templates_header,
+                "EntityHandle<T> WindowRuntimeContext::insert_entity_handle(") ||
       !contains(runtime_templates_header,
                 "EntityHandle<T> WindowRuntimeContext::entity(") ||
       !contains(runtime_templates_header,

@@ -155,6 +155,10 @@ struct WindowRuntimeContext {
   bool update_global(Update&& update) const;
   template <typename T, typename... Args>
   Model<T> new_model(Args&&... args) const;
+  template <typename T, typename... Args>
+  EntityHandle<T> new_entity(Args&&... args) const;
+  template <typename T>
+  EntityHandle<T> insert_entity_handle(T entity) const;
   template <typename T>
   [[nodiscard]] const T* read_model(Model<T> model) const;
   template <typename T>

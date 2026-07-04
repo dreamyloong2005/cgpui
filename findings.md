@@ -4329,3 +4329,20 @@
 - This closes the public naming and C++ idiom band. Entity lifecycle,
   transactions, observations, deletion, and cross-context rules remain the
   next band rather than being smuggled into the prelude gate.
+
+## 2026-07-04 Phase B Step 265 Entity Lifecycle Creation
+
+- Step 265 should stay scoped to public entity creation spelling. The durable
+  split is `Context<T>::new_entity<T>(...) -> EntityHandle<T>` and
+  `insert_entity_handle(...)` over the existing runtime store; weak-handle
+  semantics, observation, transactions, deletion, invalidation, and
+  cross-context access rules remain future slices in Steps 266-270.
+- The implementation belongs in the existing template context boundary:
+  declarations in `include/cgpui/ui/runtime_context.hpp` and definitions in
+  `include/cgpui/ui/runtime_templates.hpp`. No behavior needs to move into
+  `ui.cpp`, `runtime_entities.cpp`, or broad runtime files for this slice.
+- The RED test proved the intended public gap: a prelude-only authoring view
+  could not call `context.new_entity<LifecycleState>(...)`. The GREEN path
+  reuses `EntityHandle<T>::read(...)` and `EntityHandle<T>::update(...)`, so
+  the slice demonstrates creation plus basic read/update handle ergonomics
+  without claiming the rest of entity lifecycle parity.

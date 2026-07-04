@@ -123,6 +123,7 @@ int main() {
   }
   if (!contains(ledger, "`Context<T>` alias with app/window/entity helpers") ||
       !contains(ledger, "`EntityHandle<T>`") ||
+      !contains(ledger, "`Context<T>::new_entity<T>(...)`") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
@@ -134,7 +135,9 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/view_handle_spelling_test.cpp") ||
       !contains(ledger,
-                "tests/api_parity/public_authoring_surface_test.cpp")) {
+                "tests/api_parity/public_authoring_surface_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/entity_lifecycle_creation_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -231,18 +234,40 @@ int main() {
     return 19;
   }
 
+  const std::string entity_lifecycle =
+      read_source("tests/api_parity/entity_lifecycle_creation_test.cpp");
+  if (entity_lifecycle.empty()) {
+    return 20;
+  }
+  if (!contains(entity_lifecycle, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(entity_lifecycle, "context.new_entity<LifecycleState>") ||
+      !contains(entity_lifecycle, "cgpui::EntityHandle<LifecycleState>") ||
+      !contains(entity_lifecycle, "entity.update(context") ||
+      !contains(entity_lifecycle, "cgpui::Render<EntityLifecycleCreationView>")) {
+    return 21;
+  }
+  if (contains(entity_lifecycle, "WindowRuntimeContext") ||
+      contains(entity_lifecycle, "WindowRuntime") ||
+      contains(entity_lifecycle, "AppContext") ||
+      contains(entity_lifecycle, "ViewContext") ||
+      contains(entity_lifecycle, "PlatformWindow")) {
+    return 22;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
       !contains(xmake, "target(\"context_capabilities_test\")") ||
       !contains(xmake, "target(\"view_handle_spelling_test\")") ||
       !contains(xmake, "target(\"public_authoring_surface_test\")") ||
+      !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
       !contains(xmake, "tests/api_parity/view_handle_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/public_authoring_surface_test.cpp") ||
+      !contains(xmake, "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

@@ -193,7 +193,11 @@ shape before deeper native work expands platform behavior.
   `Render`, `IntoElement`, and typed view/entity handles.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
-  cross-context access rules.
+  cross-context access rules. Step 265 starts this band with public
+  `Context<T>::new_entity<T>(...) -> EntityHandle<T>` creation and
+  `insert_entity_handle(...)` over the existing runtime store while keeping
+  observation, update transactions, deletion, and cross-context rules for the
+  later slices in this band.
 - [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
   and test context.
@@ -514,11 +518,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 262 after the Step 261 context/render spelling
-slice. The next slice should deepen `Context<T>` capabilities exposed through
-the public authoring surface, especially app/window/entity access patterns,
-while preserving the focused app/UI leaf boundaries and the Windows/Linux
-Vulkan plus Wayland-first platform targets.
+Continue Phase B with Step 266 after the Step 265 entity lifecycle creation
+slice. The next slice should deepen weak entity handle semantics without
+pulling observation, update transactions, deletion, or cross-context access
+rules ahead of their own tests.
 
 ## Self-Review
 

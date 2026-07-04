@@ -290,6 +290,14 @@ Feature-worktree verification passed Windows full debug 50/50 and WSL Arch
 Linux full debug 47/47. Post-merge verification passed Windows full debug
 50/50 and WSL Arch Linux full debug 47/47. Step 265 is the next Phase B slice.
 
+Step 265, public entity lifecycle creation handles, is in progress on
+`codex/phase-b-entity-lifecycle-creation`. RED failed as expected on missing
+`Context<T>::new_entity<T>(...)`. GREEN adds the public creation spelling in
+`WindowRuntimeContext` templates, returning `EntityHandle<T>` over the existing
+runtime entity store, and keeps observation, transactions, deletion, and
+cross-context rules out of this slice. `insert_entity_handle(...)` is the
+handle-returning counterpart to the existing low-level `insert_entity(...)`.
+
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
 `8695bb1 feat: add keyed element identity` and post-merge verified on Windows

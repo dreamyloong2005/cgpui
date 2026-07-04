@@ -8763,3 +8763,43 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 47/47.
 - Step 264 is complete on `master`; Step 265 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 265 Entity Lifecycle Creation
+
+- Continued `codex/phase-b-entity-lifecycle-creation` in
+  `.worktrees/phase-b-entity-lifecycle-creation`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files catchup helper, and confirmed
+  the branch is a linked worktree rather than a submodule.
+- Baseline Windows focused verification from the interrupted run had passed
+  6/6 before RED:
+  `entity_store_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default`.
+- Added RED API coverage in
+  `tests/api_parity/entity_lifecycle_creation_test.cpp` and registered
+  `entity_lifecycle_creation_test` in `xmake.lua`.
+- RED failed as expected:
+  `xmake test -y -P . entity_lifecycle_creation_test/default` stopped on
+  missing `WindowRuntimeContext::new_entity`.
+- GREEN added `Context<T>::new_entity<T>(...) -> EntityHandle<T>` and
+  `insert_entity_handle(...) -> EntityHandle<T>` through the focused
+  `runtime_context.hpp` / `runtime_templates.hpp` template boundary.
+- Corrected an editing slip where the first GREEN patch landed in the main
+  checkout instead of the feature worktree. The patch was transferred to the
+  feature worktree and then reversed from the main checkout, leaving `master`
+  tracked-clean with only the pre-existing untracked `.vscode/`.
+- Fresh Windows minimal GREEN passed:
+  `xmake test -y -P . entity_lifecycle_creation_test/default` passed 1/1.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . entity_lifecycle_creation_test/default gpui_parity_ledger_test/default public_authoring_surface_test/default context_capabilities_test/default view_handle_spelling_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 8/8.
+- Fresh Windows JSON validation passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . entity_lifecycle_creation_test/default gpui_parity_ledger_test/default public_authoring_surface_test/default context_capabilities_test/default view_handle_spelling_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default`
+  passed 8/8.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 51/51.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 48/48.
