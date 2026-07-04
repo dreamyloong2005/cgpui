@@ -1659,7 +1659,7 @@ implementation slice.
 - Phase B Step 275, `Context<T>::async_context() ->
   AsyncContextCapability`, is complete on `master` after post-merge Windows
   and WSL full-debug verification. Phase B Step 276,
-  `Context<T>::test_context() -> TestContextCapability`, is implemented and
-  feature-worktree verified on `codex/phase-b-test-context-capability`; merge
-  verification and cleanup remain before moving the active note to Step 277
-  subscription lifetime / deterministic unsubscribe.
+  `Context<T>::test_context() -> TestContextCapability`, is complete on
+  `master` after post-merge Windows and WSL full-debug verification. Phase B
+  Step 277, subscription lifetime / deterministic unsubscribe, is the next
+  implementation slice.

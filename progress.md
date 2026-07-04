@@ -9427,3 +9427,17 @@
 - Step 276 is implemented and focused-verified on
   `codex/phase-b-test-context-capability`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 276 Merge
+
+- Committed the test-context capability branch as
+  `600cc8b feat: add test context capability`.
+- Fast-forward merged `codex/phase-b-test-context-capability` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 62/62.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 59/59.
+- Step 276 is complete on `master`; Step 277 subscription lifetime /
+  deterministic unsubscribe is the next Phase B slice.
