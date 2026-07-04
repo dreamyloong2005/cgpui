@@ -4818,3 +4818,24 @@
   through `current_desktop_platform_target()`. Explicit platform-target parsing
   exists for deterministic parity tests and future macOS API correctness, not
   as a signal to begin macOS runtime/backend work in this slice.
+
+## 2026-07-05 Phase B Step 291 Keymap Contexts
+
+- Step 291 should stay scoped to context-aware key binding activation over the
+  existing single-chord key binding table. It should not start partial matches,
+  disabled key scopes, command palette integration, action payload macros, or
+  fuller simulated test-context input.
+- The public API boundary is `include/cgpui/ui/key_binding.hpp`:
+  `KeyBindingContextKind`, `KeyBindingContext`, `KeyBinding::context`, and
+  the context-aware `WindowRuntimeContext::bind_key(..., KeyBindingContext)`
+  overload. Existing two-argument `bind_key(...)` remains app-context behavior
+  for source compatibility.
+- Runtime context filtering belongs in the focused
+  `src/ui/runtime_key_binding_contexts.cpp` source. It selects the most
+  specific active context for matching chords in focused-element, view,
+  window, then app order, while `runtime_key_bindings.cpp` remains registration
+  storage and `runtime_event_keyboard.cpp` remains a thin keyboard-event entry.
+- `KeyBindingContext::view(ViewId)` matches the current routed view ancestry
+  when an event route exists and falls back to the root view outside event
+  routing. `KeyBindingContext::focused_element(ElementId)` matches the current
+  keyboard focus element owner exactly.

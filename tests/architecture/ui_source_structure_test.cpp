@@ -395,6 +395,10 @@ int main() {
   const std::string key_binding_header =
       read_source("include/cgpui/ui/key_binding.hpp");
   if (!contains(key_binding_header, "struct KeyBinding") ||
+      !contains(key_binding_header, "enum class KeyBindingContextKind") ||
+      !contains(key_binding_header, "struct KeyBindingContext") ||
+      !contains(key_binding_header, "KeyBindingContext context") ||
+      !contains(key_binding_header, "focused_element(ElementId") ||
       !contains(key_binding_header, "struct TextEditBinding") ||
       !contains(key_binding_header, "parse_key_binding(") ||
       !contains(key_binding_header, "DesktopPlatformTarget") ||
@@ -1426,8 +1430,10 @@ int main() {
       !contains(runtime_event_keyboard_source,
                 "void WindowRuntime::apply_keyboard_bindings_for_event(") ||
       !contains(runtime_event_keyboard_source, "focus_next_element(") ||
-      !contains(runtime_event_keyboard_source, "dispatch_action(") ||
+      !contains(runtime_event_keyboard_source,
+                "dispatch_key_binding_for_event(*key)") ||
       !contains(runtime_event_keyboard_source, "TextEditBinding") ||
+      contains(runtime_event_keyboard_source, "dispatch_action(") ||
       contains(runtime_event_keyboard_source, "ImeComposition") ||
       contains(runtime_event_keyboard_source, "view_.handle_event(")) {
     return 70;
@@ -1791,6 +1797,8 @@ int main() {
       read_source("src/ui/runtime_key_binding_grammar.cpp");
   const std::string runtime_key_binding_modifiers_source =
       read_source("src/ui/runtime_key_binding_modifiers.cpp");
+  const std::string runtime_key_binding_contexts_source =
+      read_source("src/ui/runtime_key_binding_contexts.cpp");
   const std::string key_binding_internal_header =
       read_source("src/ui/key_binding_internal.hpp");
   if (line_count(runtime_key_binding_grammar_source) > 160 ||
@@ -1828,6 +1836,26 @@ int main() {
       contains(key_binding_internal_header, "WindowRuntime") ||
       contains(key_binding_internal_header, "CommandPaletteEntry")) {
     return 130;
+  }
+  if (line_count(runtime_key_binding_contexts_source) > 130 ||
+      !contains(runtime_key_binding_contexts_source,
+                "WindowRuntime::dispatch_key_binding_for_event(") ||
+      !contains(runtime_key_binding_contexts_source,
+                "WindowRuntime::key_binding_context_active(") ||
+      !contains(runtime_key_binding_contexts_source,
+                "key_binding_context_rank(") ||
+      !contains(runtime_key_binding_contexts_source, "dispatch_action(") ||
+      contains(runtime_key_binding_contexts_source,
+               "register_command_palette_entry(")) {
+    return 131;
+  }
+  if (line_count(runtime_event_keyboard_source) > 70 ||
+      !contains(runtime_event_keyboard_source,
+                "dispatch_key_binding_for_event(*key)") ||
+      contains(runtime_event_keyboard_source, "dispatch_action(") ||
+      contains(runtime_event_keyboard_source,
+               "register_command_palette_entry(")) {
+    return 132;
   }
 
   const std::string runtime_text_source = read_source("src/ui/runtime_text.cpp");

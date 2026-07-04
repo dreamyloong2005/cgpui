@@ -16,13 +16,7 @@ void WindowRuntime::apply_keyboard_bindings_for_event(
     refresh_route_ancestry(*current_event_route_);
   }
 
-  for (const KeyBinding& binding : key_bindings_) {
-    if (binding.key_code == key->key_code && binding.action == key->action &&
-        modifiers_equal(binding.modifiers, key->modifiers)) {
-      (void)dispatch_action(binding.action_name);
-      break;
-    }
-  }
+  (void)dispatch_key_binding_for_event(*key);
 
   if (!keyboard_focus_element_owner_.has_value()) {
     return;

@@ -295,9 +295,12 @@ shape before deeper native work expands platform behavior.
   the existing dispatch path. Step 290 adds platform modifier semantics:
   `secondary-*` maps to Ctrl on Windows/Linux and Super on macOS, while
   `platform-*` / `cmd-*` / `win-*` bind the platform key through the focused
-  `src/ui/runtime_key_binding_modifiers.cpp` boundary. Keymap contexts,
-  partial matches, disabled scopes, command palette integration, and fuller
-  test-context simulation remain later slices.
+  `src/ui/runtime_key_binding_modifiers.cpp` boundary. Step 291 adds
+  `KeyBindingContext` app/window/view/focused-element activation and routes
+  same-chord bindings through the most specific active context in
+  `src/ui/runtime_key_binding_contexts.cpp`. Partial matches, disabled scopes,
+  command palette integration, and fuller test-context simulation remain later
+  slices.
 - [ ] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
   redraws.
@@ -606,12 +609,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 291 keymap contexts is next after Step 290 platform modifier semantics.
-Step 290 records `secondary-*` and `platform-*` modifier parsing through
-`parse_key_binding(..., DesktopPlatformTarget)` and current-platform
-`Context<T>::bind_key(...)` behavior while keeping partial matches, disabled
-scopes, command palette integration, and fuller test-context simulation out of
-scope.
+Step 292 partial key matches is next after Step 291 keymap contexts. Step 291
+records `KeyBindingContext` app/window/view/focused-element activation through
+context-aware `Context<T>::bind_key(...)` while keeping partial matches,
+disabled scopes, command palette integration, and fuller test-context
+simulation out of scope.
 
 ## Self-Review
 

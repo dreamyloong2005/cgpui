@@ -16,6 +16,9 @@ void resolve_event_route_target(
     std::optional<ElementId> hit_element_id);
 void apply_focus_activation_for_event(const PlatformEvent& event);
 void apply_keyboard_bindings_for_event(const PlatformEvent& event);
+[[nodiscard]] bool dispatch_key_binding_for_event(const KeyboardKey& key);
+[[nodiscard]] bool key_binding_context_active(
+    const KeyBindingContext& context) const;
 void apply_text_input_for_event(const PlatformEvent& event);
 [[nodiscard]] EventResult dispatch_current_event_route(
     const PlatformEvent& event);

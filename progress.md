@@ -10298,3 +10298,71 @@
 - Step 290 is complete on `master`; Step 291 keymap contexts is the next
   key-dispatch slice before partial matches, disabled scopes, command palette
   integration, and fuller test-context simulation.
+
+## 2026-07-05 Phase B Step 291 Keymap Contexts
+
+- Created feature worktree `.worktrees/phase-b-keymap-contexts` on
+  `codex/phase-b-keymap-contexts` from
+  `d89b694 docs: mark step 290 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . key_binding_platform_modifier_test/default
+  key_binding_grammar_test/default action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 8/8.
+- Added RED behavior coverage in `tests/ui/keymap_context_test.cpp` and
+  registered `keymap_context_test` in `xmake.lua`. RED failed as expected
+  because `KeyBindingContext` and the three-argument
+  `WindowRuntimeContext::bind_key(..., KeyBindingContext)` overload did not
+  exist.
+- GREEN adds `KeyBindingContextKind`, `KeyBindingContext`,
+  `KeyBinding::context`, and context-aware key binding registration in the
+  public key-binding leaf. Runtime selection lives in
+  `src/ui/runtime_key_binding_contexts.cpp` and picks the most specific active
+  same-chord binding in focused-element, view, window, then app order.
+- Updated structure and parity guards in
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, and the complete-replication
+  roadmap. Partial matches, disabled key scopes, command palette integration,
+  and fuller test-context simulation remain out of scope.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . keymap_context_test/default
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default` passed
+  9/9.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . keymap_context_test/default
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  11/11.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . keymap_context_test/default
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  11/11.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 77/77.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 74/74.
+- Step 291 is implemented and focused/full verified on
+  `codex/phase-b-keymap-contexts`; it is ready for feature commit and merge
+  verification. Step 292 partial key matches remains the next key-dispatch
+  slice after Step 291 lands on `master`.
