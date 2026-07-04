@@ -10027,3 +10027,17 @@
 - Step 286 is implemented and focused/full verified on
   `codex/phase-b-typed-action-command-metadata`; it is ready for merge
   verification.
+
+## 2026-07-05 Phase B Step 286 Merge
+
+- Fast-forward merged `codex/phase-b-typed-action-command-metadata` into
+  `master` at `43c6040 feat: add typed action command metadata`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 72/72.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 69/69.
+- Step 286 is complete on `master`; Step 287 action enablement metadata is the
+  next action-band slice before key dispatch, key grammar, bubbling, and fuller
+  test-context simulation.

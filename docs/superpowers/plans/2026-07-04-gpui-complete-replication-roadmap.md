@@ -594,11 +594,12 @@ usable as a C++23 GPUI replacement.
 ## Immediate Next Slice
 
 Step 287 action enablement metadata is next after Step 286 typed action
-command metadata binding. Step 286 is implemented and focused GREEN on
-`codex/phase-b-typed-action-command-metadata`; it binds typed action names
-into command-palette metadata through a focused template leaf without starting
-key dispatch, key grammar, action enablement, bubbling, or fuller test-context
-simulation.
+command metadata binding merged on `master` at
+`43c6040 feat: add typed action command metadata` with post-merge Windows
+full-debug 72/72 and WSL Arch Linux full-debug 69/69 verification. Step 286
+binds typed action names into command-palette metadata through a focused
+template leaf without starting key dispatch, key grammar, action enablement,
+bubbling, or fuller test-context simulation.
 
 ## Self-Review
 
