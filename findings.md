@@ -4615,3 +4615,18 @@
   before scheduling redraw. `Subscription::release()` removes window and view
   observer records through the same deterministic token path as entity
   observers, and removed view records drop their view observers.
+
+## 2026-07-04 Phase B Step 280 Observation Diagnostics
+
+- Step 280 should stay scoped to making observation/subscription state
+  observable through diagnostics. It should not introduce new observer storage,
+  new callback ordering, action dispatch behavior, key dispatch behavior, or
+  simulated test-context input.
+- `RuntimeDiagnosticsSnapshot::entity_observer_count` remains entity-only for
+  source compatibility. Add separate `window_observer_count` and
+  `view_observer_count` fields instead of changing its meaning.
+- The implementation belongs in the existing focused diagnostics boundary:
+  `include/cgpui/ui/runtime_diagnostics.hpp` for public snapshot shape and
+  `src/ui/runtime_diagnostic_snapshot.cpp` for count collection. The behavior
+  test belongs in a focused `tests/ui/window_runtime_observation_diagnostics_test.cpp`
+  target rather than further growing `window_runtime_actions_test.cpp`.

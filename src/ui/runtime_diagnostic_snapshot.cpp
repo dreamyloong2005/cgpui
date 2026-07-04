@@ -30,6 +30,8 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .entity_count = entity_count_,
       .view_entity_subscription_count = entity_subscriptions_.size(),
       .entity_observer_count = entity_observers_.size(),
+      .window_observer_count = window_observers_.size(),
+      .view_observer_count = view_observers_.size(),
       .connected_subscription_count = connected_subscription_count,
       .invalidation = invalidation_state_,
       .frame_index = frame_index_,

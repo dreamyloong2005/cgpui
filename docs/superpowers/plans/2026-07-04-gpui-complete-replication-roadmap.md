@@ -256,7 +256,11 @@ shape before deeper native work expands platform behavior.
   `ViewContextCapability<T>::observe(...)`, and `ViewHandle<T>::observe(...)`,
   with deterministic `Subscription::release()` cleanup through the same
   subscription path and focused runtime storage in
-  `src/ui/runtime_observations.cpp`.
+  `src/ui/runtime_observations.cpp`. Step 280 adds observer diagnostics:
+  `RuntimeDiagnosticsSnapshot` exposes entity, window, and view observer
+  counts separately, and a focused runtime test verifies window/view
+  subscription release updates those counts without adding new observer
+  ownership paths.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -571,10 +575,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 279 window/view observation is merged and post-merge verified on Windows
-and WSL Arch Linux. Continue Phase B with Step 280: deepen remaining
-observation/subscription behavior without starting the later action/key-dispatch
-or fuller test-context behavior bands.
+Step 280 observer diagnostics is implemented and verified on
+`codex/phase-b-observation-release-during-callback`; merge verification is the
+next action. After merge, continue Phase B with Step 281 in the remaining
+observation/subscription band without starting the later action/key-dispatch or
+fuller test-context behavior bands.
 
 ## Self-Review
 

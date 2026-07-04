@@ -9643,3 +9643,44 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 62/62.
 - Step 279 is complete on `master`; Step 280 remaining
   observation/subscription behavior is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 280 Observation Diagnostics
+
+- Created `codex/phase-b-observation-release-during-callback` in
+  `.worktrees/phase-b-observation-release-during-callback` from `master` at
+  `9541ecd docs: mark step 279 merged`.
+- Baseline Windows focused verification passed:
+  `xmake f -c -m debug -P .` exited 0, then
+  `xmake test -P . window_view_observation_test/default subscription_lifetime_test/default entity_to_entity_observation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_source_structure_test/default`
+  passed 6/6.
+- The first RED command used the stale xmake target graph and failed before
+  compilation; after reconfiguring, the RED was confirmed correctly:
+  `xmake -y -P . window_runtime_observation_diagnostics_test` failed because
+  `RuntimeDiagnosticsSnapshot` lacked `window_observer_count` and
+  `view_observer_count`.
+- GREEN adds separate window/view observer counts to
+  `RuntimeDiagnosticsSnapshot`, fills them from
+  `WindowRuntime::diagnostics_snapshot()`, and covers subscription release
+  count changes in the focused
+  `tests/ui/window_runtime_observation_diagnostics_test.cpp` target.
+- Fresh Windows GREEN verification passed:
+  `xmake -y -P . window_runtime_observation_diagnostics_test` built
+  successfully, then
+  `xmake test -y -P . window_runtime_observation_diagnostics_test/default`
+  passed 1/1.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, explicit builds
+  for 9 Step 280 targets, and
+  `xmake test -y -P . window_runtime_observation_diagnostics_test/default window_view_observation_test/default subscription_lifetime_test/default entity_to_entity_observation_test/default test_context_capability_test/default window_runtime_scheduling_test/default ui_source_structure_test/default ui_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 9/9.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 66/66.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 63/63.
+- Step 280 is implemented and focused/full verified on
+  `codex/phase-b-observation-release-during-callback`; it is ready for merge
+  verification.

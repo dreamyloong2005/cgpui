@@ -525,6 +525,13 @@ target("window_runtime_actions_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("window_runtime_observation_diagnostics_test")
+    set_kind("binary")
+    add_files("tests/ui/window_runtime_observation_diagnostics_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("window_runtime_text_test")
     set_kind("binary")
     add_files("tests/ui/window_runtime_text_test.cpp")

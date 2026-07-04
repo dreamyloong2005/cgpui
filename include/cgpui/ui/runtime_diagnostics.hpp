@@ -58,6 +58,8 @@ struct RuntimeDiagnosticsSnapshot {
   std::size_t entity_count = 0;
   std::size_t view_entity_subscription_count = 0;
   std::size_t entity_observer_count = 0;
+  std::size_t window_observer_count = 0;
+  std::size_t view_observer_count = 0;
   std::size_t connected_subscription_count = 0;
   InvalidationState invalidation;
   int frame_index = 0;

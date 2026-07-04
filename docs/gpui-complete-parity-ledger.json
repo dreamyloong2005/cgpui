@@ -122,7 +122,7 @@
     },
     {
       "upstream_gpui": "gpui::TestAppContext",
-      "cgpui_target": "TestContextCapability groups runtime id/view id, input/event/action observability, invalidation/diagnostics snapshots, timer advancement, timer cancellation, and task completion draining from Context<T>::test_context()",
+      "cgpui_target": "TestContextCapability groups runtime id/view id, input/event/action observability, invalidation/diagnostics snapshots with entity/window/view observer counts, timer advancement, timer cancellation, and task completion draining from Context<T>::test_context()",
       "status": "adapted",
       "next_step": "Phase G fuller simulated input/test macro depth"
     },
