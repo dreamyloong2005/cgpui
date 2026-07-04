@@ -1669,5 +1669,6 @@ implementation slice.
   window/view observation, is complete on `master` after post-merge Windows
   and WSL full-debug verification. Phase B Step 280, observer diagnostics for
   window/view subscriptions, is complete on `master` after post-merge Windows
-  and WSL full-debug verification. Phase B Step 281 in the remaining
-  observation/subscription band is the next Phase B slice.
+  and WSL full-debug verification. Phase B Step 281, view-handle runtime-token
+  boundaries for cross-runtime read/upgrade/observation rejection, is in
+  progress on `codex/phase-b-view-handle-runtime-token`.

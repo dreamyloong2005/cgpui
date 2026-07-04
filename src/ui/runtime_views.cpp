@@ -73,7 +73,9 @@ bool WindowRuntime::is_view_id_allocated(ViewId view_id) const {
 }
 
 std::optional<ViewId> WindowRuntime::upgrade_view(WeakView view) const {
-  if (view.empty() || !is_view_id_allocated(view.id())) {
+  const auto context_token = reinterpret_cast<std::uintptr_t>(this);
+  if (view.empty() || !view.matches_context(context_token) ||
+      !is_view_id_allocated(view.id())) {
     return std::nullopt;
   }
   return view.id();

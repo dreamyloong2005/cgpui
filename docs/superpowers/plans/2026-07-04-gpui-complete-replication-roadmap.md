@@ -260,7 +260,10 @@ shape before deeper native work expands platform behavior.
   `RuntimeDiagnosticsSnapshot` exposes entity, window, and view observer
   counts separately, and a focused runtime test verifies window/view
   subscription release updates those counts without adding new observer
-  ownership paths.
+  ownership paths. Step 281 adds runtime-token boundaries to `ViewHandle<T>`,
+  `WeakViewHandle<T>`, and `WeakView`, so read, weak upgrade, and observation
+  helpers reject handles captured from a different `WindowRuntime` even when
+  numeric `ViewId` values collide.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -575,10 +578,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 280 observer diagnostics is merged on `master` and post-merge verified on
-Windows and WSL Arch Linux. Continue Phase B with Step 281 in the remaining
-observation/subscription band without starting the later action/key-dispatch or
-fuller test-context behavior bands.
+Step 281 view-handle runtime-token boundaries are in progress on
+`codex/phase-b-view-handle-runtime-token`. Continue verifying that slice before
+starting Step 282 or the later action/key-dispatch and fuller test-context
+behavior bands.
 
 ## Self-Review
 

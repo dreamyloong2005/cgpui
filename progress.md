@@ -9699,3 +9699,44 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 63/63.
 - Step 280 is complete on `master`; Step 281 in the remaining
   observation/subscription band is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 281 View Handle Runtime Token
+
+- Created `codex/phase-b-view-handle-runtime-token` in
+  `.worktrees/phase-b-view-handle-runtime-token` from `master` at
+  `43dda68 docs: mark step 280 merged`.
+- Baseline Windows focused verification passed:
+  `xmake f -c -m debug -P .` exited 0, then
+  `xmake test -y -P . view_handle_spelling_test/default window_view_observation_test/default window_runtime_multiwindow_test/default window_runtime_observation_diagnostics_test/default ui_header_cleanliness/default ui_source_structure_test/default gpui_parity_ledger_test/default`
+  passed 7/7.
+- Added RED coverage in
+  `tests/ui/window_runtime_view_handle_token_test.cpp` and registered
+  `window_runtime_view_handle_token_test` in `xmake.lua`. RED compiled, then
+  `xmake test -y -P . window_runtime_view_handle_token_test/default` failed;
+  the direct binary exit code was 3, proving a `ViewHandle` captured from one
+  runtime could still read the same-type root view in another runtime with the
+  same numeric `ViewId`.
+- GREEN adds `context_token()` / `matches_context(...)` to `WeakView`,
+  `WeakViewHandle<T>`, and `ViewHandle<T>`, binds handles produced by
+  `WindowRuntimeContext`, rejects cross-runtime read/observe/subscription
+  helpers, and makes weak upgrades reject mismatched runtime tokens while
+  preserving raw unbound `ViewId` handles for low-level compatibility.
+- Fresh Windows focused verification passed:
+  `xmake -y -P . window_runtime_view_handle_token_test`, then
+  `xmake test -y -P . window_runtime_view_handle_token_test/default`
+  passed 1/1.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . window_runtime_view_handle_token_test/default view_handle_spelling_test/default window_view_observation_test/default window_runtime_observation_diagnostics_test/default window_runtime_multiwindow_test/default ui_header_cleanliness/default ui_source_structure_test/default gpui_parity_ledger_test/default`
+  passed 8/8.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 67/67.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 64/64.
+- Step 281 is implemented and focused/full verified on
+  `codex/phase-b-view-handle-runtime-token`; it is ready for merge
+  verification.

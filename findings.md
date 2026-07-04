@@ -4630,3 +4630,21 @@
   `src/ui/runtime_diagnostic_snapshot.cpp` for count collection. The behavior
   test belongs in a focused `tests/ui/window_runtime_observation_diagnostics_test.cpp`
   target rather than further growing `window_runtime_actions_test.cpp`.
+
+## 2026-07-04 Phase B Step 281 View Handle Runtime Token
+
+- Step 281 should stay scoped to view-handle runtime-token boundaries in the
+  observation/subscription band. It should not start child-view lifecycle
+  ownership, action dispatch, key dispatch, or simulated test-context input.
+- The gap was that `ViewHandle<T>` and `WeakViewHandle<T>` only carried a
+  `ViewId`, so a handle captured from one `WindowRuntime` could read, observe,
+  or weak-upgrade against another runtime when both runtimes had the same
+  numeric root `ViewId`.
+- Mirror the existing entity-handle token shape in the focused public leaf
+  `include/cgpui/ui/view_handle.hpp`, bind handles in
+  `include/cgpui/ui/runtime_templates.hpp`, and enforce weak upgrades in
+  `src/ui/runtime_views.cpp`. Keep raw `ViewHandle<T>(ViewId)` and
+  `WeakView(ViewId)` unbound for low-level compatibility.
+- The behavior test belongs in a focused
+  `tests/ui/window_runtime_view_handle_token_test.cpp` target rather than
+  broadening `window_runtime_actions_test.cpp` or `window_runtime_multiwindow_test.cpp`.

@@ -104,7 +104,7 @@
     },
     {
       "upstream_gpui": "gpui::View<T>",
-      "cgpui_target": "ViewContextCapability<T> plus ViewHandle<T> and WeakViewHandle<T> over ViewId, with view observation helpers",
+      "cgpui_target": "ViewContextCapability<T> plus runtime-token-scoped ViewHandle<T> and WeakViewHandle<T> over ViewId, with view observation helpers",
       "status": "adapted",
       "next_step": "Phase B view lifecycle depth"
     },

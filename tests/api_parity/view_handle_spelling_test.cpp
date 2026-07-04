@@ -1,6 +1,7 @@
 #include "cgpui/cgpui.hpp"
 
 #include <concepts>
+#include <cstdint>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -27,9 +28,17 @@ class ViewHandleSpellingView final : public cgpui::View {
         weak_view.empty() || weak_view.id() != context.view_id ||
         context_weak_view.id() != context.view_id ||
         !upgraded.has_value() || upgraded->id() != view.id() ||
+        view.context_token() == 0 ||
+        weak_view.context_token() != view.context_token() ||
+        context_weak_view.context_token() != view.context_token() ||
+        upgraded->context_token() != view.context_token() ||
         current_view == nullptr ||
         context.read_view(view) != current_view ||
-        weak_view.untyped().id() != context.view_id) {
+        weak_view.untyped().id() != context.view_id ||
+        weak_view.untyped().context_token() != view.context_token() ||
+        !view.matches_context(view.context_token()) ||
+        !weak_view.matches_context(view.context_token()) ||
+        !weak_view.untyped().matches_context(view.context_token())) {
       return nullptr;
     }
 
@@ -52,6 +61,21 @@ static_assert(std::same_as<decltype(std::declval<ViewContextRef>().upgrade_view(
                            std::optional<ViewHandle>>);
 static_assert(std::same_as<decltype(std::declval<ViewHandle>().downgrade()),
                            WeakViewHandle>);
+static_assert(std::same_as<decltype(std::declval<ViewHandle>().context_token()),
+                           std::uintptr_t>);
+static_assert(std::same_as<decltype(std::declval<WeakViewHandle>()
+                                        .context_token()),
+                           std::uintptr_t>);
+static_assert(std::same_as<decltype(std::declval<cgpui::WeakView>()
+                                        .context_token()),
+                           std::uintptr_t>);
+static_assert(std::same_as<decltype(std::declval<ViewHandle>().matches_context(
+                               std::declval<std::uintptr_t>())),
+                           bool>);
+static_assert(std::same_as<decltype(std::declval<WeakViewHandle>()
+                                        .matches_context(
+                                            std::declval<std::uintptr_t>())),
+                           bool>);
 static_assert(std::same_as<decltype(std::declval<WeakViewHandle>().untyped()),
                            cgpui::WeakView>);
 static_assert(std::same_as<decltype(std::declval<ViewHandle>().read(

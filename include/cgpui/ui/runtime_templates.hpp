@@ -54,6 +54,11 @@ inline std::uintptr_t entity_context_token(
   return reinterpret_cast<std::uintptr_t>(&context.runtime);
 }
 
+inline std::uintptr_t view_context_token(
+    const WindowRuntimeContext& context) {
+  return reinterpret_cast<std::uintptr_t>(&context.runtime);
+}
+
 template <typename Observer, typename ObserverT, typename ObservedT>
 void invoke_entity_to_entity_observer(
     Observer& observer,
@@ -286,26 +291,33 @@ ViewContextCapability<T> WindowRuntimeContext::view_context() const {
 
 template <typename T>
 ViewHandle<T> WindowRuntimeContext::view() const {
-  return ViewHandle<T>(view_id);
+  return ViewHandle<T>(view_id, detail::view_context_token(*this));
 }
 
 template <typename T>
 WeakViewHandle<T> WindowRuntimeContext::weak_view() const {
-  return WeakViewHandle<T>(view_id);
+  return WeakViewHandle<T>(view_id, detail::view_context_token(*this));
 }
 
 template <typename T>
 std::optional<ViewHandle<T>> WindowRuntimeContext::upgrade_view(
     WeakViewHandle<T> view) const {
+  if (!view.matches_context(detail::view_context_token(*this))) {
+    return std::nullopt;
+  }
   const std::optional<ViewId> upgraded = runtime.upgrade_view(view.untyped());
   if (!upgraded.has_value()) {
     return std::nullopt;
   }
-  return ViewHandle<T>(*upgraded);
+  return ViewHandle<T>(*upgraded, view.context_token());
 }
 
 template <typename T>
 const T* WindowRuntimeContext::read_view(ViewHandle<T> view) const {
+  if (view.empty() ||
+      !view.matches_context(detail::view_context_token(*this))) {
+    return nullptr;
+  }
   return dynamic_cast<const T*>(runtime.find_view(view.id()));
 }
 
@@ -341,7 +353,9 @@ bool WindowRuntimeContext::observe_view(
       [observer = std::forward<Observer>(observer)](
           const WindowRuntimeContext& context,
           ViewId view_id) mutable {
-        observer(context, ViewHandle<T>(view_id));
+        observer(
+            context,
+            ViewHandle<T>(view_id, detail::view_context_token(context)));
       });
 }
 
@@ -358,7 +372,9 @@ Subscription WindowRuntimeContext::observe_view_subscription(
       [observer = std::forward<Observer>(observer)](
           const WindowRuntimeContext& context,
           ViewId view_id) mutable {
-        observer(context, ViewHandle<T>(view_id));
+        observer(
+            context,
+            ViewHandle<T>(view_id, detail::view_context_token(context)));
       });
 }
 
