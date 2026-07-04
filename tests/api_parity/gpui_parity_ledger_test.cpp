@@ -220,6 +220,7 @@ int main() {
       !contains(ledger, "key binding grammar parsing") ||
       !contains(ledger, "platform modifier semantics") ||
       !contains(ledger, "keymap context filtering") ||
+      !contains(ledger, "partial key sequence matching") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
       !contains(ledger, "include/cgpui/ui/key_binding.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
@@ -231,6 +232,7 @@ int main() {
       !contains(ledger, "src/ui/runtime_key_binding_grammar.cpp") ||
       !contains(ledger, "src/ui/runtime_key_binding_modifiers.cpp") ||
       !contains(ledger, "src/ui/runtime_key_binding_contexts.cpp") ||
+      !contains(ledger, "src/ui/runtime_key_binding_sequences.cpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
@@ -240,6 +242,7 @@ int main() {
       !contains(ledger, "tests/ui/key_binding_grammar_test.cpp") ||
       !contains(ledger, "tests/ui/key_binding_platform_modifier_test.cpp") ||
       !contains(ledger, "tests/ui/keymap_context_test.cpp") ||
+      !contains(ledger, "tests/ui/key_binding_partial_match_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -271,16 +274,19 @@ int main() {
               "key binding grammar parsing",
               "platform modifier semantics",
               "keymap context filtering",
+              "partial key sequence matching",
               "typed_action_surface_test",
               "action_enablement_metadata_test",
               "action_bubbling_test",
               "key_binding_grammar_test",
               "key_binding_platform_modifier_test",
               "keymap_context_test",
+              "key_binding_partial_match_test",
               "key_binding.hpp",
               "runtime_key_binding_grammar.cpp",
               "runtime_key_binding_modifiers.cpp",
               "runtime_key_binding_contexts.cpp",
+              "runtime_key_binding_sequences.cpp",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -915,6 +921,8 @@ int main() {
                 "tests/ui/key_binding_platform_modifier_test.cpp") ||
       !contains(xmake,
                 "tests/ui/keymap_context_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/key_binding_partial_match_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {

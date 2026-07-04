@@ -4839,3 +4839,26 @@
   when an event route exists and falls back to the root view outside event
   routing. `KeyBindingContext::focused_element(ElementId)` matches the current
   keyboard focus element owner exactly.
+
+## 2026-07-05 Phase B Step 292 Partial Key Matches
+
+- Step 292 should stay scoped to multi-chord key binding grammar and pending
+  partial-match dispatch. It should not start disabled key scopes, command
+  palette integration, action payload macros, or fuller simulated test-context
+  input.
+- The public API boundary remains `include/cgpui/ui/key_binding.hpp`: add
+  `KeyBindingChord` and `KeyBinding::sequence` while preserving legacy
+  `KeyBinding::key_code` / `action` / `modifiers` fields for one-chord
+  construction and source compatibility.
+- Grammar parsing stays in `src/ui/runtime_key_binding_grammar.cpp`:
+  whitespace separates chords, while existing `-` / `+` token splitting still
+  separates modifiers inside each chord. `parse_key_binding("ctrl-k ctrl-s",
+  ...)` records both chords and keeps the first chord mirrored in the legacy
+  fields.
+- Runtime partial-match state belongs in the focused
+  `src/ui/runtime_key_binding_sequences.cpp` source. It owns pending sequence
+  storage, prefix/exact matching, context-rank selection for completed
+  sequences, and clearing pending state on mismatch. Context activation remains
+  in `src/ui/runtime_key_binding_contexts.cpp`, registration storage remains
+  in `src/ui/runtime_key_bindings.cpp`, and `runtime_event_keyboard.cpp`
+  remains a thin keyboard-event entry.

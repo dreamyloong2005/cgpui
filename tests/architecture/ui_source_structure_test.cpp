@@ -395,9 +395,11 @@ int main() {
   const std::string key_binding_header =
       read_source("include/cgpui/ui/key_binding.hpp");
   if (!contains(key_binding_header, "struct KeyBinding") ||
+      !contains(key_binding_header, "struct KeyBindingChord") ||
       !contains(key_binding_header, "enum class KeyBindingContextKind") ||
       !contains(key_binding_header, "struct KeyBindingContext") ||
       !contains(key_binding_header, "KeyBindingContext context") ||
+      !contains(key_binding_header, "std::vector<KeyBindingChord> sequence") ||
       !contains(key_binding_header, "focused_element(ElementId") ||
       !contains(key_binding_header, "struct TextEditBinding") ||
       !contains(key_binding_header, "parse_key_binding(") ||
@@ -1017,6 +1019,7 @@ int main() {
       "src/ui/runtime_command_palette.cpp",
       "src/ui/runtime_focus.cpp",
       "src/ui/runtime_key_bindings.cpp",
+      "src/ui/runtime_key_binding_sequences.cpp",
       "src/ui/runtime_windows.cpp",
       "src/ui/runtime_window_activation.cpp",
       "src/ui/runtime_window_records.cpp",
@@ -1799,11 +1802,16 @@ int main() {
       read_source("src/ui/runtime_key_binding_modifiers.cpp");
   const std::string runtime_key_binding_contexts_source =
       read_source("src/ui/runtime_key_binding_contexts.cpp");
+  const std::string runtime_key_binding_sequences_source =
+      read_source("src/ui/runtime_key_binding_sequences.cpp");
   const std::string key_binding_internal_header =
       read_source("src/ui/key_binding_internal.hpp");
-  if (line_count(runtime_key_binding_grammar_source) > 160 ||
+  if (line_count(runtime_key_binding_grammar_source) > 190 ||
       !contains(runtime_key_binding_grammar_source, "parse_key_binding(") ||
       !contains(runtime_key_binding_grammar_source, "split_key_tokens(") ||
+      !contains(runtime_key_binding_grammar_source, "split_key_sequence(") ||
+      !contains(runtime_key_binding_grammar_source,
+                "parse_key_binding_chord(") ||
       !contains(runtime_key_binding_grammar_source,
                 "apply_key_binding_modifier_token(") ||
       contains(runtime_key_binding_grammar_source, "dispatch_action(") ||
@@ -1837,17 +1845,30 @@ int main() {
       contains(key_binding_internal_header, "CommandPaletteEntry")) {
     return 130;
   }
-  if (line_count(runtime_key_binding_contexts_source) > 130 ||
-      !contains(runtime_key_binding_contexts_source,
-                "WindowRuntime::dispatch_key_binding_for_event(") ||
+  if (line_count(runtime_key_binding_contexts_source) > 90 ||
       !contains(runtime_key_binding_contexts_source,
                 "WindowRuntime::key_binding_context_active(") ||
-      !contains(runtime_key_binding_contexts_source,
-                "key_binding_context_rank(") ||
-      !contains(runtime_key_binding_contexts_source, "dispatch_action(") ||
+      !contains(runtime_key_binding_contexts_source, "route_contains_view(") ||
+      contains(runtime_key_binding_contexts_source,
+               "WindowRuntime::dispatch_key_binding_for_event(") ||
+      contains(runtime_key_binding_contexts_source, "dispatch_action(") ||
       contains(runtime_key_binding_contexts_source,
                "register_command_palette_entry(")) {
     return 131;
+  }
+  if (line_count(runtime_key_binding_sequences_source) > 130 ||
+      !contains(runtime_key_binding_sequences_source,
+                "WindowRuntime::dispatch_key_binding_for_event(") ||
+      !contains(runtime_key_binding_sequences_source,
+                "pending_key_binding_sequence_") ||
+      !contains(runtime_key_binding_sequences_source,
+                "key_binding_sequence_has_prefix(") ||
+      !contains(runtime_key_binding_sequences_source,
+                "key_binding_context_rank(") ||
+      !contains(runtime_key_binding_sequences_source, "dispatch_action(") ||
+      contains(runtime_key_binding_sequences_source,
+               "register_command_palette_entry(")) {
+    return 132;
   }
   if (line_count(runtime_event_keyboard_source) > 70 ||
       !contains(runtime_event_keyboard_source,
@@ -1855,7 +1876,7 @@ int main() {
       contains(runtime_event_keyboard_source, "dispatch_action(") ||
       contains(runtime_event_keyboard_source,
                "register_command_palette_entry(")) {
-    return 132;
+    return 133;
   }
 
   const std::string runtime_text_source = read_source("src/ui/runtime_text.cpp");

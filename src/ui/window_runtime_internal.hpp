@@ -212,6 +212,7 @@ std::unordered_map<
 std::vector<ActionRegistration> action_registrations_;
 std::vector<CommandPaletteEntry> command_palette_entries_;
 std::vector<KeyBinding> key_bindings_;
+std::vector<KeyBindingChord> pending_key_binding_sequence_;
 std::vector<TextEditBinding> text_edit_bindings_;
 std::unordered_map<std::uint64_t, TextModel*> text_models_;
 Clipboard* clipboard_ = nullptr;

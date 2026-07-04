@@ -29,6 +29,29 @@ namespace {
   return tokens;
 }
 
+[[nodiscard]] std::vector<std::string_view> split_key_sequence(
+    std::string_view grammar) {
+  std::vector<std::string_view> sequence;
+  std::size_t index = 0;
+  while (index < grammar.size()) {
+    while (index < grammar.size() &&
+           std::isspace(static_cast<unsigned char>(grammar[index])) != 0) {
+      ++index;
+    }
+    if (index == grammar.size()) {
+      break;
+    }
+
+    const std::size_t chord_start = index;
+    while (index < grammar.size() &&
+           std::isspace(static_cast<unsigned char>(grammar[index])) == 0) {
+      ++index;
+    }
+    sequence.push_back(grammar.substr(chord_start, index - chord_start));
+  }
+  return sequence;
+}
+
 [[nodiscard]] std::optional<std::uint32_t> named_key_code(
     const std::string& lowered) {
   if (lowered == "enter" || lowered == "return") {
@@ -75,16 +98,9 @@ namespace {
   return named_key_code(lowered);
 }
 
-} // namespace
-
-std::optional<KeyBinding> parse_key_binding(
+[[nodiscard]] std::optional<KeyBindingChord> parse_key_binding_chord(
     std::string_view grammar,
-    std::string action_name,
     DesktopPlatformTarget platform) {
-  if (grammar.empty() || action_name.empty()) {
-    return std::nullopt;
-  }
-
   const std::vector<std::string_view> tokens = split_key_tokens(grammar);
   if (tokens.empty()) {
     return std::nullopt;
@@ -105,11 +121,48 @@ std::optional<KeyBinding> parse_key_binding(
     return std::nullopt;
   }
 
-  return KeyBinding{
+  return KeyBindingChord{
       .key_code = *key_code,
       .action = KeyAction::pressed,
-      .modifiers = modifiers,
+      .modifiers = modifiers};
+}
+
+} // namespace
+
+std::optional<KeyBinding> parse_key_binding(
+    std::string_view grammar,
+    std::string action_name,
+    DesktopPlatformTarget platform) {
+  if (grammar.empty() || action_name.empty()) {
+    return std::nullopt;
+  }
+
+  const std::vector<std::string_view> chord_tokens =
+      split_key_sequence(grammar);
+  if (chord_tokens.empty()) {
+    return std::nullopt;
+  }
+
+  std::vector<KeyBindingChord> sequence;
+  sequence.reserve(chord_tokens.size());
+  for (std::string_view chord_token : chord_tokens) {
+    std::optional<KeyBindingChord> chord =
+        parse_key_binding_chord(chord_token, platform);
+    if (!chord.has_value()) {
+      return std::nullopt;
+    }
+    sequence.push_back(*chord);
+  }
+
+  const KeyBindingChord first_chord = sequence.front();
+
+  KeyBinding binding{
+      .key_code = first_chord.key_code,
+      .action = KeyAction::pressed,
+      .modifiers = first_chord.modifiers,
       .action_name = std::move(action_name)};
+  binding.sequence = std::move(sequence);
+  return binding;
 }
 
 std::optional<KeyBinding> parse_key_binding(

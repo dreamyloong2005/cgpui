@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace cgpui {
 
@@ -30,12 +31,19 @@ struct KeyBindingContext {
   [[nodiscard]] static KeyBindingContext focused_element(ElementId element_id);
 };
 
+struct KeyBindingChord {
+  std::uint32_t key_code = 0;
+  KeyAction action = KeyAction::pressed;
+  KeyboardModifiers modifiers;
+};
+
 struct KeyBinding {
   std::uint32_t key_code = 0;
   KeyAction action = KeyAction::pressed;
   KeyboardModifiers modifiers;
   std::string action_name;
   KeyBindingContext context;
+  std::vector<KeyBindingChord> sequence;
 };
 
 struct TextEditBinding {

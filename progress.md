@@ -10380,3 +10380,67 @@
 - Step 291 is complete on `master`; Step 292 partial key matches is the next
   key-dispatch slice before disabled scopes, command palette integration, and
   fuller test-context simulation.
+
+## 2026-07-05 Phase B Step 292 Partial Key Matches
+
+- Created feature worktree `.worktrees/phase-b-partial-key-matches` on
+  `codex/phase-b-partial-key-matches` from
+  `33e8591 docs: mark step 291 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . keymap_context_test/default
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default` passed
+  9/9.
+- Added RED behavior/API coverage in
+  `tests/ui/key_binding_partial_match_test.cpp` and registered
+  `key_binding_partial_match_test` in `xmake.lua`. RED failed as expected
+  because `KeyBinding::sequence` did not exist.
+- GREEN adds `KeyBindingChord`, `KeyBinding::sequence`, whitespace-separated
+  multi-chord grammar such as `ctrl-k ctrl-s`, and pending partial-match
+  dispatch state in `src/ui/runtime_key_binding_sequences.cpp`. The first
+  chord still mirrors into legacy `key_code` / `action` / `modifiers` fields
+  for source compatibility.
+- Updated structure and parity guards in
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, and the complete-replication
+  roadmap. Disabled key scopes, command palette integration, action payload
+  macros, and fuller test-context simulation remain out of scope.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . key_binding_partial_match_test/default
+  keymap_context_test/default key_binding_platform_modifier_test/default
+  key_binding_grammar_test/default action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 10/10.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . key_binding_partial_match_test/default
+  keymap_context_test/default key_binding_platform_modifier_test/default
+  key_binding_grammar_test/default action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 12/12.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . key_binding_partial_match_test/default
+  keymap_context_test/default key_binding_platform_modifier_test/default
+  key_binding_grammar_test/default action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 12/12.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 78/78.
+- Fresh WSL Arch Linux full debug passed after resume:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 75/75.

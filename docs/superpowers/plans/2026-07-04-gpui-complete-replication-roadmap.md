@@ -298,9 +298,11 @@ shape before deeper native work expands platform behavior.
   `src/ui/runtime_key_binding_modifiers.cpp` boundary. Step 291 adds
   `KeyBindingContext` app/window/view/focused-element activation and routes
   same-chord bindings through the most specific active context in
-  `src/ui/runtime_key_binding_contexts.cpp`. Partial matches, disabled scopes,
-  command palette integration, and fuller test-context simulation remain later
-  slices.
+  `src/ui/runtime_key_binding_contexts.cpp`. Step 292 adds multi-chord
+  `KeyBindingChord` sequences, whitespace-separated key grammar such as
+  `ctrl-k ctrl-s`, and pending partial-match dispatch state in
+  `src/ui/runtime_key_binding_sequences.cpp`. Disabled scopes, command palette
+  integration, and fuller test-context simulation remain later slices.
 - [ ] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
   redraws.
@@ -609,9 +611,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 292 partial key matches is next after Step 291 keymap contexts. Step 291
-records `KeyBindingContext` app/window/view/focused-element activation through
-context-aware `Context<T>::bind_key(...)` while keeping partial matches,
+Step 293 disabled key scopes is next after Step 292 partial key matches. Step
+292 records multi-chord `KeyBindingChord` sequences plus pending partial-match
+dispatch for `Context<T>::bind_key("ctrl-k ctrl-s", "action")` while keeping
 disabled scopes, command palette integration, and fuller test-context
 simulation out of scope.
 
