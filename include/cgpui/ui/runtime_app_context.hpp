@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/app/app_facade.hpp"
+#include "cgpui/ui/action.hpp"
 #include "cgpui/ui/runtime_actions.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
 
@@ -25,6 +26,8 @@ struct AppContext {
       NativeMenuModel menu) const;
   [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
       NativeFileDialogOptions options) const;
+  void register_command_palette_entry(CommandPaletteEntry entry) const;
+  template <Action T>
   void register_command_palette_entry(CommandPaletteEntry entry) const;
   [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
       const;

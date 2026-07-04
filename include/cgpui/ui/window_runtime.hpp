@@ -107,6 +107,7 @@ class WindowRuntime {
   [[nodiscard]] std::vector<ActionRegistration>
   action_registrations_for_scope(ActionRegistrationScope scope) const;
   void register_command_palette_entry(CommandPaletteEntry entry);
+  template <Action T> void register_command_palette_entry(CommandPaletteEntry entry);
   [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
       const;
   [[nodiscard]] std::vector<CommandPaletteEntry>

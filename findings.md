@@ -4717,3 +4717,22 @@
   for upsert/query behavior. `runtime_action_dispatch.cpp` should continue to
   own handler registration and dispatch, and command palette/key binding code
   should not grow this metadata behavior.
+
+## 2026-07-05 Phase B Step 286 Typed Action Command Metadata
+
+- Step 286 should stay scoped to binding typed action names into command
+  palette metadata. It should not start key dispatch, key grammar, action
+  enablement, bubbling, or fuller simulated test-context input.
+- The correct module boundary is a focused template leaf:
+  `include/cgpui/ui/runtime_command_palette_templates.hpp`. Keeping
+  `CommandPaletteEntry` out of `runtime_action_templates.hpp` preserves the
+  split between action registration/dispatch templates and command-palette
+  metadata helpers.
+- Typed command helpers fill `CommandPaletteEntry::action_name` from
+  `action_name<T>()` and preserve the rest of the metadata payload: title,
+  group, action scope, optional view id, optional element id, and enabled
+  state. The existing string-based command registry and dispatch behavior stay
+  source-compatible.
+- Tests that call `Context<T>::app_context()` or `WindowRuntimeContext::app_context()`
+  need to link `cgpui_app`; plain UI runtime tests that do not cross into the
+  app facade can continue to link only `cgpui_ui`.

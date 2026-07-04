@@ -704,6 +704,31 @@ int main() {
       contains(action_scope_metadata, "CommandPaletteEntry")) {
     return 69;
   }
+  const std::string typed_command_metadata =
+      read_source("tests/ui/typed_action_command_metadata_test.cpp");
+  const std::string runtime_command_palette_templates =
+      read_source("include/cgpui/ui/runtime_command_palette_templates.hpp");
+  if (typed_command_metadata.empty() ||
+      runtime_command_palette_templates.empty()) {
+    return 70;
+  }
+  if (!contains(typed_command_metadata,
+                "command_palette_entry<RuntimePaletteAction>") ||
+      !contains(typed_command_metadata,
+                "register_command_palette_entry<ContextPaletteAction>") ||
+      !contains(typed_command_metadata,
+                "register_command_palette_entry<AppContextPaletteAction>") ||
+      !contains(typed_command_metadata,
+                "register_command_palette_entry<ViewPaletteAction>") ||
+      !contains(typed_command_metadata,
+                "register_command_palette_entry<FocusedPaletteAction>") ||
+      !contains(runtime_command_palette_templates,
+                "CommandPaletteEntry command_palette_entry(") ||
+      !contains(runtime_command_palette_templates,
+                "AppContext::register_command_palette_entry(") ||
+      contains(typed_command_metadata, "KeyBinding")) {
+    return 71;
+  }
 
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
@@ -726,6 +751,7 @@ int main() {
       !contains(xmake, "target(\"typed_action_surface_test\")") ||
       !contains(xmake, "target(\"typed_action_dispatch_test\")") ||
       !contains(xmake, "target(\"action_scope_metadata_test\")") ||
+      !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -759,6 +785,8 @@ int main() {
                 "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(xmake,
                 "tests/ui/action_scope_metadata_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

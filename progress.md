@@ -9982,3 +9982,48 @@
 - Step 285 is complete on `master`; Step 286 typed action command metadata
   binding is the next action-band slice before key dispatch, key grammar,
   enablement, bubbling, and fuller test-context simulation.
+
+## 2026-07-05 Phase B Step 286 Typed Action Command Metadata
+
+- Created `codex/phase-b-typed-action-command-metadata` in
+  `.worktrees/phase-b-typed-action-command-metadata` from `6c91fb3`.
+- Baseline Windows focused verification passed:
+  `xmake test -y -P . action_scope_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 7/7.
+- Added RED behavior coverage in
+  `tests/ui/typed_action_command_metadata_test.cpp` and registered
+  `typed_action_command_metadata_test` in `xmake.lua`. RED failed as expected
+  because `cgpui::command_palette_entry<T>` and typed
+  `register_command_palette_entry<T>(...)` APIs were missing.
+- GREEN adds typed command-palette metadata helpers in the focused public leaf
+  `include/cgpui/ui/runtime_command_palette_templates.hpp`, with runtime,
+  context, and `AppContext` typed registration overloads that fill
+  `CommandPaletteEntry::action_name` from `action_name<T>()` while preserving
+  title, group, scope, view id, element id, and enabled metadata.
+- The first GREEN build exposed a test target dependency miss: calling
+  `context.app_context()` needs `cgpui_app`, so
+  `typed_action_command_metadata_test` now links that target explicitly.
+- Fresh Windows focused behavior and structure verification passed:
+  `xmake -y -P . typed_action_command_metadata_test`, then
+  `xmake test -y -P . typed_action_command_metadata_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . typed_action_command_metadata_test/default action_scope_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 8/8.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . typed_action_command_metadata_test/default action_scope_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 8/8.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 72/72.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 69/69.
+- Step 286 is implemented and focused/full verified on
+  `codex/phase-b-typed-action-command-metadata`; it is ready for merge
+  verification.

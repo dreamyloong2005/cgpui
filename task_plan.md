@@ -1685,6 +1685,8 @@ implementation slice.
   complete on `master` at `266c032` after post-merge Windows full-debug 71/71
   and WSL Arch Linux full-debug 68/68 verification; it keeps
   `ActionRegistration` metadata in the focused runtime action boundary. Phase
-  B Step 286 typed action command metadata binding is next. Keep key
-  dispatch, key grammar, enablement, bubbling, and fuller test-context behavior
-  in later slices.
+  B Step 286 typed action command metadata binding is implemented and focused
+  GREEN on `codex/phase-b-typed-action-command-metadata`; it keeps command
+  template helpers in `include/cgpui/ui/runtime_command_palette_templates.hpp`.
+  Phase B Step 287 action enablement metadata is next. Keep key dispatch, key
+  grammar, bubbling, and fuller test-context behavior in later slices.

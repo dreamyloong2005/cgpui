@@ -104,6 +104,7 @@ int main() {
       "include/cgpui/ui/window_runtime.hpp",
       "include/cgpui/ui/runtime_rendering.hpp",
       "include/cgpui/ui/runtime_templates.hpp",
+      "include/cgpui/ui/runtime_command_palette_templates.hpp",
       "include/cgpui/ui/runtime.hpp",
   };
   for (const char* header : public_headers) {
@@ -358,6 +359,8 @@ int main() {
       !contains(runtime_header, "#include \"cgpui/ui/runtime_rendering.hpp\"") ||
       !contains(runtime_header,
                 "#include \"cgpui/ui/runtime_action_templates.hpp\"") ||
+      !contains(runtime_header,
+                "#include \"cgpui/ui/runtime_command_palette_templates.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_templates.hpp\"")) {
     return 7;
   }
@@ -426,6 +429,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_rendering.hpp");
   const std::string runtime_action_templates_header =
       read_source("include/cgpui/ui/runtime_action_templates.hpp");
+  const std::string runtime_command_palette_templates_header =
+      read_source("include/cgpui/ui/runtime_command_palette_templates.hpp");
   const std::string runtime_templates_header =
       read_source("include/cgpui/ui/runtime_templates.hpp");
   if (!contains(runtime_callbacks_header, "using ActionHandler") ||
@@ -575,6 +580,14 @@ int main() {
                 "WindowRuntimeContext::register_action(ActionHandler handler) const") ||
       !contains(runtime_action_templates_header,
                 "WindowRuntimeContext::dispatch_action() const") ||
+      !contains(runtime_command_palette_templates_header,
+                "CommandPaletteEntry command_palette_entry(") ||
+      !contains(runtime_command_palette_templates_header,
+                "WindowRuntime::register_command_palette_entry(") ||
+      !contains(runtime_command_palette_templates_header,
+                "WindowRuntimeContext::register_command_palette_entry(") ||
+      !contains(runtime_command_palette_templates_header,
+                "AppContext::register_command_palette_entry(") ||
       !contains(window_runtime_header, "action_registrations() const") ||
       !contains(runtime_context_header, "action_registrations()") ||
       !contains(runtime_templates_header,
@@ -591,12 +604,14 @@ int main() {
       line_count(window_context_header) > 120 ||
       line_count(window_runtime_header) > 240 ||
       line_count(runtime_action_templates_header) > 120 ||
+      line_count(runtime_command_palette_templates_header) > 80 ||
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
       contains(runtime_types_header, "struct AppContext") ||
       contains(runtime_input_state_header, "class WeakView") ||
       contains(runtime_context_header, "PlatformWindow& window") ||
       contains(runtime_action_templates_header, "CommandPaletteEntry") ||
+      contains(runtime_command_palette_templates_header, "KeyBinding") ||
       contains(runtime_action_templates_header, "KeyBinding") ||
       contains(window_runtime_header, "PlatformApplication& application_") ||
       contains(window_runtime_header, "std::vector<RuntimeTask> tasks_")) {
