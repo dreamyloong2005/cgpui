@@ -475,6 +475,9 @@ int main() {
       !contains(runtime_actions_header, "struct ActionRegistration") ||
       !contains(runtime_actions_header, "bool enabled = true") ||
       !contains(runtime_actions_header, "struct CommandPaletteEntry") ||
+      !contains(runtime_actions_header, "std::string key_binding") ||
+      !contains(runtime_actions_header,
+                "std::optional<KeyBindingContext> key_context") ||
       !contains(runtime_context_header, "bool bind_key(") ||
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
@@ -1019,6 +1022,7 @@ int main() {
       "src/ui/runtime_action_registration.cpp",
       "src/ui/runtime_action_metadata.cpp",
       "src/ui/runtime_command_palette.cpp",
+      "src/ui/runtime_command_palette_keys.cpp",
       "src/ui/runtime_focus.cpp",
       "src/ui/runtime_key_bindings.cpp",
       "src/ui/runtime_key_binding_sequences.cpp",
@@ -1772,6 +1776,8 @@ int main() {
 
   const std::string runtime_command_palette_source =
       read_source("src/ui/runtime_command_palette.cpp");
+  const std::string runtime_command_palette_keys_source =
+      read_source("src/ui/runtime_command_palette_keys.cpp");
   if (line_count(runtime_command_palette_source) > 100 ||
       !contains(runtime_command_palette_source,
                 "void WindowRuntime::register_command_palette_entry(") ||
@@ -1781,9 +1787,34 @@ int main() {
                 "WindowRuntime::dispatch_command_palette_entry(") ||
       !contains(runtime_command_palette_source,
                 "WindowRuntime::dispatch_command_palette_action(") ||
+      !contains(runtime_command_palette_source,
+                "command_palette_key_binding(entry)") ||
+      contains(runtime_command_palette_source, "parse_key_binding(") ||
+      contains(runtime_command_palette_source, "KeyBindingContext::") ||
       contains(runtime_command_palette_source, "request_keyboard_focus(") ||
       contains(runtime_command_palette_source, "bind_text_edit_action(")) {
     return 75;
+  }
+  if (line_count(runtime_command_palette_keys_source) > 80 ||
+      !contains(runtime_command_palette_keys_source,
+                "WindowRuntime::command_palette_key_binding(") ||
+      !contains(runtime_command_palette_keys_source,
+                "parse_key_binding(entry.key_binding") ||
+      !contains(runtime_command_palette_keys_source,
+                "command_palette_key_context(") ||
+      !contains(runtime_command_palette_keys_source,
+                "KeyBindingContext::focused_element(") ||
+      !contains(runtime_command_palette_keys_source,
+                "KeyBindingContext::view(") ||
+      !contains(runtime_command_palette_keys_source,
+                "KeyBindingContext::window()") ||
+      !contains(runtime_command_palette_keys_source,
+                "KeyBindingContext::app()") ||
+      contains(runtime_command_palette_keys_source,
+               "register_command_palette_entry(") ||
+      contains(runtime_command_palette_keys_source, "dispatch_action(") ||
+      contains(runtime_command_palette_keys_source, "bind_text_edit_action(")) {
+    return 134;
   }
 
   const std::string runtime_key_bindings_source =

@@ -4879,3 +4879,26 @@
   asking context activation first, so disabled scopes are skipped for both
   exact matches and partial prefix matches. A disabled more-specific binding
   should not block an outer enabled binding or leave pending sequence state.
+
+## 2026-07-05 Phase B Step 294 Command Palette Key Integration
+
+- Step 294 should stay scoped to wiring command palette metadata to the
+  existing key-binding dispatch path. It should not start action payload
+  macros or Step 295+ simulated test-context input.
+- Current `CommandPaletteEntry` records action name, title, group, scope,
+  enabled state, and optional view/element ids. It does not carry a key grammar
+  string and `WindowRuntime::register_command_palette_entry(...)` only stores
+  valid entries.
+- The smallest aligned API is to add a command-palette-owned key grammar field
+  plus an optional explicit `KeyBindingContext`. Registration can parse the
+  grammar and call the existing `WindowRuntime::bind_key(KeyBinding)` path
+  without coupling command palette templates to key binding internals.
+- Default key context should be derived from the entry scope: app, window,
+  view when `view_id` is present, or focused-element when `element_id` is
+  present. Disabled entries should not install key bindings, because direct
+  key dispatch would otherwise bypass `CommandPaletteEntry::enabled`.
+- Implementation ownership belongs in a focused
+  `src/ui/runtime_command_palette_keys.cpp` source. The registry/query/dispatch
+  file should call a narrow private `WindowRuntime::command_palette_key_binding`
+  helper but should not own `parse_key_binding(...)` or `KeyBindingContext`
+  derivation logic.

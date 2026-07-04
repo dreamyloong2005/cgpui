@@ -67,6 +67,7 @@ void notify_window_observers();
 void notify_view_observers(ViewId view_id);
 void deactivate_native_additional_windows();
 void upsert_action_registration(ActionRegistration registration);
+[[nodiscard]] std::optional<KeyBinding> command_palette_key_binding(const CommandPaletteEntry& entry) const;
 [[nodiscard]] std::optional<bool> action_registration_enabled(
     std::string_view name,
     ActionScope dispatch_scope,
@@ -111,7 +112,6 @@ template <typename T>
 [[nodiscard]] bool notify_entity_changed(
     std::type_index entity_type,
     std::uint64_t entity_id_value);
-
 struct RegisteredView {
   View* view = nullptr;
   std::unique_ptr<View> owned_view;

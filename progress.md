@@ -10523,3 +10523,75 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 76/76.
 - Step 293 is complete on `master`; Step 294 command palette key integration
   is the next key-dispatch slice before fuller test-context behavior.
+
+## 2026-07-05 Phase B Step 294 Command Palette Key Integration
+
+- Created feature worktree `.worktrees/phase-b-command-palette-key-integration`
+  on `codex/phase-b-command-palette-key-integration` from
+  `92a8b98 docs: mark step 293 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . typed_action_command_metadata_test/default
+  key_binding_disabled_scope_test/default key_binding_partial_match_test/default
+  keymap_context_test/default key_binding_platform_modifier_test/default
+  key_binding_grammar_test/default action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 12/12.
+- Design boundary: add command-palette-owned key metadata and registration-time
+  binding through the existing key-binding parser/dispatch path. Keep action
+  payload macros and Step 295+ simulated test-context input out of this slice.
+- Added RED behavior/API coverage in
+  `tests/ui/command_palette_key_integration_test.cpp` and registered
+  `command_palette_key_integration_test` in `xmake.lua`. RED failed as
+  expected because `CommandPaletteEntry::key_binding` and
+  `CommandPaletteEntry::key_context` did not exist.
+- GREEN adds `CommandPaletteEntry::key_binding` and optional
+  `CommandPaletteEntry::key_context`, parses valid enabled command-palette
+  entries into existing `KeyBinding` records, derives app/window/view/focused
+  contexts from entry scope, and leaves invalid or disabled palette entries
+  stored without installing a direct key binding.
+- Refactor/structure pass keeps `src/ui/runtime_command_palette.cpp` focused on
+  register/query/dispatch and moves key parsing/context derivation into the
+  focused `src/ui/runtime_command_palette_keys.cpp` boundary. Architecture and
+  parity ledger tests now guard that split.
+- First Windows focused run failed only
+  `ui_source_structure_test/default`: direct execution returned 100 because
+  the private helper declaration pushed `src/ui/window_runtime_internal.hpp`
+  to 262 real newline-counted lines, above the existing 260 cap. Compressed
+  the helper declaration and removed one local blank line; direct
+  `ui_source_structure_test.exe` then returned 0 with the internal header back
+  at exactly 260 lines.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . command_palette_key_integration_test/default
+  typed_action_command_metadata_test/default
+  key_binding_disabled_scope_test/default
+  key_binding_partial_match_test/default keymap_context_test/default
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  15/15.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  command_palette_key_integration_test/default
+  typed_action_command_metadata_test/default
+  key_binding_disabled_scope_test/default
+  key_binding_partial_match_test/default keymap_context_test/default
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  15/15.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 80/80.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 77/77.

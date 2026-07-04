@@ -4,7 +4,11 @@ namespace cgpui {
 
 void WindowRuntime::register_command_palette_entry(CommandPaletteEntry entry) {
   if (!entry.action_name.empty() && !entry.title.empty()) {
+    std::optional<KeyBinding> binding = command_palette_key_binding(entry);
     command_palette_entries_.push_back(std::move(entry));
+    if (binding.has_value()) {
+      bind_key(std::move(*binding));
+    }
   }
 }
 

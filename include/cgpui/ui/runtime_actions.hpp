@@ -54,6 +54,8 @@ struct CommandPaletteEntry {
   bool enabled = true;
   std::optional<ViewId> view_id;
   std::optional<ElementId> element_id;
+  std::string key_binding;
+  std::optional<KeyBindingContext> key_context;
 };
 
 } // namespace cgpui

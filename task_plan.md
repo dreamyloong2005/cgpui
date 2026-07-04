@@ -1721,5 +1721,6 @@ implementation slice.
   `KeyBindingContext::disabled()`, and disabled-scope filtering in
   `WindowRuntime::key_binding_context_active(...)` so disabled exact and
   partial-prefix bindings do not block outer enabled bindings. Phase B Step
-  294 command palette key integration is the next key-dispatch slice before
-  fuller test-context behavior.
+  294 command palette key integration is implemented and verified in
+  `codex/phase-b-command-palette-key-integration`; Step 295 test-context
+  keystroke simulation is the next slice after merge.

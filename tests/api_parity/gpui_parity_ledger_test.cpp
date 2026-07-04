@@ -222,11 +222,13 @@ int main() {
       !contains(ledger, "keymap context filtering") ||
       !contains(ledger, "partial key sequence matching") ||
       !contains(ledger, "disabled key scope filtering") ||
+      !contains(ledger, "command palette key integration") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
       !contains(ledger, "include/cgpui/ui/key_binding.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
       !contains(ledger,
                 "include/cgpui/ui/runtime_action_enablement_templates.hpp") ||
+      !contains(ledger, "src/ui/runtime_command_palette_keys.cpp") ||
       !contains(ledger, "src/ui/runtime_action_dispatch.cpp") ||
       !contains(ledger, "src/ui/runtime_action_metadata.cpp") ||
       !contains(ledger, "src/ui/runtime_action_registration.cpp") ||
@@ -245,6 +247,8 @@ int main() {
       !contains(ledger, "tests/ui/keymap_context_test.cpp") ||
       !contains(ledger, "tests/ui/key_binding_partial_match_test.cpp") ||
       !contains(ledger, "tests/ui/key_binding_disabled_scope_test.cpp") ||
+      !contains(ledger,
+                "tests/ui/command_palette_key_integration_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -278,6 +282,7 @@ int main() {
               "keymap context filtering",
               "partial key sequence matching",
               "disabled key scope filtering",
+              "command palette key integration",
               "typed_action_surface_test",
               "action_enablement_metadata_test",
               "action_bubbling_test",
@@ -286,11 +291,13 @@ int main() {
               "keymap_context_test",
               "key_binding_partial_match_test",
               "key_binding_disabled_scope_test",
+              "command_palette_key_integration_test",
               "key_binding.hpp",
               "runtime_key_binding_grammar.cpp",
               "runtime_key_binding_modifiers.cpp",
               "runtime_key_binding_contexts.cpp",
               "runtime_key_binding_sequences.cpp",
+              "runtime_command_palette_keys.cpp",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -854,6 +861,32 @@ int main() {
       contains(runtime_key_binding_grammar, "dispatch_action(")) {
     return 77;
   }
+  const std::string command_palette_key_integration =
+      read_source("tests/ui/command_palette_key_integration_test.cpp");
+  const std::string runtime_command_palette_keys =
+      read_source("src/ui/runtime_command_palette_keys.cpp");
+  if (command_palette_key_integration.empty() ||
+      runtime_command_palette_keys.empty()) {
+    return 78;
+  }
+  if (!contains(command_palette_key_integration,
+                "cgpui::CommandPaletteEntry") ||
+      !contains(command_palette_key_integration,
+                ".key_binding = \"ctrl-p\"") ||
+      !contains(command_palette_key_integration,
+                ".key_context = cgpui::KeyBindingContext::window()") ||
+      !contains(command_palette_key_integration,
+                ".enabled = false") ||
+      !contains(command_palette_key_integration, "ctrl-unknown") ||
+      !contains(runtime_command_palette_keys,
+                "WindowRuntime::command_palette_key_binding(") ||
+      !contains(runtime_command_palette_keys,
+                "parse_key_binding(entry.key_binding") ||
+      !contains(runtime_command_palette_keys,
+                "KeyBindingContext::focused_element(") ||
+      contains(runtime_command_palette_keys, "dispatch_action(")) {
+    return 79;
+  }
 
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
@@ -882,6 +915,7 @@ int main() {
       !contains(xmake, "target(\"key_binding_platform_modifier_test\")") ||
       !contains(xmake, "target(\"keymap_context_test\")") ||
       !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
+      !contains(xmake, "target(\"command_palette_key_integration_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -931,6 +965,8 @@ int main() {
                 "tests/ui/key_binding_disabled_scope_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/command_palette_key_integration_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

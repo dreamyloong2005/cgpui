@@ -287,7 +287,7 @@ shape before deeper native work expands platform behavior.
   `src/ui/runtime_action_dispatch.cpp`, where unhandled or disabled
   focused/view/window handlers continue outward and consumed or cancelled
   handlers stop dispatch.
-- [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
+- [x] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration. Step 289 adds the focused
   `include/cgpui/ui/key_binding.hpp` leaf, `parse_key_binding(...)`, and
@@ -303,8 +303,12 @@ shape before deeper native work expands platform behavior.
   `ctrl-k ctrl-s`, and pending partial-match dispatch state in
   `src/ui/runtime_key_binding_sequences.cpp`. Step 293 adds disabled
   `KeyBindingContext` scope filtering so disabled view/window/focused key
-  scopes are skipped without blocking outer enabled bindings. Command palette
-  integration and fuller test-context simulation remain later slices.
+  scopes are skipped without blocking outer enabled bindings. Step 294 adds
+  command-palette-owned `key_binding` and optional explicit `key_context`
+  metadata, derives app/window/view/focused-element key contexts from palette
+  scope when needed, installs valid enabled entries through
+  `src/ui/runtime_command_palette_keys.cpp`, and keeps fuller test-context
+  simulation for later slices.
 - [ ] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
   redraws.
@@ -613,10 +617,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 294 command palette key integration is next after Step 293 disabled key
-scopes. Step 293 records disabled `KeyBindingContext` scope filtering while
-keeping command palette integration and fuller test-context simulation out of
-scope.
+Step 295 test-context keystroke simulation is next after Step 294 command
+palette key integration. Step 294 records command-palette-owned key grammar and
+key-context metadata while keeping action macro payloads and fuller
+test-context clipboard/timer/async/redraw behavior out of scope.
 
 ## Self-Review
 
