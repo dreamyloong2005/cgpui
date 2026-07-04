@@ -1727,14 +1727,12 @@ implementation slice.
   derives default key contexts from command scope, skips disabled or invalid
   palette bindings, and keeps parsing/context derivation in
   `src/ui/runtime_command_palette_keys.cpp`. Phase B Step 295 test-context
-  keystroke simulation is implemented and feature-worktree verified on
-  `codex/phase-b-test-context-keystrokes`: `TestContextCapability` now exposes
-  direct `dispatch_keystroke(...)` and grammar-backed
-  `simulate_keystrokes(...)` through the real runtime event/key binding/action
-  dispatch path, with ownership isolated in `src/ui/test_context_keystrokes.cpp`.
-  Fresh feature-worktree verification passed `git diff --check` with only
-  expected LF-to-CRLF warnings, Windows full-debug 81/81, WSL Arch Linux
-  focused 11/11, and WSL Arch Linux full-debug 78/78. Step 296 test-context
-  pointer input simulation is the next slice, followed by Step 297 focus/window
-  activation simulation, Step 298 clipboard helpers, Step 299 timer/async
-  advancement helpers, and Step 300 redraw/frame pump simulation.
+  keystroke simulation is complete on `master` at `04cfa7a` after post-merge
+  Windows full-debug 81/81 and WSL Arch Linux full-debug 78/78 verification:
+  `TestContextCapability` now exposes direct `dispatch_keystroke(...)` and
+  grammar-backed `simulate_keystrokes(...)` through the real runtime
+  event/key binding/action dispatch path, with ownership isolated in
+  `src/ui/test_context_keystrokes.cpp`. Step 296 test-context pointer input
+  simulation is the next slice, followed by Step 297 focus/window activation
+  simulation, Step 298 clipboard helpers, Step 299 timer/async advancement
+  helpers, and Step 300 redraw/frame pump simulation.

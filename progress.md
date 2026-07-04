@@ -10663,3 +10663,20 @@
   It is ready for feature commit and merge verification. Step 296
   test-context pointer input simulation is the next slice after Step 295 lands
   on `master`.
+
+## 2026-07-05 Phase B Step 295 Merge
+
+- Fast-forward merged `codex/phase-b-test-context-keystrokes` into `master` at
+  `04cfa7a feat: add test context keystroke simulation`.
+- Before merging, cleared a main-worktree status oddity on
+  `tests/api_parity/test_context_capability_test.cpp` and `xmake.lua` only
+  after confirming both working-tree hashes matched `HEAD` exactly; the
+  pre-existing untracked `.vscode/` directory was preserved.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 81/81.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 78/78.
+- Step 295 is complete on `master`; Step 296 test-context pointer input
+  simulation is the next slice in the Step 295-300 test-context behavior band.
