@@ -270,11 +270,12 @@ shape before deeper native work expands platform behavior.
   entity subscriptions before actions and key dispatch begin.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
-  enablement, and bubbling through focused routes. Step 283 starts this band
-  with the public `Action<T>` typed action concept and `action_name<T>()`
-  authoring surface in `include/cgpui/ui/action.hpp`, while keeping typed
-  registration/dispatch, key dispatch, and fuller test-context simulation for
-  later slices.
+  enablement, and bubbling through focused routes. Step 283 landed the public
+  `Action<T>` typed action concept and `action_name<T>()` authoring surface in
+  `include/cgpui/ui/action.hpp`; Step 284 adds typed action
+  registration/dispatch overloads over the existing string registry while
+  keeping key dispatch, key grammar, command metadata, and fuller test-context
+  simulation for later slices.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration.
@@ -586,16 +587,17 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 282 observation/subscription closure audit is merged on `master` at
-`4a8d837 feat: close observation subscription cleanup` and post-merge verified
-on Windows and WSL Arch Linux. Continue Phase B with Step 283, starting the
-typed-action parity band without pulling key dispatch or fuller test-context
+Step 283 public typed-action authoring surface is merged on `master` at
+`6b383e4 feat: add typed action surface` and post-merge verified on Windows and
+WSL Arch Linux. Continue Phase B with Step 284 typed action
+registration/dispatch overloads over the existing string registry, without
+pulling key dispatch, key grammar, command metadata, or fuller test-context
 simulation forward.
 
-Step 283 is in progress on `codex/phase-b-typed-action-surface`: the intended
-scope is the public typed-action authoring surface only, with
-`include/cgpui/ui/action.hpp` as the ownership boundary and
-`tests/api_parity/typed_action_surface_test.cpp` as the prelude-only API gate.
+Step 284 should use `include/cgpui/ui/action.hpp` for typed authoring helpers
+and the existing action runtime boundary for overloads. The guard should prove
+typed registration/dispatch works while preserving string action behavior and
+last-dispatch observability.
 
 ## Self-Review
 

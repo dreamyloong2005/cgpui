@@ -4685,3 +4685,17 @@
 - Keep typed registration/dispatch overloads, command metadata binding, key
   context grammar, key routing, and fuller simulated test-context input for the
   next action/key-dispatch slices.
+
+## 2026-07-05 Phase B Step 284 Typed Action Registration/Dispatch
+
+- Step 284 should stay scoped to typed action registration and dispatch
+  overloads over the existing string-keyed action registry. It should not start
+  key dispatch, key grammar, command metadata, enablement, bubbling, or fuller
+  test-context input.
+- Keep typed authoring helpers in `include/cgpui/ui/action.hpp`; add overloads
+  at the existing action ownership boundary instead of introducing another
+  registry. Aggregate headers should remain thin.
+- Behavior coverage should prove that an action struct with `static
+  std::string_view name` can be registered and dispatched through the typed API,
+  while preserving existing string action behavior and last-dispatch
+  observability.

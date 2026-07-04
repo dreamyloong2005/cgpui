@@ -1674,8 +1674,9 @@ implementation slice.
   on `master` after post-merge Windows and WSL full-debug verification. Phase
   B Step 282 observation/subscription closure audit is complete on `master`
   after post-merge Windows and WSL full-debug verification. Phase B Step 283,
-  public typed-action authoring surface, is implemented and feature-worktree
-  verified on `codex/phase-b-typed-action-surface`; the ownership boundary is
-  the focused `include/cgpui/ui/action.hpp` leaf with prelude exposure, while
-  typed registration/dispatch, key dispatch, and fuller test-context behavior
-  stay in later slices.
+  public typed-action authoring surface, is complete on `master` after
+  post-merge Windows and WSL full-debug verification; the ownership boundary is
+  the focused `include/cgpui/ui/action.hpp` leaf with prelude exposure. Phase B
+  Step 284 typed action registration/dispatch overloads is the next action-band
+  slice; keep key dispatch, key grammar, command metadata, and fuller
+  test-context behavior in later slices.

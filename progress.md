@@ -9859,3 +9859,18 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 66/66.
 - Step 283 is implemented and focused/full verified on
   `codex/phase-b-typed-action-surface`; it is ready for merge verification.
+
+## 2026-07-05 Phase B Step 283 Merge
+
+- Fast-forward merged `codex/phase-b-typed-action-surface` into `master` at
+  `6b383e4 feat: add typed action surface`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 69/69.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 66/66.
+- Step 283 is complete on `master`; Step 284 typed action
+  registration/dispatch overloads is the next action-band slice, without
+  pulling key dispatch, key grammar, command metadata, or fuller test-context
+  behavior forward.
