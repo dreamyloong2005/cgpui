@@ -40,8 +40,18 @@ KeyBindingContext KeyBindingContext::focused_element(ElementId element_id) {
   };
 }
 
+KeyBindingContext KeyBindingContext::disabled() const {
+  KeyBindingContext context = *this;
+  context.enabled = false;
+  return context;
+}
+
 bool WindowRuntime::key_binding_context_active(
     const KeyBindingContext& context) const {
+  if (!context.enabled) {
+    return false;
+  }
+
   switch (context.kind) {
     case KeyBindingContextKind::app:
       return true;

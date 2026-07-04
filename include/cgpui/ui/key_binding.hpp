@@ -24,11 +24,13 @@ struct KeyBindingContext {
   KeyBindingContextKind kind = KeyBindingContextKind::app;
   std::optional<ViewId> view_id;
   std::optional<ElementId> element_id;
+  bool enabled = true;
 
   [[nodiscard]] static KeyBindingContext app();
   [[nodiscard]] static KeyBindingContext window();
   [[nodiscard]] static KeyBindingContext view(ViewId view_id);
   [[nodiscard]] static KeyBindingContext focused_element(ElementId element_id);
+  [[nodiscard]] KeyBindingContext disabled() const;
 };
 
 struct KeyBindingChord {

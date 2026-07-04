@@ -398,6 +398,8 @@ int main() {
       !contains(key_binding_header, "struct KeyBindingChord") ||
       !contains(key_binding_header, "enum class KeyBindingContextKind") ||
       !contains(key_binding_header, "struct KeyBindingContext") ||
+      !contains(key_binding_header, "bool enabled = true") ||
+      !contains(key_binding_header, "KeyBindingContext disabled() const") ||
       !contains(key_binding_header, "KeyBindingContext context") ||
       !contains(key_binding_header, "std::vector<KeyBindingChord> sequence") ||
       !contains(key_binding_header, "focused_element(ElementId") ||
@@ -1848,6 +1850,9 @@ int main() {
   if (line_count(runtime_key_binding_contexts_source) > 90 ||
       !contains(runtime_key_binding_contexts_source,
                 "WindowRuntime::key_binding_context_active(") ||
+      !contains(runtime_key_binding_contexts_source,
+                "KeyBindingContext::disabled() const") ||
+      !contains(runtime_key_binding_contexts_source, "!context.enabled") ||
       !contains(runtime_key_binding_contexts_source, "route_contains_view(") ||
       contains(runtime_key_binding_contexts_source,
                "WindowRuntime::dispatch_key_binding_for_event(") ||

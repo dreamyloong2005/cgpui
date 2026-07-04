@@ -4862,3 +4862,20 @@
   in `src/ui/runtime_key_binding_contexts.cpp`, registration storage remains
   in `src/ui/runtime_key_bindings.cpp`, and `runtime_event_keyboard.cpp`
   remains a thin keyboard-event entry.
+
+## 2026-07-05 Phase B Step 293 Disabled Key Scopes
+
+- Step 293 should stay scoped to disabled key binding scopes. It should not
+  start command palette key integration, action payload macros, or fuller
+  simulated test-context input.
+- The public API boundary remains `include/cgpui/ui/key_binding.hpp`: add a
+  boolean `KeyBindingContext::enabled` state plus `KeyBindingContext::disabled()`
+  authoring helper. This keeps disabled scope metadata with the scope object
+  rather than adding command-palette or action registration coupling.
+- Runtime filtering belongs in `src/ui/runtime_key_binding_contexts.cpp` by
+  making `WindowRuntime::key_binding_context_active(...)` return false for
+  disabled contexts before app/window/view/focused-element matching.
+- Sequence dispatch in `src/ui/runtime_key_binding_sequences.cpp` should keep
+  asking context activation first, so disabled scopes are skipped for both
+  exact matches and partial prefix matches. A disabled more-specific binding
+  should not block an outer enabled binding or leave pending sequence state.
