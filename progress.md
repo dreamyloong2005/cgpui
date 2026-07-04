@@ -8911,3 +8911,17 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 50/50.
 - Step 267 is implemented and verified on
   `codex/phase-b-entity-observation`; it is ready for merge verification.
+
+## 2026-07-04 Phase B Step 267 Merge
+
+- Committed the entity observation branch as
+  `10d5c23 feat: add entity observation helpers`.
+- Fast-forward merged `codex/phase-b-entity-observation` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 53/53.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 50/50.
+- Step 267 is complete on `master`; Step 268 entity update transactions is the
+  next Phase B slice.
