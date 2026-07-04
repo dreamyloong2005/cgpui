@@ -1677,8 +1677,10 @@ implementation slice.
   public typed-action authoring surface, is complete on `master` after
   post-merge Windows and WSL full-debug verification; the ownership boundary is
   the focused `include/cgpui/ui/action.hpp` leaf with prelude exposure. Phase B
-  Step 284 typed action registration/dispatch overloads is implemented and
-  focused/full verified on `codex/phase-b-typed-action-dispatch`; it keeps
+  Step 284 typed action registration/dispatch overloads is complete on
+  `master` at `3d50204` after post-merge Windows full-debug 70/70 and WSL
+  Arch Linux full-debug 67/67 verification; it keeps
   `include/cgpui/ui/runtime_action_templates.hpp` as the typed overload leaf
-  over the existing string registry. Keep key dispatch, key grammar, command
-  metadata, and fuller test-context behavior in later slices.
+  over the existing string registry. Phase B Step 285 action scope metadata is
+  next. Keep key dispatch, key grammar, command metadata, and fuller
+  test-context behavior in later slices.

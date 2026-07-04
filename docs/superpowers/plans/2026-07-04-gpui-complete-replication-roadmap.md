@@ -272,11 +272,12 @@ shape before deeper native work expands platform behavior.
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes. Step 283 landed the public
   `Action<T>` typed action concept and `action_name<T>()` authoring surface in
-  `include/cgpui/ui/action.hpp`; Step 284 adds typed action
+  `include/cgpui/ui/action.hpp`; Step 284 landed typed action
   registration/dispatch overloads through
   `include/cgpui/ui/runtime_action_templates.hpp` over the existing string
-  registry while keeping key dispatch, key grammar, command metadata, and
-  fuller test-context simulation for later slices.
+  registry. Step 285 is the next action-scope metadata slice while key
+  dispatch, key grammar, command metadata, and fuller test-context simulation
+  remain later work.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration.
@@ -588,16 +589,16 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 284 typed action registration/dispatch overloads is implemented and
-focused/full verified on `codex/phase-b-typed-action-dispatch`. It uses
-`include/cgpui/ui/action.hpp` for typed authoring helpers,
-`include/cgpui/ui/runtime_action_templates.hpp` for overload definitions, and
-the existing string action registry as the storage/dispatch backend.
+Step 285 action scope metadata is next. Step 284 typed action
+registration/dispatch overloads is complete on `master` at `3d50204` after
+post-merge Windows full-debug 70/70 and WSL Arch Linux full-debug 67/67
+verification.
 
-The Step 284 guard proves typed runtime/context registration and typed dispatch
-work while preserving string action behavior and last-dispatch observability.
-Continue to merge verification on `master`; keep key dispatch, key grammar,
-command metadata, and fuller test-context simulation for later slices.
+The Step 285 guard should keep the action-band scope narrow: expose enough
+metadata to distinguish app, window, view, focused-element, and general action
+registration scopes over the existing action registry. Keep key dispatch, key
+grammar, command metadata/palette integration, enablement, bubbling, and fuller
+test-context simulation for later slices.
 
 ## Self-Review
 

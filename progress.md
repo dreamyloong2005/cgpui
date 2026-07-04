@@ -9913,3 +9913,17 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 67/67.
 - Step 284 is implemented and focused/full verified on
   `codex/phase-b-typed-action-dispatch`; it is ready for merge verification.
+
+## 2026-07-05 Phase B Step 284 Merge
+
+- Fast-forward merged `codex/phase-b-typed-action-dispatch` into `master` at
+  `3d50204 feat: add typed action dispatch overloads`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 70/70.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 67/67.
+- Step 284 is complete on `master`; Step 285 action scope metadata is the next
+  action-band slice before command metadata, enablement, bubbling, key
+  dispatch, and fuller test-context simulation.
