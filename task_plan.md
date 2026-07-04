@@ -1694,10 +1694,11 @@ implementation slice.
   verification. Phase B Step 288 action bubbling through focused routes is
   complete on `master` at `97dda96`
   after post-merge Windows full-debug 74/74 and WSL Arch Linux full-debug
-  71/71 verification. Phase B Step 289 key binding grammar is in progress on
-  `codex/phase-b-key-binding-grammar`; the slice owns GPUI-style single-chord
+  71/71 verification. Phase B Step 289 key binding grammar is complete on
+  `master` at `a81fc02` after post-merge Windows full-debug 75/75 and WSL Arch
+  Linux full-debug 72/72 verification; the slice owns GPUI-style single-chord
   parsing in `include/cgpui/ui/key_binding.hpp` and
   `src/ui/runtime_key_binding_grammar.cpp` plus
-  `Context<T>::bind_key("ctrl-shift-s", "action")`. Keep platform modifiers,
-  keymap contexts, partial matches, disabled scopes, command palette
-  integration, and fuller test-context behavior in later slices.
+  `Context<T>::bind_key("ctrl-shift-s", "action")`. Phase B Step 290 platform
+  modifier semantics is next before keymap contexts, partial matches, disabled
+  scopes, command palette integration, and fuller test-context behavior.

@@ -10206,3 +10206,18 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 72/72.
 - Step 289 is implemented and focused/full verified on
   `codex/phase-b-key-binding-grammar`; it is ready for merge verification.
+
+## 2026-07-05 Phase B Step 289 Merge
+
+- Fast-forward merged `codex/phase-b-key-binding-grammar` into `master` at
+  `a81fc02 feat: add key binding grammar`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 75/75.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 72/72.
+- Step 289 is complete on `master`; Step 290 platform modifier semantics is
+  the next key-dispatch slice before keymap contexts, partial matches,
+  disabled scopes, command palette integration, and fuller test-context
+  simulation.
