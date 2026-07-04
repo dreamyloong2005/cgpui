@@ -251,17 +251,18 @@ Windows full debug 47/47 and WSL Arch Linux full debug 44/44. Step 262,
 deeper public `Context<T>` app/window/entity access patterns, is the next
 Phase B slice.
 
-Step 262, deeper public `Context<T>` app/window/entity access patterns, is in
-progress on `codex/phase-b-context-capabilities`. RED failed as expected on
-missing `Context<T>::window()`, `Context<T>::entity(...)`, and
-`Context<T>::weak_entity(...)` authoring helpers. GREEN adds `window()` as a
-public `Window` facade alias for the current runtime window, renames the
+Step 262, deeper public `Context<T>` app/window/entity access patterns, is
+merged on `master` at `ef9dff0 feat: add context capability helpers`. RED
+failed as expected on missing `Context<T>::window()`, `Context<T>::entity(...)`,
+and `Context<T>::weak_entity(...)` authoring helpers. GREEN adds `window()` as
+a public `Window` facade alias for the current runtime window, renames the
 low-level public platform-window field to `platform_window`, and adds template
 entity/weak-entity helpers over the existing runtime entity store without
 claiming full entity lifecycle parity yet. Feature-worktree focused
 verification passed Windows 7/7 and WSL Arch Linux 11/11. Feature-worktree
-full debug passed Windows 48/48 and WSL Arch Linux 45/45. Merge and post-merge
-verification remain before Step 262 can be marked complete.
+full debug passed Windows 48/48 and WSL Arch Linux 45/45. Post-merge
+verification passed Windows 48/48 and WSL Arch Linux 45/45. Step 263 is the
+next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
