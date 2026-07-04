@@ -4569,3 +4569,24 @@
   The implementation builds a pending callback list and rechecks subscribed
   observer ids before invocation, so callbacks can release subscriptions
   without invalidating the active traversal.
+
+## 2026-07-04 Phase B Step 278 Entity-To-Entity Observation
+
+- Step 278 should stay scoped to public entity-to-entity observation spelling:
+  `EntityHandle<ObserverT>::observe_entity(context, observed, observer)`,
+  `EntityHandle<ObserverT>::observe_entity_subscription(...)`, and matching
+  three-argument `Context<T>::observe_entity(...)` /
+  `observe_entity_subscription(...)` overloads.
+- The implementation belongs in the existing public handle/context template
+  boundary: `include/cgpui/core/entity.hpp`,
+  `include/cgpui/ui/runtime_context.hpp`, and
+  `include/cgpui/ui/runtime_templates.hpp`. It should not add a new runtime
+  store or move observer behavior into `ui.cpp` or broad implementation files.
+- The C++ adaptation of upstream GPUI observation callbacks passes mutable
+  observer entity state, the observed `EntityHandle<ObservedT>`, and the
+  current context. The callback mutates observer state directly but does not
+  introduce a new observer-entity invalidation policy in this slice.
+- Registration soft-fails when either handle is empty, belongs to another
+  runtime token, or when the observer entity is missing. If the observer entity
+  is removed after registration, callbacks skip it; deterministic unsubscribe
+  remains owned by Step 277's `Subscription::release()` path.

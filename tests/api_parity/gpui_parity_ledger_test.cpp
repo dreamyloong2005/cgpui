@@ -139,6 +139,7 @@ int main() {
       !contains(ledger, "weak upgrade/read semantics") ||
       !contains(ledger, "`observe_entity(...)` helpers") ||
       !contains(ledger, "entity observation helpers") ||
+      !contains(ledger, "entity-to-entity observation helpers") ||
       !contains(ledger, "`update_entity(...)` transaction helpers") ||
       !contains(ledger, "value-returning update transactions") ||
       !contains(ledger, "`invalidate_entity(...)` helpers") ||
@@ -180,6 +181,8 @@ int main() {
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/entity_observation_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/entity_to_entity_observation_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/subscription_lifetime_test.cpp") ||
       !contains(ledger,
@@ -230,6 +233,7 @@ int main() {
               "gpui::TestAppContext",
               "deterministic subscription lifetime/unsubscribe behavior",
               "deterministic Subscription lifetime/unsubscribe behavior",
+              "entity-to-entity observation helpers",
               "invalidate_entity helpers",
               "entity deletion helpers",
               "\"x11\"",
@@ -365,6 +369,30 @@ int main() {
       contains(entity_observation, "ViewContext") ||
       contains(entity_observation, "PlatformWindow")) {
     return 28;
+  }
+
+  const std::string entity_to_entity_observation =
+      read_source("tests/api_parity/entity_to_entity_observation_test.cpp");
+  if (entity_to_entity_observation.empty()) {
+    return 53;
+  }
+  if (!contains(entity_to_entity_observation, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(entity_to_entity_observation, "observer.observe_entity(") ||
+      !contains(entity_to_entity_observation,
+                "context.observe_entity_subscription") ||
+      !contains(entity_to_entity_observation, "ObserverState& owner") ||
+      !contains(entity_to_entity_observation,
+                "cgpui::EntityHandle<ObservedState>") ||
+      !contains(entity_to_entity_observation,
+                "cgpui::Render<EntityToEntityObservationView>")) {
+    return 54;
+  }
+  if (contains(entity_to_entity_observation, "WindowRuntimeContext") ||
+      contains(entity_to_entity_observation, "WindowRuntime") ||
+      contains(entity_to_entity_observation, "AppContext") ||
+      contains(entity_to_entity_observation, "ViewContext") ||
+      contains(entity_to_entity_observation, "PlatformWindow")) {
+    return 55;
   }
 
   const std::string subscription_lifetime =

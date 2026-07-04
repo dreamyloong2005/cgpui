@@ -180,6 +180,28 @@ class TestView final : public cgpui::View {
                cgpui::EntityHandle<TestModel>) {});
     (void)entity_subscription.connected();
     (void)entity_subscription.release();
+    const cgpui::EntityHandle<TestModel> observer_entity =
+        context.new_entity<TestModel>(7);
+    (void)observer_entity.observe_entity(
+        context,
+        entity,
+        [](TestModel& observer,
+           cgpui::EntityHandle<TestModel> observed,
+           const cgpui::Context<TestModel>& observer_context) {
+          (void)observed.read(observer_context);
+          observer.value += 1;
+        });
+    cgpui::Subscription entity_to_entity_subscription =
+        context.observe_entity_subscription(
+            observer_entity,
+            entity,
+            [](TestModel& observer,
+               cgpui::EntityHandle<TestModel> observed,
+               const cgpui::Context<TestModel>& observer_context) {
+              (void)observed.read(observer_context);
+              observer.value += 1;
+            });
+    (void)entity_to_entity_subscription.release();
     context.defer([](const cgpui::ViewContext& deferred_context) {
       deferred_context.request_paint();
     });

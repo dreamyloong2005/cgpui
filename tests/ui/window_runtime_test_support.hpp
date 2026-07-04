@@ -680,6 +680,68 @@ class RecordingView final : public cgpui::View {
         entity_handle_observer_value_sum_after_context_invalidate =
             entity_handle_observer_value_sum;
       }
+      if (exercise_entity_to_entity_observation && keyboard_key_count == 1) {
+        const cgpui::Context<RecordingView>& author_context = context;
+        observing_entity = author_context.new_entity<RuntimeEntity>(3);
+        observed_entity = author_context.new_entity<RuntimeEntity>(5);
+        entity_to_entity_observed =
+            observing_entity.observe_entity(
+                author_context,
+                observed_entity,
+                [this](RuntimeEntity& observer,
+                       cgpui::EntityHandle<RuntimeEntity> observed,
+                       const cgpui::Context<RuntimeEntity>& observe_context) {
+                  const RuntimeEntity* observed_state =
+                      observed.read(observe_context);
+                  entity_to_entity_context_matched =
+                      observe_context.view_id == cgpui::ViewId{1};
+                  observer.value +=
+                      observed_state == nullptr ? -100 : observed_state->value;
+                  entity_to_entity_callback_count += 1;
+                });
+        cgpui::Subscription subscription =
+            author_context.observe_entity_subscription(
+                observing_entity,
+                observed_entity,
+                [this](RuntimeEntity& observer,
+                       cgpui::EntityHandle<RuntimeEntity> observed,
+                       const cgpui::Context<RuntimeEntity>& observe_context) {
+                  const RuntimeEntity* observed_state =
+                      observed.read(observe_context);
+                  observer.value +=
+                      observed_state == nullptr ? -1000
+                                                : observed_state->value;
+                  entity_to_entity_subscription_count += 1;
+                });
+        entity_to_entity_subscription_connected =
+            subscription.connected();
+        entity_to_entity_observed_update =
+            observed_entity.update(
+                author_context,
+                [](RuntimeEntity& entity) {
+                  entity.value = 8;
+                });
+        const RuntimeEntity* observer_state =
+            observing_entity.read(author_context);
+        entity_to_entity_observer_value_after_update =
+            observer_state == nullptr ? -1 : observer_state->value;
+        entity_to_entity_callback_count_after_update =
+            entity_to_entity_callback_count;
+        entity_to_entity_subscription_count_after_update =
+            entity_to_entity_subscription_count;
+        entity_to_entity_release = subscription.release();
+        entity_to_entity_update_after_release =
+            observed_entity.update(
+                author_context,
+                [](RuntimeEntity& entity) {
+                  entity.value = 10;
+                });
+        const RuntimeEntity* observer_after_release =
+            observing_entity.read(author_context);
+        entity_to_entity_observer_value_after_release =
+            observer_after_release == nullptr ? -1
+                                              : observer_after_release->value;
+      }
       if (exercise_global_state_helpers && keyboard_key_count == 1) {
         const cgpui::Context<RecordingView>& author_context = context;
         global_missing_before_set =
@@ -1053,6 +1115,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_subscription_ownership_token = false;
   bool exercise_entity_handle_helpers = false;
   bool exercise_entity_invalidation_helpers = false;
+  bool exercise_entity_to_entity_observation = false;
   bool exercise_global_state_helpers = false;
   bool exercise_weak_entity_and_view_handles = false;
   bool exercise_view_identity_allocation = false;
@@ -1184,6 +1247,20 @@ class RecordingView final : public cgpui::View {
   int entity_handle_observer_value_sum_after_invalidate = 0;
   int entity_handle_observer_count_after_context_invalidate = 0;
   int entity_handle_observer_value_sum_after_context_invalidate = 0;
+  cgpui::EntityHandle<RuntimeEntity> observing_entity{};
+  cgpui::EntityHandle<RuntimeEntity> observed_entity{};
+  bool entity_to_entity_observed = false;
+  bool entity_to_entity_subscription_connected = false;
+  bool entity_to_entity_observed_update = false;
+  bool entity_to_entity_release = false;
+  bool entity_to_entity_update_after_release = false;
+  bool entity_to_entity_context_matched = false;
+  int entity_to_entity_callback_count = 0;
+  int entity_to_entity_subscription_count = 0;
+  int entity_to_entity_callback_count_after_update = 0;
+  int entity_to_entity_subscription_count_after_update = 0;
+  int entity_to_entity_observer_value_after_update = -1;
+  int entity_to_entity_observer_value_after_release = -1;
   bool global_missing_before_set = false;
   bool global_update = false;
   bool global_missing_update = true;

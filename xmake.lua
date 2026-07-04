@@ -397,6 +397,13 @@ target("subscription_lifetime_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("entity_to_entity_observation_test")
+    set_kind("binary")
+    add_files("tests/api_parity/entity_to_entity_observation_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("entity_transaction_test")
     set_kind("binary")
     add_files("tests/api_parity/entity_transaction_test.cpp")

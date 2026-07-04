@@ -501,6 +501,17 @@ int main() {
                 "bool remove_entity(EntityHandle<T> entity) const") ||
       !contains(runtime_templates_header,
                 "bool WindowRuntimeContext::remove_entity(") ||
+      !contains(runtime_context_header, "bool observe_entity(") ||
+      !contains(runtime_context_header,
+                "EntityHandle<ObserverT> observer_entity") ||
+      !contains(runtime_context_header,
+                "Subscription observe_entity_subscription(") ||
+      !contains(runtime_templates_header,
+                "WindowRuntimeContext::observe_entity(") ||
+      !contains(runtime_templates_header,
+                "EntityHandle<ObserverT> observer_entity") ||
+      !contains(runtime_templates_header,
+                "invoke_entity_to_entity_observer(") ||
       !contains(runtime_templates_header, "entity_context_token(") ||
       !contains(runtime_templates_header,
                 "matches_context(detail::entity_context_token(*this))") ||

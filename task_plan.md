@@ -1663,4 +1663,6 @@ implementation slice.
   `master` after post-merge Windows and WSL full-debug verification. Phase B
   Step 277, subscription lifetime / deterministic unsubscribe, is complete on
   `master` after post-merge Windows and WSL full-debug verification. Phase B
-  Step 278, entity-to-entity observation, is the next implementation slice.
+  Step 278, entity-to-entity observation, is implemented and focused/full
+  verified on `codex/phase-b-entity-to-entity-observation`; merge and
+  post-merge verification are pending.

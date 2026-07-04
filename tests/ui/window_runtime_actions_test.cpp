@@ -566,6 +566,58 @@ int test_entity_handle_and_context_invalidate_entities() {
   return 0;
 }
 
+int test_entity_can_observe_another_entity() {
+  RuntimeFixture fixture;
+  entity_handle_fixture = &fixture;
+  fixture.app.on_run = &dispatch_entity_handle_sequence;
+  fixture.view.exercise_entity_to_entity_observation = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  entity_handle_fixture = nullptr;
+
+  if (result != 0) {
+    return 330;
+  }
+  if (fixture.view.observing_entity.empty() ||
+      fixture.view.observed_entity.empty()) {
+    return 331;
+  }
+  if (!fixture.view.entity_to_entity_observed ||
+      !fixture.view.entity_to_entity_subscription_connected ||
+      !fixture.view.entity_to_entity_context_matched) {
+    return 332;
+  }
+  if (!fixture.view.entity_to_entity_observed_update) {
+    return 333;
+  }
+  if (fixture.view.entity_to_entity_callback_count_after_update != 1) {
+    return 335;
+  }
+  if (fixture.view.entity_to_entity_subscription_count_after_update != 1) {
+    return 336;
+  }
+  if (fixture.view.entity_to_entity_observer_value_after_update != 19) {
+    return 337;
+  }
+  if (!fixture.view.entity_to_entity_release ||
+      !fixture.view.entity_to_entity_update_after_release ||
+      fixture.view.entity_to_entity_callback_count != 2 ||
+      fixture.view.entity_to_entity_subscription_count != 1 ||
+      fixture.view.entity_to_entity_observer_value_after_release != 29) {
+    return 334;
+  }
+  return 0;
+}
+
 int test_entity_handles_do_not_cross_runtime_boundaries() {
   RuntimeFixture first_fixture;
   CrossRuntimeEntityBoundaryView first_view;
@@ -1295,6 +1347,9 @@ int main() {
     return result;
   }
   if (const int result = test_entity_handle_and_context_invalidate_entities(); result != 0) {
+    return result;
+  }
+  if (const int result = test_entity_can_observe_another_entity(); result != 0) {
     return result;
   }
   if (const int result = test_entity_handles_do_not_cross_runtime_boundaries(); result != 0) {

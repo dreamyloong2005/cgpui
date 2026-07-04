@@ -54,6 +54,29 @@ inline std::uintptr_t entity_context_token(
   return reinterpret_cast<std::uintptr_t>(&context.runtime);
 }
 
+template <typename Observer, typename ObserverT, typename ObservedT>
+void invoke_entity_to_entity_observer(
+    Observer& observer,
+    ObserverT& observer_entity,
+    EntityHandle<ObservedT> observed_entity,
+    const WindowRuntimeContext& context) {
+  if constexpr (std::is_invocable_v<
+                    Observer&,
+                    ObserverT&,
+                    EntityHandle<ObservedT>,
+                    const WindowRuntimeContext&>) {
+    std::invoke(observer, observer_entity, observed_entity, context);
+  } else if constexpr (std::is_invocable_v<
+                           Observer&,
+                           ObserverT&,
+                           const WindowRuntimeContext&,
+                           EntityHandle<ObservedT>>) {
+    std::invoke(observer, observer_entity, context, observed_entity);
+  } else {
+    std::invoke(observer, observer_entity, observed_entity);
+  }
+}
+
 } // namespace detail
 
 template <typename T>
@@ -379,6 +402,82 @@ Subscription WindowRuntimeContext::observe_entity_subscription(
           const WindowRuntimeContext& context,
           Model<T> model) mutable {
         observer(context, context.entity(model));
+      });
+}
+
+template <typename ObserverT, typename ObservedT, typename Observer>
+bool WindowRuntimeContext::observe_entity(
+    EntityHandle<ObserverT> observer_entity,
+    EntityHandle<ObservedT> observed_entity,
+    Observer&& observer) const {
+  const std::uintptr_t context_token = detail::entity_context_token(*this);
+  if (observer_entity.empty() || observed_entity.empty() ||
+      !observer_entity.matches_context(context_token) ||
+      !observed_entity.matches_context(context_token) ||
+      read_entity(observer_entity) == nullptr) {
+    return false;
+  }
+
+  return observe_model(
+      observed_entity.id(),
+      [observer_entity, observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context,
+          Model<ObservedT> observed_model) mutable {
+        if (!observer_entity.matches_context(
+                detail::entity_context_token(context))) {
+          return;
+        }
+
+        ObserverT* observing_state =
+            context.runtime.template mutate_entity<ObserverT>(
+                observer_entity.id());
+        if (observing_state == nullptr) {
+          return;
+        }
+
+        detail::invoke_entity_to_entity_observer(
+            observer,
+            *observing_state,
+            context.entity(observed_model),
+            context);
+      });
+}
+
+template <typename ObserverT, typename ObservedT, typename Observer>
+Subscription WindowRuntimeContext::observe_entity_subscription(
+    EntityHandle<ObserverT> observer_entity,
+    EntityHandle<ObservedT> observed_entity,
+    Observer&& observer) const {
+  const std::uintptr_t context_token = detail::entity_context_token(*this);
+  if (observer_entity.empty() || observed_entity.empty() ||
+      !observer_entity.matches_context(context_token) ||
+      !observed_entity.matches_context(context_token) ||
+      read_entity(observer_entity) == nullptr) {
+    return {};
+  }
+
+  return observe_model_subscription(
+      observed_entity.id(),
+      [observer_entity, observer = std::forward<Observer>(observer)](
+          const WindowRuntimeContext& context,
+          Model<ObservedT> observed_model) mutable {
+        if (!observer_entity.matches_context(
+                detail::entity_context_token(context))) {
+          return;
+        }
+
+        ObserverT* observing_state =
+            context.runtime.template mutate_entity<ObserverT>(
+                observer_entity.id());
+        if (observing_state == nullptr) {
+          return;
+        }
+
+        detail::invoke_entity_to_entity_observer(
+            observer,
+            *observing_state,
+            context.entity(observed_model),
+            context);
       });
 }
 

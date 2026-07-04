@@ -75,12 +75,34 @@ class EntityHandle {
     return context.observe_entity(*this, std::forward<Observer>(observer));
   }
 
+  template <typename Context, typename ObservedT, typename Observer>
+  bool observe_entity(
+      const Context& context,
+      EntityHandle<ObservedT> observed,
+      Observer&& observer) const {
+    return context.observe_entity(
+        *this,
+        observed,
+        std::forward<Observer>(observer));
+  }
+
   template <typename Context, typename Observer>
   [[nodiscard]] auto observe_subscription(
       const Context& context,
       Observer&& observer) const {
     return context.observe_entity_subscription(
         *this,
+        std::forward<Observer>(observer));
+  }
+
+  template <typename Context, typename ObservedT, typename Observer>
+  [[nodiscard]] auto observe_entity_subscription(
+      const Context& context,
+      EntityHandle<ObservedT> observed,
+      Observer&& observer) const {
+    return context.observe_entity_subscription(
+        *this,
+        observed,
         std::forward<Observer>(observer));
   }
 

@@ -9509,3 +9509,52 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 60/60.
 - Step 277 is complete on `master`; Step 278 entity-to-entity observation is
   the next Phase B slice.
+
+## 2026-07-04 Phase B Step 278 Entity-To-Entity Observation
+
+- Created `codex/phase-b-entity-to-entity-observation` in
+  `.worktrees/phase-b-entity-to-entity-observation` from `master` at
+  `c5e3391 docs: mark step 277 merged`.
+- Added RED coverage in
+  `tests/api_parity/entity_to_entity_observation_test.cpp`, registered
+  `entity_to_entity_observation_test` in `xmake.lua`, extended
+  `window_runtime_actions_test` to exercise observer-entity mutation when an
+  observed entity changes, and extended header/structure/ledger guards.
+- Initial RED build command needed adjustment because xmake accepts one build
+  target per invocation in this shell form. The corrected RED confirmed the
+  intended API gap: `entity_to_entity_observation_test` failed to compile on
+  missing `EntityHandle<ObserverState>::observe_entity(...)`, missing
+  `observe_entity_subscription(...)`, and missing three-argument
+  `Context<T>::observe_entity(...)` / `observe_entity_subscription(...)`.
+- GREEN added entity-to-entity observation template overloads in
+  `include/cgpui/core/entity.hpp`,
+  `include/cgpui/ui/runtime_context.hpp`, and
+  `include/cgpui/ui/runtime_templates.hpp`. The implementation reuses the
+  existing runtime entity observer storage and Step 277 subscription token
+  removal path.
+- Runtime behavior verification initially failed because the test inspected
+  final callback counts after a release-and-second-update sequence while
+  expecting first-update counts. The test now records first-update callback
+  snapshots separately; `window_runtime_actions_test` then passed directly.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus explicit
+  rebuilds for 14 Step 278 targets, then
+  `xmake test -y -P . entity_to_entity_observation_test/default entity_observation_test/default subscription_lifetime_test/default entity_transaction_test/default entity_deletion_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default window_runtime_actions_test/default window_runtime_scheduling_test/default`
+  passed 14/14.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, explicit rebuilds for the same
+  14 focused targets, and
+  `XMAKE_ROOT=y xmake test -y -P . entity_to_entity_observation_test/default entity_observation_test/default subscription_lifetime_test/default entity_transaction_test/default entity_deletion_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default window_runtime_actions_test/default window_runtime_scheduling_test/default`
+  passed 14/14.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 64/64.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 61/61.
+- Step 278 is implemented and focused/full verified on
+  `codex/phase-b-entity-to-entity-observation`; it is ready for merge
+  verification.

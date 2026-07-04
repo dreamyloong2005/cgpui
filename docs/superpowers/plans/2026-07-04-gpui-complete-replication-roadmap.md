@@ -246,7 +246,11 @@ shape before deeper native work expands platform behavior.
   explicit `release()` removes observer records once, moved-from subscriptions
   soft-fail, scoped destruction unsubscribes, diagnostics drop disconnected
   observers, and the implementation is split into `src/ui/subscription.cpp`
-  and `src/ui/runtime_subscriptions.cpp`.
+  and `src/ui/runtime_subscriptions.cpp`. Step 278 adds entity-to-entity
+  observation: an `EntityHandle<ObserverT>` can observe another
+  `EntityHandle<ObservedT>`, callbacks receive mutable observer state, the
+  observed handle, and the current context, and subscription lifetime continues
+  to use the Step 277 token path.
 - [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes.
@@ -561,9 +565,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 278 after the Step 277 subscription lifetime slice.
-The next slice should deepen entity-to-entity observation without starting the
-later action/key-dispatch or fuller test-context behavior bands.
+Continue Phase B with Step 279 after the Step 278 entity-to-entity observation
+slice. The next slice should deepen window/view observation without starting
+the later action/key-dispatch or fuller test-context behavior bands.
 
 ## Self-Review
 
