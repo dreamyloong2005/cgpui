@@ -1668,6 +1668,6 @@ implementation slice.
   post-merge Windows and WSL full-debug verification. Phase B Step 279,
   window/view observation, is complete on `master` after post-merge Windows
   and WSL full-debug verification. Phase B Step 280, observer diagnostics for
-  window/view subscriptions, is implemented and verified on
-  `codex/phase-b-observation-release-during-callback`; it is ready for merge
-  verification.
+  window/view subscriptions, is complete on `master` after post-merge Windows
+  and WSL full-debug verification. Phase B Step 281 in the remaining
+  observation/subscription band is the next Phase B slice.

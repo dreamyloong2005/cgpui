@@ -9684,3 +9684,18 @@
 - Step 280 is implemented and focused/full verified on
   `codex/phase-b-observation-release-during-callback`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 280 Merge
+
+- Committed the observation diagnostics branch as
+  `6b28897 feat: add observation diagnostics`.
+- Fast-forward merged `codex/phase-b-observation-release-during-callback` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 66/66.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 63/63.
+- Step 280 is complete on `master`; Step 281 in the remaining
+  observation/subscription band is the next Phase B slice.

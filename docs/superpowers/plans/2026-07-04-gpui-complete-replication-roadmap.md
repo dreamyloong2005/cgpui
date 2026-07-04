@@ -575,9 +575,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 280 observer diagnostics is implemented and verified on
-`codex/phase-b-observation-release-during-callback`; merge verification is the
-next action. After merge, continue Phase B with Step 281 in the remaining
+Step 280 observer diagnostics is merged on `master` and post-merge verified on
+Windows and WSL Arch Linux. Continue Phase B with Step 281 in the remaining
 observation/subscription band without starting the later action/key-dispatch or
 fuller test-context behavior bands.
 
