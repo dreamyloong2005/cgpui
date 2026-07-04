@@ -613,6 +613,49 @@ class RecordingView final : public cgpui::View {
         weak_model = entity_handle.downgrade();
         upgraded_removed_weak_model = author_context.upgrade_entity(weak_model);
       }
+      if (exercise_entity_invalidation_helpers && keyboard_key_count == 1) {
+        const cgpui::Context<RecordingView>& author_context = context;
+        entity_handle = author_context.new_entity<RuntimeEntity>(22);
+        author_context.subscribe_view_to_entity(
+            author_context.view_id,
+            entity_handle.id());
+        entity_handle_observed = entity_handle.observe(
+            author_context,
+            [this](const cgpui::Context<RecordingView>& observe_context,
+                   cgpui::EntityHandle<RuntimeEntity> observed) {
+              const RuntimeEntity* entity = observed.read(observe_context);
+              entity_handle_observer_count += 1;
+              entity_handle_observer_value_sum +=
+                  entity == nullptr ? -100 : entity->value;
+            });
+
+        const cgpui::EntityHandle<RuntimeEntity> missing_entity(
+            cgpui::EntityId<RuntimeEntity>{entity_handle.id().value + 100});
+        const cgpui::EntityHandle<RuntimeEntity> empty_entity;
+        author_context.runtime.clear_invalidation();
+        missing_entity_invalidate =
+            author_context.invalidate_entity(missing_entity);
+        empty_entity_invalidate = empty_entity.invalidate(author_context);
+        invalidation_after_missing_entity_invalidate =
+            author_context.runtime.invalidation_state();
+
+        entity_handle_invalidate = entity_handle.invalidate(author_context);
+        invalidation_after_entity_invalidate =
+            author_context.runtime.invalidation_state();
+        entity_handle_observer_count_after_invalidate =
+            entity_handle_observer_count;
+        entity_handle_observer_value_sum_after_invalidate =
+            entity_handle_observer_value_sum;
+
+        context_invalidate_entity =
+            author_context.invalidate_entity(entity_handle);
+        invalidation_after_context_entity_invalidate =
+            author_context.runtime.invalidation_state();
+        entity_handle_observer_count_after_context_invalidate =
+            entity_handle_observer_count;
+        entity_handle_observer_value_sum_after_context_invalidate =
+            entity_handle_observer_value_sum;
+      }
       if (exercise_global_state_helpers && keyboard_key_count == 1) {
         const cgpui::Context<RecordingView>& author_context = context;
         global_missing_before_set =
@@ -985,6 +1028,7 @@ class RecordingView final : public cgpui::View {
   bool exercise_view_context_model_observe_helper = false;
   bool exercise_subscription_ownership_token = false;
   bool exercise_entity_handle_helpers = false;
+  bool exercise_entity_invalidation_helpers = false;
   bool exercise_global_state_helpers = false;
   bool exercise_weak_entity_and_view_handles = false;
   bool exercise_view_identity_allocation = false;
@@ -1107,6 +1151,14 @@ class RecordingView final : public cgpui::View {
   int entity_handle_transaction_value = -1;
   int entity_handle_observer_count_after_transaction = 0;
   int entity_handle_observer_value_sum_after_transaction = 0;
+  bool entity_handle_invalidate = false;
+  bool context_invalidate_entity = false;
+  bool missing_entity_invalidate = true;
+  bool empty_entity_invalidate = true;
+  int entity_handle_observer_count_after_invalidate = 0;
+  int entity_handle_observer_value_sum_after_invalidate = 0;
+  int entity_handle_observer_count_after_context_invalidate = 0;
+  int entity_handle_observer_value_sum_after_context_invalidate = 0;
   bool global_missing_before_set = false;
   bool global_update = false;
   bool global_missing_update = true;
@@ -1159,6 +1211,9 @@ class RecordingView final : public cgpui::View {
   cgpui::InvalidationState invalidation_after_subscribed_notify{};
   cgpui::InvalidationState invalidation_after_model_update{};
   cgpui::InvalidationState invalidation_after_model_remove{};
+  cgpui::InvalidationState invalidation_after_missing_entity_invalidate{};
+  cgpui::InvalidationState invalidation_after_entity_invalidate{};
+  cgpui::InvalidationState invalidation_after_context_entity_invalidate{};
   cgpui::InvalidationState view_context_initial_invalidation{};
   cgpui::InvalidationState view_context_after_layout_request_invalidation{};
   cgpui::InvalidationState view_context_after_clear_invalidation{};

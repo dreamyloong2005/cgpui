@@ -209,7 +209,11 @@ shape before deeper native work expands platform behavior.
   and value-returning `EntityHandle<T>::update(...)` transaction helpers whose
   callbacks can receive the entity state and a typed `Context<T>` view, while
   preserving the old `bool` result for void updates and keeping invalidation,
-  deletion, and cross-context rules for later slices.
+  deletion, and cross-context rules for later slices. Step 269 adds explicit
+  `EntityHandle<T>::invalidate(context)` and
+  `Context<T>::invalidate_entity(...)` helpers that notify observers and
+  subscribed views for existing entities and request redraw even when no
+  observer exists, while deletion and cross-context access stay out of scope.
 - [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
   and test context.
@@ -530,9 +534,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 269 after the Step 268 entity update transaction
-slice. The next slice should deepen entity invalidation semantics without
-pulling deletion or cross-context access rules ahead of their own tests.
+Continue Phase B with Step 270 after the Step 269 entity invalidation slice.
+The next slice should define entity deletion and cross-context boundaries
+without changing the explicit invalidation helper semantics.
 
 ## Self-Review
 

@@ -49,6 +49,11 @@ class EntityHandle {
     return context.update_entity(*this, std::forward<Update>(update));
   }
 
+  template <typename Context>
+  bool invalidate(const Context& context) const {
+    return context.invalidate_entity(*this);
+  }
+
   template <typename Context, typename Observer>
   bool observe(const Context& context, Observer&& observer) const {
     return context.observe_entity(*this, std::forward<Observer>(observer));

@@ -129,6 +129,8 @@ int main() {
       !contains(ledger, "entity observation helpers") ||
       !contains(ledger, "`update_entity(...)` transaction helpers") ||
       !contains(ledger, "value-returning update transactions") ||
+      !contains(ledger, "`invalidate_entity(...)` helpers") ||
+      !contains(ledger, "entity invalidation helpers") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
@@ -148,7 +150,9 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/entity_observation_test.cpp") ||
       !contains(ledger,
-                "tests/api_parity/entity_transaction_test.cpp")) {
+                "tests/api_parity/entity_transaction_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/entity_invalidation_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -176,6 +180,7 @@ int main() {
               "\"uniform_list\"",
               "\"window_shadow\"",
               "\"gpui::prelude\"",
+              "invalidate_entity helpers",
               "\"x11\"",
           },
           8);
@@ -334,6 +339,29 @@ int main() {
     return 31;
   }
 
+  const std::string entity_invalidation =
+      read_source("tests/api_parity/entity_invalidation_test.cpp");
+  if (entity_invalidation.empty()) {
+    return 32;
+  }
+  if (!contains(entity_invalidation, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(entity_invalidation, "entity.invalidate(context)") ||
+      !contains(entity_invalidation, "context.invalidate_entity(entity)") ||
+      !contains(entity_invalidation,
+                "cgpui::EntityHandle<InvalidationStateModel>") ||
+      !contains(entity_invalidation, "std::same_as") ||
+      !contains(entity_invalidation,
+                "cgpui::Render<EntityInvalidationView>")) {
+    return 33;
+  }
+  if (contains(entity_invalidation, "WindowRuntimeContext") ||
+      contains(entity_invalidation, "WindowRuntime") ||
+      contains(entity_invalidation, "AppContext") ||
+      contains(entity_invalidation, "ViewContext") ||
+      contains(entity_invalidation, "PlatformWindow")) {
+    return 34;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -344,6 +372,7 @@ int main() {
       !contains(xmake, "target(\"entity_weak_handle_semantics_test\")") ||
       !contains(xmake, "target(\"entity_observation_test\")") ||
       !contains(xmake, "target(\"entity_transaction_test\")") ||
+      !contains(xmake, "target(\"entity_invalidation_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -357,6 +386,8 @@ int main() {
                 "tests/api_parity/entity_observation_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_transaction_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/entity_invalidation_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

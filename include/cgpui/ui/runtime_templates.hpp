@@ -242,6 +242,15 @@ auto WindowRuntimeContext::update_entity(
   }
 }
 
+template <typename T>
+bool WindowRuntimeContext::invalidate_entity(EntityHandle<T> entity) const {
+  if (entity.empty()) {
+    return false;
+  }
+
+  return runtime.invalidate_entity(entity.id());
+}
+
 template <typename T, typename Observer>
 bool WindowRuntimeContext::observe_model(
     Model<T> model,
@@ -431,6 +440,19 @@ void WindowRuntime::subscribe_view_to_entity(
       .entity_type = entity_type,
       .entity_id_value = entity_id.value,
   });
+}
+
+template <typename T>
+bool WindowRuntime::invalidate_entity(EntityId<T> entity_id) {
+  if (entity_id.value == 0 || read_entity(entity_id) == nullptr) {
+    return false;
+  }
+
+  const bool notified = notify_entity_changed(entity_id);
+  if (!notified) {
+    request_render();
+  }
+  return true;
 }
 
 template <typename T>

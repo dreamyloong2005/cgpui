@@ -210,8 +210,9 @@ class WindowRuntime {
   template <typename T>
   void subscribe_view_to_entity(ViewId view_id, EntityId<T> entity_id);
   template <typename T>
+  bool invalidate_entity(EntityId<T> entity_id);
+  template <typename T>
   bool notify_entity_changed(EntityId<T> entity_id);
-
  private:
 #include "../../../src/ui/window_runtime_internal.hpp"
 };

@@ -4402,3 +4402,23 @@
   `Unknown Error (740)` even though the binary exited 0 when run directly.
   Use `entity_transaction_test` as the target name while keeping the API under
   test as `update_entity(...)`.
+
+## 2026-07-04 Phase B Step 269 Entity Invalidation
+
+- Step 269 should stay scoped to explicit entity invalidation spelling:
+  `EntityHandle<T>::invalidate(context) -> bool` and
+  `Context<T>::invalidate_entity(handle) -> bool`. Empty and missing handles
+  soft-fail with `false`; valid handles return `true`.
+- Explicit invalidation is intentionally stronger than the old update return
+  semantics: it notifies entity observers/subscribed views when present and
+  still requests render invalidation when no observer was notified.
+- Do not route `update_model(...)` or `update_entity(...)` through the explicit
+  invalidation helper. Existing void update callers rely on the old `bool`
+  result meaning "observer/subscriber was notified", so update helpers must
+  keep calling `notify_entity_changed(...)`.
+- The implementation belongs in the focused public entity/context template
+  boundary: `include/cgpui/core/entity.hpp`,
+  `include/cgpui/ui/runtime_context.hpp`,
+  `include/cgpui/ui/window_runtime.hpp`, and
+  `include/cgpui/ui/runtime_templates.hpp`. Deletion semantics and
+  cross-context access rules remain future slices.

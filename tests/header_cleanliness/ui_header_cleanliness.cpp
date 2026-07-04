@@ -125,6 +125,11 @@ class TestView final : public cgpui::View {
           (void)entity_context.view_id;
           model.value += 1;
         });
+    const bool entity_handle_invalidation = entity.invalidate(context);
+    const bool context_entity_invalidation =
+        context.invalidate_entity(entity);
+    (void)entity_handle_invalidation;
+    (void)context_entity_invalidation;
     cgpui::Subscription subscription =
         context.observe_model_subscription(
             model,

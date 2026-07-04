@@ -424,6 +424,63 @@ int test_entity_handle_read_update_and_downgrade() {
   return 0;
 }
 
+int test_entity_handle_and_context_invalidate_entities() {
+  RuntimeFixture fixture;
+  entity_handle_fixture = &fixture;
+  fixture.app.on_run = &dispatch_entity_handle_sequence;
+  fixture.view.exercise_entity_invalidation_helpers = true;
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  entity_handle_fixture = nullptr;
+
+  if (result != 0) {
+    return 290;
+  }
+  if (fixture.view.entity_handle.empty() ||
+      !fixture.view.entity_handle_observed) {
+    return 291;
+  }
+  if (fixture.view.missing_entity_invalidate ||
+      fixture.view.empty_entity_invalidate ||
+      fixture.view.invalidation_after_missing_entity_invalidate.render ||
+      fixture.view.invalidation_after_missing_entity_invalidate.layout ||
+      fixture.view.invalidation_after_missing_entity_invalidate.paint) {
+    return 292;
+  }
+  if (!fixture.view.entity_handle_invalidate ||
+      !fixture.view.invalidation_after_entity_invalidate.render ||
+      !fixture.view.invalidation_after_entity_invalidate.layout ||
+      !fixture.view.invalidation_after_entity_invalidate.paint ||
+      fixture.view.entity_handle_observer_count_after_invalidate != 1 ||
+      fixture.view.entity_handle_observer_value_sum_after_invalidate != 22) {
+    return 293;
+  }
+  if (!fixture.view.context_invalidate_entity ||
+      !fixture.view.invalidation_after_context_entity_invalidate.render ||
+      !fixture.view.invalidation_after_context_entity_invalidate.layout ||
+      !fixture.view.invalidation_after_context_entity_invalidate.paint ||
+      fixture.view.entity_handle_observer_count_after_context_invalidate != 2 ||
+      fixture.view.entity_handle_observer_value_sum_after_context_invalidate !=
+          44) {
+    return 294;
+  }
+  if (fixture.window.request_redraw_count != 1 ||
+      fixture.renderer.begin_frame_count != 1) {
+    return 295;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* global_state_fixture = nullptr;
 
 void dispatch_global_state_sequence() {
@@ -1083,6 +1140,9 @@ int main() {
     return result;
   }
   if (const int result = test_entity_handle_read_update_and_downgrade(); result != 0) {
+    return result;
+  }
+  if (const int result = test_entity_handle_and_context_invalidate_entities(); result != 0) {
     return result;
   }
   if (const int result = test_view_context_global_state_helpers(); result != 0) {

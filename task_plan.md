@@ -345,6 +345,18 @@ Windows full debug 54/54, and WSL Arch Linux full debug 51/51. Post-merge
 verification passed Windows full debug 54/54 and WSL Arch Linux full debug
 51/51. Step 269, entity invalidation semantics, is the next Phase B slice.
 
+Step 269, entity invalidation semantics, is in progress on
+`codex/phase-b-entity-invalidation`. RED failed as expected on missing
+`EntityHandle<T>::invalidate(...)` and
+`Context<T>::invalidate_entity(...)`. GREEN adds the explicit invalidation
+helpers in the focused public entity/context template boundaries and keeps
+entity update transactions on the existing `notify_entity_changed(...)`
+return semantics. Existing entities notify observers/subscribed views and
+request redraw; missing or empty entities soft-fail. Deletion and
+cross-context rules remain Step 270 work. Feature-worktree verification passed
+Windows focused 13/13, WSL Arch Linux focused 13/13, Windows full debug 55/55,
+and WSL Arch Linux full debug 52/52. Step 269 is ready for merge verification.
+
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at
 `8695bb1 feat: add keyed element identity` and post-merge verified on Windows

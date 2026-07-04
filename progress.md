@@ -8986,3 +8986,44 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 51/51.
 - Step 268 is complete on `master`; Step 269 entity invalidation semantics is
   the next Phase B slice.
+
+## 2026-07-04 Phase B Step 269 Entity Invalidation
+
+- Continued `codex/phase-b-entity-invalidation` in
+  `.worktrees/phase-b-entity-invalidation` from `master` at
+  `fe26655 docs: mark step 268 merged`.
+- Baseline Windows focused verification before RED passed 12/12:
+  `entity_transaction_test/default entity_observation_test/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default public_authoring_surface_test/default context_capabilities_test/default`.
+- Added RED API coverage in
+  `tests/api_parity/entity_invalidation_test.cpp` and registered
+  `entity_invalidation_test` in `xmake.lua`. RED failed as expected on missing
+  `EntityHandle<T>::invalidate(...)` and
+  `Context<T>::invalidate_entity(...)`.
+- GREEN added `EntityHandle<T>::invalidate(context) -> bool`,
+  `Context<T>::invalidate_entity(handle) -> bool`, and
+  `WindowRuntime::invalidate_entity(EntityId<T>) -> bool` through the focused
+  entity/context template boundary. Empty and missing entities soft-fail with
+  `false`; existing entities notify observers/subscribed views and request
+  redraw when no observer was notified.
+- Added runtime behavior coverage to `window_runtime_actions_test` for handle
+  and context invalidation, including observer notification counts, invalidation
+  flags, redraw/render counts, and missing/empty soft-failure behavior.
+- Preserved existing update semantics after a failed experiment showed routing
+  `update_model(...)` / `update_entity(...)` through explicit invalidation
+  breaks old `bool` return expectations in `window_runtime_actions_test`.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus
+  `xmake test -y -P . entity_invalidation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default entity_transaction_test/default entity_observation_test/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default public_authoring_surface_test/default context_capabilities_test/default`
+  passed 13/13.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . entity_invalidation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default entity_transaction_test/default entity_observation_test/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default public_authoring_surface_test/default context_capabilities_test/default`
+  passed 13/13.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 55/55.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 52/52.
+- Step 269 is implemented and verified on
+  `codex/phase-b-entity-invalidation`; it is ready for merge verification.

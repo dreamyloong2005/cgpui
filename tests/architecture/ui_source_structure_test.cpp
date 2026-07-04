@@ -419,6 +419,12 @@ int main() {
       !contains(runtime_context_header, "auto update_entity(") ||
       !contains(runtime_templates_header,
                 "auto WindowRuntimeContext::update_entity(") ||
+      !contains(runtime_context_header,
+                "bool invalidate_entity(EntityHandle<T> entity) const") ||
+      !contains(runtime_templates_header,
+                "bool WindowRuntimeContext::invalidate_entity(") ||
+      !contains(window_runtime_header,
+                "bool invalidate_entity(EntityId<T> entity_id)") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
       !contains(window_runtime_header, "struct AppRunnerOptions") ||
