@@ -10284,3 +10284,17 @@
   `codex/phase-b-platform-modifier-semantics`; it is ready for feature commit
   and merge verification. Step 291 keymap contexts remains the next key-dispatch
   slice after Step 290 lands on `master`.
+
+## 2026-07-05 Phase B Step 290 Merge
+
+- Fast-forward merged `codex/phase-b-platform-modifier-semantics` into
+  `master` at `e96e2ac feat: add platform modifier key semantics`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 76/76.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 73/73.
+- Step 290 is complete on `master`; Step 291 keymap contexts is the next
+  key-dispatch slice before partial matches, disabled scopes, command palette
+  integration, and fuller test-context simulation.
