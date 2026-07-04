@@ -10144,3 +10144,18 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 71/71.
 - Step 288 is implemented and focused/full verified on
   `codex/phase-b-action-bubbling`; it is ready for merge verification.
+
+## 2026-07-05 Phase B Step 288 Merge
+
+- Fast-forward merged `codex/phase-b-action-bubbling` into `master` at
+  `97dda96 feat: add action bubbling`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 74/74.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 71/71.
+- Step 288 is complete on `master`; Step 289 key binding grammar is the next
+  action/key-dispatch slice before platform modifiers, keymap contexts,
+  partial matches, disabled scopes, command palette integration, and fuller
+  test-context simulation.
