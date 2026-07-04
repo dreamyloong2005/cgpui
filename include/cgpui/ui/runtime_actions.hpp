@@ -1,10 +1,9 @@
 #pragma once
 
+#include "cgpui/ui/key_binding.hpp"
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
-#include "cgpui/ui/text_edit_actions.hpp"
 
-#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -55,20 +54,6 @@ struct CommandPaletteEntry {
   bool enabled = true;
   std::optional<ViewId> view_id;
   std::optional<ElementId> element_id;
-};
-
-struct KeyBinding {
-  std::uint32_t key_code = 0;
-  KeyAction action = KeyAction::pressed;
-  KeyboardModifiers modifiers;
-  std::string action_name;
-};
-
-struct TextEditBinding {
-  std::uint32_t key_code = 0;
-  KeyAction action = KeyAction::pressed;
-  KeyboardModifiers modifiers;
-  TextEditAction edit_action = TextEditAction::move_previous;
 };
 
 } // namespace cgpui

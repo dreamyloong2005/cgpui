@@ -162,6 +162,18 @@ void WindowRuntimeContext::bind_key(KeyBinding binding) const {
   runtime.bind_key(std::move(binding));
 }
 
+bool WindowRuntimeContext::bind_key(
+    std::string_view grammar,
+    std::string action_name) const {
+  std::optional<KeyBinding> binding =
+      parse_key_binding(grammar, std::move(action_name));
+  if (!binding.has_value()) {
+    return false;
+  }
+  runtime.bind_key(std::move(*binding));
+  return true;
+}
+
 void WindowRuntimeContext::bind_text_edit_action(
     TextEditBinding binding) const {
   runtime.bind_text_edit_action(std::move(binding));

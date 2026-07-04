@@ -467,6 +467,13 @@ target("action_bubbling_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("key_binding_grammar_test")
+    set_kind("binary")
+    add_files("tests/ui/key_binding_grammar_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("typed_action_command_metadata_test")
     set_kind("binary")
     add_files("tests/ui/typed_action_command_metadata_test.cpp")

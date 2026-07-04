@@ -158,6 +158,9 @@ struct WindowRuntimeContext {
   [[nodiscard]] ActionDispatchResult dispatch_command_palette_action(
       std::string action_name) const;
   void bind_key(KeyBinding binding) const;
+  [[nodiscard]] bool bind_key(
+      std::string_view grammar,
+      std::string action_name) const;
   void bind_text_edit_action(TextEditBinding binding) const;
   void bind_text_model(ElementId element_id, TextModel* model) const;
   [[nodiscard]] bool mutate_focused_text_model(

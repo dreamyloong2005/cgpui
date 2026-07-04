@@ -217,19 +217,23 @@ int main() {
       !contains(ledger, "action registration metadata") ||
       !contains(ledger, "action enablement metadata") ||
       !contains(ledger, "action bubbling through focused routes") ||
+      !contains(ledger, "key binding grammar parsing") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
+      !contains(ledger, "include/cgpui/ui/key_binding.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
       !contains(ledger,
                 "include/cgpui/ui/runtime_action_enablement_templates.hpp") ||
       !contains(ledger, "src/ui/runtime_action_dispatch.cpp") ||
       !contains(ledger, "src/ui/runtime_action_metadata.cpp") ||
       !contains(ledger, "src/ui/runtime_action_registration.cpp") ||
+      !contains(ledger, "src/ui/runtime_key_binding_grammar.cpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(ledger, "tests/ui/action_scope_metadata_test.cpp") ||
       !contains(ledger, "tests/ui/action_enablement_metadata_test.cpp") ||
       !contains(ledger, "tests/ui/action_bubbling_test.cpp") ||
+      !contains(ledger, "tests/ui/key_binding_grammar_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -258,9 +262,13 @@ int main() {
               "action_name<T>",
               "action enablement metadata",
               "action bubbling through focused routes",
+              "key binding grammar parsing",
               "typed_action_surface_test",
               "action_enablement_metadata_test",
               "action_bubbling_test",
+              "key_binding_grammar_test",
+              "key_binding.hpp",
+              "runtime_key_binding_grammar.cpp",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -784,6 +792,28 @@ int main() {
       contains(action_bubbling, "KeyBinding")) {
     return 75;
   }
+  const std::string key_binding_grammar =
+      read_source("tests/ui/key_binding_grammar_test.cpp");
+  const std::string runtime_key_binding_grammar =
+      read_source("src/ui/runtime_key_binding_grammar.cpp");
+  const std::string key_binding_header =
+      read_source("include/cgpui/ui/key_binding.hpp");
+  if (key_binding_grammar.empty() || runtime_key_binding_grammar.empty() ||
+      key_binding_header.empty()) {
+    return 76;
+  }
+  if (!contains(key_binding_grammar, "parse_key_binding(\"ctrl-shift-s\"") ||
+      !contains(key_binding_grammar,
+                "context.bind_key(\"ctrl-shift-s\"") ||
+      !contains(key_binding_grammar, "context.bind_key(\"cmd-p\"") ||
+      !contains(key_binding_grammar, "ctrl-unknown") ||
+      !contains(runtime_key_binding_grammar, "parse_key_binding(") ||
+      !contains(runtime_key_binding_grammar, "apply_modifier_token(") ||
+      !contains(key_binding_header, "struct KeyBinding") ||
+      !contains(key_binding_header, "std::optional<KeyBinding>") ||
+      contains(runtime_key_binding_grammar, "dispatch_action(")) {
+    return 77;
+  }
 
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
@@ -808,6 +838,7 @@ int main() {
       !contains(xmake, "target(\"action_scope_metadata_test\")") ||
       !contains(xmake, "target(\"action_enablement_metadata_test\")") ||
       !contains(xmake, "target(\"action_bubbling_test\")") ||
+      !contains(xmake, "target(\"key_binding_grammar_test\")") ||
       !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -846,6 +877,8 @@ int main() {
                 "tests/ui/action_enablement_metadata_test.cpp") ||
       !contains(xmake,
                 "tests/ui/action_bubbling_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/key_binding_grammar_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {

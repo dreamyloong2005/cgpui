@@ -96,6 +96,7 @@ int main() {
       "include/cgpui/ui/runtime_window_options.hpp",
       "include/cgpui/ui/runtime_app_context.hpp",
       "include/cgpui/ui/runtime_actions.hpp",
+      "include/cgpui/ui/key_binding.hpp",
       "include/cgpui/ui/runtime_events.hpp",
       "include/cgpui/ui/runtime_diagnostics.hpp",
       "include/cgpui/ui/runtime_input_state.hpp",
@@ -341,6 +342,7 @@ int main() {
   const std::string runtime_header =
       read_source("include/cgpui/ui/runtime.hpp");
   if (!contains(runtime_header, "#include \"cgpui/ui/action.hpp\"") ||
+      !contains(runtime_header, "#include \"cgpui/ui/key_binding.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_callbacks.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_ids.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_handles.hpp\"") ||
@@ -388,6 +390,22 @@ int main() {
       contains(action_header, "class WindowRuntime") ||
       contains(action_header, "struct WindowRuntimeContext")) {
     return 125;
+  }
+
+  const std::string key_binding_header =
+      read_source("include/cgpui/ui/key_binding.hpp");
+  if (!contains(key_binding_header, "struct KeyBinding") ||
+      !contains(key_binding_header, "struct TextEditBinding") ||
+      !contains(key_binding_header, "parse_key_binding(") ||
+      !contains(key_binding_header, "std::optional<KeyBinding>")) {
+    return 126;
+  }
+  if (line_count(key_binding_header) > 80 ||
+      contains(key_binding_header, "struct CommandPaletteEntry") ||
+      contains(key_binding_header, "ActionRegistration") ||
+      contains(key_binding_header, "class WindowRuntime") ||
+      contains(key_binding_header, "struct WindowRuntimeContext")) {
+    return 127;
   }
 
   const std::string runtime_types_header =
@@ -448,6 +466,7 @@ int main() {
       !contains(runtime_actions_header, "struct ActionRegistration") ||
       !contains(runtime_actions_header, "bool enabled = true") ||
       !contains(runtime_actions_header, "struct CommandPaletteEntry") ||
+      !contains(runtime_context_header, "bool bind_key(") ||
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
                 "struct RuntimeDiagnosticsSnapshot") ||
@@ -632,6 +651,7 @@ int main() {
       contains(runtime_command_palette_templates_header, "KeyBinding") ||
       contains(runtime_action_templates_header, "KeyBinding") ||
       contains(runtime_action_enablement_templates_header, "KeyBinding") ||
+      contains(runtime_actions_header, "struct KeyBinding") ||
       contains(window_runtime_header, "PlatformApplication& application_") ||
       contains(window_runtime_header, "std::vector<RuntimeTask> tasks_")) {
     return 100;
@@ -1765,6 +1785,19 @@ int main() {
       contains(runtime_key_bindings_source,
                "register_command_palette_entry(")) {
     return 76;
+  }
+  const std::string runtime_key_binding_grammar_source =
+      read_source("src/ui/runtime_key_binding_grammar.cpp");
+  if (line_count(runtime_key_binding_grammar_source) > 160 ||
+      !contains(runtime_key_binding_grammar_source, "parse_key_binding(") ||
+      !contains(runtime_key_binding_grammar_source, "split_key_tokens(") ||
+      !contains(runtime_key_binding_grammar_source, "apply_modifier_token(") ||
+      contains(runtime_key_binding_grammar_source, "dispatch_action(") ||
+      contains(runtime_key_binding_grammar_source,
+               "register_command_palette_entry(") ||
+      contains(runtime_key_binding_grammar_source,
+               "ActionDispatchResult WindowRuntime::dispatch_action(")) {
+    return 128;
   }
 
   const std::string runtime_text_source = read_source("src/ui/runtime_text.cpp");

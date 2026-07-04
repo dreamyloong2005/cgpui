@@ -4779,3 +4779,21 @@
 - The behavior guard belongs in `tests/ui/action_bubbling_test.cpp` so the
   runtime chain semantics stay separate from typed action surface,
   registration metadata, and key-dispatch tests.
+
+## 2026-07-05 Phase B Step 289 Key Binding Grammar
+
+- Step 289 should stay scoped to GPUI-style single-chord key binding grammar
+  and author-facing string registration. It should not start platform
+  modifier normalization, keymap contexts, partial matches, disabled scopes,
+  command palette integration, action payload macros, or fuller test-context
+  input simulation.
+- The ownership boundary is `include/cgpui/ui/key_binding.hpp` for
+  `KeyBinding`, `TextEditBinding`, and `parse_key_binding(...)`,
+  `src/ui/runtime_key_binding_grammar.cpp` for grammar parsing, and the
+  existing `src/ui/runtime_key_bindings.cpp` for pushing structured bindings.
+  `runtime_actions.hpp` should remain action/command metadata only and include
+  the key-binding leaf for source compatibility instead of defining key
+  binding structs itself.
+- `Context<T>::bind_key("ctrl-shift-s", "action")` parses and forwards to the
+  existing structured `WindowRuntime::bind_key(KeyBinding)` path. Invalid
+  grammar returns `false` and does not register a binding.

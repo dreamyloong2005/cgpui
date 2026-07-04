@@ -10159,3 +10159,50 @@
   action/key-dispatch slice before platform modifiers, keymap contexts,
   partial matches, disabled scopes, command palette integration, and fuller
   test-context simulation.
+
+## 2026-07-05 Phase B Step 289 Key Binding Grammar
+
+- Created feature worktree `.worktrees/phase-b-key-binding-grammar` on
+  `codex/phase-b-key-binding-grammar` from `c04fe45 docs: mark step 288
+  merged`.
+- Windows baseline focused verification passed before edits:
+  `xmake test -y -P . action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 6/6.
+- Added RED coverage in `tests/ui/key_binding_grammar_test.cpp` and registered
+  `key_binding_grammar_test` in `xmake.lua`; RED failed as expected on missing
+  `cgpui/ui/key_binding.hpp`.
+- GREEN currently adds `include/cgpui/ui/key_binding.hpp`,
+  `src/ui/runtime_key_binding_grammar.cpp`, `parse_key_binding(...)`, and
+  `WindowRuntimeContext::bind_key(std::string_view, std::string)` over the
+  existing structured binding path.
+- Current focused checks passed: `key_binding_grammar_test/default` and
+  `ui_source_structure_test/default`.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 9/9.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 9/9.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 75/75.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 72/72.
+- Step 289 is implemented and focused/full verified on
+  `codex/phase-b-key-binding-grammar`; it is ready for merge verification.

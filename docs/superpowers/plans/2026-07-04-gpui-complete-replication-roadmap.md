@@ -286,11 +286,15 @@ shape before deeper native work expands platform behavior.
   Step 288 adds action bubbling through focused routes in
   `src/ui/runtime_action_dispatch.cpp`, where unhandled or disabled
   focused/view/window handlers continue outward and consumed or cancelled
-  handlers stop dispatch. Key dispatch, key grammar, and fuller test-context
-  simulation remain later work.
+  handlers stop dispatch.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
-  command palette integration.
+  command palette integration. Step 289 adds the focused
+  `include/cgpui/ui/key_binding.hpp` leaf, `parse_key_binding(...)`, and
+  `Context<T>::bind_key("ctrl-shift-s", "action")` grammar registration over
+  the existing dispatch path; platform modifier normalization, keymap
+  contexts, partial matches, disabled scopes, command palette integration, and
+  fuller test-context simulation remain later slices.
 - [ ] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
   redraws.
@@ -599,11 +603,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 289 key binding grammar is next after Step 288 action bubbling through
-focused routes. Step 288 records outward bubbling for unhandled or disabled
-focused/view/window action scopes and stops on consumed or cancelled handler
-results, while keeping key dispatch, key grammar, and fuller test-context
-simulation out of scope.
+Step 290 platform modifier semantics is next after Step 289 key binding
+grammar. Step 289 records GPUI-style single-chord grammar parsing through
+`parse_key_binding(...)` and `Context<T>::bind_key("ctrl-shift-s", "action")`
+while keeping keymap contexts, partial matches, disabled scopes, command
+palette integration, and fuller test-context simulation out of scope.
 
 ## Self-Review
 
