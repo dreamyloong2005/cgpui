@@ -4,12 +4,52 @@
 
 #include <any>
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <typeindex>
 #include <typeinfo>
+#include <type_traits>
 #include <utility>
 
 namespace cgpui {
+
+namespace detail {
+
+template <typename Update, typename T>
+decltype(auto) invoke_entity_update(
+    Update&& update,
+    T& entity,
+    const WindowRuntimeContext& context) {
+  if constexpr (std::is_invocable_v<Update, T&, const WindowRuntimeContext&>) {
+    return std::invoke(
+        std::forward<Update>(update),
+        entity,
+        context);
+  } else {
+    return std::invoke(std::forward<Update>(update), entity);
+  }
+}
+
+template <typename Update, typename T>
+using EntityUpdateResult = decltype(invoke_entity_update(
+    std::declval<Update>(),
+    std::declval<T&>(),
+    std::declval<const WindowRuntimeContext&>()));
+
+template <typename Result>
+struct EntityUpdateReturn {
+  using type = std::optional<std::remove_cvref_t<Result>>;
+};
+
+template <>
+struct EntityUpdateReturn<void> {
+  using type = bool;
+};
+
+template <typename Result>
+using EntityUpdateReturnT = typename EntityUpdateReturn<Result>::type;
+
+} // namespace detail
 
 template <typename T>
 void AppContext::set_global(T global_value) const {
@@ -159,6 +199,47 @@ bool WindowRuntimeContext::update_model(Model<T> model, Update&& update) const {
   }
   std::forward<Update>(update)(*stored_model);
   return runtime.notify_entity_changed(model);
+}
+
+template <typename T, typename Update>
+auto WindowRuntimeContext::update_entity(
+    EntityHandle<T> entity,
+    Update&& update) const {
+  using Result = detail::EntityUpdateResult<Update, T>;
+  using Return = detail::EntityUpdateReturnT<Result>;
+
+  if (entity.empty()) {
+    if constexpr (std::is_void_v<Result>) {
+      return false;
+    } else {
+      return Return{};
+    }
+  }
+
+  T* stored_entity = runtime.mutate_entity(entity.id());
+  if (stored_entity == nullptr) {
+    if constexpr (std::is_void_v<Result>) {
+      return false;
+    } else {
+      return Return{};
+    }
+  }
+
+  if constexpr (std::is_void_v<Result>) {
+    detail::invoke_entity_update(
+        std::forward<Update>(update),
+        *stored_entity,
+        *this);
+    (void)runtime.notify_entity_changed(entity.id());
+    return true;
+  } else {
+    auto result = detail::invoke_entity_update(
+        std::forward<Update>(update),
+        *stored_entity,
+        *this);
+    (void)runtime.notify_entity_changed(entity.id());
+    return Return{std::move(result)};
+  }
 }
 
 template <typename T, typename Observer>

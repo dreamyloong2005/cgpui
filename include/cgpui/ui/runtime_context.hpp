@@ -170,6 +170,9 @@ struct WindowRuntimeContext {
       WeakEntity<T> entity) const;
   template <typename T, typename Update>
   bool update_model(Model<T> model, Update&& update) const;
+  template <typename T, typename Update>
+  [[nodiscard]] auto update_entity(EntityHandle<T> entity, Update&& update)
+      const;
   template <typename T, typename Observer>
   bool observe_model(Model<T> model, Observer&& observer) const;
   template <typename T, typename Observer>

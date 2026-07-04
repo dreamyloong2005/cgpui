@@ -8925,3 +8925,49 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 50/50.
 - Step 267 is complete on `master`; Step 268 entity update transactions is the
   next Phase B slice.
+
+## 2026-07-04 Phase B Step 268 Entity Update Transactions
+
+- Created `codex/phase-b-entity-update-transactions` in
+  `.worktrees/phase-b-entity-update-transactions` from `master` at
+  `1f588d6 docs: mark step 267 merged`.
+- Restored planning context, confirmed `.worktrees` is ignored, and verified
+  the main checkout was tracked-clean with only the pre-existing untracked
+  `.vscode/` directory.
+- Baseline Windows focused verification passed:
+  `xmake test -y -P . entity_observation_test/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default public_authoring_surface_test/default context_capabilities_test/default`
+  passed 11/11.
+- Added RED API coverage in
+  `tests/api_parity/entity_update_transaction_test.cpp` and registered an
+  initial `entity_update_transaction_test` target. RED failed as expected:
+  `xmake test -y -P . entity_update_transaction_test/default` stopped on
+  missing `Context<T>::update_entity(...)` and on `EntityHandle<T>::update(...)`
+  returning `bool` rather than `std::optional<int>` for a value transaction.
+- GREEN added `Context<T>::update_entity(...)` in the focused
+  `runtime_context.hpp` / `runtime_templates.hpp` template boundary and routed
+  `EntityHandle<T>::update(...)` through it. Void callbacks still return
+  `bool`; value callbacks return `std::optional<R>`.
+- Renamed the test target to `entity_transaction_test` after Windows xmake
+  failed to `execv` an executable containing `update` in the name with
+  `Unknown Error (740)`. The direct binary returned 0, so the target rename
+  keeps the test runner stable without changing the API being tested.
+- Fresh Windows minimal and behavior verification passed:
+  `xmake test -y -P . entity_transaction_test/default window_runtime_actions_test/default ui_header_cleanliness/default`
+  passed 3/3.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus
+  `xmake test -y -P . entity_transaction_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default entity_observation_test/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default public_authoring_surface_test/default context_capabilities_test/default`
+  passed 12/12.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . entity_transaction_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default ui_source_structure_test/default entity_observation_test/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default public_authoring_surface_test/default context_capabilities_test/default`
+  passed 12/12.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 54/54.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 51/51.
+- Step 268 is implemented and verified on
+  `codex/phase-b-entity-update-transactions`; it is ready for merge
+  verification.

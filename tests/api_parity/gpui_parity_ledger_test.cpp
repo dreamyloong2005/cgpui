@@ -127,6 +127,8 @@ int main() {
       !contains(ledger, "weak upgrade/read semantics") ||
       !contains(ledger, "`observe_entity(...)` helpers") ||
       !contains(ledger, "entity observation helpers") ||
+      !contains(ledger, "`update_entity(...)` transaction helpers") ||
+      !contains(ledger, "value-returning update transactions") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
@@ -144,7 +146,9 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
       !contains(ledger,
-                "tests/api_parity/entity_observation_test.cpp")) {
+                "tests/api_parity/entity_observation_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/entity_transaction_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -307,6 +311,29 @@ int main() {
     return 28;
   }
 
+  const std::string entity_transaction =
+      read_source("tests/api_parity/entity_transaction_test.cpp");
+  if (entity_transaction.empty()) {
+    return 29;
+  }
+  if (!contains(entity_transaction, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(entity_transaction, "entity.update(") ||
+      !contains(entity_transaction, "context.update_entity(") ||
+      !contains(entity_transaction, "std::optional<int>") ||
+      !contains(entity_transaction,
+                "const cgpui::Context<TransactionState>&") ||
+      !contains(entity_transaction,
+                "cgpui::Render<EntityUpdateTransactionView>")) {
+    return 30;
+  }
+  if (contains(entity_transaction, "WindowRuntimeContext") ||
+      contains(entity_transaction, "WindowRuntime") ||
+      contains(entity_transaction, "AppContext") ||
+      contains(entity_transaction, "ViewContext") ||
+      contains(entity_transaction, "PlatformWindow")) {
+    return 31;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -316,6 +343,7 @@ int main() {
       !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
       !contains(xmake, "target(\"entity_weak_handle_semantics_test\")") ||
       !contains(xmake, "target(\"entity_observation_test\")") ||
+      !contains(xmake, "target(\"entity_transaction_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -327,6 +355,8 @@ int main() {
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_observation_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/entity_transaction_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

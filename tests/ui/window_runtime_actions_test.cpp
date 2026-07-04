@@ -397,6 +397,17 @@ int test_entity_handle_read_update_and_downgrade() {
   if (fixture.view.entity_handle_observer_value_sum_after_update != 178) {
     return 287;
   }
+  if (!fixture.view.entity_handle_transaction_result.has_value() ||
+      *fixture.view.entity_handle_transaction_result != 100 ||
+      !fixture.view.entity_handle_context_transaction ||
+      !fixture.view.entity_handle_transaction_context_matched ||
+      fixture.view.entity_handle_transaction_value != 100) {
+    return 288;
+  }
+  if (fixture.view.entity_handle_observer_count_after_transaction != 6 ||
+      fixture.view.entity_handle_observer_value_sum_after_transaction != 576) {
+    return 289;
+  }
   if (!fixture.view.invalidation_after_model_update.render ||
       !fixture.view.invalidation_after_model_update.layout ||
       !fixture.view.invalidation_after_model_update.paint) {

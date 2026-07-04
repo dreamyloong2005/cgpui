@@ -416,6 +416,9 @@ int main() {
                 "EntityHandle<T> WindowRuntimeContext::entity(") ||
       !contains(runtime_templates_header,
                 "WeakEntity<T> WindowRuntimeContext::weak_entity(") ||
+      !contains(runtime_context_header, "auto update_entity(") ||
+      !contains(runtime_templates_header,
+                "auto WindowRuntimeContext::update_entity(") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
       !contains(window_runtime_header, "struct AppRunnerOptions") ||

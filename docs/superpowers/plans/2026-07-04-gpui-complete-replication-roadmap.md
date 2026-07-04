@@ -205,7 +205,11 @@ shape before deeper native work expands platform behavior.
   `Context<T>::observe_entity(...)`, and
   `Context<T>::observe_entity_subscription(...)`, delegating to the existing
   runtime observer path without pulling update transactions, deletion, or
-  cross-context access rules forward.
+  cross-context access rules forward. Step 268 adds `Context<T>::update_entity(...)`
+  and value-returning `EntityHandle<T>::update(...)` transaction helpers whose
+  callbacks can receive the entity state and a typed `Context<T>` view, while
+  preserving the old `bool` result for void updates and keeping invalidation,
+  deletion, and cross-context rules for later slices.
 - [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
   and test context.
@@ -526,9 +530,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 268 after the Step 267 entity observation helper
-slice. The next slice should deepen entity update transactions without pulling
-invalidation, deletion, or cross-context access rules ahead of their own tests.
+Continue Phase B with Step 269 after the Step 268 entity update transaction
+slice. The next slice should deepen entity invalidation semantics without
+pulling deletion or cross-context access rules ahead of their own tests.
 
 ## Self-Review
 

@@ -575,6 +575,33 @@ class RecordingView final : public cgpui::View {
         const RuntimeEntity* updated = entity_handle.read(author_context);
         entity_handle_updated_value =
             updated == nullptr ? -1 : updated->value;
+        const cgpui::ViewId transaction_view_id = author_context.view_id;
+        entity_handle_transaction_result = entity_handle.update(
+            author_context,
+            [this, transaction_view_id](
+                RuntimeEntity& entity,
+                const cgpui::Context<RuntimeEntity>& transaction_context) {
+              entity_handle_transaction_context_matched =
+                  transaction_context.view_id == transaction_view_id;
+              entity.value += 10;
+              return entity.value + 1;
+            });
+        entity_handle_context_transaction =
+            author_context.update_entity(
+                entity_handle,
+                [](RuntimeEntity& entity,
+                   const cgpui::Context<RuntimeEntity>& transaction_context) {
+                  (void)transaction_context.view_id;
+                  entity.value += 1;
+                });
+        const RuntimeEntity* transaction_updated =
+            entity_handle.read(author_context);
+        entity_handle_transaction_value =
+            transaction_updated == nullptr ? -1 : transaction_updated->value;
+        entity_handle_observer_count_after_transaction =
+            entity_handle_observer_count;
+        entity_handle_observer_value_sum_after_transaction =
+            entity_handle_observer_value_sum;
         removed_entity = author_context.remove_entity(entity_handle.id());
         entity_handle_missing_read =
             entity_handle.read(author_context) == nullptr;
@@ -1074,6 +1101,12 @@ class RecordingView final : public cgpui::View {
   int entity_handle_observer_value_sum = 0;
   int entity_handle_observer_count_after_update = 0;
   int entity_handle_observer_value_sum_after_update = 0;
+  std::optional<int> entity_handle_transaction_result;
+  bool entity_handle_context_transaction = false;
+  bool entity_handle_transaction_context_matched = false;
+  int entity_handle_transaction_value = -1;
+  int entity_handle_observer_count_after_transaction = 0;
+  int entity_handle_observer_value_sum_after_transaction = 0;
   bool global_missing_before_set = false;
   bool global_update = false;
   bool global_missing_update = true;

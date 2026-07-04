@@ -45,8 +45,8 @@ class EntityHandle {
   }
 
   template <typename Context, typename Update>
-  bool update(const Context& context, Update&& update) const {
-    return context.update_model(id_, std::forward<Update>(update));
+  [[nodiscard]] auto update(const Context& context, Update&& update) const {
+    return context.update_entity(*this, std::forward<Update>(update));
   }
 
   template <typename Context, typename Observer>

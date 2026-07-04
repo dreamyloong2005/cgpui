@@ -108,6 +108,23 @@ class TestView final : public cgpui::View {
     (void)entity.observe(
         context,
         [](const cgpui::ViewContext&, cgpui::EntityHandle<TestModel>) {});
+    const std::optional<int> entity_transaction =
+        context.update_entity(
+            entity,
+            [](TestModel& model,
+               const cgpui::Context<TestModel>& entity_context) {
+              (void)entity_context.view_id;
+              model.value += 1;
+              return model.value;
+            });
+    (void)entity_transaction;
+    (void)entity.update(
+        context,
+        [](TestModel& model,
+           const cgpui::Context<TestModel>& entity_context) {
+          (void)entity_context.view_id;
+          model.value += 1;
+        });
     cgpui::Subscription subscription =
         context.observe_model_subscription(
             model,

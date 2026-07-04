@@ -4380,3 +4380,25 @@
   wrapping callback ids back into `EntityHandle<T>`. Update transactions,
   deletion semantics, deterministic unsubscribe behavior, and cross-context
   access rules remain later slices.
+
+## 2026-07-04 Phase B Step 268 Entity Update Transactions
+
+- Step 268 should stay scoped to public entity update transaction spelling:
+  `Context<T>::update_entity(handle, update)` and
+  `EntityHandle<T>::update(context, update)` callbacks can receive both
+  `T&` and `const Context<T>&`, and value-returning callbacks soft-fail with
+  `std::optional<R>` when the entity is missing.
+- Void update callbacks intentionally preserve the old `bool` result shape so
+  existing `entity.update(context, [](T&) { ... })` code remains source
+  compatible while routing through the new transaction helper.
+- The implementation belongs in the existing template context boundary:
+  `include/cgpui/core/entity.hpp` forwards handle updates, while
+  `include/cgpui/ui/runtime_context.hpp` and
+  `include/cgpui/ui/runtime_templates.hpp` own the transaction template.
+  No new entity store, `ui.cpp` implementation, invalidation policy, deletion
+  rule, or cross-context rule belongs in this slice.
+- On Windows, xmake cannot reliably run a test executable whose target name
+  contains `update`; `entity_update_transaction_test.exe` failed with
+  `Unknown Error (740)` even though the binary exited 0 when run directly.
+  Use `entity_transaction_test` as the target name while keeping the API under
+  test as `update_entity(...)`.
