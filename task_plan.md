@@ -1692,5 +1692,6 @@ implementation slice.
   action enablement metadata is complete on `master` at `5b1a873` after
   post-merge Windows full-debug 73/73 and WSL Arch Linux full-debug 70/70
   verification. Phase B Step 288 action bubbling through focused routes is
-  next. Keep key dispatch, key grammar, and fuller test-context behavior in
-  later slices.
+  implemented and focused/full verified on
+  `codex/phase-b-action-bubbling`; merge verification is pending. Keep key
+  dispatch, key grammar, and fuller test-context behavior in later slices.

@@ -216,10 +216,12 @@ int main() {
       !contains(ledger, "typed register/dispatch overloads") ||
       !contains(ledger, "action registration metadata") ||
       !contains(ledger, "action enablement metadata") ||
+      !contains(ledger, "action bubbling through focused routes") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
       !contains(ledger,
                 "include/cgpui/ui/runtime_action_enablement_templates.hpp") ||
+      !contains(ledger, "src/ui/runtime_action_dispatch.cpp") ||
       !contains(ledger, "src/ui/runtime_action_metadata.cpp") ||
       !contains(ledger, "src/ui/runtime_action_registration.cpp") ||
       !contains(ledger,
@@ -227,6 +229,7 @@ int main() {
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(ledger, "tests/ui/action_scope_metadata_test.cpp") ||
       !contains(ledger, "tests/ui/action_enablement_metadata_test.cpp") ||
+      !contains(ledger, "tests/ui/action_bubbling_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -254,9 +257,12 @@ int main() {
               "Action<T> typed action concept",
               "action_name<T>",
               "action enablement metadata",
+              "action bubbling through focused routes",
               "typed_action_surface_test",
               "action_enablement_metadata_test",
+              "action_bubbling_test",
               "runtime_action_enablement_templates.hpp",
+              "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
               "WindowContextCapability",
               "window_context",
@@ -760,6 +766,25 @@ int main() {
     return 73;
   }
 
+  const std::string action_bubbling =
+      read_source("tests/ui/action_bubbling_test.cpp");
+  const std::string runtime_action_dispatch =
+      read_source("src/ui/runtime_action_dispatch.cpp");
+  if (action_bubbling.empty() || runtime_action_dispatch.empty()) {
+    return 74;
+  }
+  if (!contains(action_bubbling, "bubble.unhandled.to.window") ||
+      !contains(action_bubbling, "bubble.disabled.to.view") ||
+      !contains(action_bubbling, "bubble.cancelled.stop") ||
+      !contains(action_bubbling, "EventResult::unhandled()") ||
+      !contains(action_bubbling, "EventResult::cancelled_event()") ||
+      !contains(action_bubbling, "ActionRegistrationOptions{.enabled = false}") ||
+      !contains(runtime_action_dispatch, "action_result_stops_bubbling") ||
+      !contains(runtime_action_dispatch, "!action_result_stops_bubbling(result)") ||
+      contains(action_bubbling, "KeyBinding")) {
+    return 75;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -782,6 +807,7 @@ int main() {
       !contains(xmake, "target(\"typed_action_dispatch_test\")") ||
       !contains(xmake, "target(\"action_scope_metadata_test\")") ||
       !contains(xmake, "target(\"action_enablement_metadata_test\")") ||
+      !contains(xmake, "target(\"action_bubbling_test\")") ||
       !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -818,6 +844,8 @@ int main() {
                 "tests/ui/action_scope_metadata_test.cpp") ||
       !contains(xmake,
                 "tests/ui/action_enablement_metadata_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/action_bubbling_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {

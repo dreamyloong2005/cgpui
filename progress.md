@@ -10105,3 +10105,42 @@
 - Step 287 is complete on `master`; Step 288 action bubbling through focused
   routes is the next action-band slice before key dispatch, key grammar, and
   fuller test-context simulation.
+
+## 2026-07-05 Phase B Step 288 Action Bubbling
+
+- Continued `codex/phase-b-action-bubbling` in
+  `.worktrees/phase-b-action-bubbling` from `96c2aa1 docs: mark step 287
+  merged`.
+- Added RED/GREEN behavior coverage in `tests/ui/action_bubbling_test.cpp` and
+  registered `action_bubbling_test` in `xmake.lua`. The RED test failed as
+  expected before bubbling semantics existed; GREEN keeps dispatch in
+  `src/ui/runtime_action_dispatch.cpp`.
+- Implemented focused-route bubbling so focused element, view, window, and app
+  action handlers are tried outward. Disabled candidates and handlers returning
+  `EventResult::unhandled()` continue bubbling; consumed or cancelled handler
+  results stop dispatch and populate `ActionDispatchResult`.
+- Updated architecture and parity guards so the bubbling behavior is recorded
+  in `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, and the complete-replication
+  roadmap. The dispatch source remains under the 100-line structure budget.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . action_bubbling_test/default action_enablement_metadata_test/default action_scope_metadata_test/default typed_action_command_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 11/11.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . action_bubbling_test/default action_enablement_metadata_test/default action_scope_metadata_test/default typed_action_command_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 11/11.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 74/74.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 71/71.
+- Step 288 is implemented and focused/full verified on
+  `codex/phase-b-action-bubbling`; it is ready for merge verification.

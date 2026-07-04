@@ -1682,6 +1682,10 @@ int main() {
                 "WindowRuntime::last_action_dispatch(") ||
       !contains(runtime_action_dispatch_source,
                 "action_registration_enabled(") ||
+      !contains(runtime_action_dispatch_source,
+                "action_result_stops_bubbling") ||
+      !contains(runtime_action_dispatch_source,
+                "!action_result_stops_bubbling(result)") ||
       contains(runtime_action_dispatch_source,
                "void WindowRuntime::register_action(") ||
       contains(runtime_action_dispatch_source,
@@ -1692,6 +1696,7 @@ int main() {
                "register_command_palette_entry(") ||
       contains(runtime_action_dispatch_source,
                "action_registrations_for_scope(") ||
+      contains(runtime_action_dispatch_source, "KeyBinding") ||
       contains(runtime_action_dispatch_source, "bind_text_edit_action(")) {
     return 74;
   }

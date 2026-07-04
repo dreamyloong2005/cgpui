@@ -268,7 +268,7 @@ shape before deeper native work expands platform behavior.
   `WindowRuntime::remove_view(...)` cleanup for removed-view subscriptions;
   its guard verifies removed views release both view observers and view-owned
   entity subscriptions before actions and key dispatch begin.
-- [ ] Steps 283-288: Bring actions closer to upstream: typed action structs,
+- [x] Steps 283-288: Bring actions closer to upstream: typed action structs,
   action registration, action dispatch, action scope, command metadata,
   enablement, and bubbling through focused routes. Step 283 landed the public
   `Action<T>` typed action concept and `action_name<T>()` authoring surface in
@@ -283,8 +283,11 @@ shape before deeper native work expands platform behavior.
   action enablement metadata through `ActionRegistrationOptions`,
   `include/cgpui/ui/runtime_action_enablement_templates.hpp`,
   `src/ui/runtime_action_registration.cpp`, and disabled-dispatch coverage.
-  Key dispatch, key grammar, bubbling, and fuller test-context simulation
-  remain later work.
+  Step 288 adds action bubbling through focused routes in
+  `src/ui/runtime_action_dispatch.cpp`, where unhandled or disabled
+  focused/view/window handlers continue outward and consumed or cancelled
+  handlers stop dispatch. Key dispatch, key grammar, and fuller test-context
+  simulation remain later work.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration.
@@ -596,10 +599,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 288 action bubbling through focused routes is next after Step 287 action
-enablement metadata. Step 287 records `ActionRegistrationOptions::enabled`,
-filters registrations by enabled state, suppresses disabled action dispatch,
-and keeps key dispatch, key grammar, bubbling, and fuller test-context
+Step 289 key binding grammar is next after Step 288 action bubbling through
+focused routes. Step 288 records outward bubbling for unhandled or disabled
+focused/view/window action scopes and stops on consumed or cancelled handler
+results, while keeping key dispatch, key grammar, and fuller test-context
 simulation out of scope.
 
 ## Self-Review

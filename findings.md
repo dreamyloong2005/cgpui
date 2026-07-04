@@ -4761,3 +4761,21 @@
   fix is for `upsert_action_registration(...)` to keep refreshed keys at the
   newest position and for `action_registration_enabled(...)` to search matching
   dispatch keys from newest to oldest.
+
+## 2026-07-05 Phase B Step 288 Action Bubbling
+
+- Step 288 should stay scoped to action bubbling through focused routes. It
+  should not start key dispatch, key grammar, command-palette routing, action
+  payload macros, or fuller simulated test-context input.
+- The bubbling order remains focused element, view, window, then app. A
+  disabled candidate registration is skipped and dispatch continues outward.
+  A handler that returns `EventResult::unhandled()` also continues outward.
+  A handler that returns consumed or cancelled stops bubbling and fills
+  `ActionDispatchResult` with the stopping scope and optional view/element id.
+- The implementation belongs in the focused dispatch boundary,
+  `src/ui/runtime_action_dispatch.cpp`, while registration upsert, enabled
+  filtering, command metadata, key binding grammar, and text edit bindings
+  remain outside this file.
+- The behavior guard belongs in `tests/ui/action_bubbling_test.cpp` so the
+  runtime chain semantics stay separate from typed action surface,
+  registration metadata, and key-dispatch tests.
