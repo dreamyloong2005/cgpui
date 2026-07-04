@@ -8719,3 +8719,35 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 46/46.
 - Step 263 is complete on `master`; Step 264 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 264 Public Authoring Surface
+
+- Created `codex/phase-b-public-authoring-surface` in
+  `.worktrees/phase-b-public-authoring-surface`.
+- Added RED API coverage in
+  `tests/api_parity/public_authoring_surface_test.cpp` and registered
+  `public_authoring_surface_test` in `xmake.lua`.
+- RED failed as expected:
+  `xmake test -y -P . public_authoring_surface_test/default` stopped on
+  missing `cgpui/prelude.hpp`.
+- GREEN added `include/cgpui/prelude.hpp`, made `include/cgpui/cgpui.hpp` a
+  thin compatibility wrapper over that prelude aggregate, and added structure
+  and ledger coverage for the public authoring surface.
+- Updated the complete parity ledger, JSON export, roadmap, and parity ledger
+  test with Step 264 evidence.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default prelude_header_cleanliness/default`
+  passed 4/4.
+- Fresh Windows expanded focused verification passed:
+  `xmake test -y -P . public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default prelude_header_cleanliness/default app_window_context_test/default context_capabilities_test/default context_render_spelling_test/default view_handle_spelling_test/default ui_source_structure_test/default ui_header_cleanliness/default`
+  passed 10/10.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `XMAKE_ROOT=y xmake test -y -P . public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default prelude_header_cleanliness/default app_window_context_test/default context_capabilities_test/default context_render_spelling_test/default view_handle_spelling_test/default ui_source_structure_test/default ui_header_cleanliness/default`
+  passed 10/10.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings for touched text files.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 50/50.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 47/47.

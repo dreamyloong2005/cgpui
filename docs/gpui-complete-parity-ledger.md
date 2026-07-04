@@ -49,7 +49,7 @@ Status meanings:
 | gpui::Render | `Render<T>` concept over `View::render(Context<T>&)` | Adapted | `include/cgpui/ui/render.hpp`, `include/cgpui/ui/view.hpp`, `tests/api_parity/context_render_spelling_test.cpp` | Phase B view lifecycle depth |
 | gpui::IntoElement | `IntoElement` alias plus `into_element` builders | Adapted | `include/cgpui/ui/render.hpp`, `include/cgpui/ui/element_builder_core.hpp`, `tests/api_parity/context_render_spelling_test.cpp` | Phase C |
 | gpui::div | `div()` | Adapted | `include/cgpui/ui/element_builder_core.hpp` | Phase C style vocabulary |
-| gpui::prelude | `cgpui/cgpui.hpp` | Adapted | public aggregate exists and is header-tested | Phase B |
+| gpui::prelude | `cgpui/prelude.hpp` plus thin `cgpui/cgpui.hpp` compatibility aggregate | Adapted | `include/cgpui/prelude.hpp`, `include/cgpui/cgpui.hpp`, `tests/api_parity/public_authoring_surface_test.cpp`, `tests/header_cleanliness/prelude_header_cleanliness.cpp` | Phase B public authoring surface gate |
 | gpui::actions! / action macro | string action registry | Required | action dispatch exists, typed action parity missing | Phase B |
 | gpui key_context | no key-context tree API yet | Required | key bindings exist without upstream key-context model | Phase B |
 | gpui keymap dispatch | `KeyBinding` + action registry | Required | deterministic key binding exists, grammar incomplete | Phase B |

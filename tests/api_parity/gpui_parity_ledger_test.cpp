@@ -109,6 +109,7 @@ int main() {
       !contains(ledger, "| gpui::Context<T> |") ||
       !contains(ledger, "| gpui::View<T> |") ||
       !contains(ledger, "| gpui::Render |") ||
+      !contains(ledger, "| gpui::prelude |") ||
       !contains(ledger, "| gpui::div |") ||
       !contains(ledger, "| gpui::test |") ||
       !contains(ledger, "| gpui_platform::application |")) {
@@ -127,10 +128,13 @@ int main() {
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
       !contains(ledger, "include/cgpui/ui/render.hpp") ||
       !contains(ledger, "include/cgpui/ui/view_handle.hpp") ||
+      !contains(ledger, "include/cgpui/prelude.hpp") ||
       !contains(ledger,
                 "tests/api_parity/context_capabilities_test.cpp") ||
       !contains(ledger,
-                "tests/api_parity/view_handle_spelling_test.cpp")) {
+                "tests/api_parity/view_handle_spelling_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/public_authoring_surface_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -157,6 +161,7 @@ int main() {
               "\"hello_world\"",
               "\"uniform_list\"",
               "\"window_shadow\"",
+              "\"gpui::prelude\"",
               "\"x11\"",
           },
           8);
@@ -205,16 +210,39 @@ int main() {
     return 13;
   }
 
+  const std::string public_authoring =
+      read_source("tests/api_parity/public_authoring_surface_test.cpp");
+  if (public_authoring.empty()) {
+    return 17;
+  }
+  if (!contains(public_authoring, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(public_authoring, "cgpui::Context<PublicAuthoringSurfaceView>&") ||
+      !contains(public_authoring, "cgpui::IntoElement render") ||
+      !contains(public_authoring, "cgpui::Render<PublicAuthoringSurfaceView>") ||
+      !contains(public_authoring, "cgpui::ViewHandle<PublicAuthoringSurfaceView>") ||
+      !contains(public_authoring, "cgpui::Application")) {
+    return 18;
+  }
+  if (contains(public_authoring, "WindowRuntimeContext") ||
+      contains(public_authoring, "WindowRuntime") ||
+      contains(public_authoring, "AppContext") ||
+      contains(public_authoring, "ViewContext") ||
+      contains(public_authoring, "PlatformWindow")) {
+    return 19;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
       !contains(xmake, "target(\"context_capabilities_test\")") ||
       !contains(xmake, "target(\"view_handle_spelling_test\")") ||
+      !contains(xmake, "target(\"public_authoring_surface_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
       !contains(xmake, "tests/api_parity/view_handle_spelling_test.cpp") ||
+      !contains(xmake, "tests/api_parity/public_authoring_surface_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

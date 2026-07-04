@@ -4314,3 +4314,18 @@
 - Moving untyped `WeakView` out of `runtime_input_state.hpp` keeps pointer
   capture/input state focused while preserving the existing
   `WindowRuntimeContext::upgrade_view(WeakView)` compatibility path.
+
+## 2026-07-04 Phase B Step 264 Public Authoring Surface
+
+- The final Steps 259-264 public-name slice should be a prelude-level compile
+  gate, not another low-level runtime helper. `cgpui/prelude.hpp` is the
+  C++23 analogue to upstream `gpui::prelude`, while `cgpui/cgpui.hpp` remains
+  a compatibility aggregate.
+- The durable authoring guard is `public_authoring_surface_test`: it includes
+  only `cgpui/prelude.hpp` and uses `Application`, `App`, `Window`,
+  `Context<T>`, `Render`, `IntoElement`, typed view handles, and typed entity
+  handles without spelling `WindowRuntimeContext`, `WindowRuntime`,
+  `AppContext`, `ViewContext`, or `PlatformWindow`.
+- This closes the public naming and C++ idiom band. Entity lifecycle,
+  transactions, observations, deletion, and cross-context rules remain the
+  next band rather than being smuggled into the prelude gate.

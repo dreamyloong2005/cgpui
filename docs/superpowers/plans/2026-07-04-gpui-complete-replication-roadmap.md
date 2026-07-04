@@ -166,7 +166,7 @@ shape before deeper native work expands platform behavior.
 - `tests/api_parity/*`
 - `tests/ui/*`
 
-- [ ] Steps 259-264: Align public names and C++ idioms for `Application`,
+- [x] Steps 259-264: Align public names and C++ idioms for `Application`,
   `App`, `Window`, `Context<T>`, `Render`, `IntoElement`, and `View` without
   breaking the existing public prelude. Step 259 is complete: `Application`
   now owns a `PlatformApplication`, exposes `Application::create()`, and
@@ -186,7 +186,11 @@ shape before deeper native work expands platform behavior.
   `view_handle.hpp` public leaf with typed `ViewHandle<T>` and
   `WeakViewHandle<T>` wrappers over the existing `ViewId` registry, plus
   context helpers for current-view handle creation, weak handles, typed
-  upgrade, and read-only lookup.
+  upgrade, and read-only lookup. Step 264 closes the public-name band with
+  `cgpui/prelude.hpp`, keeps `cgpui/cgpui.hpp` as a thin compatibility
+  aggregate, and adds an integrated public authoring compile gate that uses
+  only the public prelude for `Application`, `App`, `Window`, `Context<T>`,
+  `Render`, `IntoElement`, and typed view/entity handles.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules.

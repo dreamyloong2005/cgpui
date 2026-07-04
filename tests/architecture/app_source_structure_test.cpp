@@ -36,6 +36,7 @@ std::size_t line_count(const std::string& text) {
 
 int main() {
   const std::string cgpui_header = read_source("include/cgpui/cgpui.hpp");
+  const std::string prelude_header = read_source("include/cgpui/prelude.hpp");
   const std::string app_header = read_source("include/cgpui/app/app.hpp");
   const std::string application_header =
       read_source("include/cgpui/app/application.hpp");
@@ -49,15 +50,24 @@ int main() {
   const std::string app_context_source =
       read_source("src/app/app_context_facade.cpp");
 
-  if (cgpui_header.empty() || app_header.empty() ||
+  if (cgpui_header.empty() || prelude_header.empty() || app_header.empty() ||
       application_header.empty() || app_facade_header.empty() ||
       window_header.empty() || application_source.empty() ||
       app_facade_source.empty() || window_source.empty() ||
       app_context_source.empty()) {
     return 1;
   }
-  if (!contains(cgpui_header, "#include \"cgpui/app/app.hpp\"")) {
+  if (!contains(cgpui_header, "#include \"cgpui/prelude.hpp\"") ||
+      contains(cgpui_header, "#include \"cgpui/app/app.hpp\"") ||
+      line_count(cgpui_header) > 8) {
     return 2;
+  }
+  if (!contains(prelude_header, "#include \"cgpui/app/app.hpp\"") ||
+      !contains(prelude_header, "#include \"cgpui/ui/ui.hpp\"") ||
+      !contains(prelude_header, "#include \"cgpui/renderer/renderer.hpp\"") ||
+      !contains(prelude_header, "#include \"cgpui/platform/platform.hpp\"") ||
+      line_count(prelude_header) > 40) {
+    return 13;
   }
   if (!contains(app_header, "#include \"cgpui/app/application.hpp\"")) {
     return 3;

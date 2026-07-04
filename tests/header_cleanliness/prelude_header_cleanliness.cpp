@@ -1,3 +1,4 @@
+#include "cgpui/prelude.hpp"
 #include "cgpui/cgpui.hpp"
 
 class PreludeView final : public cgpui::View {

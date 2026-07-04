@@ -34,7 +34,7 @@
   },
   "status_counts": {
     "required": 18,
-    "adapted": 12,
+    "adapted": 13,
     "deferred": 2,
     "non_goal": 1
   },
@@ -113,6 +113,12 @@
       "cgpui_target": "IntoElement alias plus into_element builders",
       "status": "adapted",
       "next_step": "Phase C"
+    },
+    {
+      "upstream_gpui": "gpui::prelude",
+      "cgpui_target": "cgpui/prelude.hpp plus cgpui/cgpui.hpp compatibility aggregate",
+      "status": "adapted",
+      "next_step": "Phase B public authoring surface gate"
     },
     {
       "upstream_gpui": "gpui::div",
