@@ -10595,3 +10595,21 @@
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 77/77.
+
+## 2026-07-05 Phase B Step 294 Merge
+
+- Fast-forward merged `codex/phase-b-command-palette-key-integration` into
+  `master` at `9e8969c feat: add command palette key bindings`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 80/80.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 77/77.
+- Step 294 is complete on `master`; Step 295 test-context keystroke simulation
+  is the next key-dispatch/test-authoring slice.
+- Cleanup removed `.worktrees/phase-b-command-palette-key-integration`,
+  deleted branch `codex/phase-b-command-palette-key-integration`, and pruned
+  stale worktree records. A fresh final Windows root full-debug rerun also
+  passed 80/80 after the docs closeout commit; final status shows only the
+  pre-existing untracked `.vscode/`.

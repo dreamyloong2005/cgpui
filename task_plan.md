@@ -1721,6 +1721,10 @@ implementation slice.
   `KeyBindingContext::disabled()`, and disabled-scope filtering in
   `WindowRuntime::key_binding_context_active(...)` so disabled exact and
   partial-prefix bindings do not block outer enabled bindings. Phase B Step
-  294 command palette key integration is implemented and verified in
-  `codex/phase-b-command-palette-key-integration`; Step 295 test-context
-  keystroke simulation is the next slice after merge.
+  294 command palette key integration is complete on `master` at `9e8969c`
+  after post-merge Windows full-debug 80/80 and WSL Arch Linux full-debug
+  77/77 verification. The slice adds command-palette-owned key metadata,
+  derives default key contexts from command scope, skips disabled or invalid
+  palette bindings, and keeps parsing/context derivation in
+  `src/ui/runtime_command_palette_keys.cpp`. Step 295 test-context keystroke
+  simulation is the next slice.
