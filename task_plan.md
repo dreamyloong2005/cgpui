@@ -1733,10 +1733,10 @@ implementation slice.
   grammar-backed `simulate_keystrokes(...)` through the real runtime
   event/key binding/action dispatch path, with ownership isolated in
   `src/ui/test_context_keystrokes.cpp`. Phase B Step 296 test-context pointer
-  input simulation is implemented and feature-worktree verified on Windows
-  full-debug 82/82 and WSL Arch Linux full-debug 79/79; it adds direct pointer
-  move/button/scroll helpers through the real runtime event path, with
-  ownership isolated in `src/ui/test_context_pointer.cpp`. Step 297
-  focus/window activation simulation is the next slice, followed by Step 298
-  clipboard helpers, Step 299 timer/async advancement helpers, and Step 300
-  redraw/frame pump simulation.
+  input simulation is complete on `master` at `f807753` after post-merge
+  Windows full-debug 82/82 and WSL Arch Linux full-debug 79/79 verification.
+  It adds direct pointer move/button/scroll helpers through the real runtime
+  event path, with ownership isolated in `src/ui/test_context_pointer.cpp`.
+  Step 297 focus/window activation simulation is the next slice, followed by
+  Step 298 clipboard helpers, Step 299 timer/async advancement helpers, and
+  Step 300 redraw/frame pump simulation.

@@ -10735,3 +10735,16 @@
   It is ready for feature commit and merge verification. Step 297
   focus/window activation simulation is the next slice after Step 296 lands on
   `master`.
+
+## 2026-07-05 Phase B Step 296 Merge
+
+- Fast-forward merged `codex/phase-b-test-context-pointer` into `master` at
+  `f807753 feat: add test context pointer simulation`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 82/82.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 79/79.
+- Step 296 is complete on `master`; Step 297 focus/window activation
+  simulation is the next slice in the Step 295-300 test-context behavior band.
