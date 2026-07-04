@@ -171,6 +171,10 @@ shape before deeper native work expands platform behavior.
   breaking the existing public prelude. Step 259 is complete: `Application`
   now owns a `PlatformApplication`, exposes `Application::create()`, and
   forwards `run(...)` to the existing app runner from a focused app module.
+  Step 260 is implemented in the app module: `AppContext::app()`,
+  `WindowRuntimeContext::app()`, and `WindowRuntimeContext::current_window()`
+  return public `App`/`Window` facades for window opening and runtime window
+  inspection without moving implementation into UI/runtime monoliths.
 - [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules.
@@ -494,10 +498,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 260 after the Step 259 Application facade merge.
-The next slice should deepen the public `App`/`Window` context shape without
-moving implementation into UI/runtime monoliths or changing the Windows/Linux
-Vulkan and Wayland-first platform targets.
+Continue Phase B with Step 261 after the Step 260 App/Window context facade
+merge. The next slice should deepen public context/render naming around
+`Context<T>`, `Render`, `IntoElement`, and `View` while preserving the focused
+app-module facade boundary and the Windows/Linux Vulkan plus Wayland-first
+platform targets.
 
 ## Self-Review
 

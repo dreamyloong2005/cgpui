@@ -8525,3 +8525,44 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 41/41.
 - Step 259 is complete on `master`; Step 260 is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 260 App Window Context Facades
+
+- Continued the interrupted `codex/phase-b-app-window-context` worktree.
+- The RED step had already failed as expected on missing `cgpui::App`,
+  `cgpui::Window`, `AppContext::app()`, `WindowRuntimeContext::app()`, and
+  `WindowRuntimeContext::current_window()`.
+- Implemented focused app-module facade files:
+  `include/cgpui/app/app_facade.hpp`, `include/cgpui/app/window.hpp`,
+  `src/app/app_facade.cpp`, `src/app/window.cpp`, and
+  `src/app/app_context_facade.cpp`.
+- Kept `include/cgpui/app/app.hpp` as the thin app aggregate and registered
+  the new `cgpui_app` sources plus `app_window_context_test` and
+  `app_header_cleanliness` in `xmake.lua`.
+- Added `AppContext::app()`, `WindowRuntimeContext::app()`, and
+  `WindowRuntimeContext::current_window()` as public GPUI-shaped context
+  entrypoints without renaming existing runtime fields or removing low-level
+  APIs.
+- Diagnosed the `app_source_structure_test/default` failure after the behavior
+  test passed. Direct binary execution returned exit code 12 because the
+  structure test looked for the literal string `WindowRuntime::open_window`,
+  while the focused facade correctly forwards through `runtime_->open_window`.
+  The structure assertion now checks the actual instance forwarding evidence.
+- Fresh Windows minimal GREEN passed:
+  `xmake test -y -P . app_window_context_test/default app_source_structure_test/default`
+  passed 2/2.
+- Fresh Windows focused verification passed:
+  `xmake test -y -P . app_window_context_test/default application_facade_test/default app_header_cleanliness/default app_source_structure_test/default gpui_parity_ledger_test/default prelude_header_cleanliness/default ui_header_cleanliness/default ui_source_structure_test/default`
+  passed 8/8.
+- Fresh WSL Arch Linux focused verification passed:
+  `XMAKE_ROOT=y xmake test -y -P . app_window_context_test/default application_facade_test/default app_header_cleanliness/default app_source_structure_test/default gpui_parity_ledger_test/default prelude_header_cleanliness/default ui_header_cleanliness/default ui_source_structure_test/default`
+  passed 8/8.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 46/46.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 43/43.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings for touched text files.
+- Updated the complete parity ledger, JSON export, roadmap, task plan,
+  findings, and progress notes so Step 261 is the next Phase B slice.

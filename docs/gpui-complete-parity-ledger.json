@@ -76,19 +76,19 @@
       "upstream_gpui": "gpui::Application",
       "cgpui_target": "Application",
       "status": "adapted",
-      "next_step": "Step 260 App/Window context depth"
+      "next_step": "Step 261 context/render spelling depth"
     },
     {
       "upstream_gpui": "gpui::App",
-      "cgpui_target": "AppContext",
+      "cgpui_target": "App facade from AppContext::app()",
       "status": "adapted",
-      "next_step": "Phase B"
+      "next_step": "Phase B context API depth"
     },
     {
       "upstream_gpui": "gpui::Window",
-      "cgpui_target": "WindowRuntimeContext and PlatformWindow",
+      "cgpui_target": "Window facade from WindowRuntimeContext::current_window()",
       "status": "adapted",
-      "next_step": "Phase B/F"
+      "next_step": "Phase B/F window service depth"
     },
     {
       "upstream_gpui": "gpui::Context<T>",

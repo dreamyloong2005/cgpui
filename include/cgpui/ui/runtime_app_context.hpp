@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/app/app_facade.hpp"
 #include "cgpui/ui/runtime_actions.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
 
@@ -15,6 +16,7 @@ namespace cgpui {
 struct AppContext {
   WindowRuntime& runtime;
 
+  [[nodiscard]] App app() const;
   [[nodiscard]] AppOpenedWindow open_window(WindowOptions options) const;
   [[nodiscard]] AppOpenedWindow open_window(
       WindowOptions options,

@@ -4241,3 +4241,28 @@
   valid; xmake's test runner exposed the use-after-free. The durable pattern is
   to record renderer observations through external counters, as
   `tests/ui/app_runner_test.cpp` already does.
+
+## 2026-07-04 Phase B Step 260 App Window Context Facades
+
+- `gpui::App` and `gpui::Window` parity should be layered as public app-module
+  facades over the existing `WindowRuntime`, not by renaming `AppContext`,
+  `WindowRuntimeContext`, or low-level runtime records. This keeps compatibility
+  while moving the authoring surface closer to upstream GPUI spelling.
+- The Step 260 ownership boundary is:
+  `include/cgpui/app/app_facade.hpp`, `include/cgpui/app/window.hpp`,
+  `src/app/app_facade.cpp`, `src/app/window.cpp`, and
+  `src/app/app_context_facade.cpp`. The app aggregate remains thin, and
+  `cgpui_app` is the build target that owns the facade implementation.
+- `AppContext::app()` and `WindowRuntimeContext::app()` intentionally return
+  lightweight facade handles over the current runtime. `WindowRuntimeContext`
+  also exposes `current_window()` so frame/update code can inspect the active
+  window without reaching through the old raw `window` field spelling.
+- `Window::viewport_size()` currently prefers the platform window state when
+  a native window exists, then falls back to the descriptor size. This makes the
+  facade useful for the root window and still deterministic for app-opened
+  window records that do not yet have full production native redraw semantics.
+- Structure tests should assert the real source boundary and forwarding shape,
+  not an impossible static-qualified spelling. The failed check for
+  `WindowRuntime::open_window` was fixed to require `runtime_->open_window`,
+  which proves the facade still forwards through `WindowRuntime` while matching
+  the implementation style.

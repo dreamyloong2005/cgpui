@@ -29,6 +29,8 @@ struct WindowRuntimeContext {
   int frame_index = 0;
 
   [[nodiscard]] std::optional<EventRoute> current_event_route() const;
+  [[nodiscard]] App app() const;
+  [[nodiscard]] Window current_window() const;
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;

@@ -113,6 +113,12 @@ int main() {
       !contains(ledger, "| gpui_platform::application |")) {
     return 5;
   }
+  if (!contains(ledger, "`App` facade from `AppContext::app()`") ||
+      !contains(ledger,
+                "`Window` facade from `WindowRuntimeContext::current_window()`") ||
+      !contains(ledger, "tests/api_parity/app_window_context_test.cpp")) {
+    return 15;
+  }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
       !contains(ledger, "| gpui_platform wayland feature | Required |") ||
       !contains(ledger, "| gpui Windows backend | Required |")) {
