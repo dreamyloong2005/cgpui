@@ -9027,3 +9027,17 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 52/52.
 - Step 269 is implemented and verified on
   `codex/phase-b-entity-invalidation`; it is ready for merge verification.
+
+## 2026-07-04 Phase B Step 269 Merge
+
+- Committed the entity invalidation branch as
+  `df46612 feat: add entity invalidation helpers`.
+- Fast-forward merged `codex/phase-b-entity-invalidation` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 55/55.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 52/52.
+- Step 269 is complete on `master`; Step 270 entity deletion and cross-context
+  boundaries are the next Phase B slice.
