@@ -8,6 +8,10 @@ App AppContext::app() const {
   return App(runtime);
 }
 
+AppContext WindowRuntimeContext::app_context() const {
+  return AppContext{.runtime = runtime};
+}
+
 App WindowRuntimeContext::app() const {
   return App(runtime);
 }

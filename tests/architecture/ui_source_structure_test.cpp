@@ -400,6 +400,7 @@ int main() {
       !contains(view_handle_header, "class WeakViewHandle") ||
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
+      !contains(runtime_context_header, "AppContext app_context() const") ||
       !contains(runtime_context_header, "ViewHandle<T> view() const") ||
       !contains(runtime_templates_header,
                 "ViewHandle<T> WindowRuntimeContext::view() const") ||

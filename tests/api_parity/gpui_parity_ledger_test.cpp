@@ -116,12 +116,16 @@ int main() {
     return 5;
   }
   if (!contains(ledger, "`App` facade from `AppContext::app()`") ||
+      !contains(ledger, "`Context<T>::app_context()` app-domain capability") ||
       !contains(ledger,
                 "`Window` facade from `WindowRuntimeContext::window()`") ||
-      !contains(ledger, "tests/api_parity/app_window_context_test.cpp")) {
+      !contains(ledger, "tests/api_parity/app_window_context_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/app_context_capability_test.cpp")) {
     return 15;
   }
   if (!contains(ledger, "`Context<T>` alias with app/window/entity helpers") ||
+      !contains(ledger, "`Context<T>::app_context()`") ||
       !contains(ledger, "`EntityHandle<T>`") ||
       !contains(ledger, "`Context<T>::new_entity<T>(...)`") ||
       !contains(ledger, "weak upgrade/read semantics") ||
@@ -391,10 +395,34 @@ int main() {
     return 37;
   }
 
+  const std::string app_context_capability =
+      read_source("tests/api_parity/app_context_capability_test.cpp");
+  if (app_context_capability.empty()) {
+    return 38;
+  }
+  if (!contains(app_context_capability, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(app_context_capability, "context.app_context()") ||
+      !contains(app_context_capability, "cgpui::AppContext") ||
+      !contains(app_context_capability, "app_context.app()") ||
+      !contains(app_context_capability,
+                "app_context.global<CapabilityGlobal>()") ||
+      !contains(app_context_capability, "std::same_as") ||
+      !contains(app_context_capability,
+                "cgpui::Render<AppContextCapabilityView>")) {
+    return 39;
+  }
+  if (contains(app_context_capability, "WindowRuntimeContext") ||
+      contains(app_context_capability, "WindowRuntime") ||
+      contains(app_context_capability, "ViewContext") ||
+      contains(app_context_capability, "PlatformWindow")) {
+    return 40;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
       !contains(xmake, "target(\"context_capabilities_test\")") ||
+      !contains(xmake, "target(\"app_context_capability_test\")") ||
       !contains(xmake, "target(\"view_handle_spelling_test\")") ||
       !contains(xmake, "target(\"public_authoring_surface_test\")") ||
       !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
@@ -407,6 +435,8 @@ int main() {
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/app_context_capability_test.cpp") ||
       !contains(xmake, "tests/api_parity/view_handle_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/public_authoring_surface_test.cpp") ||
       !contains(xmake, "tests/api_parity/entity_lifecycle_creation_test.cpp") ||

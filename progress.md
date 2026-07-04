@@ -9095,3 +9095,29 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 53/53.
 - Step 270 is complete on `master`; Step 271 GPUI-like context capabilities by
   domain is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 271 App Context Capability
+
+- Created `codex/phase-b-app-context-capability` in
+  `.worktrees/phase-b-app-context-capability` from `master` at
+  `7e569d5 docs: mark step 270 merged`.
+- Restored planning context, confirmed `master` was tracked-clean with only the
+  pre-existing untracked `.vscode/`, and confirmed `.worktrees` is ignored.
+  The first planning catchup attempt used the missing `.claude` path; rerunning
+  the helper from `.codex/skills/planning-with-files/scripts/session-catchup.py`
+  succeeded.
+- Baseline Windows focused verification passed 10/10:
+  `context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default ui_source_structure_test/default entity_deletion_test/default window_runtime_actions_test/default`.
+- Added RED coverage in
+  `tests/api_parity/app_context_capability_test.cpp` and registered
+  `app_context_capability_test` in `xmake.lua`. RED failed as expected on
+  missing `WindowRuntimeContext::app_context()`.
+- GREEN added `Context<T>::app_context() -> AppContext` through
+  `include/cgpui/ui/runtime_context.hpp` and
+  `src/app/app_context_facade.cpp`, reusing the existing app-domain facade
+  instead of creating a duplicate capability type.
+- Added runtime coverage to `app_window_context_test` proving a frame context's
+  `app_context()` resolves the same root window and shared global runtime
+  state. The first attempt mutated globals from after-frame and stack-overflowed
+  through synchronous fake redraw; the fixed test seeds the global in setup and
+  reads through the app-context capability during the frame callback.

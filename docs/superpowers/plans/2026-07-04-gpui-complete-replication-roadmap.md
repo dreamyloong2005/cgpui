@@ -220,7 +220,10 @@ shape before deeper native work expands platform behavior.
   against another runtime, even when the typed numeric id matches.
 - [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
-  and test context.
+  and test context. Step 271 starts this band with
+  `Context<T>::app_context() -> AppContext`, reusing the existing app-domain
+  facade for app/global/theme/window-opening capability access from authoring
+  contexts.
 - [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
   entity-to-entity observation, window/view observation, and deterministic
   unsubscribe behavior.
@@ -538,9 +541,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 271 after the Step 270 entity deletion and
-cross-context boundary slice. The next slice should add GPUI-like context
-capabilities by domain without weakening the runtime-token entity boundary.
+Continue Phase B with Step 272 after the Step 271 app-context capability
+slice. The next slice should add the view-context capability domain without
+weakening the runtime-token entity boundary.
 
 ## Self-Review
 

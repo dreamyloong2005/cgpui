@@ -69,6 +69,10 @@ class TestView final : public cgpui::View {
   int paint_count = 0;
 };
 
+struct AppContextCapabilityGlobal {
+  int value = 0;
+};
+
 class FakeWindow final : public cgpui::PlatformWindow {
  public:
   explicit FakeWindow(cgpui::WindowState state) : state_(state) {}
@@ -183,6 +187,8 @@ int test_app_and_window_context_facades() {
   cgpui::Size root_viewport_size;
   cgpui::DpiScale root_scale;
   cgpui::WindowDescriptor child_descriptor;
+  bool app_context_global_visible = false;
+  cgpui::WindowRuntimeId app_context_root_window_id;
 
   const int result = cgpui::run_app(
       application,
@@ -203,6 +209,7 @@ int test_app_and_window_context_facades() {
           .setup_context =
               [&](cgpui::AppContext& context) {
                 setup_called = true;
+                context.set_global(AppContextCapabilityGlobal{.value = 5});
                 cgpui::App app = context.app();
                 opened = app.open_window(cgpui::WindowOptions{}
                                              .title("Child Facade")
@@ -211,12 +218,21 @@ int test_app_and_window_context_facades() {
                     [&](const cgpui::ViewContext& frame_context) {
                       frame_called = true;
                       cgpui::App frame_app = frame_context.app();
+                      cgpui::AppContext app_context =
+                          frame_context.app_context();
                       cgpui::Window root_window =
                           frame_context.current_window();
                       root_window_id = root_window.runtime_id();
                       root_descriptor = root_window.descriptor();
                       root_viewport_size = root_window.viewport_size();
                       root_scale = root_window.scale();
+                      app_context_root_window_id =
+                          app_context.app().root_window().runtime_id();
+
+                      const AppContextCapabilityGlobal* global =
+                          app_context.global<AppContextCapabilityGlobal>();
+                      app_context_global_visible =
+                          global != nullptr && global->value == 5;
 
                       const std::optional<cgpui::Window> child_window =
                           frame_app.window(opened.runtime_id);
@@ -238,6 +254,10 @@ int test_app_and_window_context_facades() {
   if (opened.runtime_id.value == 0 || root_window_id.value == 0 ||
       opened.runtime_id == root_window_id) {
     return 3;
+  }
+  if (app_context_root_window_id != root_window_id ||
+      !app_context_global_visible) {
+    return 8;
   }
   if (root_descriptor.title != "Root Facade" ||
       root_descriptor.size.width != 500.0F ||

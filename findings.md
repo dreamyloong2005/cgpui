@@ -4442,3 +4442,19 @@
   `include/cgpui/ui/runtime_context.hpp`, and
   `include/cgpui/ui/runtime_templates.hpp`. No new entity store or broad
   `ui.cpp`/`runtime_entities.cpp` rewrite is needed.
+
+## 2026-07-04 Phase B Step 271 App Context Capability
+
+- Step 271 starts the GPUI-like context-capability band with the app domain:
+  `Context<T>::app_context() -> AppContext`. This reuses the existing
+  `AppContext` facade rather than introducing a parallel capability type.
+- The runtime implementation belongs beside the existing app/window facade
+  bridge in `src/app/app_context_facade.cpp`; `runtime_context.hpp` only owns
+  the declaration. This keeps the new capability out of `ui.cpp` and broad
+  runtime implementation files.
+- Runtime tests must avoid mutating globals from an after-frame callback in the
+  fake platform window. `AppContext::set_global(...)` and
+  `update_global(...)` request render, and the fake window dispatches redraw
+  synchronously, so doing that inside after-frame recurses until stack
+  overflow. Seed globals in setup, then read through `context.app_context()` in
+  the frame callback.

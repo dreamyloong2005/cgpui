@@ -80,7 +80,7 @@
     },
     {
       "upstream_gpui": "gpui::App",
-      "cgpui_target": "App facade from AppContext::app()",
+      "cgpui_target": "App facade from AppContext::app() and Context<T>::app_context() app-domain capability",
       "status": "adapted",
       "next_step": "Phase B context API depth"
     },
@@ -92,9 +92,9 @@
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
       "status": "adapted",
-      "next_step": "Phase B entity lifecycle depth"
+      "next_step": "Phase B context capability depth"
     },
     {
       "upstream_gpui": "gpui::Entity<T>",

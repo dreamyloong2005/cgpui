@@ -120,6 +120,7 @@ int main() {
       !contains(window_source, "Window::descriptor()") ||
       !contains(window_source, "Window::viewport_size()") ||
       !contains(app_context_source, "AppContext::app()") ||
+      !contains(app_context_source, "WindowRuntimeContext::app_context()") ||
       !contains(app_context_source, "WindowRuntimeContext::window()") ||
       !contains(app_context_source, "WindowRuntimeContext::current_window()")) {
     return 12;

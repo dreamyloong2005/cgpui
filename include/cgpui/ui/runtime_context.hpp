@@ -29,6 +29,7 @@ struct WindowRuntimeContext {
   int frame_index = 0;
 
   [[nodiscard]] std::optional<EventRoute> current_event_route() const;
+  [[nodiscard]] AppContext app_context() const;
   [[nodiscard]] App app() const;
   [[nodiscard]] Window window() const;
   [[nodiscard]] Window current_window() const;
