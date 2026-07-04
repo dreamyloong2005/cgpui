@@ -10444,3 +10444,17 @@
 - Fresh WSL Arch Linux full debug passed after resume:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 75/75.
+
+## 2026-07-05 Phase B Step 292 Merge
+
+- Fast-forward merged `codex/phase-b-partial-key-matches` into `master` at
+  `cb28df0 feat: add partial key matches`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 78/78.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 75/75.
+- Step 292 is complete on `master`; Step 293 disabled key scopes is the next
+  key-dispatch slice before command palette integration and fuller
+  test-context simulation.

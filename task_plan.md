@@ -1710,6 +1710,10 @@ implementation slice.
   Arch Linux full-debug 74/74 verification. The slice adds
   `KeyBindingContext`, context-aware `bind_key(...)`, and focused-element >
   view > window > app binding selection in a focused runtime key-binding
-  context module. Phase B Step 292 partial key matches is the next
-  key-dispatch slice before disabled scopes, command palette integration, and
-  fuller test-context behavior.
+  context module. Phase B Step 292 partial key matches is complete on
+  `master` at `cb28df0` after post-merge Windows full-debug 78/78 and WSL
+  Arch Linux full-debug 75/75 verification. The slice adds `KeyBindingChord`,
+  multi-chord grammar such as `ctrl-k ctrl-s`, and pending sequence dispatch
+  state in `src/ui/runtime_key_binding_sequences.cpp`. Phase B Step 293
+  disabled key scopes is the next key-dispatch slice before command palette
+  integration and fuller test-context behavior.
