@@ -331,18 +331,19 @@ and WSL Arch Linux full debug 50/50. Post-merge verification passed Windows
 full debug 53/53 and WSL Arch Linux full debug 50/50. Step 268, entity update
 transactions, is the next Phase B slice.
 
-Step 268, entity update transactions, is implemented on
-`codex/phase-b-entity-update-transactions`. RED failed as expected on missing
-`Context<T>::update_entity(...)` and on `EntityHandle<T>::update(...)`
-returning `bool` rather than `std::optional<R>` for value-returning
-transactions. GREEN adds `Context<T>::update_entity(...)` in the focused
-`runtime_context.hpp` / `runtime_templates.hpp` template boundary and routes
-`EntityHandle<T>::update(...)` through it. Void callbacks still return `bool`;
-value callbacks return `std::optional<R>`, callbacks may receive the typed
-context, and missing entities soft-fail. Feature-worktree verification passed
-Windows focused 12/12, WSL Arch Linux focused 12/12, Windows full debug 54/54,
-and WSL Arch Linux full debug 51/51. Step 269, entity invalidation semantics,
-is the next Phase B slice after merge verification.
+Step 268, entity update transactions, is merged on `master` at
+`84c4dfa feat: add entity update transactions`. RED failed as expected on
+missing `Context<T>::update_entity(...)` and on
+`EntityHandle<T>::update(...)` returning `bool` rather than `std::optional<R>`
+for value-returning transactions. GREEN adds `Context<T>::update_entity(...)`
+in the focused `runtime_context.hpp` / `runtime_templates.hpp` template
+boundary and routes `EntityHandle<T>::update(...)` through it. Void callbacks
+still return `bool`; value callbacks return `std::optional<R>`, callbacks may
+receive the typed context, and missing entities soft-fail. Feature-worktree
+verification passed Windows focused 12/12, WSL Arch Linux focused 12/12,
+Windows full debug 54/54, and WSL Arch Linux full debug 51/51. Post-merge
+verification passed Windows full debug 54/54 and WSL Arch Linux full debug
+51/51. Step 269, entity invalidation semantics, is the next Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

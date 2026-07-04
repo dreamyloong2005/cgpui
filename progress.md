@@ -8971,3 +8971,18 @@
 - Step 268 is implemented and verified on
   `codex/phase-b-entity-update-transactions`; it is ready for merge
   verification.
+
+## 2026-07-04 Phase B Step 268 Merge
+
+- Committed the entity update transaction branch as
+  `84c4dfa feat: add entity update transactions`.
+- Fast-forward merged `codex/phase-b-entity-update-transactions` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 54/54.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 51/51.
+- Step 268 is complete on `master`; Step 269 entity invalidation semantics is
+  the next Phase B slice.
