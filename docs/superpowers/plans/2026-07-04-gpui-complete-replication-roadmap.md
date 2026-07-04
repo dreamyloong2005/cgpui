@@ -315,10 +315,12 @@ shape before deeper native work expands platform behavior.
   now exposes direct `dispatch_keystroke(...)` plus grammar-backed
   `simulate_keystrokes(...)`, with the implementation isolated in
   `src/ui/test_context_keystrokes.cpp` and verified through the real runtime
-  keyboard/keymap/action dispatch path. The remaining queue is Step 296 pointer
-  input simulation, Step 297 focus/window activation simulation, Step 298
-  clipboard helpers, Step 299 timer and async advancement helpers, and Step
-  300 redraw/frame pump simulation.
+  keyboard/keymap/action dispatch path. Step 296 adds direct pointer
+  move/button/scroll simulation through the real runtime event path, with the
+  implementation isolated in `src/ui/test_context_pointer.cpp`. The remaining
+  queue is Step 297 focus/window activation simulation, Step 298 clipboard
+  helpers, Step 299 timer and async advancement helpers, and Step 300
+  redraw/frame pump simulation.
 - [ ] Steps 301-306: Add public error/result conventions for window opening,
   platform services, async spawn, and renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
@@ -624,12 +626,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 296 test-context pointer input simulation is next after Step 295
-keystroke simulation landed on `master` at `04cfa7a` and post-merge verified
-on Windows and WSL. Step 295 records direct and grammar-backed keyboard
-simulation through the existing runtime event path while keeping pointer input,
-focus/window activation, clipboard helpers, timer/async advancement,
-redraw/frame pumping, and action macro payloads out of scope.
+Step 297 focus/window activation simulation is next after Step 296 pointer
+input simulation. Step 296 records direct pointer move/button/scroll helpers
+through the existing runtime event path while keeping focus/window activation,
+clipboard helpers, timer/async advancement, redraw/frame pumping, and action
+macro payloads out of scope.
 
 ## Self-Review
 

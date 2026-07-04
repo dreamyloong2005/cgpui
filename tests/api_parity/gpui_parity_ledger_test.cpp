@@ -206,6 +206,9 @@ int main() {
   }
   if (!contains(ledger, "| gpui::TestAppContext |") ||
       !contains(ledger, "`TestContextCapability` groups runtime id/view id") ||
+      !contains(ledger, "direct pointer move/button/scroll simulation") ||
+      !contains(ledger, "src/ui/test_context_pointer.cpp") ||
+      !contains(ledger, "tests/ui/test_context_pointer_simulation_test.cpp") ||
       !contains(ledger,
                 "Phase G fuller simulated input/test macro depth")) {
     return 18;
@@ -295,6 +298,7 @@ int main() {
               "key_binding_disabled_scope_test",
               "command_palette_key_integration_test",
               "test_context_keystroke_simulation_test",
+              "test_context_pointer_simulation_test",
               "key_binding.hpp",
               "runtime_key_binding_grammar.cpp",
               "runtime_key_binding_modifiers.cpp",
@@ -302,6 +306,8 @@ int main() {
               "runtime_key_binding_sequences.cpp",
               "runtime_command_palette_keys.cpp",
               "test_context_keystrokes.cpp",
+              "test_context_pointer.cpp",
+              "dispatch_pointer_* helpers",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -922,6 +928,8 @@ int main() {
       !contains(xmake, "target(\"command_palette_key_integration_test\")") ||
       !contains(xmake,
                 "target(\"test_context_keystroke_simulation_test\")") ||
+      !contains(xmake,
+                "target(\"test_context_pointer_simulation_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -975,6 +983,8 @@ int main() {
                 "tests/ui/command_palette_key_integration_test.cpp") ||
       !contains(xmake,
                 "tests/ui/test_context_keystroke_simulation_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/test_context_pointer_simulation_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

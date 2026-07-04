@@ -10680,3 +10680,58 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 78/78.
 - Step 295 is complete on `master`; Step 296 test-context pointer input
   simulation is the next slice in the Step 295-300 test-context behavior band.
+
+## 2026-07-05 Phase B Step 296 Test-Context Pointer Simulation
+
+- Continued `.worktrees/phase-b-test-context-pointer` on
+  `codex/phase-b-test-context-pointer` from `2adb3a7`.
+- Baseline focused verification from the previous continuation passed 6/6.
+- RED added `TestContextCapability` API assertions and
+  `tests/ui/test_context_pointer_simulation_test.cpp`; focused build failed as
+  expected because `dispatch_pointer_move(...)`,
+  `dispatch_pointer_button(...)`, and `dispatch_pointer_scroll(...)` were not
+  members of `TestContextCapability`.
+- GREEN added those public helpers, implemented them in focused
+  `src/ui/test_context_pointer.cpp`, and kept dispatch on the real
+  `WindowRuntime::handle_event(PlatformEvent{...})` pointer path.
+- Added structure and parity documentation guards in
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`, `xmake.lua`, and
+  `docs/gpui-complete-parity-ledger.*`.
+- Focused Windows verification passed:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_pointer_simulation_test/default ui_source_structure_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default` passed
+  6/6.
+- Focused ledger verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . gpui_parity_ledger_test/default
+  test_context_capability_test/default
+  test_context_pointer_simulation_test/default
+  ui_source_structure_test/default` passed 4/4.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 82/82.
+- The first WSL focused attempt used stale distro name `Arch` and failed
+  before entering the repo; the registered WSL distro is `archlinux`.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  test_context_pointer_simulation_test/default
+  test_context_capability_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed
+  9/9.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 79/79.
+- Step 296 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 297
+  focus/window activation simulation is the next slice after Step 296 lands on
+  `master`.

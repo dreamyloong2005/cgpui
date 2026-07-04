@@ -4932,3 +4932,24 @@
   and Step 300 redraw/frame pump simulation in a focused rendering/test-context
   source. Do not add these follow-on behaviors to `ui.cpp` or the broad
   `test_context.cpp` file after the fact.
+
+## 2026-07-05 Phase B Step 296 Test-Context Pointer Simulation
+
+- Step 296 stays scoped to pointer input simulation on the public
+  `TestContextCapability`. It should not start focus/window activation,
+  clipboard helpers, timer/async advancement, redraw pumping,
+  `gpui::test` macro equivalents, or action payload macro work.
+- The correct runtime path is direct event dispatch through
+  `context_->runtime.handle_event(PlatformEvent{PointerMoved{...}})`,
+  `PointerButton{...}`, and `PointerScrolled{...}`. This keeps simulated
+  pointer input on the same input-state, hit-testing, route, view fallback, and
+  after-event path as native pointer input.
+- Implementation ownership belongs in the focused
+  `src/ui/test_context_pointer.cpp` leaf. `src/ui/test_context.cpp` remains
+  the observability/queue-control capability file, and
+  `src/ui/test_context_keystrokes.cpp` remains keyboard-only.
+- The behavior guard belongs in
+  `tests/ui/test_context_pointer_simulation_test.cpp`: it should prove direct
+  pointer move/button/scroll helpers update input state, emit the expected
+  `EventKind` records, and preserve hit-test routing through the real runtime
+  dispatch path.

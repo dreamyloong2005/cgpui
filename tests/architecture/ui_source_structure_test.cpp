@@ -139,6 +139,7 @@ int main() {
       "tests/ui/window_runtime_multiwindow_test.cpp",
       "tests/ui/window_runtime_theme_test.cpp",
       "tests/ui/test_context_keystroke_simulation_test.cpp",
+      "tests/ui/test_context_pointer_simulation_test.cpp",
   };
   for (const char* test_file : runtime_test_files) {
     if (read_source(test_file).empty()) {
@@ -165,7 +166,9 @@ int main() {
           900 ||
       line_count(read_source("tests/ui/window_runtime_theme_test.cpp")) > 500 ||
       line_count(read_source("tests/ui/test_context_keystroke_simulation_test.cpp")) >
-          180) {
+          180 ||
+      line_count(read_source("tests/ui/test_context_pointer_simulation_test.cpp")) >
+          240) {
     return 112;
   }
 
@@ -499,6 +502,9 @@ int main() {
       !contains(test_context_header, "void drain_task_completions(") ||
       !contains(test_context_header, "void dispatch_keystroke(") ||
       !contains(test_context_header, "bool simulate_keystrokes(") ||
+      !contains(test_context_header, "void dispatch_pointer_move(") ||
+      !contains(test_context_header, "void dispatch_pointer_button(") ||
+      !contains(test_context_header, "void dispatch_pointer_scroll(") ||
       !contains(element_context_header, "class ElementContextCapability") ||
       !contains(element_context_header, "ElementId element_id() const") ||
       !contains(element_context_header, "void capture_pointer() const") ||
@@ -1590,6 +1596,8 @@ int main() {
       read_source("src/ui/test_context.cpp");
   const std::string test_context_keystrokes_source =
       read_source("src/ui/test_context_keystrokes.cpp");
+  const std::string test_context_pointer_source =
+      read_source("src/ui/test_context_pointer.cpp");
   if (!contains(test_context_source,
                 "WindowRuntimeId TestContextCapability::runtime_id() const") ||
       !contains(test_context_source,
@@ -1617,6 +1625,25 @@ int main() {
       contains(test_context_keystrokes_source, "AsyncContextCapability") ||
       contains(test_context_keystrokes_source, "ElementContextCapability")) {
     return 121;
+  }
+  if (!contains(test_context_pointer_source,
+                "void TestContextCapability::dispatch_pointer_move(") ||
+      !contains(test_context_pointer_source,
+                "void TestContextCapability::dispatch_pointer_button(") ||
+      !contains(test_context_pointer_source,
+                "void TestContextCapability::dispatch_pointer_scroll(") ||
+      !contains(test_context_pointer_source, "PointerMoved{") ||
+      !contains(test_context_pointer_source, "PointerButton{") ||
+      !contains(test_context_pointer_source, "PointerScrolled{") ||
+      !contains(test_context_pointer_source,
+                "context_->runtime.handle_event(") ||
+      contains(test_context_source, "dispatch_pointer_move(") ||
+      contains(test_context_source, "dispatch_pointer_button(") ||
+      contains(test_context_source, "dispatch_pointer_scroll(") ||
+      line_count(test_context_pointer_source) > 80 ||
+      contains(test_context_pointer_source, "AsyncContextCapability") ||
+      contains(test_context_pointer_source, "ElementContextCapability")) {
+    return 134;
   }
 
   const std::string element_context_source =

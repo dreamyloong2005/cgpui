@@ -107,6 +107,21 @@ static_assert(std::same_as<decltype(std::declval<Capability>()
                                         .simulate_keystrokes(
                                             std::declval<std::string_view>())),
                            bool>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .dispatch_pointer_move(
+                                            std::declval<cgpui::Point>())),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .dispatch_pointer_button(
+                                            std::declval<cgpui::MouseButton>(),
+                                            bool{},
+                                            std::declval<cgpui::Point>())),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .dispatch_pointer_scroll(
+                                            std::declval<cgpui::Point>(),
+                                            std::declval<cgpui::Point>())),
+                           void>);
 static_assert(std::is_copy_constructible_v<Capability>);
 static_assert(cgpui::Render<TestContextCapabilityView>);
 

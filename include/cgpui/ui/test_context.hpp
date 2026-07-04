@@ -43,6 +43,12 @@ class TestContextCapability {
   void drain_task_completions() const;
   void dispatch_keystroke(KeyboardKey key) const;
   [[nodiscard]] bool simulate_keystrokes(std::string_view keystrokes) const;
+  void dispatch_pointer_move(Point position) const;
+  void dispatch_pointer_button(
+      MouseButton button,
+      bool pressed,
+      Point position) const;
+  void dispatch_pointer_scroll(Point delta, Point position) const;
 
  private:
   const WindowRuntimeContext* context_ = nullptr;
