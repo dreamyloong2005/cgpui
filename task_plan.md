@@ -1657,6 +1657,8 @@ implementation slice.
 ## Active Extension Note
 
 - Phase B Step 275, `Context<T>::async_context() ->
-  AsyncContextCapability`, is implemented and full-debug verified on
-  `codex/phase-b-async-context-capability`. It is ready for merge
-  verification and cleanup before marking the slice complete on `master`.
+  AsyncContextCapability`, is complete on `master` after post-merge Windows
+  and WSL full-debug verification. Phase B Step 276, test-context capability
+  domain, is the next implementation slice; keep it scoped to public
+  test-context access and do not claim the fuller Step 295-300 test behavior
+  band yet.

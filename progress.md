@@ -9368,3 +9368,17 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 58/58.
 - Step 275 is ready for merge verification.
+
+## 2026-07-04 Phase B Step 275 Merge
+
+- Committed the async-context capability branch as
+  `d9e8138 feat: add async context capability`.
+- Fast-forward merged `codex/phase-b-async-context-capability` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 61/61.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 58/58.
+- Step 275 is complete on `master`; Step 276 test-context capability domain
+  is the next Phase B slice.
