@@ -1700,5 +1700,15 @@ implementation slice.
   parsing in `include/cgpui/ui/key_binding.hpp` and
   `src/ui/runtime_key_binding_grammar.cpp` plus
   `Context<T>::bind_key("ctrl-shift-s", "action")`. Phase B Step 290 platform
-  modifier semantics is next before keymap contexts, partial matches, disabled
-  scopes, command palette integration, and fuller test-context behavior.
+  modifier semantics is implemented and focused-verified on
+  `codex/phase-b-platform-modifier-semantics`: `secondary-*` maps to Ctrl on
+  Windows/Linux and Super on macOS, `platform-*` / `cmd-*` / `win-*` bind the
+  platform key, duplicate semantic modifiers reject invalid chords, and the
+  ownership boundary is the focused `src/ui/runtime_key_binding_modifiers.cpp`
+  implementation plus the private `src/ui/key_binding_internal.hpp` parser
+  bridge. Fresh focused verification passed Windows 10/10 and WSL Arch Linux
+  10/10. Feature-worktree full debug passed Windows 76/76 and WSL Arch Linux
+  73/73, and `git diff --check` exited 0 with only expected LF-to-CRLF
+  normalization warnings. Step 290 still needs feature commit, fast-forward
+  merge, post-merge verification, docs closeout, and cleanup before Step 291
+  keymap contexts begins.

@@ -24,4 +24,14 @@ enum class DesktopPlatformTarget {
   return "Unknown";
 }
 
+[[nodiscard]] constexpr DesktopPlatformTarget current_desktop_platform_target() {
+#if defined(_WIN32)
+  return DesktopPlatformTarget::windows;
+#elif defined(__APPLE__)
+  return DesktopPlatformTarget::macos_cocoa;
+#else
+  return DesktopPlatformTarget::linux_wayland;
+#endif
+}
+
 } // namespace cgpui

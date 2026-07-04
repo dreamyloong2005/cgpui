@@ -292,9 +292,12 @@ shape before deeper native work expands platform behavior.
   command palette integration. Step 289 adds the focused
   `include/cgpui/ui/key_binding.hpp` leaf, `parse_key_binding(...)`, and
   `Context<T>::bind_key("ctrl-shift-s", "action")` grammar registration over
-  the existing dispatch path; platform modifier normalization, keymap
-  contexts, partial matches, disabled scopes, command palette integration, and
-  fuller test-context simulation remain later slices.
+  the existing dispatch path. Step 290 adds platform modifier semantics:
+  `secondary-*` maps to Ctrl on Windows/Linux and Super on macOS, while
+  `platform-*` / `cmd-*` / `win-*` bind the platform key through the focused
+  `src/ui/runtime_key_binding_modifiers.cpp` boundary. Keymap contexts,
+  partial matches, disabled scopes, command palette integration, and fuller
+  test-context simulation remain later slices.
 - [ ] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
   redraws.
@@ -603,11 +606,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 290 platform modifier semantics is next after Step 289 key binding
-grammar. Step 289 records GPUI-style single-chord grammar parsing through
-`parse_key_binding(...)` and `Context<T>::bind_key("ctrl-shift-s", "action")`
-while keeping keymap contexts, partial matches, disabled scopes, command
-palette integration, and fuller test-context simulation out of scope.
+Step 291 keymap contexts is next after Step 290 platform modifier semantics.
+Step 290 records `secondary-*` and `platform-*` modifier parsing through
+`parse_key_binding(..., DesktopPlatformTarget)` and current-platform
+`Context<T>::bind_key(...)` behavior while keeping partial matches, disabled
+scopes, command palette integration, and fuller test-context simulation out of
+scope.
 
 ## Self-Review
 

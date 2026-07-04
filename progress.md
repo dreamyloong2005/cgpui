@@ -10221,3 +10221,66 @@
   the next key-dispatch slice before keymap contexts, partial matches,
   disabled scopes, command palette integration, and fuller test-context
   simulation.
+
+## 2026-07-05 Phase B Step 290 Platform Modifier Semantics
+
+- Continued `codex/phase-b-platform-modifier-semantics` in
+  `.worktrees/phase-b-platform-modifier-semantics` from
+  `ae217df docs: mark step 289 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default` passed
+  7/7.
+- Added RED behavior coverage in
+  `tests/ui/key_binding_platform_modifier_test.cpp` and registered
+  `key_binding_platform_modifier_test` in `xmake.lua`. RED failed as expected
+  because `parse_key_binding(...)` did not accept an explicit
+  `DesktopPlatformTarget`.
+- GREEN adds explicit platform-target parsing through
+  `parse_key_binding(std::string_view, std::string, DesktopPlatformTarget)`,
+  current-platform forwarding through `current_desktop_platform_target()`, and
+  focused modifier normalization in `src/ui/runtime_key_binding_modifiers.cpp`
+  with private declarations in `src/ui/key_binding_internal.hpp`.
+- The semantics now map `secondary-*` to Ctrl on Windows/Linux and Super on
+  macOS; map `platform-*`, `cmd-*`, `command-*`, `super-*`, `meta-*`,
+  `win-*`, and `windows-*` to the platform key; and reject duplicate semantic
+  modifiers such as `ctrl-secondary-s` on Windows.
+- Updated structure and parity guards in
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, and the complete-replication
+  roadmap. Keymap contexts, partial matches, disabled scopes, command palette
+  integration, and fuller test-context input simulation remain out of scope.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . key_binding_platform_modifier_test/default
+  key_binding_grammar_test/default action_bubbling_test/default
+  action_enablement_metadata_test/default typed_action_dispatch_test/default
+  window_runtime_actions_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 10/10.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  key_binding_platform_modifier_test/default key_binding_grammar_test/default
+  action_bubbling_test/default action_enablement_metadata_test/default
+  typed_action_dispatch_test/default window_runtime_actions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  10/10.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 76/76.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 73/73.
+- Step 290 is implemented and focused-verified on
+  `codex/phase-b-platform-modifier-semantics`; it is ready for feature commit
+  and merge verification. Step 291 keymap contexts remains the next key-dispatch
+  slice after Step 290 lands on `master`.

@@ -218,6 +218,7 @@ int main() {
       !contains(ledger, "action enablement metadata") ||
       !contains(ledger, "action bubbling through focused routes") ||
       !contains(ledger, "key binding grammar parsing") ||
+      !contains(ledger, "platform modifier semantics") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
       !contains(ledger, "include/cgpui/ui/key_binding.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
@@ -227,6 +228,7 @@ int main() {
       !contains(ledger, "src/ui/runtime_action_metadata.cpp") ||
       !contains(ledger, "src/ui/runtime_action_registration.cpp") ||
       !contains(ledger, "src/ui/runtime_key_binding_grammar.cpp") ||
+      !contains(ledger, "src/ui/runtime_key_binding_modifiers.cpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
@@ -234,6 +236,7 @@ int main() {
       !contains(ledger, "tests/ui/action_enablement_metadata_test.cpp") ||
       !contains(ledger, "tests/ui/action_bubbling_test.cpp") ||
       !contains(ledger, "tests/ui/key_binding_grammar_test.cpp") ||
+      !contains(ledger, "tests/ui/key_binding_platform_modifier_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -263,12 +266,15 @@ int main() {
               "action enablement metadata",
               "action bubbling through focused routes",
               "key binding grammar parsing",
+              "platform modifier semantics",
               "typed_action_surface_test",
               "action_enablement_metadata_test",
               "action_bubbling_test",
               "key_binding_grammar_test",
+              "key_binding_platform_modifier_test",
               "key_binding.hpp",
               "runtime_key_binding_grammar.cpp",
+              "runtime_key_binding_modifiers.cpp",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -794,11 +800,17 @@ int main() {
   }
   const std::string key_binding_grammar =
       read_source("tests/ui/key_binding_grammar_test.cpp");
+  const std::string key_binding_platform_modifier =
+      read_source("tests/ui/key_binding_platform_modifier_test.cpp");
   const std::string runtime_key_binding_grammar =
       read_source("src/ui/runtime_key_binding_grammar.cpp");
+  const std::string runtime_key_binding_modifiers =
+      read_source("src/ui/runtime_key_binding_modifiers.cpp");
   const std::string key_binding_header =
       read_source("include/cgpui/ui/key_binding.hpp");
-  if (key_binding_grammar.empty() || runtime_key_binding_grammar.empty() ||
+  if (key_binding_grammar.empty() || key_binding_platform_modifier.empty() ||
+      runtime_key_binding_grammar.empty() ||
+      runtime_key_binding_modifiers.empty() ||
       key_binding_header.empty()) {
     return 76;
   }
@@ -808,8 +820,20 @@ int main() {
       !contains(key_binding_grammar, "context.bind_key(\"cmd-p\"") ||
       !contains(key_binding_grammar, "ctrl-unknown") ||
       !contains(runtime_key_binding_grammar, "parse_key_binding(") ||
-      !contains(runtime_key_binding_grammar, "apply_modifier_token(") ||
+      !contains(runtime_key_binding_grammar,
+                "apply_key_binding_modifier_token(") ||
+      !contains(key_binding_platform_modifier, "secondary-s") ||
+      !contains(key_binding_platform_modifier, "platform-p") ||
+      !contains(key_binding_platform_modifier,
+                "DesktopPlatformTarget::windows") ||
+      !contains(key_binding_platform_modifier,
+                "DesktopPlatformTarget::linux_wayland") ||
+      !contains(key_binding_platform_modifier,
+                "DesktopPlatformTarget::macos_cocoa") ||
+      !contains(runtime_key_binding_modifiers, "secondary_modifier_for(") ||
+      !contains(runtime_key_binding_modifiers, "platform_modifier_for(") ||
       !contains(key_binding_header, "struct KeyBinding") ||
+      !contains(key_binding_header, "DesktopPlatformTarget") ||
       !contains(key_binding_header, "std::optional<KeyBinding>") ||
       contains(runtime_key_binding_grammar, "dispatch_action(")) {
     return 77;
@@ -839,6 +863,7 @@ int main() {
       !contains(xmake, "target(\"action_enablement_metadata_test\")") ||
       !contains(xmake, "target(\"action_bubbling_test\")") ||
       !contains(xmake, "target(\"key_binding_grammar_test\")") ||
+      !contains(xmake, "target(\"key_binding_platform_modifier_test\")") ||
       !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -879,6 +904,8 @@ int main() {
                 "tests/ui/action_bubbling_test.cpp") ||
       !contains(xmake,
                 "tests/ui/key_binding_grammar_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/key_binding_platform_modifier_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_command_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {

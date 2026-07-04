@@ -397,6 +397,7 @@ int main() {
   if (!contains(key_binding_header, "struct KeyBinding") ||
       !contains(key_binding_header, "struct TextEditBinding") ||
       !contains(key_binding_header, "parse_key_binding(") ||
+      !contains(key_binding_header, "DesktopPlatformTarget") ||
       !contains(key_binding_header, "std::optional<KeyBinding>")) {
     return 126;
   }
@@ -1788,16 +1789,45 @@ int main() {
   }
   const std::string runtime_key_binding_grammar_source =
       read_source("src/ui/runtime_key_binding_grammar.cpp");
+  const std::string runtime_key_binding_modifiers_source =
+      read_source("src/ui/runtime_key_binding_modifiers.cpp");
+  const std::string key_binding_internal_header =
+      read_source("src/ui/key_binding_internal.hpp");
   if (line_count(runtime_key_binding_grammar_source) > 160 ||
       !contains(runtime_key_binding_grammar_source, "parse_key_binding(") ||
       !contains(runtime_key_binding_grammar_source, "split_key_tokens(") ||
-      !contains(runtime_key_binding_grammar_source, "apply_modifier_token(") ||
+      !contains(runtime_key_binding_grammar_source,
+                "apply_key_binding_modifier_token(") ||
       contains(runtime_key_binding_grammar_source, "dispatch_action(") ||
       contains(runtime_key_binding_grammar_source,
                "register_command_palette_entry(") ||
       contains(runtime_key_binding_grammar_source,
                "ActionDispatchResult WindowRuntime::dispatch_action(")) {
     return 128;
+  }
+  if (line_count(runtime_key_binding_modifiers_source) > 100 ||
+      !contains(runtime_key_binding_modifiers_source,
+                "apply_key_binding_modifier_token(") ||
+      !contains(runtime_key_binding_modifiers_source, "platform_modifier_for(") ||
+      !contains(runtime_key_binding_modifiers_source, "secondary_modifier_for(") ||
+      !contains(runtime_key_binding_modifiers_source,
+                "DesktopPlatformTarget::windows") ||
+      !contains(runtime_key_binding_modifiers_source,
+                "DesktopPlatformTarget::linux_wayland") ||
+      !contains(runtime_key_binding_modifiers_source,
+                "DesktopPlatformTarget::macos_cocoa") ||
+      contains(runtime_key_binding_modifiers_source, "dispatch_action(") ||
+      contains(runtime_key_binding_modifiers_source,
+               "register_command_palette_entry(")) {
+    return 129;
+  }
+  if (line_count(key_binding_internal_header) > 40 ||
+      !contains(key_binding_internal_header, "lower_key_binding_token(") ||
+      !contains(key_binding_internal_header,
+                "apply_key_binding_modifier_token(") ||
+      contains(key_binding_internal_header, "WindowRuntime") ||
+      contains(key_binding_internal_header, "CommandPaletteEntry")) {
+    return 130;
   }
 
   const std::string runtime_text_source = read_source("src/ui/runtime_text.cpp");

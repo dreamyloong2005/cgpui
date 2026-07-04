@@ -4797,3 +4797,24 @@
 - `Context<T>::bind_key("ctrl-shift-s", "action")` parses and forwards to the
   existing structured `WindowRuntime::bind_key(KeyBinding)` path. Invalid
   grammar returns `false` and does not register a binding.
+
+## 2026-07-05 Phase B Step 290 Platform Modifier Semantics
+
+- Step 290 should stay scoped to platform modifier normalization for the
+  existing single-chord grammar. It should not start keymap contexts, partial
+  matches, disabled scopes, command palette integration, action payload macros,
+  or fuller simulated test-context input.
+- The ownership boundary is `src/ui/runtime_key_binding_modifiers.cpp` for
+  platform alias semantics, `src/ui/key_binding_internal.hpp` for private
+  parser sharing, `src/ui/runtime_key_binding_grammar.cpp` for tokenization,
+  and `include/cgpui/ui/key_binding.hpp` for the public overload that accepts
+  an explicit `DesktopPlatformTarget`.
+- `secondary-*` is the cross-platform primary command modifier: Ctrl on
+  Windows/Linux and Super on macOS. `platform-*`, `cmd-*`, `command-*`,
+  `super-*`, `meta-*`, `win-*`, and `windows-*` bind the platform key in the
+  current modifier model. Duplicate semantic modifiers should fail rather than
+  silently collapse.
+- `Context<T>::bind_key(...)` remains current-platform behavior by forwarding
+  through `current_desktop_platform_target()`. Explicit platform-target parsing
+  exists for deterministic parity tests and future macOS API correctness, not
+  as a signal to begin macOS runtime/backend work in this slice.

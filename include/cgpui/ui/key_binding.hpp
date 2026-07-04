@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/core/event_keyboard.hpp"
+#include "cgpui/platform/target.hpp"
 #include "cgpui/ui/text_edit_actions.hpp"
 
 #include <cstdint>
@@ -23,6 +24,11 @@ struct TextEditBinding {
   KeyboardModifiers modifiers;
   TextEditAction edit_action = TextEditAction::move_previous;
 };
+
+[[nodiscard]] std::optional<KeyBinding> parse_key_binding(
+    std::string_view grammar,
+    std::string action_name,
+    DesktopPlatformTarget platform);
 
 [[nodiscard]] std::optional<KeyBinding> parse_key_binding(
     std::string_view grammar,
