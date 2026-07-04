@@ -3,21 +3,31 @@
 namespace cgpui {
 
 void WindowRuntime::register_action(std::string name, ActionHandler handler) {
-  register_app_action(std::move(name), std::move(handler));
-}
-
-void WindowRuntime::register_app_action(
-    std::string name,
-    ActionHandler handler) {
   if (!name.empty() && handler) {
+    upsert_action_registration(ActionRegistration{
+        .name = name,
+        .registration_scope = ActionRegistrationScope::general,
+        .dispatch_scope = ActionScope::app});
     action_handlers_[std::move(name)] = std::move(handler);
   }
 }
 
-void WindowRuntime::register_window_action(
-    std::string name,
-    ActionHandler handler) {
+void WindowRuntime::register_app_action(std::string name, ActionHandler handler) {
   if (!name.empty() && handler) {
+    upsert_action_registration(ActionRegistration{
+        .name = name,
+        .registration_scope = ActionRegistrationScope::app,
+        .dispatch_scope = ActionScope::app});
+    action_handlers_[std::move(name)] = std::move(handler);
+  }
+}
+
+void WindowRuntime::register_window_action(std::string name, ActionHandler handler) {
+  if (!name.empty() && handler) {
+    upsert_action_registration(ActionRegistration{
+        .name = name,
+        .registration_scope = ActionRegistrationScope::window,
+        .dispatch_scope = ActionScope::window});
     window_action_handlers_[std::move(name)] = std::move(handler);
   }
 }
@@ -27,6 +37,11 @@ void WindowRuntime::register_view_action(
     std::string name,
     ActionHandler handler) {
   if (view_id.value != 0 && !name.empty() && handler) {
+    upsert_action_registration(ActionRegistration{
+        .name = name,
+        .registration_scope = ActionRegistrationScope::view,
+        .dispatch_scope = ActionScope::view,
+        .view_id = view_id});
     view_action_handlers_[view_id.value][std::move(name)] =
         std::move(handler);
   }
@@ -37,6 +52,11 @@ void WindowRuntime::register_focused_element_action(
     std::string name,
     ActionHandler handler) {
   if (element_id.value != 0 && !name.empty() && handler) {
+    upsert_action_registration(ActionRegistration{
+        .name = name,
+        .registration_scope = ActionRegistrationScope::focused_element,
+        .dispatch_scope = ActionScope::focused_element,
+        .element_id = element_id});
     focused_element_action_handlers_[element_id.value][std::move(name)] =
         std::move(handler);
   }

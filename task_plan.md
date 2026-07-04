@@ -1682,5 +1682,9 @@ implementation slice.
   Arch Linux full-debug 67/67 verification; it keeps
   `include/cgpui/ui/runtime_action_templates.hpp` as the typed overload leaf
   over the existing string registry. Phase B Step 285 action scope metadata is
-  next. Keep key dispatch, key grammar, command metadata, and fuller
-  test-context behavior in later slices.
+  implemented and focused/full verified on
+  `codex/phase-b-action-scope-metadata`; it keeps `ActionRegistration`
+  metadata in the focused runtime action boundary. Phase B Step 286 typed
+  action command metadata binding is next. Keep key
+  dispatch, key grammar, enablement, bubbling, and fuller test-context behavior
+  in later slices.

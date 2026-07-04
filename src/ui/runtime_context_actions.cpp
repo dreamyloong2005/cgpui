@@ -58,6 +58,17 @@ std::optional<ActionDispatchResult> WindowRuntimeContext::last_action_dispatch()
   return runtime.last_action_dispatch();
 }
 
+std::span<const ActionRegistration> WindowRuntimeContext::action_registrations()
+    const {
+  return runtime.action_registrations();
+}
+
+std::vector<ActionRegistration>
+WindowRuntimeContext::action_registrations_for_scope(
+    ActionRegistrationScope scope) const {
+  return runtime.action_registrations_for_scope(scope);
+}
+
 void WindowRuntimeContext::register_command_palette_entry(
     CommandPaletteEntry entry) const {
   runtime.register_command_palette_entry(std::move(entry));

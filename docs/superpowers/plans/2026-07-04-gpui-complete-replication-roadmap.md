@@ -275,9 +275,11 @@ shape before deeper native work expands platform behavior.
   `include/cgpui/ui/action.hpp`; Step 284 landed typed action
   registration/dispatch overloads through
   `include/cgpui/ui/runtime_action_templates.hpp` over the existing string
-  registry. Step 285 is the next action-scope metadata slice while key
-  dispatch, key grammar, command metadata, and fuller test-context simulation
-  remain later work.
+  registry. Step 285 adds `ActionRegistration` scope metadata in
+  `include/cgpui/ui/runtime_actions.hpp` and
+  `src/ui/runtime_action_metadata.cpp` while key dispatch, key grammar,
+  command metadata binding, enablement, bubbling, and fuller test-context
+  simulation remain later work.
 - [ ] Steps 289-294: Expand key dispatch parity: key binding grammar,
   platform modifiers, keymap contexts, partial matches, disabled scopes, and
   command palette integration.
@@ -589,16 +591,15 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 285 action scope metadata is next. Step 284 typed action
-registration/dispatch overloads is complete on `master` at `3d50204` after
-post-merge Windows full-debug 70/70 and WSL Arch Linux full-debug 67/67
-verification.
+Step 286 typed action command metadata binding is next after Step 285 merge
+verification. Step 285 action scope metadata is implemented and focused/full
+verified on `codex/phase-b-action-scope-metadata`; it exposes
+`ActionRegistration` records for general, app, window, view, and
+focused-element registration sources over the existing action registry.
 
-The Step 285 guard should keep the action-band scope narrow: expose enough
-metadata to distinguish app, window, view, focused-element, and general action
-registration scopes over the existing action registry. Keep key dispatch, key
-grammar, command metadata/palette integration, enablement, bubbling, and fuller
-test-context simulation for later slices.
+The Step 286 guard should bind typed action names into command-palette metadata
+without starting key dispatch, key grammar, action enablement, bubbling, or
+fuller test-context simulation.
 
 ## Self-Review
 

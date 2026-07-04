@@ -9927,3 +9927,44 @@
 - Step 284 is complete on `master`; Step 285 action scope metadata is the next
   action-band slice before command metadata, enablement, bubbling, key
   dispatch, and fuller test-context simulation.
+
+## 2026-07-05 Phase B Step 285 Action Scope Metadata
+
+- Created `codex/phase-b-action-scope-metadata` in
+  `.worktrees/phase-b-action-scope-metadata` from `5024112`.
+- Baseline Windows focused verification passed:
+  `xmake test -y -P . typed_action_dispatch_test/default typed_action_surface_test/default window_runtime_actions_test/default ui_source_structure_test/default ui_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 6/6.
+- Added RED behavior coverage in `tests/ui/action_scope_metadata_test.cpp` and
+  registered `action_scope_metadata_test` in `xmake.lua`. RED failed as
+  expected because `cgpui::ActionRegistration`,
+  `cgpui::ActionRegistrationScope`, and runtime/context
+  `action_registrations(...)` query APIs were missing.
+- GREEN adds `ActionRegistrationScope`, `ActionRegistration`, runtime/context
+  action registration metadata queries, and the focused
+  `src/ui/runtime_action_metadata.cpp` implementation. `register_action(...)`
+  now preserves the general registration source while still dispatching through
+  app scope, and invalid empty-name/empty-handler registrations are not
+  recorded.
+- Fresh Windows focused behavior verification passed:
+  `xmake -y -P . action_scope_metadata_test`, then
+  `xmake test -y -P . action_scope_metadata_test/default` passed 1/1.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . action_scope_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 7/7.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . action_scope_metadata_test/default typed_action_dispatch_test/default typed_action_surface_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default gpui_parity_ledger_test/default`
+  passed 7/7.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 71/71.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 68/68.
+- Step 285 is implemented and focused/full verified on
+  `codex/phase-b-action-scope-metadata`; it is ready for merge verification.

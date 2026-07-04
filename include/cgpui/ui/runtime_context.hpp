@@ -119,6 +119,10 @@ struct WindowRuntimeContext {
   [[nodiscard]] ActionDispatchResult dispatch_action(std::string name) const;
   template <Action T> [[nodiscard]] ActionDispatchResult dispatch_action() const;
   [[nodiscard]] std::optional<ActionDispatchResult> last_action_dispatch() const;
+  [[nodiscard]] std::span<const ActionRegistration> action_registrations()
+      const;
+  [[nodiscard]] std::vector<ActionRegistration>
+  action_registrations_for_scope(ActionRegistrationScope scope) const;
   void register_command_palette_entry(CommandPaletteEntry entry) const;
   [[nodiscard]] std::span<const CommandPaletteEntry> command_palette_entries()
       const;

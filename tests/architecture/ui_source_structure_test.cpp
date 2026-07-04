@@ -433,6 +433,8 @@ int main() {
       !contains(runtime_handles_header, "class Subscription") ||
       !contains(runtime_window_options_header, "struct WindowOptions") ||
       !contains(runtime_app_context_header, "struct AppContext") ||
+      !contains(runtime_actions_header, "enum class ActionRegistrationScope") ||
+      !contains(runtime_actions_header, "struct ActionRegistration") ||
       !contains(runtime_actions_header, "struct CommandPaletteEntry") ||
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
@@ -573,6 +575,8 @@ int main() {
                 "WindowRuntimeContext::register_action(ActionHandler handler) const") ||
       !contains(runtime_action_templates_header,
                 "WindowRuntimeContext::dispatch_action() const") ||
+      !contains(window_runtime_header, "action_registrations() const") ||
+      !contains(runtime_context_header, "action_registrations()") ||
       !contains(runtime_templates_header,
                 "void WindowRuntimeContext::set_global") ||
       !contains(runtime_templates_header,
@@ -1631,6 +1635,8 @@ int main() {
 
   const std::string runtime_action_dispatch_source =
       read_source("src/ui/runtime_action_dispatch.cpp");
+  const std::string runtime_action_metadata_source =
+      read_source("src/ui/runtime_action_metadata.cpp");
   if (line_count(runtime_action_dispatch_source) > 130 ||
       !contains(runtime_action_dispatch_source,
                 "void WindowRuntime::register_action(") ||
@@ -1644,8 +1650,24 @@ int main() {
                 "WindowRuntime::last_action_dispatch(") ||
       contains(runtime_action_dispatch_source,
                "register_command_palette_entry(") ||
+      contains(runtime_action_dispatch_source,
+               "action_registrations_for_scope(") ||
       contains(runtime_action_dispatch_source, "bind_text_edit_action(")) {
     return 74;
+  }
+  if (line_count(runtime_action_metadata_source) > 80 ||
+      !contains(runtime_action_metadata_source,
+                "WindowRuntime::upsert_action_registration(") ||
+      !contains(runtime_action_metadata_source,
+                "WindowRuntime::action_registrations()") ||
+      !contains(runtime_action_metadata_source,
+                "WindowRuntime::action_registrations_for_scope(") ||
+      contains(runtime_action_metadata_source,
+               "ActionDispatchResult WindowRuntime::dispatch_action(") ||
+      contains(runtime_action_metadata_source,
+               "register_command_palette_entry(") ||
+      contains(runtime_action_metadata_source, "KeyBinding")) {
+    return 76;
   }
 
   const std::string runtime_command_palette_source =

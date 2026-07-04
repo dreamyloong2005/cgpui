@@ -4701,3 +4701,19 @@
   std::string_view name` can be registered and dispatched through the typed API,
   while preserving existing string action behavior and last-dispatch
   observability.
+
+## 2026-07-05 Phase B Step 285 Action Scope Metadata
+
+- Step 285 should stay scoped to recording action registration metadata over
+  the existing scoped registry. It should not start command metadata binding,
+  key dispatch, key grammar, enablement, bubbling, or fuller simulated
+  test-context input.
+- The important distinction is registration source vs dispatch scope:
+  `register_action(...)` is a general/legacy registration source but still
+  dispatches with `ActionScope::app` for source compatibility.
+- The ownership boundary is `include/cgpui/ui/runtime_actions.hpp` for
+  `ActionRegistrationScope` / `ActionRegistration`, existing runtime/context
+  action declarations for read APIs, and `src/ui/runtime_action_metadata.cpp`
+  for upsert/query behavior. `runtime_action_dispatch.cpp` should continue to
+  own handler registration and dispatch, and command palette/key binding code
+  should not grow this metadata behavior.

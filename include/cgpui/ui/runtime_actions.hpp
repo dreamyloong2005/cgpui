@@ -17,6 +17,22 @@ enum class ActionScope {
   focused_element,
 };
 
+enum class ActionRegistrationScope {
+  general,
+  app,
+  window,
+  view,
+  focused_element,
+};
+
+struct ActionRegistration {
+  std::string name;
+  ActionRegistrationScope registration_scope = ActionRegistrationScope::general;
+  ActionScope dispatch_scope = ActionScope::app;
+  std::optional<ViewId> view_id;
+  std::optional<ElementId> element_id;
+};
+
 struct ActionDispatchResult {
   std::string name;
   bool handled = false;

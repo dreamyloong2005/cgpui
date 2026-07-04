@@ -63,6 +63,7 @@ void remove_observers_for_view(ViewId view_id);
 void notify_window_observers();
 void notify_view_observers(ViewId view_id);
 void deactivate_native_additional_windows();
+void upsert_action_registration(ActionRegistration registration);
 [[nodiscard]] WindowRuntimeId allocate_window_runtime_id();
 [[nodiscard]] WindowRuntimeRecord* find_window_runtime_record(
     WindowRuntimeId runtime_id);
@@ -200,6 +201,7 @@ std::unordered_map<
     std::uint64_t,
     std::unordered_map<std::string, ActionHandler>>
     focused_element_action_handlers_;
+std::vector<ActionRegistration> action_registrations_;
 std::vector<CommandPaletteEntry> command_palette_entries_;
 std::vector<KeyBinding> key_bindings_;
 std::vector<TextEditBinding> text_edit_bindings_;

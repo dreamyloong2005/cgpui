@@ -214,11 +214,14 @@ int main() {
       !contains(ledger, "`Action<T>` typed action concept") ||
       !contains(ledger, "`action_name<T>()`") ||
       !contains(ledger, "typed register/dispatch overloads") ||
+      !contains(ledger, "action registration metadata") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
+      !contains(ledger, "src/ui/runtime_action_metadata.cpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
+      !contains(ledger, "tests/ui/action_scope_metadata_test.cpp") ||
       !contains(ledger, "Phase B action metadata/key dispatch depth")) {
     return 62;
   }
@@ -685,6 +688,22 @@ int main() {
       !contains(typed_dispatch, "typed.runtime.string")) {
     return 67;
   }
+  const std::string action_scope_metadata =
+      read_source("tests/ui/action_scope_metadata_test.cpp");
+  if (action_scope_metadata.empty()) {
+    return 68;
+  }
+  if (!contains(action_scope_metadata, "ActionRegistrationScope::general") ||
+      !contains(action_scope_metadata, "ActionRegistrationScope::app") ||
+      !contains(action_scope_metadata, "ActionRegistrationScope::window") ||
+      !contains(action_scope_metadata, "ActionRegistrationScope::view") ||
+      !contains(action_scope_metadata,
+                "ActionRegistrationScope::focused_element") ||
+      !contains(action_scope_metadata, "action_registrations_for_scope") ||
+      contains(action_scope_metadata, "KeyBinding") ||
+      contains(action_scope_metadata, "CommandPaletteEntry")) {
+    return 69;
+  }
 
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
@@ -706,6 +725,7 @@ int main() {
       !contains(xmake, "target(\"entity_deletion_test\")") ||
       !contains(xmake, "target(\"typed_action_surface_test\")") ||
       !contains(xmake, "target(\"typed_action_dispatch_test\")") ||
+      !contains(xmake, "target(\"action_scope_metadata_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -737,6 +757,8 @@ int main() {
                 "tests/api_parity/typed_action_surface_test.cpp") ||
       !contains(xmake,
                 "tests/ui/typed_action_dispatch_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/action_scope_metadata_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }
