@@ -1715,5 +1715,11 @@ implementation slice.
   Arch Linux full-debug 75/75 verification. The slice adds `KeyBindingChord`,
   multi-chord grammar such as `ctrl-k ctrl-s`, and pending sequence dispatch
   state in `src/ui/runtime_key_binding_sequences.cpp`. Phase B Step 293
-  disabled key scopes is the next key-dispatch slice before command palette
-  integration and fuller test-context behavior.
+  disabled key scopes is complete on `master` at `2a70550` after post-merge
+  Windows full-debug 79/79 and WSL Arch Linux full-debug 76/76 verification.
+  The slice adds `KeyBindingContext::enabled`,
+  `KeyBindingContext::disabled()`, and disabled-scope filtering in
+  `WindowRuntime::key_binding_context_active(...)` so disabled exact and
+  partial-prefix bindings do not block outer enabled bindings. Phase B Step
+  294 command palette key integration is the next key-dispatch slice before
+  fuller test-context behavior.

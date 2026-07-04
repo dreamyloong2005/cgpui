@@ -10510,3 +10510,16 @@
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 76/76.
+
+## 2026-07-05 Phase B Step 293 Merge
+
+- Fast-forward merged `codex/phase-b-disabled-key-scopes` into `master` at
+  `2a70550 feat: add disabled key scopes`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 79/79.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 76/76.
+- Step 293 is complete on `master`; Step 294 command palette key integration
+  is the next key-dispatch slice before fuller test-context behavior.
