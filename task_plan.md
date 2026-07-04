@@ -238,15 +238,18 @@ verification passed 8/8 each. Feature-worktree full debug passed Windows
 46/46 and WSL Arch Linux 43/43. Post-merge verification passed Windows full
 debug 46/46 and WSL Arch Linux full debug 43/43.
 
-Step 261, public `Context<T>` / `Render` / `IntoElement` spelling depth, is in
-progress on `codex/phase-b-context-render-spelling`. RED failed as expected on
+Step 261, public `Context<T>` / `Render` / `IntoElement` spelling depth, is
+merged on `master` at `56553e0 feat: add context render spelling` and
+post-merge verified on Windows and WSL Arch Linux. RED failed as expected on
 missing `include/cgpui/ui/render.hpp`. GREEN adds the focused render leaf
 header, keeps `View` ownership in `include/cgpui/ui/view.hpp`, updates the
 hello-world parity example to use `Context<HelloWorldView>`, `IntoElement`,
 and `Render<HelloWorldView>`, and records the ledger evidence. Feature-worktree
 verification passed Windows focused 5/5, WSL focused 5/5, Windows full debug
-47/47, and WSL Arch Linux full debug 44/44. Merge and post-merge verification
-remain before Step 261 can be marked complete.
+47/47, and WSL Arch Linux full debug 44/44. Post-merge verification passed
+Windows full debug 47/47 and WSL Arch Linux full debug 44/44. Step 262,
+deeper public `Context<T>` app/window/entity access patterns, is the next
+Phase B slice.
 
 Step 139, keyed element identity and keyed reconciliation beyond parent-local
 index matching, is merged on `master` at

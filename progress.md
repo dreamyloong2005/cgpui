@@ -8617,3 +8617,15 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 44/44.
 - `git diff --check` exited 0 with only expected LF-to-CRLF normalization
   warnings for touched text files.
+
+## 2026-07-04 Phase B Step 261 Merge
+
+- Committed the Context/Render spelling branch as
+  `56553e0 feat: add context render spelling`.
+- Fast-forward merged `codex/phase-b-context-render-spelling` into `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .` passed 47/47.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 44/44.
+- Step 261 is complete on `master`; Step 262 is the next Phase B slice.
