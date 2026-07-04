@@ -9311,3 +9311,18 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 57/57.
 - Step 274 is ready for merge verification.
+
+## 2026-07-04 Phase B Step 274 Merge
+
+- Committed the element-context capability branch as
+  `fea090d feat: add element context capability`.
+- Fast-forward merged `codex/phase-b-element-context-capability` into
+  `master`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 60/60.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 57/57.
+- Step 274 is complete on `master`; Step 275 async context capability domain
+  is the next Phase B slice.

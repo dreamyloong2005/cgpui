@@ -1629,6 +1629,6 @@ implementation slice.
 ## Active Extension Note
 
 - Phase B Step 274, `Context<T>::element_context(ElementId) ->
-  ElementContextCapability`, is implemented and focused-verified on
-  `codex/phase-b-element-context-capability`. Full debug verification and
-  merge cleanup remain before marking the slice complete on `master`.
+  ElementContextCapability`, is merged and post-merge verified on `master` at
+  `fea090d feat: add element context capability`. Step 275 async context
+  capability domain is the next Phase B slice.
