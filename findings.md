@@ -4422,3 +4422,23 @@
   `include/cgpui/ui/window_runtime.hpp`, and
   `include/cgpui/ui/runtime_templates.hpp`. Deletion semantics and
   cross-context access rules remain future slices.
+
+## 2026-07-04 Phase B Step 270 Entity Deletion Boundaries
+
+- Step 270 closes the entity lifecycle band with public deletion spelling:
+  `EntityHandle<T>::remove(context) -> bool` and
+  `Context<T>::remove_entity(handle) -> bool`. Empty, missing, and already
+  deleted handles soft-fail with `false`.
+- Context-created `EntityHandle<T>` and `WeakEntity<T>` values now carry a
+  runtime token. Handle reads, updates, invalidation, observation, removal, and
+  weak upgrades reject mismatched tokens before touching the runtime store, so
+  a handle from one `WindowRuntime` cannot affect another runtime's entity even
+  when the type and numeric id match.
+- Raw `EntityHandle<T>(EntityId<T>)` and `WeakEntity<T>(EntityId<T>)` remain
+  unbound for low-level compatibility with existing runtime tests and helpers.
+  The public context helpers bind new handles; compatibility ids still flow
+  through the existing `EntityId<T>` methods.
+- The implementation belongs in `include/cgpui/core/entity.hpp`,
+  `include/cgpui/ui/runtime_context.hpp`, and
+  `include/cgpui/ui/runtime_templates.hpp`. No new entity store or broad
+  `ui.cpp`/`runtime_entities.cpp` rewrite is needed.

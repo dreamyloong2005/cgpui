@@ -9041,3 +9041,43 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 52/52.
 - Step 269 is complete on `master`; Step 270 entity deletion and cross-context
   boundaries are the next Phase B slice.
+
+## 2026-07-04 Phase B Step 270 Entity Deletion Boundaries
+
+- Created `codex/phase-b-entity-deletion` in
+  `.worktrees/phase-b-entity-deletion` after closing and cleaning up the Step
+  269 branch.
+- Baseline Windows focused verification passed 13/13 before RED:
+  `xmake test -y -P . entity_invalidation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default entity_observation_test/default entity_transaction_test/default public_authoring_surface_test/default context_capabilities_test/default ui_source_structure_test/default`.
+- Added RED API coverage in
+  `tests/api_parity/entity_deletion_test.cpp` and registered
+  `entity_deletion_test` in `xmake.lua`. RED failed as expected on missing
+  `EntityHandle<T>::remove(...)` and
+  `Context<T>::remove_entity(EntityHandle<T>)`.
+- Added RED runtime coverage to `window_runtime_actions_test` for cross-runtime
+  boundaries: two runtimes deliberately create the same typed numeric entity
+  id, then the imported handle must fail read/update/invalidate/remove/weak
+  upgrade without touching the local entity.
+- GREEN added `EntityHandle<T>::remove(context) -> bool`,
+  `Context<T>::remove_entity(handle) -> bool`, handle-aware
+  `Context<T>::read_entity(handle)`, and runtime-token checks for handle read,
+  update, observe, invalidate, remove, and weak upgrade paths.
+- Updated ledger JSON/Markdown, `gpui_parity_ledger_test`,
+  `ui_source_structure_test`, and `ui_header_cleanliness` so deletion helpers
+  and runtime-token cross-context boundaries are part of the guarded surface.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus
+  `xmake test -y -P . entity_deletion_test/default entity_invalidation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default entity_observation_test/default entity_transaction_test/default public_authoring_surface_test/default context_capabilities_test/default ui_source_structure_test/default`
+  passed 14/14.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . entity_deletion_test/default entity_invalidation_test/default window_runtime_actions_test/default gpui_parity_ledger_test/default ui_header_cleanliness/default core_header_cleanliness/default prelude_header_cleanliness/default entity_weak_handle_semantics_test/default entity_lifecycle_creation_test/default entity_observation_test/default entity_transaction_test/default public_authoring_surface_test/default context_capabilities_test/default ui_source_structure_test/default`
+  passed 14/14.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 56/56.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 53/53.
+- Step 270 is implemented and verified on `codex/phase-b-entity-deletion`; it
+  is ready for merge verification.

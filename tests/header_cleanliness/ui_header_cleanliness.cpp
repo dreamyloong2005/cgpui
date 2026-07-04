@@ -128,8 +128,17 @@ class TestView final : public cgpui::View {
     const bool entity_handle_invalidation = entity.invalidate(context);
     const bool context_entity_invalidation =
         context.invalidate_entity(entity);
+    const cgpui::EntityHandle<TestModel> removable_entity =
+        context.new_entity<TestModel>(5);
+    const cgpui::EntityHandle<TestModel> context_removable_entity =
+        context.new_entity<TestModel>(6);
+    const bool entity_handle_removal = removable_entity.remove(context);
+    const bool context_entity_removal =
+        context.remove_entity(context_removable_entity);
     (void)entity_handle_invalidation;
     (void)context_entity_invalidation;
+    (void)entity_handle_removal;
+    (void)context_entity_removal;
     cgpui::Subscription subscription =
         context.observe_model_subscription(
             model,

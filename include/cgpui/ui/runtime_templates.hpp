@@ -49,6 +49,11 @@ struct EntityUpdateReturn<void> {
 template <typename Result>
 using EntityUpdateReturnT = typename EntityUpdateReturn<Result>::type;
 
+inline std::uintptr_t entity_context_token(
+    const WindowRuntimeContext& context) {
+  return reinterpret_cast<std::uintptr_t>(&context.runtime);
+}
+
 } // namespace detail
 
 template <typename T>
@@ -120,6 +125,16 @@ const T* WindowRuntimeContext::read_entity(EntityId<T> id) const {
 }
 
 template <typename T>
+const T* WindowRuntimeContext::read_entity(EntityHandle<T> entity) const {
+  if (entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*this))) {
+    return nullptr;
+  }
+
+  return runtime.read_entity(entity.id());
+}
+
+template <typename T>
 T* WindowRuntimeContext::mutate_entity(EntityId<T> id) const {
   return runtime.mutate_entity(id);
 }
@@ -137,12 +152,15 @@ Model<T> WindowRuntimeContext::new_model(Args&&... args) const {
 template <typename T, typename... Args>
 EntityHandle<T> WindowRuntimeContext::new_entity(Args&&... args) const {
   return EntityHandle<T>(
-      runtime.emplace_entity<T>(std::forward<Args>(args)...));
+      runtime.emplace_entity<T>(std::forward<Args>(args)...),
+      detail::entity_context_token(*this));
 }
 
 template <typename T>
 EntityHandle<T> WindowRuntimeContext::insert_entity_handle(T entity) const {
-  return EntityHandle<T>(runtime.insert_entity<T>(std::move(entity)));
+  return EntityHandle<T>(
+      runtime.insert_entity<T>(std::move(entity)),
+      detail::entity_context_token(*this));
 }
 
 template <typename T>
@@ -177,17 +195,21 @@ const T* WindowRuntimeContext::read_view(ViewHandle<T> view) const {
 
 template <typename T>
 EntityHandle<T> WindowRuntimeContext::entity(EntityId<T> id) const {
-  return EntityHandle<T>(id);
+  return EntityHandle<T>(id, detail::entity_context_token(*this));
 }
 
 template <typename T>
 WeakEntity<T> WindowRuntimeContext::weak_entity(EntityId<T> id) const {
-  return WeakEntity<T>(id);
+  return WeakEntity<T>(id, detail::entity_context_token(*this));
 }
 
 template <typename T>
 std::optional<Model<T>> WindowRuntimeContext::upgrade_entity(
     WeakEntity<T> entity) const {
+  if (!entity.matches_context(detail::entity_context_token(*this))) {
+    return std::nullopt;
+  }
+
   return runtime.upgrade_entity(entity);
 }
 
@@ -208,7 +230,8 @@ auto WindowRuntimeContext::update_entity(
   using Result = detail::EntityUpdateResult<Update, T>;
   using Return = detail::EntityUpdateReturnT<Result>;
 
-  if (entity.empty()) {
+  if (entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*this))) {
     if constexpr (std::is_void_v<Result>) {
       return false;
     } else {
@@ -244,7 +267,8 @@ auto WindowRuntimeContext::update_entity(
 
 template <typename T>
 bool WindowRuntimeContext::invalidate_entity(EntityHandle<T> entity) const {
-  if (entity.empty()) {
+  if (entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*this))) {
     return false;
   }
 
@@ -271,7 +295,8 @@ template <typename T, typename Observer>
 bool WindowRuntimeContext::observe_entity(
     EntityHandle<T> entity,
     Observer&& observer) const {
-  if (entity.empty()) {
+  if (entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*this))) {
     return false;
   }
 
@@ -280,7 +305,7 @@ bool WindowRuntimeContext::observe_entity(
       [observer = std::forward<Observer>(observer)](
           const WindowRuntimeContext& context,
           Model<T> model) mutable {
-        observer(context, EntityHandle<T>(model));
+        observer(context, context.entity(model));
       });
 }
 
@@ -288,7 +313,8 @@ template <typename T, typename Observer>
 Subscription WindowRuntimeContext::observe_entity_subscription(
     EntityHandle<T> entity,
     Observer&& observer) const {
-  if (entity.empty()) {
+  if (entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*this))) {
     return {};
   }
 
@@ -297,13 +323,23 @@ Subscription WindowRuntimeContext::observe_entity_subscription(
       [observer = std::forward<Observer>(observer)](
           const WindowRuntimeContext& context,
           Model<T> model) mutable {
-        observer(context, EntityHandle<T>(model));
+        observer(context, context.entity(model));
       });
 }
 
 template <typename T>
 bool WindowRuntimeContext::remove_model(Model<T> model) const {
   return runtime.remove_entity(model);
+}
+
+template <typename T>
+bool WindowRuntimeContext::remove_entity(EntityHandle<T> entity) const {
+  if (entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*this))) {
+    return false;
+  }
+
+  return runtime.remove_entity(entity.id());
 }
 
 template <typename T>
@@ -340,7 +376,9 @@ const T* WindowRuntime::read_entity(EntityId<T> id) const {
 template <typename T>
 std::optional<EntityId<T>> WindowRuntime::upgrade_entity(
     WeakEntity<T> entity) const {
-  if (entity.empty() || read_entity(entity.id()) == nullptr) {
+  const auto context_token = reinterpret_cast<std::uintptr_t>(this);
+  if (entity.empty() || !entity.matches_context(context_token) ||
+      read_entity(entity.id()) == nullptr) {
     return std::nullopt;
   }
   return entity.id();

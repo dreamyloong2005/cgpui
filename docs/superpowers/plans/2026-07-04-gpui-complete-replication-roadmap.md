@@ -191,7 +191,7 @@ shape before deeper native work expands platform behavior.
   aggregate, and adds an integrated public authoring compile gate that uses
   only the public prelude for `Application`, `App`, `Window`, `Context<T>`,
   `Render`, `IntoElement`, and typed view/entity handles.
-- [ ] Steps 265-270: Complete entity lifecycle semantics: creation, weak
+- [x] Steps 265-270: Complete entity lifecycle semantics: creation, weak
   handles, observation, update transactions, invalidation, deletion, and
   cross-context access rules. Step 265 starts this band with public
   `Context<T>::new_entity<T>(...) -> EntityHandle<T>` creation and
@@ -213,7 +213,11 @@ shape before deeper native work expands platform behavior.
   `EntityHandle<T>::invalidate(context)` and
   `Context<T>::invalidate_entity(...)` helpers that notify observers and
   subscribed views for existing entities and request redraw even when no
-  observer exists, while deletion and cross-context access stay out of scope.
+  observer exists. Step 270 adds public
+  `EntityHandle<T>::remove(context)` and
+  `Context<T>::remove_entity(handle)` deletion helpers plus runtime-token
+  cross-context boundaries so context-created handles soft-fail when used
+  against another runtime, even when the typed numeric id matches.
 - [ ] Steps 271-276: Add GPUI-like context capabilities by domain:
   app context, view context, window context, element context, async context,
   and test context.
@@ -534,9 +538,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 270 after the Step 269 entity invalidation slice.
-The next slice should define entity deletion and cross-context boundaries
-without changing the explicit invalidation helper semantics.
+Continue Phase B with Step 271 after the Step 270 entity deletion and
+cross-context boundary slice. The next slice should add GPUI-like context
+capabilities by domain without weakening the runtime-token entity boundary.
 
 ## Self-Review
 

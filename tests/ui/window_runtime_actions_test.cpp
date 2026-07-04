@@ -355,6 +355,71 @@ void dispatch_entity_handle_sequence() {
       .action = cgpui::KeyAction::pressed});
 }
 
+RuntimeFixture* cross_runtime_entity_fixture = nullptr;
+
+void dispatch_cross_runtime_entity_sequence() {
+  auto& callback = cross_runtime_entity_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 67,
+      .action = cgpui::KeyAction::pressed});
+}
+
+class CrossRuntimeEntityBoundaryView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList&, cgpui::Size) override {}
+
+  cgpui::EventResult handle_event(
+      const cgpui::PlatformEvent& event,
+      const cgpui::WindowRuntimeContext& context) override {
+    if (!std::holds_alternative<cgpui::KeyboardKey>(event)) {
+      return cgpui::EventResult::unhandled();
+    }
+
+    if (create_exported_entity) {
+      exported_entity = context.new_entity<RuntimeEntity>(41);
+      const RuntimeEntity* exported = exported_entity.read(context);
+      exported_entity_read_value =
+          exported == nullptr ? -1 : exported->value;
+    }
+
+    if (exercise_imported_entity) {
+      local_entity = context.new_entity<RuntimeEntity>(99);
+      same_numeric_entity_id = local_entity.id() == imported_entity.id();
+      imported_read = imported_entity.read(context) != nullptr;
+      imported_update = imported_entity.update(
+          context,
+          [](RuntimeEntity& entity) {
+            entity.value = 123;
+          });
+      imported_invalidate = imported_entity.invalidate(context);
+      imported_remove = imported_entity.remove(context);
+      imported_weak_upgrade =
+          imported_entity.downgrade().upgrade(context).has_value();
+
+      const RuntimeEntity* local = local_entity.read(context);
+      local_entity_still_present = local != nullptr;
+      local_entity_value = local == nullptr ? -1 : local->value;
+    }
+
+    return cgpui::EventResult::consumed_event();
+  }
+
+  bool create_exported_entity = false;
+  bool exercise_imported_entity = false;
+  cgpui::EntityHandle<RuntimeEntity> imported_entity{};
+  cgpui::EntityHandle<RuntimeEntity> exported_entity{};
+  cgpui::EntityHandle<RuntimeEntity> local_entity{};
+  int exported_entity_read_value = -1;
+  bool same_numeric_entity_id = false;
+  bool imported_read = true;
+  bool imported_update = true;
+  bool imported_invalidate = true;
+  bool imported_remove = true;
+  bool imported_weak_upgrade = true;
+  bool local_entity_still_present = false;
+  int local_entity_value = -1;
+};
+
 int test_entity_handle_read_update_and_downgrade() {
   RuntimeFixture fixture;
   entity_handle_fixture = &fixture;
@@ -476,6 +541,73 @@ int test_entity_handle_and_context_invalidate_entities() {
   if (fixture.window.request_redraw_count != 1 ||
       fixture.renderer.begin_frame_count != 1) {
     return 295;
+  }
+
+  return 0;
+}
+
+int test_entity_handles_do_not_cross_runtime_boundaries() {
+  RuntimeFixture first_fixture;
+  CrossRuntimeEntityBoundaryView first_view;
+  first_view.create_exported_entity = true;
+  cross_runtime_entity_fixture = &first_fixture;
+  first_fixture.app.on_run = &dispatch_cross_runtime_entity_sequence;
+
+  cgpui::WindowRuntime first_runtime(
+      first_fixture.app,
+      first_view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&first_fixture.renderer};
+      });
+
+  const int first_result =
+      first_runtime.run(cgpui::WindowDescriptor{},
+                        cgpui::WindowRuntimeOptions{
+                            .request_initial_redraw = false});
+  cross_runtime_entity_fixture = nullptr;
+
+  if (first_result != 0) {
+    return 296;
+  }
+  if (first_view.exported_entity.empty() ||
+      first_view.exported_entity_read_value != 41) {
+    return 297;
+  }
+
+  RuntimeFixture second_fixture;
+  CrossRuntimeEntityBoundaryView second_view;
+  second_view.exercise_imported_entity = true;
+  second_view.imported_entity = first_view.exported_entity;
+  cross_runtime_entity_fixture = &second_fixture;
+  second_fixture.app.on_run = &dispatch_cross_runtime_entity_sequence;
+
+  cgpui::WindowRuntime second_runtime(
+      second_fixture.app,
+      second_view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&second_fixture.renderer};
+      });
+
+  const int second_result =
+      second_runtime.run(cgpui::WindowDescriptor{},
+                         cgpui::WindowRuntimeOptions{
+                             .request_initial_redraw = false});
+  cross_runtime_entity_fixture = nullptr;
+
+  if (second_result != 0) {
+    return 298;
+  }
+  if (!second_view.same_numeric_entity_id) {
+    return 299;
+  }
+  if (second_view.imported_read || second_view.imported_update ||
+      second_view.imported_invalidate || second_view.imported_remove ||
+      second_view.imported_weak_upgrade) {
+    return 300;
+  }
+  if (!second_view.local_entity_still_present ||
+      second_view.local_entity_value != 99) {
+    return 301;
   }
 
   return 0;
@@ -1143,6 +1275,9 @@ int main() {
     return result;
   }
   if (const int result = test_entity_handle_and_context_invalidate_entities(); result != 0) {
+    return result;
+  }
+  if (const int result = test_entity_handles_do_not_cross_runtime_boundaries(); result != 0) {
     return result;
   }
   if (const int result = test_view_context_global_state_helpers(); result != 0) {

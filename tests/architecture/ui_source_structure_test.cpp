@@ -416,6 +416,11 @@ int main() {
                 "EntityHandle<T> WindowRuntimeContext::entity(") ||
       !contains(runtime_templates_header,
                 "WeakEntity<T> WindowRuntimeContext::weak_entity(") ||
+      !contains(runtime_context_header,
+                "const T* read_entity(EntityHandle<T> entity) const") ||
+      !contains(runtime_templates_header,
+                "const T* WindowRuntimeContext::read_entity("
+                "EntityHandle<T> entity) const") ||
       !contains(runtime_context_header, "auto update_entity(") ||
       !contains(runtime_templates_header,
                 "auto WindowRuntimeContext::update_entity(") ||
@@ -423,6 +428,13 @@ int main() {
                 "bool invalidate_entity(EntityHandle<T> entity) const") ||
       !contains(runtime_templates_header,
                 "bool WindowRuntimeContext::invalidate_entity(") ||
+      !contains(runtime_context_header,
+                "bool remove_entity(EntityHandle<T> entity) const") ||
+      !contains(runtime_templates_header,
+                "bool WindowRuntimeContext::remove_entity(") ||
+      !contains(runtime_templates_header, "entity_context_token(") ||
+      !contains(runtime_templates_header,
+                "matches_context(detail::entity_context_token(*this))") ||
       !contains(window_runtime_header,
                 "bool invalidate_entity(EntityId<T> entity_id)") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||

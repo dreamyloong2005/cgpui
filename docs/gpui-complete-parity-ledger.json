@@ -92,13 +92,13 @@
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, and invalidate_entity helpers",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
       "status": "adapted",
       "next_step": "Phase B entity lifecycle depth"
     },
     {
       "upstream_gpui": "gpui::Entity<T>",
-      "cgpui_target": "Entity<T>, Model<T>, EntityHandle<T>, WeakEntity<T>, Context<T>::new_entity<T>(...) creation, weak upgrade/read semantics, entity observation helpers, value-returning update transactions, and entity invalidation helpers",
+      "cgpui_target": "Entity<T>, Model<T>, EntityHandle<T>, WeakEntity<T>, Context<T>::new_entity<T>(...) creation, weak upgrade/read semantics, entity observation helpers, value-returning update transactions, entity invalidation helpers, entity deletion helpers, and runtime-token cross-context boundaries",
       "status": "adapted",
       "next_step": "Phase B lifecycle depth"
     },

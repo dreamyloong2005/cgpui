@@ -196,9 +196,13 @@ struct WindowRuntimeContext {
   template <typename T>
   [[nodiscard]] const T* read_entity(EntityId<T> id) const;
   template <typename T>
+  [[nodiscard]] const T* read_entity(EntityHandle<T> entity) const;
+  template <typename T>
   [[nodiscard]] T* mutate_entity(EntityId<T> id) const;
   template <typename T>
   bool remove_entity(EntityId<T> id) const;
+  template <typename T>
+  bool remove_entity(EntityHandle<T> entity) const;
   template <typename T>
   void subscribe_view_to_entity(ViewId view_id, EntityId<T> entity_id) const;
 };

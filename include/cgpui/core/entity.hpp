@@ -28,25 +28,41 @@ class EntityHandle {
  public:
   constexpr EntityHandle() = default;
   constexpr explicit EntityHandle(EntityId<T> id) : id_(id) {}
+  constexpr EntityHandle(EntityId<T> id, std::uintptr_t context_token)
+      : id_(id), context_token_(context_token) {}
 
   [[nodiscard]] constexpr EntityId<T> id() const {
     return id_;
+  }
+
+  [[nodiscard]] constexpr std::uintptr_t context_token() const {
+    return context_token_;
   }
 
   [[nodiscard]] constexpr bool empty() const {
     return id_.value == 0;
   }
 
+  [[nodiscard]] constexpr bool matches_context(
+      std::uintptr_t context_token) const {
+    return context_token_ == 0 || context_token_ == context_token;
+  }
+
   [[nodiscard]] constexpr WeakEntity<T> downgrade() const;
 
   template <typename Context>
   [[nodiscard]] const T* read(const Context& context) const {
-    return context.read_entity(id_);
+    return context.read_entity(*this);
   }
 
   template <typename Context, typename Update>
   [[nodiscard]] auto update(const Context& context, Update&& update) const {
     return context.update_entity(*this, std::forward<Update>(update));
+  }
+
+  template <typename Context>
+  bool remove(const Context& context) const {
+    return context.remove_entity(*this);
   }
 
   template <typename Context>
@@ -72,6 +88,7 @@ class EntityHandle {
 
  private:
   EntityId<T> id_;
+  std::uintptr_t context_token_ = 0;
 };
 
 template <typename T>
@@ -79,13 +96,24 @@ class WeakEntity {
  public:
   constexpr WeakEntity() = default;
   constexpr explicit WeakEntity(EntityId<T> id) : id_(id) {}
+  constexpr WeakEntity(EntityId<T> id, std::uintptr_t context_token)
+      : id_(id), context_token_(context_token) {}
 
   [[nodiscard]] constexpr EntityId<T> id() const {
     return id_;
   }
 
+  [[nodiscard]] constexpr std::uintptr_t context_token() const {
+    return context_token_;
+  }
+
   [[nodiscard]] constexpr bool empty() const {
     return id_.value == 0;
+  }
+
+  [[nodiscard]] constexpr bool matches_context(
+      std::uintptr_t context_token) const {
+    return context_token_ == 0 || context_token_ == context_token;
   }
 
   template <typename Context>
@@ -95,7 +123,7 @@ class WeakEntity {
     if (!upgraded.has_value()) {
       return std::nullopt;
     }
-    return EntityHandle<T>(*upgraded);
+    return EntityHandle<T>(*upgraded, context_token_);
   }
 
   template <typename Context>
@@ -111,11 +139,12 @@ class WeakEntity {
 
  private:
   EntityId<T> id_;
+  std::uintptr_t context_token_ = 0;
 };
 
 template <typename T>
 constexpr WeakEntity<T> EntityHandle<T>::downgrade() const {
-  return WeakEntity<T>(id_);
+  return WeakEntity<T>(id_, context_token_);
 }
 
 template <typename T>

@@ -131,6 +131,8 @@ int main() {
       !contains(ledger, "value-returning update transactions") ||
       !contains(ledger, "`invalidate_entity(...)` helpers") ||
       !contains(ledger, "entity invalidation helpers") ||
+      !contains(ledger, "entity deletion helpers") ||
+      !contains(ledger, "runtime-token cross-context boundaries") ||
       !contains(ledger, "`ViewHandle<T>` and `WeakViewHandle<T>`") ||
       !contains(ledger, "`Render<T>` concept over") ||
       !contains(ledger, "`IntoElement` alias plus `into_element`") ||
@@ -152,7 +154,9 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/entity_transaction_test.cpp") ||
       !contains(ledger,
-                "tests/api_parity/entity_invalidation_test.cpp")) {
+                "tests/api_parity/entity_invalidation_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/entity_deletion_test.cpp")) {
     return 16;
   }
   if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
@@ -181,6 +185,7 @@ int main() {
               "\"window_shadow\"",
               "\"gpui::prelude\"",
               "invalidate_entity helpers",
+              "entity deletion helpers",
               "\"x11\"",
           },
           8);
@@ -362,6 +367,30 @@ int main() {
     return 34;
   }
 
+  const std::string entity_deletion =
+      read_source("tests/api_parity/entity_deletion_test.cpp");
+  if (entity_deletion.empty()) {
+    return 35;
+  }
+  if (!contains(entity_deletion, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(entity_deletion, "entity.remove(context)") ||
+      !contains(entity_deletion, "context.remove_entity(context_entity)") ||
+      !contains(entity_deletion, "missing.remove(context)") ||
+      !contains(entity_deletion,
+                "cgpui::EntityHandle<DeletionState>") ||
+      !contains(entity_deletion, "std::same_as") ||
+      !contains(entity_deletion,
+                "cgpui::Render<EntityDeletionView>")) {
+    return 36;
+  }
+  if (contains(entity_deletion, "WindowRuntimeContext") ||
+      contains(entity_deletion, "WindowRuntime") ||
+      contains(entity_deletion, "AppContext") ||
+      contains(entity_deletion, "ViewContext") ||
+      contains(entity_deletion, "PlatformWindow")) {
+    return 37;
+  }
+
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
       !contains(xmake, "target(\"context_render_spelling_test\")") ||
@@ -373,6 +402,7 @@ int main() {
       !contains(xmake, "target(\"entity_observation_test\")") ||
       !contains(xmake, "target(\"entity_transaction_test\")") ||
       !contains(xmake, "target(\"entity_invalidation_test\")") ||
+      !contains(xmake, "target(\"entity_deletion_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -388,6 +418,8 @@ int main() {
                 "tests/api_parity/entity_transaction_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/entity_invalidation_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/entity_deletion_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }
