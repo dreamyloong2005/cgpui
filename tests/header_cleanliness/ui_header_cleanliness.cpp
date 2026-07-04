@@ -13,6 +13,7 @@
 #include "cgpui/ui/render.hpp"
 #include "cgpui/ui/view_context.hpp"
 #include "cgpui/ui/view_handle.hpp"
+#include "cgpui/ui/window_context.hpp"
 #include "cgpui/ui/runtime_actions.hpp"
 #include "cgpui/ui/runtime_app_context.hpp"
 #include "cgpui/ui/runtime_callbacks.hpp"
@@ -110,6 +111,8 @@ class TestView final : public cgpui::View {
     (void)view_context.current();
     (void)view_handle.read(context);
     (void)context.upgrade_view(weak_view_handle);
+    cgpui::WindowContextCapability window_context;
+    (void)window_context;
     (void)context.observe_model(
         model,
         [](const cgpui::ViewContext&, cgpui::Model<TestModel>) {});

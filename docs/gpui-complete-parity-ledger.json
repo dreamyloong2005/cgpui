@@ -86,13 +86,13 @@
     },
     {
       "upstream_gpui": "gpui::Window",
-      "cgpui_target": "Window facade from WindowRuntimeContext::window() / current_window()",
+      "cgpui_target": "Window facade from WindowRuntimeContext::window() / current_window() plus WindowContextCapability from Context<T>::window_context()",
       "status": "adapted",
       "next_step": "Phase B/F window service depth"
     },
     {
       "upstream_gpui": "gpui::Context<T>",
-      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
+      "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, new_entity creation, weak entity upgrades, observe_entity helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, and runtime-token cross-context boundaries",
       "status": "adapted",
       "next_step": "Phase B context capability depth"
     },

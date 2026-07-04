@@ -4476,3 +4476,20 @@
   intentional public spelling `ViewContextCapability<T>`. Guard for
   `WindowRuntimeContext`, `WindowRuntime`, `AppContext`, and platform types
   instead.
+
+## 2026-07-04 Phase B Step 273 Window Context Capability
+
+- Step 273 should stay scoped to public window-domain capability spelling:
+  `Context<T>::window_context() -> WindowContextCapability`. The capability
+  groups the existing current-window facade queries and request helpers under
+  one author-facing domain.
+- The implementation belongs in the focused UI public leaf
+  `include/cgpui/ui/window_context.hpp` and the focused app facade source
+  `src/app/window_context.cpp`. It should not grow `ui.cpp`,
+  `runtime_context.cpp`, or the broader app-context bridge file.
+- This is a facade over the existing `Window` runtime facade, not a new native
+  window lifecycle. Native child-window creation, event routing depth, and
+  platform behavior remain later Phase B/F work.
+- Header cleanliness coverage should only prove the public type is visible in
+  leaf includes. Non-template `WindowContextCapability` methods require the
+  `cgpui_app` target and belong in the dedicated API parity test.

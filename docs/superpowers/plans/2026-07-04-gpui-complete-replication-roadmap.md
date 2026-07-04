@@ -226,7 +226,10 @@ shape before deeper native work expands platform behavior.
   contexts. Step 272 adds the view-domain capability
   `Context<T>::view_context<T>() -> ViewContextCapability<T>`, layered over
   the existing typed view handle registry without introducing new view
-  lifecycle or subscription semantics.
+  lifecycle or subscription semantics. Step 273 adds the window-domain
+  capability `Context<T>::window_context() -> WindowContextCapability`,
+  grouping existing `Window` facade queries and invalidation requests without
+  adding native window lifecycle state.
 - [ ] Steps 277-282: Deepen subscriptions and observations: scoped lifetime,
   entity-to-entity observation, window/view observation, and deterministic
   unsubscribe behavior.
@@ -544,9 +547,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Continue Phase B with Step 273 after the Step 272 view-context capability
-slice. The next slice should add the window-context capability domain without
-weakening the runtime-token entity boundary.
+Continue Phase B with Step 274 after the Step 273 window-context capability
+slice. The next slice should add the element-context capability domain without
+weakening the runtime-token entity boundary or growing broad UI runtime files.
 
 ## Self-Review
 

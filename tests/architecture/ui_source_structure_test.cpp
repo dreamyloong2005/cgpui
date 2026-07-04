@@ -41,6 +41,7 @@ int main() {
       "include/cgpui/ui/render.hpp",
       "include/cgpui/ui/view_context.hpp",
       "include/cgpui/ui/view_handle.hpp",
+      "include/cgpui/ui/window_context.hpp",
       "include/cgpui/ui/view.hpp",
       "include/cgpui/ui/style_tokens.hpp",
       "include/cgpui/ui/style_values.hpp",
@@ -165,6 +166,7 @@ int main() {
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/window_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/runtime.hpp\"")) {
     return 3;
@@ -380,6 +382,8 @@ int main() {
       read_source("include/cgpui/ui/view_context.hpp");
   const std::string view_handle_header =
       read_source("include/cgpui/ui/view_handle.hpp");
+  const std::string window_context_header =
+      read_source("include/cgpui/ui/window_context.hpp");
   const std::string runtime_context_header =
       read_source("include/cgpui/ui/runtime_context.hpp");
   const std::string window_runtime_header =
@@ -407,9 +411,16 @@ int main() {
       !contains(view_handle_header, "class WeakView") ||
       !contains(view_handle_header, "class ViewHandle") ||
       !contains(view_handle_header, "class WeakViewHandle") ||
+      !contains(window_context_header, "class WindowContextCapability") ||
+      !contains(window_context_header, "Window window() const") ||
+      !contains(window_context_header, "Window current_window() const") ||
+      !contains(window_context_header, "WindowRuntimeId runtime_id() const") ||
+      !contains(window_context_header, "void request_render() const") ||
       !contains(runtime_input_state_header, "struct ViewInputState") ||
       !contains(runtime_context_header, "struct WindowRuntimeContext") ||
       !contains(runtime_context_header, "AppContext app_context() const") ||
+      !contains(runtime_context_header,
+                "WindowContextCapability window_context() const") ||
       !contains(runtime_context_header,
                 "ViewContextCapability<T> view_context() const") ||
       !contains(runtime_context_header, "ViewHandle<T> view() const") ||
@@ -469,6 +480,7 @@ int main() {
   }
   if (line_count(runtime_types_header) > 220 ||
       line_count(view_handle_header) > 180 ||
+      line_count(window_context_header) > 120 ||
       line_count(window_runtime_header) > 220 ||
       line_count(window_runtime_internal_header) > 260 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||

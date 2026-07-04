@@ -9203,3 +9203,49 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 55/55.
 - Step 272 is complete on `master`; Step 273 window-context capability domain
   is the next Phase B slice.
+
+## 2026-07-04 Phase B Step 273 Window Context Capability
+
+- Continued `codex/phase-b-window-context-capability` in
+  `.worktrees/phase-b-window-context-capability` from `master` after the Step
+  272 merge.
+- Baseline Windows focused verification passed 13/13 before RED:
+  `window_context_capability_test/default view_context_capability_test/default app_context_capability_test/default view_handle_spelling_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default entity_deletion_test/default window_runtime_actions_test/default`.
+- Added RED API coverage in
+  `tests/api_parity/window_context_capability_test.cpp` and registered
+  `window_context_capability_test` in `xmake.lua`. RED failed as expected on
+  missing `cgpui::WindowContextCapability` and
+  `Context<T>::window_context()`.
+- GREEN added the focused public leaf
+  `include/cgpui/ui/window_context.hpp`, the focused implementation
+  `src/app/window_context.cpp`, the aggregate include in
+  `include/cgpui/ui/ui.hpp`, and
+  `WindowRuntimeContext::window_context() -> WindowContextCapability`.
+- The capability deliberately wraps the existing `Window` facade and exposes
+  `window()`, `current_window()`, `runtime_id()`, `descriptor()`,
+  `root_view_id()`, `active()`, `viewport_size()`, `scale()`,
+  `input_state()`, `focused()`, `request_render()`, `request_layout()`, and
+  `request_paint()` without adding native lifecycle or runtime state.
+- Updated `ui_header_cleanliness`, `ui_source_structure_test`,
+  `app_source_structure_test`, `gpui_parity_ledger_test`, the Markdown/JSON
+  parity ledger, and the complete replication roadmap so the new
+  window-domain capability is guarded and documented.
+- Fresh Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` plus
+  `xmake test -y -P . window_context_capability_test/default view_context_capability_test/default app_context_capability_test/default view_handle_spelling_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default entity_deletion_test/default window_runtime_actions_test/default`
+  passed 15/15.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` plus
+  `XMAKE_ROOT=y xmake test -y -P . window_context_capability_test/default view_context_capability_test/default app_context_capability_test/default view_handle_spelling_test/default context_capabilities_test/default public_authoring_surface_test/default gpui_parity_ledger_test/default app_source_structure_test/default ui_source_structure_test/default ui_header_cleanliness/default prelude_header_cleanliness/default app_header_cleanliness/default app_window_context_test/default entity_deletion_test/default window_runtime_actions_test/default`
+  passed 15/15.
+- Step 273 is implemented and focused-verified on
+  `codex/phase-b-window-context-capability`.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 59/59.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 56/56.
+- Step 273 is ready for merge verification.

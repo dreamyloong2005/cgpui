@@ -5,4 +5,5 @@
 #include "cgpui/ui/view_context.hpp"
 #include "cgpui/ui/view_handle.hpp"
 #include "cgpui/ui/view.hpp"
+#include "cgpui/ui/window_context.hpp"
 #include "cgpui/ui/runtime.hpp"
