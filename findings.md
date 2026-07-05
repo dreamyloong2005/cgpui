@@ -5102,3 +5102,16 @@
 - The behavior and API guard belongs in
   `tests/api_parity/platform_service_result_conventions_test.cpp`; the
   structure guard belongs in `tests/architecture/ui_source_structure_test.cpp`.
+
+## 2026-07-05 Phase B Step 302 Merge
+
+- Step 302 is merged on `master` at
+  `8998ec2 feat: add platform service result conventions` and post-merge
+  verified on Windows full debug 88/88 and WSL Arch Linux full debug 85/85.
+- The durable ownership boundary for platform service Result conventions is
+  `src/ui/runtime_platform_service_results.cpp`; keep compatibility
+  menu/dialog state storage in `src/ui/runtime_platform_services.cpp`.
+- Step 303 should start async-spawn result conventions without folding
+  renderer factory public API redesign, `ClipboardItem` payload parity,
+  upstream `gpui::test` macro equivalents, or action macro payloads into the
+  same slice.
