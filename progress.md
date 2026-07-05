@@ -11240,3 +11240,17 @@
   It is ready for feature commit and merge verification. Step 304
   renderer-creation result conventions is the next slice after Step 303 lands
   on `master`.
+
+## 2026-07-05 Phase B Step 303 Merge
+
+- Committed `codex/phase-b-async-spawn-result-conventions` as
+  `085cd30 feat: add async spawn result conventions`.
+- Fast-forward merged the branch into `master` at `085cd30`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 89/89.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -P .` passed 86/86.
+- Step 303 is complete on `master`; Step 304 renderer-creation result
+  conventions is the next Phase B slice.

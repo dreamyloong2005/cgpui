@@ -5139,3 +5139,17 @@
   task records are allocated. The structure guard should require
   `runtime_task_results.cpp` and reject `Result<TaskHandle>` drift back into
   `runtime_tasks.cpp`.
+
+## 2026-07-05 Phase B Step 303 Merge
+
+- Step 303 is merged on `master` at
+  `085cd30 feat: add async spawn result conventions` and post-merge verified
+  on Windows full debug 89/89 and WSL Arch Linux full debug 86/86.
+- The durable ownership boundary for async-spawn Result conventions is
+  `src/ui/runtime_task_results.cpp`; keep task record creation and completion
+  draining in `src/ui/runtime_tasks.cpp`, and keep task state/cancellation
+  queries in `src/ui/runtime_task_state.cpp`.
+- Step 304 should start renderer-creation result conventions without folding
+  `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+  action macro payloads, task priorities, structured task groups, or broader
+  async runtime production depth into the same slice.

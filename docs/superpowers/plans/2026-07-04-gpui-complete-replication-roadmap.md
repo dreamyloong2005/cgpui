@@ -352,9 +352,10 @@ shape before deeper native work expands platform behavior.
   services return `ErrorCode::unsupported_platform` without overwriting the
   last successful runtime service state; supported file-dialog cancellation
   remains a value, not an error. Existing compatibility methods remain.
-- [x] Step 303: Add async-spawn result conventions. In progress on
-  `codex/phase-b-async-spawn-result-conventions`: `WindowRuntime`,
-  `WindowRuntimeContext`, and `AsyncContextCapability` expose
+- [x] Step 303: Add async-spawn result conventions. Completed on `master` at
+  `085cd30` and post-merge verified with Windows full-debug 89/89 and WSL Arch
+  Linux full-debug 86/86. `WindowRuntime`, `WindowRuntimeContext`, and
+  `AsyncContextCapability` expose
   `try_spawn_task(...) -> Result<TaskHandle>` and
   `try_spawn_background_task(...) -> Result<TaskHandle>` through focused
   `src/ui/runtime_task_results.cpp` ownership. Empty foreground completion,
@@ -665,12 +666,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 304 renderer-creation result conventions is next. Step 303 adds
-async-spawn `try_* -> Result<TaskHandle>` methods for foreground and background
-tasks, isolates the runtime Result behavior in `src/ui/runtime_task_results.cpp`,
-keeps compatibility `spawn_*` methods intact, and keeps `ClipboardItem` payload
-parity, upstream `gpui::test` macro equivalents, and action macro payloads out
-of scope.
+Step 304 renderer-creation result conventions is next. Step 303 is complete on
+`master` with async-spawn `try_* -> Result<TaskHandle>` methods for foreground
+and background tasks, runtime Result behavior isolated in
+`src/ui/runtime_task_results.cpp`, compatibility `spawn_*` methods intact, and
+`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, and
+action macro payloads kept out of scope.
 
 ## Self-Review
 
