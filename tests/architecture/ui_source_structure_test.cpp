@@ -141,6 +141,7 @@ int main() {
       "tests/ui/test_context_keystroke_simulation_test.cpp",
       "tests/ui/test_context_pointer_simulation_test.cpp",
       "tests/ui/test_context_focus_activation_test.cpp",
+      "tests/ui/test_context_clipboard_test.cpp",
   };
   for (const char* test_file : runtime_test_files) {
     if (read_source(test_file).empty()) {
@@ -171,6 +172,8 @@ int main() {
       line_count(read_source("tests/ui/test_context_pointer_simulation_test.cpp")) >
           240 ||
       line_count(read_source("tests/ui/test_context_focus_activation_test.cpp")) >
+          240 ||
+      line_count(read_source("tests/ui/test_context_clipboard_test.cpp")) >
           240) {
     return 112;
   }
@@ -512,6 +515,12 @@ int main() {
       !contains(test_context_header, "void dispatch_window_focus(") ||
       !contains(test_context_header, "void focus(ElementId") ||
       !contains(test_context_header, "void release_focus(ElementId") ||
+      !contains(test_context_header, "void set_clipboard(Clipboard*") ||
+      !contains(test_context_header, "bool write_to_clipboard(") ||
+      !contains(test_context_header, "std::optional<std::string> read_from_clipboard(") ||
+      !contains(test_context_header, "bool paste_clipboard_text(") ||
+      !contains(test_context_header, "bool copy_selection_to_clipboard(") ||
+      !contains(test_context_header, "bool cut_selection_to_clipboard(") ||
       !contains(element_context_header, "class ElementContextCapability") ||
       !contains(element_context_header, "ElementId element_id() const") ||
       !contains(element_context_header, "void capture_pointer() const") ||
@@ -1607,6 +1616,8 @@ int main() {
       read_source("src/ui/test_context_pointer.cpp");
   const std::string test_context_focus_source =
       read_source("src/ui/test_context_focus.cpp");
+  const std::string test_context_clipboard_source =
+      read_source("src/ui/test_context_clipboard.cpp");
   if (!contains(test_context_source,
                 "WindowRuntimeId TestContextCapability::runtime_id() const") ||
       !contains(test_context_source,
@@ -1676,6 +1687,33 @@ int main() {
       contains(test_context_focus_source, "AsyncContextCapability") ||
       contains(test_context_focus_source, "ElementContextCapability")) {
     return 135;
+  }
+  if (!contains(test_context_clipboard_source,
+                "void TestContextCapability::set_clipboard(") ||
+      !contains(test_context_clipboard_source,
+                "bool TestContextCapability::write_to_clipboard(") ||
+      !contains(test_context_clipboard_source,
+                "std::optional<std::string> TestContextCapability::read_from_clipboard(") ||
+      !contains(test_context_clipboard_source,
+                "bool TestContextCapability::paste_clipboard_text(") ||
+      !contains(test_context_clipboard_source,
+                "bool TestContextCapability::copy_selection_to_clipboard(") ||
+      !contains(test_context_clipboard_source,
+                "bool TestContextCapability::cut_selection_to_clipboard(") ||
+      !contains(test_context_clipboard_source,
+                "context_->runtime.set_clipboard(") ||
+      !contains(test_context_clipboard_source,
+                "context_->runtime.write_clipboard_text(") ||
+      !contains(test_context_clipboard_source,
+                "context_->runtime.read_clipboard_text(") ||
+      !contains(test_context_clipboard_source,
+                "context_->runtime.paste_clipboard_text(") ||
+      contains(test_context_source, "write_to_clipboard(") ||
+      contains(test_context_source, "read_from_clipboard(") ||
+      line_count(test_context_clipboard_source) > 100 ||
+      contains(test_context_clipboard_source, "AsyncContextCapability") ||
+      contains(test_context_clipboard_source, "ElementContextCapability")) {
+    return 136;
   }
 
   const std::string element_context_source =
@@ -2037,6 +2075,10 @@ int main() {
       read_source("src/ui/runtime_clipboard.cpp");
   if (!contains(runtime_clipboard_source,
                 "void WindowRuntime::set_clipboard(") ||
+      !contains(runtime_clipboard_source,
+                "std::optional<std::string> WindowRuntime::read_clipboard_text(") ||
+      !contains(runtime_clipboard_source,
+                "bool WindowRuntime::write_clipboard_text(") ||
       !contains(runtime_clipboard_source,
                 "bool WindowRuntime::paste_clipboard_text(") ||
       !contains(runtime_clipboard_source,

@@ -210,10 +210,15 @@ int main() {
       !contains(ledger, "direct pointer move/button/scroll simulation") ||
       !contains(ledger, "direct window activation/focus dispatch") ||
       !contains(ledger, "element focus/release helpers") ||
+      !contains(ledger, "direct clipboard read/write helpers") ||
+      !contains(ledger, "copy/cut/paste clipboard forwarding") ||
       !contains(ledger, "src/ui/test_context_pointer.cpp") ||
       !contains(ledger, "src/ui/test_context_focus.cpp") ||
+      !contains(ledger, "src/ui/test_context_clipboard.cpp") ||
+      !contains(ledger, "src/ui/runtime_clipboard.cpp") ||
       !contains(ledger, "tests/ui/test_context_pointer_simulation_test.cpp") ||
       !contains(ledger, "tests/ui/test_context_focus_activation_test.cpp") ||
+      !contains(ledger, "tests/ui/test_context_clipboard_test.cpp") ||
       !contains(ledger,
                 "Phase G fuller simulated input/test macro depth")) {
     return 18;
@@ -314,8 +319,14 @@ int main() {
               "test_context_keystrokes.cpp",
               "test_context_pointer.cpp",
               "test_context_focus.cpp",
+              "test_context_clipboard.cpp",
+              "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
+              "write_to_clipboard",
+              "read_from_clipboard",
+              "copy/cut/paste helpers",
+              "test_context_clipboard_test",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",

@@ -4978,3 +4978,26 @@
   activation/focus dispatch produces runtime event records, element focus
   routes keyboard events to the focused element, and release clears keyboard
   focus.
+
+## 2026-07-05 Phase B Step 298 Test-Context Clipboard Helpers
+
+- Step 298 stays scoped to test-context clipboard helpers over the current
+  text-only `Clipboard` contract. It should not introduce upstream
+  `ClipboardItem`, test macro equivalents, timer/async advancement, redraw
+  pumping, or broader platform clipboard production behavior.
+- The public API should keep upstream-adjacent names for direct test-context
+  clipboard access: `set_clipboard(Clipboard*)`, `write_to_clipboard(...)`,
+  and `read_from_clipboard()`. Existing runtime editing operations should stay
+  visible as `paste_clipboard_text()`, `copy_selection_to_clipboard()`, and
+  `cut_selection_to_clipboard()`.
+- Implementation ownership belongs in the focused
+  `src/ui/test_context_clipboard.cpp` leaf, forwarding through real
+  `WindowRuntime` clipboard APIs. Runtime text read/write helpers belong in
+  `src/ui/runtime_clipboard.cpp` next to copy/cut/paste diagnostics.
+- The structure guard belongs in `tests/architecture/ui_source_structure_test.cpp`
+  so future test-context clipboard behavior does not drift into broad
+  `src/ui/test_context.cpp` or unrelated capability files.
+- The behavior guard belongs in `tests/ui/test_context_clipboard_test.cpp`: it
+  should prove direct read/write through an injected clipboard, copy/cut/paste
+  forwarding through focused text state, and soft failure when no clipboard is
+  installed.

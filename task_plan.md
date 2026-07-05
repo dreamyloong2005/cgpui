@@ -1741,6 +1741,11 @@ implementation slice.
   at `d7bf5de` after post-merge Windows full-debug 83/83 and WSL Arch Linux
   full-debug 80/80 verification. It adds window activation/focus dispatch and
   element focus/release helpers through the real runtime event/focus path,
-  with ownership isolated in `src/ui/test_context_focus.cpp`. Step 298
-  clipboard helpers is the next slice, followed by Step 299 timer/async
-  advancement helpers and Step 300 redraw/frame pump simulation.
+  with ownership isolated in `src/ui/test_context_focus.cpp`. Phase B Step
+  298 clipboard helpers is in progress on
+  `codex/phase-b-test-context-clipboard`: it adds text-only clipboard
+  read/write helpers plus copy/cut/paste forwarding through the real runtime
+  clipboard path, with ownership isolated in `src/ui/test_context_clipboard.cpp`
+  and `src/ui/runtime_clipboard.cpp`. Step 299 timer/async advancement helpers
+  and Step 300 redraw/frame pump simulation are the remaining slices in this
+  test-context band.

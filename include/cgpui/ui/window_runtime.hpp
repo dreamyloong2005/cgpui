@@ -28,7 +28,6 @@ struct AppRunnerOptions {
   AppSetupCallback setup;
   AppContextSetupCallback setup_context;
 };
-
 class WindowRuntime {
  public:
   WindowRuntime(
@@ -36,7 +35,6 @@ class WindowRuntime {
       View& view,
       RendererFactory renderer_factory);
   ~WindowRuntime();
-
   [[nodiscard]] int run(
       const WindowDescriptor& descriptor,
       WindowRuntimeOptions options = {});
@@ -128,9 +126,9 @@ class WindowRuntime {
   [[nodiscard]] std::optional<ImeCandidateRect> focused_text_ime_rect() const;
   [[nodiscard]] AccessibilityTreeSnapshot accessibility_snapshot() const;
   void set_clipboard(Clipboard* clipboard);
-  [[nodiscard]] bool paste_clipboard_text();
-  [[nodiscard]] bool copy_selection_to_clipboard();
-  [[nodiscard]] bool cut_selection_to_clipboard();
+  [[nodiscard]] std::optional<std::string> read_clipboard_text();
+  [[nodiscard]] bool write_clipboard_text(std::string_view text), paste_clipboard_text();
+  [[nodiscard]] bool copy_selection_to_clipboard(), cut_selection_to_clipboard();
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
   void request_render();
   void request_layout();

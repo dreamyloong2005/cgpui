@@ -6,6 +6,55 @@ void WindowRuntime::set_clipboard(Clipboard* clipboard) {
   clipboard_ = clipboard;
 }
 
+std::optional<std::string> WindowRuntime::read_clipboard_text() {
+  if (clipboard_ == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "read-text",
+        .supported = false,
+        .succeeded = false,
+    });
+    return std::nullopt;
+  }
+
+  std::optional<std::string> text = clipboard_->read_text();
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::clipboard,
+      .backend = "runtime",
+      .operation = "read-text",
+      .supported = true,
+      .succeeded = text.has_value(),
+      .value_count = text.has_value() ? text->size() : 0U,
+  });
+  return text;
+}
+
+bool WindowRuntime::write_clipboard_text(std::string_view text) {
+  if (clipboard_ == nullptr) {
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::clipboard,
+        .backend = "runtime",
+        .operation = "write-text",
+        .supported = false,
+        .succeeded = false,
+        .value_count = text.size(),
+    });
+    return false;
+  }
+
+  const bool succeeded = clipboard_->write_text(text);
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::clipboard,
+      .backend = "runtime",
+      .operation = "write-text",
+      .supported = true,
+      .succeeded = succeeded,
+      .value_count = text.size(),
+  });
+  return succeeded;
+}
+
 bool WindowRuntime::paste_clipboard_text() {
   if (clipboard_ == nullptr) {
     record_platform_diagnostic(PlatformDiagnosticEvent{

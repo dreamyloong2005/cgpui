@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -134,6 +135,25 @@ static_assert(std::same_as<decltype(std::declval<Capability>().focus(
 static_assert(std::same_as<decltype(std::declval<Capability>().release_focus(
                                std::declval<cgpui::ElementId>())),
                            void>);
+static_assert(std::same_as<decltype(std::declval<Capability>().set_clipboard(
+                               std::declval<cgpui::Clipboard*>())),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .write_to_clipboard(
+                                            std::declval<std::string_view>())),
+                           bool>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .read_from_clipboard()),
+                           std::optional<std::string>>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .paste_clipboard_text()),
+                           bool>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .copy_selection_to_clipboard()),
+                           bool>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .cut_selection_to_clipboard()),
+                           bool>);
 static_assert(std::is_copy_constructible_v<Capability>);
 static_assert(cgpui::Render<TestContextCapabilityView>);
 

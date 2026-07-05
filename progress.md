@@ -10822,3 +10822,78 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 80/80.
 - Step 297 is complete on `master`; Step 298 clipboard helpers is the next
   test-context helper slice.
+
+## 2026-07-05 Phase B Step 298 Test-Context Clipboard Helpers
+
+- Continued `.worktrees/phase-b-test-context-clipboard` on
+  `codex/phase-b-test-context-clipboard` from
+  `a17488d docs: mark step 297 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_text_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 7/7.
+- Upstream pinned reference checked:
+  `crates/gpui/src/app/test_context.rs` at
+  `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0` exposes
+  `write_to_clipboard(ClipboardItem)` and `read_from_clipboard()`. This slice
+  adapts that to the current text-only `Clipboard` contract instead of adding
+  `ClipboardItem`.
+- RED added API, behavior, xmake, and structure coverage in
+  `tests/api_parity/test_context_capability_test.cpp`,
+  `tests/ui/test_context_clipboard_test.cpp`,
+  `tests/architecture/ui_source_structure_test.cpp`, and `xmake.lua`. RED
+  failed as expected because `TestContextCapability` did not expose clipboard
+  helpers.
+- GREEN adds `TestContextCapability::set_clipboard(...)`,
+  `write_to_clipboard(...)`, `read_from_clipboard()`, and direct
+  `paste_clipboard_text()` / `copy_selection_to_clipboard()` /
+  `cut_selection_to_clipboard()` forwarding in the focused
+  `src/ui/test_context_clipboard.cpp` source. Runtime direct text read/write
+  helpers live beside existing copy/cut/paste diagnostics in
+  `src/ui/runtime_clipboard.cpp`.
+- First focused GREEN run passed the API and behavior tests but failed
+  `ui_source_structure_test/default`: direct execution returned 100 because
+  `include/cgpui/ui/window_runtime.hpp` reached 242 lines, above the 240-line
+  guard. The fix compacted only adjacent declarations and blank spacing,
+  keeping the file at 238 lines without raising the threshold.
+- Focused Windows verification passed:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_clipboard_test/default ui_source_structure_test/default`
+  passed 3/3.
+- Updated the parity ledger, parity ledger JSON, roadmap, findings, and
+  parity ledger test guards to record Step 298 and move the active remaining
+  queue to Step 299 timer/async advancement helpers and Step 300 redraw/frame
+  pump simulation.
+- Fresh Windows expanded focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . test_context_clipboard_test/default
+  test_context_capability_test/default test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default window_runtime_text_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  10/10.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 84/84.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . test_context_clipboard_test/default
+  test_context_capability_test/default test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default window_runtime_text_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  10/10.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 81/81.
+- Step 298 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 299 timer/async
+  advancement helpers is the next slice after Step 298 lands on `master`.

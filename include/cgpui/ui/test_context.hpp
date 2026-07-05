@@ -10,10 +10,12 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 
 namespace cgpui {
 
+class Clipboard;
 struct WindowRuntimeContext;
 
 class TestContextCapability {
@@ -53,6 +55,12 @@ class TestContextCapability {
   void dispatch_window_focus(bool focused) const;
   void focus(ElementId element_id) const;
   void release_focus(ElementId element_id) const;
+  void set_clipboard(Clipboard* clipboard) const;
+  [[nodiscard]] bool write_to_clipboard(std::string_view text) const;
+  [[nodiscard]] std::optional<std::string> read_from_clipboard() const;
+  [[nodiscard]] bool paste_clipboard_text() const;
+  [[nodiscard]] bool copy_selection_to_clipboard() const;
+  [[nodiscard]] bool cut_selection_to_clipboard() const;
 
  private:
   const WindowRuntimeContext* context_ = nullptr;
