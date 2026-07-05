@@ -34,11 +34,8 @@ std::unique_ptr<Element> ElementBuilder::build() && {
     return finish(std::move(element));
   }
 
-  std::unique_ptr<Element> child;
-  if (!children_.empty()) {
-    child = std::move(children_.front());
-  }
-  auto element = std::make_unique<StyledElement>(style_state_, std::move(child));
+  auto element =
+      std::make_unique<StyledElement>(style_state_, std::move(children_));
   element->set_style_classes(style_classes_);
   element->set_inline_style(inline_style_);
   return finish(std::move(element));

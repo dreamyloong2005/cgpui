@@ -4,6 +4,7 @@
 #include "cgpui/ui/style_cascade.hpp"
 
 #include <memory>
+#include <vector>
 
 namespace cgpui {
 
@@ -11,8 +12,14 @@ class StyledElement : public Element {
  public:
   explicit StyledElement(Style style, std::unique_ptr<Element> child = {});
   explicit StyledElement(
+      Style style,
+      std::vector<std::unique_ptr<Element>> children);
+  explicit StyledElement(
       StyleState style_state,
       std::unique_ptr<Element> child = {});
+  explicit StyledElement(
+      StyleState style_state,
+      std::vector<std::unique_ptr<Element>> children);
 
   [[nodiscard]] const Style& style() const;
   [[nodiscard]] const StyleState& style_state() const;
@@ -25,6 +32,8 @@ class StyledElement : public Element {
       StyleStateFlags flags) const;
   [[nodiscard]] Element* child();
   [[nodiscard]] const Element* child() const;
+  [[nodiscard]] std::vector<std::unique_ptr<Element>>& children();
+  [[nodiscard]] const std::vector<std::unique_ptr<Element>>& children() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   void paint(PaintList& paint_list) const override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
@@ -38,7 +47,7 @@ class StyledElement : public Element {
   StyleState style_state_;
   StyleClasses style_classes_;
   StyleOverlay inline_style_;
-  std::unique_ptr<Element> child_;
+  std::vector<std::unique_ptr<Element>> children_;
 };
 
 } // namespace cgpui

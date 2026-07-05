@@ -146,9 +146,9 @@
     },
     {
       "upstream_gpui": "gpui::div",
-      "cgpui_target": "div",
+      "cgpui_target": "div() plus repeated .child(...) multi-child retention, ElementBuilder::children(...) collection authoring, and StyledElement::children() child-list ownership, covered by include/cgpui/ui/element_builder_core.hpp, include/cgpui/ui/element_style_nodes.hpp, src/ui/element_builder_interaction.cpp, src/ui/element_builder_build.cpp, src/ui/element_style_nodes.cpp, src/ui/element_style_paint.cpp, and tests/ui/element_test.cpp",
       "status": "adapted",
-      "next_step": "Phase C"
+      "next_step": "Phase C Steps 320-324 style vocabulary"
     },
     {
       "upstream_gpui": "gpui::test",

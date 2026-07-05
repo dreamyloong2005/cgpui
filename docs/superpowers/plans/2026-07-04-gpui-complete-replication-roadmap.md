@@ -480,6 +480,10 @@ expect, keeping each widget in its own module from the first version.
 - [ ] Steps 319-324: Add the upstream-style `div` element vocabulary:
   child/children handling, flex helpers, sizing, colors, borders, radius,
   shadow, text styling, overflow, and layout shortcuts.
+  Step 319 adds `div` child-list ownership: repeated `.child(...)` retains
+  all children, `ElementBuilder::children(...)` accepts owned collections, and
+  `StyledElement::children()` exposes the focused style-node child list while
+  preserving `child()` as the first-child compatibility view.
 - [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.

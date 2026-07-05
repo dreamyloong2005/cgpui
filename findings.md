@@ -5457,3 +5457,20 @@
   99/99 and WSL Arch Linux full debug 96/96 with JSON validation, focused
   public/freeze gates 8/8, and all five public API examples built on both
   hosts.
+
+## 2026-07-05 Phase C Step 319 Div Child List
+
+- Step 319 owns `div` child-list behavior in the existing focused style-node
+  and builder modules, not in aggregate headers: `StyledElement` keeps a
+  vector of children, `child()` remains a first-child compatibility view,
+  `StyledElement::children()` exposes the list for focused tests, repeated
+  `.child(...)` retains every child, and
+  `ElementBuilder::children(std::vector<AnyElement>)` appends an owned
+  collection.
+- The new default multi-child `div` layout stacks children vertically using
+  `Style::gap` plus existing padding/margin behavior; `h_flex()`, `v_flex()`,
+  and `v_stack()` keep their existing dedicated layout nodes.
+- The durable behavior guard is `tests/ui/element_test.cpp`; the parity guard
+  is `tests/api_parity/gpui_parity_ledger_test.cpp`. Keep Step 320 focused on
+  the next `div` style-vocabulary helper instead of broad widget or layout
+  rewrites.

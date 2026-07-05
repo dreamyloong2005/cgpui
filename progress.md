@@ -11891,3 +11891,39 @@
 - Phase B is complete for the Windows/Linux public Application, Context,
   Entity, Action, key dispatch, test-context API, and public authoring
   vocabulary band. Phase C Step 319 is the next slice.
+
+## 2026-07-05 Phase C Step 319 Div Child List
+
+- Created `.worktrees/phase-c-div-vocabulary-core` on
+  `codex/phase-c-div-vocabulary-core` from `fc8ded6`.
+- Baseline focused Windows gate passed:
+  `xmake test -y -P . element_test/default style_test/default
+  public_authoring_surface_test/default
+  public_phase_b_completion_audit_test/default` passed 4/4.
+- RED added `test_div_builder_preserves_multiple_children_in_author_order`;
+  `xmake test -y -P . element_test/default` failed as expected because
+  `StyledElement::children()` did not exist.
+- GREEN changed `StyledElement` from single-child ownership to child-list
+  ownership, kept `child()` as the first-child compatibility view, and made
+  the `div` build path preserve all repeated `.child(...)` calls.
+- RED added `test_element_builder_children_accepts_owned_collection`;
+  `xmake test -y -P . element_test/default` failed as expected because
+  `ElementBuilder::children(...)` did not exist.
+- GREEN added `ElementBuilder::children(std::vector<AnyElement>)` in
+  `src/ui/element_builder_interaction.cpp`.
+- Focused Windows verification passed:
+  `xmake test -y -P . element_test/default` passed 1/1, and
+  `xmake test -y -P . ui_source_structure_test/default
+  public_authoring_surface_test/default
+  public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default` passed 4/4.
+- Updated the Markdown/JSON parity ledger, the ledger guard, and the complete
+  replication roadmap with Step 319 evidence.
+- Fresh feature-worktree verification passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, Windows `xmake test -P .` passed 99/99, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 319 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 320 is
+  the next Phase C `div` style-vocabulary helper slice after Step 319 lands on
+  `master`.

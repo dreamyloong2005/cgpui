@@ -62,6 +62,7 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder on_key(KeyHandler handler) &&;
   [[nodiscard]] ElementBuilder child(std::unique_ptr<Element> child) &&;
   [[nodiscard]] ElementBuilder child(ElementBuilder child) &&;
+  [[nodiscard]] ElementBuilder children(std::vector<AnyElement> children) &&;
 
   template <typename T>
     requires std::derived_from<T, Element> && (!std::same_as<T, Element>)

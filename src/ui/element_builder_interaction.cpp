@@ -56,4 +56,13 @@ ElementBuilder ElementBuilder::child(ElementBuilder child) && {
   return std::move(*this).child(into_element(std::move(child)));
 }
 
+ElementBuilder ElementBuilder::children(std::vector<AnyElement> children) && {
+  for (auto& child : children) {
+    if (child) {
+      children_.push_back(std::move(child));
+    }
+  }
+  return std::move(*this);
+}
+
 } // namespace cgpui

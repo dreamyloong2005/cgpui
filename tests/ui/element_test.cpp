@@ -1746,6 +1746,79 @@ int test_element_builder_wraps_child() {
   return 0;
 }
 
+int test_div_builder_preserves_multiple_children_in_author_order() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .padding(cgpui::edges(1.0F))
+                              .gap(cgpui::px(2.0F))
+                              .child(cgpui::div()
+                                         .size(10.0F, 4.0F)
+                                         .background(cgpui::rgb(10, 20, 30)))
+                              .child(cgpui::div()
+                                         .size(6.0F, 5.0F)
+                                         .background(cgpui::rgb(40, 50, 60))));
+  auto* styled = dynamic_cast<cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || styled->children().size() != 2 ||
+      styled->child() != styled->children()[0].get()) {
+    return 901;
+  }
+
+  const cgpui::LayoutOutput output = styled->layout(cgpui::LayoutInput{});
+  if (output.size.width != 12.0F || output.size.height != 13.0F) {
+    return 902;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      styled->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      styled->children()[1]->layout_bounds();
+  if (!first_bounds.has_value() || !second_bounds.has_value() ||
+      first_bounds->origin.x != 1.0F || first_bounds->origin.y != 1.0F ||
+      second_bounds->origin.x != 1.0F || second_bounds->origin.y != 7.0F) {
+    return 903;
+  }
+
+  cgpui::PaintList paint_list;
+  styled->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 2 ||
+      commands[0].kind != cgpui::PaintCommandKind::solid_rect ||
+      commands[1].kind != cgpui::PaintCommandKind::solid_rect) {
+    return 904;
+  }
+
+  return commands[0].solid_rect.rect.origin.y == 1.0F &&
+                 commands[1].solid_rect.rect.origin.y == 7.0F
+             ? 0
+             : 905;
+}
+
+int test_element_builder_children_accepts_owned_collection() {
+  std::vector<cgpui::AnyElement> children;
+  children.push_back(cgpui::into_element(
+      cgpui::div().size(3.0F, 4.0F).background(cgpui::rgb(1, 2, 3))));
+  children.push_back(cgpui::into_element(
+      cgpui::div().size(5.0F, 6.0F).background(cgpui::rgb(4, 5, 6))));
+
+  cgpui::AnyElement element = cgpui::into_element(
+      cgpui::div().gap(1.0F).children(std::move(children)));
+  auto* styled = dynamic_cast<cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || styled->children().size() != 2) {
+    return 906;
+  }
+
+  const cgpui::LayoutOutput output = styled->layout(cgpui::LayoutInput{});
+  if (output.size.width != 5.0F || output.size.height != 11.0F) {
+    return 907;
+  }
+
+  const std::optional<cgpui::Rect> second_bounds =
+      styled->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.y == 5.0F
+             ? 0
+             : 908;
+}
+
 int test_element_builder_builds_flex_row_with_children() {
   std::unique_ptr<cgpui::Element> element =
       cgpui::ElementBuilder::row()
@@ -4283,6 +4356,16 @@ int main() {
     return result;
   }
   if (const int result = test_element_builder_wraps_child(); result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_div_builder_preserves_multiple_children_in_author_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_children_accepts_owned_collection();
+      result != 0) {
     return result;
   }
   if (const int result = test_element_builder_builds_flex_row_with_children();

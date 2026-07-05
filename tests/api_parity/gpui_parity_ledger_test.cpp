@@ -146,6 +146,11 @@ int main() {
       !contains(ledger, "src/ui/runtime_task_results.cpp") ||
       !contains(ledger,
                 "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
+      !contains(ledger, "`ElementBuilder::children(...)`") ||
+      !contains(ledger, "`StyledElement::children()`") ||
+      !contains(ledger, "src/ui/element_builder_interaction.cpp") ||
+      !contains(ledger, "src/ui/element_style_nodes.cpp") ||
+      !contains(ledger, "tests/ui/element_test.cpp") ||
       !contains(ledger,
                 "`Window` facade from `WindowRuntimeContext::window()`") ||
       !contains(ledger, "tests/api_parity/app_window_context_test.cpp") ||

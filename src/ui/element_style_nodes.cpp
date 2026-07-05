@@ -1,19 +1,38 @@
 #include "cgpui/ui/element_style_nodes.hpp"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 namespace cgpui {
 
 StyledElement::StyledElement(Style style, std::unique_ptr<Element> child)
+    : style_state_(StyleState{.base = std::move(style)}) {
+  if (child != nullptr) {
+    children_.push_back(std::move(child));
+  }
+}
+
+StyledElement::StyledElement(
+    Style style,
+    std::vector<std::unique_ptr<Element>> children)
     : style_state_(StyleState{.base = std::move(style)}),
-      child_(std::move(child)) {}
+      children_(std::move(children)) {}
 
 StyledElement::StyledElement(
     StyleState style_state,
     std::unique_ptr<Element> child)
+    : style_state_(std::move(style_state)) {
+  if (child != nullptr) {
+    children_.push_back(std::move(child));
+  }
+}
+
+StyledElement::StyledElement(
+    StyleState style_state,
+    std::vector<std::unique_ptr<Element>> children)
     : style_state_(std::move(style_state)),
-      child_(std::move(child)) {}
+      children_(std::move(children)) {}
 
 const Style& StyledElement::style() const {
   return style_state_.base;
@@ -51,27 +70,50 @@ Style StyledElement::resolved_style(
 }
 
 Element* StyledElement::child() {
-  return child_.get();
+  return children_.empty() ? nullptr : children_.front().get();
 }
 
 const Element* StyledElement::child() const {
-  return child_.get();
+  return children_.empty() ? nullptr : children_.front().get();
+}
+
+std::vector<std::unique_ptr<Element>>& StyledElement::children() {
+  return children_;
+}
+
+const std::vector<std::unique_ptr<Element>>& StyledElement::children() const {
+  return children_;
 }
 
 LayoutOutput StyledElement::layout(LayoutInput input) const {
   const Style& base_style = style();
   Size content_size = base_style.preferred_size;
-  if (child_) {
-    const LayoutOutput child_output = child_->layout(input);
-    content_size = child_output.size;
-    child_->set_layout_bounds(Rect{
-        .origin =
-            {
-                .x = base_style.margin.left + base_style.padding.left,
-                .y = base_style.margin.top + base_style.padding.top,
-            },
-        .size = child_output.size,
-    });
+  if (!children_.empty()) {
+    float child_y = 0.0F;
+    float content_width = 0.0F;
+    float content_height = 0.0F;
+    for (std::size_t index = 0; index < children_.size(); ++index) {
+      Element& child = *children_[index];
+      const LayoutOutput child_output = child.layout(input);
+      child.set_layout_bounds(Rect{
+          .origin =
+              {
+                  .x = base_style.margin.left + base_style.padding.left,
+                  .y = base_style.margin.top + base_style.padding.top + child_y,
+              },
+          .size = child_output.size,
+      });
+      content_width = std::max(content_width, child_output.size.width);
+      content_height = child_y + child_output.size.height;
+      child_y = content_height;
+      if (index + 1 < children_.size()) {
+        child_y += base_style.gap;
+      }
+    }
+    content_size = Size{
+        .width = content_width,
+        .height = content_height,
+    };
   }
   const Size preferred{
       .width = content_size.width + base_style.padding.left +
@@ -104,16 +146,31 @@ ElementId StyledElement::hit_test(Point point) const {
     }
   }
 
-  const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
-  return child_hit.value != 0 ? child_hit : Element::hit_test(point);
+  for (auto it = children_.rbegin(); it != children_.rend(); ++it) {
+    if (*it == nullptr) {
+      continue;
+    }
+    const ElementId child_hit = (*it)->hit_test(point);
+    if (child_hit.value != 0) {
+      return child_hit;
+    }
+  }
+  return Element::hit_test(point);
 }
 
 EventResult StyledElement::handle_event(
     const PlatformEvent& event,
     const ElementEventContext& context) {
-  return child_ == nullptr || !child_->enabled()
-             ? EventResult::unhandled()
-             : child_->handle_event(event, context);
+  for (auto it = children_.rbegin(); it != children_.rend(); ++it) {
+    if (*it == nullptr || !(*it)->enabled()) {
+      continue;
+    }
+    const EventResult result = (*it)->handle_event(event, context);
+    if (result.consumed || result.cancelled) {
+      return result;
+    }
+  }
+  return EventResult::unhandled();
 }
 
 int StyledElement::z_index() const {

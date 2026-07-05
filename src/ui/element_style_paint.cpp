@@ -14,8 +14,10 @@ void StyledElement::paint(PaintList& paint_list) const {
                              : *bounds);
   }
   paint_styled_box_base(paint_list, bounds, base_style);
-  if (child_ != nullptr) {
-    child_->paint(paint_list);
+  for (const auto& child : children_) {
+    if (child != nullptr) {
+      child->paint(paint_list);
+    }
   }
   if (uses_hidden_overflow_clip) {
     paint_list.pop_clip();
