@@ -45,7 +45,9 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder overflow_hidden() &&;
   [[nodiscard]] ElementBuilder overflow_visible() &&;
   [[nodiscard]] ElementBuilder font(FontDescriptor descriptor) &&;
+  [[nodiscard]] ElementBuilder font_family(std::string_view value) &&;
   [[nodiscard]] ElementBuilder font_size(float value) &&;
+  [[nodiscard]] ElementBuilder text_size(float value) &&;
   [[nodiscard]] ElementBuilder border_width(EdgeSizes edges) &&;
   [[nodiscard]] ElementBuilder border_1() &&;
   [[nodiscard]] ElementBuilder border_color(Color color) &&;

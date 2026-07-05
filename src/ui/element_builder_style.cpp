@@ -85,9 +85,17 @@ ElementBuilder ElementBuilder::font(FontDescriptor descriptor) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::font_family(std::string_view value) && {
+  return std::move(*this).font(FontDescriptor{.family = std::string(value)});
+}
+
 ElementBuilder ElementBuilder::font_size(float value) && {
   style_state_.base = style_state_.base.with_font_size(value);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::text_size(float value) && {
+  return std::move(*this).font_size(value);
 }
 
 ElementBuilder ElementBuilder::border_color(Color color) && {

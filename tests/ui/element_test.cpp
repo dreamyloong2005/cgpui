@@ -537,8 +537,38 @@ int test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_exi
   return visible != nullptr &&
                  visible->style().overflow == cgpui::Overflow::visible &&
                  visible->style().position == cgpui::Position::relative
+              ? 0
+              : 577;
+}
+
+int test_element_builder_text_vocabulary_helpers_map_to_existing_style() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .text_size(cgpui::px(19.0F))
+                              .font_family("Step323Mono")
+                              .text_color(cgpui::rgb(30, 40, 50)));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 578;
+  }
+
+  const cgpui::Style& style = styled->style();
+  if (style.font_size != 19.0F || style.font.family != "Step323Mono" ||
+      !style.foreground_color.has_value() ||
+      style.foreground_color->g != 40.0F / 255.0F) {
+    return 579;
+  }
+
+  cgpui::TextModel model{"text"};
+  cgpui::AnyElement text_element =
+      cgpui::into_element(cgpui::text(model)
+                              .font_family("Step323Text")
+                              .text_size(cgpui::px(21.0F)));
+  const auto* text = dynamic_cast<const cgpui::TextElement*>(text_element.get());
+  return text != nullptr && text->font().family == "Step323Text" &&
+                 text->font_size() == 21.0F
              ? 0
-             : 577;
+             : 580;
 }
 
 int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
@@ -4325,6 +4355,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_existing_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_text_vocabulary_helpers_map_to_existing_style();
       result != 0) {
     return result;
   }

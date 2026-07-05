@@ -961,11 +961,17 @@ int main() {
                 "ElementBuilder ElementBuilder::overflow_visible()") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::opacity(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::text_size(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::font_family(") ||
       contains(element_builder_style_source, "ElementBuilder::items_center()") ||
       contains(element_builder_style_source, "ElementBuilder::w(") ||
       contains(element_builder_style_source, "ElementBuilder::z_index(") ||
       contains(element_builder_layout_source, "ElementBuilder::bg(") ||
-      contains(element_builder_layout_source, "ElementBuilder::opacity(")) {
+      contains(element_builder_layout_source, "ElementBuilder::opacity(") ||
+      contains(element_builder_layout_source, "ElementBuilder::text_size(") ||
+      contains(element_builder_layout_source, "ElementBuilder::font_family(")) {
     return 146;
   }
 

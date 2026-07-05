@@ -5563,3 +5563,18 @@
   band while keeping shadow storage, text-style behavior, widget behavior,
   uniform-list behavior, flex wrap, broad layout rewrites, and the Phase B
   closeout exclusions out of the slice.
+
+## 2026-07-05 Phase C Step 323 Div Text Style Helpers
+
+- Step 323 stays scoped to text-style aliases over existing style storage. It
+  adds `ElementBuilder::text_size(...)` as an alias for `font_size(...)` and
+  `ElementBuilder::font_family(...)` as an alias for `font(FontDescriptor{...})`
+  without adding font-weight, line-height, inherited text-style cascade, shadow
+  storage, widget behavior, uniform-list behavior, or broad style rewrites.
+- The durable implementation boundary is `src/ui/element_builder_style.cpp`,
+  alongside `font(...)`, `font_size(...)`, `text_color(...)`, overflow, and
+  opacity helpers. These aliases should stay out of
+  `src/ui/element_builder_layout.cpp`.
+- Step 324 should handle the remaining `div` shadow vocabulary/storage as its
+  own slice so shadow state, paint metadata, and structure tests can be shaped
+  deliberately.

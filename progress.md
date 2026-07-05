@@ -12131,3 +12131,48 @@
   working `wsl.exe -d archlinux` entrypoint passed.
 - Step 322 is complete on `master`; Step 323, the next focused Phase C `div`
   style-vocabulary slice, is next.
+
+## 2026-07-05 Phase C Step 323 Div Text Style Helpers
+
+- Created `.worktrees/phase-c-div-text-shadow-helpers` on
+  `codex/phase-c-div-text-shadow-helpers` from
+  `d53df14 docs: mark phase c step 322 merged`.
+- Baseline focused Windows gate passed:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added
+  `test_element_builder_text_vocabulary_helpers_map_to_existing_style`;
+  `xmake test -y -P . element_test/default` failed as expected because
+  `ElementBuilder` did not have `text_size(...)` or `font_family(...)`.
+- RED extended the structure guard in `ui_source_structure_test` requiring
+  `text_size(...)` and `font_family(...)` in
+  `src/ui/element_builder_style.cpp` and absent from
+  `src/ui/element_builder_layout.cpp`; the structure test failed as expected.
+- GREEN added declarations in `include/cgpui/ui/element_builder_core.hpp` and
+  style helper bodies in `src/ui/element_builder_style.cpp`. The
+  implementation stays an alias layer over existing `Style::font_size` and
+  `Style::font` fields and does not add font-weight, line-height, shadow
+  storage, widget behavior, uniform-list behavior, or broad style rewrites.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 323 text vocabulary and
+  module ownership. Step 324 is the next focused Phase C `div` shadow
+  vocabulary/storage slice after Step 323 lands on `master`.
+- Focused feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and
+  `xmake test -y -P . element_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default style_test/default` passed 6/6.
+- Fresh feature-worktree full verification passed:
+  Windows `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .`
+  passed 99/99, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed
+  96/96.
+- Step 323 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 324 is
+  the next Phase C `div` shadow vocabulary/storage slice after Step 323 lands
+  on `master`.
