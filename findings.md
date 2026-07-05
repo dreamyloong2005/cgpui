@@ -5499,6 +5499,16 @@
 - The behavior guard is `tests/ui/element_test.cpp`, and the structure guard
   is `tests/architecture/ui_source_structure_test.cpp`.
 
+## 2026-07-05 Phase C Step 321 Merge
+
+- Step 321 is merged on `master` at
+  `694d64e feat: add div sizing color border helpers` and post-merge verified
+  with Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux
+  full debug 96/96.
+- Step 322 should continue the same focused Phase C band with the remaining
+  `div` style vocabulary, while keeping widget, uniform-list, and broad layout
+  rewrites out of the slice.
+
 ## 2026-07-05 Phase C Step 320 Merge
 
 - Step 320 is merged on `master` at `5040365` and post-merge verified with

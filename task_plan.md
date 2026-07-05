@@ -1877,5 +1877,6 @@ implementation slice.
   Feature-worktree verification passed JSON validation, focused
   public/structure gates 6/6, Windows full debug 99/99, WSL Arch Linux full
   debug 96/96, and `git diff --check` with only expected LF-to-CRLF
-  normalization warnings. Step 322 is the next focused Phase C `div`
-  style-vocabulary slice after Step 321 lands on `master`.
+  normalization warnings. Post-merge verification passed JSON validation,
+  Windows full debug 99/99, and WSL Arch Linux full debug 96/96. Step 322 is
+  the next focused Phase C `div` style-vocabulary slice.

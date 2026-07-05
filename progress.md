@@ -12052,3 +12052,21 @@
   reran the invalidation-prone focused guards: JSON validation passed,
   `git diff --check` stayed clean with only expected LF-to-CRLF warnings, and
   the six-test focused gate passed 6/6 again.
+
+## 2026-07-05 Phase C Step 321 Merge
+
+- Committed `codex/phase-c-div-sizing-color-border-helpers` as
+  `694d64e feat: add div sizing color border helpers`.
+- Fast-forward merged the branch into `master` at `694d64e`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0 and
+  `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 321 is complete on `master`; Step 322, the next focused Phase C `div`
+  style-vocabulary slice, is next.
+- The first post-note Windows focused guard rerun failed in
+  `public_phase_b_completion_audit_test/default` because the roadmap hard-wrap
+  split the guarded phrase `structured task groups`. Restored that exact
+  phrase in the roadmap; rerun focused docs guards passed on Windows 2/2 and
+  WSL Arch Linux 2/2.
