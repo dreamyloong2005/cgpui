@@ -375,15 +375,16 @@ shape before deeper native work expands platform behavior.
   Result<void>` owns the renderer-resize Result boundary in focused
   `src/ui/runtime_renderer_resize_results.cpp`, while `resize_surface(...)`
   remains the fail-and-quit compatibility wrapper.
-- [x] Step 306: Finish renderer frame/redraw result conventions. Implemented
-  in `codex/phase-b-renderer-frame-results` with
+- [x] Step 306: Finish renderer frame/redraw result conventions. Merged on
+  `master` at `4649f71` with
   `WindowRuntime::try_draw_frame() -> Result<void>` and
   `TestContextCapability::try_draw_frame() -> Result<void>`, isolated frame
   Result ownership in `src/ui/runtime_renderer_frame_results.cpp`, and kept
   existing redraw event / `draw_frame()` compatibility as fail-and-quit
   wrappers. Focused Windows GREEN verification passed
   `renderer_frame_result_conventions_test/default` and
-  `ui_source_structure_test/default`; full merge verification is pending.
+  `ui_source_structure_test/default`; post-merge verification passed Windows
+  full-debug 92/92 and WSL Arch Linux full-debug 89/89.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
@@ -687,11 +688,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 307 public API compatibility examples are next after Step 306 lands on
-`master`. Step 306 implemented `try_draw_frame() -> Result<void>`, isolated
-renderer frame/redraw Result behavior in
-`src/ui/runtime_renderer_frame_results.cpp`, and kept redraw event /
-`TestContextCapability::draw_frame()` compatibility fail-and-quit behavior
+Step 307 public API compatibility examples are next after Step 306 landed on
+`master` at `4649f71`. Step 306 implemented
+`try_draw_frame() -> Result<void>`, isolated renderer frame/redraw Result
+behavior in `src/ui/runtime_renderer_frame_results.cpp`, and kept redraw event
+/ `TestContextCapability::draw_frame()` compatibility fail-and-quit behavior
 intact. `ClipboardItem` payload parity, upstream `gpui::test` macro
 equivalents, and action macro payloads stay out of scope.
 

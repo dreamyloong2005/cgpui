@@ -5226,3 +5226,17 @@
   spelling, begin-frame errors, present errors, compatibility fail-and-quit,
   and test-context Result forwarding. The structure guard is
   `tests/architecture/ui_source_structure_test.cpp`.
+
+## 2026-07-05 Phase B Step 306 Merge
+
+- Step 306 is merged on `master` at
+  `4649f71 feat: add renderer frame result conventions` and post-merge
+  verified on Windows full debug 92/92 and WSL Arch Linux full debug 89/89.
+- The durable ownership boundary for renderer frame/redraw Result conventions
+  is `src/ui/runtime_renderer_frame_results.cpp`; keep compatibility
+  fail-and-quit wrappers in `src/ui/runtime_rendering.cpp` and
+  `src/ui/runtime_window_rendering.cpp`.
+- Step 307 should start public API compatibility examples without folding
+  `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+  action macro payloads, task priorities, or structured task groups into the
+  same slice.

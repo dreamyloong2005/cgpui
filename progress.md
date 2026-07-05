@@ -11425,3 +11425,17 @@
   10/10.
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake test -P .` passed 89/89.
+
+## 2026-07-05 Phase B Step 306 Merge
+
+- Committed `codex/phase-b-renderer-frame-results` as
+  `4649f71 feat: add renderer frame result conventions`.
+- Fast-forward merged the branch into `master` at `4649f71`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 92/92.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -P .` passed 89/89.
+- Step 306 is complete on `master`; Step 307 public API compatibility examples
+  is the next Phase B slice.
