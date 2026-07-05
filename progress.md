@@ -10809,3 +10809,16 @@
 - Step 297 is implemented and focused/full verified in the feature worktree.
   It is ready for feature commit and merge verification. Step 298 clipboard
   helpers is the next slice after Step 297 lands on `master`.
+
+## 2026-07-05 Phase B Step 297 Merge
+
+- Fast-forward merged `codex/phase-b-test-context-focus-activation` into
+  `master` at `d7bf5de feat: add test context focus activation`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 83/83.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 80/80.
+- Step 297 is complete on `master`; Step 298 clipboard helpers is the next
+  test-context helper slice.

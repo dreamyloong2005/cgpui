@@ -1737,6 +1737,10 @@ implementation slice.
   Windows full-debug 82/82 and WSL Arch Linux full-debug 79/79 verification.
   It adds direct pointer move/button/scroll helpers through the real runtime
   event path, with ownership isolated in `src/ui/test_context_pointer.cpp`.
-  Step 297 focus/window activation simulation is the next slice, followed by
-  Step 298 clipboard helpers, Step 299 timer/async advancement helpers, and
-  Step 300 redraw/frame pump simulation.
+  Phase B Step 297 focus/window activation simulation is complete on `master`
+  at `d7bf5de` after post-merge Windows full-debug 83/83 and WSL Arch Linux
+  full-debug 80/80 verification. It adds window activation/focus dispatch and
+  element focus/release helpers through the real runtime event/focus path,
+  with ownership isolated in `src/ui/test_context_focus.cpp`. Step 298
+  clipboard helpers is the next slice, followed by Step 299 timer/async
+  advancement helpers and Step 300 redraw/frame pump simulation.
