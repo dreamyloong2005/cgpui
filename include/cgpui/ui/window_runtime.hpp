@@ -42,6 +42,8 @@ class WindowRuntime {
   [[nodiscard]] AppOpenedWindow open_window(WindowOptions options, std::unique_ptr<View> root_view);
   [[nodiscard]] Result<AppOpenedWindow> try_open_window(WindowOptions options);
   [[nodiscard]] Result<AppOpenedWindow> try_open_window(WindowOptions options, std::unique_ptr<View> root_view);
+  [[nodiscard]] Result<Renderer*> try_create_renderer(
+      const RenderSurfaceDescriptor& descriptor);
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
   [[nodiscard]] WindowRuntimeId root_window_runtime_id() const;
   [[nodiscard]] std::span<const WindowRuntimeRecord> window_runtime_records() const;

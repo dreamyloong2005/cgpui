@@ -69,19 +69,13 @@ int WindowRuntime::run(
   scale_ = window_state.scale;
   viewport_size_ = to_logical_pixels(framebuffer_size_, scale_);
 
-  auto renderer_result = renderer_factory_(RenderSurfaceDescriptor{
+  auto renderer_result = try_create_renderer(RenderSurfaceDescriptor{
       .native_surface = window_->native_surface(),
       .framebuffer_size = window_state.framebuffer_size,
       .scale = window_state.scale});
-  if (!renderer_result || *renderer_result == nullptr) {
+  if (!renderer_result) {
     if (error_callback_) {
-      if (renderer_result) {
-        error_callback_(Error{
-            .code = ErrorCode::renderer_initialization_failed,
-            .message = "Renderer factory returned an empty renderer"});
-      } else {
-        error_callback_(renderer_result.error());
-      }
+      error_callback_(renderer_result.error());
     }
     return 1;
   }

@@ -45,6 +45,7 @@ void apply_focused_text_ime_placement();
 void record_platform_diagnostic(PlatformDiagnosticEvent event);
 void fail_and_quit(Error error);
 void activate_native_window_for_record(WindowRuntimeRecord& record);
+[[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor, std::string_view empty_renderer_message);
 [[nodiscard]] RuntimeTaskDiagnostics task_diagnostics() const;
 [[nodiscard]] WindowRuntimeContext context_for_record(
     const WindowRuntimeRecord& record);

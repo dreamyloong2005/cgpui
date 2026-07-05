@@ -11254,3 +11254,49 @@
   `XMAKE_ROOT=y xmake test -P .` passed 86/86.
 - Step 303 is complete on `master`; Step 304 renderer-creation result
   conventions is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 304 Renderer-Creation Result Conventions
+
+- Created `.worktrees/phase-b-renderer-result-conventions` on
+  `codex/phase-b-renderer-result-conventions` from
+  `e45dd40 docs: mark step 303 merged`.
+- Confirmed Phase B remaining scope from the roadmap: Steps 304-306 renderer
+  Result conventions, Steps 307-312 public API compatibility examples, and
+  Steps 313-318 final verification/vocabulary freeze.
+- Initial code read shows `try_open_window(...)` already propagates renderer
+  factory errors, so Step 304 should make the renderer-creation Result boundary
+  explicit and structurally guarded in a focused module.
+- RED verified:
+  `xmake test -y -P . renderer_result_conventions_test/default
+  ui_source_structure_test/default` failed as expected because
+  `WindowRuntime` does not yet expose `try_create_renderer(...)`.
+- GREEN adds `WindowRuntime::try_create_renderer(...) -> Result<Renderer*>`
+  in focused `src/ui/runtime_renderer_results.cpp`, propagates factory errors,
+  rejects missing factories and empty renderer pointers with
+  `ErrorCode::renderer_initialization_failed`, and routes `run(...)` plus
+  child-window activation through the Result boundary.
+- First GREEN focused run passed behavior but failed
+  `ui_source_structure_test/default` at failure code 100. Root cause:
+  `src/ui/window_runtime_internal.hpp` exceeded its existing 260-line budget
+  after the internal child-renderer overload was added. The declaration was
+  compressed to keep the existing budget rather than relaxing the guard.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . renderer_result_conventions_test/default
+  ui_source_structure_test/default` passed 2/2.
+- `python -m json.tool docs\gpui-complete-parity-ledger.json` passed.
+- Expanded Windows focused verification passed:
+  `xmake test -y -P . renderer_result_conventions_test/default
+  public_result_conventions_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 6/6.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 90/90.
+- Fresh WSL Arch Linux validation passed:
+  JSON load check passed, `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, focused WSL verification passed 6/6, and full WSL debug
+  `XMAKE_ROOT=y xmake test -P .` passed 87/87.
+- Step 304 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification.

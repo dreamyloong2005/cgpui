@@ -121,6 +121,10 @@ int main() {
       !contains(ledger, "src/ui/runtime_window_results.cpp") ||
       !contains(ledger,
                 "tests/api_parity/public_result_conventions_test.cpp") ||
+      !contains(ledger, "`try_create_renderer(...) -> Result<Renderer*>`") ||
+      !contains(ledger, "src/ui/runtime_renderer_results.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/renderer_result_conventions_test.cpp") ||
       !contains(ledger, "`try_install_native_menu(...) -> "
                         "Result<NativeMenuInstallation>`") ||
       !contains(ledger, "`try_show_native_file_dialog(...) -> "
@@ -367,6 +371,10 @@ int main() {
               "async_context",
               "try_open_window",
               "Result<AppOpenedWindow>",
+              "try_create_renderer",
+              "Result<Renderer*>",
+              "runtime_renderer_results.cpp",
+              "renderer_result_conventions_test",
               "try_install_native_menu",
               "Result<NativeMenuInstallation>",
               "try_show_native_file_dialog",

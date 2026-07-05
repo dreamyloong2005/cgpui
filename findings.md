@@ -5153,3 +5153,26 @@
   `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
   action macro payloads, task priorities, structured task groups, or broader
   async runtime production depth into the same slice.
+
+## 2026-07-05 Phase B Step 304 Renderer-Creation Result Conventions
+
+- Phase B has three remaining groups after Step 303: Steps 304-306 renderer
+  creation Result conventions, Steps 307-312 public API compatibility
+  examples, and Steps 313-318 final Windows/WSL verification plus authoring
+  vocabulary freeze before Phase C.
+- `WindowRuntime::try_open_window(...)` already propagates renderer factory
+  errors without publishing an app-opened window record through
+  `src/ui/runtime_window_results.cpp`, but Step 304 should expose and guard a
+  clearer renderer-creation Result boundary instead of relying only on the
+  window-opening flow.
+- `ui_source_structure_test` failure code 100 after the first GREEN was a
+  structure-budget issue, not a behavior failure. The public
+  `window_runtime.hpp` stayed at its 240-line budget, while
+  `window_runtime_internal.hpp` reached 262 against a 260-line cap after the
+  internal child-renderer overload was added. Keeping that internal declaration
+  on one line restored the boundary without broadening the guard.
+- Step 304 ownership should remain: renderer Result creation in
+  `src/ui/runtime_renderer_results.cpp`; root `run(...)` in
+  `src/ui/runtime_run.cpp`; child-window activation in
+  `src/ui/runtime_window_activation.cpp`; window-opening publication in
+  `src/ui/runtime_window_results.cpp`.

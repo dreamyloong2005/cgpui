@@ -645,6 +645,8 @@ int main() {
       !contains(window_runtime_header,
                 "bool invalidate_entity(EntityId<T> entity_id)") ||
       !contains(window_runtime_header,
+                "Result<Renderer*> try_create_renderer(") ||
+      !contains(window_runtime_header,
                 "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
@@ -1074,6 +1076,7 @@ int main() {
       "src/ui/runtime_window_records.cpp",
       "src/ui/runtime_window_rendering.cpp",
       "src/ui/runtime_window_results.cpp",
+      "src/ui/runtime_renderer_results.cpp",
       "src/ui/window.cpp",
       "src/ui/window_context.cpp",
       "src/ui/runtime_theme.cpp",
@@ -1201,8 +1204,9 @@ int main() {
   if (line_count(runtime_run_source) > 140 ||
       !contains(runtime_run_source, "int WindowRuntime::run(") ||
       !contains(runtime_run_source, "application_.create_window(") ||
-      !contains(runtime_run_source, "renderer_factory_(") ||
+      !contains(runtime_run_source, "try_create_renderer(") ||
       !contains(runtime_run_source, "void WindowRuntime::fail_and_quit(") ||
+      contains(runtime_run_source, "renderer_factory_(") ||
       contains(runtime_run_source, "WindowRuntime::~WindowRuntime(")) {
     return 84;
   }
@@ -1362,10 +1366,30 @@ int main() {
                 "void WindowRuntime::activate_native_window_for_record(") ||
       !contains(runtime_window_activation_source,
                 "application_.create_window(") ||
-      !contains(runtime_window_activation_source, "renderer_factory_(") ||
+      !contains(runtime_window_activation_source, "try_create_renderer(") ||
+      contains(runtime_window_activation_source, "renderer_factory_(") ||
       contains(runtime_window_activation_source,
                "void WindowRuntime::handle_redraw_for_record(")) {
     return 65;
+  }
+
+  const std::string runtime_renderer_results_source =
+      read_source("src/ui/runtime_renderer_results.cpp");
+  if (line_count(runtime_renderer_results_source) > 80 ||
+      !contains(runtime_renderer_results_source,
+                "Result<Renderer*> WindowRuntime::try_create_renderer(") ||
+      !contains(runtime_renderer_results_source,
+                "Window runtime requires a renderer factory") ||
+      !contains(runtime_renderer_results_source,
+                "ErrorCode::renderer_initialization_failed") ||
+      !contains(runtime_renderer_results_source, "renderer_factory_(") ||
+      contains(runtime_renderer_results_source,
+               "WindowRuntime::try_open_window(") ||
+      contains(runtime_renderer_results_source,
+               "WindowRuntime::spawn_background_task(") ||
+      contains(runtime_renderer_results_source,
+               "WindowRuntime::install_native_menu(")) {
+    return 140;
   }
 
   const std::string runtime_window_rendering_source =

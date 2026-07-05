@@ -1775,5 +1775,14 @@ implementation slice.
   full-debug 86/86 verification: `WindowRuntime`, `WindowRuntimeContext`, and
   `AsyncContextCapability` expose `try_spawn_task(...)` and
   `try_spawn_background_task(...)` Result methods, with runtime ownership
-  isolated in `src/ui/runtime_task_results.cpp`. Step 304 renderer-creation
-  result conventions is the next Phase B slice.
+  isolated in `src/ui/runtime_task_results.cpp`. Phase B Step 304
+  renderer-creation result conventions is implemented in the feature worktree:
+  `WindowRuntime::try_create_renderer(...) -> Result<Renderer*>` now owns the
+  explicit renderer factory Result boundary in
+  `src/ui/runtime_renderer_results.cpp`, and `run(...)` plus child-window
+  activation call that boundary instead of calling `renderer_factory_(...)`
+  directly. Focused behavior and structure coverage lives in
+  `tests/api_parity/renderer_result_conventions_test.cpp` and
+  `tests/architecture/ui_source_structure_test.cpp`. Feature-worktree Windows
+  full debug passed 90/90 and WSL Arch Linux full debug passed 87/87; merge is
+  pending.

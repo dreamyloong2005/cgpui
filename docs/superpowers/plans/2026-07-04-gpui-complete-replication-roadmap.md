@@ -362,7 +362,11 @@ shape before deeper native work expands platform behavior.
   background work, or background completion callbacks return
   `ErrorCode::invalid_argument` without creating task records, while existing
   `spawn_*` compatibility methods still return an empty `TaskHandle`.
-- [ ] Steps 304-306: Add public error/result conventions for renderer creation.
+- [ ] Step 304: Add renderer-creation result conventions. Implemented in the
+  feature worktree with `WindowRuntime::try_create_renderer(...) ->
+  Result<Renderer*>` and focused `src/ui/runtime_renderer_results.cpp`
+  ownership; merge and post-merge verification are pending.
+- [ ] Steps 305-306: Finish the remaining renderer error/result conventions.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
@@ -666,12 +670,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 304 renderer-creation result conventions is next. Step 303 is complete on
-`master` with async-spawn `try_* -> Result<TaskHandle>` methods for foreground
-and background tasks, runtime Result behavior isolated in
-`src/ui/runtime_task_results.cpp`, compatibility `spawn_*` methods intact, and
-`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, and
-action macro payloads kept out of scope.
+Step 305 renderer result follow-on is next after Step 304 lands on `master`.
+Step 304 has the feature-worktree implementation for
+`try_create_renderer(...) -> Result<Renderer*>`, runtime Result behavior
+isolated in `src/ui/runtime_renderer_results.cpp`, and compatibility
+window-opening behavior kept intact. `ClipboardItem` payload parity, upstream
+`gpui::test` macro equivalents, and action macro payloads stay out of scope.
 
 ## Self-Review
 

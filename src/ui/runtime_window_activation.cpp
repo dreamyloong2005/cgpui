@@ -20,21 +20,17 @@ void WindowRuntime::activate_native_window_for_record(
 
   std::unique_ptr<PlatformWindow> window = std::move(*window_result);
   const WindowState window_state = window->state();
-  auto renderer_result = renderer_factory_(RenderSurfaceDescriptor{
-      .native_surface = window->native_surface(),
-      .framebuffer_size = window_state.framebuffer_size,
-      .scale = window_state.scale});
-  if (!renderer_result || *renderer_result == nullptr) {
+  auto renderer_result = try_create_renderer(
+      RenderSurfaceDescriptor{
+          .native_surface = window->native_surface(),
+          .framebuffer_size = window_state.framebuffer_size,
+          .scale = window_state.scale},
+      "Renderer factory returned an empty child renderer");
+  if (!renderer_result) {
     record.window = nullptr;
     record.renderer = nullptr;
     record.active = false;
-    record.native_window_error =
-        renderer_result
-            ? Error{
-                  .code = ErrorCode::renderer_initialization_failed,
-                  .message =
-                      "Renderer factory returned an empty child renderer"}
-            : renderer_result.error();
+    record.native_window_error = renderer_result.error();
     return;
   }
 
