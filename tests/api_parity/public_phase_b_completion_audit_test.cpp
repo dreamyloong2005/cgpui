@@ -52,8 +52,9 @@ int main() {
   if (!contains(
           roadmap,
           "- [x] Steps 313-318: Run full Windows/WSL verification and freeze") ||
-      !contains(roadmap, "Step 319 should start Phase C") ||
-      !contains(roadmap, "without introducing deferred Phase B exclusions")) {
+      !contains(roadmap, "Step 319 landed the child-list") ||
+      !contains(roadmap, "Phase B public authoring boundary") ||
+      !contains(roadmap, "Keep the Phase B closeout exclusions out")) {
     return 3;
   }
 

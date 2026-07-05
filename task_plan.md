@@ -1847,15 +1847,14 @@ implementation slice.
   verification passed Windows JSON validation, focused public/freeze gates
   8/8, all five public example builds, and full debug 99/99, plus WSL Arch
   Linux JSON validation, focused public/freeze gates 8/8, all five public
-  example builds, and full debug 96/96. Phase C Step 319 is the next slice.
+  example builds, and full debug 96/96. Phase C Step 319 is merged on `master`
+  at `14aaff0`; Step 320 is the next slice.
 
-- Phase C Step 319, `div` child/children handling, is implemented in
-  `.worktrees/phase-c-div-vocabulary-core`: repeated `.child(...)` preserves
-  all children, `ElementBuilder::children(std::vector<AnyElement>)` appends an
-  owned collection, and `StyledElement::children()` exposes the child list
-  while `child()` remains the first-child compatibility view. Focused Windows
-  verification passed `element_test/default`, `ui_source_structure_test/default`,
-  `public_authoring_surface_test/default`,
-  `public_authoring_vocabulary_freeze_test/default`, and
-  `public_phase_b_completion_audit_test/default`; full Windows/WSL verification
-  and merge remain before Step 320 starts on `master`.
+- Phase C Step 319, `div` child/children handling, is merged on `master` at
+  `14aaff0`: repeated `.child(...)` preserves all children,
+  `ElementBuilder::children(std::vector<AnyElement>)` appends an owned
+  collection, and `StyledElement::children()` exposes the child list while
+  `child()` remains the first-child compatibility view. Post-merge
+  verification passed JSON validation, Windows full debug 99/99, and WSL Arch
+  Linux full debug 96/96. Step 320 is the next Phase C `div`
+  style-vocabulary helper slice.

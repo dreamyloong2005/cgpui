@@ -483,7 +483,10 @@ expect, keeping each widget in its own module from the first version.
   Step 319 adds `div` child-list ownership: repeated `.child(...)` retains
   all children, `ElementBuilder::children(...)` accepts owned collections, and
   `StyledElement::children()` exposes the focused style-node child list while
-  preserving `child()` as the first-child compatibility view.
+  preserving `child()` as the first-child compatibility view. Merged on
+  `master` at `14aaff0` and post-merge verified with JSON validation, Windows
+  full-debug 99/99, and WSL Arch Linux full-debug 96/96. Step 320 should
+  continue with the next focused `div` style-vocabulary helper.
 - [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -763,11 +766,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 319 should start Phase C element/style/layout work from the frozen Phase B
-public authoring boundary. The Phase B closeout audit keeps all public examples
-prelude-only without introducing deferred Phase B exclusions: `ClipboardItem`
-payload parity, upstream `gpui::test` macro equivalents, action macro payloads,
-task priorities, or structured task groups.
+Step 320 should continue Phase C element/style/layout work from the frozen
+Phase B public authoring boundary, using the next focused `div`
+style-vocabulary helper from Steps 319-324. Step 319 landed the child-list
+foundation on `master` at `14aaff0`. Keep the Phase B closeout exclusions out
+of this slice: `ClipboardItem` payload parity, upstream `gpui::test` macro
+equivalents, action macro payloads, task priorities, or structured task groups.
 
 ## Self-Review
 

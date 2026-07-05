@@ -5474,3 +5474,12 @@
   is `tests/api_parity/gpui_parity_ledger_test.cpp`. Keep Step 320 focused on
   the next `div` style-vocabulary helper instead of broad widget or layout
   rewrites.
+
+## 2026-07-05 Phase C Step 319 Merge
+
+- Step 319 is merged on `master` at `14aaff0` and post-merge verified with
+  Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux full
+  debug 96/96.
+- Step 320 should continue the same focused Phase C band by adding the next
+  `div` style-vocabulary helper, while keeping widget, uniform-list, and broad
+  layout rewrites out of the slice.

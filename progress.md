@@ -11927,3 +11927,27 @@
   worktree. It is ready for feature commit and merge verification. Step 320 is
   the next Phase C `div` style-vocabulary helper slice after Step 319 lands on
   `master`.
+
+## 2026-07-05 Phase C Step 319 Merge
+
+- Committed `codex/phase-c-div-vocabulary-core` as
+  `14aaff0 feat: add div child list support`.
+- Fast-forward merged the branch into `master` at `14aaff0`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0 and
+  `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- The first post-note focused guard run failed in
+  `public_phase_b_completion_audit_test/default` because the audit still
+  required the pre-merge roadmap phrase `Step 319 should start Phase C`.
+  Updated the guard to check the durable Phase B frozen-boundary language and
+  the Step 319 landed note instead; the assertion uses an unwrapped substring
+  because the roadmap hard-wraps prose.
+- Rerun focused guards passed on both hosts:
+  Windows `xmake test -P . gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 2/2, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P . gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 2/2.
+- Step 319 is complete on `master`; Step 320, the next Phase C `div`
+  style-vocabulary helper slice, is next.
