@@ -5001,3 +5001,28 @@
   should prove direct read/write through an injected clipboard, copy/cut/paste
   forwarding through focused text state, and soft failure when no clipboard is
   installed.
+
+## 2026-07-05 Phase B Step 299 Test-Context Timer Async Advancement
+
+- Step 299 stays scoped to deterministic timer/async advancement on the public
+  `TestContextCapability`. It should not start redraw/frame pump simulation,
+  upstream `gpui::test` macro equivalents, `ClipboardItem` payload parity, or
+  action macro payload work.
+- The upstream-adjacent API is `run_until_parked()`. In CGPUI it should drain
+  currently runnable work through the real runtime wakeup order: queued task
+  completions, timers already due at the current deterministic clock, deferred
+  callbacks, and deferred redraw flushing. It must not fast-forward future
+  timers.
+- `advance_time_until_parked(delta_ms)` is the deterministic convenience
+  helper: advance the existing runtime clock by `delta_ms`, then run until
+  parked. Existing `advance_time(...)`, `complete_task(...)`,
+  `cancel_timer(...)`, and `drain_task_completions()` remain available as
+  lower-level controls.
+- Implementation ownership belongs in focused
+  `src/ui/test_context_scheduling.cpp`. `src/ui/test_context.cpp` should keep
+  only observability and `WindowRuntimeContext::test_context()` construction,
+  and future redraw/frame pumping should go in a separate rendering/test
+  context source.
+- The behavior guard belongs in `tests/ui/test_context_time_async_test.cpp`:
+  it should prove nested ready work drains to parked, future timers stay
+  pending until time is advanced, and time advancement then parks again.

@@ -10910,3 +10910,61 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 81/81.
 - Step 298 is complete on `master`; Step 299 timer/async advancement helpers
   is the next test-context helper slice.
+
+## 2026-07-05 Phase B Step 299 Test-Context Timer Async Advancement
+
+- Created feature worktree `.worktrees/phase-b-test-context-time-async` on
+  `codex/phase-b-test-context-time-async` from
+  `4b8b540 docs: mark step 298 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_clipboard_test/default test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_scheduling_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 8/8.
+- RED added `TestContextCapability` API coverage,
+  `tests/ui/test_context_time_async_test.cpp`, xmake registration, structure
+  guards, and parity ledger guards. RED failed as expected because
+  `TestContextCapability` did not expose `run_until_parked()` or
+  `advance_time_until_parked(...)`.
+- GREEN adds those public helpers and moves existing test-context scheduling
+  wrappers from broad `src/ui/test_context.cpp` into focused
+  `src/ui/test_context_scheduling.cpp`.
+- `run_until_parked()` drains the currently runnable runtime wakeup queues
+  through the real order: queued task completions, timers already due at the
+  current deterministic clock, deferred callbacks, and deferred redraw
+  flushing. It does not fast-forward future timers.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_time_async_test/default ui_source_structure_test/default`
+  passed 3/3.
+- Expanded Windows focused verification passed:
+  `xmake test -y -P . test_context_time_async_test/default
+  test_context_capability_test/default test_context_clipboard_test/default
+  test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_scheduling_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 11/11.
+- `python -m json.tool docs\gpui-complete-parity-ledger.json` passed.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 85/85.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . test_context_time_async_test/default
+  test_context_capability_test/default test_context_clipboard_test/default
+  test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_scheduling_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 11/11.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 82/82.

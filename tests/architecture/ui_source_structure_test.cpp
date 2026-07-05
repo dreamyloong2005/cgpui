@@ -142,6 +142,7 @@ int main() {
       "tests/ui/test_context_pointer_simulation_test.cpp",
       "tests/ui/test_context_focus_activation_test.cpp",
       "tests/ui/test_context_clipboard_test.cpp",
+      "tests/ui/test_context_time_async_test.cpp",
   };
   for (const char* test_file : runtime_test_files) {
     if (read_source(test_file).empty()) {
@@ -174,6 +175,8 @@ int main() {
       line_count(read_source("tests/ui/test_context_focus_activation_test.cpp")) >
           240 ||
       line_count(read_source("tests/ui/test_context_clipboard_test.cpp")) >
+          240 ||
+      line_count(read_source("tests/ui/test_context_time_async_test.cpp")) >
           240) {
     return 112;
   }
@@ -504,6 +507,8 @@ int main() {
       !contains(test_context_header, "WindowRuntimeId runtime_id() const") ||
       !contains(test_context_header, "ViewInputState input_state() const") ||
       !contains(test_context_header, "void advance_time(") ||
+      !contains(test_context_header, "void run_until_parked(") ||
+      !contains(test_context_header, "void advance_time_until_parked(") ||
       !contains(test_context_header, "bool complete_task(") ||
       !contains(test_context_header, "void drain_task_completions(") ||
       !contains(test_context_header, "void dispatch_keystroke(") ||
@@ -1618,14 +1623,12 @@ int main() {
       read_source("src/ui/test_context_focus.cpp");
   const std::string test_context_clipboard_source =
       read_source("src/ui/test_context_clipboard.cpp");
+  const std::string test_context_scheduling_source =
+      read_source("src/ui/test_context_scheduling.cpp");
   if (!contains(test_context_source,
                 "WindowRuntimeId TestContextCapability::runtime_id() const") ||
       !contains(test_context_source,
                 "ViewInputState TestContextCapability::input_state() const") ||
-      !contains(test_context_source,
-                "void TestContextCapability::advance_time(") ||
-      !contains(test_context_source,
-                "bool TestContextCapability::complete_task(") ||
       !contains(test_context_source,
                 "TestContextCapability WindowRuntimeContext::test_context() const") ||
       line_count(test_context_source) > 110 ||
@@ -1714,6 +1717,25 @@ int main() {
       contains(test_context_clipboard_source, "AsyncContextCapability") ||
       contains(test_context_clipboard_source, "ElementContextCapability")) {
     return 136;
+  }
+  if (!contains(test_context_scheduling_source,
+                "void TestContextCapability::advance_time(") ||
+      !contains(test_context_scheduling_source,
+                "void TestContextCapability::run_until_parked(") ||
+      !contains(test_context_scheduling_source,
+                "void TestContextCapability::advance_time_until_parked(") ||
+      !contains(test_context_scheduling_source,
+                "bool TestContextCapability::complete_task(") ||
+      !contains(test_context_scheduling_source,
+                "void TestContextCapability::drain_task_completions(") ||
+      !contains(test_context_scheduling_source,
+                "context_->runtime.handle_wakeup()") ||
+      contains(test_context_source, "advance_time(") ||
+      contains(test_context_source, "complete_task(") ||
+      contains(test_context_source, "drain_task_completions(") ||
+      line_count(test_context_scheduling_source) > 120 ||
+      contains(test_context_scheduling_source, "ElementContextCapability")) {
+    return 137;
   }
 
   const std::string element_context_source =

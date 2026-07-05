@@ -122,7 +122,7 @@
     },
     {
       "upstream_gpui": "gpui::TestAppContext",
-      "cgpui_target": "TestContextCapability groups runtime id/view id, live input/event/action observability, invalidation/diagnostics snapshots with entity/window/view observer counts, timer advancement, timer cancellation, task completion draining, direct dispatch_keystroke(...), grammar-backed simulate_keystrokes(...), direct pointer move/button/scroll simulation, direct window activation/focus dispatch, element focus/release helpers, direct clipboard read/write helpers, and copy/cut/paste clipboard forwarding from Context<T>::test_context(), covered by src/ui/test_context_keystrokes.cpp, src/ui/test_context_pointer.cpp, src/ui/test_context_focus.cpp, src/ui/test_context_clipboard.cpp, src/ui/runtime_clipboard.cpp, tests/ui/test_context_keystroke_simulation_test.cpp, tests/ui/test_context_pointer_simulation_test.cpp, tests/ui/test_context_focus_activation_test.cpp, and tests/ui/test_context_clipboard_test.cpp",
+      "cgpui_target": "TestContextCapability groups runtime id/view id, live input/event/action observability, invalidation/diagnostics snapshots with entity/window/view observer counts, timer advancement, timer cancellation, task completion draining, run_until_parked() and advance_time_until_parked(...) helpers, direct dispatch_keystroke(...), grammar-backed simulate_keystrokes(...), direct pointer move/button/scroll simulation, direct window activation/focus dispatch, element focus/release helpers, direct clipboard read/write helpers, and copy/cut/paste clipboard forwarding from Context<T>::test_context(), covered by src/ui/test_context_scheduling.cpp, src/ui/test_context_keystrokes.cpp, src/ui/test_context_pointer.cpp, src/ui/test_context_focus.cpp, src/ui/test_context_clipboard.cpp, src/ui/runtime_clipboard.cpp, tests/ui/test_context_time_async_test.cpp, tests/ui/test_context_keystroke_simulation_test.cpp, tests/ui/test_context_pointer_simulation_test.cpp, tests/ui/test_context_focus_activation_test.cpp, and tests/ui/test_context_clipboard_test.cpp",
       "status": "adapted",
       "next_step": "Phase G fuller simulated input/test macro depth"
     },
@@ -152,7 +152,7 @@
     },
     {
       "upstream_gpui": "gpui::test",
-      "cgpui_target": "TestContextCapability exists with simulate_keystrokes(...), dispatch_pointer_* helpers, dispatch_window_* helpers, focus(...), release_focus(...), write_to_clipboard(...), read_from_clipboard(...), and copy/cut/paste helpers, but upstream-style test macro and fuller simulation helpers remain missing",
+      "cgpui_target": "TestContextCapability exists with simulate_keystrokes(...), dispatch_pointer_* helpers, dispatch_window_* helpers, focus(...), release_focus(...), write_to_clipboard(...), read_from_clipboard(...), copy/cut/paste helpers, run_until_parked(), and advance_time_until_parked(...), but upstream-style test macro and fuller simulation helpers remain missing",
       "status": "required",
       "next_step": "Phase G"
     },

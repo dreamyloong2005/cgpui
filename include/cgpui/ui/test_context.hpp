@@ -40,6 +40,8 @@ class TestContextCapability {
   platform_diagnostics() const;
 
   void advance_time(std::uint64_t delta_ms) const;
+  void run_until_parked() const;
+  void advance_time_until_parked(std::uint64_t delta_ms) const;
   [[nodiscard]] bool cancel_timer(TimerId id) const;
   [[nodiscard]] bool complete_task(TaskId id) const;
   void drain_task_completions() const;

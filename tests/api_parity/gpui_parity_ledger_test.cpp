@@ -212,13 +212,16 @@ int main() {
       !contains(ledger, "element focus/release helpers") ||
       !contains(ledger, "direct clipboard read/write helpers") ||
       !contains(ledger, "copy/cut/paste clipboard forwarding") ||
+      !contains(ledger, "run-until-parked timer/async advancement helpers") ||
       !contains(ledger, "src/ui/test_context_pointer.cpp") ||
       !contains(ledger, "src/ui/test_context_focus.cpp") ||
       !contains(ledger, "src/ui/test_context_clipboard.cpp") ||
+      !contains(ledger, "src/ui/test_context_scheduling.cpp") ||
       !contains(ledger, "src/ui/runtime_clipboard.cpp") ||
       !contains(ledger, "tests/ui/test_context_pointer_simulation_test.cpp") ||
       !contains(ledger, "tests/ui/test_context_focus_activation_test.cpp") ||
       !contains(ledger, "tests/ui/test_context_clipboard_test.cpp") ||
+      !contains(ledger, "tests/ui/test_context_time_async_test.cpp") ||
       !contains(ledger,
                 "Phase G fuller simulated input/test macro depth")) {
     return 18;
@@ -320,6 +323,7 @@ int main() {
               "test_context_pointer.cpp",
               "test_context_focus.cpp",
               "test_context_clipboard.cpp",
+              "test_context_scheduling.cpp",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -327,6 +331,9 @@ int main() {
               "read_from_clipboard",
               "copy/cut/paste helpers",
               "test_context_clipboard_test",
+              "run_until_parked",
+              "advance_time_until_parked",
+              "test_context_time_async_test",
               "runtime_action_enablement_templates.hpp",
               "runtime_action_dispatch.cpp",
               "runtime_action_registration.cpp",
@@ -949,6 +956,7 @@ int main() {
                 "target(\"test_context_keystroke_simulation_test\")") ||
       !contains(xmake,
                 "target(\"test_context_pointer_simulation_test\")") ||
+      !contains(xmake, "target(\"test_context_time_async_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -1004,6 +1012,8 @@ int main() {
                 "tests/ui/test_context_keystroke_simulation_test.cpp") ||
       !contains(xmake,
                 "tests/ui/test_context_pointer_simulation_test.cpp") ||
+      !contains(xmake,
+                "tests/ui/test_context_time_async_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

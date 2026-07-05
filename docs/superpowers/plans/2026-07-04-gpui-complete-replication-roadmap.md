@@ -324,9 +324,13 @@ shape before deeper native work expands platform behavior.
   helpers plus copy/cut/paste forwarding over the existing runtime clipboard
   operations, with the implementation isolated in
   `src/ui/test_context_clipboard.cpp` and runtime text read/write ownership
-  kept in `src/ui/runtime_clipboard.cpp`. The remaining queue is Step 299
-  timer and async advancement helpers, and Step 300 redraw/frame pump
-  simulation.
+  kept in `src/ui/runtime_clipboard.cpp`. Step 299 adds
+  `run_until_parked()` and `advance_time_until_parked(...)` over the real
+  runtime wakeup order for ready task completions, due timers, deferred
+  callbacks, and deferred redraw flushing without advancing future timers;
+  scheduling helper ownership is isolated in
+  `src/ui/test_context_scheduling.cpp`. The remaining queue is Step 300
+  redraw/frame pump simulation.
 - [ ] Steps 301-306: Add public error/result conventions for window opening,
   platform services, async spawn, and renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
@@ -632,11 +636,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 299 timer and async advancement helpers are next after the merged Step
-298 clipboard helper slice. Step 298 records direct clipboard read/write
-helpers plus copy/cut/paste forwarding through the existing runtime clipboard
-path while keeping timer/async advancement, redraw/frame pumping,
-`ClipboardItem` payload parity, and action macro payloads out of scope.
+Step 300 redraw/frame pump simulation is next after the Step 299 timer/async
+advancement helper slice lands on `master`. Step 299 records
+`run_until_parked()` and `advance_time_until_parked(...)` over the existing
+runtime wakeup path while keeping redraw/frame pumping, `ClipboardItem`
+payload parity, and action macro payloads out of scope.
 
 ## Self-Review
 

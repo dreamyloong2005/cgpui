@@ -1747,5 +1747,9 @@ implementation slice.
   It adds text-only clipboard read/write helpers plus copy/cut/paste
   forwarding through the real runtime clipboard path, with ownership isolated
   in `src/ui/test_context_clipboard.cpp` and `src/ui/runtime_clipboard.cpp`.
-  Step 299 timer/async advancement helpers and Step 300 redraw/frame pump
-  simulation are the remaining slices in this test-context band.
+  Phase B Step 299 timer/async advancement helpers is implemented in the
+  feature worktree with `run_until_parked()` and
+  `advance_time_until_parked(...)` isolated in
+  `src/ui/test_context_scheduling.cpp`; merge/post-merge verification is still
+  pending. Step 300 redraw/frame pump simulation remains the last slice in
+  this test-context band.

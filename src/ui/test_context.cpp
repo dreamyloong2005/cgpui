@@ -48,22 +48,6 @@ TestContextCapability::platform_diagnostics() const {
   return context_->platform_diagnostics();
 }
 
-void TestContextCapability::advance_time(std::uint64_t delta_ms) const {
-  context_->runtime.advance_time(delta_ms);
-}
-
-bool TestContextCapability::cancel_timer(TimerId id) const {
-  return context_->runtime.cancel_timer(id);
-}
-
-bool TestContextCapability::complete_task(TaskId id) const {
-  return context_->runtime.complete_task(id);
-}
-
-void TestContextCapability::drain_task_completions() const {
-  context_->runtime.drain_task_completions();
-}
-
 TestContextCapability WindowRuntimeContext::test_context() const {
   return TestContextCapability(*this);
 }
