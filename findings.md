@@ -5552,3 +5552,14 @@
   `tests/architecture/ui_source_structure_test.cpp`, and
   `tests/api_parity/gpui_parity_ledger_test.cpp` keeps the ledger vocabulary
   in sync.
+
+## 2026-07-05 Phase C Step 322 Merge
+
+- Step 322 is merged on `master` at
+  `f4f2fc2 feat: add div overflow position helpers` and post-merge verified
+  with Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux
+  full debug 96/96.
+- Step 323 should continue the same focused Phase C `div` style-vocabulary
+  band while keeping shadow storage, text-style behavior, widget behavior,
+  uniform-list behavior, flex wrap, broad layout rewrites, and the Phase B
+  closeout exclusions out of the slice.

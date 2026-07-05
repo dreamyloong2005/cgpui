@@ -505,6 +505,8 @@ expect, keeping each widget in its own module from the first version.
   `top(...)`, `right(...)`, `bottom(...)`, and `left(...)` over existing
   `Style` fields, with behavior coverage in `tests/ui/element_test.cpp` and
   structure coverage in `tests/architecture/ui_source_structure_test.cpp`.
+  Merged on `master` at `f4f2fc2` and post-merge verified with JSON
+  validation, Windows full-debug 99/99, and WSL Arch Linux full-debug 96/96.
   Step 323 should continue with the remaining `div` style vocabulary.
 - [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
@@ -791,7 +793,7 @@ vocabulary from Steps 319-324. Step 319 landed the child-list foundation on
 `master` at `14aaff0`; Step 320 landed the flex vocabulary helpers on
 `master` at `5040365`; Step 321 landed the sizing/color/border helper aliases
 on `master` at `694d64e`; Step 322 landed overflow/opacity/position helper
-aliases in the active feature worktree. Keep the Phase B closeout exclusions out
+aliases on `master` at `f4f2fc2`. Keep the Phase B closeout exclusions out
 of this slice: `ClipboardItem` payload parity, upstream `gpui::test` macro
 equivalents, action macro payloads, task priorities, or structured task groups.
 

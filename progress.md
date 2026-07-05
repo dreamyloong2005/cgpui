@@ -12112,3 +12112,22 @@
   worktree. It is ready for feature commit and merge verification. Step 323 is
   the next Phase C `div` style-vocabulary slice after Step 322 lands on
   `master`.
+
+## 2026-07-05 Phase C Step 322 Merge
+
+- Committed `codex/phase-c-div-shadow-overflow-text-helpers` as
+  `f4f2fc2 feat: add div overflow position helpers`.
+- Fast-forward merged the branch into `master` at `f4f2fc2`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0 and
+  `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- After the merge-note documentation edit, JSON validation and `git diff
+  --check` passed with only expected LF-to-CRLF warnings, Windows focused docs
+  guards passed 2/2, and WSL Arch Linux focused docs guards passed 2/2.
+- The first WSL focused guard attempt used the `wsl` wrapper and failed before
+  entering Linux with `WSL_E_DISTRO_NOT_FOUND`; rerunning through the known
+  working `wsl.exe -d archlinux` entrypoint passed.
+- Step 322 is complete on `master`; Step 323, the next focused Phase C `div`
+  style-vocabulary slice, is next.
