@@ -334,8 +334,10 @@ shape before deeper native work expands platform behavior.
   helpers over the real runtime redraw scheduling and
   `WindowRedrawRequested` frame path, with rendering helper ownership isolated
   in `src/ui/test_context_rendering.cpp`.
-- [x] Step 301: Add public window-opening result conventions. `App`,
-  `AppContext`, and `WindowRuntime` now expose
+- [x] Step 301: Add public window-opening result conventions. Merged on
+  `master` at `53e625a` and post-merge verified with Windows full-debug 87/87
+  and WSL Arch Linux full-debug 84/84. `App`, `AppContext`, and `WindowRuntime`
+  now expose
   `try_open_window(...) -> Result<AppOpenedWindow>` over a focused
   `src/ui/runtime_window_results.cpp` implementation. Failed platform-window
   or renderer creation returns `Error` without publishing an app-opened window

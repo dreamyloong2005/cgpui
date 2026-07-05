@@ -1757,10 +1757,11 @@ implementation slice.
   verification. It adds `request_redraw()` and `draw_frame()` over the real
   runtime redraw scheduling and `WindowRedrawRequested` frame path, with
   ownership isolated in `src/ui/test_context_rendering.cpp`. Phase B Step
-  301 public window-opening result conventions is implemented in the feature
-  worktree: `App`, `AppContext`, and `WindowRuntime` expose
-  `try_open_window(...) -> Result<AppOpenedWindow>`, with implementation
+  301 public window-opening result conventions is complete on `master` at
+  `53e625a` after post-merge Windows full-debug 87/87 and WSL Arch Linux
+  full-debug 84/84 verification. `App`, `AppContext`, and `WindowRuntime`
+  expose `try_open_window(...) -> Result<AppOpenedWindow>`, with implementation
   isolated in `src/ui/runtime_window_results.cpp`; failed platform-window or
   renderer creation returns `Error` without publishing an app-opened window
   record, while `open_window(...)` compatibility remains. Step 302 platform
-  service result conventions is the next Phase B slice after Step 301 lands.
+  service result conventions is the next Phase B slice.

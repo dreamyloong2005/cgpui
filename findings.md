@@ -5067,3 +5067,15 @@
 - The behavior guard belongs in
   `tests/api_parity/public_result_conventions_test.cpp`, covering API spelling,
   platform-window failure, renderer failure, and facade/context forwarding.
+
+## 2026-07-05 Phase B Step 301 Merge
+
+- Step 301 is merged on `master` at `53e625a feat: add public window result
+  conventions` and post-merge verified on Windows full debug 87/87 and WSL
+  Arch Linux full debug 84/84.
+- The durable ownership boundary for public window Result conventions is now
+  `src/ui/runtime_window_results.cpp`. Keep the compatibility
+  `open_window(...)` record-publishing path in `src/ui/runtime_windows.cpp`.
+- Step 302 should start platform service result conventions without folding
+  async-spawn result conversion, renderer factory public API redesign, or
+  broader exception/error rewrites into the same slice.

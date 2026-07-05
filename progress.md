@@ -11076,3 +11076,41 @@
   app_source_structure_test/default ui_source_structure_test/default
   app_window_context_test/default window_runtime_multiwindow_test/default`
   passed 5/5.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . public_result_conventions_test/default
+  app_source_structure_test/default ui_source_structure_test/default
+  app_window_context_test/default application_facade_test/default
+  window_runtime_multiwindow_test/default gpui_parity_ledger_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default` passed 9/9.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 87/87.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  public_result_conventions_test/default app_source_structure_test/default
+  ui_source_structure_test/default app_window_context_test/default
+  application_facade_test/default window_runtime_multiwindow_test/default
+  gpui_parity_ledger_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default` passed 9/9.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 84/84.
+- Step 301 is implemented and focused/full verified in the feature worktree.
+
+## 2026-07-05 Phase B Step 301 Merge
+
+- Fast-forward merged `codex/phase-b-public-result-conventions` into `master`
+  at `53e625a feat: add public window result conventions`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 87/87.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 84/84.
+- Step 301 is complete on `master`; Step 302 platform service result
+  conventions is the next Phase B slice.
