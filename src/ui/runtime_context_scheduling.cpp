@@ -52,10 +52,23 @@ TaskHandle WindowRuntimeContext::spawn_task(
   return runtime.spawn_task(std::move(callback));
 }
 
+Result<TaskHandle> WindowRuntimeContext::try_spawn_task(
+    TaskCompletionCallback callback) const {
+  return runtime.try_spawn_task(std::move(callback));
+}
+
 TaskHandle WindowRuntimeContext::spawn_background_task(
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) const {
   return runtime.spawn_background_task(
+      std::move(work),
+      std::move(completion));
+}
+
+Result<TaskHandle> WindowRuntimeContext::try_spawn_background_task(
+    BackgroundTaskCallback work,
+    TaskCompletionCallback completion) const {
+  return runtime.try_spawn_background_task(
       std::move(work),
       std::move(completion));
 }

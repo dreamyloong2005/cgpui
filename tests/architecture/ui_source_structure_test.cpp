@@ -497,6 +497,8 @@ int main() {
       !contains(runtime_actions_header,
                 "std::optional<KeyBindingContext> key_context") ||
       !contains(runtime_context_header, "bool bind_key(") ||
+      !contains(runtime_context_header,
+                "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(runtime_events_header, "struct EventRoute") ||
       !contains(runtime_diagnostics_header,
                 "struct RuntimeDiagnosticsSnapshot") ||
@@ -505,6 +507,8 @@ int main() {
       !contains(async_context_header, "TimerId schedule_timer(") ||
       !contains(async_context_header, "AnimationHandle start_animation(") ||
       !contains(async_context_header, "TaskHandle spawn_background_task(") ||
+      !contains(async_context_header,
+                "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(async_context_header, "void batch_updates(") ||
       !contains(test_context_header, "class TestContextCapability") ||
       !contains(test_context_header, "WindowRuntimeId runtime_id() const") ||
@@ -640,6 +644,8 @@ int main() {
                 "matches_context(detail::entity_context_token(*this))") ||
       !contains(window_runtime_header,
                 "bool invalidate_entity(EntityId<T> entity_id)") ||
+      !contains(window_runtime_header,
+                "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
       !contains(window_runtime_header, "struct AppRunnerOptions") ||
@@ -1084,6 +1090,7 @@ int main() {
       "src/ui/runtime_animation_tick.cpp",
       "src/ui/runtime_animations.cpp",
       "src/ui/runtime_tasks.cpp",
+      "src/ui/runtime_task_results.cpp",
       "src/ui/runtime_task_state.cpp",
       "src/ui/runtime_diagnostic_snapshot.cpp",
       "src/ui/runtime_diagnostics.cpp",
@@ -1634,6 +1641,9 @@ int main() {
       !contains(async_context_source,
                 "TaskHandle AsyncContextCapability::spawn_background_task(") ||
       !contains(async_context_source,
+                "Result<TaskHandle> "
+                "AsyncContextCapability::try_spawn_background_task(") ||
+      !contains(async_context_source,
                 "AsyncContextCapability WindowRuntimeContext::async_context() const") ||
       line_count(async_context_source) > 110 ||
       contains(async_context_source, "ElementContextCapability")) {
@@ -1833,6 +1843,9 @@ int main() {
                 "AnimationHandle WindowRuntimeContext::start_animation(") ||
       !contains(runtime_context_scheduling_source,
                 "TaskHandle WindowRuntimeContext::spawn_background_task(") ||
+      !contains(runtime_context_scheduling_source,
+                "Result<TaskHandle> "
+                "WindowRuntimeContext::try_spawn_background_task(") ||
       !contains(runtime_context_scheduling_source,
                 "RuntimeDiagnosticsSnapshot "
                 "WindowRuntimeContext::diagnostics_snapshot() const")) {
@@ -2248,6 +2261,8 @@ int main() {
 
   const std::string runtime_tasks_source =
       read_source("src/ui/runtime_tasks.cpp");
+  const std::string runtime_task_results_source =
+      read_source("src/ui/runtime_task_results.cpp");
   if (line_count(runtime_tasks_source) > 150 ||
       !contains(runtime_tasks_source,
                 "TaskHandle WindowRuntime::spawn_task(") ||
@@ -2260,8 +2275,23 @@ int main() {
       contains(runtime_tasks_source,
                "bool WindowRuntime::cancel_task(") ||
       contains(runtime_tasks_source,
-               "bool WindowRuntime::task_active(")) {
+               "bool WindowRuntime::task_active(") ||
+      contains(runtime_tasks_source, "Result<TaskHandle>") ||
+      contains(runtime_tasks_source, "try_spawn_task(")) {
     return 41;
+  }
+  if (line_count(runtime_task_results_source) > 80 ||
+      !contains(runtime_task_results_source,
+                "Result<TaskHandle> WindowRuntime::try_spawn_task(") ||
+      !contains(runtime_task_results_source,
+                "WindowRuntime::try_spawn_background_task(") ||
+      !contains(runtime_task_results_source,
+                "ErrorCode::invalid_argument") ||
+      contains(runtime_task_results_source,
+               "bool WindowRuntime::complete_task(") ||
+      contains(runtime_task_results_source,
+               "bool WindowRuntime::cancel_task(")) {
+    return 139;
   }
 
   const std::string runtime_task_state_source =
@@ -2277,6 +2307,7 @@ int main() {
                 "bool WindowRuntime::cancel_task(") ||
       contains(runtime_task_state_source,
                "TaskHandle WindowRuntime::spawn_task(") ||
+      contains(runtime_task_state_source, "try_spawn_task(") ||
       contains(runtime_task_state_source,
                "void WindowRuntime::drain_task_completions(")) {
     return 80;

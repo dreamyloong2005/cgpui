@@ -192,7 +192,12 @@ struct WindowRuntimeContext {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id) const;
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
+  [[nodiscard]] Result<TaskHandle> try_spawn_task(
+      TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_background_task(
+      BackgroundTaskCallback work,
+      TaskCompletionCallback completion) const;
+  [[nodiscard]] Result<TaskHandle> try_spawn_background_task(
       BackgroundTaskCallback work,
       TaskCompletionCallback completion) const;
   void batch_updates(UpdateBatchCallback callback) const;

@@ -5115,3 +5115,27 @@
   renderer factory public API redesign, `ClipboardItem` payload parity,
   upstream `gpui::test` macro equivalents, or action macro payloads into the
   same slice.
+
+## 2026-07-05 Phase B Step 303 Async-Spawn Result Conventions
+
+- Step 303 stays scoped to foreground/background task spawn Result conventions.
+  It should not start renderer-creation result redesign, `ClipboardItem`
+  payload parity, upstream `gpui::test` macro equivalents, action macro
+  payloads, task priorities, structured task groups, or broader async runtime
+  production depth.
+- The public API shape is `try_spawn_task(...) -> Result<TaskHandle>` and
+  `try_spawn_background_task(...) -> Result<TaskHandle>` on `WindowRuntime`,
+  `WindowRuntimeContext`, and `AsyncContextCapability`. Existing
+  `spawn_task(...)` and `spawn_background_task(...)` compatibility methods
+  remain source-compatible and keep returning an empty `TaskHandle` for invalid
+  callbacks.
+- Runtime Result validation belongs in focused
+  `src/ui/runtime_task_results.cpp`. Existing task record creation,
+  completion draining, and worker-thread ownership remain in
+  `src/ui/runtime_tasks.cpp`; task state/cancellation queries remain in
+  `src/ui/runtime_task_state.cpp`.
+- Invalid foreground completion, background work, and background completion
+  callbacks return `ErrorCode::invalid_argument` with specific messages before
+  task records are allocated. The structure guard should require
+  `runtime_task_results.cpp` and reject `Result<TaskHandle>` drift back into
+  `runtime_tasks.cpp`.

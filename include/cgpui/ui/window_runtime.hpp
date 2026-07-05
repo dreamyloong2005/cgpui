@@ -54,7 +54,6 @@ class WindowRuntime {
   [[nodiscard]] View* find_view(ViewId view_id);
   [[nodiscard]] const View* find_view(ViewId view_id) const;
   [[nodiscard]] bool remove_view(ViewId view_id);
-
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
   void set_after_render_callback(WindowRuntimeRenderCallback callback);
   void set_after_event_callback(WindowRuntimeEventCallback callback);
@@ -149,9 +148,9 @@ class WindowRuntime {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id);
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
-  [[nodiscard]] TaskHandle spawn_background_task(
-      BackgroundTaskCallback work,
-      TaskCompletionCallback completion);
+  [[nodiscard]] Result<TaskHandle> try_spawn_task(TaskCompletionCallback callback);
+  [[nodiscard]] TaskHandle spawn_background_task(BackgroundTaskCallback work, TaskCompletionCallback completion);
+  [[nodiscard]] Result<TaskHandle> try_spawn_background_task(BackgroundTaskCallback work, TaskCompletionCallback completion);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
   void batch_updates(UpdateBatchCallback callback);

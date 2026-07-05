@@ -342,17 +342,26 @@ shape before deeper native work expands platform behavior.
   `src/ui/runtime_window_results.cpp` implementation. Failed platform-window
   or renderer creation returns `Error` without publishing an app-opened window
   record, while existing `open_window(...)` compatibility behavior remains.
-- [x] Step 302: Add public platform-service result conventions. In progress
-  on `codex/phase-b-platform-service-result-conventions`: `WindowRuntime`,
-  `AppContext`, and `ViewContext`/`WindowRuntimeContext` expose
+- [x] Step 302: Add public platform-service result conventions. Merged on
+  `master` at `8998ec2` and post-merge verified with Windows full-debug 88/88
+  and WSL Arch Linux full-debug 85/85. `WindowRuntime`, `AppContext`, and
+  `ViewContext`/`WindowRuntimeContext` expose
   `try_install_native_menu(...) -> Result<NativeMenuInstallation>` and
   `try_show_native_file_dialog(...) -> Result<NativeFileDialogResult>` through
   focused `src/ui/runtime_platform_service_results.cpp` ownership. Unsupported
   services return `ErrorCode::unsupported_platform` without overwriting the
   last successful runtime service state; supported file-dialog cancellation
   remains a value, not an error. Existing compatibility methods remain.
-- [ ] Steps 303-306: Add public error/result conventions for async spawn and
-  renderer creation.
+- [x] Step 303: Add async-spawn result conventions. In progress on
+  `codex/phase-b-async-spawn-result-conventions`: `WindowRuntime`,
+  `WindowRuntimeContext`, and `AsyncContextCapability` expose
+  `try_spawn_task(...) -> Result<TaskHandle>` and
+  `try_spawn_background_task(...) -> Result<TaskHandle>` through focused
+  `src/ui/runtime_task_results.cpp` ownership. Empty foreground completion,
+  background work, or background completion callbacks return
+  `ErrorCode::invalid_argument` without creating task records, while existing
+  `spawn_*` compatibility methods still return an empty `TaskHandle`.
+- [ ] Steps 304-306: Add public error/result conventions for renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
@@ -656,11 +665,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 303 async-spawn result conventions is next. Step 302 landed
-platform-service `try_* -> Result<...>` methods for native menu installation
-and native file dialogs, isolates the runtime Result behavior in
-`src/ui/runtime_platform_service_results.cpp`, keeps compatibility menu/dialog
-methods intact, and keeps renderer-creation redesign, `ClipboardItem` payload
+Step 304 renderer-creation result conventions is next. Step 303 adds
+async-spawn `try_* -> Result<TaskHandle>` methods for foreground and background
+tasks, isolates the runtime Result behavior in `src/ui/runtime_task_results.cpp`,
+keeps compatibility `spawn_*` methods intact, and keeps `ClipboardItem` payload
 parity, upstream `gpui::test` macro equivalents, and action macro payloads out
 of scope.
 

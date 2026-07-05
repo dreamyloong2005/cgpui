@@ -128,6 +128,12 @@ int main() {
       !contains(ledger, "src/ui/runtime_platform_service_results.cpp") ||
       !contains(ledger,
                 "tests/api_parity/platform_service_result_conventions_test.cpp") ||
+      !contains(ledger, "`try_spawn_task(...) -> Result<TaskHandle>`") ||
+      !contains(ledger,
+                "`try_spawn_background_task(...) -> Result<TaskHandle>`") ||
+      !contains(ledger, "src/ui/runtime_task_results.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
       !contains(ledger,
                 "`Window` facade from `WindowRuntimeContext::window()`") ||
       !contains(ledger, "tests/api_parity/app_window_context_test.cpp") ||
@@ -367,6 +373,11 @@ int main() {
               "Result<NativeFileDialogResult>",
               "runtime_platform_service_results.cpp",
               "platform_service_result_conventions_test",
+              "try_spawn_task",
+              "Result<TaskHandle>",
+              "try_spawn_background_task",
+              "runtime_task_results.cpp",
+              "async_spawn_result_conventions_test",
               "TestContextCapability",
               "test_context",
               "gpui::TestAppContext",
@@ -984,6 +995,7 @@ int main() {
                 "target(\"test_context_pointer_simulation_test\")") ||
       !contains(xmake, "target(\"test_context_time_async_test\")") ||
       !contains(xmake, "target(\"test_context_frame_pump_test\")") ||
+      !contains(xmake, "target(\"async_spawn_result_conventions_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
@@ -1043,6 +1055,8 @@ int main() {
                 "tests/ui/test_context_time_async_test.cpp") ||
       !contains(xmake,
                 "tests/ui/test_context_frame_pump_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
     return 14;
   }

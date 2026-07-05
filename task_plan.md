@@ -1769,5 +1769,10 @@ implementation slice.
   85/85 verification: `WindowRuntime`, `AppContext`, and
   `ViewContext`/`WindowRuntimeContext` expose `try_install_native_menu(...)`
   and `try_show_native_file_dialog(...)` Result methods, with runtime
-  ownership isolated in `src/ui/runtime_platform_service_results.cpp`. Step
-  303 async-spawn result conventions is the next Phase B slice.
+  ownership isolated in `src/ui/runtime_platform_service_results.cpp`. Phase
+  B Step 303 async-spawn result conventions is implemented in
+  `.worktrees/phase-b-async-spawn-result-conventions`: `WindowRuntime`,
+  `WindowRuntimeContext`, and `AsyncContextCapability` expose
+  `try_spawn_task(...)` and `try_spawn_background_task(...)` Result methods,
+  with runtime ownership isolated in `src/ui/runtime_task_results.cpp`. Step
+  304 renderer-creation result conventions is the next Phase B slice.

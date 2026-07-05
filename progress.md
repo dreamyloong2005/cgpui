@@ -11181,3 +11181,62 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 85/85.
 - Step 302 is complete on `master`; Step 303 async-spawn result conventions
   is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 303 Async-Spawn Result Conventions
+
+- Continued feature worktree
+  `.worktrees/phase-b-async-spawn-result-conventions` on
+  `codex/phase-b-async-spawn-result-conventions` from
+  `7a0c99f docs: mark step 302 merged`.
+- RED was verified:
+  `xmake test -y -P . async_spawn_result_conventions_test/default` failed as
+  expected because `WindowRuntime`, `WindowRuntimeContext`, and
+  `AsyncContextCapability` did not expose `try_spawn_task(...)` or
+  `try_spawn_background_task(...)`, and `ErrorCode::invalid_argument` did not
+  exist.
+- GREEN adds `try_spawn_task(...) -> Result<TaskHandle>` and
+  `try_spawn_background_task(...) -> Result<TaskHandle>` on the runtime,
+  runtime context, and async context capability. Validation is isolated in
+  `src/ui/runtime_task_results.cpp`; forwarding stays in
+  `src/ui/runtime_context_scheduling.cpp` and `src/ui/async_context.cpp`.
+- Invalid empty foreground completion, background work, and background
+  completion callbacks now return `ErrorCode::invalid_argument` before task
+  records are allocated. Existing `spawn_*` compatibility methods still return
+  an empty `TaskHandle` for invalid callbacks.
+- Structure guards now require `src/ui/runtime_task_results.cpp` and reject
+  `Result<TaskHandle>` / `try_spawn_*` drift into `src/ui/runtime_tasks.cpp`
+  or `src/ui/runtime_task_state.cpp`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . async_spawn_result_conventions_test/default
+  ui_source_structure_test/default` passed 2/2.
+- `python -m json.tool docs\gpui-complete-parity-ledger.json` passed.
+- First expanded Windows focused run failed only
+  `gpui_parity_ledger_test/default`: the Markdown ledger had Step 303 evidence
+  but the JSON export did not yet include `runtime_task_results.cpp`,
+  `Result<TaskHandle>`, or `async_spawn_result_conventions_test`. Updating the
+  JSON evidence resolved the failure.
+- Expanded Windows focused verification passed:
+  `xmake test -y -P . async_spawn_result_conventions_test/default
+  async_context_capability_test/default window_runtime_scheduling_test/default
+  test_context_time_async_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 8/8.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 89/89.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P . async_spawn_result_conventions_test/default
+  async_context_capability_test/default window_runtime_scheduling_test/default
+  test_context_time_async_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 8/8.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake test -P .` passed 86/86.
+- Step 303 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 304
+  renderer-creation result conventions is the next slice after Step 303 lands
+  on `master`.

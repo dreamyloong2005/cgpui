@@ -42,10 +42,23 @@ TaskHandle AsyncContextCapability::spawn_task(
   return context_->spawn_task(std::move(callback));
 }
 
+Result<TaskHandle> AsyncContextCapability::try_spawn_task(
+    TaskCompletionCallback callback) const {
+  return context_->try_spawn_task(std::move(callback));
+}
+
 TaskHandle AsyncContextCapability::spawn_background_task(
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) const {
   return context_->spawn_background_task(
+      std::move(work),
+      std::move(completion));
+}
+
+Result<TaskHandle> AsyncContextCapability::try_spawn_background_task(
+    BackgroundTaskCallback work,
+    TaskCompletionCallback completion) const {
+  return context_->try_spawn_background_task(
       std::move(work),
       std::move(completion));
 }

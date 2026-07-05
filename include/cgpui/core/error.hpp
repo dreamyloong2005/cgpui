@@ -11,6 +11,7 @@ enum class ErrorCode {
   renderer_initialization_failed,
   frame_acquisition_failed,
   unsupported_platform,
+  invalid_argument,
 };
 
 struct Error {
