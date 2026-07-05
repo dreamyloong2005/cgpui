@@ -647,6 +647,8 @@ int main() {
       !contains(window_runtime_header,
                 "Result<Renderer*> try_create_renderer(") ||
       !contains(window_runtime_header,
+                "Result<void> try_resize_surface(") ||
+      !contains(window_runtime_header,
                 "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
@@ -1077,6 +1079,7 @@ int main() {
       "src/ui/runtime_window_rendering.cpp",
       "src/ui/runtime_window_results.cpp",
       "src/ui/runtime_renderer_results.cpp",
+      "src/ui/runtime_renderer_resize_results.cpp",
       "src/ui/window.cpp",
       "src/ui/window_context.cpp",
       "src/ui/runtime_theme.cpp",
@@ -1390,6 +1393,20 @@ int main() {
       contains(runtime_renderer_results_source,
                "WindowRuntime::install_native_menu(")) {
     return 140;
+  }
+
+  const std::string runtime_renderer_resize_results_source =
+      read_source("src/ui/runtime_renderer_resize_results.cpp");
+  if (line_count(runtime_renderer_resize_results_source) > 80 ||
+      !contains(runtime_renderer_resize_results_source,
+                "Result<void> WindowRuntime::try_resize_surface(") ||
+      !contains(runtime_renderer_resize_results_source, "renderer_->resize(") ||
+      contains(runtime_renderer_resize_results_source, "fail_and_quit(") ||
+      contains(runtime_renderer_resize_results_source,
+               "WindowRuntime::try_create_renderer(") ||
+      contains(runtime_renderer_resize_results_source,
+               "WindowRuntime::try_open_window(")) {
+    return 141;
   }
 
   const std::string runtime_window_rendering_source =

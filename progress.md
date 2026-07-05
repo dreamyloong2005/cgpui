@@ -11314,3 +11314,51 @@
   `XMAKE_ROOT=y xmake test -P .` passed 87/87.
 - Step 304 is complete on `master`; Step 305 renderer Result follow-on is the
   next Phase B slice.
+
+## 2026-07-05 Phase B Step 305 Renderer-Resize Result Conventions
+
+- Created `.worktrees/phase-b-renderer-error-diagnostics` on
+  `codex/phase-b-renderer-error-diagnostics` from
+  `4881ced docs: mark step 304 merged`.
+- Baseline Windows focused verification passed:
+  `xmake test -y -P . renderer_result_conventions_test/default
+  public_result_conventions_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 4/4.
+- RED was verified after refreshing xmake configuration:
+  `xmake test -y -P . renderer_resize_result_conventions_test/default
+  ui_source_structure_test/default` failed as expected because
+  `WindowRuntime` did not expose `try_resize_surface(...)`.
+- GREEN adds `try_resize_surface(...) -> Result<void>` on `WindowRuntime`,
+  isolates renderer resize Result propagation in
+  `src/ui/runtime_renderer_resize_results.cpp`, and keeps
+  `resize_surface(...)` as the fail-and-quit compatibility wrapper.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . renderer_resize_result_conventions_test/default
+  ui_source_structure_test/default` passed 2/2.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . renderer_resize_result_conventions_test/default
+  renderer_result_conventions_test/default
+  window_runtime_rendering_test/default public_result_conventions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  8/8.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 91/91.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  renderer_resize_result_conventions_test/default
+  renderer_result_conventions_test/default
+  window_runtime_rendering_test/default public_result_conventions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  8/8.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake test -P .` passed 88/88.
+- Step 305 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 306 renderer
+  frame/redraw Result conventions is the next slice after Step 305 lands on
+  `master`.

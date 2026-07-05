@@ -42,8 +42,7 @@ class WindowRuntime {
   [[nodiscard]] AppOpenedWindow open_window(WindowOptions options, std::unique_ptr<View> root_view);
   [[nodiscard]] Result<AppOpenedWindow> try_open_window(WindowOptions options);
   [[nodiscard]] Result<AppOpenedWindow> try_open_window(WindowOptions options, std::unique_ptr<View> root_view);
-  [[nodiscard]] Result<Renderer*> try_create_renderer(
-      const RenderSurfaceDescriptor& descriptor);
+  [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor);
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
   [[nodiscard]] WindowRuntimeId root_window_runtime_id() const;
   [[nodiscard]] std::span<const WindowRuntimeRecord> window_runtime_records() const;
@@ -187,6 +186,7 @@ class WindowRuntime {
   [[nodiscard]] ViewId allocate_view_id();
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;
+  [[nodiscard]] Result<void> try_resize_surface(Size size, DpiScale scale);
   Result<void> resize_surface(Size size, DpiScale scale);
 
   template <typename Observer>

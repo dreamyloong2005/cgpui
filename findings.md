@@ -5191,3 +5191,17 @@
   `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
   action macro payloads, task priorities, structured task groups, or broader
   async runtime production depth into the same slice.
+
+## 2026-07-05 Phase B Step 305 Renderer-Resize Result Conventions
+
+- Step 305 stays scoped to renderer surface-resize Result conventions. It
+  should not start renderer frame/redraw Result conversion, asset payload
+  parity, upstream `gpui::test` macro equivalents, action macro payloads, task
+  priorities, structured task groups, or broader async runtime production depth.
+- The public API shape is `try_resize_surface(Size, DpiScale) -> Result<void>`
+  on `WindowRuntime`. Existing `resize_surface(...)` remains source-compatible
+  and still calls `fail_and_quit(...)` on renderer resize failure.
+- Runtime Result validation belongs in focused
+  `src/ui/runtime_renderer_resize_results.cpp`. Existing redraw orchestration
+  stays in `src/ui/runtime_rendering.cpp` and renderer creation stays in
+  `src/ui/runtime_renderer_results.cpp`.

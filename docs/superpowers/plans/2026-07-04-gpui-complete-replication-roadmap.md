@@ -369,7 +369,11 @@ shape before deeper native work expands platform behavior.
   focused `src/ui/runtime_renderer_results.cpp`; `run(...)` and child-window
   activation now call that boundary instead of calling `renderer_factory_(...)`
   directly.
-- [ ] Steps 305-306: Finish the remaining renderer error/result conventions.
+- [ ] Step 305: Add renderer-resize result conventions. Implemented in the
+  feature worktree with `WindowRuntime::try_resize_surface(...) ->
+  Result<void>` and focused `src/ui/runtime_renderer_resize_results.cpp`
+  ownership; merge and post-merge verification are pending.
+- [ ] Step 306: Finish renderer frame/redraw result conventions.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public

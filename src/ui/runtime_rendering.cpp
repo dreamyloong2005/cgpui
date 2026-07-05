@@ -72,14 +72,7 @@ void WindowRuntime::handle_redraw() {
 }
 
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
-  framebuffer_size_ = size;
-  scale_ = scale;
-  viewport_size_ = to_logical_pixels(framebuffer_size_, scale_);
-  if (renderer_ == nullptr) {
-    return {};
-  }
-
-  auto result = renderer_->resize(size, scale);
+  auto result = try_resize_surface(size, scale);
   if (!result) {
     fail_and_quit(result.error());
   }
