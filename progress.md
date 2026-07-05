@@ -11439,3 +11439,53 @@
   `XMAKE_ROOT=y xmake test -P .` passed 89/89.
 - Step 306 is complete on `master`; Step 307 public API compatibility examples
   is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 307 Public API Compatibility Examples
+
+- Created `.worktrees/phase-b-public-api-compat-examples` on
+  `codex/phase-b-public-api-compat-examples` from
+  `d306059 docs: mark step 306 merged`.
+- Confirmed Step 301 is already complete on `master`; the active missing Phase
+  B slice is Step 307 public API compatibility examples.
+- RED added
+  `tests/api_parity/public_api_compatibility_examples_test.cpp` and xmake
+  registration. After refreshing xmake configuration, the target failed as
+  expected because
+  `examples/api_parity/public_api_compatibility/main.cpp` did not exist.
+- GREEN adds a prelude-only
+  `examples/api_parity/public_api_compatibility/main.cpp` and
+  `api_parity_public_api_compatibility` target. The example covers public
+  `Application`, `App`, `Window`, `Context<T>`, `Render`, `IntoElement`,
+  entity/view handles, action/key bindings, async/test Result spellings, and
+  platform-service Result spellings without including private headers or
+  naming `WindowRuntime` internals directly.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . public_api_compatibility_examples_test/default` passed
+  1/1, and `xmake build -P . api_parity_public_api_compatibility` built the
+  example successfully.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . public_api_compatibility_examples_test/default
+  gpui_parity_ledger_test/default public_authoring_surface_test/default
+  prelude_header_cleanliness/default app_header_cleanliness/default
+  application_facade_test/default app_window_context_test/default
+  public_result_conventions_test/default renderer_frame_result_conventions_test/default
+  async_spawn_result_conventions_test/default
+  platform_service_result_conventions_test/default` passed 11/11.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 93/93.
+- Fresh WSL Arch Linux focused verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  public_api_compatibility_examples_test/default
+  gpui_parity_ledger_test/default public_authoring_surface_test/default
+  prelude_header_cleanliness/default app_header_cleanliness/default
+  application_facade_test/default app_window_context_test/default
+  public_result_conventions_test/default renderer_frame_result_conventions_test/default
+  async_spawn_result_conventions_test/default
+  platform_service_result_conventions_test/default` passed 11/11.
+- Fresh WSL Arch Linux example build passed:
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility`.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake test -P .` passed 90/90.

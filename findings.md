@@ -5240,3 +5240,18 @@
   `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
   action macro payloads, task priorities, or structured task groups into the
   same slice.
+
+## 2026-07-05 Phase B Step 307 Public API Compatibility Examples
+
+- Step 307 stays scoped to public API compatibility examples. It should not
+  add new runtime behavior, `ClipboardItem` payload parity, upstream
+  `gpui::test` macro equivalents, action macro payloads, task priorities, or
+  structured task groups.
+- The durable public example is
+  `examples/api_parity/public_api_compatibility/main.cpp`. It must compile
+  using only `cgpui/prelude.hpp` and should stay written from an application
+  author's point of view rather than a runtime/internal-test point of view.
+- The structure/API guard is
+  `tests/api_parity/public_api_compatibility_examples_test.cpp`. It requires
+  the example target and fails if the example includes private headers or names
+  `WindowRuntime` internals directly.

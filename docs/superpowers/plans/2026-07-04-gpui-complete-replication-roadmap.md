@@ -385,8 +385,18 @@ shape before deeper native work expands platform behavior.
   `renderer_frame_result_conventions_test/default` and
   `ui_source_structure_test/default`; post-merge verification passed Windows
   full-debug 92/92 and WSL Arch Linux full-debug 89/89.
-- [ ] Steps 307-312: Add API compatibility examples that compile without
-  private headers and fail if they touch `WindowRuntime` internals directly.
+- [x] Step 307: Add the first public API compatibility example. Implemented in
+  `.worktrees/phase-b-public-api-compat-examples` with
+  `examples/api_parity/public_api_compatibility/main.cpp`,
+  `api_parity_public_api_compatibility`, and
+  `tests/api_parity/public_api_compatibility_examples_test.cpp`. The example
+  compiles using only `cgpui/prelude.hpp`, covers the public
+  `Application`/`App`/`Window`/`Context<T>` authoring vocabulary plus
+  action/key, async/test Result, and platform-service Result spellings, and the
+  guard fails if the example includes private headers or names
+  `WindowRuntime` internals directly.
+- [ ] Steps 308-312: Expand API compatibility examples and freeze the public
+  authoring vocabulary before Phase C.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
   authoring vocabulary before Phase C.
 
@@ -688,13 +698,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 307 public API compatibility examples are next after Step 306 landed on
-`master` at `4649f71`. Step 306 implemented
-`try_draw_frame() -> Result<void>`, isolated renderer frame/redraw Result
-behavior in `src/ui/runtime_renderer_frame_results.cpp`, and kept redraw event
-/ `TestContextCapability::draw_frame()` compatibility fail-and-quit behavior
-intact. `ClipboardItem` payload parity, upstream `gpui::test` macro
-equivalents, and action macro payloads stay out of scope.
+Step 308 public authoring vocabulary freeze is next after Step 307 added the
+prelude-only public API compatibility example and guard. `ClipboardItem`
+payload parity, upstream `gpui::test` macro equivalents, action macro payloads,
+task priorities, and structured task groups stay out of scope for the
+remaining Phase B example-freeze work.
 
 ## Self-Review
 

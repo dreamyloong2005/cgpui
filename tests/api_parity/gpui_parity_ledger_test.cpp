@@ -207,6 +207,10 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/public_authoring_surface_test.cpp") ||
       !contains(ledger,
+                "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
+      !contains(ledger,
+                "examples/api_parity/public_api_compatibility/main.cpp") ||
+      !contains(ledger,
                 "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
@@ -391,6 +395,8 @@ int main() {
               "renderer_resize_result_conventions_test",
               "runtime_renderer_frame_results.cpp",
               "renderer_frame_result_conventions_test",
+              "public_api_compatibility_examples_test",
+              "examples/api_parity/public_api_compatibility/main.cpp",
               "try_install_native_menu",
               "Result<NativeMenuInstallation>",
               "try_show_native_file_dialog",
@@ -457,6 +463,38 @@ int main() {
       !contains(example, "app->run") ||
       !contains(example, "GPUI upstream hello_world.rs parity")) {
     return 13;
+  }
+
+  const std::string public_api_example =
+      read_source("examples/api_parity/public_api_compatibility/main.cpp");
+  if (public_api_example.empty()) {
+    return 80;
+  }
+  if (!contains(public_api_example, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(public_api_example, "class PublicApiCompatibilityView") ||
+      !contains(public_api_example,
+                "cgpui::Context<PublicApiCompatibilityView>&") ||
+      !contains(public_api_example, "cgpui::IntoElement render") ||
+      !contains(public_api_example,
+                "static_assert(cgpui::Render<PublicApiCompatibilityView>)") ||
+      !contains(public_api_example, "cgpui::Application::create()") ||
+      !contains(public_api_example, "try_open_window(") ||
+      !contains(public_api_example, "try_install_native_menu(") ||
+      !contains(public_api_example, "try_show_native_file_dialog(") ||
+      !contains(public_api_example, "try_spawn_task(") ||
+      !contains(public_api_example, "try_draw_frame(") ||
+      !contains(public_api_example, "register_action(") ||
+      !contains(public_api_example, "bind_key(")) {
+    return 81;
+  }
+  if (contains(public_api_example, "WindowRuntime") ||
+      contains(public_api_example, "#include \"cgpui/ui/") ||
+      contains(public_api_example, "#include \"cgpui/platform/") ||
+      contains(public_api_example, "#include \"cgpui/renderer/") ||
+      contains(public_api_example, "#include \"src/") ||
+      contains(public_api_example, ".runtime") ||
+      contains(public_api_example, "runtime.")) {
+    return 82;
   }
 
   const std::string public_authoring =
@@ -1022,6 +1060,10 @@ int main() {
       !contains(xmake, "target(\"renderer_frame_result_conventions_test\")") ||
       !contains(xmake, "target(\"async_spawn_result_conventions_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
+      !contains(xmake,
+                "target(\"api_parity_public_api_compatibility\")") ||
+      !contains(xmake,
+                "target(\"public_api_compatibility_examples_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1084,7 +1126,12 @@ int main() {
                 "tests/api_parity/renderer_frame_result_conventions_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
-      !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {
+      !contains(xmake,
+                "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
+      !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
+      !contains(
+          xmake,
+          "examples/api_parity/public_api_compatibility/main.cpp")) {
     return 14;
   }
 

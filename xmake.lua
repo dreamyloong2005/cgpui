@@ -411,6 +411,11 @@ target("public_authoring_surface_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("public_api_compatibility_examples_test")
+    set_kind("binary")
+    add_files("tests/api_parity/public_api_compatibility_examples_test.cpp")
+    add_tests("default")
+
 target("entity_lifecycle_creation_test")
     set_kind("binary")
     add_files("tests/api_parity/entity_lifecycle_creation_test.cpp")
@@ -619,6 +624,22 @@ target("app_source_structure_test")
 target("api_parity_hello_world")
     set_kind("binary")
     add_files("examples/api_parity/hello_world/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+
+target("api_parity_public_api_compatibility")
+    set_kind("binary")
+    add_files("examples/api_parity/public_api_compatibility/main.cpp")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
