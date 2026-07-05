@@ -1857,7 +1857,7 @@ implementation slice.
   `child()` remains the first-child compatibility view. Post-merge
   verification passed JSON validation, Windows full debug 99/99, and WSL Arch
   Linux full debug 96/96. Phase C Step 320, `div` flex-vocabulary helpers, is
-  implemented and feature-worktree verified: `ElementBuilder` exposes
+  merged on `master` at `5040365`: `ElementBuilder` exposes
   `items_start()`, `items_center()`, `items_end()`, `justify_start()`,
   `justify_center()`, `justify_end()`, `justify_between()`, and `flex_1()`
   over the existing align/justify/grow/shrink style values, with behavior
@@ -1866,6 +1866,6 @@ implementation slice.
   verification passed JSON validation, focused public/structure gates 6/6,
   Windows full debug 99/99, WSL Arch Linux full debug 96/96, and
   `git diff --check` with only expected LF-to-CRLF normalization warnings.
-  Step 320 is ready for feature commit and merge verification; Step 321 is the
-  next Phase C `div` sizing/color/border helper slice after Step 320 lands on
-  `master`.
+  Post-merge verification passed JSON validation, Windows full debug 99/99,
+  and WSL Arch Linux full debug 96/96. Step 321 is the next Phase C `div`
+  sizing/color/border helper slice.

@@ -11992,3 +11992,16 @@
   worktree. It is ready for feature commit and merge verification. Step 321 is
   the next Phase C `div` sizing/color/border helper slice after Step 320 lands
   on `master`.
+
+## 2026-07-05 Phase C Step 320 Merge
+
+- Committed `codex/phase-c-div-style-flex-helpers` as
+  `5040365 feat: add div flex vocabulary helpers`.
+- Fast-forward merged the branch into `master` at `5040365`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0 and
+  `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 320 is complete on `master`; Step 321, the next Phase C `div`
+  sizing/color/border helper slice, is next.

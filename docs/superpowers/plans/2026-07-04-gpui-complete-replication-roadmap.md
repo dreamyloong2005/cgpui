@@ -485,19 +485,16 @@ expect, keeping each widget in its own module from the first version.
   `StyledElement::children()` exposes the focused style-node child list while
   preserving `child()` as the first-child compatibility view. Merged on
   `master` at `14aaff0` and post-merge verified with JSON validation, Windows
-  full-debug 99/99, and WSL Arch Linux full-debug 96/96. Step 320 should
-  continue with the next focused `div` style-vocabulary helper. Step 320 adds
+  full-debug 99/99, and WSL Arch Linux full-debug 96/96. Step 320 adds
   flex vocabulary aliases `items_start()`, `items_center()`, `items_end()`,
   `justify_start()`, `justify_center()`, `justify_end()`,
   `justify_between()`, and `flex_1()` over the existing align/justify and
   grow/shrink style values, with focused behavior coverage in
   `tests/ui/element_test.cpp` and structure coverage in
-  `tests/architecture/ui_source_structure_test.cpp`. Feature-worktree
-  verification passed JSON validation, focused public/structure gates 6/6,
-  Windows full-debug 99/99, WSL Arch Linux full-debug 96/96, and
-  `git diff --check` with only expected LF-to-CRLF normalization warnings.
-  Step 321 should continue with the next narrow `div` sizing/color/border
-  helper after Step 320 lands on `master`.
+  `tests/architecture/ui_source_structure_test.cpp`. Merged on `master` at
+  `5040365` and post-merge verified with JSON validation, Windows full-debug
+  99/99, and WSL Arch Linux full-debug 96/96. Step 321 should continue with
+  the next narrow `div` sizing/color/border helper.
 - [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -777,11 +774,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 320 should continue Phase C element/style/layout work from the frozen
+Step 321 should continue Phase C element/style/layout work from the frozen
 Phase B public authoring boundary, using the next focused `div`
-style-vocabulary helper from Steps 319-324. Step 319 landed the child-list
-foundation on `master` at `14aaff0`. Keep the Phase B closeout exclusions out
-of this slice: `ClipboardItem` payload parity, upstream `gpui::test` macro
+sizing/color/border helper from Steps 319-324. Step 319 landed the child-list
+foundation on `master` at `14aaff0`; Step 320 landed the flex vocabulary
+helpers on `master` at `5040365`. Keep the Phase B closeout exclusions out of
+this slice: `ClipboardItem` payload parity, upstream `gpui::test` macro
 equivalents, action macro payloads, task priorities, or structured task groups.
 
 ## Self-Review

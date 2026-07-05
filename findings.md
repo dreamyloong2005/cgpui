@@ -5498,3 +5498,12 @@
   `element_builder_style.cpp` and aggregate headers.
 - The behavior guard is `tests/ui/element_test.cpp`, and the structure guard
   is `tests/architecture/ui_source_structure_test.cpp`.
+
+## 2026-07-05 Phase C Step 320 Merge
+
+- Step 320 is merged on `master` at `5040365` and post-merge verified with
+  Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux full
+  debug 96/96.
+- Step 321 should continue the same focused Phase C band with the next
+  `div` sizing/color/border helper slice, while keeping widget,
+  uniform-list, and broad layout rewrites out of the slice.
