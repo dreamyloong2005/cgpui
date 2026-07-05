@@ -416,7 +416,15 @@ shape before deeper native work expands platform behavior.
   `tests/api_parity/public_api_example_expansion_test.cpp`; post-merge
   verification passed Windows full-debug 95/95, WSL Arch Linux public API
   example builds, and WSL Arch Linux full-debug 92/92.
-- [ ] Steps 310-312: Continue expanding API compatibility examples against the
+- [x] Step 310: Expand public API compatibility examples with a prelude-only
+  public context capability workflow. Added
+  `examples/api_parity/public_context_capabilities/main.cpp`,
+  `api_parity_public_context_capabilities`, and
+  `tests/api_parity/public_context_capability_example_test.cpp`; the guard
+  keeps `AppContext`, `ViewContextCapability<T>`,
+  `WindowContextCapability`, and `ElementContextCapability` authoring examples
+  out of private headers and `WindowRuntime` internals.
+- [ ] Steps 311-312: Continue expanding API compatibility examples against the
   frozen public authoring vocabulary before Phase C.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
   authoring vocabulary before Phase C.
@@ -719,10 +727,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 310 should continue the public API compatibility example expansion queue
-after Step 309 landed the second prelude-only authoring workflow example. It
-should add another public example or guard against the frozen names without
-introducing `ClipboardItem` payload parity, upstream `gpui::test` macro
+Step 311 should continue the public API compatibility example expansion queue
+after Step 310 added the prelude-only public context capability workflow
+example. It should add another public example or guard against the frozen names
+without introducing `ClipboardItem` payload parity, upstream `gpui::test` macro
 equivalents, action macro payloads, task priorities, or structured task groups.
 
 ## Self-Review

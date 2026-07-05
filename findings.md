@@ -5328,3 +5328,23 @@
 - Step 310 should continue the public API compatibility example expansion
   queue without adding runtime behavior or opening the deferred Phase B
   exclusions.
+
+## 2026-07-05 Phase B Step 310 Public Context Capability Example
+
+- Step 301 is already complete on `master`; the active unfinished Phase B
+  slice is Step 310.
+- Step 310 stays scoped to another public API compatibility example against
+  the frozen public authoring vocabulary. It should not add runtime behavior,
+  `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+  action macro payloads, task priorities, or structured task groups.
+- The durable example boundary is
+  `examples/api_parity/public_context_capabilities/main.cpp`. It must compile
+  using only `cgpui/prelude.hpp`, remain author-facing, and avoid private
+  headers or direct `WindowRuntime` internals.
+- The structure/API guard is
+  `tests/api_parity/public_context_capability_example_test.cpp`, with
+  `tests/api_parity/gpui_parity_ledger_test.cpp` also requiring the new
+  example file, test file, and xmake targets so future ledger drift is caught.
+- A transient `xmake` package filelock error recurred when the new example
+  build ran in parallel with the new test. Keep Step 310 verification commands
+  sequential around example builds.

@@ -1818,5 +1818,10 @@ implementation slice.
   post-merge Windows full-debug 95/95 and WSL Arch Linux full-debug 92/92
   verification. It adds a second prelude-only authoring workflow example and
   focused guard against the frozen public vocabulary before Phase C. Phase B
-  Step 310 public API compatibility example expansion follow-on is the next
-  slice.
+  Step 310 public API compatibility example expansion follow-on is now in
+  progress on `codex/phase-b-public-context-capability-example`. The slice
+  adds a prelude-only public context capability example covering
+  `AppContext`, `ViewContextCapability<T>`, `WindowContextCapability`, and
+  `ElementContextCapability`, guarded by
+  `tests/api_parity/public_context_capability_example_test.cpp`, without
+  adding runtime behavior or opening deferred Phase B exclusions.

@@ -11637,3 +11637,46 @@
   successfully, and `XMAKE_ROOT=y xmake test -P .` passed 92/92.
 - Step 309 is complete on `master`; Step 310 public API compatibility example
   expansion follow-on is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 310 Public Context Capability Example
+
+- Confirmed from the roadmap, `task_plan.md`, and `findings.md` that Step 301
+  is already complete on `master`; the active unfinished slice is Step 310.
+- Created `.worktrees/phase-b-public-context-capability-example` on
+  `codex/phase-b-public-context-capability-example` from
+  `34e16d3 docs: mark step 309 merged`.
+- Baseline Windows focused verification passed:
+  `xmake test -P . public_api_example_expansion_test/default
+  public_api_compatibility_examples_test/default
+  public_authoring_vocabulary_freeze_test/default
+  gpui_parity_ledger_test/default` passed 4/4.
+- RED added
+  `tests/api_parity/public_context_capability_example_test.cpp` and xmake
+  registration. The focused target failed as expected because
+  `examples/api_parity/public_context_capabilities/main.cpp` did not exist.
+- GREEN adds
+  `examples/api_parity/public_context_capabilities/main.cpp` and
+  `api_parity_public_context_capabilities`, covering prelude-only
+  `AppContext`, `ViewContextCapability<T>`, `WindowContextCapability`, and
+  `ElementContextCapability` authoring from a public view.
+- Updated `tests/api_parity/gpui_parity_ledger_test.cpp`, the Markdown parity
+  ledger, the JSON parity ledger, and the complete-replication roadmap so the
+  new example, new test, and new xmake targets are part of the normal parity
+  gate.
+- Focused Windows GREEN verification passed:
+  `xmake test -P . public_context_capability_example_test/default` passed 1/1
+  and, after a transient Vulkan SDK package filelock caused by parallel
+  execution, `xmake build -P . api_parity_public_context_capabilities` built
+  successfully when rerun sequentially.
+- Fresh Windows feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 5/5, all three public API example targets built
+  sequentially, and `xmake test -P .` passed 96/96.
+- Fresh WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 5/5, all three public API example targets built
+  sequentially, and `XMAKE_ROOT=y xmake test -P .` passed 93/93.
+- Step 310 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 311 is
+  the next Phase B example expansion slice after Step 310 lands on `master`.

@@ -211,11 +211,15 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/public_api_example_expansion_test.cpp") ||
       !contains(ledger,
+                "tests/api_parity/public_context_capability_example_test.cpp") ||
+      !contains(ledger,
                 "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(ledger,
                 "examples/api_parity/public_api_compatibility/main.cpp") ||
       !contains(ledger,
                 "examples/api_parity/public_authoring_workflow/main.cpp") ||
+      !contains(ledger,
+                "examples/api_parity/public_context_capabilities/main.cpp") ||
       !contains(ledger, "docs/gpui-public-authoring-vocabulary.md") ||
       !contains(ledger,
                 "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
@@ -406,6 +410,8 @@ int main() {
               "examples/api_parity/public_api_compatibility/main.cpp",
               "public_api_example_expansion_test",
               "examples/api_parity/public_authoring_workflow/main.cpp",
+              "public_context_capability_example_test",
+              "examples/api_parity/public_context_capabilities/main.cpp",
               "public_authoring_vocabulary_freeze_test",
               "docs/gpui-public-authoring-vocabulary.md",
               "try_install_native_menu",
@@ -552,6 +558,60 @@ int main() {
       contains(public_workflow_example, "runtime.") ||
       contains(public_workflow_example, "window_runtime")) {
     return 87;
+  }
+
+  const std::string public_context_example =
+      read_source("examples/api_parity/public_context_capabilities/main.cpp");
+  if (public_context_example.empty()) {
+    return 88;
+  }
+  if (!contains(public_context_example, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(public_context_example,
+                "class PublicContextCapabilitiesView") ||
+      !contains(public_context_example,
+                "cgpui::Context<PublicContextCapabilitiesView>&") ||
+      !contains(public_context_example, "cgpui::IntoElement render") ||
+      !contains(public_context_example,
+                "static_assert(cgpui::Render<PublicContextCapabilitiesView>)") ||
+      !contains(public_context_example, "cgpui::AppContext") ||
+      !contains(public_context_example,
+                "cgpui::ViewContextCapability<PublicContextCapabilitiesView>") ||
+      !contains(public_context_example,
+                "cgpui::WindowContextCapability") ||
+      !contains(public_context_example,
+                "cgpui::ElementContextCapability") ||
+      !contains(public_context_example, "app_context()") ||
+      !contains(public_context_example,
+                "view_context<PublicContextCapabilitiesView>()") ||
+      !contains(public_context_example, "window_context()") ||
+      !contains(public_context_example, "element_context(") ||
+      !contains(public_context_example, "set_global(") ||
+      !contains(public_context_example, "update_global<") ||
+      !contains(public_context_example, "set_app_theme(") ||
+      !contains(public_context_example, "view_context.view()") ||
+      !contains(public_context_example, "view_context.weak_view()") ||
+      !contains(public_context_example, "window_context.window()") ||
+      !contains(public_context_example, "window_context.request_render()") ||
+      !contains(public_context_example, "element_context.focus()") ||
+      !contains(public_context_example, "element_context.capture_pointer()") ||
+      !contains(public_context_example, "element_context.set_cursor(") ||
+      !contains(public_context_example, "element_context.state_or_init<") ||
+      !contains(public_context_example, "cgpui::Application::create()")) {
+    return 89;
+  }
+  if (contains(public_context_example, "WindowRuntime") ||
+      contains(public_context_example, "#include \"cgpui/ui/") ||
+      contains(public_context_example, "#include \"cgpui/platform/") ||
+      contains(public_context_example, "#include \"cgpui/renderer/") ||
+      contains(public_context_example, "#include \"src/") ||
+      contains(public_context_example, "ClipboardItem") ||
+      contains(public_context_example, "gpui::test") ||
+      contains(public_context_example, "TaskPriority") ||
+      contains(public_context_example, "StructuredTaskGroup") ||
+      contains(public_context_example, ".runtime") ||
+      contains(public_context_example, "runtime.") ||
+      contains(public_context_example, "window_runtime")) {
+    return 90;
   }
 
   const std::string public_vocabulary =
@@ -1145,9 +1205,13 @@ int main() {
       !contains(xmake,
                 "target(\"api_parity_public_authoring_workflow\")") ||
       !contains(xmake,
+                "target(\"api_parity_public_context_capabilities\")") ||
+      !contains(xmake,
                 "target(\"public_api_compatibility_examples_test\")") ||
       !contains(xmake,
                 "target(\"public_api_example_expansion_test\")") ||
+      !contains(xmake,
+                "target(\"public_context_capability_example_test\")") ||
       !contains(xmake,
                 "target(\"public_authoring_vocabulary_freeze_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -1218,6 +1282,9 @@ int main() {
                 "tests/api_parity/public_api_example_expansion_test.cpp") ||
       !contains(
           xmake,
+          "tests/api_parity/public_context_capability_example_test.cpp") ||
+      !contains(
+          xmake,
           "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
@@ -1225,7 +1292,10 @@ int main() {
           "examples/api_parity/public_api_compatibility/main.cpp") ||
       !contains(
           xmake,
-          "examples/api_parity/public_authoring_workflow/main.cpp")) {
+          "examples/api_parity/public_authoring_workflow/main.cpp") ||
+      !contains(
+          xmake,
+          "examples/api_parity/public_context_capabilities/main.cpp")) {
     return 14;
   }
 

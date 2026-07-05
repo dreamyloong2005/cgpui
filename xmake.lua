@@ -421,6 +421,11 @@ target("public_api_example_expansion_test")
     add_files("tests/api_parity/public_api_example_expansion_test.cpp")
     add_tests("default")
 
+target("public_context_capability_example_test")
+    set_kind("binary")
+    add_files("tests/api_parity/public_context_capability_example_test.cpp")
+    add_tests("default")
+
 target("public_authoring_vocabulary_freeze_test")
     set_kind("binary")
     add_files("tests/api_parity/public_authoring_vocabulary_freeze_test.cpp")
@@ -666,6 +671,22 @@ target("api_parity_public_api_compatibility")
 target("api_parity_public_authoring_workflow")
     set_kind("binary")
     add_files("examples/api_parity/public_authoring_workflow/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+
+target("api_parity_public_context_capabilities")
+    set_kind("binary")
+    add_files("examples/api_parity/public_context_capabilities/main.cpp")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
     if is_plat("windows") then
         add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
