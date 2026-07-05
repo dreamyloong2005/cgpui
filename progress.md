@@ -11870,3 +11870,24 @@
   warnings.
 - Steps 313-318 are implemented and Windows/WSL full-debug verified in the
   feature worktree. They are ready for feature commit and merge verification.
+
+## 2026-07-05 Phase B Steps 313-318 Merge
+
+- Committed `codex/phase-b-final-freeze-audit` as
+  `5a3e029 docs: add phase b final freeze audit`.
+- Fast-forward merged the branch into `master` at `5a3e029`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused public/freeze gates passed 8/8,
+  all five public API example targets built sequentially, and
+  `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused public/freeze gates passed 8/8,
+  all five public API example targets built sequentially, and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Phase B is complete for the Windows/Linux public Application, Context,
+  Entity, Action, key dispatch, test-context API, and public authoring
+  vocabulary band. Phase C Step 319 is the next slice.

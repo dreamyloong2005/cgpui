@@ -447,7 +447,11 @@ shape before deeper native work expands platform behavior.
   pointer-capture public vocabulary without private headers or `WindowRuntime`
   internals.
 - [x] Steps 313-318: Run full Windows/WSL verification and freeze the public
-  authoring vocabulary before Phase C. Adds
+  authoring vocabulary before Phase C. Merged on `master` at `5a3e029` and
+  post-merge verified with Windows JSON validation, focused public/freeze
+  gates 8/8, all five public API example builds, and full debug 99/99; WSL
+  Arch Linux JSON validation, focused public/freeze gates 8/8, all five public
+  API example builds, and full debug 96/96. Adds
   `tests/api_parity/public_phase_b_completion_audit_test.cpp` as the final
   Phase B public vocabulary completion audit so the roadmap, public vocabulary
   document, parity ledger, public examples, public example tests, and xmake

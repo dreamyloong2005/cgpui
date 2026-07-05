@@ -1842,10 +1842,9 @@ implementation slice.
   Arch Linux verification passed JSON validation, seven focused public/ledger
   gates, all five public example builds, and full debug 95/95. Phase B Steps
   313-318 final Windows/WSL verification and public vocabulary freeze audit
-  are complete in the feature worktree after adding
-  `tests/api_parity/public_phase_b_completion_audit_test.cpp`; fresh
-  feature-worktree verification passed Windows JSON validation, focused
-  public/freeze gates 8/8, all five public example builds, and full debug
-  99/99, plus WSL Arch Linux JSON validation, focused public/freeze gates 8/8,
-  all five public example builds, and full debug 96/96. Phase C Step 319 is
-  the next slice after merge.
+  are merged on `master` at `5a3e029` after adding
+  `tests/api_parity/public_phase_b_completion_audit_test.cpp`. Post-merge
+  verification passed Windows JSON validation, focused public/freeze gates
+  8/8, all five public example builds, and full debug 99/99, plus WSL Arch
+  Linux JSON validation, focused public/freeze gates 8/8, all five public
+  example builds, and full debug 96/96. Phase C Step 319 is the next slice.
