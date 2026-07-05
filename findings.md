@@ -5362,3 +5362,25 @@
 - Step 311 should continue the public API compatibility example expansion
   queue without adding runtime behavior or opening the deferred Phase B
   exclusions.
+
+## 2026-07-05 Phase B Step 311 Public Async/Test Workflow Example
+
+- Step 301 is already complete on `master`; the active unfinished Phase B
+  slice is Step 311, not a redo of Step 301.
+- Step 311 stays scoped to another public API compatibility example against
+  the frozen public authoring vocabulary. It should not add runtime behavior,
+  `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+  action macro payloads, task priorities, or structured task groups.
+- The durable example boundary is
+  `examples/api_parity/public_async_test_workflow/main.cpp`. It must compile
+  using only `cgpui/prelude.hpp`, remain author-facing, and avoid private
+  headers or direct `WindowRuntime` internals.
+- The structure/API guard is
+  `tests/api_parity/public_async_test_workflow_example_test.cpp`, with
+  `tests/api_parity/gpui_parity_ledger_test.cpp` also requiring the new
+  example file, test file, xmake targets, Markdown ledger entries, and JSON
+  ledger entries so future drift is caught.
+- Public async/test examples can use generic lambdas for scheduling/task
+  callbacks so the example does not need to spell internal runtime context
+  types while still compiling against the public `AsyncContextCapability` and
+  `TestContextCapability` APIs.

@@ -62,6 +62,11 @@ outside this freeze.
 - `ErrorCode`
 - `AsyncContextCapability`
 - `TestContextCapability`
+- `try_spawn_task(...) -> Result<TaskHandle>`
+- `try_spawn_background_task(...) -> Result<TaskHandle>`
+- `run_until_parked()`
+- `advance_time_until_parked(...)`
+- `try_draw_frame() -> Result<void>`
 
 Phase B public examples may use Result-returning async and test helpers. This
 freeze does not add task priorities, structured task groups, or upstream test

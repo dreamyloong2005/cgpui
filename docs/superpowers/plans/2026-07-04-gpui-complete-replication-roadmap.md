@@ -426,8 +426,16 @@ shape before deeper native work expands platform behavior.
   keeps `AppContext`, `ViewContextCapability<T>`,
   `WindowContextCapability`, and `ElementContextCapability` authoring examples
   out of private headers and `WindowRuntime` internals.
-- [ ] Steps 311-312: Continue expanding API compatibility examples against the
-  frozen public authoring vocabulary before Phase C.
+- [x] Step 311: Expand public API compatibility examples with a prelude-only
+  public async/test workflow. Added
+  `examples/api_parity/public_async_test_workflow/main.cpp`,
+  `api_parity_public_async_test_workflow`, and
+  `tests/api_parity/public_async_test_workflow_example_test.cpp`; the guard
+  keeps `AsyncContextCapability`, `TestContextCapability`, Result-returning
+  task/frame helpers, simulated input, clipboard, and frame-pump examples out
+  of private headers and `WindowRuntime` internals.
+- [ ] Step 312: Finish the public API compatibility example expansion queue
+  against the frozen public authoring vocabulary before Phase C.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
   authoring vocabulary before Phase C.
 
@@ -729,9 +737,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 311 should continue the public API compatibility example expansion queue
-after Step 310 added the prelude-only public context capability workflow
-example. It should add another public example or guard against the frozen names
+Step 312 should finish the public API compatibility example expansion queue
+after Step 311 added the prelude-only public async/test workflow example. It
+should add the final public example or guard against the frozen names
 without introducing `ClipboardItem` payload parity, upstream `gpui::test` macro
 equivalents, action macro payloads, task priorities, or structured task groups.
 

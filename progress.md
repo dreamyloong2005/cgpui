@@ -11705,3 +11705,54 @@
   `XMAKE_ROOT=y xmake test -P .` passed 93/93.
 - Step 310 is complete on `master`; Step 311 public API compatibility example
   expansion follow-on is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 311 Public Async/Test Workflow Example
+
+- Confirmed from `task_plan.md`, `findings.md`, `progress.md`, and the
+  complete-replication roadmap that Step 301 is already complete on `master`;
+  the active unfinished Phase B slice is Step 311.
+- Created `.worktrees/phase-b-public-async-test-example` on
+  `codex/phase-b-public-async-test-example` from
+  `9e654f0 docs: mark step 310 merged`.
+- Baseline Windows focused verification passed:
+  `xmake test -P . public_api_compatibility_examples_test/default
+  public_api_example_expansion_test/default
+  public_context_capability_example_test/default
+  public_authoring_vocabulary_freeze_test/default
+  gpui_parity_ledger_test/default` passed 5/5.
+- RED added
+  `tests/api_parity/public_async_test_workflow_example_test.cpp` and xmake
+  registration. After refreshing xmake configuration, the target failed as
+  expected because
+  `examples/api_parity/public_async_test_workflow/main.cpp` did not exist.
+- An initial patch attempt accidentally landed the RED test/xmake snippet in
+  the main checkout instead of the feature worktree. The accidental tracked
+  main-worktree changes were removed, the line-ending-only `xmake.lua` status
+  was normalized back to a clean tracked state, and the same RED changes were
+  reapplied under `.worktrees/phase-b-public-async-test-example`.
+- GREEN adds
+  `examples/api_parity/public_async_test_workflow/main.cpp` and
+  `api_parity_public_async_test_workflow`, covering prelude-only
+  `AsyncContextCapability` and `TestContextCapability` authoring from a public
+  view without naming `WindowRuntime` internals.
+- Focused Windows GREEN verification passed:
+  `xmake test -P . public_async_test_workflow_example_test/default` passed
+  1/1, and `xmake build -P . api_parity_public_async_test_workflow` built
+  successfully.
+- Fresh Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 6/6,
+  all four public API example targets built sequentially, and
+  `xmake test -P .` passed 97/97.
+- Fresh WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 6/6,
+  all four public API example targets built sequentially, and
+  `XMAKE_ROOT=y xmake test -P .` passed 94/94.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Step 311 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 312 is
+  the next Phase B example expansion slice after Step 311 lands on `master`.
