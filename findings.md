@@ -5384,3 +5384,15 @@
   callbacks so the example does not need to spell internal runtime context
   types while still compiling against the public `AsyncContextCapability` and
   `TestContextCapability` APIs.
+
+## 2026-07-05 Phase B Step 311 Merge
+
+- Step 311 is merged on `master` at
+  `2e7a669 docs: add public async test workflow example` and post-merge
+  verified on Windows full-debug 97/97 and WSL Arch Linux full-debug 94/94.
+- The durable Step 311 boundary is the prelude-only
+  `examples/api_parity/public_async_test_workflow/main.cpp` example plus
+  `tests/api_parity/public_async_test_workflow_example_test.cpp`; keep final
+  public example expansion work author-facing and out of runtime internals.
+- Step 312 should finish the public API compatibility example expansion queue
+  without adding runtime behavior or opening deferred Phase B exclusions.

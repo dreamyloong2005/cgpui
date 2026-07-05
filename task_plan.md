@@ -1825,10 +1825,10 @@ implementation slice.
   `ElementContextCapability`, guarded by
   `tests/api_parity/public_context_capability_example_test.cpp`, without
   adding runtime behavior or opening deferred Phase B exclusions. Phase B Step
-  311 public API compatibility example expansion follow-on is implemented and
-  Windows/WSL full-debug verified in
-  `.worktrees/phase-b-public-async-test-example`, adding a prelude-only public
+  311 public API compatibility example expansion follow-on is complete on
+  `master` at `2e7a669` after post-merge Windows full-debug 97/97 and WSL Arch
+  Linux full-debug 94/94 verification. The slice adds a prelude-only public
   async/test workflow example guarded by
   `tests/api_parity/public_async_test_workflow_example_test.cpp` without
-  adding runtime behavior or opening deferred Phase B exclusions. It is ready
-  for feature commit and merge verification.
+  adding runtime behavior or opening deferred Phase B exclusions. Phase B Step
+  312 final public API compatibility example expansion is the next slice.

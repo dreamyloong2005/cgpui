@@ -11756,3 +11756,23 @@
 - Step 311 is implemented and Windows/WSL full-debug verified in the feature
   worktree. It is ready for feature commit and merge verification. Step 312 is
   the next Phase B example expansion slice after Step 311 lands on `master`.
+
+## 2026-07-05 Phase B Step 311 Merge
+
+- Committed `codex/phase-b-public-async-test-example` as
+  `2e7a669 docs: add public async test workflow example`.
+- Fast-forward merged the branch into `master` at `2e7a669`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 6/6,
+  all four public API example targets built sequentially, and
+  `xmake test -P .` passed 97/97.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 6/6,
+  all four public API example targets built sequentially, and
+  `XMAKE_ROOT=y xmake test -P .` passed 94/94.
+- Step 311 is complete on `master`; Step 312 final public API compatibility
+  example expansion is the next Phase B slice.
