@@ -54,9 +54,17 @@ ElementBuilder ElementBuilder::background(Color color) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::bg(Color color) && {
+  return std::move(*this).background(color);
+}
+
 ElementBuilder ElementBuilder::foreground(Color color) && {
   style_state_.base = style_state_.base.with_foreground_color(color);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::text_color(Color color) && {
+  return std::move(*this).foreground(color);
 }
 
 ElementBuilder ElementBuilder::font(FontDescriptor descriptor) && {
@@ -77,6 +85,10 @@ ElementBuilder ElementBuilder::border_color(Color color) && {
 ElementBuilder ElementBuilder::border_radius(BorderRadii radius) && {
   style_state_.base = style_state_.base.with_border_radius(radius);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::rounded(float radius) && {
+  return std::move(*this).border_radius(BorderRadii::all(radius));
 }
 
 } // namespace cgpui

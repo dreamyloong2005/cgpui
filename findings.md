@@ -5507,3 +5507,17 @@
 - Step 321 should continue the same focused Phase C band with the next
   `div` sizing/color/border helper slice, while keeping widget,
   uniform-list, and broad layout rewrites out of the slice.
+
+## 2026-07-05 Phase C Step 321 Div Sizing Color Border Helpers
+
+- Step 321 stays scoped to upstream-style authoring vocabulary over existing
+  style storage. It adds `w(...)`, `h(...)`, `bg(...)`, `text_color(...)`,
+  `border_1()`, and `rounded(...)` on `ElementBuilder`, without adding new
+  layout behavior, widget behavior, uniform-list behavior, or a broad style
+  system rewrite.
+- The durable implementation boundary is split by ownership:
+  `w(...)`, `h(...)`, and `border_1()` live in
+  `src/ui/element_builder_layout.cpp`; `bg(...)`, `text_color(...)`, and
+  `rounded(...)` live in `src/ui/element_builder_style.cpp`.
+- The behavior guard is `tests/ui/element_test.cpp`, and the structure guard
+  is `tests/architecture/ui_source_structure_test.cpp`.

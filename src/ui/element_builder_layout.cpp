@@ -16,6 +16,24 @@ ElementBuilder ElementBuilder::size(float width, float height) && {
   return std::move(*this).size(Size{.width = width, .height = height});
 }
 
+ElementBuilder ElementBuilder::w(float width) && {
+  Size size = style_state_.base.preferred_size;
+  if (kind_ == Kind::fixed_size || kind_ == Kind::child_view) {
+    size = size_;
+  }
+  size.width = width;
+  return std::move(*this).size(size);
+}
+
+ElementBuilder ElementBuilder::h(float height) && {
+  Size size = style_state_.base.preferred_size;
+  if (kind_ == Kind::fixed_size || kind_ == Kind::child_view) {
+    size = size_;
+  }
+  size.height = height;
+  return std::move(*this).size(size);
+}
+
 ElementBuilder ElementBuilder::padding(EdgeSizes edges) && {
   style_state_.base = style_state_.base.with_padding(edges);
   return std::move(*this);
@@ -29,6 +47,10 @@ ElementBuilder ElementBuilder::margin(EdgeSizes edges) && {
 ElementBuilder ElementBuilder::border_width(EdgeSizes edges) && {
   style_state_.base = style_state_.base.with_border_width(edges);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::border_1() && {
+  return std::move(*this).border_width(edges(1.0F));
 }
 
 ElementBuilder ElementBuilder::gap(float value) && {

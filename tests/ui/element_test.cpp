@@ -456,6 +456,54 @@ int test_element_builder_flex_vocabulary_helpers_map_to_existing_style() {
                                                                       : 220;
 }
 
+int test_element_builder_sizing_color_border_vocabulary_helpers_map_to_existing_style() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .w(cgpui::px(64.0F))
+                              .h(cgpui::px(32.0F))
+                              .bg(cgpui::rgb(10, 20, 30))
+                              .text_color(cgpui::rgba(200, 210, 220, 0.5F))
+                              .border_1()
+                              .border_color(cgpui::rgb(40, 50, 60))
+                              .rounded(cgpui::px(6.0F)));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 571;
+  }
+
+  const cgpui::Style& style = styled->style();
+  if (style.preferred_size.width != 64.0F ||
+      style.preferred_size.height != 32.0F ||
+      style.border_width.top != 1.0F || style.border_width.right != 1.0F ||
+      style.border_width.bottom != 1.0F || style.border_width.left != 1.0F) {
+    return 572;
+  }
+  if (!style.background_color.has_value() ||
+      style.background_color->r != 10.0F / 255.0F ||
+      !style.foreground_color.has_value() ||
+      style.foreground_color->a != 0.5F ||
+      !style.border_color.has_value() ||
+      style.border_color->g != 50.0F / 255.0F ||
+      style.border_radius.top_left != 6.0F ||
+      style.border_radius.top_right != 6.0F ||
+      style.border_radius.bottom_right != 6.0F ||
+      style.border_radius.bottom_left != 6.0F) {
+    return 573;
+  }
+
+  cgpui::AnyElement fixed_element = cgpui::into_element(
+      cgpui::ElementBuilder::fixed_size(
+          cgpui::Size{.width = 11.0F, .height = 12.0F})
+          .w(cgpui::px(13.0F))
+          .h(cgpui::px(14.0F)));
+  const auto* fixed =
+      dynamic_cast<const cgpui::FixedSizeElement*>(fixed_element.get());
+  return fixed != nullptr && fixed->preferred_size().width == 13.0F &&
+                 fixed->preferred_size().height == 14.0F
+             ? 0
+             : 574;
+}
+
 int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
   cgpui::AnyElement element =
       cgpui::into_element(cgpui::div()
@@ -4230,6 +4278,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_flex_vocabulary_helpers_map_to_existing_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_sizing_color_border_vocabulary_helpers_map_to_existing_style();
       result != 0) {
     return result;
   }

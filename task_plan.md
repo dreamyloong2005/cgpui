@@ -1867,5 +1867,15 @@ implementation slice.
   Windows full debug 99/99, WSL Arch Linux full debug 96/96, and
   `git diff --check` with only expected LF-to-CRLF normalization warnings.
   Post-merge verification passed JSON validation, Windows full debug 99/99,
-  and WSL Arch Linux full debug 96/96. Step 321 is the next Phase C `div`
-  sizing/color/border helper slice.
+  and WSL Arch Linux full debug 96/96. Phase C Step 321, `div`
+  sizing/color/border helper aliases, is implemented and full-verified in
+  `.worktrees/phase-c-div-sizing-color-border-helpers`: `ElementBuilder`
+  exposes `w(...)`, `h(...)`, `bg(...)`, `text_color(...)`, `border_1()`, and
+  `rounded(...)` over the existing size/background/foreground/border/radius
+  style values. Behavior coverage lives in `tests/ui/element_test.cpp` and
+  structure coverage lives in `tests/architecture/ui_source_structure_test.cpp`.
+  Feature-worktree verification passed JSON validation, focused
+  public/structure gates 6/6, Windows full debug 99/99, WSL Arch Linux full
+  debug 96/96, and `git diff --check` with only expected LF-to-CRLF
+  normalization warnings. Step 322 is the next focused Phase C `div`
+  style-vocabulary slice after Step 321 lands on `master`.

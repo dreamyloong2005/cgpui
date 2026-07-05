@@ -151,8 +151,13 @@ int main() {
       !contains(ledger, "`ElementBuilder::items_center()`") ||
       !contains(ledger, "`ElementBuilder::justify_between()`") ||
       !contains(ledger, "`ElementBuilder::flex_1()`") ||
+      !contains(ledger, "`ElementBuilder::w(...)`") ||
+      !contains(ledger, "`ElementBuilder::bg(...)`") ||
+      !contains(ledger, "`ElementBuilder::border_1()`") ||
+      !contains(ledger, "`ElementBuilder::rounded(...)`") ||
       !contains(ledger, "src/ui/element_builder_interaction.cpp") ||
       !contains(ledger, "src/ui/element_builder_layout.cpp") ||
+      !contains(ledger, "src/ui/element_builder_style.cpp") ||
       !contains(ledger, "src/ui/element_style_nodes.cpp") ||
       !contains(ledger, "tests/architecture/ui_source_structure_test.cpp") ||
       !contains(ledger, "tests/ui/element_test.cpp") ||

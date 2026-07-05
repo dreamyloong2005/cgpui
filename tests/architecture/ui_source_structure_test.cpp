@@ -921,14 +921,29 @@ int main() {
   }
   const std::string element_builder_layout_source =
       read_source("src/ui/element_builder_layout.cpp");
+  const std::string element_builder_style_source =
+      read_source("src/ui/element_builder_style.cpp");
   if (!contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::items_center()") ||
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::justify_between()") ||
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::flex_1()") ||
-      contains(read_source("src/ui/element_builder_style.cpp"),
-               "ElementBuilder::items_center()")) {
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::w(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::h(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::border_1()") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::bg(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::text_color(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::rounded(") ||
+      contains(element_builder_style_source, "ElementBuilder::items_center()") ||
+      contains(element_builder_style_source, "ElementBuilder::w(") ||
+      contains(element_builder_layout_source, "ElementBuilder::bg(")) {
     return 146;
   }
 
