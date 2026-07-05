@@ -320,11 +320,12 @@ shape before deeper native work expands platform behavior.
   implementation isolated in `src/ui/test_context_pointer.cpp`. Step 297 adds
   direct window activation/focus dispatch plus element focus/release helpers,
   with the implementation isolated in `src/ui/test_context_focus.cpp`. Step
-  298 adds direct clipboard read/write helpers plus copy/cut/paste forwarding
-  over the existing runtime clipboard operations, with the implementation
-  isolated in `src/ui/test_context_clipboard.cpp` and runtime text read/write
-  ownership kept in `src/ui/runtime_clipboard.cpp`. The remaining queue is Step
-  299 timer and async advancement helpers, and Step 300 redraw/frame pump
+  298 is merged on `master` at `96c7c96`: it adds direct clipboard read/write
+  helpers plus copy/cut/paste forwarding over the existing runtime clipboard
+  operations, with the implementation isolated in
+  `src/ui/test_context_clipboard.cpp` and runtime text read/write ownership
+  kept in `src/ui/runtime_clipboard.cpp`. The remaining queue is Step 299
+  timer and async advancement helpers, and Step 300 redraw/frame pump
   simulation.
 - [ ] Steps 301-306: Add public error/result conventions for window opening,
   platform services, async spawn, and renderer creation.
@@ -631,11 +632,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 299 timer and async advancement helpers are next after Step 298 clipboard
-helpers land. Step 298 records direct clipboard read/write helpers plus
-copy/cut/paste forwarding through the existing runtime clipboard path while
-keeping timer/async advancement, redraw/frame pumping, `ClipboardItem` payload
-parity, and action macro payloads out of scope.
+Step 299 timer and async advancement helpers are next after the merged Step
+298 clipboard helper slice. Step 298 records direct clipboard read/write
+helpers plus copy/cut/paste forwarding through the existing runtime clipboard
+path while keeping timer/async advancement, redraw/frame pumping,
+`ClipboardItem` payload parity, and action macro payloads out of scope.
 
 ## Self-Review
 
