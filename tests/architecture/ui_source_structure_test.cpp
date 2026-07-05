@@ -516,6 +516,7 @@ int main() {
       !contains(test_context_header, "void advance_time(") ||
       !contains(test_context_header, "void run_until_parked(") ||
       !contains(test_context_header, "void request_redraw(") ||
+      !contains(test_context_header, "Result<void> try_draw_frame(") ||
       !contains(test_context_header, "void draw_frame(") ||
       !contains(test_context_header, "void advance_time_until_parked(") ||
       !contains(test_context_header, "bool complete_task(") ||
@@ -648,6 +649,8 @@ int main() {
                 "Result<Renderer*> try_create_renderer(") ||
       !contains(window_runtime_header,
                 "Result<void> try_resize_surface(") ||
+      !contains(window_runtime_header,
+                "Result<void> try_draw_frame(") ||
       !contains(window_runtime_header,
                 "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
@@ -1080,6 +1083,7 @@ int main() {
       "src/ui/runtime_window_results.cpp",
       "src/ui/runtime_renderer_results.cpp",
       "src/ui/runtime_renderer_resize_results.cpp",
+      "src/ui/runtime_renderer_frame_results.cpp",
       "src/ui/window.cpp",
       "src/ui/window_context.cpp",
       "src/ui/runtime_theme.cpp",
@@ -1409,15 +1413,32 @@ int main() {
     return 141;
   }
 
+  const std::string runtime_renderer_frame_results_source =
+      read_source("src/ui/runtime_renderer_frame_results.cpp");
+  if (line_count(runtime_renderer_frame_results_source) > 180 ||
+      !contains(runtime_renderer_frame_results_source,
+                "Result<void> WindowRuntime::try_draw_frame(") ||
+      !contains(runtime_renderer_frame_results_source,
+                "WindowRuntime::try_draw_frame_for_record(") ||
+      !contains(runtime_renderer_frame_results_source, "render_view(") ||
+      !contains(runtime_renderer_frame_results_source, "frame_index_ += 1") ||
+      contains(runtime_renderer_frame_results_source, "fail_and_quit(") ||
+      contains(runtime_renderer_frame_results_source,
+               "WindowRuntime::try_resize_surface(") ||
+      contains(runtime_renderer_frame_results_source,
+               "WindowRuntime::try_create_renderer(")) {
+    return 142;
+  }
+
   const std::string runtime_window_rendering_source =
       read_source("src/ui/runtime_window_rendering.cpp");
   if (line_count(runtime_window_rendering_source) > 120 ||
       !contains(runtime_window_rendering_source,
                 "void WindowRuntime::handle_redraw_for_record(") ||
       !contains(runtime_window_rendering_source,
-                "ViewContext render_context = context_for_record(record)") ||
-      !contains(runtime_window_rendering_source,
-                "auto result = render_view(") ||
+                "try_draw_frame_for_record(record, view)") ||
+      contains(runtime_window_rendering_source,
+               "render_view(") ||
       contains(runtime_window_rendering_source,
                "void WindowRuntime::activate_native_window_for_record(")) {
     return 66;
@@ -1820,12 +1841,17 @@ int main() {
   if (!contains(test_context_rendering_source,
                 "void TestContextCapability::request_redraw(") ||
       !contains(test_context_rendering_source,
+                "Result<void> TestContextCapability::try_draw_frame(") ||
+      !contains(test_context_rendering_source,
                 "void TestContextCapability::draw_frame(") ||
       !contains(test_context_rendering_source,
                 "context_->runtime.schedule_redraw()") ||
       !contains(test_context_rendering_source,
+                "context_->runtime.try_draw_frame()") ||
+      !contains(test_context_rendering_source,
                 "context_->runtime.handle_event(WindowRedrawRequested{})") ||
       contains(test_context_source, "request_redraw(") ||
+      contains(test_context_source, "try_draw_frame(") ||
       contains(test_context_source, "draw_frame(") ||
       line_count(test_context_rendering_source) > 80 ||
       contains(test_context_rendering_source, "ElementContextCapability")) {

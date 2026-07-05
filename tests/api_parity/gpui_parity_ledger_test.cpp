@@ -129,6 +129,10 @@ int main() {
       !contains(ledger, "src/ui/runtime_renderer_resize_results.cpp") ||
       !contains(ledger,
                 "tests/api_parity/renderer_resize_result_conventions_test.cpp") ||
+      !contains(ledger, "`try_draw_frame() -> Result<void>`") ||
+      !contains(ledger, "src/ui/runtime_renderer_frame_results.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/renderer_frame_result_conventions_test.cpp") ||
       !contains(ledger, "`try_install_native_menu(...) -> "
                         "Result<NativeMenuInstallation>`") ||
       !contains(ledger, "`try_show_native_file_dialog(...) -> "
@@ -239,6 +243,7 @@ int main() {
       !contains(ledger, "copy/cut/paste clipboard forwarding") ||
       !contains(ledger, "run-until-parked timer/async advancement helpers") ||
       !contains(ledger, "redraw/frame pump helpers") ||
+      !contains(ledger, "`try_draw_frame() -> Result<void>`") ||
       !contains(ledger, "src/ui/test_context_pointer.cpp") ||
       !contains(ledger, "src/ui/test_context_focus.cpp") ||
       !contains(ledger, "src/ui/test_context_clipboard.cpp") ||
@@ -363,6 +368,7 @@ int main() {
               "run_until_parked",
               "advance_time_until_parked",
               "request_redraw",
+              "try_draw_frame",
               "draw_frame",
               "test_context_time_async_test",
               "test_context_frame_pump_test",
@@ -383,6 +389,8 @@ int main() {
               "Result<void>",
               "runtime_renderer_resize_results.cpp",
               "renderer_resize_result_conventions_test",
+              "runtime_renderer_frame_results.cpp",
+              "renderer_frame_result_conventions_test",
               "try_install_native_menu",
               "Result<NativeMenuInstallation>",
               "try_show_native_file_dialog",
@@ -1011,6 +1019,7 @@ int main() {
                 "target(\"test_context_pointer_simulation_test\")") ||
       !contains(xmake, "target(\"test_context_time_async_test\")") ||
       !contains(xmake, "target(\"test_context_frame_pump_test\")") ||
+      !contains(xmake, "target(\"renderer_frame_result_conventions_test\")") ||
       !contains(xmake, "target(\"async_spawn_result_conventions_test\")") ||
       !contains(xmake, "target(\"api_parity_hello_world\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -1071,6 +1080,8 @@ int main() {
                 "tests/ui/test_context_time_async_test.cpp") ||
       !contains(xmake,
                 "tests/ui/test_context_frame_pump_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/renderer_frame_result_conventions_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp")) {

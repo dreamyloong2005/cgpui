@@ -5205,3 +5205,24 @@
   `src/ui/runtime_renderer_resize_results.cpp`. Existing redraw orchestration
   stays in `src/ui/runtime_rendering.cpp` and renderer creation stays in
   `src/ui/runtime_renderer_results.cpp`.
+
+## 2026-07-05 Phase B Step 306 Renderer Frame Result Conventions
+
+- Step 306 stays scoped to frame/redraw Result conventions. It should not
+  start `ClipboardItem` payload parity, upstream `gpui::test` macro
+  equivalents, action macro payloads, task priorities, structured task groups,
+  or broader async/runtime production depth.
+- The public API shape is `WindowRuntime::try_draw_frame() -> Result<void>`
+  plus `TestContextCapability::try_draw_frame() -> Result<void>`. Existing
+  redraw events and `TestContextCapability::draw_frame()` remain
+  source-compatible fail-and-quit wrappers.
+- Runtime frame Result ownership belongs in focused
+  `src/ui/runtime_renderer_frame_results.cpp`; `src/ui/runtime_rendering.cpp`
+  and `src/ui/runtime_window_rendering.cpp` should stay thin compatibility
+  wrappers, and `src/ui/test_context_rendering.cpp` should only forward the
+  test-context Result helper.
+- The behavior/API guard is
+  `tests/api_parity/renderer_frame_result_conventions_test.cpp`, covering API
+  spelling, begin-frame errors, present errors, compatibility fail-and-quit,
+  and test-context Result forwarding. The structure guard is
+  `tests/architecture/ui_source_structure_test.cpp`.

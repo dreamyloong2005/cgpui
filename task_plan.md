@@ -1793,5 +1793,13 @@ implementation slice.
   `resize_surface(...)` remains the compatibility wrapper that fails and quits
   on renderer resize errors. Focused behavior and structure coverage lives in
   `tests/api_parity/renderer_resize_result_conventions_test.cpp` and
-  `tests/architecture/ui_source_structure_test.cpp`. Step 306 renderer
-  frame/redraw Result conventions is the next Phase B slice.
+  `tests/architecture/ui_source_structure_test.cpp`. Phase B Step 306
+  renderer frame/redraw Result conventions is implemented in the feature
+  worktree: `WindowRuntime` and `TestContextCapability` expose
+  `try_draw_frame() -> Result<void>`, renderer frame Result ownership is
+  isolated in `src/ui/runtime_renderer_frame_results.cpp`, and redraw event /
+  `draw_frame()` compatibility remains fail-and-quit. Focused Windows GREEN
+  verification passed
+  `renderer_frame_result_conventions_test/default` and
+  `ui_source_structure_test/default`; full Windows/WSL and merge verification
+  are pending.

@@ -23,9 +23,7 @@ void apply_text_input_for_event(const PlatformEvent& event);
     const PlatformEvent& event);
 void finish_event_dispatch(EventResult result);
 void handle_resize(const WindowResized& event);
-void handle_redraw();
-void schedule_redraw();
-void flush_deferred_redraw_request();
+void handle_redraw(), schedule_redraw(), flush_deferred_redraw_request();
 void request_platform_wakeup();
 void handle_wakeup();
 void drain_deferred_callbacks();
@@ -46,6 +44,7 @@ void record_platform_diagnostic(PlatformDiagnosticEvent event);
 void fail_and_quit(Error error);
 void activate_native_window_for_record(WindowRuntimeRecord& record);
 [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor, std::string_view empty_renderer_message);
+[[nodiscard]] Result<void> try_draw_frame_for_record(WindowRuntimeRecord& record, View& view);
 [[nodiscard]] RuntimeTaskDiagnostics task_diagnostics() const;
 [[nodiscard]] WindowRuntimeContext context_for_record(
     const WindowRuntimeRecord& record);

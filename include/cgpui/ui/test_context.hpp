@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/core/error.hpp"
 #include "cgpui/ui/runtime_actions.hpp"
 #include "cgpui/ui/runtime_diagnostics.hpp"
 #include "cgpui/ui/runtime_events.hpp"
@@ -42,6 +43,7 @@ class TestContextCapability {
   void advance_time(std::uint64_t delta_ms) const;
   void run_until_parked() const;
   void request_redraw() const;
+  [[nodiscard]] Result<void> try_draw_frame() const;
   void draw_frame() const;
   void advance_time_until_parked(std::uint64_t delta_ms) const;
   [[nodiscard]] bool cancel_timer(TimerId id) const;

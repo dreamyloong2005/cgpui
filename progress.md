@@ -11380,3 +11380,48 @@
   `XMAKE_ROOT=y xmake test -P .` passed 88/88.
 - Step 305 is complete on `master`; Step 306 renderer frame/redraw Result
   conventions is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 306 Renderer Frame Result Conventions
+
+- Continued `.worktrees/phase-b-renderer-frame-results` on
+  `codex/phase-b-renderer-frame-results` from `b55bf65 docs: mark step 305
+  merged`.
+- Confirmed Step 301 was already complete on `master`; the active missing
+  Phase B slice is Step 306 renderer frame/redraw Result conventions.
+- RED added
+  `tests/api_parity/renderer_frame_result_conventions_test.cpp` and xmake
+  registration. After refreshing xmake configuration, the target failed as
+  expected because `WindowRuntime` and `TestContextCapability` did not expose
+  `try_draw_frame()`.
+- GREEN adds `try_draw_frame() -> Result<void>` on `WindowRuntime` and
+  `TestContextCapability`, isolates frame/redraw Result propagation in
+  `src/ui/runtime_renderer_frame_results.cpp`, and keeps redraw event plus
+  `draw_frame()` compatibility paths as fail-and-quit wrappers.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . renderer_frame_result_conventions_test/default
+  ui_source_structure_test/default` passed 2/2.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . renderer_frame_result_conventions_test/default
+  renderer_resize_result_conventions_test/default
+  renderer_result_conventions_test/default window_runtime_rendering_test/default
+  test_context_frame_pump_test/default public_result_conventions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  10/10.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 92/92.
+- Fresh WSL Arch Linux focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  renderer_frame_result_conventions_test/default
+  renderer_resize_result_conventions_test/default
+  renderer_result_conventions_test/default window_runtime_rendering_test/default
+  test_context_frame_pump_test/default public_result_conventions_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  10/10.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake test -P .` passed 89/89.

@@ -130,9 +130,8 @@ class WindowRuntime {
   [[nodiscard]] bool write_clipboard_text(std::string_view text), paste_clipboard_text();
   [[nodiscard]] bool copy_selection_to_clipboard(), cut_selection_to_clipboard();
   void set_element_cursor(ElementId element_id, CursorShape cursor_shape);
-  void request_render();
-  void request_layout();
-  void request_paint();
+  void request_render(), request_layout(), request_paint();
+  [[nodiscard]] Result<void> try_draw_frame();
   void defer(DeferredCallback callback);
   [[nodiscard]] TimerId schedule_timer(
       std::uint64_t delay_ms,
