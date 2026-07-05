@@ -309,7 +309,7 @@ shape before deeper native work expands platform behavior.
   scope when needed, installs valid enabled entries through
   `src/ui/runtime_command_palette_keys.cpp`, and keeps fuller test-context
   simulation for later slices.
-- [ ] Steps 295-300: Implement test-context equivalents for simulating
+- [x] Steps 295-300: Implement test-context equivalents for simulating
   keystrokes, pointer input, window focus, clipboard, timers, async tasks, and
   redraws. Step 295 is merged on `master` at `04cfa7a`: `TestContextCapability`
   now exposes direct `dispatch_keystroke(...)` plus grammar-backed
@@ -329,10 +329,11 @@ shape before deeper native work expands platform behavior.
   runtime wakeup order for ready task completions, due timers, deferred
   callbacks, and deferred redraw flushing without advancing future timers;
   scheduling helper ownership is isolated in
-  `src/ui/test_context_scheduling.cpp`. Step 300 adds
-  `request_redraw()` and `draw_frame()` test-context helpers over the real
-  runtime redraw scheduling and `WindowRedrawRequested` frame path, with
-  rendering helper ownership isolated in `src/ui/test_context_rendering.cpp`.
+  `src/ui/test_context_scheduling.cpp`. Step 300 is merged on `master` at
+  `8ac5aa0`: it adds `request_redraw()` and `draw_frame()` test-context
+  helpers over the real runtime redraw scheduling and
+  `WindowRedrawRequested` frame path, with rendering helper ownership isolated
+  in `src/ui/test_context_rendering.cpp`.
 - [ ] Steps 301-306: Add public error/result conventions for window opening,
   platform services, async spawn, and renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
@@ -638,11 +639,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 301 public error/result conventions is next after Step 300 redraw/frame
-pump simulation lands on `master`. Step 300 records `request_redraw()` and
-`draw_frame()` over the existing runtime redraw path while keeping
-`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, and
-action macro payloads out of scope.
+Step 301 public error/result conventions is next. Step 300 is complete on
+`master` at `8ac5aa0` and records `request_redraw()` plus `draw_frame()` over
+the existing runtime redraw path while keeping `ClipboardItem` payload parity,
+upstream `gpui::test` macro equivalents, and action macro payloads out of
+scope.
 
 ## Self-Review
 

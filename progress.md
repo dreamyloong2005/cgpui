@@ -11034,3 +11034,16 @@
 - Step 300 is implemented and focused/full verified in the feature worktree.
   It is ready for feature commit and merge verification. Step 301 public
   error/result conventions is the next slice after Step 300 lands on `master`.
+
+## 2026-07-05 Phase B Step 300 Merge
+
+- Fast-forward merged `codex/phase-b-test-context-frame-pump` into `master`
+  at `8ac5aa0 feat: add test context frame pump helpers`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 86/86.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 83/83.
+- Step 300 is complete on `master`; Step 301 public error/result conventions
+  is the next Phase B slice.

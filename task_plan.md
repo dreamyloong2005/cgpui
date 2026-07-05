@@ -1752,8 +1752,9 @@ implementation slice.
   full-debug 82/82 verification. It adds `run_until_parked()` and
   `advance_time_until_parked(...)` over the real runtime wakeup order, with
   ownership isolated in `src/ui/test_context_scheduling.cpp`. Phase B Step
-  300 redraw/frame pump simulation is implemented and feature-worktree
-  verified on Windows and WSL Arch Linux with `request_redraw()` and
-  `draw_frame()` isolated in `src/ui/test_context_rendering.cpp`; feature
-  commit and merge verification are pending. Step 301 public error/result
-  conventions is the next slice after Step 300 lands on `master`.
+  300 redraw/frame pump simulation is complete on `master` at `8ac5aa0` after
+  post-merge Windows full-debug 86/86 and WSL Arch Linux full-debug 83/83
+  verification. It adds `request_redraw()` and `draw_frame()` over the real
+  runtime redraw scheduling and `WindowRedrawRequested` frame path, with
+  ownership isolated in `src/ui/test_context_rendering.cpp`. Step 301 public
+  error/result conventions is the next Phase B slice.
