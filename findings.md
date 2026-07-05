@@ -5578,3 +5578,14 @@
 - Step 324 should handle the remaining `div` shadow vocabulary/storage as its
   own slice so shadow state, paint metadata, and structure tests can be shaped
   deliberately.
+
+## 2026-07-05 Phase C Step 323 Merge
+
+- Step 323 is merged on `master` at
+  `78f2f05 feat: add div text style helpers` and post-merge verified with
+  Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux full
+  debug 96/96.
+- Step 324 should now add the remaining `div` shadow vocabulary/storage while
+  keeping font-weight, line-height, inherited text-style cascade, widget
+  behavior, uniform-list behavior, broad style rewrites, and the Phase B
+  closeout exclusions out of the slice.

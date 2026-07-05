@@ -1904,7 +1904,8 @@ implementation slice.
   style-vocabulary slice.
 
 - Phase C Step 323, `div` text-style helper aliases, is implemented in
-  `.worktrees/phase-c-div-text-shadow-helpers`: `ElementBuilder` exposes
+  `.worktrees/phase-c-div-text-shadow-helpers` and merged on `master` at
+  `78f2f05`: `ElementBuilder` exposes
   `text_size(...)` and `font_family(...)` over existing `Style::font_size` and
   `Style::font` fields. Implementation ownership stays in
   `src/ui/element_builder_style.cpp`; the aggregate header only declares the
@@ -1913,6 +1914,7 @@ implementation slice.
   and the parity ledger guard tracks the new public helper names.
   Feature-worktree verification passed JSON validation, `git diff --check`
   with only expected LF-to-CRLF warnings, focused public/structure gates 6/6,
-  Windows full debug 99/99, and WSL Arch Linux full debug 96/96. Step 323 is
-  ready for feature commit and merge verification. Step 324 is the next
-  focused Phase C `div` shadow vocabulary/storage slice.
+  Windows full debug 99/99, and WSL Arch Linux full debug 96/96. Post-merge
+  verification passed JSON validation, Windows full debug 99/99, and WSL Arch
+  Linux full debug 96/96. Step 324 is the next focused Phase C `div` shadow
+  vocabulary/storage slice.

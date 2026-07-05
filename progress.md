@@ -12176,3 +12176,17 @@
   worktree. It is ready for feature commit and merge verification. Step 324 is
   the next Phase C `div` shadow vocabulary/storage slice after Step 323 lands
   on `master`.
+
+## 2026-07-05 Phase C Step 323 Merge
+
+- Committed `codex/phase-c-div-text-shadow-helpers` as
+  `78f2f05 feat: add div text style helpers`.
+- Fast-forward merged the branch into `master` at `78f2f05`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 323 is complete on `master`; Step 324, the remaining focused Phase C
+  `div` shadow vocabulary/storage slice, is next.
