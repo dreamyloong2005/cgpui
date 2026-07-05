@@ -43,6 +43,8 @@ class TestContextCapabilityView final : public cgpui::View {
 
     test_context.clear_invalidation();
     test_context.run_until_parked();
+    test_context.request_redraw();
+    test_context.draw_frame();
     test_context.advance_time(0);
     test_context.advance_time_until_parked(0);
     (void)test_context.cancel_timer(cgpui::TimerId{999});
@@ -95,6 +97,11 @@ static_assert(std::same_as<decltype(std::declval<Capability>().advance_time(
                            void>);
 static_assert(std::same_as<decltype(std::declval<Capability>()
                                         .run_until_parked()),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>()
+                                        .request_redraw()),
+                           void>);
+static_assert(std::same_as<decltype(std::declval<Capability>().draw_frame()),
                            void>);
 static_assert(
     std::same_as<decltype(std::declval<Capability>()

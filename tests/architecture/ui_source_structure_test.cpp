@@ -143,6 +143,7 @@ int main() {
       "tests/ui/test_context_focus_activation_test.cpp",
       "tests/ui/test_context_clipboard_test.cpp",
       "tests/ui/test_context_time_async_test.cpp",
+      "tests/ui/test_context_frame_pump_test.cpp",
   };
   for (const char* test_file : runtime_test_files) {
     if (read_source(test_file).empty()) {
@@ -177,6 +178,8 @@ int main() {
       line_count(read_source("tests/ui/test_context_clipboard_test.cpp")) >
           240 ||
       line_count(read_source("tests/ui/test_context_time_async_test.cpp")) >
+          240 ||
+      line_count(read_source("tests/ui/test_context_frame_pump_test.cpp")) >
           240) {
     return 112;
   }
@@ -508,6 +511,8 @@ int main() {
       !contains(test_context_header, "ViewInputState input_state() const") ||
       !contains(test_context_header, "void advance_time(") ||
       !contains(test_context_header, "void run_until_parked(") ||
+      !contains(test_context_header, "void request_redraw(") ||
+      !contains(test_context_header, "void draw_frame(") ||
       !contains(test_context_header, "void advance_time_until_parked(") ||
       !contains(test_context_header, "bool complete_task(") ||
       !contains(test_context_header, "void drain_task_completions(") ||
@@ -1625,6 +1630,8 @@ int main() {
       read_source("src/ui/test_context_clipboard.cpp");
   const std::string test_context_scheduling_source =
       read_source("src/ui/test_context_scheduling.cpp");
+  const std::string test_context_rendering_source =
+      read_source("src/ui/test_context_rendering.cpp");
   if (!contains(test_context_source,
                 "WindowRuntimeId TestContextCapability::runtime_id() const") ||
       !contains(test_context_source,
@@ -1736,6 +1743,20 @@ int main() {
       line_count(test_context_scheduling_source) > 120 ||
       contains(test_context_scheduling_source, "ElementContextCapability")) {
     return 137;
+  }
+  if (!contains(test_context_rendering_source,
+                "void TestContextCapability::request_redraw(") ||
+      !contains(test_context_rendering_source,
+                "void TestContextCapability::draw_frame(") ||
+      !contains(test_context_rendering_source,
+                "context_->runtime.schedule_redraw()") ||
+      !contains(test_context_rendering_source,
+                "context_->runtime.handle_event(WindowRedrawRequested{})") ||
+      contains(test_context_source, "request_redraw(") ||
+      contains(test_context_source, "draw_frame(") ||
+      line_count(test_context_rendering_source) > 80 ||
+      contains(test_context_rendering_source, "ElementContextCapability")) {
+    return 138;
   }
 
   const std::string element_context_source =

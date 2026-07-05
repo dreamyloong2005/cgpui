@@ -5026,3 +5026,24 @@
 - The behavior guard belongs in `tests/ui/test_context_time_async_test.cpp`:
   it should prove nested ready work drains to parked, future timers stay
   pending until time is advanced, and time advancement then parks again.
+
+## 2026-07-05 Phase B Step 300 Test-Context Frame Pump
+
+- Step 300 stays scoped to redraw/frame pumping on the public
+  `TestContextCapability`. It should not start upstream `gpui::test` macro
+  equivalents, `ClipboardItem` payload parity, action macro payload work, or
+  broader visual element drawing helpers.
+- The upstream-adjacent behavior is a window-bound test draw path: CGPUI keeps
+  this as `request_redraw()` for scheduling through the runtime redraw
+  coalescing path and `draw_frame()` for directly simulating a platform
+  `WindowRedrawRequested` frame. Both helpers pump the real runtime renderer,
+  after-frame callback, diagnostics, and frame-index path.
+- Implementation ownership belongs in focused
+  `src/ui/test_context_rendering.cpp`. `src/ui/test_context.cpp` remains the
+  observability/construction file, `src/ui/test_context_scheduling.cpp`
+  remains timer/async-only, and renderer/runtime internals should not grow
+  test-only shortcuts.
+- The behavior guard belongs in `tests/ui/test_context_frame_pump_test.cpp`:
+  it should prove `request_redraw()` goes through platform redraw scheduling,
+  `draw_frame()` can pump a frame without issuing another platform redraw
+  request, and runtime diagnostics track the pumped frames.

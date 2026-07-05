@@ -10981,3 +10981,56 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 82/82.
 - Step 299 is complete on `master`; Step 300 redraw/frame pump simulation is
   the next test-context helper slice.
+
+## 2026-07-05 Phase B Step 300 Test-Context Frame Pump
+
+- Created feature worktree `.worktrees/phase-b-test-context-frame-pump` on
+  `codex/phase-b-test-context-frame-pump` from
+  `f53122a docs: mark step 299 merged`.
+- Checked pinned upstream `app/test_context.rs`: upstream visual test context
+  exposes a draw-oriented window test path, while CGPUI's current test context
+  is already bound to a single runtime/window. The Step 300 shape is therefore
+  `request_redraw()` plus `draw_frame()` on `TestContextCapability`.
+- RED added public API coverage, `tests/ui/test_context_frame_pump_test.cpp`,
+  xmake registration, and structure guards. RED failed as expected because
+  `TestContextCapability` did not expose `request_redraw()` or `draw_frame()`.
+- GREEN adds `request_redraw()` and `draw_frame()` in focused
+  `src/ui/test_context_rendering.cpp`. `request_redraw()` uses the real runtime
+  redraw scheduler; `draw_frame()` simulates `WindowRedrawRequested` through
+  the runtime event path.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . test_context_capability_test/default
+  test_context_frame_pump_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` passed 4/4.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . test_context_frame_pump_test/default
+  test_context_capability_test/default test_context_time_async_test/default
+  test_context_clipboard_test/default test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_rendering_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 12/12.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 86/86.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  test_context_frame_pump_test/default test_context_capability_test/default
+  test_context_time_async_test/default test_context_clipboard_test/default
+  test_context_focus_activation_test/default
+  test_context_pointer_simulation_test/default
+  test_context_keystroke_simulation_test/default
+  window_runtime_rendering_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 12/12.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake test -y -P .` passed 83/83.
+- Step 300 is implemented and focused/full verified in the feature worktree.
+  It is ready for feature commit and merge verification. Step 301 public
+  error/result conventions is the next slice after Step 300 lands on `master`.

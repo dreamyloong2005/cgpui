@@ -329,8 +329,10 @@ shape before deeper native work expands platform behavior.
   runtime wakeup order for ready task completions, due timers, deferred
   callbacks, and deferred redraw flushing without advancing future timers;
   scheduling helper ownership is isolated in
-  `src/ui/test_context_scheduling.cpp`. The remaining queue is Step 300
-  redraw/frame pump simulation.
+  `src/ui/test_context_scheduling.cpp`. Step 300 adds
+  `request_redraw()` and `draw_frame()` test-context helpers over the real
+  runtime redraw scheduling and `WindowRedrawRequested` frame path, with
+  rendering helper ownership isolated in `src/ui/test_context_rendering.cpp`.
 - [ ] Steps 301-306: Add public error/result conventions for window opening,
   platform services, async spawn, and renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
@@ -636,11 +638,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 300 redraw/frame pump simulation is next. Step 299 is complete on
-`master` and records `run_until_parked()` plus
-`advance_time_until_parked(...)` over the existing runtime wakeup path while
-keeping redraw/frame pumping, `ClipboardItem` payload parity, and action macro
-payloads out of scope.
+Step 301 public error/result conventions is next after Step 300 redraw/frame
+pump simulation lands on `master`. Step 300 records `request_redraw()` and
+`draw_frame()` over the existing runtime redraw path while keeping
+`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, and
+action macro payloads out of scope.
 
 ## Self-Review
 
