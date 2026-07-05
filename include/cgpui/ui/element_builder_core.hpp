@@ -41,6 +41,9 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder bg(Color color) &&;
   [[nodiscard]] ElementBuilder foreground(Color color) &&;
   [[nodiscard]] ElementBuilder text_color(Color color) &&;
+  [[nodiscard]] ElementBuilder overflow(Overflow value) &&;
+  [[nodiscard]] ElementBuilder overflow_hidden() &&;
+  [[nodiscard]] ElementBuilder overflow_visible() &&;
   [[nodiscard]] ElementBuilder font(FontDescriptor descriptor) &&;
   [[nodiscard]] ElementBuilder font_size(float value) &&;
   [[nodiscard]] ElementBuilder border_width(EdgeSizes edges) &&;
@@ -48,6 +51,7 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder border_color(Color color) &&;
   [[nodiscard]] ElementBuilder border_radius(BorderRadii radius) &&;
   [[nodiscard]] ElementBuilder rounded(float radius) &&;
+  [[nodiscard]] ElementBuilder opacity(float value) &&;
   [[nodiscard]] ElementBuilder gap(float value) &&;
   [[nodiscard]] ElementBuilder align_items(AlignItems value) &&;
   [[nodiscard]] ElementBuilder items_start() &&;
@@ -62,9 +66,15 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder flex_shrink(float value) &&;
   [[nodiscard]] ElementBuilder flex_1() &&;
   [[nodiscard]] ElementBuilder layer(int value) &&;
+  [[nodiscard]] ElementBuilder z_index(int value) &&;
   [[nodiscard]] ElementBuilder position(Position value) &&;
   [[nodiscard]] ElementBuilder absolute() &&;
+  [[nodiscard]] ElementBuilder relative() &&;
   [[nodiscard]] ElementBuilder inset(EdgeSizes edges) &&;
+  [[nodiscard]] ElementBuilder top(float value) &&;
+  [[nodiscard]] ElementBuilder right(float value) &&;
+  [[nodiscard]] ElementBuilder bottom(float value) &&;
+  [[nodiscard]] ElementBuilder left(float value) &&;
   [[nodiscard]] ElementBuilder enabled(bool value) &&;
   [[nodiscard]] ElementBuilder disabled() &&;
   [[nodiscard]] ElementBuilder focusable() &&;

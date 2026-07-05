@@ -935,15 +935,37 @@ int main() {
                 "ElementBuilder ElementBuilder::h(") ||
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::border_1()") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::z_index(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::relative()") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::top(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::right(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::bottom(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::left(") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::bg(") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::text_color(") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::rounded(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::overflow(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::overflow_hidden()") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::overflow_visible()") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::opacity(") ||
       contains(element_builder_style_source, "ElementBuilder::items_center()") ||
       contains(element_builder_style_source, "ElementBuilder::w(") ||
-      contains(element_builder_layout_source, "ElementBuilder::bg(")) {
+      contains(element_builder_style_source, "ElementBuilder::z_index(") ||
+      contains(element_builder_layout_source, "ElementBuilder::bg(") ||
+      contains(element_builder_layout_source, "ElementBuilder::opacity(")) {
     return 146;
   }
 

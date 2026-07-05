@@ -504,6 +504,43 @@ int test_element_builder_sizing_color_border_vocabulary_helpers_map_to_existing_
              : 574;
 }
 
+int test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_existing_style() {
+  cgpui::AnyElement positioned_element =
+      cgpui::into_element(cgpui::div()
+                              .overflow_hidden()
+                              .opacity(0.625F)
+                              .z_index(7)
+                              .absolute()
+                              .top(cgpui::px(1.0F))
+                              .right(cgpui::px(2.0F))
+                              .bottom(cgpui::px(3.0F))
+                              .left(cgpui::px(4.0F)));
+  const auto* positioned =
+      dynamic_cast<const cgpui::StyledElement*>(positioned_element.get());
+  if (positioned == nullptr) {
+    return 575;
+  }
+
+  const cgpui::Style& style = positioned->style();
+  if (style.overflow != cgpui::Overflow::hidden ||
+      style.opacity != 0.625F || style.z_index != 7 ||
+      style.position != cgpui::Position::absolute ||
+      style.inset.top != 1.0F || style.inset.right != 2.0F ||
+      style.inset.bottom != 3.0F || style.inset.left != 4.0F) {
+    return 576;
+  }
+
+  cgpui::AnyElement visible_element = cgpui::into_element(
+      cgpui::div().overflow_hidden().overflow_visible().absolute().relative());
+  const auto* visible =
+      dynamic_cast<const cgpui::StyledElement*>(visible_element.get());
+  return visible != nullptr &&
+                 visible->style().overflow == cgpui::Overflow::visible &&
+                 visible->style().position == cgpui::Position::relative
+             ? 0
+             : 577;
+}
+
 int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
   cgpui::AnyElement element =
       cgpui::into_element(cgpui::div()
@@ -4283,6 +4320,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_sizing_color_border_vocabulary_helpers_map_to_existing_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_existing_style();
       result != 0) {
     return result;
   }

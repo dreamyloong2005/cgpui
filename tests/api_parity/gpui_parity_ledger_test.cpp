@@ -155,6 +155,12 @@ int main() {
       !contains(ledger, "`ElementBuilder::bg(...)`") ||
       !contains(ledger, "`ElementBuilder::border_1()`") ||
       !contains(ledger, "`ElementBuilder::rounded(...)`") ||
+      !contains(ledger, "`ElementBuilder::overflow_hidden()`") ||
+      !contains(ledger, "`ElementBuilder::overflow_visible()`") ||
+      !contains(ledger, "`ElementBuilder::opacity(...)`") ||
+      !contains(ledger, "`ElementBuilder::z_index(...)`") ||
+      !contains(ledger, "`ElementBuilder::relative()`") ||
+      !contains(ledger, "`ElementBuilder::top(...)`") ||
       !contains(ledger, "src/ui/element_builder_interaction.cpp") ||
       !contains(ledger, "src/ui/element_builder_layout.cpp") ||
       !contains(ledger, "src/ui/element_builder_style.cpp") ||

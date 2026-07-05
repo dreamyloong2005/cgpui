@@ -1880,3 +1880,22 @@ implementation slice.
   normalization warnings. Post-merge verification passed JSON validation,
   Windows full debug 99/99, and WSL Arch Linux full debug 96/96. Step 322 is
   the next focused Phase C `div` style-vocabulary slice.
+
+- Phase C Step 322, `div` overflow/opacity/position helper aliases, is
+  implemented and full-verified in
+  `.worktrees/phase-c-div-shadow-overflow-text-helpers`: `ElementBuilder`
+  exposes `overflow(...)`, `overflow_hidden()`, `overflow_visible()`,
+  `opacity(...)`, `z_index(...)`, `relative()`, `top(...)`, `right(...)`,
+  `bottom(...)`, and `left(...)` over existing `Style::overflow`,
+  `Style::opacity`, `Style::z_index`, `Style::position`, and `Style::inset`
+  fields. Implementation ownership stays split by module:
+  `overflow(...)`, `overflow_hidden()`, `overflow_visible()`, and
+  `opacity(...)` live in `src/ui/element_builder_style.cpp`; `z_index(...)`,
+  `relative()`, `top(...)`, `right(...)`, `bottom(...)`, and `left(...)` live
+  in `src/ui/element_builder_layout.cpp`. Behavior coverage lives in
+  `tests/ui/element_test.cpp`, structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
+  guard tracks the new public helper names. Feature-worktree verification
+  passed JSON validation, `git diff --check` with only expected LF-to-CRLF
+  warnings, focused public/structure gates 6/6, Windows full debug 99/99, and
+  WSL Arch Linux full debug 96/96.

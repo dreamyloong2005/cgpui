@@ -5531,3 +5531,24 @@
   `rounded(...)` live in `src/ui/element_builder_style.cpp`.
 - The behavior guard is `tests/ui/element_test.cpp`, and the structure guard
   is `tests/architecture/ui_source_structure_test.cpp`.
+
+## 2026-07-05 Phase C Step 322 Div Overflow Opacity Position Helpers
+
+- Step 322 stays scoped to authoring aliases over existing style storage. It
+  adds `overflow(...)`, `overflow_hidden()`, `overflow_visible()`,
+  `opacity(...)`, `z_index(...)`, `relative()`, `top(...)`, `right(...)`,
+  `bottom(...)`, and `left(...)` on `ElementBuilder` without inventing shadow
+  storage, text-style behavior, widget behavior, uniform-list behavior, flex
+  wrap, or a layout-engine rewrite.
+- The durable implementation boundary is split by ownership:
+  `overflow(...)`, `overflow_hidden()`, `overflow_visible()`, and
+  `opacity(...)` live in `src/ui/element_builder_style.cpp`; `z_index(...)`,
+  `relative()`, `top(...)`, `right(...)`, `bottom(...)`, and `left(...)` live
+  in `src/ui/element_builder_layout.cpp`.
+- The single-edge inset helpers preserve the other authored inset edges by
+  copying `style_state_.base.inset`, changing one field, and forwarding through
+  `inset(...)`.
+- The behavior guard is `tests/ui/element_test.cpp`, the structure guard is
+  `tests/architecture/ui_source_structure_test.cpp`, and
+  `tests/api_parity/gpui_parity_ledger_test.cpp` keeps the ledger vocabulary
+  in sync.

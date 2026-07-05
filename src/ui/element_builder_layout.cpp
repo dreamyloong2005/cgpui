@@ -115,6 +115,11 @@ ElementBuilder ElementBuilder::layer(int value) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::z_index(int value) && {
+  style_state_.base = style_state_.base.with_z_index(value);
+  return std::move(*this);
+}
+
 ElementBuilder ElementBuilder::position(Position value) && {
   style_state_.base = style_state_.base.with_position(value);
   return std::move(*this);
@@ -124,9 +129,37 @@ ElementBuilder ElementBuilder::absolute() && {
   return std::move(*this).position(Position::absolute);
 }
 
+ElementBuilder ElementBuilder::relative() && {
+  return std::move(*this).position(Position::relative);
+}
+
 ElementBuilder ElementBuilder::inset(EdgeSizes edges) && {
   style_state_.base = style_state_.base.with_inset(edges);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::top(float value) && {
+  EdgeSizes inset = style_state_.base.inset;
+  inset.top = value;
+  return std::move(*this).inset(inset);
+}
+
+ElementBuilder ElementBuilder::right(float value) && {
+  EdgeSizes inset = style_state_.base.inset;
+  inset.right = value;
+  return std::move(*this).inset(inset);
+}
+
+ElementBuilder ElementBuilder::bottom(float value) && {
+  EdgeSizes inset = style_state_.base.inset;
+  inset.bottom = value;
+  return std::move(*this).inset(inset);
+}
+
+ElementBuilder ElementBuilder::left(float value) && {
+  EdgeSizes inset = style_state_.base.inset;
+  inset.left = value;
+  return std::move(*this).inset(inset);
 }
 
 } // namespace cgpui

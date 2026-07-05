@@ -67,6 +67,19 @@ ElementBuilder ElementBuilder::text_color(Color color) && {
   return std::move(*this).foreground(color);
 }
 
+ElementBuilder ElementBuilder::overflow(Overflow value) && {
+  style_state_.base = style_state_.base.with_overflow(value);
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::overflow_hidden() && {
+  return std::move(*this).overflow(Overflow::hidden);
+}
+
+ElementBuilder ElementBuilder::overflow_visible() && {
+  return std::move(*this).overflow(Overflow::visible);
+}
+
 ElementBuilder ElementBuilder::font(FontDescriptor descriptor) && {
   style_state_.base = style_state_.base.with_font(std::move(descriptor));
   return std::move(*this);
@@ -89,6 +102,11 @@ ElementBuilder ElementBuilder::border_radius(BorderRadii radius) && {
 
 ElementBuilder ElementBuilder::rounded(float radius) && {
   return std::move(*this).border_radius(BorderRadii::all(radius));
+}
+
+ElementBuilder ElementBuilder::opacity(float value) && {
+  style_state_.base = style_state_.base.with_opacity(value);
+  return std::move(*this);
 }
 
 } // namespace cgpui
