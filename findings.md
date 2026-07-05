@@ -5396,3 +5396,31 @@
   public example expansion work author-facing and out of runtime internals.
 - Step 312 should finish the public API compatibility example expansion queue
   without adding runtime behavior or opening deferred Phase B exclusions.
+
+## 2026-07-05 Phase B Step 312 Public Surface Closure Example
+
+- Step 301 is already complete on `master`; the active unfinished Phase B
+  slice is Step 312, not a redo of Step 301.
+- Step 312 stays scoped to public example/test/docs/xmake coverage. It should
+  not add runtime behavior, `ClipboardItem` payload parity, upstream
+  `gpui::test` macro equivalents, action macro payloads, task priorities, or
+  structured task groups.
+- The durable example boundary is
+  `examples/api_parity/public_phase_b_surface_closure/main.cpp`. It must
+  compile using only `cgpui/prelude.hpp`, remain author-facing, and avoid
+  private headers or direct `WindowRuntime` internals.
+- The structure/API guard is
+  `tests/api_parity/public_phase_b_surface_closure_example_test.cpp`, with
+  `tests/api_parity/gpui_parity_ledger_test.cpp` requiring the new example,
+  new test, xmake targets, Markdown ledger entries, and JSON ledger entries so
+  future drift is caught.
+- The closure example intentionally covers frozen Phase B vocabulary in one
+  prelude-only place: `Application`, `App`, `Window`, `AppContext`,
+  `Context<T>`, context capabilities, entity/view handles, typed actions,
+  command palette entries, key binding contexts, `Result<T>`, `ErrorCode`,
+  async/test capabilities, native menu/file dialog Result APIs, task Result
+  APIs, frame Result APIs, and pointer capture/release through public element
+  context helpers.
+- WSL example builds should stay sequential. The first Linux public example
+  build may cold-build static libraries and take around two minutes, while
+  subsequent public example builds are much faster.

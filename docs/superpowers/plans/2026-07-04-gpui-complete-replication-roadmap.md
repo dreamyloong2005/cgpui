@@ -434,8 +434,15 @@ shape before deeper native work expands platform behavior.
   keeps `AsyncContextCapability`, `TestContextCapability`, Result-returning
   task/frame helpers, simulated input, clipboard, and frame-pump examples out
   of private headers and `WindowRuntime` internals.
-- [ ] Step 312: Finish the public API compatibility example expansion queue
-  against the frozen public authoring vocabulary before Phase C.
+- [x] Step 312: Finish the public API compatibility example expansion queue
+  against the frozen public authoring vocabulary before Phase C. Adds
+  `examples/api_parity/public_phase_b_surface_closure/main.cpp`,
+  `api_parity_public_phase_b_surface_closure`, and
+  `tests/api_parity/public_phase_b_surface_closure_example_test.cpp` as the
+  final prelude-only public surface closure example covering app/context,
+  entity/view, action/key, async/test, Result, platform-service, frame, and
+  pointer-capture public vocabulary without private headers or `WindowRuntime`
+  internals.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
   authoring vocabulary before Phase C.
 
@@ -737,9 +744,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 312 should finish the public API compatibility example expansion queue
-after Step 311 added the prelude-only public async/test workflow example. It
-should add the final public example or guard against the frozen names
+Steps 313-318 should run the final Phase B Windows/WSL verification and freeze
+audit before Phase C. They should close the public authoring vocabulary phase
 without introducing `ClipboardItem` payload parity, upstream `gpui::test` macro
 equivalents, action macro payloads, task priorities, or structured task groups.
 

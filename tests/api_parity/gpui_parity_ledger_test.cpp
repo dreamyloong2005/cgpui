@@ -214,6 +214,9 @@ int main() {
                 "tests/api_parity/public_context_capability_example_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/public_async_test_workflow_example_test.cpp") ||
+      !contains(
+          ledger,
+          "tests/api_parity/public_phase_b_surface_closure_example_test.cpp") ||
       !contains(ledger,
                 "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(ledger,
@@ -224,6 +227,9 @@ int main() {
                 "examples/api_parity/public_context_capabilities/main.cpp") ||
       !contains(ledger,
                 "examples/api_parity/public_async_test_workflow/main.cpp") ||
+      !contains(
+          ledger,
+          "examples/api_parity/public_phase_b_surface_closure/main.cpp") ||
       !contains(ledger, "docs/gpui-public-authoring-vocabulary.md") ||
       !contains(ledger,
                 "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
@@ -418,6 +424,8 @@ int main() {
               "examples/api_parity/public_context_capabilities/main.cpp",
               "public_async_test_workflow_example_test",
               "examples/api_parity/public_async_test_workflow/main.cpp",
+              "public_phase_b_surface_closure_example_test",
+              "examples/api_parity/public_phase_b_surface_closure/main.cpp",
               "public_authoring_vocabulary_freeze_test",
               "docs/gpui-public-authoring-vocabulary.md",
               "try_install_native_menu",
@@ -675,6 +683,68 @@ int main() {
       contains(public_async_test_example, "runtime.") ||
       contains(public_async_test_example, "window_runtime")) {
     return 93;
+  }
+
+  const std::string public_phase_b_example =
+      read_source("examples/api_parity/public_phase_b_surface_closure/main.cpp");
+  if (public_phase_b_example.empty()) {
+    return 94;
+  }
+  if (!contains(public_phase_b_example, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(public_phase_b_example,
+                "class PublicPhaseBSurfaceClosureView") ||
+      !contains(public_phase_b_example,
+                "cgpui::Context<PublicPhaseBSurfaceClosureView>&") ||
+      !contains(public_phase_b_example, "cgpui::IntoElement render") ||
+      !contains(public_phase_b_example,
+                "static_assert(cgpui::Render<PublicPhaseBSurfaceClosureView>)") ||
+      !contains(public_phase_b_example, "cgpui::Application::create()") ||
+      !contains(public_phase_b_example, "cgpui::AppRunnerOptions") ||
+      !contains(public_phase_b_example, "cgpui::WindowOptions") ||
+      !contains(public_phase_b_example, "cgpui::AppContext") ||
+      !contains(public_phase_b_example,
+                "cgpui::ViewContextCapability<PublicPhaseBSurfaceClosureView>") ||
+      !contains(public_phase_b_example, "cgpui::WindowContextCapability") ||
+      !contains(public_phase_b_example, "cgpui::ElementContextCapability") ||
+      !contains(public_phase_b_example, "cgpui::EntityHandle<") ||
+      !contains(public_phase_b_example, "cgpui::WeakEntity<") ||
+      !contains(public_phase_b_example, "cgpui::ViewHandle<") ||
+      !contains(public_phase_b_example, "cgpui::WeakViewHandle<") ||
+      !contains(public_phase_b_example, "cgpui::Action<") ||
+      !contains(public_phase_b_example, "cgpui::CommandPaletteEntry") ||
+      !contains(public_phase_b_example, "cgpui::KeyBindingContext") ||
+      !contains(public_phase_b_example, "cgpui::Result<") ||
+      !contains(public_phase_b_example, "cgpui::ErrorCode") ||
+      !contains(public_phase_b_example, "cgpui::AsyncContextCapability") ||
+      !contains(public_phase_b_example, "cgpui::TestContextCapability") ||
+      !contains(public_phase_b_example, "cgpui::NativeMenuModel") ||
+      !contains(public_phase_b_example, "cgpui::NativeFileDialogOptions") ||
+      !contains(public_phase_b_example, "try_open_window(") ||
+      !contains(public_phase_b_example, "try_install_native_menu(") ||
+      !contains(public_phase_b_example, "try_show_native_file_dialog(") ||
+      !contains(public_phase_b_example, "try_spawn_task(") ||
+      !contains(public_phase_b_example, "try_spawn_background_task(") ||
+      !contains(public_phase_b_example, "try_draw_frame()") ||
+      !contains(public_phase_b_example, "bind_key(") ||
+      !contains(public_phase_b_example,
+                "register_command_palette_entry<") ||
+      !contains(public_phase_b_example, "capture_pointer(") ||
+      !contains(public_phase_b_example, "release_pointer(")) {
+    return 95;
+  }
+  if (contains(public_phase_b_example, "WindowRuntime") ||
+      contains(public_phase_b_example, "#include \"cgpui/ui/") ||
+      contains(public_phase_b_example, "#include \"cgpui/platform/") ||
+      contains(public_phase_b_example, "#include \"cgpui/renderer/") ||
+      contains(public_phase_b_example, "#include \"src/") ||
+      contains(public_phase_b_example, "ClipboardItem") ||
+      contains(public_phase_b_example, "gpui::test") ||
+      contains(public_phase_b_example, "TaskPriority") ||
+      contains(public_phase_b_example, "StructuredTaskGroup") ||
+      contains(public_phase_b_example, ".runtime") ||
+      contains(public_phase_b_example, "runtime.") ||
+      contains(public_phase_b_example, "window_runtime")) {
+    return 96;
   }
 
   const std::string public_vocabulary =
@@ -1276,6 +1346,8 @@ int main() {
       !contains(xmake,
                 "target(\"api_parity_public_async_test_workflow\")") ||
       !contains(xmake,
+                "target(\"api_parity_public_phase_b_surface_closure\")") ||
+      !contains(xmake,
                 "target(\"public_api_compatibility_examples_test\")") ||
       !contains(xmake,
                 "target(\"public_api_example_expansion_test\")") ||
@@ -1283,6 +1355,9 @@ int main() {
                 "target(\"public_context_capability_example_test\")") ||
       !contains(xmake,
                 "target(\"public_async_test_workflow_example_test\")") ||
+      !contains(
+          xmake,
+          "target(\"public_phase_b_surface_closure_example_test\")") ||
       !contains(xmake,
                 "target(\"public_authoring_vocabulary_freeze_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -1359,6 +1434,9 @@ int main() {
           "tests/api_parity/public_async_test_workflow_example_test.cpp") ||
       !contains(
           xmake,
+          "tests/api_parity/public_phase_b_surface_closure_example_test.cpp") ||
+      !contains(
+          xmake,
           "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
@@ -1373,6 +1451,12 @@ int main() {
       !contains(
           xmake,
           "examples/api_parity/public_async_test_workflow/main.cpp")) {
+    return 14;
+  }
+
+  if (!contains(
+          xmake,
+          "examples/api_parity/public_phase_b_surface_closure/main.cpp")) {
     return 14;
   }
 

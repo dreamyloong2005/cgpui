@@ -1831,4 +1831,15 @@ implementation slice.
   async/test workflow example guarded by
   `tests/api_parity/public_async_test_workflow_example_test.cpp` without
   adding runtime behavior or opening deferred Phase B exclusions. Phase B Step
-  312 final public API compatibility example expansion is the next slice.
+  312 final public API compatibility example expansion is implemented and
+  verified in the feature worktree: it adds
+  `examples/api_parity/public_phase_b_surface_closure/main.cpp`,
+  `api_parity_public_phase_b_surface_closure`, and
+  `tests/api_parity/public_phase_b_surface_closure_example_test.cpp` as the
+  final prelude-only Phase B public surface closure example. Windows feature
+  verification passed JSON validation, seven focused public/ledger gates, all
+  five public example builds, and full debug 98/98. WSL Arch Linux feature
+  verification passed JSON validation, seven focused public/ledger gates, all
+  five public example builds, and full debug 95/95. Phase B Steps 313-318 final
+  Windows/WSL verification and public vocabulary freeze audit are the next
+  slices after Step 312 is merged.

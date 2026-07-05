@@ -11776,3 +11776,43 @@
   `XMAKE_ROOT=y xmake test -P .` passed 94/94.
 - Step 311 is complete on `master`; Step 312 final public API compatibility
   example expansion is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 312 Public Surface Closure Example
+
+- Continued `.worktrees/phase-b-public-surface-closure-example` on
+  `codex/phase-b-public-surface-closure-example` after confirming from
+  `task_plan.md`, `findings.md`, `progress.md`, and the complete-replication
+  roadmap that Step 301 is already complete on `master`; the active unfinished
+  Phase B slice is Step 312.
+- Baseline and RED/GREEN were already established before continuation:
+  `tests/api_parity/public_phase_b_surface_closure_example_test.cpp` failed
+  first on the missing
+  `examples/api_parity/public_phase_b_surface_closure/main.cpp`, then GREEN
+  added the prelude-only final Phase B public surface closure example plus
+  xmake targets `public_phase_b_surface_closure_example_test` and
+  `api_parity_public_phase_b_surface_closure`.
+- Completed JSON parity ledger updates for `gpui::Application`, `gpui::App`,
+  `gpui::Context<T>`, `gpui::AsyncWindowContext`, `gpui::TestAppContext`, and
+  `gpui::prelude`; aligned the Markdown ledger `gpui::Application` row with
+  the new final public surface example evidence.
+- Updated the complete-replication roadmap to mark Step 312 checked and shift
+  the immediate next slice to Steps 313-318 final Windows/WSL verification and
+  public vocabulary freeze audit.
+- Fresh Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused public/ledger gates passed 7/7,
+  all five public API example targets built sequentially, and
+  `xmake test -P .` passed 98/98.
+- Fresh WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused public/ledger gates passed 7/7,
+  all five public API example targets built sequentially, and
+  `XMAKE_ROOT=y xmake test -P .` passed 95/95.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Step 312 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Steps
+  313-318 are the final Phase B verification/freeze band after Step 312 lands
+  on `master`.
