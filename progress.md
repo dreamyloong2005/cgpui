@@ -10968,3 +10968,16 @@
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
   `XMAKE_ROOT=y xmake test -y -P .` passed 82/82.
+
+## 2026-07-05 Phase B Step 299 Merge
+
+- Fast-forward merged `codex/phase-b-test-context-time-async` into `master`
+  at `bda1027 feat: add test context time async helpers`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 85/85.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 82/82.
+- Step 299 is complete on `master`; Step 300 redraw/frame pump simulation is
+  the next test-context helper slice.

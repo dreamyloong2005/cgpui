@@ -636,11 +636,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 300 redraw/frame pump simulation is next after the Step 299 timer/async
-advancement helper slice lands on `master`. Step 299 records
-`run_until_parked()` and `advance_time_until_parked(...)` over the existing
-runtime wakeup path while keeping redraw/frame pumping, `ClipboardItem`
-payload parity, and action macro payloads out of scope.
+Step 300 redraw/frame pump simulation is next. Step 299 is complete on
+`master` and records `run_until_parked()` plus
+`advance_time_until_parked(...)` over the existing runtime wakeup path while
+keeping redraw/frame pumping, `ClipboardItem` payload parity, and action macro
+payloads out of scope.
 
 ## Self-Review
 

@@ -1747,9 +1747,10 @@ implementation slice.
   It adds text-only clipboard read/write helpers plus copy/cut/paste
   forwarding through the real runtime clipboard path, with ownership isolated
   in `src/ui/test_context_clipboard.cpp` and `src/ui/runtime_clipboard.cpp`.
-  Phase B Step 299 timer/async advancement helpers is implemented in the
-  feature worktree with `run_until_parked()` and
-  `advance_time_until_parked(...)` isolated in
-  `src/ui/test_context_scheduling.cpp`; merge/post-merge verification is still
-  pending. Step 300 redraw/frame pump simulation remains the last slice in
-  this test-context band.
+  Phase B Step 299 timer/async advancement helpers is complete on `master` at
+  `bda1027` after post-merge Windows full-debug 85/85 and WSL Arch Linux
+  full-debug 82/82 verification. It adds `run_until_parked()` and
+  `advance_time_until_parked(...)` over the real runtime wakeup order, with
+  ownership isolated in `src/ui/test_context_scheduling.cpp`. Step 300
+  redraw/frame pump simulation remains the last slice in this test-context
+  band.
