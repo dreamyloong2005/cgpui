@@ -369,10 +369,12 @@ shape before deeper native work expands platform behavior.
   focused `src/ui/runtime_renderer_results.cpp`; `run(...)` and child-window
   activation now call that boundary instead of calling `renderer_factory_(...)`
   directly.
-- [ ] Step 305: Add renderer-resize result conventions. Implemented in the
-  feature worktree with `WindowRuntime::try_resize_surface(...) ->
-  Result<void>` and focused `src/ui/runtime_renderer_resize_results.cpp`
-  ownership; merge and post-merge verification are pending.
+- [x] Step 305: Add renderer-resize result conventions. Merged on `master` at
+  `a147283` and post-merge verified with Windows full-debug 91/91 and WSL Arch
+  Linux full-debug 88/88. `WindowRuntime::try_resize_surface(...) ->
+  Result<void>` owns the renderer-resize Result boundary in focused
+  `src/ui/runtime_renderer_resize_results.cpp`, while `resize_surface(...)`
+  remains the fail-and-quit compatibility wrapper.
 - [ ] Step 306: Finish renderer frame/redraw result conventions.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
@@ -677,12 +679,13 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 305 renderer result follow-on is next after Step 304 landed on `master` at
-`5f09830`. Step 304 completed `try_create_renderer(...) -> Result<Renderer*>`,
-isolated runtime Result behavior in `src/ui/runtime_renderer_results.cpp`, and
-kept compatibility window-opening behavior intact. `ClipboardItem` payload
-parity, upstream `gpui::test` macro equivalents, and action macro payloads stay
-out of scope.
+Step 306 renderer frame/redraw Result conventions is next after Step 305
+landed on `master` at `a147283`. Step 305 completed
+`try_resize_surface(...) -> Result<void>`, isolated renderer-resize Result
+behavior in `src/ui/runtime_renderer_resize_results.cpp`, and kept
+`resize_surface(...)` compatibility fail-and-quit behavior intact.
+`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, and
+action macro payloads stay out of scope.
 
 ## Self-Review
 

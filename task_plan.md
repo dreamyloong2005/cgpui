@@ -1784,13 +1784,14 @@ implementation slice.
   activation call that boundary instead of calling `renderer_factory_(...)`
   directly. Focused behavior and structure coverage lives in
   `tests/api_parity/renderer_result_conventions_test.cpp` and
-  `tests/architecture/ui_source_structure_test.cpp`. Step 305 renderer Result
-  follow-on is the next Phase B slice. Phase B Step 305 renderer-resize result
-  conventions is implemented in the feature worktree: `WindowRuntime` exposes
+  `tests/architecture/ui_source_structure_test.cpp`. Phase B Step 305
+  renderer-resize result conventions is complete on `master` at `a147283`
+  after post-merge Windows full-debug 91/91 and WSL Arch Linux full-debug
+  88/88 verification: `WindowRuntime` exposes
   `try_resize_surface(...) -> Result<void>` over focused
   `src/ui/runtime_renderer_resize_results.cpp`, while existing
   `resize_surface(...)` remains the compatibility wrapper that fails and quits
   on renderer resize errors. Focused behavior and structure coverage lives in
   `tests/api_parity/renderer_resize_result_conventions_test.cpp` and
-  `tests/architecture/ui_source_structure_test.cpp`; broader verification and
-  merge are pending.
+  `tests/architecture/ui_source_structure_test.cpp`. Step 306 renderer
+  frame/redraw Result conventions is the next Phase B slice.

@@ -11362,3 +11362,21 @@
   It is ready for feature commit and merge verification. Step 306 renderer
   frame/redraw Result conventions is the next slice after Step 305 lands on
   `master`.
+
+## 2026-07-05 Phase B Step 305 Merge
+
+- Committed `codex/phase-b-renderer-error-diagnostics` as
+  `a147283 feat: add renderer resize result conventions`.
+- Before merging, cleared main-worktree line-ending/index artifacts on
+  `tests/architecture/ui_source_structure_test.cpp` and `xmake.lua` only after
+  confirming both files had no actual diff; the pre-existing untracked
+  `.vscode/` directory was preserved.
+- Fast-forward merged the branch into `master` at `a147283`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 91/91.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -P .` passed 88/88.
+- Step 305 is complete on `master`; Step 306 renderer frame/redraw Result
+  conventions is the next Phase B slice.
