@@ -5255,3 +5255,14 @@
   `tests/api_parity/public_api_compatibility_examples_test.cpp`. It requires
   the example target and fails if the example includes private headers or names
   `WindowRuntime` internals directly.
+
+## 2026-07-05 Phase B Step 307 Merge
+
+- Step 307 is merged on `master` at
+  `8ffc1bd feat: add public API compatibility example` and post-merge verified
+  on Windows full-debug 93/93, WSL Arch Linux public API example build, and WSL
+  Arch Linux full-debug 90/90.
+- The durable boundary is now the prelude-only example plus
+  `tests/api_parity/public_api_compatibility_examples_test.cpp`. Step 308
+  should freeze and expand public authoring vocabulary without adding runtime
+  behavior or moving compatibility checks into broad implementation files.

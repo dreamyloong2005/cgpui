@@ -385,8 +385,8 @@ shape before deeper native work expands platform behavior.
   `renderer_frame_result_conventions_test/default` and
   `ui_source_structure_test/default`; post-merge verification passed Windows
   full-debug 92/92 and WSL Arch Linux full-debug 89/89.
-- [x] Step 307: Add the first public API compatibility example. Implemented in
-  `.worktrees/phase-b-public-api-compat-examples` with
+- [x] Step 307: Add the first public API compatibility example. Merged on
+  `master` at `8ffc1bd` with
   `examples/api_parity/public_api_compatibility/main.cpp`,
   `api_parity_public_api_compatibility`, and
   `tests/api_parity/public_api_compatibility_examples_test.cpp`. The example
@@ -394,7 +394,9 @@ shape before deeper native work expands platform behavior.
   `Application`/`App`/`Window`/`Context<T>` authoring vocabulary plus
   action/key, async/test Result, and platform-service Result spellings, and the
   guard fails if the example includes private headers or names
-  `WindowRuntime` internals directly.
+  `WindowRuntime` internals directly. Post-merge verification passed Windows
+  full-debug 93/93, WSL Arch Linux example build, and WSL Arch Linux
+  full-debug 90/90.
 - [ ] Steps 308-312: Expand API compatibility examples and freeze the public
   authoring vocabulary before Phase C.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
@@ -698,7 +700,7 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 308 public authoring vocabulary freeze is next after Step 307 added the
+Step 308 public authoring vocabulary freeze is next after Step 307 merged the
 prelude-only public API compatibility example and guard. `ClipboardItem`
 payload parity, upstream `gpui::test` macro equivalents, action macro payloads,
 task priorities, and structured task groups stay out of scope for the

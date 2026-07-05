@@ -11489,3 +11489,23 @@
   `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility`.
 - Fresh WSL Arch Linux full debug passed:
   `XMAKE_ROOT=y xmake test -P .` passed 90/90.
+
+## 2026-07-05 Phase B Step 307 Merge
+
+- Fast-forward merged `codex/phase-b-public-api-compat-examples` into
+  `master` at `8ffc1bd feat: add public API compatibility example`.
+- Verified post-merge Windows full debug before this record:
+  `xmake f -c -m debug -P .` exited 0,
+  `xmake build -P . api_parity_public_api_compatibility` built the example,
+  and `xmake test -P .` passed 93/93.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility` built
+  the public API compatibility example, and `XMAKE_ROOT=y xmake test -P .`
+  passed 90/90.
+- After post-merge verification, removed
+  `.worktrees/phase-b-public-api-compat-examples`, deleted the already-merged
+  `codex/phase-b-public-api-compat-examples` branch, and ran
+  `git worktree prune`.
+- Step 307 is complete on `master`; Step 308 public authoring vocabulary
+  freeze is the next Phase B slice.

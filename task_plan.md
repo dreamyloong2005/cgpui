@@ -1800,10 +1800,10 @@ implementation slice.
   expose `try_draw_frame() -> Result<void>`, renderer frame Result ownership
   is isolated in `src/ui/runtime_renderer_frame_results.cpp`, and redraw event
   / `draw_frame()` compatibility remains fail-and-quit. Phase B Step 307
-  public API compatibility examples is implemented in
-  `.worktrees/phase-b-public-api-compat-examples`: it adds a prelude-only
+  public API compatibility examples is complete on `master` at `8ffc1bd` after
+  post-merge Windows full-debug 93/93, WSL Arch Linux public API example build,
+  and WSL Arch Linux full-debug 90/90 verification. It adds a prelude-only
   `examples/api_parity/public_api_compatibility/main.cpp` compile target and
   `tests/api_parity/public_api_compatibility_examples_test.cpp` so public
   examples fail if they include private headers or touch `WindowRuntime`
-  internals directly. Step 308 public authoring vocabulary freeze is next after
-  Step 307 is verified and merged.
+  internals directly. Step 308 public authoring vocabulary freeze is next.
