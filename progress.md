@@ -11614,3 +11614,26 @@
 - Step 309 is implemented and Windows/WSL full-debug verified in the feature
   worktree. It is ready for feature commit and merge verification. Step 310 is
   the next Phase B example expansion slice after Step 309 lands on `master`.
+
+## 2026-07-05 Phase B Step 309 Merge
+
+- Committed `codex/phase-b-public-api-example-expansion` as
+  `2cfb166 docs: expand public API authoring examples`.
+- Fast-forward merged the branch into `master` at `2cfb166`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 4/4,
+  `xmake build -P . api_parity_public_api_compatibility` built successfully,
+  `xmake build -P . api_parity_public_authoring_workflow` built successfully,
+  and `xmake test -P .` passed 95/95.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 4/4,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility` built
+  successfully,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_authoring_workflow` built
+  successfully, and `XMAKE_ROOT=y xmake test -P .` passed 92/92.
+- Step 309 is complete on `master`; Step 310 public API compatibility example
+  expansion follow-on is the next Phase B slice.

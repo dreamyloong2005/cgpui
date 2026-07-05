@@ -5314,3 +5314,17 @@
   tests run concurrently against the Vulkan SDK package cache; rerunning the
   build alone succeeded. Keep the full verification commands sequential when
   touching build targets in this worktree.
+
+## 2026-07-05 Phase B Step 309 Merge
+
+- Step 309 is merged on `master` at
+  `2cfb166 docs: expand public API authoring examples` and post-merge verified
+  on Windows full-debug 95/95, WSL Arch Linux public API example builds, and
+  WSL Arch Linux full-debug 92/92.
+- The durable Step 309 boundary is the prelude-only
+  `examples/api_parity/public_authoring_workflow/main.cpp` example plus
+  `tests/api_parity/public_api_example_expansion_test.cpp`; keep subsequent
+  example expansion slices author-facing and out of runtime internals.
+- Step 310 should continue the public API compatibility example expansion
+  queue without adding runtime behavior or opening the deferred Phase B
+  exclusions.
