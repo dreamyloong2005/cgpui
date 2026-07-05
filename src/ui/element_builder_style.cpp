@@ -112,6 +112,20 @@ ElementBuilder ElementBuilder::rounded(float radius) && {
   return std::move(*this).border_radius(BorderRadii::all(radius));
 }
 
+ElementBuilder ElementBuilder::shadow(BoxShadow shadow) && {
+  style_state_.base = style_state_.base.with_box_shadow(shadow);
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::shadow_sm() && {
+  return std::move(*this).shadow(BoxShadow{
+      .color = rgba(0, 0, 0, 0.18F),
+      .offset = {.x = 0.0F, .y = 2.0F},
+      .blur_radius = 8.0F,
+      .spread_radius = 0.0F,
+  });
+}
+
 ElementBuilder ElementBuilder::opacity(float value) && {
   style_state_.base = style_state_.base.with_opacity(value);
   return std::move(*this);

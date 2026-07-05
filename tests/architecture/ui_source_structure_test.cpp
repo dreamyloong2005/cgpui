@@ -923,6 +923,13 @@ int main() {
       read_source("src/ui/element_builder_layout.cpp");
   const std::string element_builder_style_source =
       read_source("src/ui/element_builder_style.cpp");
+  const std::string style_box_source = read_source("src/ui/style_box.cpp");
+  const std::string style_overlay_source =
+      read_source("src/ui/style_overlay.cpp");
+  const std::string shadow_paint_source =
+      read_source("src/ui/paint_shadow.cpp");
+  const std::string shadow_render_view_commands_source =
+      read_source("src/ui/render_view_commands.cpp");
   if (!contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::items_center()") ||
       !contains(element_builder_layout_source,
@@ -965,13 +972,26 @@ int main() {
                 "ElementBuilder ElementBuilder::text_size(") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::font_family(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::shadow(") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::shadow_sm()") ||
+      !contains(style_box_source, "Style Style::with_box_shadow(") ||
+      !contains(style_overlay_source,
+                "StyleOverlay StyleOverlay::with_box_shadow(") ||
+      !contains(shadow_paint_source, "PaintList::draw_box_shadow(") ||
+      !contains(
+          shadow_render_view_commands_source,
+          "PaintCommandKind::box_shadow") ||
       contains(element_builder_style_source, "ElementBuilder::items_center()") ||
       contains(element_builder_style_source, "ElementBuilder::w(") ||
       contains(element_builder_style_source, "ElementBuilder::z_index(") ||
       contains(element_builder_layout_source, "ElementBuilder::bg(") ||
       contains(element_builder_layout_source, "ElementBuilder::opacity(") ||
       contains(element_builder_layout_source, "ElementBuilder::text_size(") ||
-      contains(element_builder_layout_source, "ElementBuilder::font_family(")) {
+      contains(element_builder_layout_source, "ElementBuilder::font_family(") ||
+      contains(element_builder_layout_source, "ElementBuilder::shadow(") ||
+      contains(element_builder_layout_source, "ElementBuilder::shadow_sm(")) {
     return 146;
   }
 
@@ -1214,6 +1234,8 @@ int main() {
   const std::string paint_source = read_source("src/ui/paint.cpp");
   const std::string paint_text_source = read_source("src/ui/paint_text.cpp");
   const std::string paint_image_source = read_source("src/ui/paint_image.cpp");
+  const std::string paint_shadow_source =
+      read_source("src/ui/paint_shadow.cpp");
   if (line_count(paint_source) > 90 ||
       !contains(paint_source, "PaintList::fill_rect(") ||
       !contains(paint_source, "PaintList::fill_rounded_rect(") ||
@@ -1234,6 +1256,13 @@ int main() {
       contains(paint_image_source, "PaintList::fill_text(") ||
       contains(paint_image_source, "PaintList::fill_rect(")) {
     return 83;
+  }
+  if (line_count(paint_shadow_source) > 50 ||
+      !contains(paint_shadow_source, "PaintList::draw_box_shadow(") ||
+      contains(paint_shadow_source, "PaintList::fill_text(") ||
+      contains(paint_shadow_source, "PaintList::fill_rect(") ||
+      contains(paint_shadow_source, "PaintList::draw_image(")) {
+    return 147;
   }
 
   const std::string runtime_core_source =

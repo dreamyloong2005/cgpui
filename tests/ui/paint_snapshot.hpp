@@ -72,6 +72,21 @@ void append_snapshot_rect(
       << " color=" << snapshot_color(color);
 }
 
+void append_snapshot_shadow(
+    std::ostringstream& out,
+    const cgpui::BoxShadowPaint& shadow) {
+  out << " bounds=" << snapshot_rect(shadow.bounds)
+      << " color=" << snapshot_color(shadow.shadow.color)
+      << " offset=" << snapshot_float(shadow.shadow.offset.x) << ","
+      << snapshot_float(shadow.shadow.offset.y)
+      << " blur=" << snapshot_float(shadow.shadow.blur_radius)
+      << " spread=" << snapshot_float(shadow.shadow.spread_radius)
+      << " radius=" << snapshot_float(shadow.radius.top_left) << ","
+      << snapshot_float(shadow.radius.top_right) << ","
+      << snapshot_float(shadow.radius.bottom_right) << ","
+      << snapshot_float(shadow.radius.bottom_left);
+}
+
 void append_snapshot_text(
     std::ostringstream& out,
     cgpui::Rect bounds,
@@ -115,6 +130,10 @@ void append_snapshot_text(
             << snapshot_float(command.rounded_rect.radius.top_right) << ","
             << snapshot_float(command.rounded_rect.radius.bottom_right) << ","
             << snapshot_float(command.rounded_rect.radius.bottom_left);
+        break;
+      case cgpui::PaintCommandKind::box_shadow:
+        out << "box_shadow";
+        append_snapshot_shadow(out, command.box_shadow);
         break;
       case cgpui::PaintCommandKind::text:
         out << "text";

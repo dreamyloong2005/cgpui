@@ -71,6 +71,9 @@ inline void paint_styled_box_base(
     PaintList& paint_list,
     const std::optional<Rect>& bounds,
     const Style& style) {
+  if (bounds.has_value() && style.box_shadow.has_value()) {
+    paint_list.draw_box_shadow(*bounds, *style.box_shadow, style.border_radius);
+  }
   if (bounds.has_value() && style.background_color.has_value()) {
     const BorderRadii radius = style.border_radius;
     if (radius.top_left > 0.0F || radius.top_right > 0.0F ||

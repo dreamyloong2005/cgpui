@@ -52,6 +52,12 @@ Style Style::with_border_radius(BorderRadii radius) const {
   return style;
 }
 
+Style Style::with_box_shadow(BoxShadow shadow) const {
+  Style style = *this;
+  style.box_shadow = shadow;
+  return style;
+}
+
 Style Style::with_overflow(Overflow value) const {
   Style style = *this;
   style.overflow = value;

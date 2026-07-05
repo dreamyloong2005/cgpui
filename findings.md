@@ -5589,3 +5589,24 @@
   keeping font-weight, line-height, inherited text-style cascade, widget
   behavior, uniform-list behavior, broad style rewrites, and the Phase B
   closeout exclusions out of the slice.
+
+## 2026-07-05 Phase C Step 324 Div Shadow Vocabulary Storage
+
+- Step 324 stays scoped to `div` shadow authoring and deterministic style
+  storage. It adds `BoxShadow`, `Style::box_shadow`,
+  `StyleOverlay::box_shadow`, `ElementBuilder::shadow(...)`, and
+  `ElementBuilder::shadow_sm()` without adding broad renderer shadow geometry,
+  widget behavior, uniform-list behavior, inherited text-style cascade, or
+  Phase B closeout exclusions.
+- Paint observability is intentionally narrow: `StyledElement::paint` records a
+  `PaintCommandKind::box_shadow` command before background, border, and child
+  painting, and `src/ui/render_view_commands.cpp` treats that command as a
+  renderer no-op until a later renderer-geometry slice.
+- Durable ownership is split by module: value/storage declarations in
+  `include/cgpui/ui/style_values.hpp`, `style_box.hpp`, and
+  `style_overlay.hpp`; non-template bodies in `src/ui/style_box.cpp`,
+  `src/ui/style_overlay.cpp`, `src/ui/element_builder_style.cpp`, and
+  `src/ui/paint_shadow.cpp`; cascade propagation in
+  `include/cgpui/ui/style_cascade.hpp`; behavior guards in
+  `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`; and structure
+  guards in `tests/architecture/ui_source_structure_test.cpp`.

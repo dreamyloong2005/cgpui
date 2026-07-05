@@ -12190,3 +12190,53 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 323 is complete on `master`; Step 324, the remaining focused Phase C
   `div` shadow vocabulary/storage slice, is next.
+
+## 2026-07-05 Phase C Step 324 Div Shadow Vocabulary Storage
+
+- Continued `.worktrees/phase-c-div-shadow-vocabulary` on
+  `codex/phase-c-div-shadow-vocabulary` from
+  `b4a5032 docs: mark phase c step 323 merged`.
+- Baseline focused Windows gate had already passed before this continuation:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added style/cascade storage coverage in `tests/ui/style_test.cpp`,
+  builder and paint-list ordering coverage in `tests/ui/element_test.cpp`, and
+  module-boundary coverage in `tests/architecture/ui_source_structure_test.cpp`.
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` failed as expected because `cgpui::BoxShadow`,
+  `Style::box_shadow`, `StyleOverlay::box_shadow`, `with_box_shadow(...)`,
+  `ElementBuilder::shadow(...)`, and `PaintCommandKind::box_shadow` did not
+  exist.
+- GREEN added `BoxShadow`, style and overlay storage/mutators, cascade
+  propagation, `ElementBuilder::shadow(...)`, deterministic `shadow_sm()`, and
+  focused paint-list observability through `PaintList::draw_box_shadow(...)`
+  in `src/ui/paint_shadow.cpp`. `submit_paint_command_to_frame(...)` recognizes
+  the paint command as a no-op for renderer geometry in this slice.
+- Focused Windows GREEN verification passed cleanly:
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 324 shadow vocabulary and
+  module ownership. Step 325 is the next Phase C layout-constraint slice after
+  Step 324 lands on `master`.
+- The first six-test focused gate rerun failed only in
+  `public_phase_b_completion_audit_test/default`: the roadmap edit split the
+  exact guarded phrase `Keep the Phase B closeout` across a line break.
+  Restored the phrase contiguously, then reran the focused gate successfully.
+- Focused feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default` passed 6/6.
+- Fresh feature-worktree full verification passed:
+  Windows `xmake f -c -m debug -P .` exited 0, Windows
+  `xmake test -P .` passed 99/99, WSL Arch Linux
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 324 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 325 is
+  the next Phase C layout-constraint slice after Step 324 lands on `master`.

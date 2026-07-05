@@ -20,6 +20,14 @@ bool same_transform(cgpui::AffineTransform lhs, cgpui::AffineTransform rhs) {
          lhs.translate_y == rhs.translate_y;
 }
 
+bool same_shadow(const cgpui::BoxShadow& lhs, const cgpui::BoxShadow& rhs) {
+  return lhs.color.r == rhs.color.r && lhs.color.g == rhs.color.g &&
+         lhs.color.b == rhs.color.b && lhs.color.a == rhs.color.a &&
+         lhs.offset.x == rhs.offset.x && lhs.offset.y == rhs.offset.y &&
+         lhs.blur_radius == rhs.blur_radius &&
+         lhs.spread_radius == rhs.spread_radius;
+}
+
 class TestElement final : public cgpui::Element {};
 
 class NamedElement final : public cgpui::Element {
@@ -567,8 +575,74 @@ int test_element_builder_text_vocabulary_helpers_map_to_existing_style() {
   const auto* text = dynamic_cast<const cgpui::TextElement*>(text_element.get());
   return text != nullptr && text->font().family == "Step323Text" &&
                  text->font_size() == 21.0F
-             ? 0
-             : 580;
+            ? 0
+            : 580;
+}
+
+int test_element_builder_shadow_vocabulary_maps_to_style_storage_and_paint() {
+  const cgpui::BoxShadow custom_shadow{
+      .color = cgpui::rgba(0, 0, 0, 0.3F),
+      .offset = {.x = 3.0F, .y = 4.0F},
+      .blur_radius = 12.0F,
+      .spread_radius = 2.0F,
+  };
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div().shadow(custom_shadow));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || !styled->style().box_shadow.has_value() ||
+      !same_shadow(*styled->style().box_shadow, custom_shadow)) {
+    return 581;
+  }
+
+  cgpui::AnyElement preset_element = cgpui::into_element(cgpui::div().shadow_sm());
+  const auto* preset =
+      dynamic_cast<const cgpui::StyledElement*>(preset_element.get());
+  const cgpui::BoxShadow expected_sm{
+      .color = cgpui::rgba(0, 0, 0, 0.18F),
+      .offset = {.x = 0.0F, .y = 2.0F},
+      .blur_radius = 8.0F,
+      .spread_radius = 0.0F,
+  };
+  if (preset == nullptr || !preset->style().box_shadow.has_value() ||
+      !same_shadow(*preset->style().box_shadow, expected_sm)) {
+    return 582;
+  }
+
+  cgpui::AnyElement painted_element =
+      cgpui::into_element(cgpui::div()
+                              .shadow(custom_shadow)
+                              .bg(cgpui::rgb(240, 240, 240))
+                              .rounded(cgpui::px(6.0F))
+                              .child(cgpui::div()
+                                         .size(cgpui::px(2.0F), cgpui::px(2.0F))
+                                         .bg(cgpui::rgb(10, 20, 30))));
+  auto* painted = dynamic_cast<cgpui::StyledElement*>(painted_element.get());
+  if (painted == nullptr) {
+    return 583;
+  }
+  const cgpui::LayoutOutput painted_layout =
+      painted->layout(cgpui::LayoutInput{});
+  if (painted_layout.size.width != 2.0F ||
+      painted_layout.size.height != 2.0F) {
+    return 586;
+  }
+  cgpui::PaintList paint_list;
+  painted->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 3 ||
+      commands[0].kind != cgpui::PaintCommandKind::box_shadow ||
+      commands[1].kind != cgpui::PaintCommandKind::rounded_rect ||
+      commands[2].kind != cgpui::PaintCommandKind::solid_rect) {
+    return 584;
+  }
+  if (!same_shadow(commands[0].box_shadow.shadow, custom_shadow) ||
+      commands[0].box_shadow.bounds.size.width != 2.0F ||
+      commands[0].box_shadow.bounds.size.height != 2.0F ||
+      commands[0].box_shadow.radius.top_left != 6.0F) {
+    return 585;
+  }
+
+  return 0;
 }
 
 int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
@@ -4360,6 +4434,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_text_vocabulary_helpers_map_to_existing_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_shadow_vocabulary_maps_to_style_storage_and_paint();
       result != 0) {
     return result;
   }

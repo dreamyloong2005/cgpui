@@ -10,6 +10,9 @@ void submit_paint_command_to_frame(
     record_clip_stack_statistics(*statistics, command);
     record_composition_stack_statistics(*statistics, command);
   }
+  if (command.kind == PaintCommandKind::box_shadow) {
+    return;
+  }
   if (command.kind == PaintCommandKind::image) {
     const ImagePaint& image = command.image;
     frame.draw_image(ImageDraw{

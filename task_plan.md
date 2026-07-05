@@ -1918,3 +1918,19 @@ implementation slice.
   verification passed JSON validation, Windows full debug 99/99, and WSL Arch
   Linux full debug 96/96. Step 324 is the next focused Phase C `div` shadow
   vocabulary/storage slice.
+
+- Phase C Step 324, `div` shadow vocabulary/storage, is implemented in
+  `.worktrees/phase-c-div-shadow-vocabulary`: `BoxShadow` stores color, offset,
+  blur radius, and spread radius; `Style::box_shadow` and
+  `StyleOverlay::box_shadow` participate in direct style, state, class, and
+  inline cascade paths; `ElementBuilder` exposes `shadow(...)` and
+  deterministic `shadow_sm()` helpers; and `StyledElement::paint` records a
+  `PaintCommandKind::box_shadow` command before background, border, and child
+  paint commands. Implementation ownership stays focused in
+  `src/ui/style_box.cpp`, `src/ui/style_overlay.cpp`,
+  `src/ui/element_builder_style.cpp`, and `src/ui/paint_shadow.cpp`, with
+  renderer geometry intentionally left out of the slice. Behavior coverage
+  lives in `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`, and
+  structure coverage lives in `tests/architecture/ui_source_structure_test.cpp`.
+  Focused GREEN verification passed 3/3; full feature-worktree verification is
+  still pending before merge.

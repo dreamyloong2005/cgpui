@@ -53,6 +53,8 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder border_color(Color color) &&;
   [[nodiscard]] ElementBuilder border_radius(BorderRadii radius) &&;
   [[nodiscard]] ElementBuilder rounded(float radius) &&;
+  [[nodiscard]] ElementBuilder shadow(BoxShadow shadow) &&;
+  [[nodiscard]] ElementBuilder shadow_sm() &&;
   [[nodiscard]] ElementBuilder opacity(float value) &&;
   [[nodiscard]] ElementBuilder gap(float value) &&;
   [[nodiscard]] ElementBuilder align_items(AlignItems value) &&;

@@ -10,6 +10,7 @@ struct Style {
   std::optional<Color> background_color;
   std::optional<Color> foreground_color;
   std::optional<Color> border_color;
+  std::optional<BoxShadow> box_shadow;
   std::optional<Rect> clip_rect;
   FontDescriptor font;
   Size preferred_size;
@@ -39,6 +40,7 @@ struct Style {
   [[nodiscard]] Style with_border_width(EdgeSizes edges) const;
   [[nodiscard]] Style with_border_color(Color color) const;
   [[nodiscard]] Style with_border_radius(BorderRadii radius) const;
+  [[nodiscard]] Style with_box_shadow(BoxShadow shadow) const;
   [[nodiscard]] Style with_overflow(Overflow value) const;
   [[nodiscard]] Style with_z_index(int value) const;
   [[nodiscard]] Style with_layer(int value) const;

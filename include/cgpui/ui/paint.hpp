@@ -34,6 +34,7 @@ namespace cgpui {
 enum class PaintCommandKind {
   solid_rect,
   rounded_rect,
+  box_shadow,
   text,
   text_selection,
   text_caret,
@@ -43,6 +44,12 @@ enum class PaintCommandKind {
 struct RoundedRect {
   Rect rect;
   Color color;
+  BorderRadii radius;
+};
+
+struct BoxShadowPaint {
+  Rect bounds;
+  BoxShadow shadow;
   BorderRadii radius;
 };
 
@@ -89,6 +96,7 @@ struct PaintCommand {
   PaintCommandKind kind = PaintCommandKind::solid_rect;
   SolidRect solid_rect;
   RoundedRect rounded_rect;
+  BoxShadowPaint box_shadow;
   TextPaint text;
   TextSelectionPaint text_selection;
   TextCaretPaint text_caret;
@@ -110,6 +118,7 @@ class PaintList {
   void pop_metadata();
   void fill_rect(Rect rect, Color color);
   void fill_rounded_rect(Rect rect, Color color, BorderRadii radius);
+  void draw_box_shadow(Rect bounds, BoxShadow shadow, BorderRadii radius = {});
   void fill_text(
       Rect bounds,
       Color color,

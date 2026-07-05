@@ -59,6 +59,7 @@ namespace detail {
   overlay.background_color = style.background_color;
   overlay.foreground_color = style.foreground_color;
   overlay.border_color = style.border_color;
+  overlay.box_shadow = style.box_shadow;
   overlay.clip_rect = style.clip_rect;
   if (!same_size(style.preferred_size, defaults.preferred_size)) {
     overlay.preferred_size = style.preferred_size;
@@ -133,6 +134,9 @@ namespace detail {
   }
   if (overlay.border_color.has_value()) {
     style.border_color = overlay.border_color;
+  }
+  if (overlay.box_shadow.has_value()) {
+    style.box_shadow = overlay.box_shadow;
   }
   if (overlay.clip_rect.has_value()) {
     style.clip_rect = overlay.clip_rect;

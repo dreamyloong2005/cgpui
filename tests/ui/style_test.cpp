@@ -17,6 +17,14 @@ bool same_transform(cgpui::AffineTransform lhs, cgpui::AffineTransform rhs) {
          lhs.translate_y == rhs.translate_y;
 }
 
+bool same_shadow(const cgpui::BoxShadow& lhs, const cgpui::BoxShadow& rhs) {
+  return lhs.color.r == rhs.color.r && lhs.color.g == rhs.color.g &&
+         lhs.color.b == rhs.color.b && lhs.color.a == rhs.color.a &&
+         lhs.offset.x == rhs.offset.x && lhs.offset.y == rhs.offset.y &&
+         lhs.blur_radius == rhs.blur_radius &&
+         lhs.spread_radius == rhs.spread_radius;
+}
+
 int test_edge_sizes_default_to_zero() {
   const cgpui::EdgeSizes edges;
   if (!same(edges.top, 0.0F) || !same(edges.right, 0.0F) ||
@@ -184,6 +192,9 @@ int test_style_defaults_are_empty() {
       !same_transform(style.transform, cgpui::AffineTransform::identity())) {
     return 78;
   }
+  if (style.box_shadow.has_value()) {
+    return 81;
+  }
   return 0;
 }
 
@@ -217,6 +228,12 @@ int test_style_builder_methods_store_values() {
           .with_inset(cgpui::edges(9.0F, 10.0F, 11.0F, 12.0F))
           .with_font(cgpui::FontDescriptor{.family = "Inter"})
           .with_font_size(20.0F)
+          .with_box_shadow(cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 20, 30, 0.35F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 12.0F,
+              .spread_radius = 1.5F,
+          })
           .with_opacity(0.5F)
           .with_transform(cgpui::AffineTransform::translation(6.0F, 7.0F))
           .with_clip_rect(cgpui::Rect{
@@ -292,6 +309,17 @@ int test_style_builder_methods_store_values() {
   if (style.font.family != "Inter" || !same(style.font_size, 20.0F)) {
     return 62;
   }
+  if (!style.box_shadow.has_value() ||
+      !same_shadow(
+          *style.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 20, 30, 0.35F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 12.0F,
+              .spread_radius = 1.5F,
+          })) {
+    return 82;
+  }
   if (!same(style.opacity, 0.5F) ||
       !same_transform(
           style.transform,
@@ -324,6 +352,7 @@ int test_style_overlay_defaults_to_no_overrides() {
       overlay.flex_grow.has_value() || overlay.flex_shrink.has_value() ||
       overlay.position.has_value() || overlay.inset.has_value() ||
       overlay.font.has_value() || overlay.font_size.has_value() ||
+      overlay.box_shadow.has_value() ||
       overlay.opacity.has_value() || overlay.transform.has_value() ||
       overlay.clip_rect.has_value()) {
     return 37;
@@ -351,6 +380,12 @@ int test_style_overlay_defaults_to_no_overrides() {
           .with_inset(cgpui::edges(13.0F))
           .with_font(cgpui::FontDescriptor{.family = "Serif"})
           .with_font_size(18.0F)
+          .with_box_shadow(cgpui::BoxShadow{
+              .color = cgpui::rgba(1, 2, 3, 0.5F),
+              .offset = {.x = 4.0F, .y = 5.0F},
+              .blur_radius = 6.0F,
+              .spread_radius = 0.5F,
+          })
           .with_opacity(0.25F)
           .with_transform(cgpui::AffineTransform::translation(9.0F, 10.0F))
           .with_clip_rect(cgpui::Rect{
@@ -407,6 +442,17 @@ int test_style_overlay_defaults_to_no_overrides() {
       !authored.font_size.has_value() || *authored.font_size != 18.0F) {
     return 63;
   }
+  if (!authored.box_shadow.has_value() ||
+      !same_shadow(
+          *authored.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(1, 2, 3, 0.5F),
+              .offset = {.x = 4.0F, .y = 5.0F},
+              .blur_radius = 6.0F,
+              .spread_radius = 0.5F,
+          })) {
+    return 83;
+  }
   if (!authored.opacity.has_value() || *authored.opacity != 0.25F ||
       !authored.transform.has_value() ||
       !same_transform(
@@ -439,6 +485,12 @@ int test_style_state_resolves_hover_focus_disabled_order() {
                    .with_inset(cgpui::edges(1.0F))
                    .with_font(cgpui::FontDescriptor{.family = "Base"})
                    .with_font_size(14.0F)
+                   .with_box_shadow(cgpui::BoxShadow{
+                       .color = cgpui::rgba(0, 0, 0, 0.2F),
+                       .offset = {.x = 1.0F, .y = 2.0F},
+                       .blur_radius = 3.0F,
+                       .spread_radius = 0.0F,
+                   })
                    .with_opacity(0.9F)
                    .with_transform(
                        cgpui::AffineTransform::translation(2.0F, 3.0F));
@@ -452,6 +504,12 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_layer(2)
           .with_position(cgpui::Position::absolute)
           .with_font_size(18.0F)
+          .with_box_shadow(cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 10, 10, 0.3F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 4.0F,
+              .spread_radius = 1.0F,
+          })
           .with_opacity(0.7F);
   state.focus =
       cgpui::StyleOverlay{}
@@ -486,6 +544,15 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       hover.position != cgpui::Position::absolute ||
       hover.inset.left != 1.0F ||
       hover.font.family != "Base" || hover.font_size != 18.0F ||
+      !hover.box_shadow.has_value() ||
+      !same_shadow(
+          *hover.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 10, 10, 0.3F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 4.0F,
+              .spread_radius = 1.0F,
+          }) ||
       hover.opacity != 0.7F ||
       !same_transform(
           hover.transform,
@@ -508,6 +575,15 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       focused.position != cgpui::Position::absolute ||
       focused.inset.left != 4.0F ||
       focused.font.family != "Focus" || focused.font_size != 18.0F ||
+      !focused.box_shadow.has_value() ||
+      !same_shadow(
+          *focused.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 10, 10, 0.3F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 4.0F,
+              .spread_radius = 1.0F,
+          }) ||
       focused.opacity != 0.7F ||
       !same_transform(
           focused.transform,
@@ -535,6 +611,15 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       disabled.position != cgpui::Position::absolute ||
       disabled.inset.left != 4.0F ||
       disabled.font.family != "Focus" || disabled.font_size != 12.0F ||
+      !disabled.box_shadow.has_value() ||
+      !same_shadow(
+          *disabled.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 10, 10, 0.3F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 4.0F,
+              .spread_radius = 1.0F,
+          }) ||
       disabled.opacity != 0.25F ||
       !same_transform(
           disabled.transform,
@@ -626,6 +711,12 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
                       .with_background_color(cgpui::rgb(20, 20, 20))
                       .with_padding(cgpui::edges(6.0F))
                       .with_gap(2.0F)
+                      .with_box_shadow(cgpui::BoxShadow{
+                          .color = cgpui::rgba(20, 20, 20, 0.25F),
+                          .offset = {.x = 1.0F, .y = 2.0F},
+                          .blur_radius = 8.0F,
+                          .spread_radius = 0.5F,
+                      })
                       .with_opacity(0.8F),
           .hover = cgpui::StyleOverlay{}
                        .with_background_color(cgpui::rgb(30, 30, 30))
@@ -692,6 +783,17 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
           resolved.transform,
           cgpui::AffineTransform::translation(4.0F, 5.0F))) {
     return 81;
+  }
+  if (!resolved.box_shadow.has_value() ||
+      !same_shadow(
+          *resolved.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(20, 20, 20, 0.25F),
+              .offset = {.x = 1.0F, .y = 2.0F},
+              .blur_radius = 8.0F,
+              .spread_radius = 0.5F,
+          })) {
+    return 86;
   }
 
   const cgpui::StyleState* accent_rule = cascade.class_style(accent_class);

@@ -207,6 +207,13 @@ struct BorderRadii {
   }
 };
 
+struct BoxShadow {
+  Color color;
+  Point offset;
+  float blur_radius = 0.0F;
+  float spread_radius = 0.0F;
+};
+
 struct FontDescriptor {
   std::string family;
 
