@@ -11114,3 +11114,57 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 84/84.
 - Step 301 is complete on `master`; Step 302 platform service result
   conventions is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 302 Platform Service Result Conventions
+
+- Continued feature worktree
+  `.worktrees/phase-b-platform-service-result-conventions` on
+  `codex/phase-b-platform-service-result-conventions` from
+  `8b3fc84 docs: mark step 301 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . app_runner_test/default
+  app_context_capability_test/default window_context_capability_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default` passed
+  5/5.
+- RED added
+  `tests/api_parity/platform_service_result_conventions_test.cpp` and xmake
+  registration. The focused target failed as expected because `WindowRuntime`,
+  `AppContext`, and `WindowRuntimeContext` did not expose
+  `try_install_native_menu(...)` or `try_show_native_file_dialog(...)`.
+- GREEN added those public Result methods and kept runtime behavior isolated in
+  `src/ui/runtime_platform_service_results.cpp`. Unsupported services now
+  return `ErrorCode::unsupported_platform` without overwriting the last
+  successful runtime menu/dialog state, while supported file-dialog
+  cancellation returns a value rather than an error.
+- Updated `tests/architecture/ui_source_structure_test.cpp` so the new Result
+  behavior must stay in `runtime_platform_service_results.cpp` and not drift
+  into `runtime_platform_services.cpp`.
+- Focused Windows verification passed:
+  `xmake test -y -P . platform_service_result_conventions_test/default
+  app_context_capability_test/default window_context_capability_test/default
+  ui_source_structure_test/default` passed 4/4.
+- Expanded Windows focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . platform_service_result_conventions_test/default
+  app_runner_test/default app_context_capability_test/default
+  window_context_capability_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default prelude_header_cleanliness/default
+  gpui_parity_ledger_test/default` passed 8/8.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 88/88.
+- Fresh WSL Arch Linux expanded focused verification passed:
+  `python -m json.tool docs/gpui-complete-parity-ledger.json`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .`, then
+  `XMAKE_ROOT=y xmake test -y -P .
+  platform_service_result_conventions_test/default app_runner_test/default
+  app_context_capability_test/default window_context_capability_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  prelude_header_cleanliness/default gpui_parity_ledger_test/default` passed
+  8/8.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -y -P .` passed 85/85.
+- Step 302 is implemented and focused/full verified in the feature worktree.

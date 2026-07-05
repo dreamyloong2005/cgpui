@@ -28,9 +28,19 @@ NativeMenuInstallation AppContext::install_native_menu(
   return runtime.install_native_menu(std::move(menu));
 }
 
+Result<NativeMenuInstallation> AppContext::try_install_native_menu(
+    NativeMenuModel menu) const {
+  return runtime.try_install_native_menu(std::move(menu));
+}
+
 NativeFileDialogResult AppContext::show_native_file_dialog(
     NativeFileDialogOptions options) const {
   return runtime.show_native_file_dialog(std::move(options));
+}
+
+Result<NativeFileDialogResult> AppContext::try_show_native_file_dialog(
+    NativeFileDialogOptions options) const {
+  return runtime.try_show_native_file_dialog(std::move(options));
 }
 
 } // namespace cgpui

@@ -9,6 +9,11 @@ NativeMenuInstallation WindowRuntimeContext::install_native_menu(
   return runtime.install_native_menu(std::move(menu));
 }
 
+Result<NativeMenuInstallation> WindowRuntimeContext::try_install_native_menu(
+    NativeMenuModel menu) const {
+  return runtime.try_install_native_menu(std::move(menu));
+}
+
 const NativeMenuInstallation& WindowRuntimeContext::native_menu_installation()
     const {
   return runtime.native_menu_installation();
@@ -17,6 +22,12 @@ const NativeMenuInstallation& WindowRuntimeContext::native_menu_installation()
 NativeFileDialogResult WindowRuntimeContext::show_native_file_dialog(
     NativeFileDialogOptions options) const {
   return runtime.show_native_file_dialog(std::move(options));
+}
+
+Result<NativeFileDialogResult>
+WindowRuntimeContext::try_show_native_file_dialog(
+    NativeFileDialogOptions options) const {
+  return runtime.try_show_native_file_dialog(std::move(options));
 }
 
 const NativeFileDialogResult& WindowRuntimeContext::native_file_dialog_result()

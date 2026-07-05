@@ -29,7 +29,11 @@ struct AppContext {
       std::unique_ptr<View> root_view) const;
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu) const;
+  [[nodiscard]] Result<NativeMenuInstallation> try_install_native_menu(
+      NativeMenuModel menu) const;
   [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) const;
+  [[nodiscard]] Result<NativeFileDialogResult> try_show_native_file_dialog(
       NativeFileDialogOptions options) const;
   void register_command_palette_entry(CommandPaletteEntry entry) const;
   template <Action T>

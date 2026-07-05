@@ -1763,5 +1763,10 @@ implementation slice.
   expose `try_open_window(...) -> Result<AppOpenedWindow>`, with implementation
   isolated in `src/ui/runtime_window_results.cpp`; failed platform-window or
   renderer creation returns `Error` without publishing an app-opened window
-  record, while `open_window(...)` compatibility remains. Step 302 platform
-  service result conventions is the next Phase B slice.
+  record, while `open_window(...)` compatibility remains. Phase B Step 302
+  platform service result conventions is implemented in the feature worktree:
+  `WindowRuntime`, `AppContext`, and `ViewContext`/`WindowRuntimeContext`
+  expose `try_install_native_menu(...)` and `try_show_native_file_dialog(...)`
+  Result methods, with runtime ownership isolated in
+  `src/ui/runtime_platform_service_results.cpp`. Step 303 async-spawn result
+  conventions is the next Phase B slice after Step 302 lands.

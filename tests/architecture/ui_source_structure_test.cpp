@@ -1076,6 +1076,7 @@ int main() {
       "src/ui/runtime_text_pointer_selection.cpp",
       "src/ui/runtime_clipboard.cpp",
       "src/ui/runtime_platform_services.cpp",
+      "src/ui/runtime_platform_service_results.cpp",
       "src/ui/runtime_scheduling.cpp",
       "src/ui/runtime_timers.cpp",
       "src/ui/runtime_animation_start.cpp",
@@ -1840,12 +1841,17 @@ int main() {
 
   const std::string runtime_context_platform_source =
       read_source("src/ui/runtime_context_platform.cpp");
-  if (!contains(runtime_context_platform_source,
+  if (line_count(runtime_context_platform_source) > 90 ||
+      !contains(runtime_context_platform_source,
                 "NativeMenuInstallation "
                 "WindowRuntimeContext::install_native_menu(") ||
       !contains(runtime_context_platform_source,
+                "WindowRuntimeContext::try_install_native_menu(") ||
+      !contains(runtime_context_platform_source,
                 "NativeFileDialogResult "
                 "WindowRuntimeContext::show_native_file_dialog(") ||
+      !contains(runtime_context_platform_source,
+                "WindowRuntimeContext::try_show_native_file_dialog(") ||
       !contains(runtime_context_platform_source,
                 "void WindowRuntimeContext::set_window_theme(") ||
       !contains(runtime_context_platform_source,
@@ -2332,6 +2338,8 @@ int main() {
 
   const std::string runtime_platform_services_source =
       read_source("src/ui/runtime_platform_services.cpp");
+  const std::string runtime_platform_service_results_source =
+      read_source("src/ui/runtime_platform_service_results.cpp");
   if (line_count(runtime_platform_services_source) > 160 ||
       !contains(runtime_platform_services_source,
                 "NativeMenuInstallation WindowRuntime::install_native_menu(") ||
@@ -2344,8 +2352,25 @@ int main() {
       !contains(runtime_platform_services_source,
                 "void WindowRuntime::record_platform_diagnostic(") ||
       contains(runtime_platform_services_source,
+               "WindowRuntime::try_install_native_menu(") ||
+      contains(runtime_platform_services_source,
+               "WindowRuntime::try_show_native_file_dialog(") ||
+      contains(runtime_platform_services_source,
                "RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot(")) {
     return 62;
+  }
+  if (line_count(runtime_platform_service_results_source) > 110 ||
+      !contains(runtime_platform_service_results_source,
+                "WindowRuntime::try_install_native_menu(") ||
+      !contains(runtime_platform_service_results_source,
+                "WindowRuntime::try_show_native_file_dialog(") ||
+      contains(runtime_platform_service_results_source,
+               "WindowRuntime::install_native_menu(") ||
+      contains(runtime_platform_service_results_source,
+               "WindowRuntime::show_native_file_dialog(") ||
+      contains(runtime_platform_service_results_source,
+               "WindowRuntime::apply_cursor_shape(")) {
+    return 134;
   }
 
   const std::string runtime_theme_source =
@@ -2423,7 +2448,11 @@ int main() {
       !contains(app_context_services_source,
                 "AppContext::install_native_menu(") ||
       !contains(app_context_services_source,
+                "AppContext::try_install_native_menu(") ||
+      !contains(app_context_services_source,
                 "AppContext::show_native_file_dialog(") ||
+      !contains(app_context_services_source,
+                "AppContext::try_show_native_file_dialog(") ||
       contains(app_context_services_source,
                "register_command_palette_entry(") ||
       contains(app_context_services_source, "set_app_theme(")) {

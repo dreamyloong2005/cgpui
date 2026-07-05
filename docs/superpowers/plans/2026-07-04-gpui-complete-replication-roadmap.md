@@ -342,8 +342,17 @@ shape before deeper native work expands platform behavior.
   `src/ui/runtime_window_results.cpp` implementation. Failed platform-window
   or renderer creation returns `Error` without publishing an app-opened window
   record, while existing `open_window(...)` compatibility behavior remains.
-- [ ] Steps 302-306: Add public error/result conventions for platform
-  services, async spawn, and renderer creation.
+- [x] Step 302: Add public platform-service result conventions. In progress
+  on `codex/phase-b-platform-service-result-conventions`: `WindowRuntime`,
+  `AppContext`, and `ViewContext`/`WindowRuntimeContext` expose
+  `try_install_native_menu(...) -> Result<NativeMenuInstallation>` and
+  `try_show_native_file_dialog(...) -> Result<NativeFileDialogResult>` through
+  focused `src/ui/runtime_platform_service_results.cpp` ownership. Unsupported
+  services return `ErrorCode::unsupported_platform` without overwriting the
+  last successful runtime service state; supported file-dialog cancellation
+  remains a value, not an error. Existing compatibility methods remain.
+- [ ] Steps 303-306: Add public error/result conventions for async spawn and
+  renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
@@ -647,12 +656,13 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 302 platform service result conventions is next. Step 301 adds
-`try_open_window(...) -> Result<AppOpenedWindow>` on the public app/context and
-runtime surfaces, isolates the implementation in
-`src/ui/runtime_window_results.cpp`, and keeps broader platform service,
-async-spawn, renderer-creation, `ClipboardItem` payload parity, upstream
-`gpui::test` macro equivalents, and action macro payloads out of scope.
+Step 303 async-spawn result conventions is next after Step 302 lands. Step 302
+adds platform-service `try_* -> Result<...>` methods for native menu
+installation and native file dialogs, isolates the runtime Result behavior in
+`src/ui/runtime_platform_service_results.cpp`, keeps compatibility menu/dialog
+methods intact, and keeps renderer-creation redesign, `ClipboardItem` payload
+parity, upstream `gpui::test` macro equivalents, and action macro payloads out
+of scope.
 
 ## Self-Review
 

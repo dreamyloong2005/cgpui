@@ -306,6 +306,13 @@ target("public_result_conventions_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("platform_service_result_conventions_test")
+    set_kind("binary")
+    add_files("tests/api_parity/platform_service_result_conventions_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("context_render_spelling_test")
     set_kind("binary")
     add_files("tests/api_parity/context_render_spelling_test.cpp")

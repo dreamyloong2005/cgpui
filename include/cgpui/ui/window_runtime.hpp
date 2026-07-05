@@ -159,11 +159,12 @@ class WindowRuntime {
   [[nodiscard]] InvalidationState invalidation_state() const;
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu);
+  [[nodiscard]] Result<NativeMenuInstallation> try_install_native_menu(NativeMenuModel menu);
   [[nodiscard]] const NativeMenuInstallation& native_menu_installation() const;
   [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
       NativeFileDialogOptions options);
-  [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result()
-      const;
+  [[nodiscard]] Result<NativeFileDialogResult> try_show_native_file_dialog(NativeFileDialogOptions options);
+  [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result() const;
   void set_app_theme(Theme theme);
   [[nodiscard]] const Theme& app_theme() const;
   void set_window_theme(WindowRuntimeId runtime_id, Theme theme);

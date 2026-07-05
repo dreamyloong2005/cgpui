@@ -203,8 +203,12 @@ struct WindowRuntimeContext {
   platform_diagnostics() const;
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu) const;
+  [[nodiscard]] Result<NativeMenuInstallation> try_install_native_menu(
+      NativeMenuModel menu) const;
   [[nodiscard]] const NativeMenuInstallation& native_menu_installation() const;
   [[nodiscard]] NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) const;
+  [[nodiscard]] Result<NativeFileDialogResult> try_show_native_file_dialog(
       NativeFileDialogOptions options) const;
   [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result()
       const;

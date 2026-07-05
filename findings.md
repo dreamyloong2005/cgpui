@@ -5079,3 +5079,26 @@
 - Step 302 should start platform service result conventions without folding
   async-spawn result conversion, renderer factory public API redesign, or
   broader exception/error rewrites into the same slice.
+
+## 2026-07-05 Phase B Step 302 Platform Service Result Conventions
+
+- Step 302 stays scoped to native menu and native file-dialog Result
+  conventions. It should not start async-spawn result conversion, renderer
+  factory public API redesign, `ClipboardItem` payload parity, upstream
+  `gpui::test` macro equivalents, or production-depth native service work.
+- The public API shape is `try_install_native_menu(...) ->
+  Result<NativeMenuInstallation>` and `try_show_native_file_dialog(...) ->
+  Result<NativeFileDialogResult>` on `WindowRuntime`, `AppContext`, and
+  `ViewContext`/`WindowRuntimeContext`. Existing `install_native_menu(...)` and
+  `show_native_file_dialog(...)` compatibility methods remain source-compatible.
+- Unsupported platform services should return `ErrorCode::unsupported_platform`
+  and must not overwrite the last successful runtime service state. Supported
+  file-dialog cancellation (`accepted == false`) remains a successful value,
+  because user cancellation is not a platform failure.
+- Implementation ownership belongs in focused
+  `src/ui/runtime_platform_service_results.cpp`; compatibility menu/dialog
+  storage remains in `src/ui/runtime_platform_services.cpp`, and app/context
+  files only forward.
+- The behavior and API guard belongs in
+  `tests/api_parity/platform_service_result_conventions_test.cpp`; the
+  structure guard belongs in `tests/architecture/ui_source_structure_test.cpp`.

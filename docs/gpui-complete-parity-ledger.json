@@ -33,7 +33,7 @@
     }
   },
   "status_counts": {
-    "required": 16,
+    "required": 17,
     "adapted": 15,
     "deferred": 2,
     "non_goal": 1
@@ -82,7 +82,7 @@
       "upstream_gpui": "gpui::App",
       "cgpui_target": "App facade from AppContext::app() and Context<T>::app_context() app-domain capability, plus try_open_window(...) -> Result<AppOpenedWindow> public window-opening result conventions on App, AppContext, and WindowRuntime",
       "status": "adapted",
-      "next_step": "Phase B platform service result conventions"
+      "next_step": "Phase B async/renderer result conventions"
     },
     {
       "upstream_gpui": "gpui::Window",
@@ -155,6 +155,12 @@
       "cgpui_target": "TestContextCapability exists with simulate_keystrokes(...), dispatch_pointer_* helpers, dispatch_window_* helpers, focus(...), release_focus(...), write_to_clipboard(...), read_from_clipboard(...), copy/cut/paste helpers, run_until_parked(), advance_time_until_parked(...), request_redraw(), and draw_frame(), but upstream-style test macro and fuller simulation helpers remain missing",
       "status": "required",
       "next_step": "Phase G"
+    },
+    {
+      "upstream_gpui": "gpui platform services",
+      "cgpui_target": "menu/dialog/chrome skeletons plus try_install_native_menu(...) -> Result<NativeMenuInstallation> and try_show_native_file_dialog(...) -> Result<NativeFileDialogResult> on WindowRuntime, AppContext, and ViewContext/WindowRuntimeContext, covered by src/ui/runtime_platform_service_results.cpp, src/ui/runtime_platform_services.cpp, src/ui/app_context_services.cpp, src/ui/runtime_context_platform.cpp, and tests/api_parity/platform_service_result_conventions_test.cpp",
+      "status": "required",
+      "next_step": "Phase B result conventions, then Phase F production services"
     },
     {
       "upstream_gpui": "gpui_platform wayland feature",

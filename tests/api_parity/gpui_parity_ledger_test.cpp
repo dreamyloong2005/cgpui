@@ -121,6 +121,13 @@ int main() {
       !contains(ledger, "src/ui/runtime_window_results.cpp") ||
       !contains(ledger,
                 "tests/api_parity/public_result_conventions_test.cpp") ||
+      !contains(ledger, "`try_install_native_menu(...) -> "
+                        "Result<NativeMenuInstallation>`") ||
+      !contains(ledger, "`try_show_native_file_dialog(...) -> "
+                        "Result<NativeFileDialogResult>`") ||
+      !contains(ledger, "src/ui/runtime_platform_service_results.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/platform_service_result_conventions_test.cpp") ||
       !contains(ledger,
                 "`Window` facade from `WindowRuntimeContext::window()`") ||
       !contains(ledger, "tests/api_parity/app_window_context_test.cpp") ||
@@ -354,6 +361,12 @@ int main() {
               "async_context",
               "try_open_window",
               "Result<AppOpenedWindow>",
+              "try_install_native_menu",
+              "Result<NativeMenuInstallation>",
+              "try_show_native_file_dialog",
+              "Result<NativeFileDialogResult>",
+              "runtime_platform_service_results.cpp",
+              "platform_service_result_conventions_test",
               "TestContextCapability",
               "test_context",
               "gpui::TestAppContext",
