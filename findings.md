@@ -5424,3 +5424,15 @@
 - WSL example builds should stay sequential. The first Linux public example
   build may cold-build static libraries and take around two minutes, while
   subsequent public example builds are much faster.
+
+## 2026-07-05 Phase B Step 312 Merge
+
+- Step 312 is merged on `master` at
+  `a9ad4dc docs: add public phase b surface closure example` and post-merge
+  verified on Windows full-debug 98/98 and WSL Arch Linux full-debug 95/95.
+- The durable Step 312 boundary is the prelude-only
+  `examples/api_parity/public_phase_b_surface_closure/main.cpp` example plus
+  `tests/api_parity/public_phase_b_surface_closure_example_test.cpp`; keep the
+  final Phase B closure examples author-facing and out of runtime internals.
+- Steps 313-318 should now run the final Phase B Windows/WSL verification and
+  public authoring vocabulary freeze audit before Phase C starts.

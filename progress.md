@@ -11816,3 +11816,23 @@
   worktree. It is ready for feature commit and merge verification. Steps
   313-318 are the final Phase B verification/freeze band after Step 312 lands
   on `master`.
+
+## 2026-07-05 Phase B Step 312 Merge
+
+- Committed `codex/phase-b-public-surface-closure-example` as
+  `a9ad4dc docs: add public phase b surface closure example`.
+- Fast-forward merged the branch into `master` at `a9ad4dc`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused public/ledger gates passed 7/7,
+  all five public API example targets built sequentially, and
+  `xmake test -P .` passed 98/98.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused public/ledger gates passed 7/7,
+  all five public API example targets built sequentially, and
+  `XMAKE_ROOT=y xmake test -P .` passed 95/95.
+- Step 312 is complete on `master`; Steps 313-318 final Windows/WSL
+  verification and public vocabulary freeze audit are the next Phase B band.

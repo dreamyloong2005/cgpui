@@ -435,7 +435,10 @@ shape before deeper native work expands platform behavior.
   task/frame helpers, simulated input, clipboard, and frame-pump examples out
   of private headers and `WindowRuntime` internals.
 - [x] Step 312: Finish the public API compatibility example expansion queue
-  against the frozen public authoring vocabulary before Phase C. Adds
+  against the frozen public authoring vocabulary before Phase C. Merged on
+  `master` at `a9ad4dc` and post-merge verified with Windows full-debug 98/98,
+  WSL Arch Linux full-debug 95/95, JSON validation, focused public/ledger
+  gates, and all five public API example builds. Adds
   `examples/api_parity/public_phase_b_surface_closure/main.cpp`,
   `api_parity_public_phase_b_surface_closure`, and
   `tests/api_parity/public_phase_b_surface_closure_example_test.cpp` as the
