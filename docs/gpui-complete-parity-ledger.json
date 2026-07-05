@@ -146,9 +146,9 @@
     },
     {
       "upstream_gpui": "gpui::div",
-      "cgpui_target": "div() plus repeated .child(...) multi-child retention, ElementBuilder::children(...) collection authoring, and StyledElement::children() child-list ownership, covered by include/cgpui/ui/element_builder_core.hpp, include/cgpui/ui/element_style_nodes.hpp, src/ui/element_builder_interaction.cpp, src/ui/element_builder_build.cpp, src/ui/element_style_nodes.cpp, src/ui/element_style_paint.cpp, and tests/ui/element_test.cpp",
+      "cgpui_target": "div() plus repeated .child(...) multi-child retention, ElementBuilder::children(...) collection authoring, StyledElement::children() child-list ownership, and upstream-style flex vocabulary aliases ElementBuilder::items_start(), ElementBuilder::items_center(), ElementBuilder::items_end(), ElementBuilder::justify_start(), ElementBuilder::justify_center(), ElementBuilder::justify_end(), ElementBuilder::justify_between(), and ElementBuilder::flex_1() over the existing style values, covered by include/cgpui/ui/element_builder_core.hpp, include/cgpui/ui/element_style_nodes.hpp, src/ui/element_builder_interaction.cpp, src/ui/element_builder_layout.cpp, src/ui/element_builder_build.cpp, src/ui/element_style_nodes.cpp, src/ui/element_style_paint.cpp, tests/ui/element_test.cpp, and tests/architecture/ui_source_structure_test.cpp",
       "status": "adapted",
-      "next_step": "Phase C Steps 320-324 style vocabulary"
+      "next_step": "Phase C Steps 321-324 remaining style vocabulary"
     },
     {
       "upstream_gpui": "gpui::test",

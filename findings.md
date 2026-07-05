@@ -5483,3 +5483,18 @@
 - Step 320 should continue the same focused Phase C band by adding the next
   `div` style-vocabulary helper, while keeping widget, uniform-list, and broad
   layout rewrites out of the slice.
+
+## 2026-07-05 Phase C Step 320 Div Flex Vocabulary Helpers
+
+- Step 320 stays scoped to authoring vocabulary over existing flex style
+  values. It adds `items_start()`, `items_center()`, `items_end()`,
+  `justify_start()`, `justify_center()`, `justify_end()`,
+  `justify_between()`, and `flex_1()` on `ElementBuilder`, without adding flex
+  wrap, flex direction style, widget behavior, or a new layout engine.
+- The durable implementation boundary is
+  `src/ui/element_builder_layout.cpp`, alongside the existing
+  `gap(...)`, `align_items(...)`, `justify_content(...)`, `flex_grow(...)`,
+  and `flex_shrink(...)` setters. Keep these aliases out of
+  `element_builder_style.cpp` and aggregate headers.
+- The behavior guard is `tests/ui/element_test.cpp`, and the structure guard
+  is `tests/architecture/ui_source_structure_test.cpp`.

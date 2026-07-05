@@ -148,8 +148,13 @@ int main() {
                 "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
       !contains(ledger, "`ElementBuilder::children(...)`") ||
       !contains(ledger, "`StyledElement::children()`") ||
+      !contains(ledger, "`ElementBuilder::items_center()`") ||
+      !contains(ledger, "`ElementBuilder::justify_between()`") ||
+      !contains(ledger, "`ElementBuilder::flex_1()`") ||
       !contains(ledger, "src/ui/element_builder_interaction.cpp") ||
+      !contains(ledger, "src/ui/element_builder_layout.cpp") ||
       !contains(ledger, "src/ui/element_style_nodes.cpp") ||
+      !contains(ledger, "tests/architecture/ui_source_structure_test.cpp") ||
       !contains(ledger, "tests/ui/element_test.cpp") ||
       !contains(ledger,
                 "`Window` facade from `WindowRuntimeContext::window()`") ||

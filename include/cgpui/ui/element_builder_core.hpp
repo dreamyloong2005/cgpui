@@ -44,9 +44,17 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder border_radius(BorderRadii radius) &&;
   [[nodiscard]] ElementBuilder gap(float value) &&;
   [[nodiscard]] ElementBuilder align_items(AlignItems value) &&;
+  [[nodiscard]] ElementBuilder items_start() &&;
+  [[nodiscard]] ElementBuilder items_center() &&;
+  [[nodiscard]] ElementBuilder items_end() &&;
   [[nodiscard]] ElementBuilder justify_content(JustifyContent value) &&;
+  [[nodiscard]] ElementBuilder justify_start() &&;
+  [[nodiscard]] ElementBuilder justify_center() &&;
+  [[nodiscard]] ElementBuilder justify_end() &&;
+  [[nodiscard]] ElementBuilder justify_between() &&;
   [[nodiscard]] ElementBuilder flex_grow(float value) &&;
   [[nodiscard]] ElementBuilder flex_shrink(float value) &&;
+  [[nodiscard]] ElementBuilder flex_1() &&;
   [[nodiscard]] ElementBuilder layer(int value) &&;
   [[nodiscard]] ElementBuilder position(Position value) &&;
   [[nodiscard]] ElementBuilder absolute() &&;

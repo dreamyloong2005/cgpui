@@ -919,6 +919,18 @@ int main() {
       line_count(read_source("src/ui/element_flex_layout.cpp")) > 180) {
     return 106;
   }
+  const std::string element_builder_layout_source =
+      read_source("src/ui/element_builder_layout.cpp");
+  if (!contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::items_center()") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::justify_between()") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::flex_1()") ||
+      contains(read_source("src/ui/element_builder_style.cpp"),
+               "ElementBuilder::items_center()")) {
+    return 146;
+  }
 
   const std::vector<const char*> private_headers{
       "src/ui/ui_internal.hpp",

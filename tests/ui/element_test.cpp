@@ -404,6 +404,58 @@ int test_element_builder_fluent_gap_shortcut_applies_to_stack_and_flex() {
              : 215;
 }
 
+int test_element_builder_flex_vocabulary_helpers_map_to_existing_style() {
+  cgpui::AnyElement start_row =
+      cgpui::into_element(cgpui::h_flex()
+                              .align_items(cgpui::AlignItems::end)
+                              .items_start()
+                              .justify_content(cgpui::JustifyContent::end)
+                              .justify_start());
+  const auto* start_flex =
+      dynamic_cast<const cgpui::FlexElement*>(start_row.get());
+  if (start_flex == nullptr ||
+      start_flex->align_items() != cgpui::AlignItems::start ||
+      start_flex->justify_content() != cgpui::JustifyContent::start) {
+    return 216;
+  }
+
+  cgpui::AnyElement centered_row =
+      cgpui::into_element(cgpui::h_flex().items_center().justify_center());
+  const auto* centered_flex =
+      dynamic_cast<const cgpui::FlexElement*>(centered_row.get());
+  if (centered_flex == nullptr ||
+      centered_flex->align_items() != cgpui::AlignItems::center ||
+      centered_flex->justify_content() != cgpui::JustifyContent::center) {
+    return 217;
+  }
+
+  cgpui::AnyElement end_column =
+      cgpui::into_element(cgpui::v_flex().items_end().justify_end());
+  const auto* end_flex =
+      dynamic_cast<const cgpui::FlexElement*>(end_column.get());
+  if (end_flex == nullptr ||
+      end_flex->align_items() != cgpui::AlignItems::end ||
+      end_flex->justify_content() != cgpui::JustifyContent::end) {
+    return 218;
+  }
+
+  cgpui::AnyElement styled_element =
+      cgpui::into_element(cgpui::div()
+                              .items_center()
+                              .justify_between()
+                              .flex_1());
+  const auto* styled =
+      dynamic_cast<const cgpui::StyledElement*>(styled_element.get());
+  if (styled == nullptr ||
+      styled->style().align_items != cgpui::AlignItems::center ||
+      styled->style().justify_content !=
+          cgpui::JustifyContent::space_between) {
+    return 219;
+  }
+  return styled->flex_grow() == 1.0F && styled->flex_shrink() == 1.0F ? 0
+                                                                      : 220;
+}
+
 int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
   cgpui::AnyElement element =
       cgpui::into_element(cgpui::div()
@@ -4173,6 +4225,11 @@ int main() {
   }
   if (const int result =
           test_element_builder_fluent_gap_shortcut_applies_to_stack_and_flex();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_flex_vocabulary_helpers_map_to_existing_style();
       result != 0) {
     return result;
   }

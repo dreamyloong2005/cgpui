@@ -41,9 +41,37 @@ ElementBuilder ElementBuilder::align_items(AlignItems value) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::items_start() && {
+  return std::move(*this).align_items(AlignItems::start);
+}
+
+ElementBuilder ElementBuilder::items_center() && {
+  return std::move(*this).align_items(AlignItems::center);
+}
+
+ElementBuilder ElementBuilder::items_end() && {
+  return std::move(*this).align_items(AlignItems::end);
+}
+
 ElementBuilder ElementBuilder::justify_content(JustifyContent value) && {
   style_state_.base = style_state_.base.with_justify_content(value);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::justify_start() && {
+  return std::move(*this).justify_content(JustifyContent::start);
+}
+
+ElementBuilder ElementBuilder::justify_center() && {
+  return std::move(*this).justify_content(JustifyContent::center);
+}
+
+ElementBuilder ElementBuilder::justify_end() && {
+  return std::move(*this).justify_content(JustifyContent::end);
+}
+
+ElementBuilder ElementBuilder::justify_between() && {
+  return std::move(*this).justify_content(JustifyContent::space_between);
 }
 
 ElementBuilder ElementBuilder::flex_grow(float value) && {
@@ -54,6 +82,10 @@ ElementBuilder ElementBuilder::flex_grow(float value) && {
 ElementBuilder ElementBuilder::flex_shrink(float value) && {
   style_state_.base = style_state_.base.with_flex_shrink(value);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::flex_1() && {
+  return std::move(*this).flex_grow(1.0F).flex_shrink(1.0F);
 }
 
 ElementBuilder ElementBuilder::layer(int value) && {

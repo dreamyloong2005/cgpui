@@ -11951,3 +11951,44 @@
   public_phase_b_completion_audit_test/default` passed 2/2.
 - Step 319 is complete on `master`; Step 320, the next Phase C `div`
   style-vocabulary helper slice, is next.
+
+## 2026-07-05 Phase C Step 320 Div Flex Vocabulary Helpers
+
+- Continued `.worktrees/phase-c-div-style-flex-helpers` on
+  `codex/phase-c-div-style-flex-helpers` from
+  `77e2cf0 docs: mark phase c step 319 merged`.
+- Baseline focused Windows gate passed:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added
+  `test_element_builder_flex_vocabulary_helpers_map_to_existing_style`;
+  `xmake test -y -P . element_test/default` failed as expected because
+  `ElementBuilder` did not have `items_start()`, `items_center()`, or
+  `items_end()` helper members.
+- RED added a structure guard in `ui_source_structure_test` requiring the
+  flex-vocabulary helper bodies to live in
+  `src/ui/element_builder_layout.cpp`; `xmake test -y -P .
+  ui_source_structure_test/default` failed as expected.
+- GREEN added `items_start()`, `items_center()`, `items_end()`,
+  `justify_start()`, `justify_center()`, `justify_end()`,
+  `justify_between()`, and `flex_1()` as aliases over the existing
+  align/justify/grow/shrink style setters in `src/ui/element_builder_layout.cpp`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default` passed 1/1, and
+  `xmake test -y -P . ui_source_structure_test/default` passed 1/1.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 320 evidence.
+- Focused feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . element_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default style_test/default` passed 6/6.
+- Fresh feature-worktree full verification passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, Windows `xmake test -P .` passed 99/99, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 320 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 321 is
+  the next Phase C `div` sizing/color/border helper slice after Step 320 lands
+  on `master`.
