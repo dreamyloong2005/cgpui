@@ -5176,3 +5176,18 @@
   `src/ui/runtime_run.cpp`; child-window activation in
   `src/ui/runtime_window_activation.cpp`; window-opening publication in
   `src/ui/runtime_window_results.cpp`.
+
+## 2026-07-05 Phase B Step 304 Merge
+
+- Step 304 is merged on `master` at
+  `5f09830 feat: add renderer result conventions` and post-merge verified on
+  Windows full debug 90/90 and WSL Arch Linux full debug 87/87.
+- The durable ownership boundary for renderer-creation Result conventions is
+  `src/ui/runtime_renderer_results.cpp`; keep root runtime startup in
+  `src/ui/runtime_run.cpp`, child-window activation in
+  `src/ui/runtime_window_activation.cpp`, and window publication in
+  `src/ui/runtime_window_results.cpp`.
+- Step 305 should continue renderer Result follow-on work without folding
+  `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+  action macro payloads, task priorities, structured task groups, or broader
+  async runtime production depth into the same slice.

@@ -11300,3 +11300,17 @@
   `XMAKE_ROOT=y xmake test -P .` passed 87/87.
 - Step 304 is implemented and focused/full verified in the feature worktree.
   It is ready for feature commit and merge verification.
+
+## 2026-07-05 Phase B Step 304 Merge
+
+- Committed `codex/phase-b-renderer-result-conventions` as
+  `5f09830 feat: add renderer result conventions`.
+- Fast-forward merged the branch into `master` at `5f09830`.
+- Verified post-merge Windows full debug:
+  `xmake f -c -m debug -P .` exited 0, then `xmake test -P .`
+  passed 90/90.
+- Verified post-merge WSL Arch Linux full debug:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, then
+  `XMAKE_ROOT=y xmake test -P .` passed 87/87.
+- Step 304 is complete on `master`; Step 305 renderer Result follow-on is the
+  next Phase B slice.

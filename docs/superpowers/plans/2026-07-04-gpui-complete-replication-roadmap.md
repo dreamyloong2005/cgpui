@@ -362,10 +362,13 @@ shape before deeper native work expands platform behavior.
   background work, or background completion callbacks return
   `ErrorCode::invalid_argument` without creating task records, while existing
   `spawn_*` compatibility methods still return an empty `TaskHandle`.
-- [ ] Step 304: Add renderer-creation result conventions. Implemented in the
-  feature worktree with `WindowRuntime::try_create_renderer(...) ->
-  Result<Renderer*>` and focused `src/ui/runtime_renderer_results.cpp`
-  ownership; merge and post-merge verification are pending.
+- [x] Step 304: Add renderer-creation result conventions. Completed on
+  `master` at `5f09830` and post-merge verified with Windows full-debug 90/90
+  and WSL Arch Linux full-debug 87/87. `WindowRuntime::try_create_renderer(...) ->
+  Result<Renderer*>` owns the explicit renderer factory Result boundary in
+  focused `src/ui/runtime_renderer_results.cpp`; `run(...)` and child-window
+  activation now call that boundary instead of calling `renderer_factory_(...)`
+  directly.
 - [ ] Steps 305-306: Finish the remaining renderer error/result conventions.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
@@ -670,12 +673,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 305 renderer result follow-on is next after Step 304 lands on `master`.
-Step 304 has the feature-worktree implementation for
-`try_create_renderer(...) -> Result<Renderer*>`, runtime Result behavior
-isolated in `src/ui/runtime_renderer_results.cpp`, and compatibility
-window-opening behavior kept intact. `ClipboardItem` payload parity, upstream
-`gpui::test` macro equivalents, and action macro payloads stay out of scope.
+Step 305 renderer result follow-on is next after Step 304 landed on `master` at
+`5f09830`. Step 304 completed `try_create_renderer(...) -> Result<Renderer*>`,
+isolated runtime Result behavior in `src/ui/runtime_renderer_results.cpp`, and
+kept compatibility window-opening behavior intact. `ClipboardItem` payload
+parity, upstream `gpui::test` macro equivalents, and action macro payloads stay
+out of scope.
 
 ## Self-Review
 
