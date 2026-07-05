@@ -22,6 +22,16 @@ AppOpenedWindow App::open_window(
   return runtime_->open_window(std::move(options), std::move(root_view));
 }
 
+Result<AppOpenedWindow> App::try_open_window(WindowOptions options) const {
+  return runtime_->try_open_window(std::move(options));
+}
+
+Result<AppOpenedWindow> App::try_open_window(
+    WindowOptions options,
+    std::unique_ptr<View> root_view) const {
+  return runtime_->try_open_window(std::move(options), std::move(root_view));
+}
+
 Window App::root_window() const {
   return Window(*runtime_, runtime_->root_window_runtime_id());
 }

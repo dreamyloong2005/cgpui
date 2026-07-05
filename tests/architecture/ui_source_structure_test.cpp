@@ -1067,6 +1067,7 @@ int main() {
       "src/ui/runtime_window_activation.cpp",
       "src/ui/runtime_window_records.cpp",
       "src/ui/runtime_window_rendering.cpp",
+      "src/ui/runtime_window_results.cpp",
       "src/ui/window.cpp",
       "src/ui/window_context.cpp",
       "src/ui/runtime_theme.cpp",
@@ -1322,8 +1323,28 @@ int main() {
       contains(runtime_windows_source,
                "WindowRuntimeRecord* WindowRuntime::find_window_runtime_record(") ||
       contains(runtime_windows_source,
-               "void WindowRuntime::cleanup_closed_additional_window(")) {
+               "void WindowRuntime::cleanup_closed_additional_window(") ||
+      contains(runtime_windows_source,
+               "Result<AppOpenedWindow> WindowRuntime::try_open_window(")) {
     return 33;
+  }
+
+  const std::string runtime_window_results_source =
+      read_source("src/ui/runtime_window_results.cpp");
+  if (line_count(runtime_window_results_source) > 100 ||
+      !contains(runtime_window_results_source,
+                "Result<AppOpenedWindow> WindowRuntime::try_open_window(") ||
+      !contains(runtime_window_results_source,
+                "record.native_window_error.has_value()") ||
+      !contains(runtime_window_results_source,
+                "app_opened_windows_.push_back(opened)") ||
+      !contains(runtime_window_results_source,
+                "window_runtime_records_.push_back(record)") ||
+      contains(runtime_window_results_source,
+               "void WindowRuntime::handle_redraw_for_record(") ||
+      contains(runtime_window_results_source, "install_native_menu(") ||
+      contains(runtime_window_results_source, "spawn_background_task(")) {
+    return 134;
   }
 
   const std::string runtime_window_activation_source =
@@ -2395,8 +2416,10 @@ int main() {
       contains(app_context_window_options_source, "int run_app(")) {
     return 94;
   }
-  if (line_count(app_context_services_source) > 70 ||
+  if (line_count(app_context_services_source) > 90 ||
       !contains(app_context_services_source, "AppContext::open_window(") ||
+      !contains(app_context_services_source,
+                "AppContext::try_open_window(") ||
       !contains(app_context_services_source,
                 "AppContext::install_native_menu(") ||
       !contains(app_context_services_source,

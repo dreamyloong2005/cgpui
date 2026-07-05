@@ -11047,3 +11047,32 @@
   `XMAKE_ROOT=y xmake test -y -P .` passed 83/83.
 - Step 300 is complete on `master`; Step 301 public error/result conventions
   is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 301 Public Result Conventions
+
+- Created feature worktree `.worktrees/phase-b-public-result-conventions` on
+  `codex/phase-b-public-result-conventions` from
+  `2324415 docs: mark step 300 merged`.
+- Baseline Windows focused verification passed before edits:
+  `xmake test -y -P . app_window_context_test/default
+  application_facade_test/default app_source_structure_test/default
+  ui_source_structure_test/default window_runtime_multiwindow_test/default
+  gpui_parity_ledger_test/default` passed 6/6.
+- RED added `tests/api_parity/public_result_conventions_test.cpp` and xmake
+  registration; the focused target failed as expected because
+  `WindowRuntime`, `App`, and `AppContext` did not expose
+  `try_open_window(...)`.
+- GREEN added `try_open_window(...) -> Result<AppOpenedWindow>` on
+  `WindowRuntime`, `App`, and `AppContext`, with runtime ownership isolated in
+  `src/ui/runtime_window_results.cpp` and facade/context methods only
+  forwarding to the runtime.
+- A stricter RED assertion caught that a naive wrapper over `open_window(...)`
+  would publish failed app-opened records. GREEN now uses a separate Result
+  creation path: platform-window or renderer creation errors return
+  `Error` without adding an app-opened window record or additional runtime
+  record, and owned child root views are removed on failure.
+- Focused Windows verification passed:
+  `xmake test -y -P . public_result_conventions_test/default
+  app_source_structure_test/default ui_source_structure_test/default
+  app_window_context_test/default window_runtime_multiwindow_test/default`
+  passed 5/5.

@@ -16,6 +16,11 @@ class App {
   [[nodiscard]] AppOpenedWindow open_window(
       WindowOptions options,
       std::unique_ptr<View> root_view) const;
+  [[nodiscard]] Result<AppOpenedWindow> try_open_window(
+      WindowOptions options) const;
+  [[nodiscard]] Result<AppOpenedWindow> try_open_window(
+      WindowOptions options,
+      std::unique_ptr<View> root_view) const;
   [[nodiscard]] Window root_window() const;
   [[nodiscard]] std::optional<Window> window(
       WindowRuntimeId runtime_id) const;

@@ -22,6 +22,11 @@ struct AppContext {
   [[nodiscard]] AppOpenedWindow open_window(
       WindowOptions options,
       std::unique_ptr<View> root_view) const;
+  [[nodiscard]] Result<AppOpenedWindow> try_open_window(
+      WindowOptions options) const;
+  [[nodiscard]] Result<AppOpenedWindow> try_open_window(
+      WindowOptions options,
+      std::unique_ptr<View> root_view) const;
   [[nodiscard]] NativeMenuInstallation install_native_menu(
       NativeMenuModel menu) const;
   [[nodiscard]] NativeFileDialogResult show_native_file_dialog(

@@ -117,6 +117,10 @@ int main() {
   }
   if (!contains(ledger, "`App` facade from `AppContext::app()`") ||
       !contains(ledger, "`Context<T>::app_context()` app-domain capability") ||
+      !contains(ledger, "`try_open_window(...) -> Result<AppOpenedWindow>`") ||
+      !contains(ledger, "src/ui/runtime_window_results.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/public_result_conventions_test.cpp") ||
       !contains(ledger,
                 "`Window` facade from `WindowRuntimeContext::window()`") ||
       !contains(ledger, "tests/api_parity/app_window_context_test.cpp") ||
@@ -348,6 +352,8 @@ int main() {
               "window_context",
               "AsyncContextCapability",
               "async_context",
+              "try_open_window",
+              "Result<AppOpenedWindow>",
               "TestContextCapability",
               "test_context",
               "gpui::TestAppContext",

@@ -334,8 +334,14 @@ shape before deeper native work expands platform behavior.
   helpers over the real runtime redraw scheduling and
   `WindowRedrawRequested` frame path, with rendering helper ownership isolated
   in `src/ui/test_context_rendering.cpp`.
-- [ ] Steps 301-306: Add public error/result conventions for window opening,
-  platform services, async spawn, and renderer creation.
+- [x] Step 301: Add public window-opening result conventions. `App`,
+  `AppContext`, and `WindowRuntime` now expose
+  `try_open_window(...) -> Result<AppOpenedWindow>` over a focused
+  `src/ui/runtime_window_results.cpp` implementation. Failed platform-window
+  or renderer creation returns `Error` without publishing an app-opened window
+  record, while existing `open_window(...)` compatibility behavior remains.
+- [ ] Steps 302-306: Add public error/result conventions for platform
+  services, async spawn, and renderer creation.
 - [ ] Steps 307-312: Add API compatibility examples that compile without
   private headers and fail if they touch `WindowRuntime` internals directly.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
@@ -639,11 +645,12 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 301 public error/result conventions is next. Step 300 is complete on
-`master` at `8ac5aa0` and records `request_redraw()` plus `draw_frame()` over
-the existing runtime redraw path while keeping `ClipboardItem` payload parity,
-upstream `gpui::test` macro equivalents, and action macro payloads out of
-scope.
+Step 302 platform service result conventions is next. Step 301 adds
+`try_open_window(...) -> Result<AppOpenedWindow>` on the public app/context and
+runtime surfaces, isolates the implementation in
+`src/ui/runtime_window_results.cpp`, and keeps broader platform service,
+async-spawn, renderer-creation, `ClipboardItem` payload parity, upstream
+`gpui::test` macro equivalents, and action macro payloads out of scope.
 
 ## Self-Review
 

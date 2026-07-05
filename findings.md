@@ -5047,3 +5047,23 @@
   it should prove `request_redraw()` goes through platform redraw scheduling,
   `draw_frame()` can pump a frame without issuing another platform redraw
   request, and runtime diagnostics track the pumped frames.
+
+## 2026-07-05 Phase B Step 301 Public Result Conventions
+
+- Step 301 stays scoped to public window-opening result conventions. It should
+  not start platform service result conversion, async-spawn result conversion,
+  renderer factory public API redesign, or broad exception/error rewrites.
+- The public API shape is `try_open_window(...) -> Result<AppOpenedWindow>` on
+  `WindowRuntime`, `App`, and `AppContext`, while existing
+  `open_window(...) -> AppOpenedWindow` remains source-compatible.
+- `try_open_window(...)` should not simply wrap `open_window(...)`, because
+  doing so publishes failed app-opened windows before returning `Error`. The
+  Result path needs its own focused creation flow that publishes records only
+  after platform-window and renderer creation both succeed.
+- Implementation ownership belongs in `src/ui/runtime_window_results.cpp`.
+  App facade forwarding stays in `src/app/app_facade.cpp`; app-context
+  service forwarding stays in `src/ui/app_context_services.cpp`; the original
+  compatibility record path stays in `src/ui/runtime_windows.cpp`.
+- The behavior guard belongs in
+  `tests/api_parity/public_result_conventions_test.cpp`, covering API spelling,
+  platform-window failure, renderer failure, and facade/context forwarding.

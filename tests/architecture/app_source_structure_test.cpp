@@ -105,6 +105,7 @@ int main() {
   }
   if (!contains(app_facade_header, "class App") ||
       !contains(app_facade_header, "open_window(") ||
+      !contains(app_facade_header, "try_open_window(") ||
       !contains(app_facade_header, "root_window()") ||
       !contains(app_facade_header, "std::optional<Window> window(") ||
       line_count(app_facade_header) > 120) {
@@ -120,6 +121,8 @@ int main() {
   }
   if (!contains(app_facade_source, "App::open_window(") ||
       !contains(app_facade_source, "runtime_->open_window(") ||
+      !contains(app_facade_source, "App::try_open_window(") ||
+      !contains(app_facade_source, "runtime_->try_open_window(") ||
       !contains(window_source, "Window::descriptor()") ||
       !contains(window_source, "Window::viewport_size()") ||
       !contains(window_context_source, "WindowContextCapability::window()") ||

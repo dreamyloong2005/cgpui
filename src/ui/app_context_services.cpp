@@ -12,6 +12,17 @@ AppOpenedWindow AppContext::open_window(
   return runtime.open_window(std::move(options), std::move(root_view));
 }
 
+Result<AppOpenedWindow> AppContext::try_open_window(
+    WindowOptions options) const {
+  return runtime.try_open_window(std::move(options));
+}
+
+Result<AppOpenedWindow> AppContext::try_open_window(
+    WindowOptions options,
+    std::unique_ptr<View> root_view) const {
+  return runtime.try_open_window(std::move(options), std::move(root_view));
+}
+
 NativeMenuInstallation AppContext::install_native_menu(
     NativeMenuModel menu) const {
   return runtime.install_native_menu(std::move(menu));
