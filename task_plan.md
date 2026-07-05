@@ -1814,4 +1814,7 @@ implementation slice.
   prelude include boundary, frozen public app/context/entity/action/key,
   async/test, Result, and platform-service names, and explicit Phase B
   exclusions are machine-checked before Phase C. Phase B Step 309 public API
-  compatibility example expansion is the next slice.
+  compatibility example expansion is implemented and feature-worktree
+  verified on `codex/phase-b-public-api-example-expansion`: it adds a second
+  prelude-only authoring workflow example and focused guard against the frozen
+  public vocabulary before Phase C.

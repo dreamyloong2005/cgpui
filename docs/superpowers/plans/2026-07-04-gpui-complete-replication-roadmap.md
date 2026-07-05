@@ -408,8 +408,16 @@ shape before deeper native work expands platform behavior.
   Phase B exclusions for `ClipboardItem` payload parity, upstream `gpui::test`
   macro equivalents, action macro payloads, task priorities, and structured
   task groups.
-- [ ] Steps 309-312: Expand API compatibility examples against the frozen
-  public authoring vocabulary before Phase C.
+- [ ] Step 309: Expand the public API compatibility examples against the
+  frozen public authoring vocabulary with a second prelude-only authoring
+  workflow example. Implemented and feature-worktree verified on
+  `codex/phase-b-public-api-example-expansion` with
+  `examples/api_parity/public_authoring_workflow/main.cpp`,
+  `api_parity_public_authoring_workflow`, and
+  `tests/api_parity/public_api_example_expansion_test.cpp`; Windows full-debug
+  passed 95/95 and WSL Arch Linux full-debug passed 92/92 before merge.
+- [ ] Steps 310-312: Continue expanding API compatibility examples against the
+  frozen public authoring vocabulary before Phase C.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
   authoring vocabulary before Phase C.
 
@@ -711,11 +719,15 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 309 public API compatibility example expansion is next after Step 308
-landed the public authoring vocabulary freeze. It should add another prelude-only
-example or example guard against the frozen names without introducing
-`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, action
-macro payloads, task priorities, or structured task groups.
+Step 309 public API compatibility example expansion is feature-worktree
+verified after Step 308 landed the public authoring vocabulary freeze. It adds
+`examples/api_parity/public_authoring_workflow/main.cpp` plus
+`tests/api_parity/public_api_example_expansion_test.cpp` as a second
+prelude-only authoring example and guard against the frozen names without
+introducing `ClipboardItem` payload parity, upstream `gpui::test` macro
+equivalents, action macro payloads, task priorities, or structured task groups.
+Step 310 should continue the public example expansion queue after Step 309
+lands on `master`.
 
 ## Self-Review
 

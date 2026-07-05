@@ -209,9 +209,13 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
       !contains(ledger,
+                "tests/api_parity/public_api_example_expansion_test.cpp") ||
+      !contains(ledger,
                 "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(ledger,
                 "examples/api_parity/public_api_compatibility/main.cpp") ||
+      !contains(ledger,
+                "examples/api_parity/public_authoring_workflow/main.cpp") ||
       !contains(ledger, "docs/gpui-public-authoring-vocabulary.md") ||
       !contains(ledger,
                 "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
@@ -400,6 +404,8 @@ int main() {
               "renderer_frame_result_conventions_test",
               "public_api_compatibility_examples_test",
               "examples/api_parity/public_api_compatibility/main.cpp",
+              "public_api_example_expansion_test",
+              "examples/api_parity/public_authoring_workflow/main.cpp",
               "public_authoring_vocabulary_freeze_test",
               "docs/gpui-public-authoring-vocabulary.md",
               "try_install_native_menu",
@@ -500,6 +506,52 @@ int main() {
       contains(public_api_example, ".runtime") ||
       contains(public_api_example, "runtime.")) {
     return 82;
+  }
+
+  const std::string public_workflow_example =
+      read_source("examples/api_parity/public_authoring_workflow/main.cpp");
+  if (public_workflow_example.empty()) {
+    return 85;
+  }
+  if (!contains(public_workflow_example, "#include \"cgpui/prelude.hpp\"") ||
+      !contains(public_workflow_example,
+                "class PublicAuthoringWorkflowView") ||
+      !contains(public_workflow_example,
+                "cgpui::Context<PublicAuthoringWorkflowView>&") ||
+      !contains(public_workflow_example, "cgpui::IntoElement render") ||
+      !contains(public_workflow_example,
+                "static_assert(cgpui::Render<PublicAuthoringWorkflowView>)") ||
+      !contains(public_workflow_example, "cgpui::Application::create()") ||
+      !contains(public_workflow_example, "cgpui::EntityHandle<") ||
+      !contains(public_workflow_example, "cgpui::WeakEntity<") ||
+      !contains(public_workflow_example, "cgpui::ViewHandle<") ||
+      !contains(public_workflow_example, "cgpui::WeakViewHandle<") ||
+      !contains(public_workflow_example, "cgpui::CommandPaletteEntry") ||
+      !contains(public_workflow_example, "cgpui::KeyBindingContext") ||
+      !contains(public_workflow_example, "cgpui::AsyncContextCapability") ||
+      !contains(public_workflow_example, "cgpui::TestContextCapability") ||
+      !contains(public_workflow_example, "cgpui::NativeMenuModel") ||
+      !contains(public_workflow_example, "cgpui::NativeFileDialogOptions") ||
+      !contains(public_workflow_example, "try_install_native_menu(") ||
+      !contains(public_workflow_example, "try_show_native_file_dialog(") ||
+      !contains(public_workflow_example, "try_spawn_task(") ||
+      !contains(public_workflow_example, "try_draw_frame(") ||
+      !contains(public_workflow_example, "bind_key(")) {
+    return 86;
+  }
+  if (contains(public_workflow_example, "WindowRuntime") ||
+      contains(public_workflow_example, "#include \"cgpui/ui/") ||
+      contains(public_workflow_example, "#include \"cgpui/platform/") ||
+      contains(public_workflow_example, "#include \"cgpui/renderer/") ||
+      contains(public_workflow_example, "#include \"src/") ||
+      contains(public_workflow_example, "ClipboardItem") ||
+      contains(public_workflow_example, "gpui::test") ||
+      contains(public_workflow_example, "TaskPriority") ||
+      contains(public_workflow_example, "StructuredTaskGroup") ||
+      contains(public_workflow_example, ".runtime") ||
+      contains(public_workflow_example, "runtime.") ||
+      contains(public_workflow_example, "window_runtime")) {
+    return 87;
   }
 
   const std::string public_vocabulary =
@@ -1091,7 +1143,11 @@ int main() {
       !contains(xmake,
                 "target(\"api_parity_public_api_compatibility\")") ||
       !contains(xmake,
+                "target(\"api_parity_public_authoring_workflow\")") ||
+      !contains(xmake,
                 "target(\"public_api_compatibility_examples_test\")") ||
+      !contains(xmake,
+                "target(\"public_api_example_expansion_test\")") ||
       !contains(xmake,
                 "target(\"public_authoring_vocabulary_freeze_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -1158,13 +1214,18 @@ int main() {
                 "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/public_api_example_expansion_test.cpp") ||
       !contains(
           xmake,
           "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
           xmake,
-          "examples/api_parity/public_api_compatibility/main.cpp")) {
+          "examples/api_parity/public_api_compatibility/main.cpp") ||
+      !contains(
+          xmake,
+          "examples/api_parity/public_authoring_workflow/main.cpp")) {
     return 14;
   }
 

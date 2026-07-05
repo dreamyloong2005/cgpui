@@ -5295,3 +5295,22 @@
   vocabulary without adding `ClipboardItem` payload parity, upstream
   `gpui::test` macro equivalents, action macro payloads, task priorities, or
   structured task groups.
+
+## 2026-07-05 Phase B Step 309 Public API Example Expansion
+
+- Step 309 stays scoped to example and compatibility coverage against the
+  frozen public authoring vocabulary. It should not add new runtime behavior,
+  `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+  action macro payloads, task priorities, or structured task groups.
+- The durable example boundary is
+  `examples/api_parity/public_authoring_workflow/main.cpp`. It must compile
+  using only `cgpui/prelude.hpp`, remain author-facing, and avoid private
+  headers or direct `WindowRuntime` internals.
+- The structure/API guard is
+  `tests/api_parity/public_api_example_expansion_test.cpp`, with
+  `tests/api_parity/gpui_parity_ledger_test.cpp` also requiring the new
+  example file, test file, and xmake targets so future ledger drift is caught.
+- A transient `xmake` package filelock error can occur if example build and
+  tests run concurrently against the Vulkan SDK package cache; rerunning the
+  build alone succeeded. Keep the full verification commands sequential when
+  touching build targets in this worktree.

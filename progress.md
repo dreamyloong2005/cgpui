@@ -11567,3 +11567,50 @@
   `XMAKE_ROOT=y xmake test -P .` passed 91/91.
 - Step 308 is complete on `master`; Step 309 public API compatibility example
   expansion is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 309 Public API Example Expansion
+
+- Continued `.worktrees/phase-b-public-api-example-expansion` on
+  `codex/phase-b-public-api-example-expansion` after confirming Step 301 is
+  already complete on `master`; the active unfinished slice is Step 309.
+- Baseline and RED/GREEN were already established before continuation:
+  `tests/api_parity/public_api_example_expansion_test.cpp` failed first on the
+  missing `examples/api_parity/public_authoring_workflow/main.cpp`, then GREEN
+  added the prelude-only public authoring workflow example plus xmake targets
+  `public_api_example_expansion_test` and
+  `api_parity_public_authoring_workflow`.
+- The new example covers the frozen public vocabulary from an author-facing
+  workflow: `Application`, `App`, `Window`, `Context<T>`, entity/view handles,
+  command palette entries, key binding contexts, `Result<T>`, async/test
+  capabilities, native menu/file dialog Result APIs, task spawn Result APIs,
+  and frame Result APIs. It intentionally excludes private headers,
+  `WindowRuntime` internals, `ClipboardItem`, upstream `gpui::test` macro
+  equivalents, task priorities, and structured task groups.
+- Updated `tests/api_parity/gpui_parity_ledger_test.cpp`, the Markdown parity
+  ledger, and the JSON parity ledger so the new example, new test, and new
+  xmake targets are part of the normal parity gate.
+- Focused Windows verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . public_api_example_expansion_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  public_api_compatibility_examples_test/default` passed 4/4, and
+  `xmake build -P . api_parity_public_authoring_workflow` built successfully.
+- The first attempt to build both public API example targets in one command
+  failed because xmake accepts a single target argument in this form; rerunning
+  the two builds sequentially resolved it.
+- Fresh Windows feature-worktree full debug passed:
+  `xmake f -c -m debug -P .` exited 0,
+  `xmake build -P . api_parity_public_api_compatibility` built successfully,
+  `xmake build -P . api_parity_public_authoring_workflow` built successfully,
+  and `xmake test -P .` passed 95/95.
+- Fresh WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 4/4,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility` built
+  successfully,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_authoring_workflow` built
+  successfully, and `XMAKE_ROOT=y xmake test -P .` passed 92/92.
+- Step 309 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 310 is
+  the next Phase B example expansion slice after Step 309 lands on `master`.
