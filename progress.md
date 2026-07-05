@@ -11680,3 +11680,28 @@
 - Step 310 is implemented and Windows/WSL full-debug verified in the feature
   worktree. It is ready for feature commit and merge verification. Step 311 is
   the next Phase B example expansion slice after Step 310 lands on `master`.
+
+## 2026-07-05 Phase B Step 310 Merge
+
+- Committed `codex/phase-b-public-context-capability-example` as
+  `7f7838b docs: add public context capability example`.
+- Fast-forward merged the branch into `master` at `7f7838b`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 5/5,
+  `xmake build -P . api_parity_public_api_compatibility`,
+  `xmake build -P . api_parity_public_authoring_workflow`, and
+  `xmake build -P . api_parity_public_context_capabilities` built
+  successfully, and `xmake test -P .` passed 96/96.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused parity gates passed 5/5,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility`,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_authoring_workflow`, and
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_context_capabilities`
+  built successfully, and a fresh clean-output rerun of
+  `XMAKE_ROOT=y xmake test -P .` passed 93/93.
+- Step 310 is complete on `master`; Step 311 public API compatibility example
+  expansion follow-on is the next Phase B slice.

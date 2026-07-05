@@ -417,7 +417,9 @@ shape before deeper native work expands platform behavior.
   verification passed Windows full-debug 95/95, WSL Arch Linux public API
   example builds, and WSL Arch Linux full-debug 92/92.
 - [x] Step 310: Expand public API compatibility examples with a prelude-only
-  public context capability workflow. Added
+  public context capability workflow. Merged on `master` at `7f7838b` and
+  post-merge verified with Windows full-debug 96/96 and WSL Arch Linux
+  full-debug 93/93. Added
   `examples/api_parity/public_context_capabilities/main.cpp`,
   `api_parity_public_context_capabilities`, and
   `tests/api_parity/public_context_capability_example_test.cpp`; the guard

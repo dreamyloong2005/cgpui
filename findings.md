@@ -5348,3 +5348,17 @@
 - A transient `xmake` package filelock error recurred when the new example
   build ran in parallel with the new test. Keep Step 310 verification commands
   sequential around example builds.
+
+## 2026-07-05 Phase B Step 310 Merge
+
+- Step 310 is merged on `master` at
+  `7f7838b docs: add public context capability example` and post-merge
+  verified on Windows full-debug 96/96 and WSL Arch Linux full-debug 93/93.
+- The durable Step 310 boundary is the prelude-only
+  `examples/api_parity/public_context_capabilities/main.cpp` example plus
+  `tests/api_parity/public_context_capability_example_test.cpp`; keep
+  subsequent example expansion slices author-facing and out of runtime
+  internals.
+- Step 311 should continue the public API compatibility example expansion
+  queue without adding runtime behavior or opening the deferred Phase B
+  exclusions.
