@@ -1,6 +1,7 @@
 # Public Authoring Vocabulary Freeze
 
-Phase B Step 308 freezes the public authoring vocabulary that Windows/Linux
+Phase B Step 308 established the initial public authoring vocabulary freeze.
+Phase B Steps 313-318 close the final Phase B freeze that Windows/Linux
 examples and API-parity tests may rely on before Phase C starts.
 
 The frozen include boundary is `#include "cgpui/prelude.hpp"`.
@@ -8,7 +9,8 @@ The frozen include boundary is `#include "cgpui/prelude.hpp"`.
 This document is a compatibility guard, not a promise that every listed type is
 feature-complete with upstream GPUI. It records the public names that should be
 used from application-author code and the module boundary that future slices
-must keep green.
+must keep green. Phase C starts from this frozen boundary and may expand the
+element/style/widget vocabulary only through focused public modules.
 
 ## Application entry vocabulary
 
@@ -88,8 +90,8 @@ dialog helpers. Production-depth native platform behavior remains later work.
 - task priorities
 - structured task groups
 
-These items remain future Phase B or later work and should not be introduced
-while freezing the current public vocabulary.
+These items remain deferred Phase C or production-depth work and should not be
+introduced while freezing the current public vocabulary.
 
 ## Forbidden from public examples
 

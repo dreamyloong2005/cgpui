@@ -5436,3 +5436,20 @@
   final Phase B closure examples author-facing and out of runtime internals.
 - Steps 313-318 should now run the final Phase B Windows/WSL verification and
   public authoring vocabulary freeze audit before Phase C starts.
+
+## 2026-07-05 Phase B Steps 313-318 Final Freeze Audit
+
+- Step 301 is already complete on `master`; do not redo it. The current Phase
+  B closeout band is Steps 313-318.
+- The durable final-freeze guard is
+  `tests/api_parity/public_phase_b_completion_audit_test.cpp`. It reads the
+  roadmap, public vocabulary document, Markdown/JSON parity ledger, xmake, and
+  all public API parity examples. It fails if Phase B is not marked closed
+  before Phase C, if the new audit is not ledger-tracked, if any public example
+  stops being prelude-only, or if deferred Phase B exclusions leak into public
+  examples.
+- The final freeze keeps `ClipboardItem` payload parity, upstream
+  `gpui::test` macro equivalents, action macro payloads, task priorities, and
+  structured task groups deferred. Phase C should start with elements, style,
+  layout, widgets, and uniform-list work from this frozen public authoring
+  boundary.

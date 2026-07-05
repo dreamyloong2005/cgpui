@@ -11836,3 +11836,37 @@
   `XMAKE_ROOT=y xmake test -P .` passed 95/95.
 - Step 312 is complete on `master`; Steps 313-318 final Windows/WSL
   verification and public vocabulary freeze audit are the next Phase B band.
+
+## 2026-07-05 Phase B Steps 313-318 Final Freeze Audit
+
+- Confirmed Step 301 is already complete on `master`; the active unfinished
+  Phase B band is Steps 313-318.
+- Continued `.worktrees/phase-b-final-freeze-audit` on
+  `codex/phase-b-final-freeze-audit` from `5809de8`.
+- RED added
+  `tests/api_parity/public_phase_b_completion_audit_test.cpp` and the
+  `public_phase_b_completion_audit_test` xmake target. After configuring
+  debug, `xmake test -P .
+  public_phase_b_completion_audit_test/default` failed as expected because
+  the roadmap, public vocabulary document, and parity ledger do not yet record
+  the final Phase B freeze.
+- GREEN updates `docs/gpui-public-authoring-vocabulary.md`,
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, and
+  `tests/api_parity/gpui_parity_ledger_test.cpp` so the final Phase B public
+  vocabulary completion audit is tracked as a focused API-parity gate.
+- Fresh Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  focused public/freeze gates passed 8/8, all five public API example targets
+  built sequentially, and `xmake test -P .` passed 99/99.
+- Fresh WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  focused public/freeze gates passed 8/8, all five public API example targets
+  built sequentially, and `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Steps 313-318 are implemented and Windows/WSL full-debug verified in the
+  feature worktree. They are ready for feature commit and merge verification.

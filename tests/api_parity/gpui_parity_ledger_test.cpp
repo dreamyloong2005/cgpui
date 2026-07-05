@@ -220,6 +220,8 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(ledger,
+                "tests/api_parity/public_phase_b_completion_audit_test.cpp") ||
+      !contains(ledger,
                 "examples/api_parity/public_api_compatibility/main.cpp") ||
       !contains(ledger,
                 "examples/api_parity/public_authoring_workflow/main.cpp") ||
@@ -428,6 +430,8 @@ int main() {
               "examples/api_parity/public_phase_b_surface_closure/main.cpp",
               "public_authoring_vocabulary_freeze_test",
               "docs/gpui-public-authoring-vocabulary.md",
+              "public_phase_b_completion_audit_test",
+              "final Phase B public vocabulary completion audit",
               "try_install_native_menu",
               "Result<NativeMenuInstallation>",
               "try_show_native_file_dialog",
@@ -1360,6 +1364,8 @@ int main() {
           "target(\"public_phase_b_surface_closure_example_test\")") ||
       !contains(xmake,
                 "target(\"public_authoring_vocabulary_freeze_test\")") ||
+      !contains(xmake,
+                "target(\"public_phase_b_completion_audit_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1438,6 +1444,9 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/public_phase_b_completion_audit_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
           xmake,

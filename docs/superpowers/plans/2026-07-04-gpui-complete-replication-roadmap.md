@@ -446,8 +446,16 @@ shape before deeper native work expands platform behavior.
   entity/view, action/key, async/test, Result, platform-service, frame, and
   pointer-capture public vocabulary without private headers or `WindowRuntime`
   internals.
-- [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
-  authoring vocabulary before Phase C.
+- [x] Steps 313-318: Run full Windows/WSL verification and freeze the public
+  authoring vocabulary before Phase C. Adds
+  `tests/api_parity/public_phase_b_completion_audit_test.cpp` as the final
+  Phase B public vocabulary completion audit so the roadmap, public vocabulary
+  document, parity ledger, public examples, public example tests, and xmake
+  targets stay aligned without introducing deferred Phase B exclusions.
+  Feature-worktree verification passed Windows JSON validation, focused
+  public/freeze gates 8/8, all five public API example builds, and full debug
+  99/99; WSL Arch Linux JSON validation, focused public/freeze gates 8/8, all
+  five public API example builds, and full debug 96/96.
 
 ## Phase C: Steps 319-378 - Elements, Style, Layout, Widgets, And Uniform Lists
 
@@ -747,10 +755,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Steps 313-318 should run the final Phase B Windows/WSL verification and freeze
-audit before Phase C. They should close the public authoring vocabulary phase
-without introducing `ClipboardItem` payload parity, upstream `gpui::test` macro
-equivalents, action macro payloads, task priorities, or structured task groups.
+Step 319 should start Phase C element/style/layout work from the frozen Phase B
+public authoring boundary. The Phase B closeout audit keeps all public examples
+prelude-only without introducing deferred Phase B exclusions: `ClipboardItem`
+payload parity, upstream `gpui::test` macro equivalents, action macro payloads,
+task priorities, or structured task groups.
 
 ## Self-Review
 

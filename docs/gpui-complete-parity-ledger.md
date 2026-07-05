@@ -145,7 +145,10 @@ internals before Phase C. Step 312 adds
 `examples/api_parity/public_phase_b_surface_closure/main.cpp`, guarded by
 `tests/api_parity/public_phase_b_surface_closure_example_test.cpp`, as the
 final Phase B public surface closure example before the verification/freeze
-band. The tracked
+band. Steps 313-318 add the final Phase B public vocabulary completion audit,
+guarded by `tests/api_parity/public_phase_b_completion_audit_test.cpp`, so the
+roadmap, vocabulary document, ledger, public examples, and xmake targets stay
+aligned before Phase C. The tracked
 upstream example inventory includes:
 
 - `hello_world`
