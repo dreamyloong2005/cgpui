@@ -11548,3 +11548,22 @@
   `xmake test -P .` passed 94/94.
 - Step 308 is implemented and Windows/WSL full-debug verified in the feature
   worktree.
+
+## 2026-07-05 Phase B Step 308 Merge
+
+- Fast-forward merged `codex/phase-b-public-authoring-vocabulary-freeze` into
+  `master` at `83bbe62 docs: freeze public authoring vocabulary`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake build -P . api_parity_public_api_compatibility` built the public API
+  compatibility example, focused parity gates passed 6/6, and
+  `xmake test -P .` passed 94/94.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0,
+  `python -m json.tool docs/gpui-complete-parity-ledger.json` exited 0,
+  `XMAKE_ROOT=y xmake build -P . api_parity_public_api_compatibility` built
+  the public API compatibility example, focused parity gates passed 6/6, and
+  `XMAKE_ROOT=y xmake test -P .` passed 91/91.
+- Step 308 is complete on `master`; Step 309 public API compatibility example
+  expansion is the next Phase B slice.

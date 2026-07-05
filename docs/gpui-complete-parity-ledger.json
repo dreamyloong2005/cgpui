@@ -82,7 +82,7 @@
       "upstream_gpui": "gpui::App",
       "cgpui_target": "App facade from AppContext::app() and Context<T>::app_context() app-domain capability, plus try_open_window(...) -> Result<AppOpenedWindow> public window-opening result conventions on App, AppContext, and WindowRuntime, try_create_renderer(...) -> Result<Renderer*> renderer-creation result conventions on WindowRuntime, try_resize_surface(...) -> Result<void> renderer-resize result conventions on WindowRuntime, and try_draw_frame() -> Result<void> renderer frame/redraw result conventions on WindowRuntime, covered by src/ui/runtime_renderer_results.cpp, src/ui/runtime_renderer_resize_results.cpp, src/ui/runtime_renderer_frame_results.cpp, examples/api_parity/public_api_compatibility/main.cpp, docs/gpui-public-authoring-vocabulary.md, tests/api_parity/renderer_result_conventions_test.cpp, tests/api_parity/renderer_resize_result_conventions_test.cpp, tests/api_parity/renderer_frame_result_conventions_test.cpp, tests/api_parity/public_api_compatibility_examples_test.cpp, and tests/api_parity/public_authoring_vocabulary_freeze_test.cpp",
       "status": "adapted",
-      "next_step": "Phase B public authoring vocabulary freeze"
+      "next_step": "Phase B public API compatibility example expansion"
     },
     {
       "upstream_gpui": "gpui::Window",
@@ -94,7 +94,7 @@
       "upstream_gpui": "gpui::Context<T>",
       "cgpui_target": "Context<T> alias with app/window/entity helpers, Context<T>::app_context() app-domain capability, Context<T>::view_context<T>() view-domain capability, Context<T>::window_context() window-domain capability, ElementContextCapability from Context<T>::element_context(ElementId), AsyncContextCapability from Context<T>::async_context(), TestContextCapability from Context<T>::test_context(), new_entity creation, weak entity upgrades, observe_entity helpers, entity-to-entity observation helpers, window/view observation helpers, update_entity transaction helpers, invalidate_entity helpers, entity deletion helpers, deterministic subscription lifetime/unsubscribe behavior, view-removal subscription cleanup, runtime-token cross-context boundaries, prelude-only public API compatibility example coverage in examples/api_parity/public_api_compatibility/main.cpp guarded by tests/api_parity/public_api_compatibility_examples_test.cpp, and public authoring vocabulary freeze coverage in docs/gpui-public-authoring-vocabulary.md guarded by tests/api_parity/public_authoring_vocabulary_freeze_test.cpp",
       "status": "adapted",
-      "next_step": "Phase B public authoring vocabulary freeze"
+      "next_step": "Phase B public API compatibility example expansion"
     },
     {
       "upstream_gpui": "gpui::Entity<T>",
@@ -136,7 +136,7 @@
       "upstream_gpui": "gpui::prelude",
       "cgpui_target": "cgpui/prelude.hpp plus cgpui/cgpui.hpp compatibility aggregate, prelude-only public API compatibility example examples/api_parity/public_api_compatibility/main.cpp guarded by tests/api_parity/public_api_compatibility_examples_test.cpp, and public authoring vocabulary freeze document docs/gpui-public-authoring-vocabulary.md guarded by tests/api_parity/public_authoring_vocabulary_freeze_test.cpp",
       "status": "adapted",
-      "next_step": "Phase B public authoring vocabulary freeze"
+      "next_step": "Phase B public API compatibility example expansion"
     },
     {
       "upstream_gpui": "gpui::actions! / action macro",

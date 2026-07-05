@@ -398,7 +398,9 @@ shape before deeper native work expands platform behavior.
   full-debug 93/93, WSL Arch Linux example build, and WSL Arch Linux
   full-debug 90/90.
 - [x] Step 308: Freeze the public authoring vocabulary before Phase C.
-  Implemented in `.worktrees/phase-b-public-authoring-vocabulary-freeze` with
+  Merged on `master` at `83bbe62` and post-merge verified with Windows
+  full-debug 94/94, WSL Arch Linux public API example build, and WSL Arch
+  Linux full-debug 91/91. It adds
   `docs/gpui-public-authoring-vocabulary.md` and
   `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp`. The freeze
   guard requires the prelude include boundary, the public app/context/entity,
@@ -710,7 +712,7 @@ usable as a C++23 GPUI replacement.
 ## Immediate Next Slice
 
 Step 309 public API compatibility example expansion is next after Step 308
-freezes the public authoring vocabulary. It should add another prelude-only
+landed the public authoring vocabulary freeze. It should add another prelude-only
 example or example guard against the frozen names without introducing
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, action
 macro payloads, task priorities, or structured task groups.

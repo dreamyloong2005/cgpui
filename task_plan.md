@@ -1807,9 +1807,11 @@ implementation slice.
   `tests/api_parity/public_api_compatibility_examples_test.cpp` so public
   examples fail if they include private headers or touch `WindowRuntime`
   internals directly. Phase B Step 308 public authoring vocabulary freeze is
-  implemented in `.worktrees/phase-b-public-authoring-vocabulary-freeze`: it
-  adds `docs/gpui-public-authoring-vocabulary.md` and
+  complete on `master` at `83bbe62` after post-merge Windows full-debug 94/94,
+  WSL Arch Linux public API example build, and WSL Arch Linux full-debug 91/91
+  verification. It adds `docs/gpui-public-authoring-vocabulary.md` and
   `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp` so the
   prelude include boundary, frozen public app/context/entity/action/key,
   async/test, Result, and platform-service names, and explicit Phase B
-  exclusions are machine-checked before Phase C.
+  exclusions are machine-checked before Phase C. Phase B Step 309 public API
+  compatibility example expansion is the next slice.

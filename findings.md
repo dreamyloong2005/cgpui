@@ -5281,3 +5281,17 @@
 - Step 309 should expand examples against the frozen vocabulary without moving
   compatibility checks into broad implementation files or changing low-level
   runtime behavior.
+
+## 2026-07-05 Phase B Step 308 Merge
+
+- Step 308 is merged on `master` at
+  `83bbe62 docs: freeze public authoring vocabulary` and post-merge verified
+  on Windows full-debug 94/94, WSL Arch Linux public API example build, and WSL
+  Arch Linux full-debug 91/91.
+- The durable freeze boundary is `docs/gpui-public-authoring-vocabulary.md`
+  plus `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp`; keep
+  future example-expansion slices prelude-only and author-facing.
+- Step 309 should expand public API compatibility examples against the frozen
+  vocabulary without adding `ClipboardItem` payload parity, upstream
+  `gpui::test` macro equivalents, action macro payloads, task priorities, or
+  structured task groups.
