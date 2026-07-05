@@ -5266,3 +5266,18 @@
   `tests/api_parity/public_api_compatibility_examples_test.cpp`. Step 308
   should freeze and expand public authoring vocabulary without adding runtime
   behavior or moving compatibility checks into broad implementation files.
+
+## 2026-07-05 Phase B Step 308 Public Authoring Vocabulary Freeze
+
+- Step 308 stays scoped to documentation plus structure/API guards. It should
+  not add runtime behavior, `ClipboardItem` payload parity, upstream
+  `gpui::test` macro equivalents, action macro payloads, task priorities, or
+  structured task groups.
+- The durable ownership boundary is `docs/gpui-public-authoring-vocabulary.md`
+  plus `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp`. The
+  guard ties the frozen vocabulary to `cgpui/prelude.hpp`,
+  `include/cgpui/app/app.hpp`, `include/cgpui/ui/ui.hpp`, and
+  `examples/api_parity/public_api_compatibility/main.cpp`.
+- Step 309 should expand examples against the frozen vocabulary without moving
+  compatibility checks into broad implementation files or changing low-level
+  runtime behavior.

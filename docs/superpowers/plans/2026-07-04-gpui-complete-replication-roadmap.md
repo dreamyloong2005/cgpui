@@ -397,8 +397,17 @@ shape before deeper native work expands platform behavior.
   `WindowRuntime` internals directly. Post-merge verification passed Windows
   full-debug 93/93, WSL Arch Linux example build, and WSL Arch Linux
   full-debug 90/90.
-- [ ] Steps 308-312: Expand API compatibility examples and freeze the public
-  authoring vocabulary before Phase C.
+- [x] Step 308: Freeze the public authoring vocabulary before Phase C.
+  Implemented in `.worktrees/phase-b-public-authoring-vocabulary-freeze` with
+  `docs/gpui-public-authoring-vocabulary.md` and
+  `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp`. The freeze
+  guard requires the prelude include boundary, the public app/context/entity,
+  action/key, async/test, Result, and platform-service names, and the explicit
+  Phase B exclusions for `ClipboardItem` payload parity, upstream `gpui::test`
+  macro equivalents, action macro payloads, task priorities, and structured
+  task groups.
+- [ ] Steps 309-312: Expand API compatibility examples against the frozen
+  public authoring vocabulary before Phase C.
 - [ ] Steps 313-318: Run full Windows/WSL verification and freeze the public
   authoring vocabulary before Phase C.
 
@@ -700,11 +709,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 308 public authoring vocabulary freeze is next after Step 307 merged the
-prelude-only public API compatibility example and guard. `ClipboardItem`
-payload parity, upstream `gpui::test` macro equivalents, action macro payloads,
-task priorities, and structured task groups stay out of scope for the
-remaining Phase B example-freeze work.
+Step 309 public API compatibility example expansion is next after Step 308
+freezes the public authoring vocabulary. It should add another prelude-only
+example or example guard against the frozen names without introducing
+`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents, action
+macro payloads, task priorities, or structured task groups.
 
 ## Self-Review
 

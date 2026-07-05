@@ -11509,3 +11509,42 @@
   `git worktree prune`.
 - Step 307 is complete on `master`; Step 308 public authoring vocabulary
   freeze is the next Phase B slice.
+
+## 2026-07-05 Phase B Step 308 Public Authoring Vocabulary Freeze
+
+- Created `.worktrees/phase-b-public-authoring-vocabulary-freeze` on
+  `codex/phase-b-public-authoring-vocabulary-freeze` from
+  `9adcc20 docs: mark step 307 merged`.
+- Baseline Windows focused verification passed:
+  `xmake test -P . public_api_compatibility_examples_test/default
+  gpui_parity_ledger_test/default public_authoring_surface_test/default
+  prelude_header_cleanliness/default` passed 4/4.
+- RED added
+  `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp` and xmake
+  registration. The focused target failed as expected because
+  `docs/gpui-public-authoring-vocabulary.md` did not exist; the direct test
+  binary returned exit code 1.
+- GREEN adds `docs/gpui-public-authoring-vocabulary.md`, freezing the Phase B
+  public authoring vocabulary behind `#include "cgpui/prelude.hpp"` and
+  explicitly keeping `ClipboardItem` payload parity, upstream `gpui::test`
+  macro equivalents, action macro payloads, task priorities, and structured
+  task groups out of this slice.
+- Updated the Markdown/JSON parity ledger and
+  `tests/api_parity/gpui_parity_ledger_test.cpp` so the freeze document,
+  freeze test, and xmake target are part of the normal parity gate.
+- Focused Windows GREEN verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json`, then
+  `xmake test -y -P . public_authoring_vocabulary_freeze_test/default
+  gpui_parity_ledger_test/default public_api_compatibility_examples_test/default
+  public_authoring_surface_test/default prelude_header_cleanliness/default
+  app_header_cleanliness/default` passed 6/6.
+- Fresh WSL Arch Linux full debug passed:
+  `XMAKE_ROOT=y xmake test -P .` passed 91/91.
+- Fresh Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0,
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake build -P . api_parity_public_api_compatibility` built the public API
+  compatibility example, focused parity gates passed 6/6, and
+  `xmake test -P .` passed 94/94.
+- Step 308 is implemented and Windows/WSL full-debug verified in the feature
+  worktree.

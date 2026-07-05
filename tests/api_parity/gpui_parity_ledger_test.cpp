@@ -209,7 +209,10 @@ int main() {
       !contains(ledger,
                 "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
       !contains(ledger,
+                "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
+      !contains(ledger,
                 "examples/api_parity/public_api_compatibility/main.cpp") ||
+      !contains(ledger, "docs/gpui-public-authoring-vocabulary.md") ||
       !contains(ledger,
                 "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
       !contains(ledger,
@@ -397,6 +400,8 @@ int main() {
               "renderer_frame_result_conventions_test",
               "public_api_compatibility_examples_test",
               "examples/api_parity/public_api_compatibility/main.cpp",
+              "public_authoring_vocabulary_freeze_test",
+              "docs/gpui-public-authoring-vocabulary.md",
               "try_install_native_menu",
               "Result<NativeMenuInstallation>",
               "try_show_native_file_dialog",
@@ -495,6 +500,29 @@ int main() {
       contains(public_api_example, ".runtime") ||
       contains(public_api_example, "runtime.")) {
     return 82;
+  }
+
+  const std::string public_vocabulary =
+      read_source("docs/gpui-public-authoring-vocabulary.md");
+  if (public_vocabulary.empty()) {
+    return 83;
+  }
+  if (!contains(public_vocabulary,
+                "# Public Authoring Vocabulary Freeze") ||
+      !contains(public_vocabulary, "Phase B Step 308") ||
+      !contains(public_vocabulary,
+                "The frozen include boundary is `#include \"cgpui/prelude.hpp\"`.") ||
+      !contains(public_vocabulary, "`Context<T>`") ||
+      !contains(public_vocabulary, "`Action<T>`") ||
+      !contains(public_vocabulary, "`Result<T>`") ||
+      !contains(public_vocabulary, "`AsyncContextCapability`") ||
+      !contains(public_vocabulary, "`TestContextCapability`") ||
+      !contains(public_vocabulary, "`NativeMenuModel`") ||
+      !contains(public_vocabulary, "`NativeFileDialogOptions`") ||
+      !contains(public_vocabulary, "`ClipboardItem` payload parity") ||
+      !contains(public_vocabulary,
+                "upstream `gpui::test` macro equivalents")) {
+    return 84;
   }
 
   const std::string public_authoring =
@@ -1064,6 +1092,8 @@ int main() {
                 "target(\"api_parity_public_api_compatibility\")") ||
       !contains(xmake,
                 "target(\"public_api_compatibility_examples_test\")") ||
+      !contains(xmake,
+                "target(\"public_authoring_vocabulary_freeze_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1128,6 +1158,9 @@ int main() {
                 "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
       !contains(xmake,
                 "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
           xmake,

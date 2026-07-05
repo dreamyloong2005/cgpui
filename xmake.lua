@@ -416,6 +416,11 @@ target("public_api_compatibility_examples_test")
     add_files("tests/api_parity/public_api_compatibility_examples_test.cpp")
     add_tests("default")
 
+target("public_authoring_vocabulary_freeze_test")
+    set_kind("binary")
+    add_files("tests/api_parity/public_authoring_vocabulary_freeze_test.cpp")
+    add_tests("default")
+
 target("entity_lifecycle_creation_test")
     set_kind("binary")
     add_files("tests/api_parity/entity_lifecycle_creation_test.cpp")

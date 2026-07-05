@@ -1806,4 +1806,10 @@ implementation slice.
   `examples/api_parity/public_api_compatibility/main.cpp` compile target and
   `tests/api_parity/public_api_compatibility_examples_test.cpp` so public
   examples fail if they include private headers or touch `WindowRuntime`
-  internals directly. Step 308 public authoring vocabulary freeze is next.
+  internals directly. Phase B Step 308 public authoring vocabulary freeze is
+  implemented in `.worktrees/phase-b-public-authoring-vocabulary-freeze`: it
+  adds `docs/gpui-public-authoring-vocabulary.md` and
+  `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp` so the
+  prelude include boundary, frozen public app/context/entity/action/key,
+  async/test, Result, and platform-service names, and explicit Phase B
+  exclusions are machine-checked before Phase C.
