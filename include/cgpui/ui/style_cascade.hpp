@@ -117,6 +117,11 @@ class StyleCascade {
   return style;
 }
 
+[[nodiscard]] Style apply_style_overlay(
+    Style style,
+    const StyleOverlay& overlay,
+    const Theme& theme);
+
 [[nodiscard]] constexpr Style resolved_style(
     const StyleState& state,
     StyleStateFlags flags) {
@@ -137,10 +142,23 @@ class StyleCascade {
 }
 
 [[nodiscard]] Style resolved_style(
+    const StyleState& state,
+    StyleStateFlags flags,
+    const Theme& theme);
+
+[[nodiscard]] Style resolved_style(
     const StyleCascade& cascade,
     const StyleState& local,
     const StyleClasses& classes,
     const StyleOverlay& inline_style,
     StyleStateFlags flags);
+
+[[nodiscard]] Style resolved_style(
+    const StyleCascade& cascade,
+    const StyleState& local,
+    const StyleClasses& classes,
+    const StyleOverlay& inline_style,
+    StyleStateFlags flags,
+    const Theme& theme);
 
 } // namespace cgpui

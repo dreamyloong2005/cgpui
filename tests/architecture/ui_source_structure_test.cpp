@@ -939,6 +939,12 @@ int main() {
       read_source("src/ui/style_overlay.cpp");
   const std::string style_cascade_source =
       read_source("src/ui/style_cascade.cpp");
+  const std::string style_cascade_overlays_source =
+      read_source("src/ui/style_cascade_overlays.cpp");
+  const std::string style_theme_cascade_source =
+      read_source("src/ui/style_theme_cascade.cpp");
+  const std::string style_theme_tokens_source =
+      read_source("src/ui/style_theme_tokens.cpp");
   const std::string shadow_paint_source =
       read_source("src/ui/paint_shadow.cpp");
   const std::string shadow_render_view_commands_source =
@@ -1042,6 +1048,7 @@ int main() {
       !contains(style_cascade_header, "struct StyleClassRule") ||
       !contains(style_cascade_header, "StyleClasses reused_classes") ||
       !contains(style_cascade_header, "StyleCascade& set_class_rule(") ||
+      !contains(style_cascade_header, "const Theme& theme") ||
       contains(style_cascade_header, "StyleCascade::set_class_style(") ||
       contains(style_cascade_header, "style_base_overlay(") ||
       !contains(style_cascade_source, "StyleCascade::set_class_style(") ||
@@ -1050,12 +1057,28 @@ int main() {
       !contains(style_cascade_source, "apply_class_rule(") ||
       !contains(style_cascade_source, "resolved_style(") ||
       line_count(style_cascade_source) > 240 ||
+      !contains(style_cascade_overlays_source, "style_base_overlay(") ||
+      !contains(style_cascade_overlays_source, "apply_style_state(") ||
+      line_count(style_cascade_overlays_source) > 180 ||
+      !contains(style_theme_cascade_source, "Style apply_style_overlay(") ||
+      !contains(style_theme_cascade_source, "Style resolved_style(") ||
+      !contains(style_theme_cascade_source, "apply_class_rule(") ||
+      !contains(style_theme_cascade_source, "resolve_style_theme_tokens(") ||
+      !contains(style_theme_cascade_source,
+                "resolve_overlay_theme_tokens(") ||
+      line_count(style_theme_cascade_source) > 180 ||
+      !contains(style_tokens_header, "struct StyleThemeTokens") ||
+      !contains(style_box_header, "StyleThemeTokens tokens") ||
+      !contains(style_overlay_header, "StyleThemeTokens tokens") ||
       !contains(style_box_source, "Style Style::with_min_size(") ||
       !contains(style_box_source, "Style Style::with_max_size(") ||
       !contains(style_box_source, "Style Style::with_percentage_size(") ||
       !contains(style_box_source, "Style Style::with_width_percent(") ||
       !contains(style_box_source, "Style Style::with_height_percent(") ||
       !contains(style_box_source, "Style Style::with_box_shadow(") ||
+      !contains(style_box_source,
+                "Style Style::with_background_color_token(") ||
+      !contains(style_box_source, "Style Style::with_gap_token(") ||
       !contains(style_overlay_source,
                 "StyleOverlay StyleOverlay::with_min_size(") ||
       !contains(style_overlay_source,
@@ -1068,6 +1091,17 @@ int main() {
                 "StyleOverlay StyleOverlay::with_height_percent(") ||
       !contains(style_overlay_source,
                 "StyleOverlay StyleOverlay::with_box_shadow(") ||
+      !contains(style_overlay_source,
+                "StyleOverlay StyleOverlay::with_background_color_token(") ||
+      !contains(style_overlay_source,
+                "StyleOverlay StyleOverlay::with_gap_token(") ||
+      !contains(style_theme_tokens_source,
+                "Style resolve_style_theme_tokens(") ||
+      !contains(style_theme_tokens_source,
+                "StyleOverlay resolve_overlay_theme_tokens(") ||
+      !contains(style_theme_tokens_source, "theme.color(") ||
+      !contains(style_theme_tokens_source, "theme.spacing(") ||
+      line_count(style_theme_tokens_source) > 180 ||
       !contains(shadow_paint_source, "PaintList::draw_box_shadow(") ||
       !contains(
           shadow_render_view_commands_source,

@@ -10,9 +10,23 @@ StyleOverlay StyleOverlay::with_background_color(Color color) const {
   return overlay;
 }
 
+StyleOverlay StyleOverlay::with_background_color_token(
+    ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.background_color = std::move(id);
+  return overlay;
+}
+
 StyleOverlay StyleOverlay::with_foreground_color(Color color) const {
   StyleOverlay overlay = *this;
   overlay.foreground_color = color;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_foreground_color_token(
+    ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.foreground_color = std::move(id);
   return overlay;
 }
 
@@ -58,9 +72,21 @@ StyleOverlay StyleOverlay::with_padding(EdgeSizes edges) const {
   return overlay;
 }
 
+StyleOverlay StyleOverlay::with_padding_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.padding = std::move(id);
+  return overlay;
+}
+
 StyleOverlay StyleOverlay::with_margin(EdgeSizes edges) const {
   StyleOverlay overlay = *this;
   overlay.margin = edges;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_margin_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.margin = std::move(id);
   return overlay;
 }
 
@@ -70,15 +96,33 @@ StyleOverlay StyleOverlay::with_border_width(EdgeSizes edges) const {
   return overlay;
 }
 
+StyleOverlay StyleOverlay::with_border_width_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.border_width = std::move(id);
+  return overlay;
+}
+
 StyleOverlay StyleOverlay::with_border_color(Color color) const {
   StyleOverlay overlay = *this;
   overlay.border_color = color;
   return overlay;
 }
 
+StyleOverlay StyleOverlay::with_border_color_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.border_color = std::move(id);
+  return overlay;
+}
+
 StyleOverlay StyleOverlay::with_border_radius(BorderRadii radius) const {
   StyleOverlay overlay = *this;
   overlay.border_radius = radius;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_border_radius_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.border_radius = std::move(id);
   return overlay;
 }
 
@@ -109,6 +153,12 @@ StyleOverlay StyleOverlay::with_layer(int value) const {
 StyleOverlay StyleOverlay::with_gap(float value) const {
   StyleOverlay overlay = *this;
   overlay.gap = value;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_gap_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.gap = std::move(id);
   return overlay;
 }
 
@@ -145,6 +195,12 @@ StyleOverlay StyleOverlay::with_position(Position value) const {
 StyleOverlay StyleOverlay::with_inset(EdgeSizes edges) const {
   StyleOverlay overlay = *this;
   overlay.inset = edges;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_inset_token(ThemeTokenId id) const {
+  StyleOverlay overlay = *this;
+  overlay.tokens.inset = std::move(id);
   return overlay;
 }
 

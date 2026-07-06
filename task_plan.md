@@ -2048,3 +2048,16 @@ implementation slice.
   99/99, WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
   Step 333 theme token fallback is the next focused Phase C style-cascade
   slice.
+
+- Phase C Step 333, focused theme token fallback, is implemented in
+  `.worktrees/phase-c-theme-token-fallback`: `StyleThemeTokens` stores color
+  and spacing-like token references for `Style` and `StyleOverlay`, token
+  helper bodies live in `src/ui/style_box.cpp` and
+  `src/ui/style_overlay.cpp`, `src/ui/style_theme_tokens.cpp` owns
+  `Theme::color(...)` / `Theme::spacing(...)` lookup, and
+  `src/ui/style_theme_cascade.cpp` owns theme-aware cascade ordering. Missing
+  tokens preserve existing concrete style values, and no-theme resolution
+  remains compatible. Focused Windows GREEN verification passed
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` 3/3. Step 334 inherited text style is the
+  next focused Phase C style-cascade slice after Step 333 lands on `master`.

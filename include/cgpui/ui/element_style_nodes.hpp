@@ -30,6 +30,10 @@ class StyledElement : public Element {
   [[nodiscard]] Style resolved_style(
       const StyleCascade& cascade,
       StyleStateFlags flags) const;
+  [[nodiscard]] Style resolved_style(
+      const StyleCascade& cascade,
+      StyleStateFlags flags,
+      const Theme& theme) const;
   [[nodiscard]] Element* child();
   [[nodiscard]] const Element* child() const;
   [[nodiscard]] std::vector<std::unique_ptr<Element>>& children();

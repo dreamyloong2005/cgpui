@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/style_tokens.hpp"
 #include "cgpui/ui/style_values.hpp"
 
 #include <limits>
@@ -38,9 +39,12 @@ struct Style {
   float font_size = 16.0F;
   float opacity = 1.0F;
   AffineTransform transform;
+  StyleThemeTokens tokens;
 
   [[nodiscard]] Style with_background_color(Color color) const;
+  [[nodiscard]] Style with_background_color_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_foreground_color(Color color) const;
+  [[nodiscard]] Style with_foreground_color_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_preferred_size(Size size) const;
   [[nodiscard]] Style with_min_size(Size size) const;
   [[nodiscard]] Style with_max_size(Size size) const;
@@ -48,21 +52,28 @@ struct Style {
   [[nodiscard]] Style with_width_percent(float percent) const;
   [[nodiscard]] Style with_height_percent(float percent) const;
   [[nodiscard]] Style with_padding(EdgeSizes edges) const;
+  [[nodiscard]] Style with_padding_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_margin(EdgeSizes edges) const;
+  [[nodiscard]] Style with_margin_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_border_width(EdgeSizes edges) const;
+  [[nodiscard]] Style with_border_width_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_border_color(Color color) const;
+  [[nodiscard]] Style with_border_color_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_border_radius(BorderRadii radius) const;
+  [[nodiscard]] Style with_border_radius_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_box_shadow(BoxShadow shadow) const;
   [[nodiscard]] Style with_overflow(Overflow value) const;
   [[nodiscard]] Style with_z_index(int value) const;
   [[nodiscard]] Style with_layer(int value) const;
   [[nodiscard]] Style with_gap(float value) const;
+  [[nodiscard]] Style with_gap_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_align_items(AlignItems value) const;
   [[nodiscard]] Style with_justify_content(JustifyContent value) const;
   [[nodiscard]] Style with_flex_grow(float value) const;
   [[nodiscard]] Style with_flex_shrink(float value) const;
   [[nodiscard]] Style with_position(Position value) const;
   [[nodiscard]] Style with_inset(EdgeSizes edges) const;
+  [[nodiscard]] Style with_inset_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_font(FontDescriptor descriptor) const;
   [[nodiscard]] Style with_font_size(float value) const;
   [[nodiscard]] Style with_clip_rect(Rect rect) const;

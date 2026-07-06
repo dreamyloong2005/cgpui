@@ -829,6 +829,133 @@ int test_theme_color_and_spacing_tokens_lookup_softly() {
              : 72;
 }
 
+int test_style_cascade_resolves_theme_token_fallbacks() {
+  const cgpui::ThemeTokenId surface_color =
+      cgpui::theme_token("color.surface");
+  const cgpui::ThemeTokenId accent_color =
+      cgpui::theme_token("color.accent");
+  const cgpui::ThemeTokenId border_color =
+      cgpui::theme_token("color.border");
+  const cgpui::ThemeTokenId missing_color =
+      cgpui::theme_token("color.missing");
+  const cgpui::ThemeTokenId compact_spacing =
+      cgpui::theme_token("space.compact");
+  const cgpui::ThemeTokenId roomy_spacing =
+      cgpui::theme_token("space.roomy");
+  const cgpui::ThemeTokenId missing_spacing =
+      cgpui::theme_token("space.missing");
+
+  cgpui::Theme theme;
+  theme.set_color(surface_color, cgpui::rgb(10, 20, 30))
+      .set_color(accent_color, cgpui::rgb(40, 50, 60))
+      .set_color(border_color, cgpui::rgb(70, 80, 90))
+      .set_spacing(compact_spacing, cgpui::px(6.0F))
+      .set_spacing(roomy_spacing, cgpui::px(14.0F));
+
+  const cgpui::StyleClassId surface = cgpui::style_class("surface");
+  cgpui::StyleCascade cascade;
+  cascade.set_class_style(
+      surface,
+      cgpui::StyleState{
+          .base = cgpui::Style{}
+                      .with_background_color_token(surface_color)
+                      .with_padding_token(compact_spacing)
+                      .with_gap(3.0F)
+                      .with_gap_token(missing_spacing),
+          .hover = cgpui::StyleOverlay{}
+                       .with_foreground_color_token(accent_color)
+                       .with_margin_token(roomy_spacing),
+          .active = cgpui::StyleOverlay{}
+                        .with_border_color(cgpui::rgb(1, 2, 3))
+                        .with_border_color_token(missing_color),
+      });
+
+  cgpui::StyleClasses classes;
+  classes.add(surface);
+  const cgpui::StyleState local{
+      .base = cgpui::Style{}
+                  .with_background_color(cgpui::rgb(1, 1, 1))
+                  .with_foreground_color(cgpui::rgb(2, 2, 2))
+                  .with_border_width(cgpui::edges(1.0F))
+                  .with_border_width_token(compact_spacing),
+      .focus = cgpui::StyleOverlay{}
+                   .with_gap_token(roomy_spacing)
+                   .with_inset_token(compact_spacing),
+  };
+  const cgpui::StyleOverlay inline_style =
+      cgpui::StyleOverlay{}
+          .with_foreground_color(cgpui::rgb(100, 110, 120))
+          .with_foreground_color_token(missing_color)
+          .with_border_color_token(border_color)
+          .with_border_radius_token(compact_spacing);
+
+  const cgpui::Style resolved = cgpui::resolved_style(
+      cascade,
+      local,
+      classes,
+      inline_style,
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .active = true,
+      },
+      theme);
+
+  if (!resolved.background_color.has_value() ||
+      resolved.background_color->r != 10.0F / 255.0F) {
+    return 99;
+  }
+  if (!resolved.foreground_color.has_value() ||
+      resolved.foreground_color->r != 100.0F / 255.0F) {
+    return 100;
+  }
+  if (!resolved.border_color.has_value() ||
+      resolved.border_color->r != 70.0F / 255.0F) {
+    return 101;
+  }
+  if (resolved.padding.left != 6.0F || resolved.margin.left != 14.0F ||
+      resolved.gap != 14.0F || resolved.border_width.left != 6.0F ||
+      resolved.border_radius.top_left != 6.0F ||
+      resolved.inset.left != 6.0F) {
+    return 102;
+  }
+
+  const cgpui::Style without_theme = cgpui::resolved_style(
+      cascade,
+      local,
+      classes,
+      inline_style,
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .active = true,
+      });
+  if (!without_theme.background_color.has_value() ||
+      without_theme.background_color->r != 1.0F / 255.0F ||
+      !without_theme.foreground_color.has_value() ||
+      without_theme.foreground_color->r != 100.0F / 255.0F ||
+      !without_theme.border_color.has_value() ||
+      without_theme.border_color->r != 1.0F / 255.0F ||
+      without_theme.padding.left != 0.0F || without_theme.gap != 3.0F) {
+    return 103;
+  }
+
+  const cgpui::Style state_resolved = cgpui::resolved_style(
+      cgpui::StyleState{
+          .base = cgpui::Style{}
+                      .with_background_color(cgpui::rgb(9, 9, 9))
+                      .with_background_color_token(missing_color)
+                      .with_margin_token(compact_spacing),
+      },
+      cgpui::StyleStateFlags{},
+      theme);
+  return state_resolved.background_color.has_value() &&
+                 state_resolved.background_color->r == 9.0F / 255.0F &&
+                 state_resolved.margin.left == 6.0F
+             ? 0
+             : 104;
+}
+
 int test_style_cascade_resolves_base_classes_state_and_inline_order() {
   const cgpui::StyleClassId base_class = cgpui::style_class("surface.card");
   const cgpui::StyleClassId accent_class = cgpui::style_class("accented");
@@ -1155,6 +1282,9 @@ static_assert(std::same_as<decltype(cgpui::Style{}.max_size), cgpui::Size>);
 static_assert(std::same_as<
               decltype(cgpui::Style{}.percentage_size),
               cgpui::PercentageSize>);
+static_assert(std::same_as<
+              decltype(cgpui::Style{}.tokens),
+              cgpui::StyleThemeTokens>);
 static_assert(std::same_as<decltype(cgpui::px(1.0F)), float>);
 static_assert(std::same_as<decltype(cgpui::rgb(255, 255, 255)), cgpui::Color>);
 static_assert(
@@ -1172,6 +1302,9 @@ static_assert(std::same_as<
 static_assert(std::same_as<
               decltype(cgpui::StyleOverlay{}.percentage_size),
               cgpui::PercentageSize>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleOverlay{}.tokens),
+              cgpui::StyleThemeTokens>);
 static_assert(std::same_as<decltype(cgpui::StyleState{}.base), cgpui::Style>);
 static_assert(std::same_as<
               decltype(cgpui::StyleState{}.active),
@@ -1198,6 +1331,12 @@ static_assert(std::same_as<
 static_assert(std::same_as<
               decltype(cgpui::StyleClassRule{}.style),
               cgpui::StyleState>);
+static_assert(std::same_as<
+              decltype(cgpui::resolved_style(
+                  cgpui::StyleState{},
+                  cgpui::StyleStateFlags{},
+                  cgpui::Theme{})),
+              cgpui::Style>);
 static_assert(std::same_as<
               decltype(cgpui::ease(cgpui::AnimationEasing::linear, 0.0F)),
               float>);
@@ -1249,6 +1388,10 @@ int main() {
     return result;
   }
   if (const int result = test_theme_color_and_spacing_tokens_lookup_softly();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_style_cascade_resolves_theme_token_fallbacks();
       result != 0) {
     return result;
   }

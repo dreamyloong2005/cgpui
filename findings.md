@@ -5856,3 +5856,22 @@
   Behavior coverage lives in `tests/ui/style_test.cpp` and
   `tests/ui/element_test.cpp`; structure coverage lives in
   `tests/architecture/ui_source_structure_test.cpp`.
+
+## 2026-07-07 Phase C Step 333 Theme Token Fallback
+
+- Step 333 stays scoped to theme token fallback during style resolution. It
+  adds token references for existing color and spacing-like style fields,
+  theme-aware `resolved_style(...)` overloads, and `StyledElement` forwarding
+  without adding runtime theme switching, inherited text style, dynamic
+  invalidation, widget behavior, or pointer-active semantics.
+- Missing tokens should soft-fail: a token reference that is not present in the
+  provided `Theme` must leave the existing concrete style value intact instead
+  of clearing or defaulting it. Concrete no-theme resolution remains compatible
+  and ignores token references.
+- Durable ownership keeps token-reference data in public leaf style headers,
+  non-template setter bodies in `src/ui/style_box.cpp` and
+  `src/ui/style_overlay.cpp`, actual `Theme::color(...)` /
+  `Theme::spacing(...)` lookup in focused private
+  `src/ui/style_theme_tokens.cpp`, shared base-overlay diffing in
+  `src/ui/style_cascade_overlays.cpp`, and theme-aware style-cascade ordering
+  in `src/ui/style_theme_cascade.cpp`.

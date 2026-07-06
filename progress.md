@@ -12723,3 +12723,47 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 332 is complete on `master`; Step 333, theme token fallback, is the next
   Phase C style-cascade slice.
+
+## 2026-07-07 Phase C Step 333 Theme Token Fallback
+
+- Continued `.worktrees/phase-c-theme-token-fallback` on
+  `codex/phase-c-theme-token-fallback` from
+  `8f7c544 docs: mark phase c step 332 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  `.codex` skill path, and confirmed it produced no additional report.
+- Confirmed the main worktree is clean except for the pre-existing untracked
+  `.vscode/`, and the Step 333 feature worktree initially had no tracked
+  changes.
+- RED added behavior coverage in `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp` for theme-backed color and spacing token
+  fallback through style cascade resolution, including missing-token
+  soft-failure to existing concrete style values. RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requires token lookup
+  ownership to live in a focused `src/ui/style_theme_tokens.cpp` module.
+- The first `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` run reused old binaries and was a false
+  green. A direct `xmake build -y -P . style_test` forced recompilation and
+  failed as expected because `StyleThemeTokens`, token setter helpers, and
+  theme-aware `resolved_style(...)` overloads do not exist yet.
+- GREEN added `StyleThemeTokens` to the public style token leaf, token helper
+  declarations on `Style` and `StyleOverlay`, non-template helper bodies in
+  `src/ui/style_box.cpp` and `src/ui/style_overlay.cpp`, theme-aware
+  `resolved_style(...)` overloads, and `StyledElement::resolved_style(...,
+  Theme)` forwarding. Theme lookup is isolated in
+  `src/ui/style_theme_tokens.cpp`; shared base-overlay diffing moved to
+  `src/ui/style_cascade_overlays.cpp`; and theme-aware class/state cascade
+  ordering lives in `src/ui/style_theme_cascade.cpp`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and `task_plan.md` with Step 333 theme token fallback.
+  Step 334 inherited text style is the next Phase C style-cascade slice after
+  Step 333 lands on `master`.
+- Fresh feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/structure gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  99/99, WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 96/96.

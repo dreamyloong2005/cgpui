@@ -10,9 +10,21 @@ Style Style::with_background_color(Color color) const {
   return style;
 }
 
+Style Style::with_background_color_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.background_color = std::move(id);
+  return style;
+}
+
 Style Style::with_foreground_color(Color color) const {
   Style style = *this;
   style.foreground_color = color;
+  return style;
+}
+
+Style Style::with_foreground_color_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.foreground_color = std::move(id);
   return style;
 }
 
@@ -58,9 +70,21 @@ Style Style::with_padding(EdgeSizes edges) const {
   return style;
 }
 
+Style Style::with_padding_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.padding = std::move(id);
+  return style;
+}
+
 Style Style::with_margin(EdgeSizes edges) const {
   Style style = *this;
   style.margin = edges;
+  return style;
+}
+
+Style Style::with_margin_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.margin = std::move(id);
   return style;
 }
 
@@ -70,15 +94,33 @@ Style Style::with_border_width(EdgeSizes edges) const {
   return style;
 }
 
+Style Style::with_border_width_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.border_width = std::move(id);
+  return style;
+}
+
 Style Style::with_border_color(Color color) const {
   Style style = *this;
   style.border_color = color;
   return style;
 }
 
+Style Style::with_border_color_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.border_color = std::move(id);
+  return style;
+}
+
 Style Style::with_border_radius(BorderRadii radius) const {
   Style style = *this;
   style.border_radius = radius;
+  return style;
+}
+
+Style Style::with_border_radius_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.border_radius = std::move(id);
   return style;
 }
 
@@ -109,6 +151,12 @@ Style Style::with_layer(int value) const {
 Style Style::with_gap(float value) const {
   Style style = *this;
   style.gap = value;
+  return style;
+}
+
+Style Style::with_gap_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.gap = std::move(id);
   return style;
 }
 
@@ -145,6 +193,12 @@ Style Style::with_position(Position value) const {
 Style Style::with_inset(EdgeSizes edges) const {
   Style style = *this;
   style.inset = edges;
+  return style;
+}
+
+Style Style::with_inset_token(ThemeTokenId id) const {
+  Style style = *this;
+  style.tokens.inset = std::move(id);
   return style;
 }
 

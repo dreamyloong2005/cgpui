@@ -935,6 +935,60 @@ int test_element_builder_stores_style_classes_and_inline_style() {
              : 236;
 }
 
+int test_styled_element_resolves_theme_token_fallbacks() {
+  const cgpui::ThemeTokenId surface_color =
+      cgpui::theme_token("color.surface");
+  const cgpui::ThemeTokenId inline_color =
+      cgpui::theme_token("color.inline");
+  const cgpui::ThemeTokenId compact_spacing =
+      cgpui::theme_token("space.compact");
+  const cgpui::ThemeTokenId missing_spacing =
+      cgpui::theme_token("space.missing");
+
+  cgpui::Theme theme;
+  theme.set_color(surface_color, cgpui::rgb(10, 20, 30))
+      .set_color(inline_color, cgpui::rgb(40, 50, 60))
+      .set_spacing(compact_spacing, cgpui::px(8.0F));
+
+  const cgpui::StyleClassId card = cgpui::style_class("card.theme");
+  cgpui::StyleCascade cascade;
+  cascade.set_class_style(
+      card,
+      cgpui::StyleState{
+          .base = cgpui::Style{}
+                      .with_background_color_token(surface_color)
+                      .with_gap_token(compact_spacing),
+          .hover =
+              cgpui::StyleOverlay{}.with_padding_token(compact_spacing),
+      });
+
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .class_name(card)
+                              .style(cgpui::Style{}
+                                         .with_margin_token(compact_spacing))
+                              .inline_style(cgpui::StyleOverlay{}
+                                                .with_background_color_token(
+                                                    inline_color)
+                                                .with_gap(3.0F)
+                                                .with_gap_token(
+                                                    missing_spacing)));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 237;
+  }
+
+  const cgpui::Style resolved =
+      styled->resolved_style(cascade, cgpui::StyleStateFlags{.hovered = true},
+                             theme);
+  return resolved.background_color.has_value() &&
+                 resolved.background_color->r == 40.0F / 255.0F &&
+                 resolved.gap == 3.0F && resolved.padding.left == 8.0F &&
+                 resolved.margin.left == 8.0F
+             ? 0
+             : 238;
+}
+
 int test_base_element_lays_out_zero_size() {
   TestElement element;
   const cgpui::LayoutOutput output = element.layout(cgpui::LayoutInput{
@@ -5049,6 +5103,10 @@ int main() {
   }
   if (const int result =
           test_element_builder_stores_style_classes_and_inline_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_styled_element_resolves_theme_token_fallbacks();
       result != 0) {
     return result;
   }

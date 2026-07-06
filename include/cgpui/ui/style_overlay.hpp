@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/style_tokens.hpp"
 #include "cgpui/ui/style_values.hpp"
 
 #include <optional>
@@ -34,9 +35,14 @@ struct StyleOverlay {
   std::optional<float> font_size;
   std::optional<float> opacity;
   std::optional<AffineTransform> transform;
+  StyleThemeTokens tokens;
 
   [[nodiscard]] StyleOverlay with_background_color(Color color) const;
+  [[nodiscard]] StyleOverlay with_background_color_token(
+      ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_foreground_color(Color color) const;
+  [[nodiscard]] StyleOverlay with_foreground_color_token(
+      ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_preferred_size(Size size) const;
   [[nodiscard]] StyleOverlay with_min_size(Size size) const;
   [[nodiscard]] StyleOverlay with_max_size(Size size) const;
@@ -44,21 +50,28 @@ struct StyleOverlay {
   [[nodiscard]] StyleOverlay with_width_percent(float percent) const;
   [[nodiscard]] StyleOverlay with_height_percent(float percent) const;
   [[nodiscard]] StyleOverlay with_padding(EdgeSizes edges) const;
+  [[nodiscard]] StyleOverlay with_padding_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_margin(EdgeSizes edges) const;
+  [[nodiscard]] StyleOverlay with_margin_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_border_width(EdgeSizes edges) const;
+  [[nodiscard]] StyleOverlay with_border_width_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_border_color(Color color) const;
+  [[nodiscard]] StyleOverlay with_border_color_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_border_radius(BorderRadii radius) const;
+  [[nodiscard]] StyleOverlay with_border_radius_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_box_shadow(BoxShadow shadow) const;
   [[nodiscard]] StyleOverlay with_overflow(Overflow value) const;
   [[nodiscard]] StyleOverlay with_z_index(int value) const;
   [[nodiscard]] StyleOverlay with_layer(int value) const;
   [[nodiscard]] StyleOverlay with_gap(float value) const;
+  [[nodiscard]] StyleOverlay with_gap_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_align_items(AlignItems value) const;
   [[nodiscard]] StyleOverlay with_justify_content(JustifyContent value) const;
   [[nodiscard]] StyleOverlay with_flex_grow(float value) const;
   [[nodiscard]] StyleOverlay with_flex_shrink(float value) const;
   [[nodiscard]] StyleOverlay with_position(Position value) const;
   [[nodiscard]] StyleOverlay with_inset(EdgeSizes edges) const;
+  [[nodiscard]] StyleOverlay with_inset_token(ThemeTokenId id) const;
   [[nodiscard]] StyleOverlay with_font(FontDescriptor descriptor) const;
   [[nodiscard]] StyleOverlay with_font_size(float value) const;
   [[nodiscard]] StyleOverlay with_clip_rect(Rect rect) const;

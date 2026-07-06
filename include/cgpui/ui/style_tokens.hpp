@@ -38,6 +38,18 @@ struct ThemeTokenId {
   return ThemeTokenId{.value = std::string(value)};
 }
 
+struct StyleThemeTokens {
+  std::optional<ThemeTokenId> background_color;
+  std::optional<ThemeTokenId> foreground_color;
+  std::optional<ThemeTokenId> border_color;
+  std::optional<ThemeTokenId> padding;
+  std::optional<ThemeTokenId> margin;
+  std::optional<ThemeTokenId> border_width;
+  std::optional<ThemeTokenId> border_radius;
+  std::optional<ThemeTokenId> gap;
+  std::optional<ThemeTokenId> inset;
+};
+
 class StyleClasses {
  public:
   StyleClasses& add(StyleClassId id) {

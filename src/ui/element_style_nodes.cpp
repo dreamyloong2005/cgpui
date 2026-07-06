@@ -124,6 +124,19 @@ Style StyledElement::resolved_style(
       flags);
 }
 
+Style StyledElement::resolved_style(
+    const StyleCascade& cascade,
+    StyleStateFlags flags,
+    const Theme& theme) const {
+  return cgpui::resolved_style(
+      cascade,
+      style_state_,
+      style_classes_,
+      inline_style_,
+      flags,
+      theme);
+}
+
 Element* StyledElement::child() {
   return children_.empty() ? nullptr : children_.front().get();
 }
