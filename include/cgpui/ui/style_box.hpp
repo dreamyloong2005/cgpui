@@ -40,6 +40,7 @@ struct Style {
   float opacity = 1.0F;
   AffineTransform transform;
   StyleThemeTokens tokens;
+  StyleAuthoredTextFields authored_text;
 
   [[nodiscard]] Style with_background_color(Color color) const;
   [[nodiscard]] Style with_background_color_token(ThemeTokenId id) const;

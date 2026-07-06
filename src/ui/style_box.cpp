@@ -205,12 +205,14 @@ Style Style::with_inset_token(ThemeTokenId id) const {
 Style Style::with_font(FontDescriptor descriptor) const {
   Style style = *this;
   style.font = std::move(descriptor);
+  style.authored_text.font = true;
   return style;
 }
 
 Style Style::with_font_size(float value) const {
   Style style = *this;
   style.font_size = value;
+  style.authored_text.font_size = true;
   return style;
 }
 

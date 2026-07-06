@@ -93,10 +93,11 @@ StyleOverlay style_base_overlay(const Style& style) {
   if (!same_edges(style.inset, defaults.inset)) {
     overlay.inset = style.inset;
   }
-  if (style.font != defaults.font) {
+  if (style.authored_text.font || style.font != defaults.font) {
     overlay.font = style.font;
   }
-  if (style.font_size != defaults.font_size) {
+  if (style.authored_text.font_size ||
+      style.font_size != defaults.font_size) {
     overlay.font_size = style.font_size;
   }
   if (style.opacity != defaults.opacity) {

@@ -1,6 +1,7 @@
 #include "cgpui/ui/element_layout_nodes.hpp"
 
 #include "element_layer_ordering.hpp"
+#include "text_style_inheritance.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -27,10 +28,15 @@ std::span<const std::unique_ptr<Element>> VerticalStackElement::children()
   return children_;
 }
 
+void VerticalStackElement::inherit_text_style(const Style& style) {
+  inherited_text_style_ = inherited_text_style(style);
+}
+
 LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
   Size content_size;
   std::size_t relative_child_index = 0;
   for (const auto& child : children_) {
+    child->inherit_text_style(inherited_text_style_);
     const LayoutOutput child_output =
         child->layout(LayoutInput{.scale = input.scale});
     if (child->position() == Position::absolute) {
@@ -59,6 +65,7 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
     if (child->position() != Position::absolute) {
       continue;
     }
+    child->inherit_text_style(inherited_text_style_);
     const LayoutOutput child_output =
         child->layout(LayoutInput{.scale = input.scale});
     child->set_layout_bounds(Rect{

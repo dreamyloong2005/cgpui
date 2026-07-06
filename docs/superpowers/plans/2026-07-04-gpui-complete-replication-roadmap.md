@@ -606,6 +606,13 @@ expect, keeping each widget in its own module from the first version.
   `Theme`, and missing tokens preserve existing concrete style values. Token
   lookup lives in `src/ui/style_theme_tokens.cpp`, while theme-aware cascade
   ordering lives in `src/ui/style_theme_cascade.cpp`.
+  Step 334 adds focused inherited text style: `StyleAuthoredTextFields`
+  distinguishes default text values from explicit authoring, private
+  `src/ui/text_style_inheritance.cpp` helpers merge foreground color, font
+  family, and font size, `LabelElement` / `TextElement` keep effective text
+  style for layout and paint, and styled/flex/vertical-stack plus common
+  wrapper elements forward inherited text style without adding runtime theme
+  switching or dynamic invalidation.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -885,7 +892,7 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 334 should continue Phase C element/style/layout work from the frozen
+Step 335 should continue Phase C element/style/layout work from the frozen
 Phase B public authoring boundary after the focused layout behavior band from
 Steps 319-330. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -913,8 +920,12 @@ depth through
 with cycle protection on `master` at `630bb3d`. Step 333 landed focused theme
 token fallback through `StyleThemeTokens`, theme-aware
 `resolved_style(...)` overloads, and missing-token fallback to existing
-concrete style values on `master` at `e1d5467`. Step 334 should continue the
-style cascade depth band with inherited text style.
+concrete style values on `master` at `e1d5467`. Step 334 adds focused
+inherited text style through `StyleAuthoredTextFields`,
+`src/ui/text_style_inheritance.cpp`, effective text styles on text nodes, and
+container/wrapper forwarding for foreground color, font family, and font size.
+Step 335 should continue the style cascade depth band with dynamic invalidation
+when style-affecting state changes.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

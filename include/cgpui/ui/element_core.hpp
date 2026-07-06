@@ -155,6 +155,10 @@ class Element {
     (void)paint_list;
   }
 
+  virtual void inherit_text_style(const Style& style) {
+    (void)style;
+  }
+
   [[nodiscard]] bool enabled() const {
     return enabled_;
   }

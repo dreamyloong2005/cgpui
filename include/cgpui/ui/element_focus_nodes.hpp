@@ -27,6 +27,7 @@ class FocusableElement : public Element {
   [[nodiscard]] const Element* child() const;
   [[nodiscard]] bool focusable() const override;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   void paint(PaintList& paint_list) const override;
   [[nodiscard]] EventResult handle_event(
@@ -44,6 +45,7 @@ class KeyElement : public Element {
   [[nodiscard]] Element* child();
   [[nodiscard]] const Element* child() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   void paint(PaintList& paint_list) const override;
   [[nodiscard]] EventResult handle_event(

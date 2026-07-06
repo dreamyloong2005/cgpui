@@ -1,5 +1,7 @@
 #include "cgpui/ui/element_button_nodes.hpp"
 
+#include "text_style_inheritance.hpp"
+
 #include <utility>
 #include <variant>
 
@@ -56,6 +58,8 @@ std::string ButtonElement::accessibility_name() const {
 LayoutOutput ButtonElement::layout(LayoutInput input) const {
   Size content_size = style_state_.base.preferred_size;
   if (child_) {
+    child_->inherit_text_style(
+        merge_inherited_text_style(inherited_text_style_, style_state_.base));
     const LayoutOutput child_output = child_->layout(input);
     content_size = child_output.size;
     child_->set_layout_bounds(Rect{
@@ -85,6 +89,10 @@ LayoutOutput ButtonElement::layout(LayoutInput input) const {
       .size = output.size,
   });
   return output;
+}
+
+void ButtonElement::inherit_text_style(const Style& style) {
+  inherited_text_style_ = inherited_text_style(style);
 }
 
 ElementId ButtonElement::hit_test(Point point) const {

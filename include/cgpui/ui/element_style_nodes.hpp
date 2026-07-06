@@ -40,6 +40,7 @@ class StyledElement : public Element {
   [[nodiscard]] const std::vector<std::unique_ptr<Element>>& children() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   void paint(PaintList& paint_list) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
@@ -51,6 +52,7 @@ class StyledElement : public Element {
   StyleState style_state_;
   StyleClasses style_classes_;
   StyleOverlay inline_style_;
+  Style inherited_text_style_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

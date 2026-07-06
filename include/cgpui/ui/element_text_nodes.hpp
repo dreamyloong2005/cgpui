@@ -14,7 +14,8 @@ class TextElement : public Element {
  public:
   explicit TextElement(TextModel* model, Style style = {})
       : model_(model),
-        style_(std::move(style)) {}
+        style_(std::move(style)),
+        effective_style_(style_) {}
 
   [[nodiscard]] TextModel* model() const {
     return model_;
@@ -28,12 +29,16 @@ class TextElement : public Element {
     return style_;
   }
 
+  [[nodiscard]] const Style& effective_style() const {
+    return effective_style_;
+  }
+
   [[nodiscard]] const FontDescriptor& font() const {
-    return style_.font;
+    return effective_style_.font;
   }
 
   [[nodiscard]] float font_size() const {
-    return style_.font_size;
+    return effective_style_.font_size;
   }
 
   [[nodiscard]] float glyph_width() const {
@@ -74,10 +79,12 @@ class TextElement : public Element {
   }
 
   void paint(PaintList& paint_list) const override;
+  void inherit_text_style(const Style& style) override;
 
  private:
   TextModel* model_ = nullptr;
   Style style_;
+  Style effective_style_;
 };
 
 class TextInputElement : public TextElement {
@@ -117,7 +124,8 @@ class LabelElement : public Element {
  public:
   explicit LabelElement(std::string text, Style style = {})
       : text_(std::move(text)),
-        style_(std::move(style)) {}
+        style_(std::move(style)),
+        effective_style_(style_) {}
 
   [[nodiscard]] std::string_view text() const {
     return text_;
@@ -127,12 +135,16 @@ class LabelElement : public Element {
     return style_;
   }
 
+  [[nodiscard]] const Style& effective_style() const {
+    return effective_style_;
+  }
+
   [[nodiscard]] const FontDescriptor& font() const {
-    return style_.font;
+    return effective_style_.font;
   }
 
   [[nodiscard]] float font_size() const {
-    return style_.font_size;
+    return effective_style_.font_size;
   }
 
   [[nodiscard]] float glyph_width() const {
@@ -173,6 +185,7 @@ class LabelElement : public Element {
   }
 
   void paint(PaintList& paint_list) const override;
+  void inherit_text_style(const Style& style) override;
 
   [[nodiscard]] int z_index() const override {
     return style_.z_index;
@@ -185,6 +198,7 @@ class LabelElement : public Element {
  private:
   std::string text_;
   Style style_;
+  Style effective_style_;
 };
 
 } // namespace cgpui

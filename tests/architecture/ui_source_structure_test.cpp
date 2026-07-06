@@ -899,6 +899,7 @@ int main() {
       "src/ui/element_builder_finish.cpp",
       "src/ui/style_cascade.cpp",
       "src/ui/element_layer_ordering.cpp",
+      "src/ui/text_style_inheritance.cpp",
       "src/ui/element_fixed_size_node.cpp",
       "src/ui/element_vertical_stack_node.cpp",
       "src/ui/element_flex_node.cpp",
@@ -934,6 +935,8 @@ int main() {
       read_source("src/ui/element_style_paint.cpp");
   const std::string element_layer_ordering_source =
       read_source("src/ui/element_layer_ordering.cpp");
+  const std::string text_style_inheritance_source =
+      read_source("src/ui/text_style_inheritance.cpp");
   const std::string style_box_source = read_source("src/ui/style_box.cpp");
   const std::string style_overlay_source =
       read_source("src/ui/style_overlay.cpp");
@@ -1115,6 +1118,11 @@ int main() {
       !contains(element_layer_ordering_source, "hit_test_ordered_children(") ||
       !contains(element_layer_ordering_source, "z_order()") ||
       line_count(element_layer_ordering_source) > 140 ||
+      !contains(text_style_inheritance_source, "inherited_text_style(") ||
+      !contains(text_style_inheritance_source, "merge_inherited_text_style(") ||
+      !contains(text_style_inheritance_source, "text_style_has_font_size(") ||
+      line_count(text_style_inheritance_source) > 120 ||
+      !contains(element_style_nodes_source, "merge_inherited_text_style(") ||
       contains(element_builder_style_source, "ElementBuilder::items_center()") ||
       contains(element_builder_style_source, "ElementBuilder::w(") ||
       contains(element_builder_style_source, "ElementBuilder::min_w(") ||
@@ -1156,6 +1164,7 @@ int main() {
       "src/ui/ui_event_pointer_internal.hpp",
       "src/ui/ui_paint_internal.hpp",
       "src/ui/element_layer_ordering.hpp",
+      "src/ui/text_style_inheritance.hpp",
       "src/ui/paint_clip.hpp",
   };
   for (const char* header : private_headers) {

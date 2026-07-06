@@ -5875,3 +5875,27 @@
   `src/ui/style_theme_tokens.cpp`, shared base-overlay diffing in
   `src/ui/style_cascade_overlays.cpp`, and theme-aware style-cascade ordering
   in `src/ui/style_theme_cascade.cpp`.
+
+## 2026-07-07 Phase C Step 334 Inherited Text Style
+
+- Step 334 should stay scoped to inherited text style flowing from styled
+  containers into descendant text nodes. It should not add runtime theme
+  switching, dynamic invalidation, widget behavior, pointer-active semantics,
+  flex-wrap, or a broad cascade/layout rewrite.
+- The likely durable ownership boundary is a focused private
+  `src/ui/text_style_inheritance.hpp` / `.cpp` helper pair that merges
+  inheritable text fields. Container paint/layout code should delegate to that
+  helper instead of open-coding inheritance in broad element files.
+- Inheritable fields for this slice are the existing text-facing style values:
+  foreground color, font descriptor/family, and font size. Explicit child text
+  style should win over inherited parent text style, and nested styled
+  containers should merge parent inherited values with their local text style
+  before forwarding to text descendants.
+- `font_size` needed a narrow explicit-authoring marker because it is a plain
+  `float` with default value `16.0F`. `StyleAuthoredTextFields` records
+  `with_font(...)` and `with_font_size(...)` calls while preserving the public
+  `Style::font_size` type and existing default-style behavior.
+- Flex and vertical stack containers currently do not paint their children, so
+  inherited text style through those containers should be observed through
+  layout/effective text style in Step 334. Direct styled-element-to-label
+  inheritance is covered through both layout and paint commands.

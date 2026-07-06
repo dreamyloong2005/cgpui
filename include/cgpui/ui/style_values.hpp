@@ -229,4 +229,9 @@ struct FontDescriptor {
       const FontDescriptor&) = default;
 };
 
+struct StyleAuthoredTextFields {
+  bool font = false;
+  bool font_size = false;
+};
+
 } // namespace cgpui

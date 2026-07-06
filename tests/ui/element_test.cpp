@@ -3147,6 +3147,113 @@ int test_text_input_widget_is_focusable_editable_text_element() {
              : 364;
 }
 
+int test_styled_element_inherits_text_style_into_label_descendant() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .text_color(cgpui::rgb(12, 34, 56))
+                              .font_family("InheritedParent")
+                              .text_size(20.0F)
+                              .child(cgpui::label("copy").build()));
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 20.0F) {
+    return 608;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1 ||
+      commands[0].kind != cgpui::PaintCommandKind::text) {
+    return 609;
+  }
+
+  const cgpui::TextPaint& text = commands[0].text;
+  if (text.font.family != "InheritedParent" || text.font_size != 20.0F ||
+      text.color.r != 12.0F / 255.0F ||
+      text.bounds.size.width != 40.0F ||
+      text.bounds.size.height != 20.0F) {
+    return 610;
+  }
+  return 0;
+}
+
+int test_child_label_text_style_overrides_inherited_parent_style() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .text_color(cgpui::rgb(12, 34, 56))
+                              .font_family("InheritedParent")
+                              .text_size(24.0F)
+                              .child(cgpui::label("child")
+                                         .foreground(cgpui::rgb(200, 100, 50))
+                                         .font(cgpui::FontDescriptor{
+                                             .family = "ExplicitChild"})
+                                         .font_size(12.0F)
+                                         .build()));
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 30.0F || output.size.height != 12.0F) {
+    return 611;
+  }
+
+  cgpui::PaintList paint_list;
+  element->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 1 ||
+      commands[0].kind != cgpui::PaintCommandKind::text) {
+    return 612;
+  }
+
+  const cgpui::TextPaint& text = commands[0].text;
+  if (text.font.family != "ExplicitChild" || text.font_size != 12.0F ||
+      text.color.r != 200.0F / 255.0F ||
+      text.bounds.size.width != 30.0F ||
+      text.bounds.size.height != 12.0F) {
+    return 613;
+  }
+  return 0;
+}
+
+int test_inherited_text_style_flows_through_flex_container() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .text_color(cgpui::rgb(80, 90, 100))
+                              .font_family("FlexInherited")
+                              .text_size(22.0F)
+                              .child(cgpui::h_flex().child(
+                                  cgpui::label("xy").build())));
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 22.0F || output.size.height != 22.0F) {
+    return 614;
+  }
+
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  const auto* flex = styled == nullptr
+                         ? nullptr
+                         : dynamic_cast<const cgpui::FlexElement*>(
+                               styled->child());
+  if (flex == nullptr || flex->children().empty()) {
+    return 615;
+  }
+
+  const auto* label =
+      dynamic_cast<const cgpui::LabelElement*>(flex->children()[0].get());
+  if (label == nullptr) {
+    return 616;
+  }
+  const std::optional<cgpui::Rect> bounds = label->layout_bounds();
+  return label->font().family == "FlexInherited" &&
+                 label->font_size() == 22.0F &&
+                 label->effective_style().foreground_color.has_value() &&
+                 label->effective_style().foreground_color->r ==
+                     80.0F / 255.0F &&
+                 bounds.has_value() && bounds->size.width == 22.0F &&
+                 bounds->size.height == 22.0F
+             ? 0
+             : 617;
+}
+
 int test_child_view_element_references_view_and_lays_out_placeholder() {
   cgpui::ChildViewElement element(
       cgpui::ViewId{42},
@@ -5398,6 +5505,21 @@ int main() {
   }
   if (const int result =
           test_text_input_widget_is_focusable_editable_text_element();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_inherits_text_style_into_label_descendant();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_child_label_text_style_overrides_inherited_parent_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_inherited_text_style_flows_through_flex_container();
       result != 0) {
     return result;
   }

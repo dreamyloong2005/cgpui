@@ -26,10 +26,12 @@ class VerticalStackElement : public Element {
   void append_child(std::unique_ptr<Element> child);
   [[nodiscard]] std::span<const std::unique_ptr<Element>> children() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
 
  private:
   float gap_ = 0.0F;
+  Style inherited_text_style_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 
@@ -52,6 +54,7 @@ class FlexElement : public Element {
   void append_child(std::unique_ptr<Element> child);
   [[nodiscard]] std::span<const std::unique_ptr<Element>> children() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
 
  private:
@@ -59,6 +62,7 @@ class FlexElement : public Element {
   float gap_ = 0.0F;
   AlignItems align_items_ = AlignItems::start;
   JustifyContent justify_content_ = JustifyContent::start;
+  Style inherited_text_style_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

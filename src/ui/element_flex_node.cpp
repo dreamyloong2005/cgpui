@@ -1,6 +1,7 @@
 #include "cgpui/ui/element_layout_nodes.hpp"
 
 #include "element_layer_ordering.hpp"
+#include "text_style_inheritance.hpp"
 
 #include <optional>
 #include <utility>
@@ -45,6 +46,10 @@ void FlexElement::append_child(std::unique_ptr<Element> child) {
 
 std::span<const std::unique_ptr<Element>> FlexElement::children() const {
   return children_;
+}
+
+void FlexElement::inherit_text_style(const Style& style) {
+  inherited_text_style_ = inherited_text_style(style);
 }
 
 ElementId FlexElement::hit_test(Point point) const {

@@ -1,17 +1,28 @@
 #include "ui_internal.hpp"
 
+#include "text_style_inheritance.hpp"
+
 namespace cgpui {
+
+void LabelElement::inherit_text_style(const Style& style) {
+  effective_style_ = merge_inherited_text_style(style, style_);
+}
 
 void LabelElement::paint(PaintList& paint_list) const {
   const std::optional<Rect> bounds = layout_bounds();
   if (!bounds.has_value() || text().empty()) {
     return;
   }
-  const Color text_color = style().foreground_color.value_or(
+  const Style& text_style = effective_style();
+  const Color text_color = text_style.foreground_color.value_or(
       Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
-  paint_list.push_metadata(paint_metadata_for_style(style()));
-  paint_list.fill_text(*bounds, text_color, text(), style().font, font_size());
+  paint_list.push_metadata(paint_metadata_for_style(text_style));
+  paint_list.fill_text(*bounds, text_color, text(), text_style.font, font_size());
   paint_list.pop_metadata();
+}
+
+void TextElement::inherit_text_style(const Style& style) {
+  effective_style_ = merge_inherited_text_style(style, style_);
 }
 
 void TextElement::paint(PaintList& paint_list) const {
@@ -19,7 +30,7 @@ void TextElement::paint(PaintList& paint_list) const {
   if (!bounds.has_value() || model_ == nullptr) {
     return;
   }
-  const Style& text_style = style();
+  const Style& text_style = effective_style();
   const Color text_color = text_style.foreground_color.value_or(
       Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
   paint_list.push_metadata(paint_metadata_for_style(text_style));

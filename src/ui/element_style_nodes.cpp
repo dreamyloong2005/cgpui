@@ -1,6 +1,7 @@
 #include "cgpui/ui/element_style_nodes.hpp"
 
 #include "element_layer_ordering.hpp"
+#include "text_style_inheritance.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -155,6 +156,8 @@ const std::vector<std::unique_ptr<Element>>& StyledElement::children() const {
 
 LayoutOutput StyledElement::layout(LayoutInput input) const {
   const Style& base_style = style();
+  const Style child_text_style =
+      merge_inherited_text_style(inherited_text_style_, base_style);
   Size content_size = base_style.preferred_size;
   if (!children_.empty()) {
     float child_y = 0.0F;
@@ -163,6 +166,7 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
     std::size_t flow_child_count = 0;
     for (const auto& child_ptr : children_) {
       Element& child = *child_ptr;
+      child.inherit_text_style(child_text_style);
       if (is_positioned_out_of_flow(child.position())) {
         continue;
       }
@@ -216,6 +220,7 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
     if (!is_positioned_out_of_flow(child.position())) {
       continue;
     }
+    child.inherit_text_style(child_text_style);
     const LayoutOutput child_output = child.layout(input);
     child.set_layout_bounds(Rect{
         .origin = absolute_origin(output.size, child.inset()),
@@ -223,6 +228,10 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
     });
   }
   return output;
+}
+
+void StyledElement::inherit_text_style(const Style& style) {
+  inherited_text_style_ = inherited_text_style(style);
 }
 
 ElementId StyledElement::hit_test(Point point) const {

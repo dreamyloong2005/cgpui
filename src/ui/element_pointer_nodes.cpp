@@ -33,6 +33,12 @@ LayoutOutput ClickElement::layout(LayoutInput input) const {
   return Element::layout(input);
 }
 
+void ClickElement::inherit_text_style(const Style& style) {
+  if (child_) {
+    child_->inherit_text_style(style);
+  }
+}
+
 ElementId ClickElement::hit_test(Point point) const {
   const ElementId child_hit = child_ ? child_->hit_test(point) : ElementId{};
   return child_hit.value != 0 ? child_hit : Element::hit_test(point);
@@ -91,6 +97,12 @@ LayoutOutput PointerElement::layout(LayoutInput input) const {
     return output;
   }
   return Element::layout(input);
+}
+
+void PointerElement::inherit_text_style(const Style& style) {
+  if (child_) {
+    child_->inherit_text_style(style);
+  }
 }
 
 ElementId PointerElement::hit_test(Point point) const {

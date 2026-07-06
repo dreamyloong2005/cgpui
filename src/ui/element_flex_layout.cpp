@@ -1,5 +1,7 @@
 #include "cgpui/ui/element_layout_nodes.hpp"
 
+#include "text_style_inheritance.hpp"
+
 #include <algorithm>
 
 namespace cgpui {
@@ -24,6 +26,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
   for (std::size_t child_index = 0; child_index < children_.size();
        ++child_index) {
     const auto& child = children_[child_index];
+    child->inherit_text_style(inherited_text_style_);
     const LayoutOutput child_output =
         child->layout(LayoutInput{.scale = input.scale});
     child_sizes.push_back(child_output.size);

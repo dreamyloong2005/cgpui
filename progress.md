@@ -12787,3 +12787,51 @@
   passed 2/2.
 - Step 333 is complete on `master`; Step 334, inherited text style, is the
   next Phase C style-cascade slice.
+
+## 2026-07-07 Phase C Step 334 Inherited Text Style
+
+- Continued `.worktrees/phase-c-inherited-text-style` on
+  `codex/phase-c-inherited-text-style` from
+  `f34714c docs: mark phase c step 333 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  `.codex` skill path, and confirmed it produced no additional report.
+- Confirmed the main worktree is clean except for the pre-existing untracked
+  `.vscode/`, and the Step 334 feature worktree initially has no tracked
+  changes.
+- Noted this PowerShell environment does not handle every Unix-y search/list
+  idiom smoothly: `rg.exe` was reported broken in the handoff, and a
+  `Get-ChildItem -Filter` call with multiple filters failed because
+  `-Filter` accepts a single string. Use `Select-String` and explicit paths
+  for this slice.
+- RED added behavior coverage in `tests/ui/element_test.cpp` for parent
+  `div` text color/font family/font size flowing into default labels, child
+  explicit text style overriding inherited values, and inheritance flowing
+  through an intermediate flex container. RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requires a focused private
+  `src/ui/text_style_inheritance` helper module. The focused
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  run failed as expected before the helper and propagation path exist.
+- GREEN added `StyleAuthoredTextFields`, a focused private
+  `src/ui/text_style_inheritance.hpp` / `.cpp` helper pair, effective text
+  style storage on `LabelElement` / `TextElement`, and inherited text-style
+  forwarding through styled, flex, vertical-stack, button, focus, key, click,
+  and pointer wrappers. The flex-container test was tightened to observe
+  inherited effective style and layout bounds because flex containers do not
+  currently own paint forwarding.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 334 inherited text style.
+  Step 335 dynamic style invalidation is the next Phase C style-cascade slice
+  after Step 334 lands on `master`.
+- Fresh Windows feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/structure gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, and Windows `xmake test -P .` passed
+  99/99.
+- WSL Arch Linux feature-worktree full debug verification passed after the
+  inherited WSL run completed:
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.

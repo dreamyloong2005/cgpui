@@ -13,6 +13,7 @@ class ClickElement : public Element {
   [[nodiscard]] Element* child();
   [[nodiscard]] const Element* child() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   void paint(PaintList& paint_list) const override;
   [[nodiscard]] EventResult handle_event(
@@ -35,6 +36,7 @@ class PointerElement : public Element {
   [[nodiscard]] Element* child();
   [[nodiscard]] const Element* child() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   void paint(PaintList& paint_list) const override;
   [[nodiscard]] EventResult handle_event(

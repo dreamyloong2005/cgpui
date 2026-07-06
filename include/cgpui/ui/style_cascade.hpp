@@ -104,9 +104,11 @@ class StyleCascade {
   }
   if (overlay.font.has_value()) {
     style.font = *overlay.font;
+    style.authored_text.font = true;
   }
   if (overlay.font_size.has_value()) {
     style.font_size = *overlay.font_size;
+    style.authored_text.font_size = true;
   }
   if (overlay.opacity.has_value()) {
     style.opacity = *overlay.opacity;

@@ -24,6 +24,7 @@ class ButtonElement : public Element {
   [[nodiscard]] AccessibilityRole accessibility_role() const override;
   [[nodiscard]] std::string accessibility_name() const override;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   void paint(PaintList& paint_list) const override;
   [[nodiscard]] EventResult handle_event(
@@ -36,6 +37,7 @@ class ButtonElement : public Element {
   std::string action_name_;
   StyleState style_state_;
   ClickHandler click_handler_;
+  Style inherited_text_style_;
   std::unique_ptr<Element> child_;
 };
 
