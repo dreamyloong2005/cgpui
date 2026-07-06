@@ -579,7 +579,9 @@ expect, keeping each widget in its own module from the first version.
   intersection with the current active clip so hidden-overflow parents and
   nested scrollable-list clips clamp paint command metadata together. Behavior
   coverage lives in `tests/ui/element_test.cpp`, with structure coverage in
-  `tests/architecture/ui_source_structure_test.cpp`.
+  `tests/architecture/ui_source_structure_test.cpp`. It merged on `master` at
+  `266bc9f` and was post-merge verified with JSON validation, Windows
+  full-debug 99/99, and WSL Arch Linux full-debug 96/96.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -875,8 +877,9 @@ absolute/fixed positioning with `Position::fixed`, `ElementBuilder::fixed()`,
 and out-of-flow positioned child layout on `master` at `38574a2`; Step 329
 landed focused direct overlay-layer ordering through `z_order()` for
 direct-container child paint, hit-test, and event dispatch on `master` at
-`6c1bfe4`; and Step 330 adds focused nested scroll clipping through effective
-paint clip intersection. Step 331 should start the style cascade depth band.
+`6c1bfe4`; and Step 330 landed focused nested scroll clipping through
+effective paint clip intersection on `master` at `266bc9f`. Step 331 should
+start the style cascade depth band.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

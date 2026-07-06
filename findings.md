@@ -5797,3 +5797,14 @@
 - Step 330 does not add widget behavior, uniform-list virtualization, broad
   layout rewrites, renderer z-buffer behavior, or the Phase B closeout
   exclusions.
+
+## 2026-07-07 Phase C Step 330 Merge
+
+- Step 330 is merged on `master` at
+  `266bc9f feat: add nested paint clipping` and post-merge verified with
+  Windows JSON validation, Windows debug config, Windows full debug 99/99,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+- Step 331 should start the Phase C style cascade depth band while keeping
+  widgets, uniform-list behavior, broad layout rewrites, renderer z-buffer
+  behavior, and Phase B closeout exclusions out of the slice unless that slice
+  explicitly owns them.

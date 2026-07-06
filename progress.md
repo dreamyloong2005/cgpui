@@ -12570,3 +12570,17 @@
 - Step 330 is implemented and Windows/WSL full-debug verified in the feature
   worktree. It is ready for feature commit and merge verification. Step 331 is
   the next Phase C style cascade depth slice after Step 330 lands on `master`.
+
+## 2026-07-07 Phase C Step 330 Merge
+
+- Committed `codex/phase-c-nested-scroll-clipping` as
+  `266bc9f feat: add nested paint clipping`.
+- Fast-forward merged the branch into `master` at `266bc9f`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 330 is complete on `master`; Step 331, the Phase C style cascade depth
+  slice, is next.
