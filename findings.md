@@ -5639,3 +5639,13 @@
   `tests/ui/element_test.cpp`; the structure guard is
   `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
   guard keeps the Step 326 next-slice marker in sync.
+
+## 2026-07-07 Phase C Step 325 Merge
+
+- Step 325 is merged on `master` at
+  `a1c945e feat: add div layout constraints` and post-merge verified with
+  Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux full
+  debug 96/96.
+- Step 326 should continue Phase C into percentage-like sizing while keeping
+  Step 325's min/max constraint layer as public vocabulary over the existing
+  `LayoutConstraints` clamp path, not a broad layout rewrite.

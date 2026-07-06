@@ -12293,3 +12293,17 @@
   worktree. It is ready for feature commit and merge verification. Step 326 is
   the next Phase C percentage-like sizing slice after Step 325 lands on
   `master`.
+
+## 2026-07-07 Phase C Step 325 Merge
+
+- Committed `codex/phase-c-layout-constraints` as
+  `a1c945e feat: add div layout constraints`.
+- Fast-forward merged the branch into `master` at `a1c945e`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 325 is complete on `master`; Step 326, the next Phase C
+  percentage-like sizing slice, is next.
