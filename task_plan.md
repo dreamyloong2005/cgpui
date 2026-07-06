@@ -1995,5 +1995,11 @@ implementation slice.
   full debug 99/99, WSL Arch Linux debug config, and WSL Arch Linux full
   debug 96/96. Post-merge verification passed JSON validation, Windows debug
   config, Windows full debug 99/99, WSL Arch Linux debug config, and WSL Arch
-  Linux full debug 96/96. Step 330 is the next focused Phase C nested scroll
-  clipping slice.
+  Linux full debug 96/96. Phase C Step 330, focused nested scroll clipping, is
+  implemented in `.worktrees/phase-c-nested-scroll-clipping`: private
+  `paint_clip` helpers now make `PaintList::push_clip(...)` store effective
+  nested clip intersections so hidden-overflow parents and scrollable-list
+  clips clamp paint command metadata together. Focused Windows GREEN
+  verification passed `element_test/default ui_source_structure_test/default`
+  2/2 after a fresh debug configure for the new `.cpp`. Step 331 style cascade
+  depth is the next slice after Step 330 lands on `master`.

@@ -28,6 +28,12 @@ bool same_shadow(const cgpui::BoxShadow& lhs, const cgpui::BoxShadow& rhs) {
          lhs.spread_radius == rhs.spread_radius;
 }
 
+bool same_rect(cgpui::Rect lhs, cgpui::Rect rhs) {
+  return lhs.origin.x == rhs.origin.x && lhs.origin.y == rhs.origin.y &&
+         lhs.size.width == rhs.size.width &&
+         lhs.size.height == rhs.size.height;
+}
+
 class TestElement final : public cgpui::Element {};
 
 class NamedElement final : public cgpui::Element {
@@ -2588,6 +2594,95 @@ int test_paint_list_attaches_current_clip_to_commands() {
              : 129;
 }
 
+int test_paint_list_intersects_nested_clips() {
+  cgpui::PaintList paint_list;
+  const cgpui::Rect outer{
+      .origin = {.x = 10.0F, .y = 10.0F},
+      .size = {.width = 40.0F, .height = 30.0F},
+  };
+  const cgpui::Rect inner{
+      .origin = {.x = 30.0F, .y = 0.0F},
+      .size = {.width = 50.0F, .height = 50.0F},
+  };
+  const cgpui::Rect disjoint{
+      .origin = {.x = 100.0F, .y = 120.0F},
+      .size = {.width = 5.0F, .height = 6.0F},
+  };
+  const cgpui::Rect disjoint_before{
+      .origin = {.x = -20.0F, .y = -30.0F},
+      .size = {.width = 5.0F, .height = 6.0F},
+  };
+  const cgpui::Rect expected_intersection{
+      .origin = {.x = 30.0F, .y = 10.0F},
+      .size = {.width = 20.0F, .height = 30.0F},
+  };
+  const cgpui::Rect expected_empty_intersection{
+      .origin = {.x = 100.0F, .y = 120.0F},
+      .size = {.width = 0.0F, .height = 0.0F},
+  };
+  const cgpui::Rect expected_empty_before_intersection{
+      .origin = {.x = -20.0F, .y = -30.0F},
+      .size = {.width = 0.0F, .height = 0.0F},
+  };
+
+  paint_list.push_clip(outer);
+  paint_list.fill_rect(
+      cgpui::Rect{.size = {.width = 10.0F, .height = 10.0F}},
+      cgpui::Color{.r = 0.1F, .a = 1.0F});
+  paint_list.push_clip(inner);
+  paint_list.fill_rect(
+      cgpui::Rect{.size = {.width = 20.0F, .height = 10.0F}},
+      cgpui::Color{.g = 0.2F, .a = 1.0F});
+  paint_list.push_clip(disjoint);
+  paint_list.fill_rect(
+      cgpui::Rect{.size = {.width = 30.0F, .height = 10.0F}},
+      cgpui::Color{.b = 0.3F, .a = 1.0F});
+
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 3) {
+    return 600;
+  }
+  if (!commands[0].clip_rect.has_value() ||
+      !same_rect(*commands[0].clip_rect, outer) ||
+      commands[0].clip_stack.full_depth != 1 ||
+      commands[0].clip_stack.clips.size() != 1 ||
+      !commands[0].clip_stack.current_clip_rect.has_value() ||
+      !same_rect(*commands[0].clip_stack.current_clip_rect, outer)) {
+    return 601;
+  }
+  if (!commands[1].clip_rect.has_value() ||
+      !same_rect(*commands[1].clip_rect, expected_intersection) ||
+      commands[1].clip_stack.full_depth != 2 ||
+      commands[1].clip_stack.clips.size() != 2 ||
+      !same_rect(commands[1].clip_stack.clips.back(), expected_intersection) ||
+      !commands[1].clip_stack.current_clip_rect.has_value() ||
+      !same_rect(
+          *commands[1].clip_stack.current_clip_rect,
+          expected_intersection)) {
+    return 602;
+  }
+  if (!commands[2].clip_rect.has_value() ||
+      !same_rect(*commands[2].clip_rect, expected_empty_intersection)) {
+    return 603;
+  }
+
+  cgpui::PaintList before_list;
+  before_list.push_clip(outer);
+  before_list.push_clip(disjoint_before);
+  before_list.fill_rect(
+      cgpui::Rect{.size = {.width = 10.0F, .height = 10.0F}},
+      cgpui::Color{.a = 1.0F});
+  const std::span<const cgpui::PaintCommand> before_commands =
+      before_list.commands();
+  return before_commands.size() == 1 &&
+                 before_commands[0].clip_rect.has_value() &&
+                 same_rect(
+                     *before_commands[0].clip_rect,
+                     expected_empty_before_intersection)
+             ? 0
+             : 604;
+}
+
 int test_styled_element_hidden_overflow_attaches_bounds_clip_metadata() {
   const cgpui::Color background{.r = 0.1F, .a = 1.0F};
   const cgpui::Color border{.g = 0.2F, .a = 1.0F};
@@ -4750,6 +4845,59 @@ int test_scrollable_list_container_keys_clip_and_scroll_offset() {
   return 0;
 }
 
+int test_hidden_overflow_intersects_nested_scrollable_list_clip() {
+  cgpui::ScrollState state;
+  cgpui::AnyElement list =
+      cgpui::scrollable_list(state)
+          .size(80.0F, 30.0F)
+          .item("alpha",
+                cgpui::div()
+                    .size(80.0F, 20.0F)
+                    .background(cgpui::rgb(10, 20, 30)))
+          .item("beta",
+                cgpui::div()
+                    .size(80.0F, 20.0F)
+                    .background(cgpui::rgb(40, 50, 60)))
+          .build();
+
+  const cgpui::Rect outer_clip{
+      .origin = {.x = 0.0F, .y = 0.0F},
+      .size = {.width = 60.0F, .height = 20.0F},
+  };
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .style(cgpui::Style{}
+                                         .with_overflow(cgpui::Overflow::hidden)
+                                         .with_clip_rect(outer_clip))
+                              .child(std::move(list)));
+  auto* styled = dynamic_cast<cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 604;
+  }
+
+  (void)styled->layout(cgpui::LayoutInput{});
+  cgpui::PaintList paint_list;
+  styled->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 2) {
+    return 605;
+  }
+  for (const cgpui::PaintCommand& command : commands) {
+    if (!command.clip_rect.has_value() ||
+        !same_rect(*command.clip_rect, outer_clip) ||
+        command.clip_stack.full_depth != 2 ||
+        command.clip_stack.clips.size() != 2 ||
+        !same_rect(command.clip_stack.clips.back(), outer_clip)) {
+      return 606;
+    }
+  }
+
+  return commands[0].solid_rect.rect.size.width == 80.0F &&
+                 commands[1].solid_rect.rect.origin.y == 20.0F
+             ? 0
+             : 607;
+}
+
 } // namespace
 
 int main() {
@@ -5088,6 +5236,10 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_paint_list_intersects_nested_clips();
+      result != 0) {
+    return result;
+  }
   if (const int result =
           test_styled_element_hidden_overflow_attaches_bounds_clip_metadata();
       result != 0) {
@@ -5385,6 +5537,11 @@ int main() {
   }
   if (const int result =
           test_scrollable_list_container_keys_clip_and_scroll_offset();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_hidden_overflow_intersects_nested_scrollable_list_clip();
       result != 0) {
     return result;
   }

@@ -1103,6 +1103,7 @@ int main() {
       "src/ui/ui_event_pointer_internal.hpp",
       "src/ui/ui_paint_internal.hpp",
       "src/ui/element_layer_ordering.hpp",
+      "src/ui/paint_clip.hpp",
   };
   for (const char* header : private_headers) {
     if (read_source(header).empty()) {
@@ -1216,6 +1217,7 @@ int main() {
 
   const std::vector<const char*> source_files{
       "src/ui/paint.cpp",
+      "src/ui/paint_clip.cpp",
       "src/ui/paint_text.cpp",
       "src/ui/paint_image.cpp",
       "src/ui/element_paint.cpp",
@@ -1332,6 +1334,7 @@ int main() {
   }
 
   const std::string paint_source = read_source("src/ui/paint.cpp");
+  const std::string paint_clip_source = read_source("src/ui/paint_clip.cpp");
   const std::string paint_text_source = read_source("src/ui/paint_text.cpp");
   const std::string paint_image_source = read_source("src/ui/paint_image.cpp");
   const std::string paint_shadow_source =
@@ -1339,9 +1342,17 @@ int main() {
   if (line_count(paint_source) > 90 ||
       !contains(paint_source, "PaintList::fill_rect(") ||
       !contains(paint_source, "PaintList::fill_rounded_rect(") ||
+      !contains(paint_source, "effective_nested_clip_rect(") ||
       contains(paint_source, "PaintList::fill_text(") ||
       contains(paint_source, "PaintList::draw_image(")) {
     return 81;
+  }
+  if (line_count(paint_clip_source) > 80 ||
+      !contains(paint_clip_source, "Rect intersect_clip_rect(") ||
+      !contains(paint_clip_source, "Rect effective_nested_clip_rect(") ||
+      contains(paint_clip_source, "PaintList::fill_rect(") ||
+      contains(paint_clip_source, "PaintList::draw_image(")) {
+    return 148;
   }
   if (line_count(paint_text_source) > 100 ||
       !contains(paint_text_source, "PaintList::fill_text(") ||

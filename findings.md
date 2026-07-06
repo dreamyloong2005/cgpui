@@ -5776,3 +5776,24 @@
   slice while keeping widgets, uniform-list behavior, broad layout rewrites,
   renderer z-buffer behavior, and Phase B closeout exclusions out of the slice
   unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 330 Nested Scroll Clipping
+
+- Step 330 stays scoped to paint clip propagation for nested overflow and
+  scroll containers. It makes `PaintList::push_clip(...)` store the effective
+  intersection with the current clip stack so nested hidden-overflow and
+  scrollable-list clips clamp `PaintCommand::clip_rect` together, including
+  zero-size metadata for disjoint clips.
+- Durable ownership is the private `src/ui/paint_clip.hpp` /
+  `src/ui/paint_clip.cpp` helper pair. `src/ui/paint.cpp` keeps the public
+  `PaintList` method bodies and delegates clip intersection to that focused
+  helper instead of open-coding geometry in element paint paths.
+- Behavior coverage lives in `tests/ui/element_test.cpp`: direct nested
+  `PaintList` clips preserve effective clip-stack metadata, and a hidden
+  overflow `div` containing a `scrollable_list(...)` paints child commands with
+  the outer/inner clip intersection. Structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
+  guard moves the next slice to Step 331 style cascade depth.
+- Step 330 does not add widget behavior, uniform-list virtualization, broad
+  layout rewrites, renderer z-buffer behavior, or the Phase B closeout
+  exclusions.

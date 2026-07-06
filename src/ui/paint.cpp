@@ -1,5 +1,7 @@
 #include "ui_internal.hpp"
 
+#include "paint_clip.hpp"
+
 namespace cgpui {
 
 void PaintList::clear() {
@@ -22,7 +24,7 @@ void PaintList::set_text_measurement_cache(TextMeasurementCache* cache) {
 }
 
 void PaintList::push_clip(Rect rect) {
-  clip_stack_.push_back(rect);
+  clip_stack_.push_back(effective_nested_clip_rect(clip_stack_, rect));
 }
 
 void PaintList::pop_clip() {

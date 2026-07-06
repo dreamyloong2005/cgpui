@@ -12524,3 +12524,49 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 329 is complete on `master`; Step 330, the focused Phase C nested
   scroll clipping slice, is next.
+
+## 2026-07-07 Phase C Step 330 Nested Scroll Clipping
+
+- Continued `.worktrees/phase-c-nested-scroll-clipping` on
+  `codex/phase-c-nested-scroll-clipping` from
+  `60ff94f docs: mark phase c step 329 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  corrected `.codex` skill path, and confirmed it produced no additional
+  report.
+- RED added behavior coverage in `tests/ui/element_test.cpp` for nested
+  `PaintList` clip intersection, empty intersections, and hidden-overflow plus
+  scrollable-list clip propagation. RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` required a focused private
+  `paint_clip` module. `xmake test -y -P . element_test/default
+  ui_source_structure_test/default` failed as expected before the module
+  existed.
+- GREEN added `src/ui/paint_clip.hpp` and `src/ui/paint_clip.cpp`, and changed
+  `PaintList::push_clip(...)` in `src/ui/paint.cpp` to push the effective
+  intersection with the active clip stack.
+- Fresh debug configure after adding the new `.cpp` passed:
+  `xmake f -c -m debug -P .` exited 0.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Focused feature-worktree verification passed:
+  JSON parsing for `docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default` passed 6/6.
+- Windows feature-worktree full debug verification passed:
+  `xmake test -P .` passed 99/99.
+- WSL Arch Linux feature-worktree full debug verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- After tightening empty clip intersections to preserve the candidate clip
+  origin and adding left/up disjoint coverage, verification was rerun and
+  passed: Windows focused 2/2, JSON validation, `git diff --check`, focused
+  public/structure gates 6/6, Windows full debug 99/99, WSL debug config, and
+  WSL Arch Linux full debug 96/96.
+- Step 330 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 331 is
+  the next Phase C style cascade depth slice after Step 330 lands on `master`.
