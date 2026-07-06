@@ -98,6 +98,7 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder z_index(int value) &&;
   [[nodiscard]] ElementBuilder position(Position value) &&;
   [[nodiscard]] ElementBuilder absolute() &&;
+  [[nodiscard]] ElementBuilder fixed() &&;
   [[nodiscard]] ElementBuilder relative() &&;
   [[nodiscard]] ElementBuilder inset(EdgeSizes edges) &&;
   [[nodiscard]] ElementBuilder top(float value) &&;

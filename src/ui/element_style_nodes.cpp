@@ -53,6 +53,10 @@ namespace {
   };
 }
 
+[[nodiscard]] bool is_positioned_out_of_flow(Position position) {
+  return position == Position::absolute || position == Position::fixed;
+}
+
 } // namespace
 
 StyledElement::StyledElement(Style style, std::unique_ptr<Element> child)
@@ -141,8 +145,15 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
     float child_y = 0.0F;
     float content_width = 0.0F;
     float content_height = 0.0F;
-    for (std::size_t index = 0; index < children_.size(); ++index) {
-      Element& child = *children_[index];
+    std::size_t flow_child_count = 0;
+    for (const auto& child_ptr : children_) {
+      Element& child = *child_ptr;
+      if (is_positioned_out_of_flow(child.position())) {
+        continue;
+      }
+      if (flow_child_count > 0) {
+        child_y += base_style.gap;
+      }
       const LayoutOutput child_output = child.layout(input);
       child.set_layout_bounds(Rect{
           .origin =
@@ -155,14 +166,14 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
       content_width = std::max(content_width, child_output.size.width);
       content_height = child_y + child_output.size.height;
       child_y = content_height;
-      if (index + 1 < children_.size()) {
-        child_y += base_style.gap;
-      }
+      flow_child_count += 1;
     }
-    content_size = Size{
-        .width = content_width,
-        .height = content_height,
-    };
+    if (flow_child_count > 0) {
+      content_size = Size{
+          .width = content_width,
+          .height = content_height,
+      };
+    }
   }
   content_size = resolve_percentage_size(
       content_size,
@@ -185,6 +196,17 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
       .origin = output.origin,
       .size = output.size,
   });
+  for (const auto& child_ptr : children_) {
+    Element& child = *child_ptr;
+    if (!is_positioned_out_of_flow(child.position())) {
+      continue;
+    }
+    const LayoutOutput child_output = child.layout(input);
+    child.set_layout_bounds(Rect{
+        .origin = absolute_origin(output.size, child.inset()),
+        .size = child_output.size,
+    });
+  }
   return output;
 }
 

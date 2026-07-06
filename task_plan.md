@@ -1970,3 +1970,15 @@ implementation slice.
   debug config, Windows full debug 99/99, WSL debug config, and WSL Arch
   Linux full debug 96/96. Step 328 is the next focused Phase C
   absolute/fixed positioning slice.
+
+- Phase C Step 328, focused absolute/fixed positioning, is implemented in
+  `.worktrees/phase-c-absolute-fixed-positioning`: `Position::fixed` and
+  `ElementBuilder::fixed()` extend the public positioning vocabulary, while
+  `StyledElement::layout` and `FlexElement::layout` treat absolute/fixed
+  children as out-of-flow positioned children that keep their own bounds from
+  inset without contributing to normal child flow, gaps, or parent content
+  size. RED failed as expected on missing `ElementBuilder::fixed()` and on
+  the new structure guard; GREEN passed Windows focused
+  `element_test/default ui_source_structure_test/default` 2/2. Step 329 is
+  the next focused Phase C overlay-layer slice after Step 328 lands on
+  `master`.

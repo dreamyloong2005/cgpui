@@ -160,10 +160,13 @@ int main() {
       !contains(ledger, "`ElementBuilder::opacity(...)`") ||
       !contains(ledger, "`ElementBuilder::z_index(...)`") ||
       !contains(ledger, "`ElementBuilder::relative()`") ||
+      !contains(ledger, "`ElementBuilder::fixed()`") ||
+      !contains(ledger, "`Position::fixed`") ||
       !contains(ledger, "`ElementBuilder::top(...)`") ||
       !contains(ledger, "src/ui/element_builder_interaction.cpp") ||
       !contains(ledger, "src/ui/element_builder_layout.cpp") ||
       !contains(ledger, "src/ui/element_builder_style.cpp") ||
+      !contains(ledger, "src/ui/element_flex_layout.cpp") ||
       !contains(ledger, "src/ui/element_style_nodes.cpp") ||
       !contains(ledger, "tests/architecture/ui_source_structure_test.cpp") ||
       !contains(ledger, "tests/ui/element_test.cpp") ||
@@ -447,8 +450,12 @@ int main() {
               "ElementBuilder::mb",
               "ElementBuilder::ml",
               "margin/padding shorthand",
+              "Position::fixed",
+              "ElementBuilder::fixed",
+              "out-of-flow absolute/fixed child layout",
+              "FlexElement::layout",
               "paint_shadow.cpp",
-              "Phase C Step 328 absolute fixed positioning",
+              "Phase C Step 329 overlay layers",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",

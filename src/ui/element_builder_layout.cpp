@@ -265,6 +265,10 @@ ElementBuilder ElementBuilder::absolute() && {
   return std::move(*this).position(Position::absolute);
 }
 
+ElementBuilder ElementBuilder::fixed() && {
+  return std::move(*this).position(Position::fixed);
+}
+
 ElementBuilder ElementBuilder::relative() && {
   return std::move(*this).position(Position::relative);
 }

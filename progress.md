@@ -12425,3 +12425,43 @@
   guards passed 2/2, and WSL Arch Linux focused docs guards passed 2/2.
 - Step 327 is complete on `master`; Step 328, the focused Phase C
   absolute/fixed positioning slice, is next.
+
+## 2026-07-07 Phase C Step 328 Absolute Fixed Positioning
+
+- Continued `.worktrees/phase-c-absolute-fixed-positioning` on
+  `codex/phase-c-absolute-fixed-positioning` from
+  `3a0184d docs: mark phase c step 327 merged`.
+- Baseline focused Windows gate had already passed before implementation:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added behavior coverage in `tests/ui/element_test.cpp` for
+  `ElementBuilder::fixed()`, `Position::fixed`, flex absolute/fixed
+  positioned children, and `StyledElement` out-of-flow positioned children;
+  `xmake test -y -P . element_test/default` failed as expected because
+  `ElementBuilder::fixed()` and `Position::fixed` did not exist. RED structure
+  coverage in `tests/architecture/ui_source_structure_test.cpp` failed as
+  expected because `fixed()` and positioned child layout ownership were not in
+  the focused source files.
+- GREEN added `Position::fixed`, `ElementBuilder::fixed()`, and local
+  out-of-flow positioned-child checks in `StyledElement::layout` and
+  `FlexElement::layout` so absolute/fixed children are laid out from inset
+  without contributing to normal flow or gaps.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 328 absolute/fixed
+  positioning. Step 329 is the next focused Phase C overlay-layer slice after
+  Step 328 lands on `master`.
+- Fresh feature-worktree full verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/structure gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  99/99, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 328 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 329 is
+  the next focused Phase C overlay-layer slice after Step 328 lands on
+  `master`.

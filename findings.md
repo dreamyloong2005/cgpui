@@ -5713,3 +5713,22 @@
   behavior while keeping percentage margins/padding/gaps, flex-wrap, widgets,
   uniform-list behavior, broad layout rewrites, and Phase B closeout exclusions
   out of the slice unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 328 Absolute Fixed Positioning
+
+- Step 328 stays scoped to positioning vocabulary and out-of-flow layout for
+  existing element containers. It adds `Position::fixed` and
+  `ElementBuilder::fixed()` without adding overlay layers, nested scroll
+  clipping, percentage margins/padding/gaps, flex-wrap, widgets,
+  uniform-list behavior, or Phase B closeout exclusions.
+- Durable ownership is `include/cgpui/ui/style_values.hpp` for the enum value,
+  `include/cgpui/ui/element_builder_core.hpp` for the public declaration,
+  `src/ui/element_builder_layout.cpp` for the non-template builder body, and
+  `src/ui/element_style_nodes.cpp` / `src/ui/element_flex_layout.cpp` for the
+  out-of-flow child layout behavior.
+- The behavior guard is `tests/ui/element_test.cpp`: `.fixed()` must set
+  `Position::fixed`, and absolute/fixed children must not contribute to
+  `StyledElement` vertical flow, gap composition, or content size. The
+  structure guard is `tests/architecture/ui_source_structure_test.cpp`, and
+  the parity ledger guard keeps the Step 329 overlay-layer next-slice marker
+  in sync.

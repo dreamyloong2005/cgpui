@@ -30,6 +30,7 @@ enum class JustifyContent {
 enum class Position {
   relative,
   absolute,
+  fixed,
 };
 
 enum class AnimationEasing {

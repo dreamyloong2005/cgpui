@@ -1421,9 +1421,14 @@ int test_flex_row_absolute_children_do_not_affect_main_layout() {
                                              0.0F,
                                              0.0F,
                                              7.0F)))
+                              .child(cgpui::div()
+                                         .size(50.0F, 9.0F)
+                                         .fixed()
+                                         .top(4.0F)
+                                         .left(17.0F))
                               .child(cgpui::div().size(30.0F, 5.0F)));
   auto* flex = dynamic_cast<cgpui::FlexElement*>(element.get());
-  if (flex == nullptr || flex->children().size() != 3) {
+  if (flex == nullptr || flex->children().size() != 4) {
     return 261;
   }
 
@@ -1438,18 +1443,94 @@ int test_flex_row_absolute_children_do_not_affect_main_layout() {
       flex->children()[0]->layout_bounds();
   const std::optional<cgpui::Rect> absolute_bounds =
       flex->children()[1]->layout_bounds();
-  const std::optional<cgpui::Rect> third_bounds =
+  const std::optional<cgpui::Rect> fixed_bounds =
       flex->children()[2]->layout_bounds();
+  const std::optional<cgpui::Rect> third_bounds =
+      flex->children()[3]->layout_bounds();
   return first_bounds.has_value() && absolute_bounds.has_value() &&
-                 third_bounds.has_value() &&
+                 fixed_bounds.has_value() && third_bounds.has_value() &&
                  first_bounds->origin.x == 0.0F &&
                  third_bounds->origin.x == 15.0F &&
                  absolute_bounds->origin.x == 7.0F &&
                  absolute_bounds->origin.y == 2.0F &&
                  absolute_bounds->size.width == 20.0F &&
-                 absolute_bounds->size.height == 6.0F
+                 absolute_bounds->size.height == 6.0F &&
+                 fixed_bounds->origin.x == 17.0F &&
+                 fixed_bounds->origin.y == 4.0F &&
+                 fixed_bounds->size.width == 50.0F &&
+                 fixed_bounds->size.height == 9.0F
              ? 0
              : 263;
+}
+
+int test_element_builder_fixed_shortcut_maps_to_position() {
+  cgpui::AnyElement element = cgpui::into_element(
+      cgpui::div().size(8.0F, 4.0F).fixed().top(6.0F).left(9.0F));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 602;
+  }
+
+  const cgpui::Style& style = styled->style();
+  return style.position == cgpui::Position::fixed &&
+                 element->position() == cgpui::Position::fixed &&
+                 style.inset.top == 6.0F && style.inset.left == 9.0F &&
+                 element->inset().top == 6.0F &&
+                 element->inset().left == 9.0F
+             ? 0
+             : 603;
+}
+
+int test_styled_element_positioned_children_do_not_affect_vertical_flow() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .gap(5.0F)
+                              .p(1.0F)
+                              .m(2.0F)
+                              .child(cgpui::div().size(10.0F, 4.0F))
+                              .child(cgpui::div()
+                                         .size(20.0F, 6.0F)
+                                         .absolute()
+                                         .top(7.0F)
+                                         .left(9.0F))
+                              .child(cgpui::div()
+                                         .size(30.0F, 8.0F)
+                                         .fixed()
+                                         .top(11.0F)
+                                         .left(13.0F))
+                              .child(cgpui::div().size(12.0F, 3.0F)));
+  auto* styled = dynamic_cast<cgpui::StyledElement*>(element.get());
+  if (styled == nullptr || styled->children().size() != 4) {
+    return 604;
+  }
+
+  const cgpui::LayoutOutput output = styled->layout(cgpui::LayoutInput{});
+  if (output.size.width != 18.0F || output.size.height != 18.0F) {
+    return 605;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      styled->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> absolute_bounds =
+      styled->children()[1]->layout_bounds();
+  const std::optional<cgpui::Rect> fixed_bounds =
+      styled->children()[2]->layout_bounds();
+  const std::optional<cgpui::Rect> last_bounds =
+      styled->children()[3]->layout_bounds();
+  return first_bounds.has_value() && absolute_bounds.has_value() &&
+                 fixed_bounds.has_value() && last_bounds.has_value() &&
+                 first_bounds->origin.x == 3.0F &&
+                 first_bounds->origin.y == 3.0F &&
+                 last_bounds->origin.x == 3.0F &&
+                 last_bounds->origin.y == 12.0F &&
+                 absolute_bounds->origin.x == 9.0F &&
+                 absolute_bounds->origin.y == 7.0F &&
+                 fixed_bounds->origin.x == 13.0F &&
+                 fixed_bounds->origin.y == 11.0F &&
+                 fixed_bounds->size.width == 30.0F &&
+                 fixed_bounds->size.height == 8.0F
+             ? 0
+             : 606;
 }
 
 int test_element_builder_layer_shortcut_applies_to_child() {
@@ -4734,6 +4815,15 @@ int main() {
   }
   if (const int result =
           test_flex_row_absolute_children_do_not_affect_main_layout();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_fixed_shortcut_maps_to_position();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_positioned_children_do_not_affect_vertical_flow();
       result != 0) {
     return result;
   }

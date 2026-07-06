@@ -4,6 +4,14 @@
 
 namespace cgpui {
 
+namespace {
+
+[[nodiscard]] bool is_positioned_out_of_flow(Position position) {
+  return position == Position::absolute || position == Position::fixed;
+}
+
+} // namespace
+
 LayoutOutput FlexElement::layout(LayoutInput input) const {
   std::vector<Size> child_sizes;
   child_sizes.reserve(children_.size());
@@ -19,7 +27,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
     const LayoutOutput child_output =
         child->layout(LayoutInput{.scale = input.scale});
     child_sizes.push_back(child_output.size);
-    if (child->position() == Position::absolute) {
+    if (is_positioned_out_of_flow(child->position())) {
       continue;
     }
     relative_indices.push_back(child_index);
@@ -60,7 +68,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
   const float positive_free_space = std::max(0.0F, output_main - content_main);
   const float overflow_space = std::max(0.0F, content_main - output_main);
   for (std::size_t index = 0; index < child_sizes.size(); ++index) {
-    if (children_[index]->position() == Position::absolute) {
+    if (is_positioned_out_of_flow(children_[index]->position())) {
       continue;
     }
     Size& child_size = child_sizes[index];
@@ -130,7 +138,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
     }
   }
   for (std::size_t index = 0; index < children_.size(); ++index) {
-    if (children_[index]->position() != Position::absolute) {
+    if (!is_positioned_out_of_flow(children_[index]->position())) {
       continue;
     }
     children_[index]->set_layout_bounds(Rect{

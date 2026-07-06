@@ -899,6 +899,7 @@ int main() {
       "src/ui/element_vertical_stack_node.cpp",
       "src/ui/element_flex_node.cpp",
       "src/ui/element_flex_layout.cpp",
+      "src/ui/element_style_nodes.cpp",
       "src/ui/element_style_paint.cpp",
       "src/ui/element_button_paint.cpp",
       "src/ui/element_scroll_paint.cpp",
@@ -923,6 +924,8 @@ int main() {
       read_source("src/ui/element_builder_layout.cpp");
   const std::string element_builder_style_source =
       read_source("src/ui/element_builder_style.cpp");
+  const std::string element_style_nodes_source =
+      read_source("src/ui/element_style_nodes.cpp");
   const std::string style_box_source = read_source("src/ui/style_box.cpp");
   const std::string style_overlay_source =
       read_source("src/ui/style_overlay.cpp");
@@ -991,6 +994,8 @@ int main() {
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::z_index(") ||
       !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::fixed()") ||
+      !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::relative()") ||
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::top(") ||
@@ -1044,6 +1049,9 @@ int main() {
       !contains(
           shadow_render_view_commands_source,
           "PaintCommandKind::box_shadow") ||
+      !contains(element_style_nodes_source, "is_positioned_out_of_flow(") ||
+      !contains(element_style_nodes_source, "Position::fixed") ||
+      !contains(element_style_nodes_source, "absolute_origin(output.size") ||
       contains(element_builder_style_source, "ElementBuilder::items_center()") ||
       contains(element_builder_style_source, "ElementBuilder::w(") ||
       contains(element_builder_style_source, "ElementBuilder::min_w(") ||
@@ -1064,6 +1072,7 @@ int main() {
       contains(element_builder_style_source, "ElementBuilder::mr(") ||
       contains(element_builder_style_source, "ElementBuilder::mb(") ||
       contains(element_builder_style_source, "ElementBuilder::ml(") ||
+      contains(element_builder_style_source, "ElementBuilder::fixed(") ||
       contains(element_builder_style_source, "ElementBuilder::z_index(") ||
       contains(element_builder_layout_source, "ElementBuilder::bg(") ||
       contains(element_builder_layout_source, "ElementBuilder::opacity(") ||
