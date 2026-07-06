@@ -2063,3 +2063,18 @@ implementation slice.
   JSON validation, Windows debug config, Windows full debug 99/99, WSL Arch
   Linux debug config, and WSL Arch Linux full debug 96/96. Step 334 inherited
   text style is the next focused Phase C style-cascade slice.
+
+- Phase C Step 334, focused inherited text style, is merged on `master` at
+  `a472317 feat: add inherited text style`: `StyleAuthoredTextFields`
+  distinguishes default text style values from explicit `font(...)` /
+  `font_size(...)` authoring, private `src/ui/text_style_inheritance.cpp`
+  helpers merge foreground color, font family, and font size, text nodes keep
+  effective style for layout/paint, and styled/flex/vertical-stack plus common
+  wrappers forward inherited text style while preserving explicit child
+  precedence. Feature-worktree verification passed JSON validation,
+  `git diff --check`, focused public/structure gates 6/6, Windows debug
+  config, Windows full debug 99/99, and WSL Arch Linux full debug 96/96.
+  Post-merge verification passed JSON validation, Windows debug config,
+  Windows full debug 99/99, WSL Arch Linux debug config, and WSL Arch Linux
+  full debug 96/96. Step 335 dynamic style invalidation is the next focused
+  Phase C style-cascade slice.

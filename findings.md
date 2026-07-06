@@ -5899,3 +5899,14 @@
   inherited text style through those containers should be observed through
   layout/effective text style in Step 334. Direct styled-element-to-label
   inheritance is covered through both layout and paint commands.
+
+## 2026-07-07 Phase C Step 334 Merge
+
+- Step 334 is merged on `master` at
+  `a472317 feat: add inherited text style` and post-merge verified with JSON
+  validation, Windows debug config, Windows full debug 99/99, WSL Arch Linux
+  debug config, and WSL Arch Linux full debug 96/96.
+- Step 335 should continue the style cascade depth band with dynamic
+  invalidation when style-affecting state changes. Keep runtime theme
+  switching, widget behavior, pointer-active semantics, and broad cascade or
+  layout rewrites out unless Step 335 explicitly owns them.

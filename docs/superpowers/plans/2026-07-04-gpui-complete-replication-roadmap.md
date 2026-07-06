@@ -920,10 +920,11 @@ depth through
 with cycle protection on `master` at `630bb3d`. Step 333 landed focused theme
 token fallback through `StyleThemeTokens`, theme-aware
 `resolved_style(...)` overloads, and missing-token fallback to existing
-concrete style values on `master` at `e1d5467`. Step 334 adds focused
+concrete style values on `master` at `e1d5467`. Step 334 landed focused
 inherited text style through `StyleAuthoredTextFields`,
 `src/ui/text_style_inheritance.cpp`, effective text styles on text nodes, and
-container/wrapper forwarding for foreground color, font family, and font size.
+container/wrapper forwarding for foreground color, font family, and font size
+on `master` at `a472317`.
 Step 335 should continue the style cascade depth band with dynamic invalidation
 when style-affecting state changes.
 Keep the Phase B closeout exclusions out of this slice:
