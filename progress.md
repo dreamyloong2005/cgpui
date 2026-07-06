@@ -12641,3 +12641,29 @@
   worktree. It is ready for feature commit and merge verification. Step 332 is
   the next Phase C class style reuse depth slice after Step 331 lands on
   `master`.
+
+## 2026-07-07 Phase C Step 331 Merge
+
+- Step 331 was already merged on `master` at
+  `c621fe8 feat: add active style cascade state` when this continuation
+  resumed.
+- Verified post-merge Windows from the prior continuation:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- The first post-merge WSL full run failed while linking
+  `wayland_vulkan_surface_test` because
+  `build/linux/x86_64/debug/libcgpui_renderer_vulkan.a` contained non-ELF
+  object-cache contamination. A targeted WSL rebuild of
+  `cgpui_renderer_vulkan` and `wayland_vulkan_surface_test` then succeeded.
+- The follow-up WSL full run failed at
+  `command_palette_key_integration_test.cpp.o: file format not recognized`;
+  `file build/.objs/command_palette_key_integration_test/linux/x86_64/debug/tests/ui/command_palette_key_integration_test.cpp.o`
+  reported `data`, confirming the same cache-contamination pattern rather than
+  a Step 331 code regression.
+- Recovered by running
+  `XMAKE_ROOT=y xmake clean -a -P .`, then
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -P .`, then
+  `XMAKE_ROOT=y xmake test -P .` from WSL Arch Linux. The clean WSL full debug
+  run passed 96/96.
+- Step 331 is complete on `master`; Step 332, class style reuse depth, is the
+  next Phase C style-cascade slice.

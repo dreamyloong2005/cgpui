@@ -5830,3 +5830,14 @@
   `tests/ui/element_test.cpp`; structure coverage lives in
   `tests/architecture/ui_source_structure_test.cpp`; and the parity ledger
   guard moves the next slice to Step 332 class style reuse depth.
+
+## 2026-07-07 WSL Object Cache Contamination Recovery
+
+- A post-merge Step 331 WSL full-debug failure with
+  `file format not recognized` was traced to non-ELF/corrupt object-cache
+  artifacts in the root worktree, not to a code regression. `file` reported
+  the bad `command_palette_key_integration_test.cpp.o` as `data`.
+- If another WSL link failure reports `file format not recognized` for an
+  object under `build/.objs/.../linux/x86_64/debug`, avoid repeating a normal
+  `xmake test` loop. Use WSL-side `xmake clean -a`, reconfigure with
+  `--ccache=n`, and rerun the full WSL suite from the clean Linux build.
