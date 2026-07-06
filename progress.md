@@ -12667,3 +12667,45 @@
   run passed 96/96.
 - Step 331 is complete on `master`; Step 332, class style reuse depth, is the
   next Phase C style-cascade slice.
+
+## 2026-07-07 Phase C Step 332 Class Style Reuse Depth
+
+- Created `.worktrees/phase-c-class-style-reuse` on
+  `codex/phase-c-class-style-reuse` from
+  `d9991e9 docs: mark phase c step 331 merged`.
+- Baseline focused Windows gate passed:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added behavior coverage in `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp` for reusable class rules, depth-first reused
+  class resolution, cycle protection, and `StyledElement::resolved_style(...)`
+  class reuse. RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` required focused
+  `src/ui/style_cascade.cpp` ownership. The focused RED failed as expected
+  because `StyleClassRule`, `StyleCascade::set_class_rule(...)`, and
+  `StyleCascade::class_rule(...)` did not exist.
+- GREEN added `StyleClassRule`, compatibility-preserving
+  `StyleCascade::set_class_style(...)`, `set_class_rule(...)`, `class_style(...)`,
+  and `class_rule(...)`, moved non-template cascade bodies to
+  `src/ui/style_cascade.cpp`, and resolved reused classes depth-first with
+  cycle protection before applying each owning class's state overlays.
+- Focused Windows GREEN verification passed:
+  `xmake f -c -m debug -P .` exited 0 and
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 332 class-style reuse
+  depth. Step 333 theme token fallback is the next Phase C style-cascade slice
+  after Step 332 lands on `master`.
+- Fresh feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/structure gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  99/99, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 332 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 333 is
+  the next Phase C theme token fallback slice after Step 332 lands on
+  `master`.

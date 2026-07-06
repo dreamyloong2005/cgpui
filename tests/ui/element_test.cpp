@@ -896,13 +896,43 @@ int test_element_builder_stores_style_classes_and_inline_style() {
   const cgpui::Style resolved = styled->resolved_style(
       cascade,
       cgpui::StyleStateFlags{.hovered = true, .active = true});
-  return resolved.background_color.has_value() &&
-                 resolved.background_color->r == 9.0F / 255.0F &&
-                 resolved.foreground_color.has_value() &&
-                 resolved.foreground_color->r == 2.0F / 255.0F &&
-                 resolved.padding.left == 5.0F && resolved.gap == 4.0F
+  if (!resolved.background_color.has_value() ||
+      resolved.background_color->r != 9.0F / 255.0F ||
+      !resolved.foreground_color.has_value() ||
+      resolved.foreground_color->r != 2.0F / 255.0F ||
+      resolved.padding.left != 5.0F || resolved.gap != 4.0F) {
+    return 234;
+  }
+
+  cgpui::StyleClasses raised_reuse;
+  raised_reuse.add(card);
+  cascade.set_class_rule(
+      raised,
+      cgpui::StyleClassRule{
+          .reused_classes = raised_reuse,
+          .style = cgpui::StyleState{
+              .base = cgpui::Style{}.with_border_width(cgpui::edges(2.0F)),
+              .active = cgpui::StyleOverlay{}.with_gap(9.0F),
+          },
+      });
+  cgpui::AnyElement reused_element =
+      cgpui::into_element(cgpui::div().class_name(raised));
+  const auto* reused_styled =
+      dynamic_cast<const cgpui::StyledElement*>(reused_element.get());
+  if (reused_styled == nullptr) {
+    return 235;
+  }
+  const cgpui::Style reused_resolved = reused_styled->resolved_style(
+      cascade,
+      cgpui::StyleStateFlags{.active = true});
+  return reused_resolved.background_color.has_value() &&
+                 reused_resolved.background_color->r == 1.0F / 255.0F &&
+                 reused_resolved.foreground_color.has_value() &&
+                 reused_resolved.foreground_color->r == 2.0F / 255.0F &&
+                 reused_resolved.border_width.left == 2.0F &&
+                 reused_resolved.gap == 9.0F
              ? 0
-             : 234;
+             : 236;
 }
 
 int test_base_element_lays_out_zero_size() {

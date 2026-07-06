@@ -591,6 +591,14 @@ expect, keeping each widget in its own module from the first version.
   structure coverage in `tests/architecture/ui_source_structure_test.cpp`.
   This deliberately does not wire pointer-pressed active semantics; the
   focusable/interactable band owns real active input behavior in Steps 337-342.
+  Step 332 adds focused class-style reuse depth: `StyleClassRule` carries
+  reused class ids plus a local `StyleState`, `StyleCascade::set_class_rule(...)`
+  and `class_rule(...)` expose that rule boundary, and cascade resolution
+  applies reused classes depth-first with cycle protection before each class's
+  own hover/focus/active/disabled overlays. Non-template cascade bodies now
+  live in `src/ui/style_cascade.cpp`; behavior coverage lives in
+  `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`, with structure
+  coverage in `tests/architecture/ui_source_structure_test.cpp`.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -870,7 +878,7 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 332 should continue Phase C element/style/layout work from the frozen
+Step 333 should continue Phase C element/style/layout work from the frozen
 Phase B public authoring boundary after the focused layout behavior band from
 Steps 319-330. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -891,8 +899,11 @@ effective paint clip intersection on `master` at `266bc9f`. Step 331 adds
 focused active-state style cascade support through `StyleState::active`,
 `StyleStateFlags::active`, `ElementBuilder::active_style(...)`,
 `ButtonBuilder::active_style(...)`, and hover/focus/active/disabled overlay
-ordering. Step 332 should continue the style cascade depth band with
-class-style reuse depth.
+ordering. Step 332 adds focused class-style reuse depth through
+`StyleClassRule`, `StyleCascade::set_class_rule(...)`, out-of-line
+`src/ui/style_cascade.cpp` ownership, and depth-first reused class resolution
+with cycle protection. Step 333 should continue the style cascade depth band
+with theme token fallback.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

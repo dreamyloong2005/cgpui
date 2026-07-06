@@ -971,6 +971,106 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
              : 77;
 }
 
+int test_style_cascade_reuses_class_rules_depth_first_and_ignores_cycles() {
+  const cgpui::StyleClassId surface = cgpui::style_class("surface");
+  const cgpui::StyleClassId compact = cgpui::style_class("compact");
+  const cgpui::StyleClassId card = cgpui::style_class("card");
+  const cgpui::StyleClassId cycle_a = cgpui::style_class("cycle.a");
+  const cgpui::StyleClassId cycle_b = cgpui::style_class("cycle.b");
+
+  cgpui::StyleCascade cascade;
+  cascade.set_class_style(
+      surface,
+      cgpui::StyleState{
+          .base = cgpui::Style{}
+                      .with_background_color(cgpui::rgb(12, 24, 36))
+                      .with_padding(cgpui::edges(2.0F)),
+          .hover = cgpui::StyleOverlay{}.with_gap(3.0F),
+          .active = cgpui::StyleOverlay{}.with_foreground_color(
+              cgpui::rgb(50, 60, 70)),
+      });
+
+  cgpui::StyleClasses compact_reuse;
+  compact_reuse.add(surface);
+  cascade.set_class_rule(
+      compact,
+      cgpui::StyleClassRule{
+          .reused_classes = compact_reuse,
+          .style = cgpui::StyleState{
+              .base = cgpui::Style{}.with_padding(cgpui::edges(6.0F)),
+              .focus =
+                  cgpui::StyleOverlay{}.with_border_width(cgpui::edges(4.0F)),
+          },
+      });
+
+  cgpui::StyleClasses card_reuse;
+  card_reuse.add(compact);
+  cascade.set_class_rule(
+      card,
+      cgpui::StyleClassRule{
+          .reused_classes = card_reuse,
+          .style = cgpui::StyleState{
+              .base = cgpui::Style{}.with_opacity(0.75F),
+              .active = cgpui::StyleOverlay{}.with_gap(8.0F),
+          },
+      });
+
+  cgpui::StyleClasses cycle_a_reuse;
+  cycle_a_reuse.add(cycle_b);
+  cascade.set_class_rule(
+      cycle_a,
+      cgpui::StyleClassRule{
+          .reused_classes = cycle_a_reuse,
+          .style = cgpui::StyleState{
+              .base = cgpui::Style{}.with_z_index(4),
+          },
+      });
+  cgpui::StyleClasses cycle_b_reuse;
+  cycle_b_reuse.add(cycle_a);
+  cascade.set_class_rule(
+      cycle_b,
+      cgpui::StyleClassRule{
+          .reused_classes = cycle_b_reuse,
+          .style = cgpui::StyleState{
+              .base = cgpui::Style{}.with_layer(9),
+          },
+      });
+
+  cgpui::StyleClasses classes;
+  classes.add(card).add(cycle_a);
+  const cgpui::Style resolved = cgpui::resolved_style(
+      cascade,
+      cgpui::StyleState{},
+      classes,
+      cgpui::StyleOverlay{},
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .active = true,
+      });
+
+  if (!resolved.background_color.has_value() ||
+      resolved.background_color->r != 12.0F / 255.0F ||
+      !resolved.foreground_color.has_value() ||
+      resolved.foreground_color->r != 50.0F / 255.0F) {
+    return 95;
+  }
+  if (resolved.padding.left != 6.0F || resolved.border_width.left != 4.0F ||
+      resolved.gap != 8.0F || resolved.opacity != 0.75F) {
+    return 96;
+  }
+  if (resolved.z_index != 4 || resolved.layer != 9) {
+    return 97;
+  }
+
+  const cgpui::StyleClassRule* card_rule = cascade.class_rule(card);
+  const cgpui::StyleState* card_style = cascade.class_style(card);
+  return card_rule != nullptr && card_style == &card_rule->style &&
+                 card_rule->reused_classes.contains(compact)
+             ? 0
+             : 98;
+}
+
 int test_animation_easing_and_style_tween_primitives() {
   if (!same(cgpui::clamp_animation_progress(-0.5F), 0.0F) ||
       !same(cgpui::clamp_animation_progress(1.5F), 1.0F)) {
@@ -1090,6 +1190,15 @@ static_assert(std::same_as<
               decltype(cgpui::StyleCascade{}.class_style(cgpui::style_class("x"))),
               const cgpui::StyleState*>);
 static_assert(std::same_as<
+              decltype(cgpui::StyleCascade{}.class_rule(cgpui::style_class("x"))),
+              const cgpui::StyleClassRule*>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleClassRule{}.reused_classes),
+              cgpui::StyleClasses>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleClassRule{}.style),
+              cgpui::StyleState>);
+static_assert(std::same_as<
               decltype(cgpui::ease(cgpui::AnimationEasing::linear, 0.0F)),
               float>);
 static_assert(std::same_as<
@@ -1145,6 +1254,11 @@ int main() {
   }
   if (const int result =
           test_style_cascade_resolves_base_classes_state_and_inline_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_style_cascade_reuses_class_rules_depth_first_and_ignores_cycles();
       result != 0) {
     return result;
   }

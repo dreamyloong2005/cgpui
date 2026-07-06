@@ -897,6 +897,7 @@ int main() {
       "src/ui/element_builder_interaction.cpp",
       "src/ui/element_builder_build.cpp",
       "src/ui/element_builder_finish.cpp",
+      "src/ui/style_cascade.cpp",
       "src/ui/element_layer_ordering.cpp",
       "src/ui/element_fixed_size_node.cpp",
       "src/ui/element_vertical_stack_node.cpp",
@@ -936,6 +937,8 @@ int main() {
   const std::string style_box_source = read_source("src/ui/style_box.cpp");
   const std::string style_overlay_source =
       read_source("src/ui/style_overlay.cpp");
+  const std::string style_cascade_source =
+      read_source("src/ui/style_cascade.cpp");
   const std::string shadow_paint_source =
       read_source("src/ui/paint_shadow.cpp");
   const std::string shadow_render_view_commands_source =
@@ -1036,6 +1039,17 @@ int main() {
                 "ElementBuilder ElementBuilder::shadow_sm()") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::active_style(") ||
+      !contains(style_cascade_header, "struct StyleClassRule") ||
+      !contains(style_cascade_header, "StyleClasses reused_classes") ||
+      !contains(style_cascade_header, "StyleCascade& set_class_rule(") ||
+      contains(style_cascade_header, "StyleCascade::set_class_style(") ||
+      contains(style_cascade_header, "style_base_overlay(") ||
+      !contains(style_cascade_source, "StyleCascade::set_class_style(") ||
+      !contains(style_cascade_source, "StyleCascade::set_class_rule(") ||
+      !contains(style_cascade_source, "StyleCascade::class_rule(") ||
+      !contains(style_cascade_source, "apply_class_rule(") ||
+      !contains(style_cascade_source, "resolved_style(") ||
+      line_count(style_cascade_source) > 240 ||
       !contains(style_box_source, "Style Style::with_min_size(") ||
       !contains(style_box_source, "Style Style::with_max_size(") ||
       !contains(style_box_source, "Style Style::with_percentage_size(") ||

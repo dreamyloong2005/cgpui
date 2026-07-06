@@ -2026,3 +2026,22 @@ implementation slice.
   JSON validation, Windows debug config, Windows full debug 99/99, WSL Arch
   Linux debug config, and WSL Arch Linux full debug 96/96. Step 332, class
   style reuse depth, is the next focused Phase C style-cascade slice.
+
+- Phase C Step 332, focused class-style reuse depth, is implemented in
+  `.worktrees/phase-c-class-style-reuse`: `StyleClassRule` stores reused class
+  ids plus a local `StyleState`, `StyleCascade::set_class_rule(...)` and
+  `class_rule(...)` expose the reusable rule boundary, and cascade resolution
+  applies reused classes depth-first with cycle protection before each class's
+  own hover/focus/active/disabled overlays. Non-template cascade bodies now
+  live in `src/ui/style_cascade.cpp` instead of the public header. Behavior
+  coverage lives in `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`,
+  structure coverage lives in `tests/architecture/ui_source_structure_test.cpp`,
+  and the parity ledger guard moves the next slice to Step 333 theme token
+  fallback. Focused Windows GREEN verification passed
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` 3/3.
+  Feature-worktree verification passed JSON validation, `git diff --check`,
+  focused public/structure gates 6/6, Windows debug config, Windows full debug
+  99/99, WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+  Step 332 is ready for feature commit and merge verification. Step 333 theme
+  token fallback is the next focused Phase C style-cascade slice.

@@ -5841,3 +5841,18 @@
   object under `build/.objs/.../linux/x86_64/debug`, avoid repeating a normal
   `xmake test` loop. Use WSL-side `xmake clean -a`, reconfigure with
   `--ccache=n`, and rerun the full WSL suite from the clean Linux build.
+
+## 2026-07-07 Phase C Step 332 Class Style Reuse Depth
+
+- Step 332 stays scoped to reusable class-style rules. It adds
+  `StyleClassRule`, `StyleCascade::set_class_rule(...)`, and
+  `StyleCascade::class_rule(...)` without adding theme token fallback,
+  inherited text style, dynamic invalidation, or pointer-active semantics.
+- Reused classes resolve depth-first before the owning class's base/state
+  overlays. Cycles are skipped through a local visiting stack so class rules can
+  be authored defensively without hanging style resolution.
+- Durable ownership is `include/cgpui/ui/style_cascade.hpp` for declarations
+  and `src/ui/style_cascade.cpp` for non-template bodies and recursion helpers.
+  Behavior coverage lives in `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp`; structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`.
