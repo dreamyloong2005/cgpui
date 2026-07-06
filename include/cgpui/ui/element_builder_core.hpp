@@ -25,6 +25,7 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder style(Style style) &&;
   [[nodiscard]] ElementBuilder hover_style(StyleOverlay overlay) &&;
   [[nodiscard]] ElementBuilder focus_style(StyleOverlay overlay) &&;
+  [[nodiscard]] ElementBuilder active_style(StyleOverlay overlay) &&;
   [[nodiscard]] ElementBuilder disabled_style(StyleOverlay overlay) &&;
   [[nodiscard]] ElementBuilder class_name(StyleClassId id) &&;
   [[nodiscard]] ElementBuilder class_name(std::string_view value) &&;

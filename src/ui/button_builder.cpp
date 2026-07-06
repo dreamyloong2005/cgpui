@@ -22,6 +22,11 @@ ButtonBuilder ButtonBuilder::focus_style(StyleOverlay overlay) && {
   return std::move(*this);
 }
 
+ButtonBuilder ButtonBuilder::active_style(StyleOverlay overlay) && {
+  style_state_.active = std::move(overlay);
+  return std::move(*this);
+}
+
 ButtonBuilder ButtonBuilder::disabled_style(StyleOverlay overlay) && {
   style_state_.disabled = std::move(overlay);
   return std::move(*this);

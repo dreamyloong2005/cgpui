@@ -582,6 +582,15 @@ expect, keeping each widget in its own module from the first version.
   `tests/architecture/ui_source_structure_test.cpp`. It merged on `master` at
   `266bc9f` and was post-merge verified with JSON validation, Windows
   full-debug 99/99, and WSL Arch Linux full-debug 96/96.
+  Step 331 adds focused active-state style cascade support: `StyleState` and
+  `StyleStateFlags` now carry `active`, `resolved_style(...)` applies hover,
+  focus, active, then disabled overlays for local and class rules before
+  inline overlays, and `ElementBuilder::active_style(...)` plus
+  `ButtonBuilder::active_style(...)` store active overlays. Behavior coverage
+  lives in `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`, with
+  structure coverage in `tests/architecture/ui_source_structure_test.cpp`.
+  This deliberately does not wire pointer-pressed active semantics; the
+  focusable/interactable band owns real active input behavior in Steps 337-342.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -861,7 +870,7 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 331 should continue Phase C element/style/layout work from the frozen
+Step 332 should continue Phase C element/style/layout work from the frozen
 Phase B public authoring boundary after the focused layout behavior band from
 Steps 319-330. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -878,8 +887,12 @@ and out-of-flow positioned child layout on `master` at `38574a2`; Step 329
 landed focused direct overlay-layer ordering through `z_order()` for
 direct-container child paint, hit-test, and event dispatch on `master` at
 `6c1bfe4`; and Step 330 landed focused nested scroll clipping through
-effective paint clip intersection on `master` at `266bc9f`. Step 331 should
-start the style cascade depth band.
+effective paint clip intersection on `master` at `266bc9f`. Step 331 adds
+focused active-state style cascade support through `StyleState::active`,
+`StyleStateFlags::active`, `ElementBuilder::active_style(...)`,
+`ButtonBuilder::active_style(...)`, and hover/focus/active/disabled overlay
+ordering. Step 332 should continue the style cascade depth band with
+class-style reuse depth.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

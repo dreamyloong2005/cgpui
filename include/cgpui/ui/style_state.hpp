@@ -9,12 +9,14 @@ struct StyleState {
   Style base;
   StyleOverlay hover;
   StyleOverlay focus;
+  StyleOverlay active;
   StyleOverlay disabled;
 };
 
 struct StyleStateFlags {
   bool hovered = false;
   bool focused = false;
+  bool active = false;
   bool disabled = false;
 };
 

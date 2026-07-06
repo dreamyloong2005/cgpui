@@ -5808,3 +5808,25 @@
   widgets, uniform-list behavior, broad layout rewrites, renderer z-buffer
   behavior, and Phase B closeout exclusions out of the slice unless that slice
   explicitly owns them.
+
+## 2026-07-07 Phase C Step 331 Style Cascade Active State
+
+- Step 331 stays scoped to active-state style cascade storage and resolution.
+  It adds `StyleState::active`, `StyleStateFlags::active`,
+  `ElementBuilder::active_style(...)`, and `ButtonBuilder::active_style(...)`
+  without adding real pointer-pressed active semantics, widget interaction
+  changes, uniform-list behavior, broad layout rewrites, renderer z-buffer
+  behavior, or Phase B closeout exclusions.
+- The active overlay resolves after hover/focus and before disabled for both
+  local style state and class style rules. Inline overlays still apply last.
+  This gives active selectors a deterministic authoring surface while leaving
+  event-driven active state to the later focusable/interactable band.
+- Durable ownership is data-only `include/cgpui/ui/style_state.hpp`, cascade
+  resolution in `include/cgpui/ui/style_cascade.hpp`, public declarations in
+  `include/cgpui/ui/element_builder_core.hpp` and
+  `include/cgpui/ui/button_builder.hpp`, and non-template builder bodies in
+  `src/ui/element_builder_style.cpp` and `src/ui/button_builder.cpp`.
+- Behavior coverage lives in `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp`; structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`; and the parity ledger
+  guard moves the next slice to Step 332 class style reuse depth.

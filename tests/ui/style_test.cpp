@@ -515,7 +515,7 @@ int test_style_overlay_defaults_to_no_overrides() {
              : 43;
 }
 
-int test_style_state_resolves_hover_focus_disabled_order() {
+int test_style_state_resolves_hover_focus_active_disabled_order() {
   cgpui::StyleState state;
   state.base = cgpui::Style{}
                    .with_background_color(cgpui::rgb(10, 10, 10))
@@ -580,6 +580,16 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_font(cgpui::FontDescriptor{.family = "Focus"})
           .with_transform(
               cgpui::AffineTransform::translation(5.0F, 6.0F));
+  state.active =
+      cgpui::StyleOverlay{}
+          .with_background_color(cgpui::rgb(70, 70, 70))
+          .with_foreground_color(cgpui::rgb(80, 80, 80))
+          .with_gap(8.0F)
+          .with_flex_grow(5.0F)
+          .with_layer(5)
+          .with_opacity(0.5F)
+          .with_transform(
+              cgpui::AffineTransform::translation(7.0F, 8.0F));
   state.disabled =
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(60, 60, 60))
@@ -664,22 +674,66 @@ int test_style_state_resolves_hover_focus_disabled_order() {
     return 45;
   }
 
+  const cgpui::Style active = cgpui::resolved_style(
+      state,
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .active = true,
+      });
+  if (!active.background_color.has_value() ||
+      active.background_color->r != 70.0F / 255.0F ||
+      !active.foreground_color.has_value() ||
+      active.foreground_color->r != 80.0F / 255.0F ||
+      active.padding.top != 4.0F || active.gap != 8.0F ||
+      active.align_items != cgpui::AlignItems::center ||
+      active.justify_content != cgpui::JustifyContent::end ||
+      active.flex_grow != 5.0F || active.flex_shrink != 3.0F ||
+      active.layer != 5 ||
+      active.position != cgpui::Position::absolute ||
+      active.inset.left != 4.0F ||
+      active.min_size.width != 30.0F ||
+      active.min_size.height != 40.0F ||
+      active.max_size.width != 150.0F ||
+      active.max_size.height != 160.0F ||
+      !active.percentage_size.width.has_value() ||
+      !active.percentage_size.height.has_value() ||
+      *active.percentage_size.width != 30.0F ||
+      *active.percentage_size.height != 40.0F ||
+      active.font.family != "Focus" || active.font_size != 18.0F ||
+      !active.box_shadow.has_value() ||
+      !same_shadow(
+          *active.box_shadow,
+          cgpui::BoxShadow{
+              .color = cgpui::rgba(10, 10, 10, 0.3F),
+              .offset = {.x = 2.0F, .y = 3.0F},
+              .blur_radius = 4.0F,
+              .spread_radius = 1.0F,
+          }) ||
+      active.opacity != 0.5F ||
+      !same_transform(
+          active.transform,
+          cgpui::AffineTransform::translation(7.0F, 8.0F))) {
+    return 48;
+  }
+
   const cgpui::Style disabled = cgpui::resolved_style(
       state,
       cgpui::StyleStateFlags{
           .hovered = true,
           .focused = true,
+          .active = true,
           .disabled = true,
       });
   if (!disabled.background_color.has_value() ||
       disabled.background_color->r != 60.0F / 255.0F ||
       !disabled.foreground_color.has_value() ||
-      disabled.foreground_color->r != 50.0F / 255.0F ||
-      disabled.padding.top != 4.0F || disabled.gap != 2.0F ||
+      disabled.foreground_color->r != 80.0F / 255.0F ||
+      disabled.padding.top != 4.0F || disabled.gap != 8.0F ||
       disabled.border_width.left != 3.0F ||
       disabled.align_items != cgpui::AlignItems::end ||
       disabled.justify_content != cgpui::JustifyContent::end ||
-      disabled.flex_grow != 2.0F || disabled.flex_shrink != 3.0F ||
+      disabled.flex_grow != 5.0F || disabled.flex_shrink != 3.0F ||
       disabled.layer != 4 ||
       disabled.position != cgpui::Position::absolute ||
       disabled.inset.left != 4.0F ||
@@ -700,7 +754,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       disabled.opacity != 0.25F ||
       !same_transform(
           disabled.transform,
-          cgpui::AffineTransform::translation(5.0F, 6.0F))) {
+          cgpui::AffineTransform::translation(7.0F, 8.0F))) {
     return 46;
   }
 
@@ -802,6 +856,9 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
                        .with_gap(4.0F)
                        .with_transform(
                            cgpui::AffineTransform::translation(2.0F, 3.0F)),
+          .active = cgpui::StyleOverlay{}
+                        .with_foreground_color(cgpui::rgb(55, 55, 55))
+                        .with_gap(5.0F),
       });
   cascade.set_class_style(
       accent_class,
@@ -816,6 +873,9 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
           .focus = cgpui::StyleOverlay{}
                        .with_background_color(cgpui::rgb(40, 40, 40))
                        .with_border_width(cgpui::edges(3.0F)),
+          .active = cgpui::StyleOverlay{}
+                        .with_background_color(cgpui::rgb(50, 50, 50))
+                        .with_opacity(0.7F),
       });
 
   cgpui::StyleClasses classes;
@@ -835,6 +895,9 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
       .hover = cgpui::StyleOverlay{}.with_gap(6.0F),
       .focus = cgpui::StyleOverlay{}.with_foreground_color(
           cgpui::rgb(120, 130, 140)),
+      .active = cgpui::StyleOverlay{}
+                    .with_foreground_color(cgpui::rgb(150, 160, 170))
+                    .with_gap(7.0F),
   };
   const cgpui::StyleOverlay inline_style =
       cgpui::StyleOverlay{}
@@ -849,17 +912,21 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
       local,
       classes,
       inline_style,
-      cgpui::StyleStateFlags{.hovered = true, .focused = true});
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .active = true,
+      });
 
   if (!resolved.background_color.has_value() ||
       resolved.background_color->r != 200.0F / 255.0F) {
     return 73;
   }
   if (!resolved.foreground_color.has_value() ||
-      resolved.foreground_color->r != 120.0F / 255.0F) {
+      resolved.foreground_color->r != 150.0F / 255.0F) {
     return 74;
   }
-  if (resolved.padding.left != 12.0F || resolved.gap != 6.0F) {
+  if (resolved.padding.left != 12.0F || resolved.gap != 7.0F) {
     return 75;
   }
   if (resolved.border_width.left != 3.0F ||
@@ -1007,7 +1074,13 @@ static_assert(std::same_as<
               cgpui::PercentageSize>);
 static_assert(std::same_as<decltype(cgpui::StyleState{}.base), cgpui::Style>);
 static_assert(std::same_as<
+              decltype(cgpui::StyleState{}.active),
+              cgpui::StyleOverlay>);
+static_assert(std::same_as<
               decltype(cgpui::StyleStateFlags{}.hovered),
+              bool>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleStateFlags{}.active),
               bool>);
 static_assert(std::equality_comparable<cgpui::StyleClassId>);
 static_assert(std::equality_comparable<cgpui::ThemeTokenId>);
@@ -1057,7 +1130,8 @@ int main() {
       result != 0) {
     return result;
   }
-  if (const int result = test_style_state_resolves_hover_focus_disabled_order();
+  if (const int result =
+          test_style_state_resolves_hover_focus_active_disabled_order();
       result != 0) {
     return result;
   }

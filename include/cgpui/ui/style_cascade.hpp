@@ -240,6 +240,9 @@ namespace detail {
   if (flags.focused) {
     style = apply_style_overlay(style, state.focus);
   }
+  if (flags.active) {
+    style = apply_style_overlay(style, state.active);
+  }
   if (flags.disabled) {
     style = apply_style_overlay(style, state.disabled);
   }
@@ -267,6 +270,9 @@ namespace detail {
     if (flags.focused) {
       style = apply_style_overlay(style, class_style->focus);
     }
+    if (flags.active) {
+      style = apply_style_overlay(style, class_style->active);
+    }
     if (flags.disabled) {
       style = apply_style_overlay(style, class_style->disabled);
     }
@@ -276,6 +282,7 @@ namespace detail {
                              .base = style,
                              .hover = local.hover,
                              .focus = local.focus,
+                             .active = local.active,
                              .disabled = local.disabled,
                          },
                          flags);

@@ -2005,3 +2005,20 @@ implementation slice.
   Post-merge verification passed JSON validation, Windows debug config,
   Windows full debug 99/99, WSL debug config, and WSL Arch Linux full debug
   96/96. Step 331 style cascade depth is the next slice.
+
+- Phase C Step 331, focused active-state style cascade support, is implemented
+  in `.worktrees/phase-c-style-cascade-state`: `StyleState` and
+  `StyleStateFlags` now carry `active`, `resolved_style(...)` applies
+  hover/focus/active/disabled overlays in order for local and class style
+  rules before inline overlays, and `ElementBuilder::active_style(...)` plus
+  `ButtonBuilder::active_style(...)` store active overlays without wiring real
+  pointer-active event semantics. Behavior coverage lives in
+  `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`, structure
+  coverage lives in `tests/architecture/ui_source_structure_test.cpp`, and the
+  parity ledger guard now moves the next slice to Step 332 class style reuse
+  depth. Focused Windows GREEN verification passed
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` 3/3. Feature-worktree verification passed
+  JSON validation, `git diff --check`, focused public/structure gates 6/6,
+  Windows full debug 99/99, WSL Arch Linux debug config, and WSL Arch Linux
+  full debug 96/96.

@@ -286,6 +286,8 @@ int main() {
       !contains(style_animation_header, "struct StyleTween") ||
       !contains(style_overlay_header, "struct StyleOverlay") ||
       !contains(style_state_header, "struct StyleState") ||
+      !contains(style_state_header, "StyleOverlay active") ||
+      !contains(style_state_header, "bool active") ||
       !contains(style_cascade_header, "class StyleCascade")) {
     return 28;
   }
@@ -1032,6 +1034,8 @@ int main() {
                 "ElementBuilder ElementBuilder::shadow(") ||
       !contains(element_builder_style_source,
                 "ElementBuilder ElementBuilder::shadow_sm()") ||
+      !contains(element_builder_style_source,
+                "ElementBuilder ElementBuilder::active_style(") ||
       !contains(style_box_source, "Style Style::with_min_size(") ||
       !contains(style_box_source, "Style Style::with_max_size(") ||
       !contains(style_box_source, "Style Style::with_percentage_size(") ||
@@ -1090,7 +1094,8 @@ int main() {
       contains(element_builder_layout_source, "ElementBuilder::text_size(") ||
       contains(element_builder_layout_source, "ElementBuilder::font_family(") ||
       contains(element_builder_layout_source, "ElementBuilder::shadow(") ||
-      contains(element_builder_layout_source, "ElementBuilder::shadow_sm(")) {
+      contains(element_builder_layout_source, "ElementBuilder::shadow_sm(") ||
+      contains(element_builder_layout_source, "ElementBuilder::active_style(")) {
     return 146;
   }
 

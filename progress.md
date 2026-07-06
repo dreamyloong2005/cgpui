@@ -12584,3 +12584,60 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 330 is complete on `master`; Step 331, the Phase C style cascade depth
   slice, is next.
+
+## 2026-07-07 Phase C Step 331 Style Cascade Active State
+
+- Continued `.worktrees/phase-c-style-cascade-state` on
+  `codex/phase-c-style-cascade-state` from
+  `ae6b911 docs: mark phase c step 330 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  corrected `.codex` skill path, and confirmed it produced no additional
+  report.
+- Baseline focused Windows gate passed:
+  `xmake f -c -m debug -P .` exited 0, and
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added behavior coverage in `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp` for active style-state storage, local/class
+  cascade order, inline-last precedence, and `ElementBuilder` /
+  `ButtonBuilder` active-style storage. RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` required the active
+  builder body to live in `src/ui/element_builder_style.cpp`. The explicit
+  `xmake build -y style_test` RED failed as expected because
+  `StyleState::active`, `StyleStateFlags::active`, and active-style APIs did
+  not exist.
+- Corrected an edit-location mistake by transferring the Step 331 patch from
+  the main worktree to `.worktrees/phase-c-style-cascade-state`, then restored
+  the main worktree to its prior clean tracked state with only the pre-existing
+  untracked `.vscode/`.
+- GREEN added `StyleState::active`, `StyleStateFlags::active`, active overlay
+  resolution after hover/focus and before disabled for local and class style
+  rules, `ElementBuilder::active_style(...)`, and
+  `ButtonBuilder::active_style(...)`. This slice does not wire real
+  pointer-active event semantics.
+- Focused Windows GREEN verification in the feature worktree passed:
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 331 active-state style
+  cascade support. Step 332 class style reuse depth is the next Phase C style
+  cascade slice after Step 331 lands on `master`.
+- Fresh feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default` passed 6/6.
+- Windows feature-worktree full debug verification passed:
+  `xmake test -P .` passed 99/99.
+- WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 331 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 332 is
+  the next Phase C class style reuse depth slice after Step 331 lands on
+  `master`.

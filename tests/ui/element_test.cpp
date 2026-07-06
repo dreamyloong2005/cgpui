@@ -792,6 +792,10 @@ int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
                               .focus_style(cgpui::StyleOverlay{}
                                                .with_foreground_color(
                                                    cgpui::rgb(30, 30, 30)))
+                              .active_style(cgpui::StyleOverlay{}
+                                                .with_foreground_color(
+                                                    cgpui::rgb(35, 35, 35))
+                                                .with_gap(7.0F))
                               .disabled_style(cgpui::StyleOverlay{}
                                                   .with_background_color(
                                                       cgpui::rgb(40, 40, 40))
@@ -812,13 +816,15 @@ int test_element_builder_style_state_overlays_are_stored_on_styled_box() {
       cgpui::StyleStateFlags{
           .hovered = true,
           .focused = true,
+          .active = true,
           .disabled = true,
       });
   if (!resolved.background_color.has_value() ||
       resolved.background_color->r != 40.0F / 255.0F ||
       !resolved.foreground_color.has_value() ||
-      resolved.foreground_color->r != 30.0F / 255.0F ||
+      resolved.foreground_color->r != 35.0F / 255.0F ||
       resolved.padding.top != 2.0F ||
+      resolved.gap != 7.0F ||
       resolved.border_width.left != 3.0F) {
     return 226;
   }
@@ -884,12 +890,16 @@ int test_element_builder_stores_style_classes_and_inline_style() {
       cgpui::StyleState{
           .base = cgpui::Style{}.with_background_color(cgpui::rgb(1, 2, 3)),
           .hover = cgpui::StyleOverlay{}.with_gap(4.0F),
+          .active = cgpui::StyleOverlay{}.with_foreground_color(
+              cgpui::rgb(2, 3, 4)),
       });
   const cgpui::Style resolved = styled->resolved_style(
       cascade,
-      cgpui::StyleStateFlags{.hovered = true});
+      cgpui::StyleStateFlags{.hovered = true, .active = true});
   return resolved.background_color.has_value() &&
                  resolved.background_color->r == 9.0F / 255.0F &&
+                 resolved.foreground_color.has_value() &&
+                 resolved.foreground_color->r == 2.0F / 255.0F &&
                  resolved.padding.left == 5.0F && resolved.gap == 4.0F
              ? 0
              : 234;
@@ -4387,6 +4397,9 @@ int test_button_widget_composes_click_focus_disabled_and_style_state() {
               cgpui::rgb(40, 50, 60)))
           .focus_style(cgpui::StyleOverlay{}.with_border_width(
               cgpui::edges(2.0F)))
+          .active_style(cgpui::StyleOverlay{}
+                            .with_background_color(cgpui::rgb(50, 60, 70))
+                            .with_opacity(0.4F))
           .disabled_style(cgpui::StyleOverlay{}.with_foreground_color(
               cgpui::rgb(120, 120, 120)))
           .child(cgpui::div().size(10.0F, 6.0F))
@@ -4407,11 +4420,16 @@ int test_button_widget_composes_click_focus_disabled_and_style_state() {
 
   const cgpui::Style resolved = cgpui::resolved_style(
       button->style_state(),
-      cgpui::StyleStateFlags{.hovered = true, .focused = true});
+      cgpui::StyleStateFlags{
+          .hovered = true,
+          .focused = true,
+          .active = true,
+      });
   if (!resolved.background_color.has_value() ||
-      resolved.background_color->r != 40.0F / 255.0F ||
+      resolved.background_color->r != 50.0F / 255.0F ||
       resolved.border_width.left != 2.0F ||
-      resolved.padding.left != 6.0F) {
+      resolved.padding.left != 6.0F ||
+      resolved.opacity != 0.4F) {
     return 343;
   }
 
