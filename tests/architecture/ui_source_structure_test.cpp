@@ -895,6 +895,7 @@ int main() {
       "src/ui/element_builder_interaction.cpp",
       "src/ui/element_builder_build.cpp",
       "src/ui/element_builder_finish.cpp",
+      "src/ui/element_layer_ordering.cpp",
       "src/ui/element_fixed_size_node.cpp",
       "src/ui/element_vertical_stack_node.cpp",
       "src/ui/element_flex_node.cpp",
@@ -926,6 +927,10 @@ int main() {
       read_source("src/ui/element_builder_style.cpp");
   const std::string element_style_nodes_source =
       read_source("src/ui/element_style_nodes.cpp");
+  const std::string element_style_paint_layout_source =
+      read_source("src/ui/element_style_paint.cpp");
+  const std::string element_layer_ordering_source =
+      read_source("src/ui/element_layer_ordering.cpp");
   const std::string style_box_source = read_source("src/ui/style_box.cpp");
   const std::string style_overlay_source =
       read_source("src/ui/style_overlay.cpp");
@@ -1052,6 +1057,12 @@ int main() {
       !contains(element_style_nodes_source, "is_positioned_out_of_flow(") ||
       !contains(element_style_nodes_source, "Position::fixed") ||
       !contains(element_style_nodes_source, "absolute_origin(output.size") ||
+      !contains(element_style_nodes_source, "hit_test_ordered_children(") ||
+      !contains(element_style_paint_layout_source, "paint_ordered_children(") ||
+      !contains(element_layer_ordering_source, "paint_ordered_children(") ||
+      !contains(element_layer_ordering_source, "hit_test_ordered_children(") ||
+      !contains(element_layer_ordering_source, "z_order()") ||
+      line_count(element_layer_ordering_source) > 140 ||
       contains(element_builder_style_source, "ElementBuilder::items_center()") ||
       contains(element_builder_style_source, "ElementBuilder::w(") ||
       contains(element_builder_style_source, "ElementBuilder::min_w(") ||
@@ -1091,6 +1102,7 @@ int main() {
       "src/ui/ui_event_kind_internal.hpp",
       "src/ui/ui_event_pointer_internal.hpp",
       "src/ui/ui_paint_internal.hpp",
+      "src/ui/element_layer_ordering.hpp",
   };
   for (const char* header : private_headers) {
     if (read_source(header).empty()) {

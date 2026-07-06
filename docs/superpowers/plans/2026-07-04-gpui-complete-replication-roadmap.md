@@ -564,6 +564,14 @@ expect, keeping each widget in its own module from the first version.
   `tests/architecture/ui_source_structure_test.cpp`. It merged on `master` at
   `38574a2` and was post-merge verified with JSON validation, Windows
   full-debug 99/99, and WSL Arch Linux full-debug 96/96.
+  Step 329 adds focused overlay-layer ordering for direct container children:
+  `src/ui/element_layer_ordering.cpp` owns stable `z_order()` sorting for
+  direct-child paint, hit-test, and event dispatch through
+  `paint_ordered_children(...)`, `hit_test_ordered_children(...)`, and
+  `event_ordered_children(...)`; `StyledElement`, flex, and vertical stack
+  containers call that private helper instead of open-coding ordering.
+  Behavior coverage lives in `tests/ui/element_test.cpp`, with structure
+  coverage in `tests/architecture/ui_source_structure_test.cpp`.
 - [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -843,7 +851,7 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 329 should continue Phase C element/style/layout work from the frozen
+Step 330 should continue Phase C element/style/layout work from the frozen
 Phase B public authoring boundary after the focused `div` vocabulary from
 Steps 319-327. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -856,8 +864,10 @@ at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
 `7b748b7`; Step 327 landed focused margin/padding shorthand vocabulary and gap
 composition coverage on `master` at `32ec5e1`; Step 328 landed focused
 absolute/fixed positioning with `Position::fixed`, `ElementBuilder::fixed()`,
-and out-of-flow positioned child layout on `master` at `38574a2`. Step 329
-should add the next focused overlay-layer slice.
+and out-of-flow positioned child layout on `master` at `38574a2`; Step 329
+adds focused direct overlay-layer ordering through `z_order()` for
+direct-container child paint, hit-test, and event dispatch. Step 330 should
+add the next focused nested scroll clipping slice.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

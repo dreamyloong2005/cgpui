@@ -1,5 +1,7 @@
 #include "ui_internal.hpp"
 
+#include "element_layer_ordering.hpp"
+
 namespace cgpui {
 
 void StyledElement::paint(PaintList& paint_list) const {
@@ -14,10 +16,8 @@ void StyledElement::paint(PaintList& paint_list) const {
                              : *bounds);
   }
   paint_styled_box_base(paint_list, bounds, base_style);
-  for (const auto& child : children_) {
-    if (child != nullptr) {
-      child->paint(paint_list);
-    }
+  for (const Element* child : paint_ordered_children(children_)) {
+    child->paint(paint_list);
   }
   if (uses_hidden_overflow_clip) {
     paint_list.pop_clip();

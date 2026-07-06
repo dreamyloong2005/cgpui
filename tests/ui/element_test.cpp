@@ -3648,6 +3648,131 @@ int test_element_tree_paints_layers_with_explicit_z_index_precedence() {
   return 0;
 }
 
+int test_styled_element_orders_direct_overlay_children_by_z_order() {
+  const cgpui::Color high_layer_color{
+      .r = 0.1F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color explicit_z_color{
+      .r = 0.2F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color stable_high_layer_color{
+      .r = 0.3F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+  const cgpui::Color low_layer_color{
+      .r = 0.4F,
+      .g = 0.0F,
+      .b = 0.0F,
+      .a = 1.0F,
+  };
+
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::div()
+          .size(20.0F, 20.0F)
+          .child(cgpui::div()
+                     .background(high_layer_color)
+                     .size(10.0F, 10.0F)
+                     .absolute()
+                     .top(0.0F)
+                     .left(0.0F)
+                     .layer(5)
+                     .build())
+          .child(cgpui::div()
+                     .background(explicit_z_color)
+                     .size(10.0F, 10.0F)
+                     .absolute()
+                     .top(0.0F)
+                     .left(0.0F)
+                     .layer(-10)
+                     .z_index(2)
+                     .build())
+          .child(cgpui::div()
+                     .background(stable_high_layer_color)
+                     .size(10.0F, 10.0F)
+                     .absolute()
+                     .top(0.0F)
+                     .left(0.0F)
+                     .layer(5)
+                     .build())
+          .child(cgpui::div()
+                     .background(low_layer_color)
+                     .size(10.0F, 10.0F)
+                     .absolute()
+                     .top(0.0F)
+                     .left(0.0F)
+                     .layer(-2)
+                     .build())
+          .build();
+
+  auto* root = dynamic_cast<cgpui::StyledElement*>(element.get());
+  if (root == nullptr || root->children().size() != 4) {
+    return 373;
+  }
+  root->children()[0]->assign_id(cgpui::ElementId{11});
+  root->children()[1]->assign_id(cgpui::ElementId{22});
+  root->children()[2]->assign_id(cgpui::ElementId{33});
+  root->children()[3]->assign_id(cgpui::ElementId{44});
+
+  const cgpui::LayoutOutput output = root->layout(cgpui::LayoutInput{});
+  if (output.size.width != 20.0F || output.size.height != 20.0F) {
+    return 374;
+  }
+
+  cgpui::PaintList paint_list;
+  root->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 4) {
+    return 375;
+  }
+  if (commands[0].solid_rect.color.r != low_layer_color.r ||
+      commands[1].solid_rect.color.r != explicit_z_color.r ||
+      commands[2].solid_rect.color.r != high_layer_color.r ||
+      commands[3].solid_rect.color.r != stable_high_layer_color.r) {
+    return 376;
+  }
+
+  const cgpui::ElementId hit = root->hit_test(cgpui::Point{.x = 1.0F, .y = 1.0F});
+  return hit == cgpui::ElementId{33} ? 0 : 377;
+}
+
+int test_styled_element_dispatches_direct_overlay_events_by_z_order() {
+  auto high_layer_child = std::make_unique<EventCountingElement>();
+  high_layer_child->set_layer(5);
+  high_layer_child->result = cgpui::EventResult::consumed_event();
+  EventCountingElement* high_layer_ptr = high_layer_child.get();
+
+  auto low_layer_child = std::make_unique<EventCountingElement>();
+  low_layer_child->set_layer(-2);
+  low_layer_child->result = cgpui::EventResult::consumed_event();
+  EventCountingElement* low_layer_ptr = low_layer_child.get();
+
+  std::vector<std::unique_ptr<cgpui::Element>> children;
+  children.push_back(std::move(high_layer_child));
+  children.push_back(std::move(low_layer_child));
+  cgpui::StyledElement root(cgpui::Style{}, std::move(children));
+
+  const cgpui::PlatformEvent event =
+      cgpui::PointerMoved{.position = {.x = 1.0F, .y = 1.0F}};
+  const cgpui::EventResult result =
+      root.handle_event(event, cgpui::ElementEventContext{});
+  if (!result.consumed || result.cancelled) {
+    return 378;
+  }
+  if (high_layer_ptr->event_count != 1 || low_layer_ptr->event_count != 0) {
+    return 379;
+  }
+
+  return 0;
+}
+
 int test_element_tree_lays_out_root_element() {
   cgpui::ElementTree tree;
   const cgpui::ElementId root_id = tree.set_root(
@@ -5097,6 +5222,16 @@ int main() {
   }
   if (const int result =
           test_element_tree_paints_layers_with_explicit_z_index_precedence();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_orders_direct_overlay_children_by_z_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_dispatches_direct_overlay_events_by_z_order();
       result != 0) {
     return result;
   }

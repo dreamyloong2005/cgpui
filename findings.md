@@ -5743,3 +5743,25 @@
   keeping nested scroll clipping, widgets, uniform-list behavior, broad layout
   rewrites, and Phase B closeout exclusions out of the slice unless that slice
   explicitly owns them.
+
+## 2026-07-07 Phase C Step 329 Overlay Layers
+
+- Step 329 stays scoped to direct overlay ordering for existing element
+  containers. It makes direct `StyledElement`, flex, and vertical-stack
+  children respect `z_order()` for paint order, hit-test order, and event
+  dispatch order without adding nested scroll clipping, widgets,
+  uniform-list behavior, broad layout rewrites, renderer z-buffer behavior, or
+  Phase B closeout exclusions.
+- Durable ownership is the private `src/ui/element_layer_ordering.hpp` /
+  `src/ui/element_layer_ordering.cpp` helper pair. Container implementations
+  in `src/ui/element_style_paint.cpp`, `src/ui/element_style_nodes.cpp`,
+  `src/ui/element_flex_node.cpp`, and
+  `src/ui/element_vertical_stack_node.cpp` call that focused helper instead of
+  open-coding child ordering.
+- Paint ordering is stable low-to-high `z_order()` with authored-order
+  tie-breaking; hit testing and event dispatch traverse high-to-low
+  `z_order()` with reverse-authored-order tie-breaking so the visually topmost
+  direct child receives input first.
+- The behavior guard is `tests/ui/element_test.cpp`; the structure guard is
+  `tests/architecture/ui_source_structure_test.cpp`; and the parity ledger
+  guard keeps the Step 330 nested scroll clipping next-slice marker in sync.

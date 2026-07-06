@@ -1,5 +1,7 @@
 #include "cgpui/ui/element_style_nodes.hpp"
 
+#include "element_layer_ordering.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <optional>
@@ -223,11 +225,8 @@ ElementId StyledElement::hit_test(Point point) const {
     }
   }
 
-  for (auto it = children_.rbegin(); it != children_.rend(); ++it) {
-    if (*it == nullptr) {
-      continue;
-    }
-    const ElementId child_hit = (*it)->hit_test(point);
+  for (const Element* child : hit_test_ordered_children(children_)) {
+    const ElementId child_hit = child->hit_test(point);
     if (child_hit.value != 0) {
       return child_hit;
     }
@@ -238,11 +237,11 @@ ElementId StyledElement::hit_test(Point point) const {
 EventResult StyledElement::handle_event(
     const PlatformEvent& event,
     const ElementEventContext& context) {
-  for (auto it = children_.rbegin(); it != children_.rend(); ++it) {
-    if (*it == nullptr || !(*it)->enabled()) {
+  for (Element* child : event_ordered_children(children_)) {
+    if (!child->enabled()) {
       continue;
     }
-    const EventResult result = (*it)->handle_event(event, context);
+    const EventResult result = child->handle_event(event, context);
     if (result.consumed || result.cancelled) {
       return result;
     }

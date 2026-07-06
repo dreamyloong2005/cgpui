@@ -12479,3 +12479,34 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 328 is complete on `master`; Step 329, the focused Phase C
   overlay-layer slice, is next.
+
+## 2026-07-07 Phase C Step 329 Overlay Layers
+
+- Continued `.worktrees/phase-c-overlay-layers` on
+  `codex/phase-c-overlay-layers` from
+  `b869eff docs: mark phase c step 328 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, and ran the planning-with-files session catchup helper. The
+  first catchup attempt used the wrong skill path and failed with file not
+  found; the corrected `C:\Users\dreamyloong\.codex\skills\planning-with-files`
+  script path exited 0 with no additional report.
+- Removed temporary `std::cerr` overlay paint-order debug output and the
+  temporary `<iostream>` include from `tests/ui/element_test.cpp`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, `task_plan.md`, and `findings.md` with Step 329 direct
+  overlay child ordering. Step 330 is the next focused Phase C nested scroll
+  clipping slice after Step 329 lands on `master`.
+- Fresh feature-worktree full verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/structure gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  99/99, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 329 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 330 is
+  the next focused Phase C nested scroll clipping slice after Step 329 lands
+  on `master`.

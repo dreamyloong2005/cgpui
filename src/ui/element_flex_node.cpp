@@ -1,5 +1,7 @@
 #include "cgpui/ui/element_layout_nodes.hpp"
 
+#include "element_layer_ordering.hpp"
+
 #include <optional>
 #include <utility>
 
@@ -51,9 +53,8 @@ ElementId FlexElement::hit_test(Point point) const {
     return {};
   }
 
-  for (auto iterator = children_.rbegin(); iterator != children_.rend();
-       ++iterator) {
-    const ElementId hit = (*iterator)->hit_test(point);
+  for (const Element* child : hit_test_ordered_children(children_)) {
+    const ElementId hit = child->hit_test(point);
     if (hit.value != 0) {
       return hit;
     }
