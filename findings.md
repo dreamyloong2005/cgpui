@@ -5672,3 +5672,15 @@
   `tests/ui/element_test.cpp`; the structure guard is
   `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
   guard keeps the Step 327 next-slice marker in sync.
+
+## 2026-07-07 Phase C Step 326 Merge
+
+- Step 326 is merged on `master` at
+  `7b748b7 feat: add div percentage sizing` and post-merge verified with
+  Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux full
+  debug 96/96.
+- Step 327 should continue Phase C with focused margins, padding, and gaps
+  behavior. Keep percentage sizing complete as a finite-parent-size layer, and
+  keep percentage margins/padding/gaps, widgets, uniform-list behavior,
+  flex-wrap, fixed/absolute positioning rewrites, and Phase B closeout
+  exclusions out of Step 327 unless that slice explicitly owns them.

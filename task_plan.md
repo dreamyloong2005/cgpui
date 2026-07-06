@@ -1947,12 +1947,13 @@ implementation slice.
   Windows full debug 99/99, and WSL Arch Linux full debug 96/96. Post-merge
   verification passed JSON validation, Windows full debug 99/99, and WSL Arch
   Linux full debug 96/96. Phase C Step 326, `div` percentage-like sizing, is
-  in progress in `.worktrees/phase-c-percentage-sizing`: `PercentageSize`,
+  merged on `master` at `7b748b7`: `PercentageSize`,
   `Style::percentage_size`, `StyleOverlay::percentage_size`,
   `ElementBuilder::size_pct(...)`, `w_pct(...)`, and `h_pct(...)` resolve
   finite parent max constraints while unconstrained parents fall back to
   content/preferred size. Feature-worktree verification passed JSON validation,
   `git diff --check`, focused public/structure gates 6/6, Windows full debug
-  99/99, and WSL Arch Linux full debug 96/96. Step 326 is ready for feature
-  commit and merge verification. Step 327 is the next focused Phase C margins,
-  padding, and gaps slice.
+  99/99, and WSL Arch Linux full debug 96/96. Post-merge verification passed
+  JSON validation, Windows full debug 99/99, and WSL Arch Linux full debug
+  96/96. Step 327 is the next focused Phase C margins, padding, and gaps
+  slice.

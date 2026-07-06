@@ -12354,3 +12354,20 @@
   worktree. It is ready for feature commit and merge verification. Step 327 is
   the next Phase C margins, padding, and gaps slice after Step 326 lands on
   `master`.
+
+## 2026-07-07 Phase C Step 326 Merge
+
+- Committed `codex/phase-c-percentage-sizing` as
+  `7b748b7 feat: add div percentage sizing`.
+- Fast-forward merged the branch into `master` at `7b748b7`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- After the merge-note documentation edit, JSON validation and `git diff
+  --check` passed with only expected LF-to-CRLF warnings, Windows focused docs
+  guards passed 2/2, and WSL Arch Linux focused docs guards passed 2/2.
+- Step 326 is complete on `master`; Step 327, the focused Phase C margins,
+  padding, and gaps slice, is next.
