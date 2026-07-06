@@ -959,6 +959,34 @@ int main() {
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::h_pct(") ||
       !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::p(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::px(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::py(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::pt(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::pr(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::pb(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::pl(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::m(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::mx(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::my(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::mt(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::mr(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::mb(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::ml(") ||
+      !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::border_1()") ||
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::z_index(") ||
@@ -1022,6 +1050,20 @@ int main() {
       contains(element_builder_style_source, "ElementBuilder::max_w(") ||
       contains(element_builder_style_source, "ElementBuilder::w_pct(") ||
       contains(element_builder_style_source, "ElementBuilder::h_pct(") ||
+      contains(element_builder_style_source, "ElementBuilder::p(") ||
+      contains(element_builder_style_source, "ElementBuilder::px(") ||
+      contains(element_builder_style_source, "ElementBuilder::py(") ||
+      contains(element_builder_style_source, "ElementBuilder::pt(") ||
+      contains(element_builder_style_source, "ElementBuilder::pr(") ||
+      contains(element_builder_style_source, "ElementBuilder::pb(") ||
+      contains(element_builder_style_source, "ElementBuilder::pl(") ||
+      contains(element_builder_style_source, "ElementBuilder::m(") ||
+      contains(element_builder_style_source, "ElementBuilder::mx(") ||
+      contains(element_builder_style_source, "ElementBuilder::my(") ||
+      contains(element_builder_style_source, "ElementBuilder::mt(") ||
+      contains(element_builder_style_source, "ElementBuilder::mr(") ||
+      contains(element_builder_style_source, "ElementBuilder::mb(") ||
+      contains(element_builder_style_source, "ElementBuilder::ml(") ||
       contains(element_builder_style_source, "ElementBuilder::z_index(") ||
       contains(element_builder_layout_source, "ElementBuilder::bg(") ||
       contains(element_builder_layout_source, "ElementBuilder::opacity(") ||

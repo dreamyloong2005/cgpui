@@ -5684,3 +5684,21 @@
   keep percentage margins/padding/gaps, widgets, uniform-list behavior,
   flex-wrap, fixed/absolute positioning rewrites, and Phase B closeout
   exclusions out of Step 327 unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 327 Margin Padding Gap Shorthands
+
+- Step 327 stays scoped to authoring shorthand over existing
+  `Style::padding`, `Style::margin`, and `StyledElement::layout` gap
+  composition. It adds `ElementBuilder::p(...)`, `px(...)`, `py(...)`,
+  `pt(...)`, `pr(...)`, `pb(...)`, `pl(...)`, `m(...)`, `mx(...)`,
+  `my(...)`, `mt(...)`, `mr(...)`, `mb(...)`, and `ml(...)` without adding
+  percentage margins/padding/gaps, flex-wrap, widgets, uniform-list behavior,
+  fixed/absolute positioning rewrites, or Phase B closeout exclusions.
+- Durable ownership is `include/cgpui/ui/element_builder_core.hpp` for public
+  declarations and `src/ui/element_builder_layout.cpp` for non-template
+  bodies. The helpers preserve opposite-axis and opposite-edge values by
+  copying current edge storage before forwarding through `padding(...)` or
+  `margin(...)`.
+- The behavior guard is `tests/ui/element_test.cpp`; the structure guard is
+  `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
+  guard keeps the Step 328 next-slice marker in sync.

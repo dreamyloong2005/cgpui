@@ -577,6 +577,70 @@ int test_element_builder_percentage_sizing_helpers_map_to_existing_style() {
                                                                     : 594;
 }
 
+int test_element_builder_margin_padding_gap_shorthands_map_to_existing_layout() {
+  cgpui::AnyElement axis_element =
+      cgpui::into_element(cgpui::div()
+                              .p(1.0F)
+                              .px(2.0F)
+                              .py(3.0F)
+                              .m(4.0F)
+                              .mx(5.0F)
+                              .my(6.0F));
+  const auto* axis_styled =
+      dynamic_cast<const cgpui::StyledElement*>(axis_element.get());
+  if (axis_styled == nullptr) {
+    return 597;
+  }
+  const cgpui::Style& axis_style = axis_styled->style();
+  if (axis_style.padding.top != 3.0F ||
+      axis_style.padding.right != 2.0F ||
+      axis_style.padding.bottom != 3.0F ||
+      axis_style.padding.left != 2.0F ||
+      axis_style.margin.top != 6.0F || axis_style.margin.right != 5.0F ||
+      axis_style.margin.bottom != 6.0F ||
+      axis_style.margin.left != 5.0F) {
+    return 598;
+  }
+
+  cgpui::AnyElement edge_element =
+      cgpui::into_element(cgpui::div()
+                              .p(1.0F)
+                              .pt(3.0F)
+                              .pr(6.0F)
+                              .pb(4.0F)
+                              .pl(5.0F)
+                              .m(7.0F)
+                              .mt(9.0F)
+                              .mr(8.0F)
+                              .mb(10.0F)
+                              .ml(8.0F)
+                              .gap(11.0F)
+                              .child(cgpui::div().size(20.0F, 5.0F))
+                              .child(cgpui::div().size(10.0F, 7.0F)));
+  const auto* edge_styled =
+      dynamic_cast<const cgpui::StyledElement*>(edge_element.get());
+  if (edge_styled == nullptr || edge_styled->children().size() != 2) {
+    return 599;
+  }
+
+  const cgpui::LayoutOutput output = edge_element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 47.0F || output.size.height != 49.0F) {
+    return 600;
+  }
+
+  const std::optional<cgpui::Rect> first_bounds =
+      edge_styled->children()[0]->layout_bounds();
+  const std::optional<cgpui::Rect> second_bounds =
+      edge_styled->children()[1]->layout_bounds();
+  return first_bounds.has_value() && second_bounds.has_value() &&
+                 first_bounds->origin.x == 13.0F &&
+                 first_bounds->origin.y == 12.0F &&
+                 second_bounds->origin.x == 13.0F &&
+                 second_bounds->origin.y == 28.0F
+             ? 0
+             : 601;
+}
+
 int test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_existing_style() {
   cgpui::AnyElement positioned_element =
       cgpui::into_element(cgpui::div()
@@ -4923,6 +4987,11 @@ int main() {
   }
   if (const int result =
           test_styled_element_percentage_size_falls_back_without_finite_parent();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_element_builder_margin_padding_gap_shorthands_map_to_existing_layout();
       result != 0) {
     return result;
   }

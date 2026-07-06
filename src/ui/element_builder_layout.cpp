@@ -91,9 +91,93 @@ ElementBuilder ElementBuilder::padding(EdgeSizes edges) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::p(float value) && {
+  return std::move(*this).padding(edges(value));
+}
+
+ElementBuilder ElementBuilder::px(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.padding;
+  edge_sizes.left = value;
+  edge_sizes.right = value;
+  return std::move(*this).padding(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::py(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.padding;
+  edge_sizes.top = value;
+  edge_sizes.bottom = value;
+  return std::move(*this).padding(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::pt(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.padding;
+  edge_sizes.top = value;
+  return std::move(*this).padding(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::pr(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.padding;
+  edge_sizes.right = value;
+  return std::move(*this).padding(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::pb(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.padding;
+  edge_sizes.bottom = value;
+  return std::move(*this).padding(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::pl(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.padding;
+  edge_sizes.left = value;
+  return std::move(*this).padding(edge_sizes);
+}
+
 ElementBuilder ElementBuilder::margin(EdgeSizes edges) && {
   style_state_.base = style_state_.base.with_margin(edges);
   return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::m(float value) && {
+  return std::move(*this).margin(edges(value));
+}
+
+ElementBuilder ElementBuilder::mx(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.margin;
+  edge_sizes.left = value;
+  edge_sizes.right = value;
+  return std::move(*this).margin(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::my(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.margin;
+  edge_sizes.top = value;
+  edge_sizes.bottom = value;
+  return std::move(*this).margin(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::mt(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.margin;
+  edge_sizes.top = value;
+  return std::move(*this).margin(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::mr(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.margin;
+  edge_sizes.right = value;
+  return std::move(*this).margin(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::mb(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.margin;
+  edge_sizes.bottom = value;
+  return std::move(*this).margin(edge_sizes);
+}
+
+ElementBuilder ElementBuilder::ml(float value) && {
+  EdgeSizes edge_sizes = style_state_.base.margin;
+  edge_sizes.left = value;
+  return std::move(*this).margin(edge_sizes);
 }
 
 ElementBuilder ElementBuilder::border_width(EdgeSizes edges) && {

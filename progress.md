@@ -12371,3 +12371,40 @@
   guards passed 2/2, and WSL Arch Linux focused docs guards passed 2/2.
 - Step 326 is complete on `master`; Step 327, the focused Phase C margins,
   padding, and gaps slice, is next.
+
+## 2026-07-07 Phase C Step 327 Margin Padding Gap Shorthands
+
+- Created `.worktrees/phase-c-margins-padding-gaps` on
+  `codex/phase-c-margins-padding-gaps` from
+  `1cb8a96 docs: mark phase c step 326 merged`.
+- Baseline focused Windows gate passed:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added behavior coverage in `tests/ui/element_test.cpp` for
+  `p(...)`, `px(...)`, `py(...)`, `pt(...)`, `pr(...)`, `pb(...)`,
+  `pl(...)`, `m(...)`, `mx(...)`, `my(...)`, `mt(...)`, `mr(...)`,
+  `mb(...)`, and `ml(...)` composing with existing `gap(...)`; explicit
+  `xmake build -y element_test` failed as expected because
+  `ElementBuilder` did not have `p(...)`. RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` failed as expected because
+  the helpers were not in `src/ui/element_builder_layout.cpp`.
+- GREEN added declarations in `include/cgpui/ui/element_builder_core.hpp` and
+  helper bodies in `src/ui/element_builder_layout.cpp`, forwarding through
+  existing `padding(...)` and `margin(...)` storage while preserving
+  non-targeted edges. It does not add percentage margins/padding/gaps,
+  flex-wrap, widget behavior, uniform-list behavior, fixed/absolute
+  positioning rewrites, or Phase B closeout exclusions.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  passed 2/2.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 327 margin/padding
+  shorthand vocabulary. Step 328 is the next focused Phase C
+  absolute/fixed-positioning slice after Step 327 lands on `master`.
+- Fresh feature-worktree WSL full verification passed:
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Final feature-worktree pre-commit verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and focused public/structure gates passed 6/6.
