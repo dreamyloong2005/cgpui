@@ -35,6 +35,12 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder size(float width, float height) &&;
   [[nodiscard]] ElementBuilder w(float width) &&;
   [[nodiscard]] ElementBuilder h(float height) &&;
+  [[nodiscard]] ElementBuilder min_size(Size size) &&;
+  [[nodiscard]] ElementBuilder max_size(Size size) &&;
+  [[nodiscard]] ElementBuilder min_w(float width) &&;
+  [[nodiscard]] ElementBuilder min_h(float height) &&;
+  [[nodiscard]] ElementBuilder max_w(float width) &&;
+  [[nodiscard]] ElementBuilder max_h(float height) &&;
   [[nodiscard]] ElementBuilder padding(EdgeSizes edges) &&;
   [[nodiscard]] ElementBuilder margin(EdgeSizes edges) &&;
   [[nodiscard]] ElementBuilder background(Color color) &&;

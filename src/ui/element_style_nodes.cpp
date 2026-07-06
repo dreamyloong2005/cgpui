@@ -6,6 +6,28 @@
 
 namespace cgpui {
 
+namespace {
+
+[[nodiscard]] LayoutConstraints merge_style_constraints(
+    LayoutConstraints constraints,
+    const Style& style) {
+  constraints.min_size.width =
+      std::max(constraints.min_size.width, style.min_size.width);
+  constraints.min_size.height =
+      std::max(constraints.min_size.height, style.min_size.height);
+  constraints.max_size.width =
+      std::min(constraints.max_size.width, style.max_size.width);
+  constraints.max_size.height =
+      std::min(constraints.max_size.height, style.max_size.height);
+  constraints.max_size.width =
+      std::max(constraints.max_size.width, constraints.min_size.width);
+  constraints.max_size.height =
+      std::max(constraints.max_size.height, constraints.min_size.height);
+  return constraints;
+}
+
+} // namespace
+
 StyledElement::StyledElement(Style style, std::unique_ptr<Element> child)
     : style_state_(StyleState{.base = std::move(style)}) {
   if (child != nullptr) {
@@ -124,7 +146,9 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
                 base_style.margin.bottom,
   };
   const LayoutOutput output{
-      .size = constrain_size(preferred, input.constraints),
+      .size = constrain_size(
+          preferred,
+          merge_style_constraints(input.constraints, base_style)),
   };
   set_layout_bounds(Rect{
       .origin = output.origin,

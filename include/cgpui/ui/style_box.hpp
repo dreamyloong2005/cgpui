@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/style_values.hpp"
 
+#include <limits>
 #include <optional>
 
 namespace cgpui {
@@ -14,6 +15,11 @@ struct Style {
   std::optional<Rect> clip_rect;
   FontDescriptor font;
   Size preferred_size;
+  Size min_size;
+  Size max_size{
+      .width = std::numeric_limits<float>::infinity(),
+      .height = std::numeric_limits<float>::infinity(),
+  };
   EdgeSizes padding;
   EdgeSizes margin;
   EdgeSizes border_width;
@@ -35,6 +41,8 @@ struct Style {
   [[nodiscard]] Style with_background_color(Color color) const;
   [[nodiscard]] Style with_foreground_color(Color color) const;
   [[nodiscard]] Style with_preferred_size(Size size) const;
+  [[nodiscard]] Style with_min_size(Size size) const;
+  [[nodiscard]] Style with_max_size(Size size) const;
   [[nodiscard]] Style with_padding(EdgeSizes edges) const;
   [[nodiscard]] Style with_margin(EdgeSizes edges) const;
   [[nodiscard]] Style with_border_width(EdgeSizes edges) const;

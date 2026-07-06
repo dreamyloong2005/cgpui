@@ -1936,4 +1936,12 @@ implementation slice.
   with only expected LF-to-CRLF warnings, focused public/structure gates 6/6,
   Windows full debug 99/99, and WSL Arch Linux full debug 96/96. Post-merge
   verification passed JSON validation, Windows full debug 99/99, and WSL Arch
-  Linux full debug 96/96. Step 325 is the next Phase C layout-constraint slice.
+  Linux full debug 96/96. Phase C Step 325, `div` layout constraints, is
+  implemented in `.worktrees/phase-c-layout-constraints`: `Style` and
+  `StyleOverlay` store min/max size constraints, `ElementBuilder` exposes
+  `min_size(...)`, `max_size(...)`, `min_w(...)`, `min_h(...)`, `max_w(...)`,
+  and `max_h(...)`, and `StyledElement::layout` merges authored constraints
+  with external `LayoutInput` constraints before the existing clamp path.
+  Focused Windows GREEN verification passed 3/3; full verification and merge
+  closeout are pending. Step 326 is the next Phase C percentage-like sizing
+  slice after Step 325 lands on `master`.

@@ -12257,3 +12257,39 @@
   guards passed 2/2, and WSL Arch Linux focused docs guards passed 2/2.
 - Step 324 is complete on `master`; Step 325, the next Phase C
   layout-constraint slice, is next.
+
+## 2026-07-07 Phase C Step 325 Layout Constraints
+
+- Continued `.worktrees/phase-c-layout-constraints` on
+  `codex/phase-c-layout-constraints` from
+  `d29b506 docs: mark phase c step 324 merged`.
+- RED added style/cascade storage coverage in `tests/ui/style_test.cpp`,
+  builder and layout clamp coverage in `tests/ui/element_test.cpp`, and
+  module-boundary coverage in `tests/architecture/ui_source_structure_test.cpp`.
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` failed as expected because `Style::min_size`,
+  `Style::max_size`, `StyleOverlay::min_size`, `StyleOverlay::max_size`,
+  `with_min_size(...)`, `with_max_size(...)`, and `ElementBuilder::min_w(...)`
+  / `max_h(...)` did not exist.
+- GREEN added min/max style storage, overlay storage, cascade propagation,
+  `ElementBuilder` min/max helpers in `src/ui/element_builder_layout.cpp`, and
+  `StyledElement::layout` merging of authored constraints with external
+  `LayoutInput` constraints before the existing clamp path.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 325 layout constraints.
+  Step 326 is the next Phase C percentage-like sizing slice after Step 325
+  lands on `master`.
+- Fresh feature-worktree full verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/ledger gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  99/99, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 325 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 326 is
+  the next Phase C percentage-like sizing slice after Step 325 lands on
+  `master`.

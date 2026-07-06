@@ -22,6 +22,18 @@ Style Style::with_preferred_size(Size size) const {
   return style;
 }
 
+Style Style::with_min_size(Size size) const {
+  Style style = *this;
+  style.min_size = size;
+  return style;
+}
+
+Style Style::with_max_size(Size size) const {
+  Style style = *this;
+  style.max_size = size;
+  return style;
+}
+
 Style Style::with_padding(EdgeSizes edges) const {
   Style style = *this;
   style.padding = edges;

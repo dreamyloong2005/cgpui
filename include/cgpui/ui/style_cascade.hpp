@@ -64,6 +64,12 @@ namespace detail {
   if (!same_size(style.preferred_size, defaults.preferred_size)) {
     overlay.preferred_size = style.preferred_size;
   }
+  if (!same_size(style.min_size, defaults.min_size)) {
+    overlay.min_size = style.min_size;
+  }
+  if (!same_size(style.max_size, defaults.max_size)) {
+    overlay.max_size = style.max_size;
+  }
   if (!same_edges(style.padding, defaults.padding)) {
     overlay.padding = style.padding;
   }
@@ -143,6 +149,12 @@ namespace detail {
   }
   if (overlay.preferred_size.has_value()) {
     style.preferred_size = *overlay.preferred_size;
+  }
+  if (overlay.min_size.has_value()) {
+    style.min_size = *overlay.min_size;
+  }
+  if (overlay.max_size.has_value()) {
+    style.max_size = *overlay.max_size;
   }
   if (overlay.padding.has_value()) {
     style.padding = *overlay.padding;

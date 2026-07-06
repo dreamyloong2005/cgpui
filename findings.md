@@ -5620,3 +5620,22 @@
 - Step 325 should continue Phase C into layout constraints while keeping the
   Step 324 renderer-geometry omission deliberate: shadow paint commands remain
   observable metadata until a later renderer slice owns actual shadow geometry.
+
+## 2026-07-07 Phase C Step 325 Layout Constraints
+
+- Step 325 stays scoped to public min/max layout constraints over the existing
+  `LayoutConstraints` clamp path. It adds style storage and authoring helpers,
+  not percentage sizing, flex-wrap, absolute/fixed-positioning rewrites,
+  widget behavior, uniform-list behavior, or Phase B closeout exclusions.
+- Durable ownership is split by module: `Style::min_size` /
+  `Style::max_size` and mutators live in `include/cgpui/ui/style_box.hpp` and
+  `src/ui/style_box.cpp`; overlay storage/mutators live in
+  `include/cgpui/ui/style_overlay.hpp` and `src/ui/style_overlay.cpp`;
+  cascade propagation stays in `include/cgpui/ui/style_cascade.hpp`;
+  `ElementBuilder::min_size(...)`, `max_size(...)`, `min_w(...)`, `min_h(...)`,
+  `max_w(...)`, and `max_h(...)` live in `src/ui/element_builder_layout.cpp`;
+  and `StyledElement::layout` owns the authored/external constraint merge.
+- The behavior guards are `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp`; the structure guard is
+  `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
+  guard keeps the Step 326 next-slice marker in sync.

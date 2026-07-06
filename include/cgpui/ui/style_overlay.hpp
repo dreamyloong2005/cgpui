@@ -13,6 +13,8 @@ struct StyleOverlay {
   std::optional<BoxShadow> box_shadow;
   std::optional<Rect> clip_rect;
   std::optional<Size> preferred_size;
+  std::optional<Size> min_size;
+  std::optional<Size> max_size;
   std::optional<EdgeSizes> padding;
   std::optional<EdgeSizes> margin;
   std::optional<EdgeSizes> border_width;
@@ -35,6 +37,8 @@ struct StyleOverlay {
   [[nodiscard]] StyleOverlay with_background_color(Color color) const;
   [[nodiscard]] StyleOverlay with_foreground_color(Color color) const;
   [[nodiscard]] StyleOverlay with_preferred_size(Size size) const;
+  [[nodiscard]] StyleOverlay with_min_size(Size size) const;
+  [[nodiscard]] StyleOverlay with_max_size(Size size) const;
   [[nodiscard]] StyleOverlay with_padding(EdgeSizes edges) const;
   [[nodiscard]] StyleOverlay with_margin(EdgeSizes edges) const;
   [[nodiscard]] StyleOverlay with_border_width(EdgeSizes edges) const;

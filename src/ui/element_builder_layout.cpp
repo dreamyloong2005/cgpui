@@ -34,6 +34,40 @@ ElementBuilder ElementBuilder::h(float height) && {
   return std::move(*this).size(size);
 }
 
+ElementBuilder ElementBuilder::min_size(Size size) && {
+  style_state_.base = style_state_.base.with_min_size(size);
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::max_size(Size size) && {
+  style_state_.base = style_state_.base.with_max_size(size);
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::min_w(float width) && {
+  Size size = style_state_.base.min_size;
+  size.width = width;
+  return std::move(*this).min_size(size);
+}
+
+ElementBuilder ElementBuilder::min_h(float height) && {
+  Size size = style_state_.base.min_size;
+  size.height = height;
+  return std::move(*this).min_size(size);
+}
+
+ElementBuilder ElementBuilder::max_w(float width) && {
+  Size size = style_state_.base.max_size;
+  size.width = width;
+  return std::move(*this).max_size(size);
+}
+
+ElementBuilder ElementBuilder::max_h(float height) && {
+  Size size = style_state_.base.max_size;
+  size.height = height;
+  return std::move(*this).max_size(size);
+}
+
 ElementBuilder ElementBuilder::padding(EdgeSizes edges) && {
   style_state_.base = style_state_.base.with_padding(edges);
   return std::move(*this);

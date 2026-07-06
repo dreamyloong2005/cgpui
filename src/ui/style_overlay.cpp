@@ -22,6 +22,18 @@ StyleOverlay StyleOverlay::with_preferred_size(Size size) const {
   return overlay;
 }
 
+StyleOverlay StyleOverlay::with_min_size(Size size) const {
+  StyleOverlay overlay = *this;
+  overlay.min_size = size;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_max_size(Size size) const {
+  StyleOverlay overlay = *this;
+  overlay.max_size = size;
+  return overlay;
+}
+
 StyleOverlay StyleOverlay::with_padding(EdgeSizes edges) const {
   StyleOverlay overlay = *this;
   overlay.padding = edges;
