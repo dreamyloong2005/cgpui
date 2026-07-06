@@ -20,6 +20,7 @@ struct Style {
       .width = std::numeric_limits<float>::infinity(),
       .height = std::numeric_limits<float>::infinity(),
   };
+  PercentageSize percentage_size;
   EdgeSizes padding;
   EdgeSizes margin;
   EdgeSizes border_width;
@@ -43,6 +44,9 @@ struct Style {
   [[nodiscard]] Style with_preferred_size(Size size) const;
   [[nodiscard]] Style with_min_size(Size size) const;
   [[nodiscard]] Style with_max_size(Size size) const;
+  [[nodiscard]] Style with_percentage_size(PercentageSize size) const;
+  [[nodiscard]] Style with_width_percent(float percent) const;
+  [[nodiscard]] Style with_height_percent(float percent) const;
   [[nodiscard]] Style with_padding(EdgeSizes edges) const;
   [[nodiscard]] Style with_margin(EdgeSizes edges) const;
   [[nodiscard]] Style with_border_width(EdgeSizes edges) const;

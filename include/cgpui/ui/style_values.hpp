@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string>
 
 namespace cgpui {
@@ -160,6 +161,11 @@ struct EdgeSizes {
         .left = left,
     };
   }
+};
+
+struct PercentageSize {
+  std::optional<float> width;
+  std::optional<float> height;
 };
 
 [[nodiscard]] constexpr EdgeSizes edges(float value) {

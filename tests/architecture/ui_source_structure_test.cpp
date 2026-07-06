@@ -953,6 +953,12 @@ int main() {
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::max_h(") ||
       !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::size_pct(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::w_pct(") ||
+      !contains(element_builder_layout_source,
+                "ElementBuilder ElementBuilder::h_pct(") ||
+      !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::border_1()") ||
       !contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::z_index(") ||
@@ -990,11 +996,20 @@ int main() {
                 "ElementBuilder ElementBuilder::shadow_sm()") ||
       !contains(style_box_source, "Style Style::with_min_size(") ||
       !contains(style_box_source, "Style Style::with_max_size(") ||
+      !contains(style_box_source, "Style Style::with_percentage_size(") ||
+      !contains(style_box_source, "Style Style::with_width_percent(") ||
+      !contains(style_box_source, "Style Style::with_height_percent(") ||
       !contains(style_box_source, "Style Style::with_box_shadow(") ||
       !contains(style_overlay_source,
                 "StyleOverlay StyleOverlay::with_min_size(") ||
       !contains(style_overlay_source,
                 "StyleOverlay StyleOverlay::with_max_size(") ||
+      !contains(style_overlay_source,
+                "StyleOverlay StyleOverlay::with_percentage_size(") ||
+      !contains(style_overlay_source,
+                "StyleOverlay StyleOverlay::with_width_percent(") ||
+      !contains(style_overlay_source,
+                "StyleOverlay StyleOverlay::with_height_percent(") ||
       !contains(style_overlay_source,
                 "StyleOverlay StyleOverlay::with_box_shadow(") ||
       !contains(shadow_paint_source, "PaintList::draw_box_shadow(") ||
@@ -1005,6 +1020,8 @@ int main() {
       contains(element_builder_style_source, "ElementBuilder::w(") ||
       contains(element_builder_style_source, "ElementBuilder::min_w(") ||
       contains(element_builder_style_source, "ElementBuilder::max_w(") ||
+      contains(element_builder_style_source, "ElementBuilder::w_pct(") ||
+      contains(element_builder_style_source, "ElementBuilder::h_pct(") ||
       contains(element_builder_style_source, "ElementBuilder::z_index(") ||
       contains(element_builder_layout_source, "ElementBuilder::bg(") ||
       contains(element_builder_layout_source, "ElementBuilder::opacity(") ||

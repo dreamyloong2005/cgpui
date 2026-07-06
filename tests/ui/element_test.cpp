@@ -547,6 +547,36 @@ int test_element_builder_layout_constraint_vocabulary_helpers_map_to_existing_st
                                                                    : 589;
 }
 
+int test_element_builder_percentage_sizing_helpers_map_to_existing_style() {
+  cgpui::AnyElement element =
+      cgpui::into_element(cgpui::div()
+                              .size_pct(25.0F, 50.0F)
+                              .w_pct(75.0F)
+                              .h_pct(80.0F));
+  const auto* styled = dynamic_cast<const cgpui::StyledElement*>(element.get());
+  if (styled == nullptr) {
+    return 592;
+  }
+
+  const cgpui::PercentageSize& percentage_size =
+      styled->style().percentage_size;
+  if (!percentage_size.width.has_value() ||
+      !percentage_size.height.has_value() ||
+      *percentage_size.width != 75.0F ||
+      *percentage_size.height != 80.0F) {
+    return 593;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .max_size = {.width = 200.0F, .height = 300.0F},
+          },
+  });
+  return output.size.width == 150.0F && output.size.height == 240.0F ? 0
+                                                                    : 594;
+}
+
 int test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_existing_style() {
   cgpui::AnyElement positioned_element =
       cgpui::into_element(cgpui::div()
@@ -3146,6 +3176,34 @@ int test_styled_element_layout_combines_author_and_external_constraints() {
              : 591;
 }
 
+int test_styled_element_percentage_size_falls_back_without_finite_parent() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::div()
+          .w_pct(50.0F)
+          .h_pct(25.0F)
+          .child(std::make_unique<cgpui::FixedSizeElement>(
+              cgpui::Size{.width = 40.0F, .height = 20.0F}))
+          .build();
+
+  const cgpui::LayoutOutput unconstrained =
+      element->layout(cgpui::LayoutInput{});
+  if (unconstrained.size.width != 40.0F ||
+      unconstrained.size.height != 20.0F) {
+    return 595;
+  }
+
+  const cgpui::LayoutOutput constrained = element->layout(cgpui::LayoutInput{
+      .constraints =
+          {
+              .max_size = {.width = 200.0F, .height = 400.0F},
+          },
+  });
+  return constrained.size.width == 100.0F &&
+                 constrained.size.height == 100.0F
+             ? 0
+             : 596;
+}
+
 int test_element_tree_paints_root_and_children_in_tree_order() {
   cgpui::ElementTree tree;
   const cgpui::Color root_color{
@@ -4495,6 +4553,11 @@ int main() {
     return result;
   }
   if (const int result =
+          test_element_builder_percentage_sizing_helpers_map_to_existing_style();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
           test_element_builder_overflow_opacity_position_vocabulary_helpers_map_to_existing_style();
       result != 0) {
     return result;
@@ -4855,6 +4918,11 @@ int main() {
   }
   if (const int result =
           test_styled_element_layout_combines_author_and_external_constraints();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_styled_element_percentage_size_falls_back_without_finite_parent();
       result != 0) {
     return result;
   }

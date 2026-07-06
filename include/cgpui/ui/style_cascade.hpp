@@ -53,6 +53,12 @@ namespace detail {
          lhs.bottom_left == rhs.bottom_left;
 }
 
+[[nodiscard]] inline bool same_percentage_size(
+    const PercentageSize& lhs,
+    const PercentageSize& rhs) {
+  return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
 [[nodiscard]] inline StyleOverlay style_base_overlay(const Style& style) {
   const Style defaults;
   StyleOverlay overlay;
@@ -69,6 +75,11 @@ namespace detail {
   }
   if (!same_size(style.max_size, defaults.max_size)) {
     overlay.max_size = style.max_size;
+  }
+  if (!same_percentage_size(
+          style.percentage_size,
+          defaults.percentage_size)) {
+    overlay.percentage_size = style.percentage_size;
   }
   if (!same_edges(style.padding, defaults.padding)) {
     overlay.padding = style.padding;
@@ -155,6 +166,12 @@ namespace detail {
   }
   if (overlay.max_size.has_value()) {
     style.max_size = *overlay.max_size;
+  }
+  if (overlay.percentage_size.width.has_value()) {
+    style.percentage_size.width = overlay.percentage_size.width;
+  }
+  if (overlay.percentage_size.height.has_value()) {
+    style.percentage_size.height = overlay.percentage_size.height;
   }
   if (overlay.padding.has_value()) {
     style.padding = *overlay.padding;

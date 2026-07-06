@@ -162,6 +162,10 @@ int test_style_defaults_are_empty() {
       !std::isinf(style.max_size.height)) {
     return 87;
   }
+  if (style.percentage_size.width.has_value() ||
+      style.percentage_size.height.has_value()) {
+    return 91;
+  }
   if (!same(style.padding.top, 0.0F) ||
       !same(style.border_width.left, 0.0F)) {
     return 7;
@@ -215,6 +219,8 @@ int test_style_builder_methods_store_values() {
           .with_preferred_size(cgpui::Size{.width = 20.0F, .height = 30.0F})
           .with_min_size(cgpui::Size{.width = 10.0F, .height = 15.0F})
           .with_max_size(cgpui::Size{.width = 120.0F, .height = 130.0F})
+          .with_percentage_size(
+              cgpui::PercentageSize{.width = 25.0F, .height = 50.0F})
           .with_padding(cgpui::EdgeSizes::axes(3.0F, 4.0F))
           .with_margin(cgpui::EdgeSizes::trbl(5.0F, 6.0F, 7.0F, 8.0F))
           .with_border_width(cgpui::EdgeSizes::all(2.0F))
@@ -269,6 +275,12 @@ int test_style_builder_methods_store_values() {
       !same(style.max_size.width, 120.0F) ||
       !same(style.max_size.height, 130.0F)) {
     return 88;
+  }
+  if (!style.percentage_size.width.has_value() ||
+      !style.percentage_size.height.has_value() ||
+      !same(*style.percentage_size.width, 25.0F) ||
+      !same(*style.percentage_size.height, 50.0F)) {
+    return 92;
   }
   if (!same(style.padding.left, 3.0F) ||
       !same(style.padding.top, 4.0F)) {
@@ -358,6 +370,8 @@ int test_style_overlay_defaults_to_no_overrides() {
       overlay.foreground_color.has_value() ||
       overlay.preferred_size.has_value() || overlay.padding.has_value() ||
       overlay.min_size.has_value() || overlay.max_size.has_value() ||
+      overlay.percentage_size.width.has_value() ||
+      overlay.percentage_size.height.has_value() ||
       overlay.margin.has_value() || overlay.border_width.has_value() ||
       overlay.border_color.has_value() ||
       overlay.border_radius.has_value() || overlay.overflow.has_value() ||
@@ -381,6 +395,8 @@ int test_style_overlay_defaults_to_no_overrides() {
           .with_preferred_size(cgpui::Size{.width = 11.0F, .height = 12.0F})
           .with_min_size(cgpui::Size{.width = 21.0F, .height = 22.0F})
           .with_max_size(cgpui::Size{.width = 111.0F, .height = 112.0F})
+          .with_width_percent(33.0F)
+          .with_height_percent(66.0F)
           .with_padding(cgpui::edges(1.0F))
           .with_margin(cgpui::edges(2.0F))
           .with_border_width(cgpui::edges(3.0F))
@@ -429,6 +445,12 @@ int test_style_overlay_defaults_to_no_overrides() {
       authored.max_size->width != 111.0F ||
       authored.max_size->height != 112.0F) {
     return 89;
+  }
+  if (!authored.percentage_size.width.has_value() ||
+      !authored.percentage_size.height.has_value() ||
+      authored.percentage_size.width != 33.0F ||
+      authored.percentage_size.height != 66.0F) {
+    return 93;
   }
   if (!authored.padding.has_value() || authored.padding->left != 1.0F ||
       !authored.margin.has_value() || authored.margin->top != 2.0F ||
@@ -504,6 +526,8 @@ int test_style_state_resolves_hover_focus_disabled_order() {
                        cgpui::Size{.width = 10.0F, .height = 20.0F})
                    .with_max_size(
                        cgpui::Size{.width = 200.0F, .height = 220.0F})
+                   .with_percentage_size(
+                       cgpui::PercentageSize{.width = 10.0F, .height = 20.0F})
                    .with_padding(cgpui::edges(2.0F))
                    .with_gap(1.0F)
                    .with_align_items(cgpui::AlignItems::start)
@@ -528,6 +552,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(30, 30, 30))
           .with_min_size(cgpui::Size{.width = 30.0F, .height = 40.0F})
+          .with_width_percent(30.0F)
           .with_padding(cgpui::edges(4.0F))
           .with_gap(2.0F)
           .with_align_items(cgpui::AlignItems::center)
@@ -547,6 +572,7 @@ int test_style_state_resolves_hover_focus_disabled_order() {
           .with_background_color(cgpui::rgb(40, 40, 40))
           .with_foreground_color(cgpui::rgb(50, 50, 50))
           .with_max_size(cgpui::Size{.width = 150.0F, .height = 160.0F})
+          .with_height_percent(40.0F)
           .with_justify_content(cgpui::JustifyContent::end)
           .with_flex_shrink(3.0F)
           .with_layer(3)
@@ -578,6 +604,10 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       hover.inset.left != 1.0F ||
       hover.min_size.width != 30.0F || hover.min_size.height != 40.0F ||
       hover.max_size.width != 200.0F || hover.max_size.height != 220.0F ||
+      !hover.percentage_size.width.has_value() ||
+      !hover.percentage_size.height.has_value() ||
+      *hover.percentage_size.width != 30.0F ||
+      *hover.percentage_size.height != 20.0F ||
       hover.font.family != "Base" || hover.font_size != 18.0F ||
       !hover.box_shadow.has_value() ||
       !same_shadow(
@@ -613,6 +643,10 @@ int test_style_state_resolves_hover_focus_disabled_order() {
       focused.min_size.height != 40.0F ||
       focused.max_size.width != 150.0F ||
       focused.max_size.height != 160.0F ||
+      !focused.percentage_size.width.has_value() ||
+      !focused.percentage_size.height.has_value() ||
+      *focused.percentage_size.width != 30.0F ||
+      *focused.percentage_size.height != 40.0F ||
       focused.font.family != "Focus" || focused.font_size != 18.0F ||
       !focused.box_shadow.has_value() ||
       !same_shadow(
@@ -795,6 +829,8 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
                       cgpui::Size{.width = 5.0F, .height = 6.0F})
                   .with_max_size(
                       cgpui::Size{.width = 300.0F, .height = 400.0F})
+                  .with_percentage_size(
+                      cgpui::PercentageSize{.width = 25.0F, .height = 50.0F})
                   .with_padding(cgpui::edges(1.0F)),
       .hover = cgpui::StyleOverlay{}.with_gap(6.0F),
       .focus = cgpui::StyleOverlay{}.with_foreground_color(
@@ -804,6 +840,7 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
       cgpui::StyleOverlay{}
           .with_background_color(cgpui::rgb(200, 10, 10))
           .with_max_size(cgpui::Size{.width = 70.0F, .height = 80.0F})
+          .with_width_percent(75.0F)
           .with_padding(cgpui::edges(12.0F))
           .with_opacity(0.6F);
 
@@ -835,6 +872,12 @@ int test_style_cascade_resolves_base_classes_state_and_inline_order() {
       resolved.max_size.width != 70.0F ||
       resolved.max_size.height != 80.0F) {
     return 90;
+  }
+  if (!resolved.percentage_size.width.has_value() ||
+      !resolved.percentage_size.height.has_value() ||
+      *resolved.percentage_size.width != 75.0F ||
+      *resolved.percentage_size.height != 50.0F) {
+    return 94;
   }
   if (resolved.opacity != 0.6F ||
       !same_transform(
@@ -942,6 +985,9 @@ static_assert(std::same_as<
 static_assert(std::same_as<decltype(cgpui::Style{}.margin), cgpui::EdgeSizes>);
 static_assert(std::same_as<decltype(cgpui::Style{}.min_size), cgpui::Size>);
 static_assert(std::same_as<decltype(cgpui::Style{}.max_size), cgpui::Size>);
+static_assert(std::same_as<
+              decltype(cgpui::Style{}.percentage_size),
+              cgpui::PercentageSize>);
 static_assert(std::same_as<decltype(cgpui::px(1.0F)), float>);
 static_assert(std::same_as<decltype(cgpui::rgb(255, 255, 255)), cgpui::Color>);
 static_assert(
@@ -956,6 +1002,9 @@ static_assert(std::same_as<
 static_assert(std::same_as<
               decltype(cgpui::StyleOverlay{}.max_size),
               std::optional<cgpui::Size>>);
+static_assert(std::same_as<
+              decltype(cgpui::StyleOverlay{}.percentage_size),
+              cgpui::PercentageSize>);
 static_assert(std::same_as<decltype(cgpui::StyleState{}.base), cgpui::Style>);
 static_assert(std::same_as<
               decltype(cgpui::StyleStateFlags{}.hovered),

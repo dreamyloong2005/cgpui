@@ -5649,3 +5649,26 @@
 - Step 326 should continue Phase C into percentage-like sizing while keeping
   Step 325's min/max constraint layer as public vocabulary over the existing
   `LayoutConstraints` clamp path, not a broad layout rewrite.
+
+## 2026-07-07 Phase C Step 326 Percentage-Like Sizing
+
+- Step 326 stays scoped to percentage-like content sizing for `div` /
+  `StyledElement`. It adds `PercentageSize`, `Style::percentage_size`,
+  `StyleOverlay::percentage_size`, `ElementBuilder::size_pct(...)`,
+  `ElementBuilder::w_pct(...)`, and `ElementBuilder::h_pct(...)`, but not
+  percentage margins/padding/gaps, widgets, uniform-list behavior, flex-wrap,
+  fixed/absolute positioning rewrites, or Phase B closeout exclusions.
+- Percentage axes resolve only against finite external
+  `LayoutInput.constraints.max_size`; unconstrained axes fall back to existing
+  content/preferred sizing, and negative resolved values clamp to zero.
+- Durable ownership is split by module: value/storage declarations live in
+  `include/cgpui/ui/style_values.hpp`, `style_box.hpp`, and
+  `style_overlay.hpp`; non-template bodies live in `src/ui/style_box.cpp`,
+  `src/ui/style_overlay.cpp`, and `src/ui/element_builder_layout.cpp`;
+  cascade propagation stays in `include/cgpui/ui/style_cascade.hpp`; and
+  `src/ui/element_style_nodes.cpp` owns percentage resolution before the
+  existing min/max clamp path.
+- The behavior guards are `tests/ui/style_test.cpp` and
+  `tests/ui/element_test.cpp`; the structure guard is
+  `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
+  guard keeps the Step 327 next-slice marker in sync.

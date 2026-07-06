@@ -68,6 +68,24 @@ ElementBuilder ElementBuilder::max_h(float height) && {
   return std::move(*this).max_size(size);
 }
 
+ElementBuilder ElementBuilder::size_pct(
+    float width_percent,
+    float height_percent) && {
+  style_state_.base = style_state_.base.with_percentage_size(
+      PercentageSize{.width = width_percent, .height = height_percent});
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::w_pct(float percent) && {
+  style_state_.base = style_state_.base.with_width_percent(percent);
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::h_pct(float percent) && {
+  style_state_.base = style_state_.base.with_height_percent(percent);
+  return std::move(*this);
+}
+
 ElementBuilder ElementBuilder::padding(EdgeSizes edges) && {
   style_state_.base = style_state_.base.with_padding(edges);
   return std::move(*this);

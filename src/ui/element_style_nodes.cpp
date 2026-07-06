@@ -1,6 +1,7 @@
 #include "cgpui/ui/element_style_nodes.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <optional>
 #include <utility>
 
@@ -24,6 +25,32 @@ namespace {
   constraints.max_size.height =
       std::max(constraints.max_size.height, constraints.min_size.height);
   return constraints;
+}
+
+[[nodiscard]] float resolve_percentage_axis(
+    std::optional<float> percent,
+    float fallback,
+    float parent_max) {
+  if (!percent.has_value() || !std::isfinite(parent_max)) {
+    return fallback;
+  }
+  return std::max(0.0F, parent_max * (*percent / 100.0F));
+}
+
+[[nodiscard]] Size resolve_percentage_size(
+    Size fallback,
+    const PercentageSize& percentage_size,
+    LayoutConstraints constraints) {
+  return Size{
+      .width = resolve_percentage_axis(
+          percentage_size.width,
+          fallback.width,
+          constraints.max_size.width),
+      .height = resolve_percentage_axis(
+          percentage_size.height,
+          fallback.height,
+          constraints.max_size.height),
+  };
 }
 
 } // namespace
@@ -137,6 +164,10 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
         .height = content_height,
     };
   }
+  content_size = resolve_percentage_size(
+      content_size,
+      base_style.percentage_size,
+      input.constraints);
   const Size preferred{
       .width = content_size.width + base_style.padding.left +
                base_style.padding.right + base_style.margin.left +

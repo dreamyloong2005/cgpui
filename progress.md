@@ -12307,3 +12307,50 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 325 is complete on `master`; Step 326, the next Phase C
   percentage-like sizing slice, is next.
+
+## 2026-07-07 Phase C Step 326 Percentage-Like Sizing
+
+- Continued `.worktrees/phase-c-percentage-sizing` on
+  `codex/phase-c-percentage-sizing` from
+  `cd467e7 docs: mark phase c step 325 merged`.
+- Baseline focused Windows gate passed:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added style/cascade storage coverage in `tests/ui/style_test.cpp`,
+  builder and layout behavior coverage in `tests/ui/element_test.cpp`, and
+  module-boundary coverage in `tests/architecture/ui_source_structure_test.cpp`.
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` failed as expected because `PercentageSize`,
+  `Style::percentage_size`, `StyleOverlay::percentage_size`, overlay mutators,
+  and `ElementBuilder::size_pct(...)` / `w_pct(...)` / `h_pct(...)` did not
+  exist.
+- GREEN added percentage-size storage, overlay storage, cascade propagation,
+  `ElementBuilder` percentage helpers in `src/ui/element_builder_layout.cpp`,
+  and `StyledElement::layout` resolution against finite external parent max
+  constraints with unconstrained fallback before the existing min/max clamp
+  path.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . style_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, and working notes with Step 326 percentage-like sizing.
+  Step 327 is the next focused Phase C margins, padding, and gaps slice after
+  Step 326 lands on `master`.
+- Focused feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default` passed 6/6.
+- Fresh feature-worktree full verification passed:
+  Windows `xmake f -c -m debug -P .` exited 0, Windows
+  `xmake test -P .` passed 99/99, WSL Arch Linux
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 326 is implemented and Windows/WSL full-debug verified in the feature
+  worktree. It is ready for feature commit and merge verification. Step 327 is
+  the next Phase C margins, padding, and gaps slice after Step 326 lands on
+  `master`.

@@ -34,6 +34,24 @@ Style Style::with_max_size(Size size) const {
   return style;
 }
 
+Style Style::with_percentage_size(PercentageSize size) const {
+  Style style = *this;
+  style.percentage_size = size;
+  return style;
+}
+
+Style Style::with_width_percent(float percent) const {
+  Style style = *this;
+  style.percentage_size.width = percent;
+  return style;
+}
+
+Style Style::with_height_percent(float percent) const {
+  Style style = *this;
+  style.percentage_size.height = percent;
+  return style;
+}
+
 Style Style::with_padding(EdgeSizes edges) const {
   Style style = *this;
   style.padding = edges;

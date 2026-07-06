@@ -34,6 +34,24 @@ StyleOverlay StyleOverlay::with_max_size(Size size) const {
   return overlay;
 }
 
+StyleOverlay StyleOverlay::with_percentage_size(PercentageSize size) const {
+  StyleOverlay overlay = *this;
+  overlay.percentage_size = size;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_width_percent(float percent) const {
+  StyleOverlay overlay = *this;
+  overlay.percentage_size.width = percent;
+  return overlay;
+}
+
+StyleOverlay StyleOverlay::with_height_percent(float percent) const {
+  StyleOverlay overlay = *this;
+  overlay.percentage_size.height = percent;
+  return overlay;
+}
+
 StyleOverlay StyleOverlay::with_padding(EdgeSizes edges) const {
   StyleOverlay overlay = *this;
   overlay.padding = edges;
