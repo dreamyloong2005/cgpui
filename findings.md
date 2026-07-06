@@ -5702,3 +5702,14 @@
 - The behavior guard is `tests/ui/element_test.cpp`; the structure guard is
   `tests/architecture/ui_source_structure_test.cpp`, and the parity ledger
   guard keeps the Step 328 next-slice marker in sync.
+
+## 2026-07-07 Phase C Step 327 Merge
+
+- Step 327 is merged on `master` at
+  `32ec5e1 feat: add div spacing shorthands` and post-merge verified with
+  Windows JSON validation, Windows debug config, Windows full debug 99/99,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+- Step 328 should continue Phase C with focused absolute/fixed positioning
+  behavior while keeping percentage margins/padding/gaps, flex-wrap, widgets,
+  uniform-list behavior, broad layout rewrites, and Phase B closeout exclusions
+  out of the slice unless that slice explicitly owns them.

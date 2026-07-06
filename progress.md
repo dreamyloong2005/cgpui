@@ -12408,3 +12408,20 @@
   `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
   `git diff --check` exited 0 with only expected LF-to-CRLF normalization
   warnings, and focused public/structure gates passed 6/6.
+
+## 2026-07-07 Phase C Step 327 Merge
+
+- Committed `codex/phase-c-margins-padding-gaps` as
+  `32ec5e1 feat: add div spacing shorthands`.
+- Fast-forward merged the branch into `master` at `32ec5e1`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- After the merge-note documentation edit, JSON validation and `git diff
+  --check` passed with only expected LF-to-CRLF warnings, Windows focused docs
+  guards passed 2/2, and WSL Arch Linux focused docs guards passed 2/2.
+- Step 327 is complete on `master`; Step 328, the focused Phase C
+  absolute/fixed positioning slice, is next.

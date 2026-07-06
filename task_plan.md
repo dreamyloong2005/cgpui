@@ -1956,14 +1956,17 @@ implementation slice.
   99/99, and WSL Arch Linux full debug 96/96. Post-merge verification passed
   JSON validation, Windows full debug 99/99, and WSL Arch Linux full debug
   96/96. Phase C Step 327, `div` margin/padding shorthand and gap
-  composition, is implemented in `.worktrees/phase-c-margins-padding-gaps`:
+  composition, is merged on `master` at
+  `32ec5e1 feat: add div spacing shorthands`:
   `ElementBuilder` exposes `p(...)`, `px(...)`, `py(...)`, `pt(...)`,
   `pr(...)`, `pb(...)`, `pl(...)`, `m(...)`, `mx(...)`, `my(...)`,
   `mt(...)`, `mr(...)`, `mb(...)`, and `ml(...)` over the existing
   `Style::padding` and `Style::margin` storage while preserving authored
   opposite edges; `StyledElement::layout` continues to compose padding,
-  margin, and existing `gap(...)` between children. Focused Windows GREEN
-  verification passed `element_test/default` and
-  `ui_source_structure_test/default`. Step 327 is ready for focused
-  ledger/full verification. Step 328 is the next focused Phase C
+  margin, and existing `gap(...)` between children. Feature-worktree
+  verification passed JSON validation, `git diff --check`, focused
+  public/structure gates 6/6, Windows full debug 99/99, and WSL Arch Linux
+  full debug 96/96. Post-merge verification passed JSON validation, Windows
+  debug config, Windows full debug 99/99, WSL debug config, and WSL Arch
+  Linux full debug 96/96. Step 328 is the next focused Phase C
   absolute/fixed positioning slice.
