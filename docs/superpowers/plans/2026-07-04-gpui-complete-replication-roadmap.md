@@ -512,13 +512,15 @@ expect, keeping each widget in its own module from the first version.
   coverage in `tests/ui/element_test.cpp` and structure coverage in
   `tests/architecture/ui_source_structure_test.cpp`. Merged on `master` at
   `78f2f05` and post-merge verified with JSON validation, Windows full-debug
-  99/99, and WSL Arch Linux full-debug 96/96. Step 324 adds focused shadow
+  99/99, and WSL Arch Linux full-debug 96/96. Step 324 added focused shadow
   vocabulary/storage through `BoxShadow`, `Style::box_shadow`,
   `StyleOverlay::box_shadow`, `ElementBuilder::shadow(...)`,
   `ElementBuilder::shadow_sm()`, and `PaintCommandKind::box_shadow`
   paint-list observability without broad style or renderer rewrites. Behavior
   coverage lives in `tests/ui/element_test.cpp` and `tests/ui/style_test.cpp`,
   with structure coverage in `tests/architecture/ui_source_structure_test.cpp`.
+  It merged on `master` at `ef306c0` and was post-merge verified with JSON
+  validation, Windows full-debug 99/99, and WSL Arch Linux full-debug 96/96.
 - [ ] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -805,9 +807,10 @@ Steps 319-324. Step 319 landed the child-list foundation on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
 `master` at `f4f2fc2`; Step 323 landed text-style aliases on `master` at
-`78f2f05`; Step 324 is the focused shadow vocabulary/storage slice. Keep the Phase B closeout exclusions out of this slice: `ClipboardItem` payload parity,
-upstream `gpui::test` macro equivalents, action macro payloads, task
-priorities, or structured task groups.
+`78f2f05`; Step 324 landed focused shadow vocabulary/storage on `master` at
+`ef306c0`. Keep the Phase B closeout exclusions out of this slice:
+`ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
+action macro payloads, task priorities, or structured task groups.
 
 ## Self-Review
 

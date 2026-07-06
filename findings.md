@@ -5610,3 +5610,13 @@
   `include/cgpui/ui/style_cascade.hpp`; behavior guards in
   `tests/ui/style_test.cpp` and `tests/ui/element_test.cpp`; and structure
   guards in `tests/architecture/ui_source_structure_test.cpp`.
+
+## 2026-07-07 Phase C Step 324 Merge
+
+- Step 324 is merged on `master` at
+  `ef306c0 feat: add div shadow vocabulary` and post-merge verified with
+  Windows JSON validation, Windows full debug 99/99, and WSL Arch Linux full
+  debug 96/96.
+- Step 325 should continue Phase C into layout constraints while keeping the
+  Step 324 renderer-geometry omission deliberate: shadow paint commands remain
+  observable metadata until a later renderer slice owns actual shadow geometry.
