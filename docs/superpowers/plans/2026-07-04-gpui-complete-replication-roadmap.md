@@ -902,18 +902,19 @@ and out-of-flow positioned child layout on `master` at `38574a2`; Step 329
 landed focused direct overlay-layer ordering through `z_order()` for
 direct-container child paint, hit-test, and event dispatch on `master` at
 `6c1bfe4`; and Step 330 landed focused nested scroll clipping through
-effective paint clip intersection on `master` at `266bc9f`. Step 331 adds
+effective paint clip intersection on `master` at `266bc9f`. Step 331 landed
 focused active-state style cascade support through `StyleState::active`,
 `StyleStateFlags::active`, `ElementBuilder::active_style(...)`,
 `ButtonBuilder::active_style(...)`, and hover/focus/active/disabled overlay
-ordering. Step 332 adds focused class-style reuse depth through
+ordering on `master` at `c621fe8`. Step 332 landed focused class-style reuse
+depth through
 `StyleClassRule`, `StyleCascade::set_class_rule(...)`, out-of-line
 `src/ui/style_cascade.cpp` ownership, and depth-first reused class resolution
-with cycle protection. Step 333 should continue the style cascade depth band
-with focused theme token fallback through `StyleThemeTokens`, theme-aware
+with cycle protection on `master` at `630bb3d`. Step 333 landed focused theme
+token fallback through `StyleThemeTokens`, theme-aware
 `resolved_style(...)` overloads, and missing-token fallback to existing
-concrete style values. Step 334 should continue the style cascade depth band
-with inherited text style.
+concrete style values on `master` at `e1d5467`. Step 334 should continue the
+style cascade depth band with inherited text style.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
