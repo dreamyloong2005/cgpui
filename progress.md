@@ -12465,3 +12465,17 @@
   worktree. It is ready for feature commit and merge verification. Step 329 is
   the next focused Phase C overlay-layer slice after Step 328 lands on
   `master`.
+
+## 2026-07-07 Phase C Step 328 Merge
+
+- Committed `codex/phase-c-absolute-fixed-positioning` as
+  `38574a2 feat: add div fixed positioning`.
+- Fast-forward merged the branch into `master` at `38574a2`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 328 is complete on `master`; Step 329, the focused Phase C
+  overlay-layer slice, is next.

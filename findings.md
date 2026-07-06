@@ -5732,3 +5732,14 @@
   structure guard is `tests/architecture/ui_source_structure_test.cpp`, and
   the parity ledger guard keeps the Step 329 overlay-layer next-slice marker
   in sync.
+
+## 2026-07-07 Phase C Step 328 Merge
+
+- Step 328 is merged on `master` at
+  `38574a2 feat: add div fixed positioning` and post-merge verified with
+  Windows JSON validation, Windows debug config, Windows full debug 99/99,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+- Step 329 should continue Phase C with the focused overlay-layer slice while
+  keeping nested scroll clipping, widgets, uniform-list behavior, broad layout
+  rewrites, and Phase B closeout exclusions out of the slice unless that slice
+  explicitly owns them.
