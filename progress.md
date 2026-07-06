@@ -12510,3 +12510,17 @@
   worktree. It is ready for feature commit and merge verification. Step 330 is
   the next focused Phase C nested scroll clipping slice after Step 329 lands
   on `master`.
+
+## 2026-07-07 Phase C Step 329 Merge
+
+- Committed `codex/phase-c-overlay-layers` as
+  `6c1bfe4 feat: add direct overlay layer ordering`.
+- Fast-forward merged the branch into `master` at `6c1bfe4`.
+- Verified post-merge Windows:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 329 is complete on `master`; Step 330, the focused Phase C nested
+  scroll clipping slice, is next.

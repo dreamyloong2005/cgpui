@@ -1982,9 +1982,9 @@ implementation slice.
   `element_test/default ui_source_structure_test/default` 2/2. Post-merge
   verification passed JSON validation, Windows debug config, Windows full
   debug 99/99, WSL debug config, and WSL Arch Linux full debug 96/96.
-  Phase C Step 329, focused overlay layers, is implemented in
-  `.worktrees/phase-c-overlay-layers`: direct children of `StyledElement`,
-  flex, and vertical stack containers now use focused private
+  Phase C Step 329, focused overlay layers, is merged on `master` at
+  `6c1bfe4 feat: add direct overlay layer ordering`: direct children of
+  `StyledElement`, flex, and vertical stack containers now use focused private
   `element_layer_ordering` helpers so `z_order()` controls paint order,
   hit-test order, and event dispatch order with stable authored-order tie
   breaking. Focused Windows GREEN verification passed
@@ -1993,5 +1993,7 @@ implementation slice.
   validation, `git diff --check` with only expected LF-to-CRLF normalization
   warnings, focused public/structure gates 6/6, Windows debug config, Windows
   full debug 99/99, WSL Arch Linux debug config, and WSL Arch Linux full
-  debug 96/96. Step 330 is the next focused Phase C nested scroll clipping
-  slice.
+  debug 96/96. Post-merge verification passed JSON validation, Windows debug
+  config, Windows full debug 99/99, WSL Arch Linux debug config, and WSL Arch
+  Linux full debug 96/96. Step 330 is the next focused Phase C nested scroll
+  clipping slice.

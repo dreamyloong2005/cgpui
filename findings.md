@@ -5765,3 +5765,14 @@
 - The behavior guard is `tests/ui/element_test.cpp`; the structure guard is
   `tests/architecture/ui_source_structure_test.cpp`; and the parity ledger
   guard keeps the Step 330 nested scroll clipping next-slice marker in sync.
+
+## 2026-07-07 Phase C Step 329 Merge
+
+- Step 329 is merged on `master` at
+  `6c1bfe4 feat: add direct overlay layer ordering` and post-merge verified
+  with Windows JSON validation, Windows debug config, Windows full debug
+  99/99, WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+- Step 330 should continue Phase C with the focused nested scroll clipping
+  slice while keeping widgets, uniform-list behavior, broad layout rewrites,
+  renderer z-buffer behavior, and Phase B closeout exclusions out of the slice
+  unless that slice explicitly owns them.
