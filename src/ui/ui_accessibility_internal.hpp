@@ -21,6 +21,8 @@ inline PlatformAccessibilityRole platform_accessibility_role(
       return PlatformAccessibilityRole::text;
     case AccessibilityRole::text_input:
       return PlatformAccessibilityRole::text_input;
+    case AccessibilityRole::image:
+      return PlatformAccessibilityRole::image;
     case AccessibilityRole::checkbox:
       return PlatformAccessibilityRole::checkbox;
     case AccessibilityRole::radio:

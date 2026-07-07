@@ -13549,3 +13549,54 @@
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
 - Step 346 is complete on `master`; Step 347 icon/image widget follow-up is
   next, but paused here per user request.
+
+## 2026-07-08 Phase C Step 347 Icon Image Widgets
+
+- Created `.worktrees/phase-c-icon-image-widgets` on
+  `codex/phase-c-icon-image-widgets` from
+  `04028dd docs: mark phase c step 346 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 347 to icon/image widget authoring over the existing image asset
+  descriptor and paint command path before container primitive gaps, SVG/image
+  decoder depth, runtime theme switching, broad resolved-style layout/paint
+  rewrites, `ClipboardItem`, upstream `gpui::test` macros, action macro
+  payloads, task priorities, and structured task groups.
+- RED extended `tests/ui/builtin_widget_test.cpp` and
+  `tests/architecture/widget_source_structure_test.cpp`. Focused RED failed as
+  expected because `cgpui::image`, `cgpui::icon`, `cgpui::ImageElement`, and
+  `ImagePaint::tint` were missing.
+- GREEN added `ImageBuilder`, `image(...)`, and `icon(...)` in
+  `include/cgpui/ui/image_builder.hpp` and
+  `src/ui/widgets/image_builder.cpp`.
+- Added `ImageElement` in `include/cgpui/ui/element_image_nodes.hpp`, with
+  behavior, layout, and paint split across `src/ui/element_image_nodes.cpp`,
+  `src/ui/element_image_layout.cpp`, and
+  `src/ui/element_image_paint.cpp`.
+- Added image accessibility role mapping through `AccessibilityRole::image`
+  and `PlatformAccessibilityRole::image`; image widgets expose alt text,
+  source-rect cropping, and existing image asset descriptors, while icon
+  widgets add square sizing and optional tint metadata.
+- Extended `ImagePaint` / `ImageDraw` with optional tint metadata and forwarded
+  it through `PaintList::draw_image(...)` and the render-view command bridge
+  without adding decoder or Vulkan shader depth.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` passed 2/2.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `gpui_parity_ledger_test`,
+  `public_authoring_vocabulary_freeze_test`, and
+  `phase_c_focusable_interactable_audit_test` so Step 347 evidence is required
+  and the handoff moves to Phase C Step 348 container primitive follow-up.
+- Focused documentation/API/widget verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 5/5.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.

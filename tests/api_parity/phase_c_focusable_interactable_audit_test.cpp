@@ -160,8 +160,22 @@ int main() {
       !contains(ledger_json, "src/ui/element_item_nodes.cpp") ||
       !contains(ledger_md, "PlatformAccessibilityRole::list_item") ||
       !contains(ledger_json, "PlatformAccessibilityRole::list_item") ||
+      !contains(ledger_md, "Phase C Step 347 icon/image widget follow-up") ||
+      !contains(ledger_json, "Phase C Step 347 icon/image widget follow-up") ||
+      !contains(ledger_md, "ImageBuilder") ||
+      !contains(ledger_json, "ImageBuilder") ||
+      !contains(ledger_md, "image(...)") ||
+      !contains(ledger_json, "image(...)") ||
+      !contains(ledger_md, "icon(...)") ||
+      !contains(ledger_json, "icon(...)") ||
+      !contains(ledger_md, "src/ui/widgets/image_builder.cpp") ||
+      !contains(ledger_json, "src/ui/widgets/image_builder.cpp") ||
+      !contains(ledger_md, "src/ui/element_image_nodes.cpp") ||
+      !contains(ledger_json, "src/ui/element_image_nodes.cpp") ||
+      !contains(ledger_md, "PlatformAccessibilityRole::image") ||
+      !contains(ledger_json, "PlatformAccessibilityRole::image") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 347 icon/image widget follow-up\"")) {
+                "\"next_step\": \"Phase C Step 348 container primitive follow-up\"")) {
     return 50;
   }
 

@@ -1,7 +1,33 @@
 #include "cgpui/prelude.hpp"
 
+#include <cstdint>
 #include <string>
 #include <string_view>
+#include <vector>
+
+namespace {
+
+cgpui::ImageAsset make_test_image_asset(std::uint64_t id) {
+  return cgpui::ImageAsset{
+      .id = cgpui::ImageAssetId{id},
+      .logical_size = {.width = 20.0F, .height = 12.0F},
+      .bitmap =
+          cgpui::DecodedImageBitmap{
+              .width = 4,
+              .height = 3,
+              .stride = 16,
+              .format = cgpui::ImageFormat::rgba8_unorm,
+              .pixels = std::vector<std::uint8_t>(48, 255),
+          },
+  };
+}
+
+bool same_color(cgpui::Color left, cgpui::Color right) {
+  return left.r == right.r && left.g == right.g && left.b == right.b &&
+         left.a == right.a;
+}
+
+} // namespace
 
 int test_button_label_convenience_builds_accessible_button() {
   cgpui::AnyElement element =
@@ -348,6 +374,98 @@ int test_menu_item_widget_builder_paints_and_ignores_disabled_input() {
   return click_count == 0 && !result.consumed && !result.cancelled ? 0 : 84;
 }
 
+int test_image_widget_builder_paints_asset_and_source_rect() {
+  const cgpui::ImageAsset asset = make_test_image_asset(101);
+  const cgpui::ImageAssetDescriptor descriptor =
+      cgpui::describe_image_asset(asset);
+  const cgpui::Rect source{
+      .origin = {.x = 1.0F, .y = 2.0F},
+      .size = {.width = 3.0F, .height = 4.0F},
+  };
+  cgpui::AnyElement element =
+      cgpui::image(descriptor)
+          .alt("Preview")
+          .source_rect(source)
+          .style(cgpui::Style{}.with_preferred_size({.width = 40.0F,
+                                                     .height = 24.0F}))
+          .key("preview-image")
+          .build();
+
+  auto* image = dynamic_cast<cgpui::ImageElement*>(element.get());
+  if (image == nullptr ||
+      image->kind() != cgpui::ImageElementKind::image ||
+      image->asset().id.value != 101 ||
+      image->accessibility_role() != cgpui::AccessibilityRole::image) {
+    return 90;
+  }
+  if (image->accessibility_name() != "Preview" ||
+      image->accessibility_value() != "" || image->focusable() ||
+      !image->key().has_value() || image->key()->value != "preview-image") {
+    return 91;
+  }
+  if (!image->source_rect().has_value() ||
+      image->source_rect()->origin.x != 1.0F ||
+      image->source_rect()->size.height != 4.0F) {
+    return 92;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 40.0F || output.size.height != 24.0F) {
+    return 93;
+  }
+  cgpui::PaintList paint_list;
+  image->paint(paint_list);
+  if (paint_list.commands().size() != 1 ||
+      paint_list.commands()[0].kind != cgpui::PaintCommandKind::image) {
+    return 94;
+  }
+  const cgpui::ImagePaint& command = paint_list.commands()[0].image;
+  if (command.asset.id.value != 101 || command.asset.pixel_width != 4 ||
+      command.bounds.size.width != 40.0F ||
+      command.bounds.size.height != 24.0F || !command.source_rect.has_value() ||
+      command.source_rect->origin.y != 2.0F || command.tint.has_value()) {
+    return 95;
+  }
+  return 0;
+}
+
+int test_icon_widget_builder_uses_square_size_and_tint() {
+  const cgpui::ImageAsset asset = make_test_image_asset(202);
+  const cgpui::Color tint = cgpui::rgb(24, 96, 160);
+  cgpui::AnyElement element =
+      cgpui::icon(asset).alt("Search").size(16.0F).tint(tint).build();
+
+  auto* icon = dynamic_cast<cgpui::ImageElement*>(element.get());
+  if (icon == nullptr || icon->kind() != cgpui::ImageElementKind::icon ||
+      icon->asset().id.value != 202 ||
+      icon->accessibility_role() != cgpui::AccessibilityRole::image ||
+      icon->accessibility_name() != "Search") {
+    return 100;
+  }
+  if (!icon->tint().has_value() || !same_color(*icon->tint(), tint) ||
+      icon->source_rect().has_value()) {
+    return 101;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 16.0F || output.size.height != 16.0F) {
+    return 102;
+  }
+  cgpui::PaintList paint_list;
+  icon->paint(paint_list);
+  if (paint_list.commands().size() != 1 ||
+      paint_list.commands()[0].kind != cgpui::PaintCommandKind::image) {
+    return 103;
+  }
+  const cgpui::ImagePaint& command = paint_list.commands()[0].image;
+  return command.asset.id.value == 202 && command.tint.has_value() &&
+                 same_color(*command.tint, tint) &&
+                 command.bounds.size.width == 16.0F &&
+                 command.bounds.size.height == 16.0F
+             ? 0
+             : 104;
+}
+
 int test_text_input_widget_builder_keeps_text_model_boundary() {
   cgpui::TextModel model("typed");
   cgpui::AnyElement element =
@@ -405,6 +523,16 @@ int main() {
   }
   if (const int result =
           test_menu_item_widget_builder_paints_and_ignores_disabled_input();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_image_widget_builder_paints_asset_and_source_rect();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_icon_widget_builder_uses_square_size_and_tint();
       result != 0) {
     return result;
   }

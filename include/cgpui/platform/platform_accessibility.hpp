@@ -16,6 +16,7 @@ enum class PlatformAccessibilityRole {
   button,
   text,
   text_input,
+  image,
   checkbox,
   radio,
   switch_control,

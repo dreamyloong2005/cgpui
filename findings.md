@@ -6319,3 +6319,28 @@
   unselected values; menu items are action-only and report no selection value.
 - Step 347 should continue the built-in widget band with icon/image widgets
   before container primitive gaps.
+
+## 2026-07-08 Phase C Step 347 Icon Image Widgets
+
+- Step 347 stays scoped to image and icon widget authoring in the built-in
+  widget band. It should not add container primitives, SVG/image decoders,
+  runtime theme switching, broad resolved-style layout/paint rewrites,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- Durable public widget ownership is `include/cgpui/ui/image_builder.hpp` plus
+  `src/ui/widgets/image_builder.cpp`, matching the Step 343-346
+  `src/ui/widgets/*` builder boundary. Aggregate headers stay thin and only
+  include the new leaf.
+- Durable element ownership is a focused image element leaf:
+  `include/cgpui/ui/element_image_nodes.hpp`, with behavior in
+  `src/ui/element_image_nodes.cpp`, layout in
+  `src/ui/element_image_layout.cpp`, and paint in
+  `src/ui/element_image_paint.cpp`. The structure test keeps these files
+  inside local line-count caps and prevents broad `src/ui/*` widget dumping.
+- The smallest accessibility extension for this slice is image role plus alt
+  text: `AccessibilityRole::image` and `PlatformAccessibilityRole::image`.
+  Icon-specific behavior is represented as square sizing and optional tint
+  metadata carried by `ImagePaint` and `ImageDraw`; renderer shader/decode
+  depth remains later work.
+- Step 348 should continue the built-in widget band with container primitive
+  follow-up.

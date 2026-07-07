@@ -5,7 +5,8 @@ namespace cgpui {
 void PaintList::draw_image(
     Rect bounds,
     ImageAssetDescriptor asset,
-    std::optional<Rect> source_rect) {
+    std::optional<Rect> source_rect,
+    std::optional<Color> tint) {
   commands_.push_back(PaintCommand{
       .kind = PaintCommandKind::image,
       .image =
@@ -13,6 +14,7 @@ void PaintList::draw_image(
               .bounds = bounds,
               .asset = asset,
               .source_rect = source_rect,
+              .tint = tint,
           },
       .clip_rect = current_clip_rect_for(clip_stack_),
       .clip_stack = clip_stack_record_for(clip_stack_),

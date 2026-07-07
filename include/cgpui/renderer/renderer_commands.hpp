@@ -73,6 +73,7 @@ struct ImageDraw {
   Rect bounds;
   ImageAssetDescriptor asset;
   std::optional<Rect> source_rect;
+  std::optional<Color> tint;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
   RendererCompositionStackRecord composition_stack;

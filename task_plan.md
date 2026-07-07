@@ -2331,3 +2331,26 @@ implementation slice.
   WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100. Step
   347 icon/image widget follow-up is the next tracked Phase C slice; pause here
   per user request.
+
+- Phase C Step 347, icon/image widget follow-up, is implemented in
+  `.worktrees/phase-c-icon-image-widgets`: `ImageBuilder`, `image(...)`,
+  `icon(...)`, and `ImageElement` expose focused image/icon authoring through
+  public widget leaves and focused element implementation files. Public builder
+  bodies stay under `src/ui/widgets/image_builder.cpp`, while image behavior,
+  layout, and paint are split across `src/ui/element_image_nodes.cpp`,
+  `src/ui/element_image_layout.cpp`, and `src/ui/element_image_paint.cpp`.
+  Accessibility role mapping now includes image roles, image widgets preserve
+  alternate text/source-rect metadata, icon widgets add square sizing and
+  optional tint metadata, and `ImagePaint` / `ImageDraw` carry tint through the
+  existing image paint command path. Focused Windows GREEN verification passed
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` 2/2. The public vocabulary,
+  Markdown/JSON parity ledger, complete-replication roadmap, and audit guards
+  now move the handoff to Phase C Step 348 container primitive follow-up.
+  Focused documentation/API/widget verification passed JSON validation and
+  `builtin_widget_test/default`, `widget_source_structure_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`, and
+  `phase_c_focusable_interactable_audit_test/default` 5/5. Diff hygiene passed
+  with only expected LF-to-CRLF warnings; Windows feature-worktree full debug
+  passed 103/103 and WSL Arch Linux feature-worktree full debug passed 100/100.

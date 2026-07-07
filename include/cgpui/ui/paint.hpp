@@ -84,6 +84,7 @@ struct ImagePaint {
   Rect bounds;
   ImageAssetDescriptor asset;
   std::optional<Rect> source_rect;
+  std::optional<Color> tint;
 };
 
 struct ImeCandidateRect {
@@ -138,7 +139,8 @@ class PaintList {
   void draw_image(
       Rect bounds,
       ImageAssetDescriptor asset,
-      std::optional<Rect> source_rect = std::nullopt);
+      std::optional<Rect> source_rect = std::nullopt,
+      std::optional<Color> tint = std::nullopt);
   void set_text_measurement_cache(TextMeasurementCache* cache);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 

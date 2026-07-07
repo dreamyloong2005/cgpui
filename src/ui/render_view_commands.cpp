@@ -19,6 +19,7 @@ void submit_paint_command_to_frame(
         .bounds = image.bounds,
         .asset = image.asset,
         .source_rect = image.source_rect,
+        .tint = image.tint,
         .clip_rect = command.clip_rect,
         .clip_stack = command.clip_stack,
         .composition_stack = command.composition_stack,

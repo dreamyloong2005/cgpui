@@ -702,7 +702,13 @@ expect, keeping each widget in its own module from the first version.
   split across `src/ui/element_item_nodes.cpp`,
   `src/ui/element_item_layout.cpp`, and `src/ui/element_item_paint.cpp`, and
   accessibility role/value metadata for selected list items and menu actions
-  before icon/image and container primitive gaps.
+  before icon/image and container primitive gaps. Step 347 adds icon/image
+  widget authoring through `ImageBuilder`, `image(...)`, `icon(...)`, focused
+  `src/ui/widgets/image_builder.cpp` ownership, focused `ImageElement`
+  behavior split across `src/ui/element_image_nodes.cpp`,
+  `src/ui/element_image_layout.cpp`, and `src/ui/element_image_paint.cpp`, and
+  source-rect, alternate-text, and optional icon tint metadata before
+  container primitive gaps.
 - [ ] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection.
@@ -970,9 +976,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 347 continues built-in widget expansion from the frozen Phase B public authoring boundary
+Step 348 continues built-in widget expansion from the frozen Phase B public authoring boundary
 after the focused layout, style, focusable/interactable, and first widget
-bands from Steps 319-346. Step 319 landed the child-list foundation on `master` at
+bands from Steps 319-347. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -1046,8 +1052,12 @@ the current slider value. Step 346 adds list item and menu item widgets through
 `src/ui/widgets/item_builder.cpp`, `src/ui/element_item_nodes.cpp`,
 `src/ui/element_item_layout.cpp`, and `src/ui/element_item_paint.cpp`, plus
 accessibility role/value metadata for selected list items and menu actions.
-Step 347 should continue with icon/image widgets before container primitive
-gaps.
+Step 347 adds icon/image widgets through `ImageBuilder`, `image(...)`,
+`icon(...)`, `ImageElement`, focused `src/ui/widgets/image_builder.cpp`,
+`src/ui/element_image_nodes.cpp`, `src/ui/element_image_layout.cpp`, and
+`src/ui/element_image_paint.cpp`, plus source-rect, alternate-text, and icon
+tint metadata over the existing image asset descriptor and paint command path.
+Step 348 should continue with container primitive gaps.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
