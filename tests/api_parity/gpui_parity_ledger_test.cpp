@@ -498,6 +498,8 @@ int main() {
               "window_runtime_input_test.cpp",
               "window_runtime_focus_test.cpp",
               "Phase C Step 336 style cascade depth closeout",
+              "phase_c_style_cascade_depth_audit_test.cpp",
+              "Phase C Step 337 focusable/interactable semantics",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -1479,6 +1481,8 @@ int main() {
                 "target(\"public_authoring_vocabulary_freeze_test\")") ||
       !contains(xmake,
                 "target(\"public_phase_b_completion_audit_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_style_cascade_depth_audit_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1560,6 +1564,9 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/public_phase_b_completion_audit_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
           xmake,

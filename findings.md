@@ -5950,3 +5950,13 @@
   focusable/interactable semantics, pointer-active behavior, focus rings,
   widget behavior, and broad resolved-style layout/paint rewrites out until the
   next band opens.
+
+## 2026-07-07 Phase C Step 336 Style Cascade Closeout
+
+- Step 336 is a closeout/audit slice, not a runtime behavior slice. The durable
+  boundary is `tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp`,
+  which guards the Steps 331-335 style-cascade evidence and the ledger handoff
+  to Phase C Step 337 focusable/interactable semantics.
+- The closeout keeps runtime theme switching, real pointer-active semantics,
+  widget behavior, focusable/interactable semantics, and broad resolved-style
+  layout/paint rewrites out of Step 336. Those remain future focused slices.

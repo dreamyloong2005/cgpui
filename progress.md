@@ -12918,3 +12918,30 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 335 is complete on `master`; Step 336, style cascade depth closeout, is
   the next Phase C slice before the focusable/interactable semantics band opens.
+
+## 2026-07-07 Phase C Step 336 Style Cascade Closeout
+
+- Created `.worktrees/phase-c-style-cascade-closeout` on
+  `codex/phase-c-style-cascade-closeout` from
+  `056c2a6 docs: mark phase c step 335 merged`.
+- Baseline Windows audit gates passed:
+  `xmake test -y -P . gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 2/2.
+- RED added `tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp` and
+  the `phase_c_style_cascade_depth_audit_test` xmake target. The focused RED
+  failed as expected before the roadmap, ledger, and next-step handoff were
+  updated for Step 336.
+- GREEN updated the complete-replication roadmap, Markdown/JSON parity ledger,
+  and ledger guard so Steps 331-336 are closed and the next tracked Phase C
+  marker is Step 337 focusable/interactable semantics.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . phase_c_style_cascade_depth_audit_test/default
+  gpui_parity_ledger_test/default public_phase_b_completion_audit_test/default`
+  passed 3/3.
+- Feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, Windows `xmake f -c -m debug -P .` exited 0, Windows
+  `xmake test -P .` passed 100/100, WSL Arch Linux
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.

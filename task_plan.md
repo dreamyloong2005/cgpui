@@ -2097,3 +2097,16 @@ implementation slice.
   `e88bd78 feat: add dynamic style invalidation`; post-merge verification
   passed JSON validation, Windows debug config, Windows full debug 99/99, WSL
   Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+
+- Phase C Step 336, style cascade depth closeout, is implemented in
+  `.worktrees/phase-c-style-cascade-closeout`:
+  `tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp` guards the
+  Steps 331-335 style-cascade evidence, the roadmap checkbox for Steps
+  331-336, the parity ledger handoff to Step 337 focusable/interactable
+  semantics, and the explicit deferred exclusions for runtime theme switching,
+  real pointer-active semantics, widget behavior, focusable/interactable
+  semantics, broad resolved-style layout/paint rewrites, and Phase B closeout
+  leftovers. No runtime behavior is added in this closeout slice. Feature
+  worktree verification passed JSON validation, `git diff --check`, focused
+  audit gates 3/3, Windows debug config, Windows full debug 100/100, WSL Arch
+  Linux debug config, and WSL Arch Linux full debug 97/97.

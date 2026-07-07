@@ -624,13 +624,20 @@ expect, keeping each widget in its own module from the first version.
   `tests/ui/window_runtime_focus_test.cpp`, with structure coverage in
   `tests/architecture/ui_source_structure_test.cpp`. It deliberately leaves
   runtime theme switching, real pointer-active semantics, widget behavior, and
-  full resolved-style layout/paint application to later focused slices. It
-  merged on `master` at `e88bd78` and was post-merge verified with JSON
-  validation, Windows full-debug 99/99, and WSL Arch Linux full-debug 96/96.
+  full resolved-style layout/paint application and broad resolved-style
+  layout/paint rewrites to later focused slices. It merged on `master` at
+  `e88bd78` and was post-merge verified with JSON validation, Windows
+  full-debug 99/99, and WSL Arch Linux full-debug 96/96.
+  Step 336 closes the Phase C style-cascade depth band with
+  `tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp`, which guards
+  the Steps 331-335 evidence, the explicit handoff to Step 337, and the
+  deferred exclusions that belong to later focused slices. Feature-worktree
+  verification passed JSON validation, focused audit gates 3/3, Windows
+  full-debug 100/100, and WSL Arch Linux full-debug 97/97.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
-- [ ] Steps 331-336: Add style cascade depth: pseudo/state selectors,
+- [x] Steps 331-336: Add style cascade depth: pseudo/state selectors,
   class-like reuse, theme token fallback, inherited text style, and dynamic
   invalidation when style-affecting state changes.
 - [ ] Steps 337-342: Complete focusable/interactable element semantics:
@@ -906,8 +913,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 336 should close the current Phase C style-cascade depth band from the frozen
-Phase B public authoring boundary after the focused layout behavior band from
+Step 337 should open the focusable/interactable semantics band from the frozen
+Phase B public authoring boundary after the focused layout and style bands from
 Steps 319-330. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
@@ -943,8 +950,11 @@ Step 335 landed focused dynamic style invalidation on `master` at `e88bd78`
 through
 `WindowRuntime::request_style_state_invalidation(...)`, hover/focus element
 transition hooks, and `src/ui/runtime_style_invalidation.cpp` ownership.
-Step 336 should audit and close out Steps 331-335 style-cascade evidence,
-keeping the next focusable/interactable semantics band ready for Step 337.
+Step 336 closes the Phase C style-cascade depth band through
+`tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp`, guarding the
+Steps 331-335 evidence and the explicit Step 337 handoff. Step 337 should
+open the focusable/interactable semantics band without reopening broad style
+cascade behavior or broad resolved-style layout/paint rewrites.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
