@@ -2324,3 +2324,10 @@ implementation slice.
   with only expected LF-to-CRLF warnings, Windows debug config, Windows full
   debug 103/103, WSL Arch Linux debug config, and WSL Arch Linux full debug
   100/100.
+
+- Phase C Step 346 is merged on `master` at
+  `08a2547 feat: add list menu item widgets` and post-merge verified with JSON
+  validation, diff hygiene, Windows debug config, Windows full debug 103/103,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100. Step
+  347 icon/image widget follow-up is the next tracked Phase C slice; pause here
+  per user request.

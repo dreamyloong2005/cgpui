@@ -13531,3 +13531,21 @@
 - WSL Arch Linux feature-worktree verification passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+
+## 2026-07-08 Phase C Step 346 Merge
+
+- Fast-forward merged `codex/phase-c-list-menu-widgets` into root `master` at
+  `08a2547 feat: add list menu item widgets`; the feature worktree had no
+  remaining uncommitted diff before merge, and root `master` still only had
+  the existing untracked `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+- Step 346 is complete on `master`; Step 347 icon/image widget follow-up is
+  next, but paused here per user request.
