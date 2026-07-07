@@ -2173,3 +2173,21 @@ implementation slice.
   validation, Windows debug config, Windows full debug 100/100, WSL Arch Linux
   debug config, and WSL Arch Linux full debug 97/97. Step 340 keyboard
   activation semantics is the next focused Phase C slice.
+
+- Phase C Step 340, keyboard activation semantics, is implemented in
+  `.worktrees/phase-c-keyboard-activation`: focused Enter/Space key presses
+  synthesize the same `ElementGestureKind::click` route used by pointer
+  clicks, raw focused `on_key(...)` handlers get first refusal before
+  activation, and `KeyElement` delegates synthesized click gestures to child
+  handlers instead of re-running raw key handlers. Durable ownership remains
+  in focused `src/ui/runtime_gesture_synthesis.hpp` / `.cpp` helpers and the
+  route dispatcher only delegates after raw handlers decline. Behavior coverage
+  lives in `tests/ui/window_runtime_focus_test.cpp`, adjacent gesture/key
+  coverage lives in `tests/ui/element_test.cpp` and
+  `tests/ui/window_runtime_input_test.cpp`, and structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`. Focused Windows GREEN
+  verification passed `xmake test -y -P . element_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  ui_source_structure_test/default` 4/4. Step 341 disabled interaction
+  semantics is the next focused Phase C focusable/interactable slice after
+  Step 340 lands on `master`.

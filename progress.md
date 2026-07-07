@@ -13129,3 +13129,41 @@
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
 - Step 339 is complete on `master`; Step 340 keyboard activation semantics is
   the next Phase C focusable/interactable slice.
+
+## 2026-07-07 Phase C Step 340 Keyboard Activation
+
+- Continued `.worktrees/phase-c-keyboard-activation` on
+  `codex/phase-c-keyboard-activation` from
+  `66c9c56 docs: mark phase c step 339 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  `.codex` skill path, and confirmed it produced no additional report.
+- Confirmed Step 340 should add Enter/Space keyboard activation by reusing the
+  Step 339 synthesized click gesture path after raw focused key handlers
+  decline the event. The implementation should stay in the focused
+  `runtime_gesture_synthesis` helper, with route dispatch delegating to it.
+- RED added `tests/ui/window_runtime_focus_test.cpp` coverage for focused
+  button Enter/Space activation, raw `on_key(...)` first-refusal behavior, and
+  consumed raw-key suppression, plus structure coverage requiring keyboard
+  activation ownership in `src/ui/runtime_gesture_synthesis.cpp`. Focused RED
+  failed as expected before the helper predicate and keyboard synthesis path
+  existed.
+- GREEN added `should_dispatch_synthesized_keyboard_activation_event(...)` in
+  `runtime_gesture_synthesis`, route-dispatch delegation after raw element
+  handlers decline, and a `KeyElement` synthesized-click guard so raw key
+  handlers are not re-entered during click dispatch. Focused Windows GREEN
+  verification passed `xmake test -y -P . window_runtime_focus_test/default
+  ui_source_structure_test/default` 2/2.
+- Adjacent focused verification passed:
+  `xmake test -y -P . element_test/default window_runtime_input_test/default
+  window_runtime_focus_test/default ui_source_structure_test/default` passed
+  4/4.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the style-cascade
+  audit guard, the complete replication roadmap, and `task_plan.md` with Step
+  340 keyboard activation semantics. The next tracked focusable/interactable
+  slice is Step 341 disabled interaction semantics.
+- Feature-worktree Windows full debug verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 100/100.
+- Feature-worktree WSL Arch Linux full debug verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.

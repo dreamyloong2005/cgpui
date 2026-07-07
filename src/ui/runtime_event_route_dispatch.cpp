@@ -63,7 +63,8 @@ EventResult WindowRuntime::dispatch_routed_element_event(
     }
   }
 
-  if (should_dispatch_synthesized_click_event(input_, event, route)) {
+  if (should_dispatch_synthesized_click_event(input_, event, route) ||
+      should_dispatch_synthesized_keyboard_activation_event(event, route)) {
     return dispatch_synthesized_click_event(
         event,
         route,

@@ -6089,3 +6089,31 @@
   drag APIs, broad widget behavior, runtime theme switching, and broad
   resolved-style layout/paint rewrites out unless that slice explicitly owns
   them.
+
+## 2026-07-07 Phase C Step 340 Keyboard Activation
+
+- Step 340 should stay scoped to keyboard activation for the already-focused
+  enabled element route. Enter (`13`) and Space (`32`) pressed on the focused
+  route should synthesize the same `ElementGestureKind::click` context added in
+  Step 339.
+- Raw routed key handlers must get first refusal. If a focused element's
+  `on_key(...)` handler consumes or cancels the Enter/Space press, keyboard
+  activation should not synthesize the click gesture.
+- Durable ownership should remain in focused gesture synthesis helpers:
+  `src/ui/runtime_gesture_synthesis.hpp` / `.cpp` can own the keyboard
+  activation predicate and synthesized dispatch, while
+  `src/ui/runtime_event_route_dispatch.cpp` should only delegate after raw
+  element dispatch declines the key. Avoid growing
+  `src/ui/runtime_event_keyboard.cpp` or broad widget files.
+- `WindowRuntime::run(...)` resets keyboard focus before creating the platform
+  window, so runtime keyboard-activation tests that need an initially focused
+  element must request focus during the run callback, after the reset. A
+  pre-run `request_keyboard_focus(element_id)` is intentionally wiped.
+- `KeyElement` must treat synthesized click gestures as child delegation, not
+  as another raw `KeyboardKey` callback. Otherwise an unhandled Enter key would
+  call `on_key(...)` twice: once before synthesis and once during synthesized
+  click dispatch.
+- After Step 340, the next focused Phase C focusable/interactable gap should
+  be Step 341 disabled interaction semantics, leaving broad widget behavior,
+  runtime theme switching, and broad resolved-style layout/paint rewrites out
+  unless that slice explicitly owns them.

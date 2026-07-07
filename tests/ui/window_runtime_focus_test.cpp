@@ -3,7 +3,10 @@
 namespace {
 RuntimeFixture* click_focus_fixture = nullptr;
 RuntimeFixture* focus_traversal_fixture = nullptr;
+RuntimeFixture* keyboard_activation_fixture = nullptr;
 RuntimeFixture* scroll_routing_fixture = nullptr;
+cgpui::WindowRuntime* keyboard_activation_runtime = nullptr;
+cgpui::ElementId keyboard_activation_focus_id{};
 
 void dispatch_click_focus_sequence() {
   auto& callback = click_focus_fixture->window.callback;
@@ -36,6 +39,20 @@ void dispatch_reverse_focus_traversal_sequence() {
       .key_code = 9,
       .action = cgpui::KeyAction::pressed,
       .modifiers = {.shift = true}});
+}
+
+void dispatch_keyboard_activation_sequence() {
+  if (keyboard_activation_runtime != nullptr &&
+      keyboard_activation_focus_id.value != 0) {
+    keyboard_activation_runtime->request_keyboard_focus(keyboard_activation_focus_id);
+  }
+  auto& callback = keyboard_activation_fixture->window.callback;
+  callback(cgpui::KeyboardKey{
+      .key_code = 13,
+      .action = cgpui::KeyAction::pressed});
+  callback(cgpui::KeyboardKey{
+      .key_code = 32,
+      .action = cgpui::KeyAction::pressed});
 }
 
 void dispatch_scroll_routing_sequence() {
@@ -171,6 +188,128 @@ int test_runtime_clicks_button_widget_focus_and_dispatch_action() {
   return 0;
 }
 
+int test_runtime_enter_space_activate_focused_button() {
+  RuntimeFixture fixture;
+  keyboard_activation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_keyboard_activation_sequence;
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  cgpui::AnyElement button =
+      cgpui::button("dialog.accept")
+          .style(cgpui::Style{}.with_preferred_size(
+              cgpui::Size{.width = 40.0F, .height = 20.0F}))
+          .build();
+  const cgpui::ElementId button_id = tree->set_root(std::move(button));
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  keyboard_activation_runtime = &runtime;
+  keyboard_activation_focus_id = button_id;
+  int action_count = 0;
+  runtime.register_view_action(
+      cgpui::ViewId{1},
+      "dialog.accept",
+      [&](const cgpui::WindowRuntimeContext& context) {
+        action_count += 1;
+        return context.input.keyboard_focus_element_owner == button_id
+                   ? cgpui::EventResult::consumed_event()
+                   : cgpui::EventResult::cancelled_event();
+      });
+  int key_event_count = 0;
+  bool routed_to_button = true;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext&,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::keyboard_key) {
+          return;
+        }
+        key_event_count += 1;
+        routed_to_button =
+            routed_to_button && record.route.target_element_id == button_id &&
+            record.result.consumed && !record.result.cancelled;
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  keyboard_activation_fixture = nullptr;
+  keyboard_activation_runtime = nullptr;
+  keyboard_activation_focus_id = {};
+
+  if (result != 0) {
+    return 413;
+  }
+  if (button_id.value == 0 || action_count != 2 || key_event_count != 2) {
+    return 414;
+  }
+  if (!routed_to_button || fixture.view.keyboard_key_count != 0) {
+    return 415;
+  }
+  return 0;
+}
+int test_runtime_raw_key_handler_controls_keyboard_activation() {
+  RuntimeFixture fixture;
+  keyboard_activation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_keyboard_activation_sequence;
+
+  int key_count = 0;
+  int click_count = 0;
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  cgpui::AnyElement element =
+      cgpui::ElementBuilder::box()
+          .size(cgpui::Size{.width = 40.0F, .height = 20.0F})
+          .focusable()
+          .on_key([&](
+                      const cgpui::KeyboardKey& key,
+                      const cgpui::ElementEventContext& context) {
+            key_count += 1;
+            if (context.gesture != cgpui::ElementGestureKind::none) {
+              return cgpui::EventResult::cancelled_event();
+            }
+            return key.key_code == 32 ? cgpui::EventResult::consumed_event()
+                                      : cgpui::EventResult::unhandled();
+          })
+          .on_click([&](const cgpui::ElementEventContext& context) {
+            if (context.gesture != cgpui::ElementGestureKind::click) {
+              return cgpui::EventResult::cancelled_event();
+            }
+            click_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+  const cgpui::ElementId element_id = tree->set_root(std::move(element));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  keyboard_activation_runtime = &runtime;
+  keyboard_activation_focus_id = element_id;
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  keyboard_activation_fixture = nullptr;
+  keyboard_activation_runtime = nullptr;
+  keyboard_activation_focus_id = {};
+
+  if (result != 0) {
+    return 416;
+  }
+  if (element_id.value == 0 || key_count != 2 || click_count != 1) {
+    return 417;
+  }
+  if (fixture.view.keyboard_key_count != 0) {
+    return 418;
+  }
+  return 0;
+}
 int test_runtime_tabs_focus_forward_over_enabled_focusable_elements() {
   RuntimeFixture fixture;
   focus_traversal_fixture = &fixture;
@@ -1000,6 +1139,15 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_clicks_button_widget_focus_and_dispatch_action(); result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_enter_space_activate_focused_button();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_raw_key_handler_controls_keyboard_activation();
+      result != 0) {
     return result;
   }
   if (const int result = test_runtime_tabs_focus_forward_over_enabled_focusable_elements(); result != 0) {

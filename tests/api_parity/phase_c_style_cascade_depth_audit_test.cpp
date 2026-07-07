@@ -67,7 +67,9 @@ int main() {
       !contains(roadmap,
                 "Step 339 adds focused click/drag gesture synthesis") ||
       !contains(roadmap,
-                "Step 340 should continue the band") ||
+                "Step 340 adds keyboard activation semantics") ||
+      !contains(roadmap,
+                "Step 341 should continue the band") ||
       !contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;
@@ -115,6 +117,16 @@ int main() {
       !contains(ledger_json,
                 "Phase C Step 339 click/drag gesture synthesis")) {
     return 30;
+  }
+  if (!contains(ledger_md,
+                "Phase C Step 340 keyboard activation semantics") ||
+      !contains(ledger_json,
+                "Phase C Step 340 keyboard activation semantics") ||
+      !contains(ledger_md,
+                "should_dispatch_synthesized_keyboard_activation_event") ||
+      !contains(ledger_json,
+                "should_dispatch_synthesized_keyboard_activation_event")) {
+    return 31;
   }
 
   constexpr std::array exclusions{

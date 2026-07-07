@@ -136,7 +136,8 @@ EventResult KeyElement::handle_event(
     return EventResult::unhandled();
   }
   if (const auto* key = std::get_if<KeyboardKey>(&event);
-      key != nullptr && handler_) {
+      key != nullptr && handler_ &&
+      context.gesture == ElementGestureKind::none) {
     return handler_(*key, context);
   }
   return child_ == nullptr || !child_->enabled()

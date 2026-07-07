@@ -651,9 +651,13 @@ expect, keeping each widget in its own module from the first version.
   pointer-down/click/drag gesture metadata, `src/ui/runtime_gesture_synthesis.cpp`
   owns synthesis and dispatch helpers, runtime pointer moves suppress the later
   click as dragging, and `ClickElement` / `ButtonElement` run click handlers
-  only for synthesized click gestures. Step 340 should continue the band with
-  keyboard activation semantics while leaving broad widget behavior, runtime
-  theme switching, and broad resolved-style layout/paint rewrites out.
+  only for synthesized click gestures. Step 340 adds keyboard activation semantics:
+  focused Enter/Space key presses synthesize the same
+  `ElementGestureKind::click` path after raw `on_key(...)` handlers decline,
+  and `KeyElement` delegates synthesized click gestures to child handlers
+  instead of re-running raw key handlers. Step 341 should continue the band
+  with disabled interaction semantics while leaving broad widget behavior,
+  runtime theme switching, and broad resolved-style layout/paint rewrites out.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -979,8 +983,10 @@ rewrites closed. Step 338 adds tab-order/focus-ring metadata through
 `FocusMetadata`, `ElementBuilder::tab_index(...)`, accessibility metadata, and
 `src/ui/runtime_focus_order.cpp`. Step 339 adds focused click/drag gesture
 synthesis through `ElementGestureKind::click`, runtime gesture state, and
-`src/ui/runtime_gesture_synthesis.cpp`. Step 340 should continue the band with
-keyboard activation semantics.
+`src/ui/runtime_gesture_synthesis.cpp`. Step 340 adds keyboard activation
+semantics through focused Enter/Space synthesized clicks and raw-key-handler
+first refusal. Step 341 should continue the band with disabled interaction
+semantics.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

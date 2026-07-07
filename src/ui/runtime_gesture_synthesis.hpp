@@ -19,6 +19,10 @@ void synthesize_pointer_gesture_state(
     const PlatformEvent& event,
     const EventRoute& route);
 
+[[nodiscard]] bool should_dispatch_synthesized_keyboard_activation_event(
+    const PlatformEvent& event,
+    const EventRoute& route);
+
 [[nodiscard]] EventResult dispatch_synthesized_click_event(
     const PlatformEvent& event,
     const EventRoute& route,

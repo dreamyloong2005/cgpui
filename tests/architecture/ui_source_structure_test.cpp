@@ -1966,13 +1966,18 @@ int main() {
     return 82;
   }
   if (runtime_gesture_synthesis_header.empty() ||
-      line_count(runtime_gesture_synthesis_source) > 120 ||
+      line_count(runtime_gesture_synthesis_source) > 160 ||
       !contains(runtime_gesture_synthesis_source,
                 "synthesize_pointer_gesture_state(") ||
       !contains(runtime_gesture_synthesis_source,
+                "should_dispatch_synthesized_keyboard_activation_event(") ||
+      !contains(runtime_gesture_synthesis_source,
                 "dispatch_synthesized_click_event(") ||
       contains(runtime_event_input_source, "clicked_element_id") ||
-      contains(runtime_event_route_dispatch_source, "clicked_element_id")) {
+      contains(runtime_event_route_dispatch_source, "clicked_element_id") ||
+      contains(runtime_event_route_dispatch_source, "key_code == 13") ||
+      contains(runtime_event_route_dispatch_source, "key_code == 32") ||
+      contains(runtime_event_keyboard_source, "ElementGestureKind::click")) {
     return 148;
   }
 

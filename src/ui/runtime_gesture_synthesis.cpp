@@ -1,9 +1,26 @@
 #include "runtime_gesture_synthesis.hpp"
 
+#include <cstdint>
 #include <span>
 #include <variant>
 
 namespace cgpui {
+namespace {
+
+[[nodiscard]] bool no_keyboard_modifiers(KeyboardModifiers modifiers) {
+  return !modifiers.shift && !modifiers.control && !modifiers.alt &&
+         !modifiers.super;
+}
+
+[[nodiscard]] bool is_keyboard_activation_key(const KeyboardKey& key) {
+  constexpr std::uint32_t enter_key_code = 13;
+  constexpr std::uint32_t space_key_code = 32;
+  return key.action == KeyAction::pressed &&
+         (key.key_code == enter_key_code || key.key_code == space_key_code) &&
+         no_keyboard_modifiers(key.modifiers);
+}
+
+} // namespace
 
 void synthesize_pointer_gesture_state(
     ViewInputState& input,
@@ -49,6 +66,14 @@ bool should_dispatch_synthesized_click_event(
   return button != nullptr && button->button == MouseButton::left &&
          !button->pressed && input.clicked_element_id.has_value() &&
          route.target_element_id == input.clicked_element_id;
+}
+
+bool should_dispatch_synthesized_keyboard_activation_event(
+    const PlatformEvent& event,
+    const EventRoute& route) {
+  const auto* key = std::get_if<KeyboardKey>(&event);
+  return key != nullptr && route.target_element_id.has_value() &&
+         is_keyboard_activation_key(*key);
 }
 
 EventResult dispatch_synthesized_click_event(
