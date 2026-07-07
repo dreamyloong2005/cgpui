@@ -13831,3 +13831,55 @@
   100/100.
 - Step 350 is complete on `master`; Step 351 item measurement cache is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 351 Item Measurement Cache
+
+- Created `.worktrees/phase-c-item-measurement-cache` on
+  `codex/phase-c-item-measurement-cache` from
+  `e6ad043 docs: mark phase c step 350 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 351 to keyed uniform-list item measurement caching over the
+  existing snapshot/layout boundary, before large-list recycling and
+  keyboard/pointer selection.
+- Added RED coverage in `tests/ui/scroll_test.cpp`,
+  `tests/ui/element_test.cpp`,
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`, and
+  `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp`; the focused
+  gate failed as expected on missing `UniformListItemMeasurementCache`,
+  `UniformListLayoutSnapshot::measurements`, and
+  `ScrollableListElement::measurement_cache()`.
+- Implemented `UniformListItemMeasurement`,
+  `UniformListItemMeasurementResult`, `UniformListItemMeasurementCache`, and
+  `measure_uniform_list_items(...)` in `include/cgpui/ui/uniform_list.hpp`
+  with non-template bodies in `src/ui/uniform_list_measurement.cpp`.
+  `ScrollableListElement::layout(...)` now records measurement results into
+  the layout snapshot, and `ScrollableListElement::measurement_cache()` exposes
+  keyed cache stats.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `phase_c_focusable_interactable_audit_test`,
+  `task_plan.md`, and `findings.md` so Step 351 evidence is required and the
+  handoff moves to Phase C Step 352 large-list recycling.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Focused behavior/structure/docs checks passed individually after GREEN:
+  `scroll_test/default`, `element_test/default`,
+  `ui_source_structure_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`,
+  `gpui_parity_ledger_test/default`, and
+  `phase_c_focusable_interactable_audit_test/default`.
+- Focused documentation/API/behavior verification passed:
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 6/6.
+- Diff hygiene passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Feature-worktree Windows verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- Feature-worktree WSL Arch Linux verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-phase-c-item-measurement-cache-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-item-measurement-cache -P .`
+  passed 100/100.

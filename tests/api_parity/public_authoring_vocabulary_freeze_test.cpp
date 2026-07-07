@@ -118,12 +118,17 @@ int main() {
       "`v_stack()`",
       "`UniformListVisibleRange`",
       "`UniformListItemIdentity`",
+      "`UniformListItemMeasurement`",
+      "`UniformListItemMeasurementResult`",
       "`UniformListLayoutSnapshot`",
       "`UniformListScrollAnchor`",
+      "`UniformListItemMeasurementCache`",
       "`calculate_uniform_list_visible_range(...)`",
+      "`measure_uniform_list_items(...)`",
       "`capture_uniform_list_scroll_anchor(...)`",
       "`apply_uniform_list_scroll_anchor(...)`",
       "`ScrollableListElement::layout_snapshot()`",
+      "`ScrollableListElement::measurement_cache()`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {

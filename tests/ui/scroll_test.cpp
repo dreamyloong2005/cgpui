@@ -229,6 +229,68 @@ int test_uniform_list_scroll_anchor_preserves_keyed_item_position() {
   return unchanged.x == 5.0F && unchanged.y == 13.0F ? 0 : 17;
 }
 
+int test_uniform_list_item_measurement_cache_reuses_keyed_sizes() {
+  cgpui::UniformListItemMeasurementCache cache;
+  const cgpui::UniformListItemIdentity alpha{
+      .index = 0,
+      .key = cgpui::ElementKey{.value = "alpha"},
+      .element_id = cgpui::ElementId{10},
+      .content_bounds =
+          cgpui::Rect{.origin = {.x = 0.0F, .y = 0.0F},
+                       .size = {.width = 60.0F, .height = 10.0F}},
+  };
+  const cgpui::UniformListItemMeasurementResult first = cache.measure(alpha);
+  if (first.cache_hit || cache.entry_count() != 1 ||
+      cache.lookup_count() != 1 || cache.miss_count() != 1 ||
+      cache.hit_count() != 0 ||
+      first.measurement.size.height != 10.0F) {
+    return 18;
+  }
+
+  const cgpui::UniformListItemIdentity resized_alpha{
+      .index = 0,
+      .key = cgpui::ElementKey{.value = "alpha"},
+      .element_id = cgpui::ElementId{10},
+      .content_bounds =
+          cgpui::Rect{.origin = {.x = 0.0F, .y = 0.0F},
+                       .size = {.width = 60.0F, .height = 22.0F}},
+  };
+  const cgpui::UniformListItemMeasurementResult second =
+      cache.measure(resized_alpha);
+  if (!second.cache_hit || cache.entry_count() != 1 ||
+      cache.lookup_count() != 2 || cache.miss_count() != 1 ||
+      cache.hit_count() != 1 || second.measurement.size.height != 22.0F) {
+    return 19;
+  }
+
+  const std::optional<cgpui::UniformListItemMeasurement> cached =
+      cache.measurement_for(cgpui::ElementKey{.value = "alpha"});
+  if (!cached.has_value() || cached->size.height != 22.0F ||
+      cached->element_id != cgpui::ElementId{10}) {
+    return 20;
+  }
+
+  const std::vector<cgpui::UniformListItemIdentity> batch{
+      resized_alpha,
+      {
+          .index = 1,
+          .key = cgpui::ElementKey{.value = "beta"},
+          .element_id = cgpui::ElementId{11},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 24.0F},
+                           .size = {.width = 60.0F, .height = 12.0F}},
+      },
+  };
+  const std::vector<cgpui::UniformListItemMeasurementResult> measured =
+      cgpui::measure_uniform_list_items(cache, batch);
+  return measured.size() == 2 && measured[0].cache_hit &&
+                 !measured[1].cache_hit && cache.entry_count() == 2 &&
+                 cache.lookup_count() == 4 && cache.miss_count() == 2 &&
+                 cache.hit_count() == 2
+             ? 0
+             : 21;
+}
+
 } // namespace
 
 int main() {
@@ -258,6 +320,11 @@ int main() {
   }
   if (const int result =
           test_uniform_list_scroll_anchor_preserves_keyed_item_position();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_uniform_list_item_measurement_cache_reuses_keyed_sizes();
       result != 0) {
     return result;
   }

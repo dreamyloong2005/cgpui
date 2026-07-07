@@ -126,6 +126,7 @@ class ScrollableListElement : public Element {
   }
 
   [[nodiscard]] const UniformListLayoutSnapshot& layout_snapshot() const;
+  [[nodiscard]] const UniformListItemMeasurementCache& measurement_cache() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
 
   [[nodiscard]] ElementId hit_test(Point point) const override {
@@ -156,6 +157,7 @@ class ScrollableListElement : public Element {
   Style style_;
   mutable VerticalStackElement content_;
   mutable UniformListLayoutSnapshot layout_snapshot_;
+  mutable UniformListItemMeasurementCache measurement_cache_;
 };
 
 } // namespace cgpui

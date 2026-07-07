@@ -2408,3 +2408,17 @@ implementation slice.
   ui_source_structure_test/default` 3/3. The public vocabulary, Markdown/JSON
   parity ledger, complete-replication roadmap, and audit guards now move the
   handoff to Phase C Step 351 item measurement cache.
+
+- Phase C Step 351, item measurement cache, is implemented in
+  `.worktrees/phase-c-item-measurement-cache`: `UniformListItemMeasurement`,
+  `UniformListItemMeasurementResult`, `UniformListItemMeasurementCache`, and
+  `measure_uniform_list_items(...)` live in the focused uniform-list public
+  leaf, with non-template cache bodies in
+  `src/ui/uniform_list_measurement.cpp`. `ScrollableListElement::layout(...)`
+  records measurement results in `UniformListLayoutSnapshot::measurements`,
+  and `ScrollableListElement::measurement_cache()` exposes keyed cache stats
+  without adding large-list recycling or selection behavior. RED coverage
+  failed as expected on missing measurement APIs; GREEN behavior coverage
+  passed `scroll_test/default` and `element_test/default`, and structure/docs
+  guards now require the Step 351 evidence. The handoff moves to Phase C Step
+  352 large-list recycling.

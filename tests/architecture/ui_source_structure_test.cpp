@@ -861,10 +861,16 @@ int main() {
                 "#include \"cgpui/ui/element_button_nodes.hpp\"") ||
       !contains(uniform_list_header, "struct UniformListVisibleRange") ||
       !contains(uniform_list_header, "struct UniformListItemIdentity") ||
+      !contains(uniform_list_header, "struct UniformListItemMeasurement") ||
+      !contains(uniform_list_header,
+                "struct UniformListItemMeasurementResult") ||
       !contains(uniform_list_header, "struct UniformListLayoutSnapshot") ||
       !contains(uniform_list_header, "struct UniformListScrollAnchor") ||
       !contains(uniform_list_header,
+                "class UniformListItemMeasurementCache") ||
+      !contains(uniform_list_header,
                 "calculate_uniform_list_visible_range(") ||
+      !contains(uniform_list_header, "measure_uniform_list_items(") ||
       !contains(uniform_list_header,
                 "capture_uniform_list_scroll_anchor(") ||
       !contains(uniform_list_header, "apply_uniform_list_scroll_anchor(") ||
@@ -872,6 +878,7 @@ int main() {
       !contains(element_scroll_nodes_header,
                 "#include \"cgpui/ui/uniform_list.hpp\"") ||
       !contains(element_scroll_nodes_header, "layout_snapshot() const") ||
+      !contains(element_scroll_nodes_header, "measurement_cache() const") ||
       !contains(element_builder_core_header, "class ElementBuilder") ||
       !contains(element_builder_header,
                 "#include \"cgpui/ui/element_builder_core.hpp\"") ||
@@ -936,6 +943,7 @@ int main() {
       "src/ui/element_flex_node.cpp",
       "src/ui/element_flex_layout.cpp",
       "src/ui/uniform_list.cpp",
+      "src/ui/uniform_list_measurement.cpp",
       "src/ui/element_scroll_layout.cpp",
       "src/ui/element_style_nodes.cpp",
       "src/ui/element_style_paint.cpp",
@@ -957,11 +965,14 @@ int main() {
       line_count(read_source("src/ui/element_flex_node.cpp")) > 120 ||
       line_count(read_source("src/ui/element_flex_layout.cpp")) > 180 ||
       line_count(read_source("src/ui/uniform_list.cpp")) > 120 ||
+      line_count(read_source("src/ui/uniform_list_measurement.cpp")) > 90 ||
       line_count(read_source("src/ui/element_scroll_layout.cpp")) > 140) {
     return 106;
   }
   const std::string uniform_list_source =
       read_source("src/ui/uniform_list.cpp");
+  const std::string uniform_list_measurement_source =
+      read_source("src/ui/uniform_list_measurement.cpp");
   const std::string element_scroll_layout_source =
       read_source("src/ui/element_scroll_layout.cpp");
   if (!contains(uniform_list_source,
@@ -971,9 +982,15 @@ int main() {
       !contains(uniform_list_source,
                 "capture_uniform_list_scroll_anchor(") ||
       !contains(uniform_list_source, "apply_uniform_list_scroll_anchor(") ||
+      !contains(uniform_list_measurement_source,
+                "UniformListItemMeasurementCache::measure(") ||
+      !contains(uniform_list_measurement_source,
+                "measure_uniform_list_items(") ||
       !contains(element_scroll_layout_source,
                 "ScrollableListElement::layout(") ||
       !contains(element_scroll_layout_source, "layout_snapshot_") ||
+      !contains(element_scroll_layout_source, "measurement_cache_") ||
+      !contains(element_scroll_layout_source, "measure_uniform_list_items(") ||
       !contains(element_scroll_layout_source,
                 "apply_uniform_list_scroll_anchor(") ||
       contains(element_scroll_nodes_header,

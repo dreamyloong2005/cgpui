@@ -19,6 +19,11 @@ const UniformListLayoutSnapshot& ScrollableListElement::layout_snapshot()
   return layout_snapshot_;
 }
 
+const UniformListItemMeasurementCache& ScrollableListElement::measurement_cache()
+    const {
+  return measurement_cache_;
+}
+
 LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
   std::optional<UniformListScrollAnchor> scroll_anchor;
   Point offset;
@@ -72,6 +77,8 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
         .content_bounds = *bounds,
     });
   }
+  layout_snapshot_.measurements =
+      measure_uniform_list_items(measurement_cache_, layout_snapshot_.items);
   if (state_ != nullptr && scroll_anchor.has_value()) {
     state_->set_offset(apply_uniform_list_scroll_anchor(
         layout_snapshot_.items,

@@ -188,26 +188,40 @@ int main() {
       !contains(ledger_json, "UniformListVisibleRange") ||
       !contains(ledger_md, "UniformListItemIdentity") ||
       !contains(ledger_json, "UniformListItemIdentity") ||
+      !contains(ledger_md, "UniformListItemMeasurement") ||
+      !contains(ledger_json, "UniformListItemMeasurement") ||
+      !contains(ledger_md, "UniformListItemMeasurementResult") ||
+      !contains(ledger_json, "UniformListItemMeasurementResult") ||
       !contains(ledger_md, "UniformListLayoutSnapshot") ||
       !contains(ledger_json, "UniformListLayoutSnapshot") ||
       !contains(ledger_md, "UniformListScrollAnchor") ||
       !contains(ledger_json, "UniformListScrollAnchor") ||
+      !contains(ledger_md, "UniformListItemMeasurementCache") ||
+      !contains(ledger_json, "UniformListItemMeasurementCache") ||
       !contains(ledger_md, "calculate_uniform_list_visible_range") ||
       !contains(ledger_json, "calculate_uniform_list_visible_range") ||
+      !contains(ledger_md, "measure_uniform_list_items") ||
+      !contains(ledger_json, "measure_uniform_list_items") ||
       !contains(ledger_md, "capture_uniform_list_scroll_anchor") ||
       !contains(ledger_json, "capture_uniform_list_scroll_anchor") ||
       !contains(ledger_md, "apply_uniform_list_scroll_anchor") ||
       !contains(ledger_json, "apply_uniform_list_scroll_anchor") ||
       !contains(ledger_md, "ScrollableListElement::layout_snapshot") ||
       !contains(ledger_json, "ScrollableListElement::layout_snapshot") ||
+      !contains(ledger_md, "ScrollableListElement::measurement_cache") ||
+      !contains(ledger_json, "ScrollableListElement::measurement_cache") ||
       !contains(ledger_md, "src/ui/uniform_list.cpp") ||
       !contains(ledger_json, "src/ui/uniform_list.cpp") ||
+      !contains(ledger_md, "src/ui/uniform_list_measurement.cpp") ||
+      !contains(ledger_json, "src/ui/uniform_list_measurement.cpp") ||
       !contains(ledger_md, "src/ui/element_scroll_layout.cpp") ||
       !contains(ledger_json, "src/ui/element_scroll_layout.cpp") ||
       !contains(ledger_md, "Phase C Step 350 scroll anchoring") ||
       !contains(ledger_json, "Phase C Step 350 scroll anchoring") ||
+      !contains(ledger_md, "Phase C Step 351 item measurement cache") ||
+      !contains(ledger_json, "Phase C Step 351 item measurement cache") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 351 item measurement cache\"")) {
+                "\"next_step\": \"Phase C Step 352 large-list recycling\"")) {
     return 50;
   }
 

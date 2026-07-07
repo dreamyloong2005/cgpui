@@ -6430,3 +6430,25 @@
 - Step 351 should continue uniform list parity with item measurement cache.
   Keep recycling and keyboard/pointer selection for later slices unless that
   slice explicitly owns them.
+
+## 2026-07-08 Phase C Step 351 Item Measurement Cache
+
+- Step 351 stays scoped to keyed item measurement caching over the existing
+  `UniformListLayoutSnapshot` boundary. It should not add large-list item
+  recycling, keyboard/pointer selection, cache eviction, or a new layout
+  engine.
+- Durable public ownership remains `include/cgpui/ui/uniform_list.hpp`; the
+  focused non-template cache implementation lives in
+  `src/ui/uniform_list_measurement.cpp` rather than the existing range/anchor
+  source file.
+- `UniformListItemMeasurementCache::measure(...)` treats a stable key as a
+  cache hit, updates the stored size from the latest layout bounds, and tracks
+  entry, lookup, hit, and miss counts. This gives later recycling work a
+  reusable measurement boundary while preserving current full child layout.
+- `ScrollableListElement::layout(...)` records
+  `UniformListLayoutSnapshot::measurements` before applying the scroll-anchor
+  offset and exposes `ScrollableListElement::measurement_cache()` for tests and
+  diagnostics.
+- Step 352 should continue uniform list parity with large-list recycling over
+  this measurement cache. Keep keyboard/pointer selection for the later
+  selection slice unless Step 352 explicitly owns it.

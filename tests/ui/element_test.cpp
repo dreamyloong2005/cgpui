@@ -5244,6 +5244,55 @@ int test_scrollable_list_anchors_keyed_item_after_preceding_size_change() {
   return 0;
 }
 
+int test_scrollable_list_records_item_measurement_cache_hits() {
+  cgpui::ScrollState state;
+  cgpui::AnyElement element =
+      cgpui::scrollable_list(state)
+          .size(50.0F, 25.0F)
+          .gap(2.0F)
+          .item("alpha", cgpui::div().size(50.0F, 10.0F))
+          .item("beta", cgpui::div().size(50.0F, 12.0F))
+          .build();
+
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr) {
+    return 382;
+  }
+
+  (void)list->layout(cgpui::LayoutInput{});
+  const cgpui::UniformListLayoutSnapshot& first_snapshot =
+      list->layout_snapshot();
+  if (first_snapshot.measurements.size() != 2 ||
+      first_snapshot.measurements[0].cache_hit ||
+      first_snapshot.measurements[1].cache_hit ||
+      first_snapshot.measurements[0].measurement.size.height != 10.0F ||
+      first_snapshot.measurements[1].measurement.size.height != 12.0F) {
+    return 383;
+  }
+  if (list->measurement_cache().entry_count() != 2 ||
+      list->measurement_cache().lookup_count() != 2 ||
+      list->measurement_cache().miss_count() != 2 ||
+      list->measurement_cache().hit_count() != 0) {
+    return 384;
+  }
+
+  state.set_offset(cgpui::Point{.x = 0.0F, .y = 4.0F});
+  (void)list->layout(cgpui::LayoutInput{});
+  const cgpui::UniformListLayoutSnapshot& second_snapshot =
+      list->layout_snapshot();
+  if (second_snapshot.measurements.size() != 2 ||
+      !second_snapshot.measurements[0].cache_hit ||
+      !second_snapshot.measurements[1].cache_hit) {
+    return 385;
+  }
+  return list->measurement_cache().entry_count() == 2 &&
+                 list->measurement_cache().lookup_count() == 4 &&
+                 list->measurement_cache().miss_count() == 2 &&
+                 list->measurement_cache().hit_count() == 2
+             ? 0
+             : 386;
+}
+
 int test_hidden_overflow_intersects_nested_scrollable_list_clip() {
   cgpui::ScrollState state;
   cgpui::AnyElement list =
@@ -5973,6 +6022,11 @@ int main() {
   }
   if (const int result =
           test_scrollable_list_anchors_keyed_item_after_preceding_size_change();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scrollable_list_records_item_measurement_cache_hits();
       result != 0) {
     return result;
   }
