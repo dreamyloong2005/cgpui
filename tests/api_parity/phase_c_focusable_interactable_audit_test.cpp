@@ -248,8 +248,12 @@ int main() {
       !contains(ledger_json, "Phase C Step 352 large-list recycling") ||
       !contains(ledger_md, "Phase C Step 353 keyboard/pointer selection") ||
       !contains(ledger_json, "Phase C Step 353 keyboard/pointer selection") ||
+      !contains(ledger_md, "Phase C Step 354 uniform list closeout") ||
+      !contains(ledger_json, "Phase C Step 354 uniform list closeout") ||
+      !contains(ledger_md, "phase_c_uniform_list_audit_test.cpp") ||
+      !contains(ledger_json, "phase_c_uniform_list_audit_test.cpp") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 354 uniform list closeout\"")) {
+                "\"next_step\": \"Phase C Step 355 window/examples widgets\"")) {
     return 50;
   }
 

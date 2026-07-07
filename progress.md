@@ -14061,3 +14061,40 @@
   100/100.
 - Step 353 is complete on `master`; Step 354 uniform list closeout is the next
   Phase C slice.
+
+## 2026-07-08 Phase C Step 354 Uniform List Closeout
+
+- Created `.worktrees/phase-c-uniform-list-closeout` on
+  `codex/phase-c-uniform-list-closeout` from
+  `1e47eac docs: mark phase c step 353 merged`.
+- Scoped Step 354 to an audit/docs-only closeout over the existing Step
+  349-353 uniform-list surface. No runtime or widget behavior is added in this
+  slice.
+- Added RED coverage in
+  `tests/api_parity/phase_c_uniform_list_audit_test.cpp` and registered it in
+  `xmake.lua`.
+- The focused RED run
+  `xmake test -y -P . phase_c_uniform_list_audit_test/default` failed as
+  expected because the roadmap, ledger, and vocabulary still described Step
+  354 as the pending handoff.
+- Updated the complete-replication roadmap, Markdown/JSON parity ledger,
+  public authoring vocabulary, and existing parity/audit guards so Steps
+  349-354 are closed, `gpui uniform_list` is adapted/closed, and the handoff
+  moves to Phase C Step 355 window/examples widgets.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . phase_c_uniform_list_audit_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 4/4.
+- Diff hygiene passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Feature-worktree Windows verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed
+  104/104.
+- Feature-worktree WSL Arch Linux verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-phase-c-uniform-list-closeout-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-uniform-list-closeout -P .`
+  passed 101/101.

@@ -2451,3 +2451,10 @@ implementation slice.
   expected RED failure for missing selection APIs. The public vocabulary,
   Markdown/JSON parity ledger, complete-replication roadmap, and audit guards
   now move the handoff to Phase C Step 354 uniform list closeout.
+- Phase C Step 354, uniform list closeout, is implemented in
+  `.worktrees/phase-c-uniform-list-closeout` as an audit-only slice:
+  `tests/api_parity/phase_c_uniform_list_audit_test.cpp` guards the Steps
+  349-353 uniform-list evidence, the roadmap marks Steps 349-354 complete,
+  the parity ledger moves `gpui uniform_list` to adapted/closed state, and the
+  handoff moves to Phase C Step 355 window/examples widgets. No runtime or
+  widget behavior was added.

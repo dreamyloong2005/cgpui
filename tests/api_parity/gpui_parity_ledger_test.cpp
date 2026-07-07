@@ -632,6 +632,7 @@ int main() {
               "Phase C Step 352 large-list recycling",
               "Phase C Step 353 keyboard/pointer selection",
               "Phase C Step 354 uniform list closeout",
+              "phase_c_uniform_list_audit_test.cpp",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -1617,6 +1618,8 @@ int main() {
                 "target(\"phase_c_style_cascade_depth_audit_test\")") ||
       !contains(xmake,
                 "target(\"phase_c_focusable_interactable_audit_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_uniform_list_audit_test\")") ||
       !contains(xmake, "target(\"builtin_widget_test\")") ||
       !contains(xmake, "target(\"widget_source_structure_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
@@ -1706,6 +1709,8 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_focusable_interactable_audit_test.cpp") ||
+      !contains(xmake,
+                "tests/api_parity/phase_c_uniform_list_audit_test.cpp") ||
       !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
       !contains(
           xmake,

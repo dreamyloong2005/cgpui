@@ -155,7 +155,10 @@ list layout boundary. Phase C Step 352 adds a retained/recycled window over the
 visible range plus overscan so scrollable lists can skip painting items outside
 the recycled large-list window. Phase C Step 353 adds pointer hit selection,
 keyboard previous/next/first/last movement, and snapshot selected-state
-marking through focused uniform-list selection helpers.
+marking through focused uniform-list selection helpers. Phase C Step 354 closes the uniform-list band with
+`tests/api_parity/phase_c_uniform_list_audit_test.cpp`, freezing the focused
+uniform-list public vocabulary and source ownership evidence before Step 355
+starts the window/examples widget band.
 
 ## Out of scope for this freeze
 

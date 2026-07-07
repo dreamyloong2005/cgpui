@@ -715,7 +715,7 @@ expect, keeping each widget in its own module from the first version.
   `v_flex()`, `h_stack()`, and `v_stack()` through the focused widget builder
   aggregate and guarding the module boundary with
   `tests/architecture/widget_source_structure_test.cpp`.
-- [ ] Steps 349-354: Implement uniform list parity: stable item identity,
+- [x] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection. Step 349 starts this
   band with stable item identity and the first virtualized visible-range
@@ -990,12 +990,14 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 354 should close the uniform-list parity band with audit/docs evidence
-from the frozen Phase B public authoring boundary after the focused layout,
-style, focusable/interactable, built-in widget, Step 349 stable identity/range,
-Step 350 scroll anchoring, Step 351 item measurement cache, Step 352 recycling,
-and Step 353 keyboard/pointer selection boundaries from Steps 319-353. The
-Phase B public authoring boundary remains the source of truth for this slice.
+Step 355 should start the window/examples widget band from the closed
+uniform-list boundary. Step 354 closes the uniform-list band through
+`tests/api_parity/phase_c_uniform_list_audit_test.cpp`, guarding the focused
+layout, style, focusable/interactable, built-in widget, Step 349 stable
+identity/range, Step 350 scroll anchoring, Step 351 item measurement cache,
+Step 352 recycling, and Step 353 keyboard/pointer selection evidence from
+Steps 319-353. The Phase B public authoring boundary remains the source of
+truth for this next slice.
 Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320
 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
@@ -1078,8 +1080,7 @@ tint metadata over the existing image asset descriptor and paint command path.
 Step 348 closes the built-in widget band with focused container primitive
 free-function authoring through `include/cgpui/ui/container_builder.hpp`,
 `src/ui/widgets/container_builder.cpp`, and `div()`, `h_flex()`, `v_flex()`,
-`h_stack()`, and `v_stack()` public vocabulary. Step 349 starts uniform list
-parity with `UniformListVisibleRange`, `UniformListItemIdentity`,
+`h_stack()`, and `v_stack()` public vocabulary. Step 349 starts uniform list parity with `UniformListVisibleRange`, `UniformListItemIdentity`,
 `UniformListLayoutSnapshot`, `calculate_uniform_list_visible_range(...)`, and
 `ScrollableListElement::layout_snapshot()` over the existing
 `scrollable_list` path. Step 350 adds keyed scroll anchoring through
@@ -1100,7 +1101,11 @@ painting. Step 353 adds `UniformListSelectionSource`,
 `move_uniform_list_selection(...)`, `ScrollableListElement::selection()`,
 focused `src/ui/uniform_list_selection.cpp` and
 `src/ui/element_scroll_events.cpp` ownership, and snapshot selected flags.
-Keep the Phase B closeout exclusions out of the Step 354 closeout slice:
+Step 354 closes the uniform-list band through
+`tests/api_parity/phase_c_uniform_list_audit_test.cpp`, guarding the Steps
+349-353 evidence and the explicit Step 355 handoff. Step 355 starts the window/examples widget band for menu demos, shadow, window positioning, window
+shadow, and input examples using public APIs. Keep the Phase B closeout
+exclusions out of the Step 354 closeout record and subsequent Step 355 start:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
 

@@ -6501,3 +6501,24 @@
   Unhandled or non-moving key events continue to the list content.
 - Step 354 should close the uniform-list band with audit/docs evidence before
   Phase C moves to the Steps 355-360 window/examples widget band.
+
+## 2026-07-08 Phase C Step 354 Uniform List Closeout
+
+- Step 354 is an audit-only closeout over the existing Step 349-353
+  uniform-list work. It should not add runtime behavior, widget behavior,
+  multi-select/range selection, cache eviction, new layout engines,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- Durable coverage for the closeout is the new
+  `tests/api_parity/phase_c_uniform_list_audit_test.cpp` target, registered in
+  `xmake.lua`. It guards the roadmap checkbox, the Markdown/JSON parity
+  ledger evidence, the public authoring vocabulary freeze, and the Step 355
+  window/examples handoff.
+- The `gpui uniform_list` ledger row can move from Required to Adapted because
+  the focused Phase C uniform-list band now has stable identity/range,
+  anchoring, measurement cache, recycling, keyboard/pointer selection, and an
+  audit gate. Future production-depth list work can still be tracked as new
+  rows or later phase depth, but it should not keep this Phase C band open.
+- Step 355 should start the window/examples widget band for menu demos,
+  shadow, window positioning, window shadow, and input examples using public
+  APIs.
