@@ -2197,3 +2197,19 @@ implementation slice.
   with JSON validation, Windows debug config, Windows full debug 100/100, WSL
   Arch Linux debug config, and WSL Arch Linux full debug 97/97. Step 341
   disabled interaction semantics is the next focused Phase C slice.
+
+- Phase C Step 341, disabled interaction semantics, is implemented in
+  `.worktrees/phase-c-disabled-interaction`: focused
+  `WindowRuntime::refresh_disabled_interaction_state()` ownership lives in
+  `src/ui/runtime_disabled_interaction.cpp` and clears stale hover, active,
+  keyboard focus, element-owned pointer capture, pointer-down, clicked, and
+  dragging state when the owning element becomes disabled or missing. The
+  helper restores the default cursor for invalid hover state and keeps broad
+  widget behavior, runtime theme switching, and broad resolved-style
+  layout/paint rewrites out. Behavior coverage lives in
+  `tests/ui/window_runtime_input_test.cpp`; structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`. Focused Windows GREEN
+  verification passed `xmake test -y -P .
+  window_runtime_input_test/default ui_source_structure_test/default` 2/2.
+  Step 342 focusable/interactable band closeout is the next focused Phase C
+  slice after Step 341 lands.

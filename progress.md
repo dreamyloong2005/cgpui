@@ -13182,3 +13182,57 @@
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
 - Step 340 is complete on `master`; Step 341 disabled interaction semantics is
   the next Phase C focusable/interactable slice.
+
+## 2026-07-07 Phase C Step 341 Disabled Interaction Semantics
+
+- Continued `.worktrees/phase-c-disabled-interaction` on
+  `codex/phase-c-disabled-interaction` from
+  `22dfdfd docs: mark phase c step 340 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files catchup helper at the `.codex`
+  skill path, and confirmed the handoff RED state: behavior fails because
+  disabled state is not cleared, while structure fails until
+  `src/ui/runtime_disabled_interaction.cpp` exists.
+- GREEN adds `WindowRuntime::refresh_disabled_interaction_state()` in focused
+  `src/ui/runtime_disabled_interaction.cpp`, called from the event pipeline
+  after `update_active_state_for_event(...)` and before focus/key/text
+  dispatch. The helper clears stale hover, active, keyboard-focus,
+  element-owned pointer capture, pointer-down, clicked, and dragging state for
+  disabled or missing elements and restores the default cursor for invalid
+  hover state.
+- Updated the prior disabled-hover cursor expectation so disabled hover clears
+  the hovered element id as well as the cursor.
+- The first GREEN attempt exposed a legacy `set_element_root(...)` hover path:
+  child ids in unowned static element hierarchies must be found recursively
+  before treating an element as missing. Added focused recursive lookup for
+  existing element container/wrapper types.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . window_runtime_input_test/default
+  ui_source_structure_test/default` passed 2/2.
+  `src/ui/runtime_disabled_interaction.cpp` is 111 lines and
+  `src/ui/window_runtime_internal.hpp` is 259 lines, under their structure
+  caps.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the style-cascade
+  audit guard, the complete replication roadmap, `task_plan.md`, and
+  `findings.md` with Step 341 evidence. The next tracked Phase C slice is
+  Step 342 focusable/interactable band closeout.
+- Windows full debug initially exposed stale missing-element cleanup on tests
+  that intentionally route focus/key state through element ids before
+  installing an element tree/root. The helper now treats ids as not-missing
+  when no inspectable element surface exists, preserving those runtime routing
+  token tests while still clearing disabled/missing ids once an element tree or
+  static root is present.
+- The focused failure cluster rerun passed:
+  `xmake test -y -P . command_palette_key_integration_test/default
+  keymap_context_test/default test_context_focus_activation_test/default
+  window_runtime_focus_test/default window_runtime_text_test/default
+  window_runtime_input_test/default ui_source_structure_test/default` passed
+  7/7.
+- Feature-worktree Windows verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/ledger/structure gates passed 6/6,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 100/100.
+- Feature-worktree WSL Arch Linux verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.

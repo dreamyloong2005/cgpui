@@ -10,9 +10,8 @@ void update_hover_cursor_for_event(
     std::optional<ElementId> hit_element_id);
 void request_style_state_invalidation(std::optional<ElementId> previous, std::optional<ElementId> next);
 void update_active_state_for_event(const PlatformEvent& event);
-void resolve_event_route_target(
-    const PlatformEvent& event,
-    std::optional<ElementId> hit_element_id);
+void refresh_disabled_interaction_state();
+void resolve_event_route_target(const PlatformEvent& event, std::optional<ElementId> hit_element_id);
 void apply_focus_activation_for_event(const PlatformEvent& event);
 void apply_keyboard_bindings_for_event(const PlatformEvent& event);
 [[nodiscard]] bool dispatch_key_binding_for_event(const KeyboardKey& key);

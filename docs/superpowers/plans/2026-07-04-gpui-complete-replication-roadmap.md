@@ -655,9 +655,14 @@ expect, keeping each widget in its own module from the first version.
   focused Enter/Space key presses synthesize the same
   `ElementGestureKind::click` path after raw `on_key(...)` handlers decline,
   and `KeyElement` delegates synthesized click gestures to child handlers
-  instead of re-running raw key handlers. Step 341 should continue the band
-  with disabled interaction semantics while leaving broad widget behavior,
-  runtime theme switching, and broad resolved-style layout/paint rewrites out.
+  instead of re-running raw key handlers. Step 341 adds disabled interaction
+  semantics: `WindowRuntime::refresh_disabled_interaction_state()` in focused
+  `src/ui/runtime_disabled_interaction.cpp` clears stale hover, active, focus,
+  element-owned pointer capture, pointer-down, click, and drag state when the
+  owning element becomes disabled or missing, restores the default cursor, and
+  keeps broad widget behavior, runtime theme switching, and broad
+  resolved-style layout/paint rewrites out. Step 342 should close the
+  focusable/interactable band before built-in widget expansion starts.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -937,9 +942,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 337 should open the focusable/interactable semantics band from the frozen
+Step 342 should close the focusable/interactable semantics band from the frozen
 Phase B public authoring boundary after the focused layout and style bands from
-Steps 319-330. Step 319 landed the child-list foundation on `master` at
+Steps 319-341. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -985,8 +990,11 @@ rewrites closed. Step 338 adds tab-order/focus-ring metadata through
 synthesis through `ElementGestureKind::click`, runtime gesture state, and
 `src/ui/runtime_gesture_synthesis.cpp`. Step 340 adds keyboard activation
 semantics through focused Enter/Space synthesized clicks and raw-key-handler
-first refusal. Step 341 should continue the band with disabled interaction
-semantics.
+first refusal. Step 341 adds disabled interaction semantics through
+`WindowRuntime::refresh_disabled_interaction_state()`, focused
+`src/ui/runtime_disabled_interaction.cpp` ownership, and stale interaction
+state cleanup for disabled or missing elements. Step 342 should close the
+focusable/interactable band.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

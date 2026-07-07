@@ -1954,6 +1954,8 @@ int main() {
       read_source("src/ui/runtime_gesture_synthesis.hpp");
   const std::string runtime_gesture_synthesis_source =
       read_source("src/ui/runtime_gesture_synthesis.cpp");
+  const std::string runtime_disabled_interaction_source =
+      read_source("src/ui/runtime_disabled_interaction.cpp");
   if (line_count(runtime_event_route_dispatch_source) > 90 ||
       !contains(runtime_event_route_dispatch_source,
                 "WindowRuntime::action_dispatch_view_id(") ||
@@ -1979,6 +1981,19 @@ int main() {
       contains(runtime_event_route_dispatch_source, "key_code == 32") ||
       contains(runtime_event_keyboard_source, "ElementGestureKind::click")) {
     return 148;
+  }
+  if (runtime_disabled_interaction_source.empty() ||
+      line_count(runtime_disabled_interaction_source) > 120 ||
+      !contains(runtime_disabled_interaction_source,
+                "refresh_disabled_interaction_state(") ||
+      !contains(runtime_disabled_interaction_source,
+                "pointer_capture_owner_") ||
+      !contains(runtime_disabled_interaction_source,
+                "keyboard_focus_element_owner_") ||
+      contains(runtime_event_input_source, "pointer_capture_owner_.reset()") ||
+      contains(runtime_event_route_dispatch_source,
+               "refresh_disabled_interaction_state(")) {
+    return 149;
   }
 
   const std::string runtime_context_source =

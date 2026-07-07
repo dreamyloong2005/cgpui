@@ -69,7 +69,9 @@ int main() {
       !contains(roadmap,
                 "Step 340 adds keyboard activation semantics") ||
       !contains(roadmap,
-                "Step 341 should continue the band") ||
+                "Step 341 adds disabled interaction semantics") ||
+      !contains(roadmap,
+                "Step 342 should close the focusable/interactable semantics band") ||
       !contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;
@@ -127,6 +129,18 @@ int main() {
       !contains(ledger_json,
                 "should_dispatch_synthesized_keyboard_activation_event")) {
     return 31;
+  }
+  if (!contains(ledger_md,
+                "Phase C Step 341 disabled interaction semantics") ||
+      !contains(ledger_json,
+                "Phase C Step 341 disabled interaction semantics") ||
+      !contains(ledger_md,
+                "WindowRuntime::refresh_disabled_interaction_state") ||
+      !contains(ledger_json,
+                "WindowRuntime::refresh_disabled_interaction_state") ||
+      !contains(ledger_md, "runtime_disabled_interaction.cpp") ||
+      !contains(ledger_json, "runtime_disabled_interaction.cpp")) {
+    return 32;
   }
 
   constexpr std::array exclusions{

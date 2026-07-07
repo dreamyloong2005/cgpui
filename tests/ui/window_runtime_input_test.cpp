@@ -1895,11 +1895,130 @@ int test_runtime_clears_cursor_when_hovered_element_becomes_disabled() {
   if (first_cursor != cgpui::CursorShape::text) {
     return 287;
   }
-  if (!second_hover.has_value() || *second_hover != root_id) {
+  if (second_hover.has_value()) {
     return 288;
   }
   if (second_cursor != cgpui::CursorShape::default_arrow) {
     return 289;
+  }
+  return 0;
+}
+
+RuntimeFixture* disabled_interaction_fixture = nullptr;
+cgpui::WindowRuntime* disabled_interaction_runtime = nullptr;
+cgpui::ElementId disabled_interaction_element_id{};
+
+void dispatch_disabled_interaction_state_sequence() {
+  if (disabled_interaction_runtime != nullptr &&
+      disabled_interaction_element_id.value != 0) {
+    disabled_interaction_runtime->request_keyboard_focus(
+        disabled_interaction_element_id);
+    disabled_interaction_runtime->capture_pointer(
+        cgpui::PointerCaptureOwner::element(disabled_interaction_element_id));
+  }
+  auto& callback = disabled_interaction_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {5.0F, 5.0F}});
+  callback(cgpui::KeyboardKey{
+      .key_code = 65,
+      .action = cgpui::KeyAction::pressed});
+}
+
+int test_runtime_clears_disabled_interaction_state() {
+  RuntimeFixture fixture;
+  disabled_interaction_fixture = &fixture;
+  fixture.app.on_run = &dispatch_disabled_interaction_state_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  std::unique_ptr<cgpui::Element> root =
+      cgpui::ElementBuilder::box()
+          .size(cgpui::Size{.width = 40.0F, .height = 20.0F})
+          .focusable()
+          .build();
+  cgpui::Element* root_ptr = root.get();
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+  runtime.set_element_cursor(root_id, cgpui::CursorShape::text);
+  disabled_interaction_runtime = &runtime;
+  disabled_interaction_element_id = root_id;
+
+  std::optional<cgpui::ElementId> hover_before_disable;
+  std::optional<cgpui::ElementId> active_before_disable;
+  std::optional<cgpui::ElementId> pointer_down_before_disable;
+  std::optional<cgpui::PointerCaptureOwner> capture_before_disable;
+  std::optional<cgpui::ElementId> hover_after_disable;
+  std::optional<cgpui::ElementId> active_after_disable;
+  std::optional<cgpui::ElementId> pointer_down_after_disable;
+  std::optional<cgpui::ElementId> focus_after_disable;
+  std::optional<cgpui::PointerCaptureOwner> capture_after_disable;
+  cgpui::CursorShape cursor_after_disable = cgpui::CursorShape::text;
+  bool dragging_after_disable = true;
+  int pointer_button_count = 0;
+  int key_event_count = 0;
+
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_moved) {
+          hover_before_disable = context.input.hovered_element_id;
+          capture_before_disable = context.input.pointer_capture_owner;
+        } else if (record.event_kind == cgpui::EventKind::pointer_button) {
+          pointer_button_count += 1;
+          active_before_disable = context.input.active_element_id;
+          pointer_down_before_disable = context.input.pointer_down_element_id;
+          root_ptr->set_enabled(false);
+        } else if (record.event_kind == cgpui::EventKind::keyboard_key) {
+          key_event_count += 1;
+          hover_after_disable = context.input.hovered_element_id;
+          active_after_disable = context.input.active_element_id;
+          pointer_down_after_disable = context.input.pointer_down_element_id;
+          focus_after_disable = context.input.keyboard_focus_element_owner;
+          capture_after_disable = context.input.pointer_capture_owner;
+          cursor_after_disable = context.input.cursor_shape;
+          dragging_after_disable = context.input.dragging;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  disabled_interaction_fixture = nullptr;
+  disabled_interaction_runtime = nullptr;
+  disabled_interaction_element_id = {};
+
+  if (result != 0) {
+    return 904;
+  }
+  if (root_id.value == 0 || pointer_button_count != 1 ||
+      key_event_count != 1) {
+    return 905;
+  }
+  if (hover_before_disable != root_id || active_before_disable != root_id ||
+      pointer_down_before_disable != root_id ||
+      capture_before_disable !=
+          cgpui::PointerCaptureOwner::element(root_id)) {
+    return 906;
+  }
+  if (hover_after_disable.has_value() || active_after_disable.has_value() ||
+      pointer_down_after_disable.has_value() ||
+      focus_after_disable.has_value() || capture_after_disable.has_value() ||
+      dragging_after_disable ||
+      cursor_after_disable != cgpui::CursorShape::default_arrow) {
+    return 907;
+  }
+  if (fixture.view.keyboard_key_count != 1) {
+    return 908;
   }
   return 0;
 }
@@ -2361,6 +2480,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_clears_cursor_when_hovered_element_becomes_disabled(); result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_clears_disabled_interaction_state();
+      result != 0) {
     return result;
   }
   if (const int result = test_view_context_binds_cursor_shape_to_element(); result != 0) {

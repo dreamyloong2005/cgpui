@@ -19,6 +19,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
   resolve_event_route_target(event, hit_element_id);
   refresh_route_ancestry(*current_event_route_);
   update_active_state_for_event(event);
+  refresh_disabled_interaction_state();
   apply_focus_activation_for_event(event);
   apply_keyboard_bindings_for_event(event);
   apply_text_input_for_event(event);

@@ -6128,3 +6128,23 @@
   focusable/interactable band. Keep broad widget behavior, runtime theme
   switching, and broad resolved-style layout/paint rewrites out unless that
   slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 341 Disabled Interaction Semantics
+
+- Step 341 stays scoped to clearing stale runtime interaction state when an
+  element already participating in input state becomes disabled or disappears.
+  It should not add broad widget behavior, runtime theme switching, or broad
+  resolved-style layout/paint rewrites.
+- Durable ownership is focused `src/ui/runtime_disabled_interaction.cpp` via
+  `WindowRuntime::refresh_disabled_interaction_state()`. `runtime_events.cpp`
+  delegates to the helper after active-state updates and before focus/key/text
+  dispatch so the next event observes cleaned state.
+- Disabled and missing elements are treated the same for element-owned hover,
+  active, keyboard focus, pointer capture, pointer-down, clicked, and dragging
+  state. View-owned pointer capture remains untouched.
+- The helper must preserve legacy `set_element_root(...)` behavior by finding
+  child elements in unowned static element hierarchies before deciding an id
+  is missing. Otherwise existing hover-state tests that use a stack root with
+  assigned child ids lose valid hover state.
+- Step 342 should close the focusable/interactable band before Phase C moves
+  into built-in widget expansion.
