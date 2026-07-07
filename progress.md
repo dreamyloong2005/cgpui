@@ -14174,3 +14174,25 @@
   passed 105/105 and WSL Arch Linux `XMAKE_ROOT=y xmake test -w
   /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-widgets -P .`
   passed 102/102.
+
+## 2026-07-08 Phase C Step 355 Merge
+
+- Fast-forward merged `codex/phase-c-window-example-widgets` into root
+  `master` at `52e0957 test: add phase c public window examples`; root
+  `master` still had no tracked diff and only the existing untracked
+  `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 105/105.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-master-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  102/102.
+- Step 355 is complete on `master`; Step 356 window/examples widget deepening
+  is the next Phase C slice.
