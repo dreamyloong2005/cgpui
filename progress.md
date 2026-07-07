@@ -13883,3 +13883,30 @@
   exited 0, and
   `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-item-measurement-cache -P .`
   passed 100/100.
+
+## 2026-07-08 Phase C Step 351 Merge
+
+- Fast-forward merged `codex/phase-c-item-measurement-cache` into root
+  `master` at `2787408 feat: add uniform list item measurement cache`; root
+  `master` still had no tracked diff and only the existing untracked
+  `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Two parallel post-merge Windows full-test attempts failed only
+  `clipboard_test/default`; the targeted rerun
+  `xmake test -P . clipboard_test/default` passed 1/1, so the failure is
+  recorded as Windows system-clipboard shared-resource noise rather than a
+  Step 351 regression.
+- Verified post-merge Windows full debug with serial test scheduling:
+  `xmake test -j 1 -P .` passed 103/103.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-master-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  100/100.
+- Step 351 is complete on `master`; Step 352 large-list recycling is the next
+  Phase C slice.
