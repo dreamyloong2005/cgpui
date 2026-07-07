@@ -36,6 +36,24 @@ bool same_rect(cgpui::Rect lhs, cgpui::Rect rhs) {
 
 class TestElement final : public cgpui::Element {};
 
+class MutableSizeElement final : public cgpui::Element {
+ public:
+  explicit MutableSizeElement(cgpui::Size size) : size_(size) {}
+
+  void set_size(cgpui::Size size) {
+    size_ = size;
+  }
+
+  [[nodiscard]] cgpui::LayoutOutput layout(
+      cgpui::LayoutInput input) const override {
+    (void)input;
+    return cgpui::LayoutOutput{.size = size_};
+  }
+
+ private:
+  cgpui::Size size_;
+};
+
 class NamedElement final : public cgpui::Element {
  public:
   explicit NamedElement(int value) : value_(value) {}
@@ -5168,6 +5186,64 @@ int test_scrollable_list_records_stable_identity_and_visible_range() {
   return beta_bounds.has_value() && beta_bounds->origin.y == -1.0F ? 0 : 377;
 }
 
+int test_scrollable_list_anchors_keyed_item_after_preceding_size_change() {
+  cgpui::ScrollState state;
+  auto alpha = std::make_unique<MutableSizeElement>(
+      cgpui::Size{.width = 50.0F, .height = 10.0F});
+  MutableSizeElement* alpha_ptr = alpha.get();
+  cgpui::AnyElement element =
+      cgpui::scrollable_list(state)
+          .size(50.0F, 25.0F)
+          .gap(2.0F)
+          .item("alpha", std::move(alpha))
+          .item("beta",
+                std::make_unique<MutableSizeElement>(
+                    cgpui::Size{.width = 50.0F, .height = 10.0F}))
+          .item("gamma",
+                std::make_unique<MutableSizeElement>(
+                    cgpui::Size{.width = 50.0F, .height = 10.0F}))
+          .item("delta",
+                std::make_unique<MutableSizeElement>(
+                    cgpui::Size{.width = 50.0F, .height = 10.0F}))
+          .build();
+
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr || alpha_ptr == nullptr) {
+    return 378;
+  }
+
+  (void)list->layout(cgpui::LayoutInput{});
+  state.set_offset(cgpui::Point{.x = 0.0F, .y = 13.0F});
+  (void)list->layout(cgpui::LayoutInput{});
+  const std::optional<cgpui::Rect> before_beta_bounds =
+      list->content().children()[1]->layout_bounds();
+  if (!before_beta_bounds.has_value() ||
+      before_beta_bounds->origin.y != -1.0F) {
+    return 379;
+  }
+
+  alpha_ptr->set_size(cgpui::Size{.width = 50.0F, .height = 22.0F});
+  (void)list->layout(cgpui::LayoutInput{});
+
+  const std::optional<cgpui::Rect> after_beta_bounds =
+      list->content().children()[1]->layout_bounds();
+  const cgpui::UniformListLayoutSnapshot& snapshot =
+      list->layout_snapshot();
+  if (state.offset().y != 25.0F || !after_beta_bounds.has_value() ||
+      after_beta_bounds->origin.y != -1.0F) {
+    return 380;
+  }
+  if (snapshot.items.size() != 4 ||
+      snapshot.items[1].key.value != "beta" ||
+      snapshot.items[1].content_bounds.origin.y != 24.0F ||
+      snapshot.visible_range.start_index != 1 ||
+      snapshot.visible_range.end_index != 4) {
+    return 381;
+  }
+
+  return 0;
+}
+
 int test_hidden_overflow_intersects_nested_scrollable_list_clip() {
   cgpui::ScrollState state;
   cgpui::AnyElement list =
@@ -5892,6 +5968,11 @@ int main() {
   }
   if (const int result =
           test_scrollable_list_records_stable_identity_and_visible_range();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scrollable_list_anchors_keyed_item_after_preceding_size_change();
       result != 0) {
     return result;
   }

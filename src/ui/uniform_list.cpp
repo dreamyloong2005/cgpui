@@ -58,4 +58,39 @@ UniformListVisibleRange calculate_uniform_list_visible_range(
   return found_visible ? range : UniformListVisibleRange{};
 }
 
+std::optional<UniformListScrollAnchor> capture_uniform_list_scroll_anchor(
+    std::span<const UniformListItemIdentity> items,
+    Point scroll_offset) {
+  for (const UniformListItemIdentity& item : items) {
+    if (item.content_bounds.size.height <= 0.0F) {
+      continue;
+    }
+    const float item_bottom =
+        item.content_bounds.origin.y + item.content_bounds.size.height;
+    if (item_bottom <= scroll_offset.y) {
+      continue;
+    }
+    return UniformListScrollAnchor{
+        .index = item.index,
+        .key = item.key,
+        .element_id = item.element_id,
+        .viewport_offset_y = item.content_bounds.origin.y - scroll_offset.y,
+    };
+  }
+  return std::nullopt;
+}
+
+Point apply_uniform_list_scroll_anchor(
+    std::span<const UniformListItemIdentity> items,
+    const UniformListScrollAnchor& anchor,
+    Point scroll_offset) {
+  for (const UniformListItemIdentity& item : items) {
+    if (item.key == anchor.key) {
+      scroll_offset.y = item.content_bounds.origin.y - anchor.viewport_offset_y;
+      return scroll_offset;
+    }
+  }
+  return scroll_offset;
+}
+
 } // namespace cgpui

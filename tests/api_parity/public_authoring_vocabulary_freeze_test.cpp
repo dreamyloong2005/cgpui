@@ -119,7 +119,10 @@ int main() {
       "`UniformListVisibleRange`",
       "`UniformListItemIdentity`",
       "`UniformListLayoutSnapshot`",
+      "`UniformListScrollAnchor`",
       "`calculate_uniform_list_visible_range(...)`",
+      "`capture_uniform_list_scroll_anchor(...)`",
+      "`apply_uniform_list_scroll_anchor(...)`",
       "`ScrollableListElement::layout_snapshot()`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {

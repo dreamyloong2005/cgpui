@@ -13760,3 +13760,49 @@
   100/100.
 - Step 349 is complete on `master`; Step 350 scroll anchoring is the next
   Phase C slice.
+
+## 2026-07-08 Phase C Step 350 Scroll Anchoring
+
+- Continued `.worktrees/phase-c-scroll-anchoring` on
+  `codex/phase-c-scroll-anchoring`; root `master` baseline is
+  `9d16ba1 docs: mark phase c step 349 merged`.
+- Step 350 code was already in progress at resume: `UniformListScrollAnchor`,
+  `capture_uniform_list_scroll_anchor(...)`, and
+  `apply_uniform_list_scroll_anchor(...)` were added to
+  `include/cgpui/ui/uniform_list.hpp` and `src/ui/uniform_list.cpp`.
+- `ScrollableListElement::layout(...)` now captures a keyed anchor from the
+  previous uniform-list snapshot before relayout, applies it against the new
+  snapshot after content layout, refreshes `ScrollState`, and recalculates the
+  visible range and shifted child bounds.
+- Behavior coverage lives in `tests/ui/scroll_test.cpp` and
+  `tests/ui/element_test.cpp`; structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`. The focused GREEN gate
+  had already passed:
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default` 3/3.
+- The Windows `rg.exe` WinGet link failed to start while locating Step 350
+  docs/test anchors, so the lookup was retried with PowerShell
+  `Select-String`.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `gpui_parity_ledger_test`,
+  `public_authoring_vocabulary_freeze_test`,
+  `phase_c_focusable_interactable_audit_test`, `task_plan.md`, and
+  `findings.md` so Step 350 evidence is required and the handoff moves to
+  Phase C Step 351 item measurement cache.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Focused documentation/API/behavior verification passed:
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 6/6.
+- Diff hygiene passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-phase-c-scroll-anchoring-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-scroll-anchoring -P .`
+  passed 100/100.

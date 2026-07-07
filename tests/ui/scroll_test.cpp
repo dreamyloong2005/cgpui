@@ -1,6 +1,8 @@
 #include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/uniform_list.hpp"
 
+#include <optional>
+#include <span>
 #include <type_traits>
 #include <vector>
 
@@ -148,6 +150,85 @@ int test_uniform_list_visible_range_uses_stable_item_bounds() {
              : 14;
 }
 
+int test_uniform_list_scroll_anchor_preserves_keyed_item_position() {
+  const std::vector<cgpui::UniformListItemIdentity> before{
+      {
+          .index = 0,
+          .key = cgpui::ElementKey{.value = "alpha"},
+          .element_id = cgpui::ElementId{10},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 0.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 1,
+          .key = cgpui::ElementKey{.value = "beta"},
+          .element_id = cgpui::ElementId{11},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 12.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 2,
+          .key = cgpui::ElementKey{.value = "gamma"},
+          .element_id = cgpui::ElementId{12},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 24.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+  };
+
+  const std::optional<cgpui::UniformListScrollAnchor> anchor =
+      cgpui::capture_uniform_list_scroll_anchor(
+          before,
+          cgpui::Point{.x = 0.0F, .y = 13.0F});
+  if (!anchor.has_value() || anchor->key.value != "beta" ||
+      anchor->index != 1 || anchor->element_id != cgpui::ElementId{11} ||
+      anchor->viewport_offset_y != -1.0F) {
+    return 15;
+  }
+
+  const std::vector<cgpui::UniformListItemIdentity> after{
+      {
+          .index = 0,
+          .key = cgpui::ElementKey{.value = "alpha"},
+          .element_id = cgpui::ElementId{10},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 0.0F},
+                           .size = {.width = 60.0F, .height = 22.0F}},
+      },
+      {
+          .index = 1,
+          .key = cgpui::ElementKey{.value = "beta"},
+          .element_id = cgpui::ElementId{11},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 24.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 2,
+          .key = cgpui::ElementKey{.value = "gamma"},
+          .element_id = cgpui::ElementId{12},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 36.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+  };
+  const cgpui::Point adjusted = cgpui::apply_uniform_list_scroll_anchor(
+      after,
+      *anchor,
+      cgpui::Point{.x = 5.0F, .y = 13.0F});
+  if (adjusted.x != 5.0F || adjusted.y != 25.0F) {
+    return 16;
+  }
+
+  const cgpui::Point unchanged = cgpui::apply_uniform_list_scroll_anchor(
+      std::span<const cgpui::UniformListItemIdentity>{},
+      *anchor,
+      cgpui::Point{.x = 5.0F, .y = 13.0F});
+  return unchanged.x == 5.0F && unchanged.y == 13.0F ? 0 : 17;
+}
+
 } // namespace
 
 int main() {
@@ -172,6 +253,11 @@ int main() {
     return result;
   }
   if (const int result = test_uniform_list_visible_range_uses_stable_item_bounds();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_uniform_list_scroll_anchor_preserves_keyed_item_position();
       result != 0) {
     return result;
   }

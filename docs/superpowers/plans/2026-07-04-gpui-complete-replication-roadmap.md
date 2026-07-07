@@ -719,7 +719,8 @@ expect, keeping each widget in its own module from the first version.
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection. Step 349 starts this
   band with stable item identity and the first virtualized visible-range
-  calculation boundary over the existing `scrollable_list` path.
+  calculation boundary over the existing `scrollable_list` path. Step 350 adds
+  keyed scroll anchoring over that snapshot boundary.
 - [ ] Steps 355-360: Implement window/examples widgets for menu demos, shadow,
   window positioning, window shadow, and input examples using public APIs.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
@@ -984,10 +985,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 350 should continue uniform list parity with scroll anchoring from the
+Step 351 should continue uniform list parity with item measurement cache from the
 frozen Phase B public authoring boundary after the focused layout, style,
 focusable/interactable, built-in widget, and Step 349 stable identity/range
-boundary from Steps 319-349. Step 319 landed the child-list foundation on `master` at
+plus Step 350 scroll anchoring boundary from Steps 319-350. Step 319 landed the child-list foundation on `master` at
 The Phase B public authoring boundary remains the source of truth for this
 slice.
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -1075,8 +1076,11 @@ free-function authoring through `include/cgpui/ui/container_builder.hpp`,
 parity with `UniformListVisibleRange`, `UniformListItemIdentity`,
 `UniformListLayoutSnapshot`, `calculate_uniform_list_visible_range(...)`, and
 `ScrollableListElement::layout_snapshot()` over the existing
-`scrollable_list` path before Step 350 scroll anchoring, measurement cache,
-large-list recycling, and keyboard/pointer selection slices.
+`scrollable_list` path. Step 350 adds keyed scroll anchoring through
+`UniformListScrollAnchor`, `capture_uniform_list_scroll_anchor(...)`,
+`apply_uniform_list_scroll_anchor(...)`, and `ScrollableListElement::layout()`
+anchor application before Step 351 item measurement cache, large-list
+recycling, and keyboard/pointer selection slices.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

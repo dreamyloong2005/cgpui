@@ -2394,3 +2394,17 @@ implementation slice.
   `phase_c_focusable_interactable_audit_test/default` 6/6. The public
   vocabulary, Markdown/JSON parity ledger, complete-replication roadmap, and
   audit guards now move the handoff to Phase C Step 350 scroll anchoring.
+
+- Phase C Step 350, scroll anchoring, is implemented in
+  `.worktrees/phase-c-scroll-anchoring`: `UniformListScrollAnchor`,
+  `capture_uniform_list_scroll_anchor(...)`, and
+  `apply_uniform_list_scroll_anchor(...)` live in
+  `include/cgpui/ui/uniform_list.hpp` with non-template bodies in
+  `src/ui/uniform_list.cpp`. `ScrollableListElement::layout(...)` captures the
+  previous snapshot anchor before relayout, applies it after building the new
+  snapshot, and recalculates the visible range from the adjusted scroll state.
+  Focused Windows GREEN verification passed
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default` 3/3. The public vocabulary, Markdown/JSON
+  parity ledger, complete-replication roadmap, and audit guards now move the
+  handoff to Phase C Step 351 item measurement cache.

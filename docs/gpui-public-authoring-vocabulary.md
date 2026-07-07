@@ -126,13 +126,18 @@ rather than broad UI entry files.
 - `UniformListVisibleRange`
 - `UniformListItemIdentity`
 - `UniformListLayoutSnapshot`
+- `UniformListScrollAnchor`
 - `calculate_uniform_list_visible_range(...)`
+- `capture_uniform_list_scroll_anchor(...)`
+- `apply_uniform_list_scroll_anchor(...)`
 - `ScrollableListElement::layout_snapshot()`
 
 Phase C Step 349 starts uniform list parity with stable item identity records
-and a virtualized visible-range calculation boundary. Scroll anchoring,
-measurement caching, large-list recycling, and keyboard/pointer list selection
-remain later Phase C slices.
+and a virtualized visible-range calculation boundary. Phase C Step 350 adds
+keyed scroll anchoring over that snapshot boundary so a visible item keeps its
+viewport offset after preceding item size changes. Measurement caching,
+large-list recycling, and keyboard/pointer list selection remain later Phase C
+slices.
 
 ## Out of scope for this freeze
 

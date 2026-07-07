@@ -20,6 +20,15 @@ const UniformListLayoutSnapshot& ScrollableListElement::layout_snapshot()
 }
 
 LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
+  std::optional<UniformListScrollAnchor> scroll_anchor;
+  Point offset;
+  if (state_ != nullptr) {
+    offset = state_->offset();
+    scroll_anchor = capture_uniform_list_scroll_anchor(
+        layout_snapshot_.items,
+        offset);
+  }
+
   const LayoutOutput content_output =
       content_.layout(LayoutInput{.scale = input.scale});
   Size preferred = style_.preferred_size;
@@ -38,7 +47,6 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
       .size = output.size,
   });
 
-  Point offset;
   if (state_ != nullptr) {
     state_->set_viewport_size(output.size);
     state_->set_content_size(content_output.size);
@@ -63,6 +71,13 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
         .element_id = child->id(),
         .content_bounds = *bounds,
     });
+  }
+  if (state_ != nullptr && scroll_anchor.has_value()) {
+    state_->set_offset(apply_uniform_list_scroll_anchor(
+        layout_snapshot_.items,
+        *scroll_anchor,
+        offset));
+    offset = state_->offset();
   }
   layout_snapshot_.visible_range = calculate_uniform_list_visible_range(
       layout_snapshot_.items,

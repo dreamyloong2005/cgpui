@@ -6405,3 +6405,28 @@
 - Step 350 should continue with focused scroll anchoring over the Step 349
   snapshot boundary. Keep measurement caches, item recycling, and selection
   behavior for later slices unless Step 350 explicitly owns them.
+
+## 2026-07-08 Phase C Step 350 Scroll Anchoring
+
+- Step 350 stays scoped to keyed scroll anchoring over the Step 349
+  `UniformListLayoutSnapshot` boundary. It should not add measurement-cache
+  invalidation, large-list item recycling, selection behavior, or a new layout
+  engine.
+- Durable public ownership is still `include/cgpui/ui/uniform_list.hpp`, with
+  non-template behavior in `src/ui/uniform_list.cpp`. The new surface is
+  `UniformListScrollAnchor`, `capture_uniform_list_scroll_anchor(...)`, and
+  `apply_uniform_list_scroll_anchor(...)`.
+- Durable scroll element ownership remains
+  `src/ui/element_scroll_layout.cpp`: `ScrollableListElement::layout(...)`
+  captures the previous keyed anchor from `layout_snapshot_`, relayouts the
+  content, applies the anchor against the new snapshot, and then recalculates
+  visible range and shifted child bounds from the adjusted `ScrollState`.
+- The anchor records key, index, element id, and viewport offset. Application
+  uses the stable key and preserves horizontal scroll offset; if the key is no
+  longer present, the previous offset is left unchanged.
+- Windows `rg.exe` is still brittle in this environment: the WinGet link failed
+  to start with "no application is associated" during Step 350 docs lookup, so
+  `Select-String` was used for the text search.
+- Step 351 should continue uniform list parity with item measurement cache.
+  Keep recycling and keyboard/pointer selection for later slices unless that
+  slice explicitly owns them.

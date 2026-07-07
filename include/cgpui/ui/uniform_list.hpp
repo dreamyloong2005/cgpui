@@ -3,6 +3,7 @@
 #include "cgpui/ui/element_core.hpp"
 
 #include <cstddef>
+#include <optional>
 #include <span>
 #include <vector>
 
@@ -29,9 +30,26 @@ struct UniformListLayoutSnapshot {
   UniformListVisibleRange visible_range;
 };
 
+struct UniformListScrollAnchor {
+  std::size_t index = 0;
+  ElementKey key;
+  ElementId element_id;
+  float viewport_offset_y = 0.0F;
+};
+
 [[nodiscard]] UniformListVisibleRange calculate_uniform_list_visible_range(
     std::span<const UniformListItemIdentity> items,
     Point scroll_offset,
     Size viewport_size);
+
+[[nodiscard]] std::optional<UniformListScrollAnchor>
+capture_uniform_list_scroll_anchor(
+    std::span<const UniformListItemIdentity> items,
+    Point scroll_offset);
+
+[[nodiscard]] Point apply_uniform_list_scroll_anchor(
+    std::span<const UniformListItemIdentity> items,
+    const UniformListScrollAnchor& anchor,
+    Point scroll_offset);
 
 } // namespace cgpui

@@ -862,8 +862,12 @@ int main() {
       !contains(uniform_list_header, "struct UniformListVisibleRange") ||
       !contains(uniform_list_header, "struct UniformListItemIdentity") ||
       !contains(uniform_list_header, "struct UniformListLayoutSnapshot") ||
+      !contains(uniform_list_header, "struct UniformListScrollAnchor") ||
       !contains(uniform_list_header,
                 "calculate_uniform_list_visible_range(") ||
+      !contains(uniform_list_header,
+                "capture_uniform_list_scroll_anchor(") ||
+      !contains(uniform_list_header, "apply_uniform_list_scroll_anchor(") ||
       !contains(element_scroll_nodes_header, "class ScrollableListElement") ||
       !contains(element_scroll_nodes_header,
                 "#include \"cgpui/ui/uniform_list.hpp\"") ||
@@ -964,9 +968,14 @@ int main() {
                 "UniformListVisibleRange::contains(") ||
       !contains(uniform_list_source,
                 "calculate_uniform_list_visible_range(") ||
+      !contains(uniform_list_source,
+                "capture_uniform_list_scroll_anchor(") ||
+      !contains(uniform_list_source, "apply_uniform_list_scroll_anchor(") ||
       !contains(element_scroll_layout_source,
                 "ScrollableListElement::layout(") ||
       !contains(element_scroll_layout_source, "layout_snapshot_") ||
+      !contains(element_scroll_layout_source,
+                "apply_uniform_list_scroll_anchor(") ||
       contains(element_scroll_nodes_header,
                "calculate_uniform_list_visible_range(")) {
     return 150;
