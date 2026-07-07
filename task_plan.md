@@ -2475,3 +2475,12 @@ implementation slice.
   `gpui::test` macros, action macro payloads, task priorities, structured task
   groups, and direct `WindowRuntime`/private include usage. Step 357 is the
   next window/examples widget slice.
+- Phase C Step 357, window/examples widget catalog, continues the same band in
+  `.worktrees/phase-c-window-example-widget-catalog`: add a prelude-only
+  `examples/api_parity/public_window_examples_widget_catalog/main.cpp` target
+  plus `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp` to
+  guard checkbox/radio/switch, slider, list/menu, image/icon, and container
+  widgets inside a public window example. Keep this slice out of
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, structured task groups, and direct `WindowRuntime`/private
+  include usage. Step 358 is the next window/examples widget slice.

@@ -107,7 +107,8 @@ int main() {
       "api_parity_public_window_examples_workflow",
       "phase_c_window_examples_workflow_test.cpp",
       "public test-context workflow",
-      "Step 357 should continue the window/examples widget band",
+      "Phase C Step 357 window/examples widget catalog",
+      "Step 358 should continue the window/examples widget band",
   };
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
@@ -119,7 +120,7 @@ int main() {
   }
 
   if (!contains(ledger_json,
-                "\"next_step\": \"Phase C Step 357 window/examples widgets\"")) {
+                "\"next_step\": \"Phase C Step 358 window/examples widgets\"")) {
     return 80;
   }
 

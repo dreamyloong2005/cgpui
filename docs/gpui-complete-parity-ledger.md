@@ -311,7 +311,15 @@ upstream example inventory includes:
   `tests/api_parity/phase_c_window_examples_workflow_test.cpp` keeps the source
   prelude-only and synchronized with the roadmap, ledger, vocabulary, and xmake
   target.
-- Handoff: Phase C Step 357 window/examples widgets is next. Step 357 should continue the window/examples widget band.
+- Phase C Step 357 window/examples widget catalog:
+  `examples/api_parity/public_window_examples_widget_catalog/main.cpp` and
+  `api_parity_public_window_examples_widget_catalog` continue the
+  window/examples widget band with checkbox/radio/switch, slider, list/menu,
+  image/icon, and container widgets using public APIs. The guard
+  `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp` keeps the
+  source prelude-only and synchronized with the roadmap, ledger, vocabulary,
+  and xmake target.
+- Handoff: Phase C Step 358 window/examples widgets is next. Step 358 should continue the window/examples widget band.
 
 ## Phase A Closure
 

@@ -14265,3 +14265,51 @@
   103/103.
 - Step 356 is complete on `master`; Step 357 window/examples widgets is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 357 Window Examples Widget Catalog
+
+- Created `.worktrees/phase-c-window-example-widget-catalog` on
+  `codex/phase-c-window-example-widget-catalog` from
+  `90d925b docs: mark phase c step 356 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 357 to a public widget catalog example inside the existing
+  window/examples band. This is example/API evidence only, not new production
+  widget or runtime behavior.
+- Added RED coverage in
+  `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp` and
+  registered the test target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_window_examples_widget_catalog_test/default`
+  failed as expected because the widget catalog example and docs were not
+  present yet.
+- Added `examples/api_parity/public_window_examples_widget_catalog/main.cpp`
+  and `api_parity_public_window_examples_widget_catalog` to cover
+  checkbox/radio/switch, slider, list/menu, image/icon, and container widgets
+  through public prelude-only window example code.
+- During local validation, old WSL xmake build directories under
+  `/home/dreamyloong/cgpui*-build` had grown the C-drive WSL VHDX by roughly
+  21GB. Deleted those WSL build directories and compacted the WSL VHDX, taking
+  C: free space back to about 20.9GB. Future WSL verification should place
+  xmake build output on `/mnt/d/...`, not under WSL home.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified the new public widget catalog example target builds:
+  `xmake build -P . api_parity_public_window_examples_widget_catalog` passed
+  outside the sandbox after the recurring xmake `vulkansdk` filelock issue.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . phase_c_window_examples_widget_catalog_test/default
+  gpui_parity_ledger_test/default phase_c_window_examples_public_api_test/default
+  phase_c_window_examples_workflow_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 5/5 after keeping
+  the frozen `public test-context workflow` and `container widgets` phrases
+  contiguous.
+- Verified Windows full debug before the WSL re-run:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 107/107.
+- The remaining WSL verification for this slice must use D-drive build output,
+  e.g. `/mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-window-example-widget-catalog`,
+  so the WSL VHDX on C: does not grow from repo build products again.
+- Verified WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-window-example-widget-catalog -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-widget-catalog -P .`
+  passed 104/104. C: stayed roughly flat at 20.75GB free after the run; the
+  D-drive WSL build directory was 2.4G and `/home/dreamyloong` remained 4.0K.

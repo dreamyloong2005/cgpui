@@ -6562,3 +6562,21 @@
 - Step 357 should continue the window/examples widget band without adding
   `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
   priorities, structured task groups, or private runtime headers.
+
+## 2026-07-08 Phase C Step 357 Window Examples Widget Catalog
+
+- Step 357 stays in the window/examples band and adds a public widget catalog
+  example, not new production widget or runtime behavior.
+- Durable example ownership is
+  `examples/api_parity/public_window_examples_widget_catalog/main.cpp`; it
+  includes only `cgpui/prelude.hpp` and uses public checkbox/radio/switch,
+  slider, list/menu, image/icon, h_stack/v_stack container widgets, text input,
+  and window options.
+- Durable guard ownership is
+  `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp`,
+  registered in `xmake.lua`; it freezes the example target/source, the
+  prelude-only boundary, the roadmap/ledger/vocabulary handoff, and the Step
+  358 next slice.
+- Step 358 should continue the window/examples widget band without adding
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, structured task groups, or private runtime headers.
