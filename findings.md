@@ -5969,3 +5969,28 @@
 - Step 337 should start the focusable/interactable semantics band. Keep broad
   widget behavior, runtime theme switching, and broad resolved-style
   layout/paint rewrites out unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 337 Pointer Active Semantics
+
+- Step 337 stays scoped to real pointer-active input state for routed elements.
+  It adds `ViewInputState::active_element_id`,
+  `WindowRuntime::update_active_state_for_event(...)`, and focused
+  `src/ui/runtime_active_state.cpp` ownership without adding tab-order depth,
+  focus ring metadata, click/drag gesture synthesis, keyboard activation,
+  broad widget behavior, runtime theme switching, or broad resolved-style
+  layout/paint rewrites.
+- The active state machine handles only left `PointerButton` events in this
+  slice. Press sets active state to the enabled routed target; release clears
+  it; disabled and no-hit targets leave active state empty.
+- Active-state transitions should call
+  `WindowRuntime::request_style_state_invalidation(previous, next)` so active
+  styles invalidate through the same narrow helper added in Step 335. Repeated
+  no-op active transitions should not request redraws.
+- Structure coverage should keep active-state ownership out of
+  `src/ui/runtime_event_input.cpp` and preserve the existing line-count guards
+  for `tests/ui/window_runtime_test_support.hpp` and
+  `src/ui/window_runtime_internal.hpp`. Focused tests should assert
+  `context.input.active_element_id` directly rather than growing shared
+  `RecordingView` comparison state.
+- Step 338 should continue the focusable/interactable band with
+  tab-order/focus-ring metadata unless a narrower roadmap slice supersedes it.

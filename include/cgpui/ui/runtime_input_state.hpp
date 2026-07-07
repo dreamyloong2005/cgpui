@@ -57,6 +57,7 @@ struct ViewInputState {
   std::optional<ViewId> keyboard_focus_owner;
   std::optional<ElementId> keyboard_focus_element_owner;
   std::optional<ElementId> hovered_element_id;
+  std::optional<ElementId> active_element_id;
   CursorShape cursor_shape = CursorShape::default_arrow;
   Point pointer_position{};
 };

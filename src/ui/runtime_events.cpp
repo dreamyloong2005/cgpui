@@ -18,6 +18,7 @@ void WindowRuntime::handle_event(const PlatformEvent& event) {
   update_hover_cursor_for_event(event, hit_element_id);
   resolve_event_route_target(event, hit_element_id);
   refresh_route_ancestry(*current_event_route_);
+  update_active_state_for_event(event);
   apply_focus_activation_for_event(event);
   apply_keyboard_bindings_for_event(event);
   apply_text_input_for_event(event);

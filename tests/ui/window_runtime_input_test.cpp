@@ -1310,6 +1310,153 @@ int test_runtime_tracks_hovered_pointer_element() {
   return 0;
 }
 
+RuntimeFixture* active_state_fixture = nullptr;
+int active_redraws_after_press = 0;
+int active_redraws_after_release = 0;
+
+void dispatch_pointer_active_sequence() {
+  auto& callback = active_state_fixture->window.callback;
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {5.0F, 5.0F}});
+  active_redraws_after_press =
+      active_state_fixture->window.request_redraw_count;
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .position = {5.0F, 5.0F}});
+  active_redraws_after_release =
+      active_state_fixture->window.request_redraw_count;
+}
+
+int test_pointer_active_state_tracks_press_and_release() {
+  RuntimeFixture fixture;
+  active_state_fixture = &fixture;
+  fixture.app.on_run = &dispatch_pointer_active_sequence;
+  active_redraws_after_press = 0;
+  active_redraws_after_release = 0;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  int callback_count = 0;
+  std::optional<cgpui::ElementId> active_after_press;
+  std::optional<cgpui::ElementId> active_after_release{root_id};
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::pointer_button) {
+          return;
+        }
+        callback_count += 1;
+        if (callback_count == 1) {
+          active_after_press = context.input.active_element_id;
+        } else if (callback_count == 2) {
+          active_after_release = context.input.active_element_id;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  active_state_fixture = nullptr;
+
+  if (result != 0) {
+    return 258;
+  }
+  if (callback_count != 2 || !active_after_press.has_value() ||
+      *active_after_press != root_id) {
+    return 259;
+  }
+  if (active_after_release.has_value() ||
+      runtime.input_state().active_element_id.has_value()) {
+    return 260;
+  }
+  if (active_redraws_after_press != 1 || active_redraws_after_release != 2) {
+    return 261;
+  }
+
+  return 0;
+}
+
+RuntimeFixture* inactive_press_fixture = nullptr;
+
+void dispatch_inactive_pointer_press_sequence() {
+  auto& callback = inactive_press_fixture->window.callback;
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {5.0F, 5.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .position = {100.0F, 100.0F}});
+}
+
+int test_pointer_active_state_ignores_disabled_and_empty_targets() {
+  RuntimeFixture fixture;
+  inactive_press_fixture = &fixture;
+  fixture.app.on_run = &dispatch_inactive_pointer_press_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  auto root = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 20.0F});
+  root->set_enabled(false);
+  const cgpui::ElementId root_id = tree->set_root(std::move(root));
+  (void)tree->layout_root(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  int callback_count = 0;
+  bool active_was_empty = true;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::pointer_button) {
+          return;
+        }
+        callback_count += 1;
+        active_was_empty =
+            active_was_empty && !context.input.active_element_id.has_value();
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  inactive_press_fixture = nullptr;
+
+  if (result != 0) {
+    return 262;
+  }
+  if (root_id.value == 0 || callback_count != 2 || !active_was_empty ||
+      runtime.input_state().active_element_id.has_value()) {
+    return 263;
+  }
+  if (fixture.window.request_redraw_count != 0) {
+    return 264;
+  }
+
+  return 0;
+}
+
 RuntimeFixture* hover_style_invalidation_fixture = nullptr;
 int hover_redraws_after_first_move = 0;
 int hover_redraws_after_repeat_move = 0;
@@ -2019,6 +2166,12 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_tracks_hovered_pointer_element(); result != 0) {
+    return result;
+  }
+  if (const int result = test_pointer_active_state_tracks_press_and_release(); result != 0) {
+    return result;
+  }
+  if (const int result = test_pointer_active_state_ignores_disabled_and_empty_targets(); result != 0) {
     return result;
   }
   if (const int result = test_hover_state_changes_request_style_invalidation_redraw(); result != 0) {

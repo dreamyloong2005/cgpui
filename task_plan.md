@@ -2113,3 +2113,22 @@ implementation slice.
   Merged on `master` at `f794b22`; post-merge verification passed WSL Arch
   Linux debug config and WSL Arch Linux full debug 97/97. Step 337
   focusable/interactable semantics is the next focused Phase C slice.
+
+- Phase C Step 337, pointer-active input semantics, is implemented in
+  `.worktrees/phase-c-focusable-interactable`:
+  `ViewInputState::active_element_id` exposes active element state,
+  `WindowRuntime::update_active_state_for_event(...)` owns left-button
+  press/release tracking in `src/ui/runtime_active_state.cpp`, and active
+  transitions reuse `request_style_state_invalidation(...)` so active styles
+  invalidate through the same focused runtime helper as hover/focus changes.
+  Disabled or empty targets do not become active. Behavior coverage lives in
+  `tests/ui/window_runtime_input_test.cpp`; structure coverage lives in
+  `tests/architecture/ui_source_structure_test.cpp`. Focused Windows GREEN
+  verification passed
+  `xmake test -y -P . window_runtime_input_test/default
+  ui_source_structure_test/default` 2/2. Step 338 tab-order/focus-ring
+  metadata is the next focused Phase C slice after Step 337 lands on `master`.
+  Feature-worktree verification passed JSON validation, `git diff --check`,
+  focused public/ledger/structure gates 6/6, Windows debug config, Windows
+  full debug 100/100, WSL Arch Linux debug config, and WSL Arch Linux full
+  debug 97/97.

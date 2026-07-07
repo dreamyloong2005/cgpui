@@ -12958,3 +12958,42 @@
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
 - Step 336 is complete on `master`; Step 337 focusable/interactable semantics
   is the next Phase C slice.
+
+## 2026-07-07 Phase C Step 337 Pointer Active Semantics
+
+- Continued `.worktrees/phase-c-focusable-interactable` on
+  `codex/phase-c-focusable-interactable` from
+  `54da154 docs: mark phase c step 336 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files catchup helper at the `.codex`
+  skill path, and confirmed it produced no additional report.
+- GREEN adds `ViewInputState::active_element_id`,
+  `WindowRuntime::update_active_state_for_event(...)`, private
+  `active_element_id_` storage, and `src/ui/runtime_active_state.cpp` ownership
+  for left-button press/release active-state transitions. Pressing an enabled
+  routed element sets active state, release clears it, and disabled or no-hit
+  presses stay inactive.
+- Active-state transitions call
+  `WindowRuntime::request_style_state_invalidation(...)` so pointer-active
+  semantics reuse the Step 335 style-state invalidation path without broad
+  widget behavior or resolved-style layout/paint rewrites.
+- The first focused structure run failed after behavior passed because
+  `tests/ui/window_runtime_test_support.hpp` grew over the 1800-line guard and
+  the private runtime header grew over its 260-line guard. Removed the generic
+  active-state capture from shared test support and trimmed two local blank
+  lines in `src/ui/window_runtime_internal.hpp` while keeping active assertions
+  local to `tests/ui/window_runtime_input_test.cpp`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . window_runtime_input_test/default
+  ui_source_structure_test/default` passed 2/2.
+- Updated the Markdown/JSON parity ledger, the ledger guard, the complete
+  replication roadmap, `task_plan.md`, and `findings.md` with Step 337
+  pointer-active input semantics. Step 338 tab-order/focus-ring metadata is
+  the next focused Phase C slice after Step 337 lands on `master`.
+- Feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/ledger/structure gates passed 6/6, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  100/100, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 97/97.

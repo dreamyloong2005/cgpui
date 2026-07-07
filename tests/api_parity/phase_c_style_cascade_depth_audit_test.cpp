@@ -61,7 +61,9 @@ int main() {
       !contains(roadmap,
                 "Step 336 closes the Phase C style-cascade depth band") ||
       !contains(roadmap,
-                "Step 337 should open the focusable/interactable semantics") ||
+                "Step 337 starts the focusable/interactable band") ||
+      !contains(roadmap,
+                "Step 338 should continue the band") ||
       !contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;
@@ -97,18 +99,25 @@ int main() {
       !contains(ledger_json,
                 "Phase C Step 336 style cascade depth closeout") ||
       !contains(ledger_md,
-                "Phase C Step 337 focusable/interactable semantics") ||
+                "Phase C Step 337 pointer-active input semantics") ||
       !contains(ledger_json,
-                "Phase C Step 337 focusable/interactable semantics")) {
+                "Phase C Step 337 pointer-active input semantics") ||
+      !contains(ledger_md,
+                "Phase C Step 338 tab-order/focus-ring metadata") ||
+      !contains(ledger_json,
+                "Phase C Step 338 tab-order/focus-ring metadata")) {
     return 30;
   }
 
   constexpr std::array exclusions{
       "runtime theme switching",
-      "real pointer-active semantics",
       "widget behavior",
-      "focusable/interactable semantics",
-      "broad resolved-style layout/paint rewrites",
+      "tab order",
+      "focus ring metadata",
+      "click/drag gestures",
+      "keyboard activation",
+      "broad resolved-style",
+      "layout/paint rewrites",
       "ClipboardItem",
       "gpui::test",
       "action macro payloads",

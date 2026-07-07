@@ -634,6 +634,14 @@ expect, keeping each widget in its own module from the first version.
   deferred exclusions that belong to later focused slices. Feature-worktree
   verification passed JSON validation, focused audit gates 3/3, Windows
   full-debug 100/100, and WSL Arch Linux full-debug 97/97.
+  Step 337 starts the focusable/interactable band with focused pointer-active
+  input semantics: `ViewInputState::active_element_id` exposes active element
+  state, `src/ui/runtime_active_state.cpp` owns left-button press/release
+  tracking through `WindowRuntime::update_active_state_for_event(...)`, and
+  active transitions reuse `request_style_state_invalidation(...)`. This keeps
+  tab order, focus ring metadata, click/drag gestures, keyboard activation,
+  widget behavior, runtime theme switching, and broad resolved-style
+  layout/paint rewrites in later focused slices.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -952,9 +960,11 @@ through
 transition hooks, and `src/ui/runtime_style_invalidation.cpp` ownership.
 Step 336 closes the Phase C style-cascade depth band through
 `tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp`, guarding the
-Steps 331-335 evidence and the explicit Step 337 handoff. Step 337 should
-open the focusable/interactable semantics band without reopening broad style
-cascade behavior or broad resolved-style layout/paint rewrites.
+Steps 331-335 evidence and the explicit Step 337 handoff. Step 337 opens the
+focusable/interactable semantics band with pointer-active input behavior while
+leaving broad style cascade behavior and broad resolved-style layout/paint
+rewrites closed. Step 338 should continue the band with tab-order/focus-ring
+metadata.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

@@ -57,6 +57,7 @@ ViewInputState WindowRuntime::input_state() const {
   input.keyboard_focus_owner = keyboard_focus_owner_;
   input.keyboard_focus_element_owner = keyboard_focus_element_owner_;
   input.hovered_element_id = hovered_element_id_;
+  input.active_element_id = active_element_id_;
   input.cursor_shape = cursor_shape_;
   input.keyboard_focused = keyboard_focus_owner_ == root_view_id_ ||
                            keyboard_focus_element_owner_.has_value();

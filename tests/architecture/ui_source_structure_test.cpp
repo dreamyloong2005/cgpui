@@ -2218,6 +2218,8 @@ int main() {
       read_source("src/ui/runtime_focus.cpp");
   const std::string runtime_style_invalidation_source =
       read_source("src/ui/runtime_style_invalidation.cpp");
+  const std::string runtime_active_state_source =
+      read_source("src/ui/runtime_active_state.cpp");
   if (line_count(runtime_focus_source) > 110 ||
       !contains(runtime_focus_source,
                 "void WindowRuntime::request_keyboard_focus(") ||
@@ -2238,6 +2240,15 @@ int main() {
       contains(runtime_event_input_source, "request_render();") ||
       contains(runtime_focus_source, "request_render();")) {
     return 144;
+  }
+  if (line_count(runtime_active_state_source) > 80 ||
+      !contains(runtime_active_state_source,
+                "void WindowRuntime::update_active_state_for_event(") ||
+      !contains(runtime_active_state_source, "active_element_id_") ||
+      !contains(runtime_active_state_source,
+                "request_style_state_invalidation(") ||
+      contains(runtime_event_input_source, "active_element_id_")) {
+    return 145;
   }
 
   const std::string runtime_action_dispatch_source =

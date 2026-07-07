@@ -1,7 +1,5 @@
 friend class AnimationHandle; friend class TestContextCapability; friend class TaskHandle;
-
 struct RuntimeTaskDiagnostics;
-
 void handle_event(const PlatformEvent& event);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);
 void update_input_state_for_event(const PlatformEvent& event);
@@ -11,6 +9,7 @@ void update_hover_cursor_for_event(
     const PlatformEvent& event,
     std::optional<ElementId> hit_element_id);
 void request_style_state_invalidation(std::optional<ElementId> previous, std::optional<ElementId> next);
+void update_active_state_for_event(const PlatformEvent& event);
 void resolve_event_route_target(
     const PlatformEvent& event,
     std::optional<ElementId> hit_element_id);
@@ -179,6 +178,7 @@ std::optional<ViewId> keyboard_focus_owner_;
 std::optional<ElementId> keyboard_focus_element_owner_;
 std::optional<TextPointerSelectionDrag> text_pointer_selection_drag_;
 std::optional<ElementId> hovered_element_id_;
+std::optional<ElementId> active_element_id_;
 CursorShape cursor_shape_ = CursorShape::default_arrow;
 CursorShape applied_cursor_shape_ = CursorShape::default_arrow;
 EventResult last_event_result_{};
