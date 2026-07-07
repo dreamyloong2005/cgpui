@@ -6522,3 +6522,21 @@
 - Step 355 should start the window/examples widget band for menu demos,
   shadow, window positioning, window shadow, and input examples using public
   APIs.
+
+## 2026-07-08 Phase C Step 355 Window Examples
+
+- Step 355 starts the window/examples widget band with a public example target,
+  not new runtime/window production behavior.
+- Durable example ownership is
+  `examples/api_parity/public_window_examples/main.cpp`; it includes only
+  `cgpui/prelude.hpp` and uses `WindowOptions`, `NativeMenuModel`,
+  `CommandPaletteEntry`, `text_input(...)`, `menu_item(...)`, `button(...)`,
+  `label(...)`, `BoxShadow`, `shadow(...)`, `shadow_sm()`, and fixed-position
+  element APIs.
+- Durable guard ownership is
+  `tests/api_parity/phase_c_window_examples_public_api_test.cpp`; it checks
+  the example target, source fragments, docs/ledger/vocabulary sync, and
+  forbidden private/runtime headers.
+- Step 356 should deepen the same band without adding `ClipboardItem`, upstream
+  `gpui::test` macros, action macro payloads, task priorities, structured task
+  groups, or direct `WindowRuntime`/private include usage.

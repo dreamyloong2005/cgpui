@@ -14119,3 +14119,58 @@
   101/101.
 - Step 354 is complete on `master`; Step 355 window/examples widgets is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 355 Window Examples
+
+- Created `.worktrees/phase-c-window-example-widgets` on
+  `codex/phase-c-window-example-widgets` from
+  `e349267 docs: mark phase c step 354 merged`.
+- Added RED coverage in
+  `tests/api_parity/phase_c_window_examples_public_api_test.cpp` and
+  registered it in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_window_examples_public_api_test/default` failed
+  as expected because the public window example and docs were not present yet.
+- Added `examples/api_parity/public_window_examples/main.cpp` and
+  `api_parity_public_window_examples` to start the Step 355 public example
+  band for menu demos, shadow, window positioning, window shadow, and input
+  examples using public APIs.
+- Verified the new example target builds:
+  `xmake build -P . api_parity_public_window_examples` exited 0 after fixing
+  the key-binding context spelling to use public `KeyBindingContext::window()`.
+- Updated `tests/api_parity/gpui_parity_ledger_test.cpp` so the global parity
+  ledger guard also requires the Step 355 public example target, audit target,
+  and example source registration in `xmake.lua`.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Diff hygiene passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_uniform_list_audit_test/default
+  phase_c_window_examples_public_api_test/default` passed 4/4.
+- Verified the Step 355 public example target still builds:
+  `xmake build -P . api_parity_public_window_examples` exited 0.
+- The first Windows feature-worktree full run found one stale guard:
+  `public_phase_b_completion_audit_test/default` failed because the roadmap
+  split the frozen phrase `Keep the Phase B closeout` across lines while
+  documenting Step 356. Restored that exact phrase without changing the Step
+  355 scope.
+- Focused rerun after the roadmap wording fix passed:
+  `xmake test -y -P . public_phase_b_completion_audit_test/default
+  gpui_parity_ledger_test/default
+  phase_c_window_examples_public_api_test/default` passed 3/3.
+- Feature-worktree Windows verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed
+  105/105.
+- Feature-worktree WSL Arch Linux verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-phase-c-window-example-widgets-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-widgets -P .`
+  passed 102/102.
+- After moving the global parity-ledger guard into the feature worktree, final
+  verification passed on the exact commit candidate: Windows `xmake test -P .`
+  passed 105/105 and WSL Arch Linux `XMAKE_ROOT=y xmake test -w
+  /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-widgets -P .`
+  passed 102/102.

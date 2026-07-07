@@ -295,7 +295,14 @@ upstream example inventory includes:
   `tests/api_parity/phase_c_uniform_list_audit_test.cpp` guards the Steps
   349-353 uniform-list evidence, freezes the focused public/source ownership
   boundary, and moves the Phase C handoff to Step 355 window/examples widgets.
-- Handoff: Phase C Step 355 window/examples widgets is next.
+- Phase C Step 355 window/examples widgets:
+  `examples/api_parity/public_window_examples/main.cpp` and
+  `api_parity_public_window_examples` start the public example band for menu demos,
+  shadow, window positioning, window shadow, and input examples using public
+  APIs only. `tests/api_parity/phase_c_window_examples_public_api_test.cpp`
+  guards the source against private headers and keeps the roadmap, ledger,
+  vocabulary, and xmake target aligned.
+- Handoff: Phase C Step 356 window/examples widgets is next.
 
 ## Phase A Closure
 

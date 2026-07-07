@@ -2458,3 +2458,10 @@ implementation slice.
   the parity ledger moves `gpui uniform_list` to adapted/closed state, and the
   handoff moves to Phase C Step 355 window/examples widgets. No runtime or
   widget behavior was added.
+- Phase C Step 355, window/examples widgets, starts the Steps 355-360 example
+  band in `.worktrees/phase-c-window-example-widgets`: add a prelude-only
+  `examples/api_parity/public_window_examples/main.cpp` target plus
+  `tests/api_parity/phase_c_window_examples_public_api_test.cpp` to guard menu
+  demos, shadow, window positioning, window shadow, and input examples using
+  public APIs. Keep this slice out of private runtime headers and leave deeper
+  production window positioning/window shadow behavior for later steps.

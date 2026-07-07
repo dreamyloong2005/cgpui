@@ -160,6 +160,35 @@ marking through focused uniform-list selection helpers. Phase C Step 354 closes 
 uniform-list public vocabulary and source ownership evidence before Step 355
 starts the window/examples widget band.
 
+## Window/examples widget vocabulary
+
+- `WindowOptions`
+- `NativeMenuModel`
+- `NativeMenuItem`
+- `NativeMenuItemKind::submenu`
+- `NativeMenuItemKind::separator`
+- `NativeMenuAccelerator`
+- `CommandPaletteEntry`
+- `KeyBindingContext`
+- `TextModel`
+- `text_input(...)`
+- `menu_item(...)`
+- `button(...)`
+- `label(...)`
+- `BoxShadow`
+- `ElementBuilder::shadow(...)`
+- `ElementBuilder::shadow_sm()`
+- `ElementBuilder::fixed()`
+- `ElementBuilder::top(...)`
+- `ElementBuilder::left(...)`
+
+Phase C Step 355 window/examples widgets adds
+`examples/api_parity/public_window_examples/main.cpp` and
+`api_parity_public_window_examples` as the public API entry for menu demos,
+shadow, window positioning, window shadow, and input examples. The example is
+guarded by `tests/api_parity/phase_c_window_examples_public_api_test.cpp` and
+must stay prelude-only.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity
