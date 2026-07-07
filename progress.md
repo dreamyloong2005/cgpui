@@ -13806,3 +13806,28 @@
   exited 0, and
   `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-scroll-anchoring -P .`
   passed 100/100.
+
+## 2026-07-08 Phase C Step 350 Merge
+
+- Fast-forward merged `codex/phase-c-scroll-anchoring` into root `master` at
+  `055dfe7 feat: add uniform list scroll anchoring`; root `master` still had
+  no tracked diff and only the existing untracked `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- The first post-merge Windows full-test run failed during link/build staging
+  with only a blank `xmake` `error:` line after linking most tests. The
+  immediate rerun completed and passed, so this is recorded as transient
+  validation noise rather than a Step 350 regression.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 103/103 on rerun.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-master-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  100/100.
+- Step 350 is complete on `master`; Step 351 item measurement cache is the
+  next Phase C slice.
