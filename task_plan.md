@@ -2135,8 +2135,8 @@ implementation slice.
   Linux debug config, and WSL Arch Linux full debug 97/97. Step 338
   tab-order/focus-ring metadata is the next focused Phase C slice.
 
-- Phase C Step 338, tab-order/focus-ring metadata, is implemented in
-  `.worktrees/phase-c-tab-focus-metadata`: `FocusMetadata` and
+- Phase C Step 338, tab-order/focus-ring metadata, is merged on `master` at
+  `5290912 feat: add focus traversal metadata`: `FocusMetadata` and
   `FocusRingVisibility` live in the focused public leaf
   `include/cgpui/ui/focus_metadata.hpp`, `Element` stores the metadata through
   non-template bodies in `src/ui/element_focus_metadata.cpp`,
@@ -2148,6 +2148,7 @@ implementation slice.
   `git diff --check` with only expected LF-to-CRLF warnings, and focused
   public/ledger/structure gates 7/7. Feature-worktree full verification
   passed Windows debug config, Windows full debug 100/100, WSL Arch Linux
-  debug config, and WSL Arch Linux full debug 97/97. Step 339 click/drag
-  gesture synthesis is the next focused Phase C slice after Step 338 lands on
-  `master`.
+  debug config, and WSL Arch Linux full debug 97/97. Post-merge verification
+  passed JSON validation, Windows debug config, Windows full debug 100/100,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 97/97. Step 339
+  click/drag gesture synthesis is the next focused Phase C slice.

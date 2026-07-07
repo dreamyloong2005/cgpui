@@ -6035,3 +6035,14 @@
 - Step 339 should continue the focusable/interactable band with click/drag
   gesture synthesis while keeping keyboard activation and broad widget
   behavior out unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 338 Merge
+
+- Step 338 is merged on `master` at
+  `5290912 feat: add focus traversal metadata` and post-merge verified with
+  JSON validation, Windows debug config, Windows full debug 100/100, WSL Arch
+  Linux debug config, and WSL Arch Linux full debug 97/97.
+- Step 339 should continue the focusable/interactable band with focused
+  click/drag gesture synthesis. Keep keyboard activation, broad widget
+  behavior, runtime theme switching, and broad resolved-style layout/paint
+  rewrites out unless that slice explicitly owns them.

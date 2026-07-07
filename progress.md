@@ -13054,3 +13054,18 @@
   `xmake test -P .` passed 100/100, WSL Arch Linux
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+
+## 2026-07-07 Phase C Step 338 Merge
+
+- Committed `codex/phase-c-tab-focus-metadata` as
+  `5290912 feat: add focus traversal metadata`.
+- Fast-forward merged the branch into `master` at `5290912`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 100/100.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+- Step 338 is complete on `master`; Step 339 click/drag gesture synthesis is
+  the next Phase C focusable/interactable slice.
