@@ -624,7 +624,9 @@ expect, keeping each widget in its own module from the first version.
   `tests/ui/window_runtime_focus_test.cpp`, with structure coverage in
   `tests/architecture/ui_source_structure_test.cpp`. It deliberately leaves
   runtime theme switching, real pointer-active semantics, widget behavior, and
-  full resolved-style layout/paint application to later focused slices.
+  full resolved-style layout/paint application to later focused slices. It
+  merged on `master` at `e88bd78` and was post-merge verified with JSON
+  validation, Windows full-debug 99/99, and WSL Arch Linux full-debug 96/96.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -937,7 +939,8 @@ inherited text style through `StyleAuthoredTextFields`,
 `src/ui/text_style_inheritance.cpp`, effective text styles on text nodes, and
 container/wrapper forwarding for foreground color, font family, and font size
 on `master` at `a472317`.
-Step 335 adds focused dynamic style invalidation through
+Step 335 landed focused dynamic style invalidation on `master` at `e88bd78`
+through
 `WindowRuntime::request_style_state_invalidation(...)`, hover/focus element
 transition hooks, and `src/ui/runtime_style_invalidation.cpp` ownership.
 Step 336 should audit and close out Steps 331-335 style-cascade evidence,

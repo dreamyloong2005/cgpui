@@ -5939,3 +5939,14 @@
   pass, focus requests can send a focus accessibility live update before a
   later value/text update, and focus release can leave layout/paint invalidated
   before a subsequent explicit paint request.
+
+## 2026-07-07 Phase C Step 335 Merge
+
+- Step 335 is merged on `master` at
+  `e88bd78 feat: add dynamic style invalidation` and post-merge verified with
+  JSON validation, Windows debug config, Windows full debug 99/99, WSL Arch
+  Linux debug config, and WSL Arch Linux full debug 96/96.
+- Step 336 should close the Steps 331-335 style-cascade evidence band. Keep
+  focusable/interactable semantics, pointer-active behavior, focus rings,
+  widget behavior, and broad resolved-style layout/paint rewrites out until the
+  next band opens.

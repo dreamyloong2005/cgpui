@@ -12904,3 +12904,17 @@
 - Feature-worktree verification passed JSON validation, `git diff --check`,
   focused public/structure gates 6/6, Windows debug config, Windows full debug
   99/99, WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.
+
+## 2026-07-07 Phase C Step 335 Merge
+
+- Committed `codex/phase-c-dynamic-style-invalidation` as
+  `e88bd78 feat: add dynamic style invalidation`.
+- Fast-forward merged the branch into `master` at `e88bd78`.
+- Verified post-merge Windows from the pre-handoff continuation:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed 99/99.
+- Re-verified post-merge WSL Arch Linux after the handoff:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 96/96.
+- Step 335 is complete on `master`; Step 336, style cascade depth closeout, is
+  the next Phase C slice before the focusable/interactable semantics band opens.
