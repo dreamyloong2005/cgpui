@@ -1,3 +1,4 @@
 .worktrees/
 .xmake/
+.build-wsl/
 build/

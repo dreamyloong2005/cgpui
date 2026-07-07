@@ -14313,3 +14313,27 @@
   `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-widget-catalog -P .`
   passed 104/104. C: stayed roughly flat at 20.75GB free after the run; the
   D-drive WSL build directory was 2.4G and `/home/dreamyloong` remained 4.0K.
+
+## 2026-07-08 Phase C Step 357 Merge
+
+- Fast-forward merged `codex/phase-c-window-example-widget-catalog` into root
+  `master` at `af79a7b test: add phase c window widget catalog example`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 107/107.
+- Verified post-merge WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  104/104.
+- Added `.build-wsl/` to `.gitignore`, removed the obsolete Step 357 feature
+  WSL cache, and kept only the root/master D-drive WSL cache for subsequent
+  Phase C verification. After cleanup, C: was 20.69GB free, D: was 21.58GB
+  free, `.build-wsl/master` was 2.4G, and `/home/dreamyloong` remained 4.0K.
+- Step 357 is complete on `master`; Step 358 window/examples widgets is the
+  next Phase C slice.
