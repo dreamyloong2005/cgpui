@@ -721,7 +721,9 @@ expect, keeping each widget in its own module from the first version.
   band with stable item identity and the first virtualized visible-range
   calculation boundary over the existing `scrollable_list` path. Step 350 adds
   keyed scroll anchoring over that snapshot boundary. Step 351 adds keyed item
-  measurement caching over the same layout snapshot boundary.
+  measurement caching over the same layout snapshot boundary. Step 352 adds
+  retained/recycled large-list windows with focused paint skipping outside the
+  visible-plus-overscan range.
 - [ ] Steps 355-360: Implement window/examples widgets for menu demos, shadow,
   window positioning, window shadow, and input examples using public APIs.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
@@ -986,7 +988,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 352 should continue uniform list parity with large-list recycling from the
+Step 353 should continue uniform list parity with keyboard/pointer selection
+from the
 frozen Phase B public authoring boundary after the focused layout, style,
 focusable/interactable, built-in widget, and Step 349 stable identity/range
 plus Step 350 scroll anchoring and Step 351 item measurement cache boundaries
@@ -1086,8 +1089,11 @@ anchor application. Step 351 adds keyed item measurement caching through
 `UniformListItemMeasurementCache`, `measure_uniform_list_items(...)`,
 `ScrollableListElement::measurement_cache()`, focused
 `src/ui/uniform_list_measurement.cpp` ownership, and snapshot-level cache
-hit/miss observability before Step 352 large-list recycling and
-keyboard/pointer selection slices.
+hit/miss observability. Step 352 adds `UniformListRecyclingWindow`,
+`calculate_uniform_list_recycling_window(...)`,
+`UniformListLayoutSnapshot::recycling_window`, `UniformListItemIdentity::recycled`,
+focused `src/ui/uniform_list_recycling.cpp` ownership, and retained-window
+painting before the Step 353 keyboard/pointer selection slice.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

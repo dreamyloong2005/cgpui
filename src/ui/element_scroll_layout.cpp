@@ -5,6 +5,8 @@
 namespace cgpui {
 namespace {
 
+constexpr std::size_t kUniformListRecyclingOverscanItems = 1;
+
 [[nodiscard]] ElementKey key_for_child(const Element& child, std::size_t index) {
   if (child.key().has_value()) {
     return *child.key();
@@ -90,8 +92,13 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
       layout_snapshot_.items,
       offset,
       output.size);
+  layout_snapshot_.recycling_window = calculate_uniform_list_recycling_window(
+      layout_snapshot_.visible_range,
+      layout_snapshot_.measurements,
+      kUniformListRecyclingOverscanItems);
   for (UniformListItemIdentity& item : layout_snapshot_.items) {
     item.visible = layout_snapshot_.visible_range.contains(item.index);
+    item.recycled = layout_snapshot_.recycling_window.recycles(item.index);
   }
 
   content_.set_layout_bounds(Rect{

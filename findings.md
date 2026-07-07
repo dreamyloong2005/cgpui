@@ -6452,3 +6452,29 @@
 - Step 352 should continue uniform list parity with large-list recycling over
   this measurement cache. Keep keyboard/pointer selection for the later
   selection slice unless Step 352 explicitly owns it.
+
+## 2026-07-08 Phase C Step 352 Large-List Recycling
+
+- Step 352 stays scoped to a retained/recycled large-list window over the
+  existing `UniformListLayoutSnapshot` and Step 351 measurement cache boundary.
+  It should not add keyboard/pointer selection, cache eviction, or a new layout
+  engine.
+- Durable public ownership remains `include/cgpui/ui/uniform_list.hpp`; the
+  focused non-template recycling implementation lives in
+  `src/ui/uniform_list_recycling.cpp` rather than the existing range/anchor or
+  measurement source files.
+- `calculate_uniform_list_recycling_window(...)` expands the visible range by
+  a small overscan count, records retained count plus recycled before/after
+  counts and measured extents, and exposes `retains(...)` / `recycles(...)`
+  helpers for scroll integration.
+- `ScrollableListElement::layout(...)` stores
+  `UniformListLayoutSnapshot::recycling_window` after measurement and marks
+  each `UniformListItemIdentity::recycled`; `ScrollableListElement::paint(...)`
+  skips recycled children so large-list recycling is observable without
+  replacing the existing full child layout pass in this slice.
+- The first focused RED run failed exactly on unresolved
+  `UniformListRecyclingWindow` methods and
+  `calculate_uniform_list_recycling_window(...)`, confirming the tests were
+  aimed at the new Step 352 boundary.
+- Step 353 should continue uniform list parity with keyboard/pointer selection
+  over the Step 349-352 snapshot, anchor, measurement, and recycling state.

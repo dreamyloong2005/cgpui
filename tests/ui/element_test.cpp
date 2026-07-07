@@ -5293,6 +5293,58 @@ int test_scrollable_list_records_item_measurement_cache_hits() {
              : 386;
 }
 
+int test_scrollable_list_recycles_large_list_paint_to_retained_window() {
+  cgpui::ScrollState state;
+  cgpui::ScrollableListBuilder builder =
+      cgpui::scrollable_list(state).size(50.0F, 25.0F);
+  for (std::size_t index = 0; index < 10; ++index) {
+    builder = std::move(builder).item(
+        "item-" + std::to_string(index),
+        cgpui::div()
+            .size(50.0F, 10.0F)
+            .background(cgpui::rgb(10, 20, 30)));
+  }
+  cgpui::AnyElement element = std::move(builder).build();
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr) {
+    return 608;
+  }
+
+  (void)list->layout(cgpui::LayoutInput{});
+  state.set_offset(cgpui::Point{.x = 0.0F, .y = 35.0F});
+  (void)list->layout(cgpui::LayoutInput{});
+
+  const cgpui::UniformListLayoutSnapshot& snapshot =
+      list->layout_snapshot();
+  if (snapshot.visible_range.start_index != 3 ||
+      snapshot.visible_range.end_index != 6 ||
+      snapshot.recycling_window.retained_range.start_index != 2 ||
+      snapshot.recycling_window.retained_range.end_index != 7 ||
+      snapshot.recycling_window.retained_count != 5 ||
+      snapshot.recycling_window.recycled_before_count != 2 ||
+      snapshot.recycling_window.recycled_after_count != 3) {
+    return 609;
+  }
+  if (!snapshot.items[0].recycled || !snapshot.items[1].recycled ||
+      snapshot.items[2].recycled || !snapshot.items[3].visible ||
+      !snapshot.items[5].visible || snapshot.items[6].visible ||
+      snapshot.items[6].recycled || !snapshot.items[7].recycled) {
+    return 610;
+  }
+
+  cgpui::PaintList paint_list;
+  list->paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 5) {
+    return 611;
+  }
+  if (commands.front().solid_rect.rect.origin.y != -15.0F ||
+      commands.back().solid_rect.rect.origin.y != 25.0F) {
+    return 612;
+  }
+  return list->measurement_cache().entry_count() == 10 ? 0 : 613;
+}
+
 int test_hidden_overflow_intersects_nested_scrollable_list_clip() {
   cgpui::ScrollState state;
   cgpui::AnyElement list =
@@ -6027,6 +6079,11 @@ int main() {
   }
   if (const int result =
           test_scrollable_list_records_item_measurement_cache_hits();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scrollable_list_recycles_large_list_paint_to_retained_window();
       result != 0) {
     return result;
   }

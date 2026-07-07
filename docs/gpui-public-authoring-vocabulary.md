@@ -127,11 +127,13 @@ rather than broad UI entry files.
 - `UniformListItemIdentity`
 - `UniformListItemMeasurement`
 - `UniformListItemMeasurementResult`
+- `UniformListRecyclingWindow`
 - `UniformListLayoutSnapshot`
 - `UniformListScrollAnchor`
 - `UniformListItemMeasurementCache`
 - `calculate_uniform_list_visible_range(...)`
 - `measure_uniform_list_items(...)`
+- `calculate_uniform_list_recycling_window(...)`
 - `capture_uniform_list_scroll_anchor(...)`
 - `apply_uniform_list_scroll_anchor(...)`
 - `ScrollableListElement::layout_snapshot()`
@@ -142,8 +144,10 @@ and a virtualized visible-range calculation boundary. Phase C Step 350 adds
 keyed scroll anchoring over that snapshot boundary so a visible item keeps its
 viewport offset after preceding item size changes. Phase C Step 351 adds keyed
 item measurement caching and exposes cache hit/miss stats from the scrollable
-list layout boundary. Large-list recycling and keyboard/pointer list selection
-remain later Phase C slices.
+list layout boundary. Phase C Step 352 adds a retained/recycled window over the
+visible range plus overscan so scrollable lists can skip painting items outside
+the recycled large-list window. Keyboard/pointer list selection remains a later
+Phase C slice.
 
 ## Out of scope for this freeze
 

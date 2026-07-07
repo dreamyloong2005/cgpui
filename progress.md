@@ -13910,3 +13910,57 @@
   100/100.
 - Step 351 is complete on `master`; Step 352 large-list recycling is the next
   Phase C slice.
+
+## 2026-07-08 Phase C Step 352 Large-List Recycling
+
+- Continued in `.worktrees/phase-c-large-list-recycling` on
+  `codex/phase-c-large-list-recycling` from `1a4d883 docs: mark phase c step
+  351 merged`.
+- Scoped Step 352 to retained/recycled large-list windows over the existing
+  uniform-list snapshot, scroll anchor, and item measurement cache boundaries.
+  Keyboard/pointer selection remains the Step 353 handoff.
+- Added RED coverage in `tests/ui/scroll_test.cpp`,
+  `tests/ui/element_test.cpp`,
+  `tests/architecture/ui_source_structure_test.cpp`,
+  `tests/api_parity/gpui_parity_ledger_test.cpp`,
+  `tests/api_parity/public_authoring_vocabulary_freeze_test.cpp`, and
+  `tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`.
+- The first focused RED run
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` failed as expected at
+  link time on missing `UniformListRecyclingWindow::empty(...)`,
+  `retains(...)`, `recycles(...)`, and
+  `calculate_uniform_list_recycling_window(...)`.
+- Implemented `UniformListRecyclingWindow`,
+  `calculate_uniform_list_recycling_window(...)`,
+  `UniformListLayoutSnapshot::recycling_window`, and
+  `UniformListItemIdentity::recycled` in the focused uniform-list public leaf,
+  with non-template bodies in `src/ui/uniform_list_recycling.cpp`.
+  `ScrollableListElement::layout(...)` now records the recycling window after
+  visible-range calculation, and `ScrollableListElement::paint(...)` skips
+  recycled children outside the retained visible-plus-overscan window.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, audit guards, `task_plan.md`, and
+  `findings.md` so Step 352 evidence is required and the handoff moves to
+  Phase C Step 353 keyboard/pointer selection.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Focused documentation/API/behavior verification passed:
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 6/6.
+- Diff hygiene passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Feature-worktree Windows verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- Feature-worktree WSL Arch Linux verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o
+  /home/dreamyloong/cgpui-phase-c-large-list-recycling-build -P .` exited 0,
+  and
+  `XMAKE_ROOT=y xmake test -w
+  /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-large-list-recycling -P .`
+  passed 100/100.

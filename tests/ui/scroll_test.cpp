@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <span>
+#include <string>
 #include <type_traits>
 #include <vector>
 
@@ -291,6 +292,59 @@ int test_uniform_list_item_measurement_cache_reuses_keyed_sizes() {
              : 21;
 }
 
+int test_uniform_list_recycling_window_expands_visible_range_with_overscan() {
+  cgpui::UniformListItemMeasurementCache cache;
+  std::vector<cgpui::UniformListItemIdentity> items;
+  for (std::size_t index = 0; index < 8; ++index) {
+    items.push_back(cgpui::UniformListItemIdentity{
+        .index = index,
+        .key = cgpui::ElementKey{.value = std::to_string(index)},
+        .element_id = cgpui::ElementId{100 + index},
+        .content_bounds =
+            cgpui::Rect{.origin = {.x = 0.0F,
+                                   .y = static_cast<float>(index) * 10.0F},
+                         .size = {.width = 40.0F, .height = 10.0F}},
+    });
+  }
+  const std::vector<cgpui::UniformListItemMeasurementResult> measurements =
+      cgpui::measure_uniform_list_items(cache, items);
+
+  const cgpui::UniformListRecyclingWindow window =
+      cgpui::calculate_uniform_list_recycling_window(
+          cgpui::UniformListVisibleRange{.start_index = 3, .end_index = 5},
+          measurements,
+          1);
+  if (window.retained_range.start_index != 2 ||
+      window.retained_range.end_index != 6 || window.visible_count != 2 ||
+      window.retained_count != 4 || window.recycled_before_count != 2 ||
+      window.recycled_after_count != 2 || window.empty()) {
+    return 22;
+  }
+  if (!window.retains(2) || !window.retains(5) || window.retains(1) ||
+      !window.recycles(7) || window.recycles(4)) {
+    return 23;
+  }
+  if (window.recycled_before_size.width != 40.0F ||
+      window.recycled_before_size.height != 20.0F ||
+      window.recycled_after_size.width != 40.0F ||
+      window.recycled_after_size.height != 20.0F) {
+    return 24;
+  }
+
+  const cgpui::UniformListRecyclingWindow no_overscan =
+      cgpui::calculate_uniform_list_recycling_window(
+          cgpui::UniformListVisibleRange{.start_index = 3, .end_index = 5},
+          measurements,
+          0);
+  return no_overscan.retained_range.start_index == 3 &&
+                 no_overscan.retained_range.end_index == 5 &&
+                 no_overscan.retained_count == 2 &&
+                 no_overscan.recycled_before_count == 3 &&
+                 no_overscan.recycled_after_count == 3
+             ? 0
+             : 25;
+}
+
 } // namespace
 
 int main() {
@@ -325,6 +379,11 @@ int main() {
   }
   if (const int result =
           test_uniform_list_item_measurement_cache_reuses_keyed_sizes();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_uniform_list_recycling_window_expands_visible_range_with_overscan();
       result != 0) {
     return result;
   }

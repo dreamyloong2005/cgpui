@@ -2422,3 +2422,15 @@ implementation slice.
   passed `scroll_test/default` and `element_test/default`, and structure/docs
   guards now require the Step 351 evidence. The handoff moves to Phase C Step
   352 large-list recycling.
+
+- Phase C Step 352, large-list recycling, is in progress in
+  `.worktrees/phase-c-large-list-recycling`: `UniformListRecyclingWindow`,
+  `calculate_uniform_list_recycling_window(...)`,
+  `UniformListLayoutSnapshot::recycling_window`, and
+  `UniformListItemIdentity::recycled` are scoped to a retained
+  visible-plus-overscan window over the Step 351 measurement cache boundary.
+  `ScrollableListElement::paint(...)` skips recycled children while the layout
+  path still preserves the existing full measurement pass. RED coverage failed
+  as expected on missing recycling helper symbols before the focused
+  implementation was added. The handoff will move to Phase C Step 353
+  keyboard/pointer selection after GREEN verification and merge.

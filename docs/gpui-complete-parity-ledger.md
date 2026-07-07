@@ -54,7 +54,7 @@ Status meanings:
 | gpui key_context | `KeyBindingContext` for app/window/view/focused-element key binding activation | Required | context-aware key bindings exist without the full upstream key-context tree API | Phase B |
 | gpui keymap dispatch | `KeyBinding`, `KeyBindingChord`, `KeyBindingContext`, `parse_key_binding(...)`, `parse_key_binding(..., DesktopPlatformTarget)`, `Context<T>::bind_key("ctrl-shift-s", "action")`, `Context<T>::bind_key("ctrl-k ctrl-s", "action")`, `Context<T>::bind_key(..., KeyBindingContext)`, command-palette-owned key binding metadata, and action registry dispatch | Required | deterministic key binding plus GPUI-style chord grammar, platform modifier semantics, active context filtering, pending partial sequence matching, disabled key scope filtering, and command palette key integration exist; `secondary-*` maps to Ctrl on Windows/Linux and Super on macOS, while `platform-*` / `cmd-*` / `win-*` map to the platform key. Action macro payloads remain missing | Phase B |
 | gpui element styling | `Style`, `StyleOverlay`, builders | Required | many primitives exist, tailwind-style vocabulary incomplete | Phase C |
-| gpui uniform_list | `scrollable_list` plus `UniformListVisibleRange`, `UniformListItemIdentity`, `UniformListItemMeasurement`, `UniformListItemMeasurementResult`, `UniformListLayoutSnapshot`, `UniformListScrollAnchor`, `UniformListItemMeasurementCache`, `calculate_uniform_list_visible_range(...)`, `measure_uniform_list_items(...)`, `capture_uniform_list_scroll_anchor(...)`, `apply_uniform_list_scroll_anchor(...)`, `ScrollableListElement::layout_snapshot()`, and `ScrollableListElement::measurement_cache()` | Required | stable item identity, visible-range snapshots, keyed scroll anchoring, and keyed item measurement cache stats exist; recycling and list selection remain incomplete | Phase C Step 352 large-list recycling |
+| gpui uniform_list | `scrollable_list` plus `UniformListVisibleRange`, `UniformListItemIdentity`, `UniformListItemMeasurement`, `UniformListItemMeasurementResult`, `UniformListRecyclingWindow`, `UniformListLayoutSnapshot`, `UniformListScrollAnchor`, `UniformListItemMeasurementCache`, `calculate_uniform_list_visible_range(...)`, `measure_uniform_list_items(...)`, `calculate_uniform_list_recycling_window(...)`, `capture_uniform_list_scroll_anchor(...)`, `apply_uniform_list_scroll_anchor(...)`, `ScrollableListElement::layout_snapshot()`, and `ScrollableListElement::measurement_cache()` | Required | stable item identity, visible-range snapshots, keyed scroll anchoring, keyed item measurement cache stats, and retained/recycled large-list paint windows exist; list selection remains incomplete | Phase C Step 353 keyboard/pointer selection |
 | gpui text system | `TextModel`, shaping, wrap, glyph records | Required | deterministic text depth exists, production shaping incomplete | Phase D |
 | gpui image assets | image paint/upload skeleton | Required | in-memory RGBA8 only | Phase G |
 | gpui SVG | no production SVG element/render path | Required | SVG is only tracked as future asset path | Phase C/G |
@@ -271,7 +271,16 @@ upstream example inventory includes:
   integration in `src/ui/element_scroll_layout.cpp` and coverage in
   `tests/ui/scroll_test.cpp`, `tests/ui/element_test.cpp`, and
   `tests/architecture/ui_source_structure_test.cpp`.
-- Handoff: Phase C Step 352 large-list recycling is next.
+- Phase C Step 352 large-list recycling: `UniformListRecyclingWindow` and
+  `calculate_uniform_list_recycling_window(...)` expand the visible range by a
+  focused overscan window, record recycled before/after counts and measured
+  extents, store `UniformListLayoutSnapshot::recycling_window`, and mark
+  `UniformListItemIdentity::recycled` so `ScrollableListElement::paint(...)`
+  skips items outside the retained large-list window. The focused
+  implementation lives in `src/ui/uniform_list_recycling.cpp`, with layout and
+  paint integration in `src/ui/element_scroll_layout.cpp` and
+  `src/ui/element_scroll_paint.cpp`.
+- Handoff: Phase C Step 353 keyboard/pointer selection is next.
 
 ## Phase A Closure
 

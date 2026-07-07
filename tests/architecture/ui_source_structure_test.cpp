@@ -864,6 +864,7 @@ int main() {
       !contains(uniform_list_header, "struct UniformListItemMeasurement") ||
       !contains(uniform_list_header,
                 "struct UniformListItemMeasurementResult") ||
+      !contains(uniform_list_header, "struct UniformListRecyclingWindow") ||
       !contains(uniform_list_header, "struct UniformListLayoutSnapshot") ||
       !contains(uniform_list_header, "struct UniformListScrollAnchor") ||
       !contains(uniform_list_header,
@@ -871,6 +872,8 @@ int main() {
       !contains(uniform_list_header,
                 "calculate_uniform_list_visible_range(") ||
       !contains(uniform_list_header, "measure_uniform_list_items(") ||
+      !contains(uniform_list_header,
+                "calculate_uniform_list_recycling_window(") ||
       !contains(uniform_list_header,
                 "capture_uniform_list_scroll_anchor(") ||
       !contains(uniform_list_header, "apply_uniform_list_scroll_anchor(") ||
@@ -944,6 +947,7 @@ int main() {
       "src/ui/element_flex_layout.cpp",
       "src/ui/uniform_list.cpp",
       "src/ui/uniform_list_measurement.cpp",
+      "src/ui/uniform_list_recycling.cpp",
       "src/ui/element_scroll_layout.cpp",
       "src/ui/element_style_nodes.cpp",
       "src/ui/element_style_paint.cpp",
@@ -966,6 +970,7 @@ int main() {
       line_count(read_source("src/ui/element_flex_layout.cpp")) > 180 ||
       line_count(read_source("src/ui/uniform_list.cpp")) > 120 ||
       line_count(read_source("src/ui/uniform_list_measurement.cpp")) > 90 ||
+      line_count(read_source("src/ui/uniform_list_recycling.cpp")) > 90 ||
       line_count(read_source("src/ui/element_scroll_layout.cpp")) > 140) {
     return 106;
   }
@@ -973,6 +978,8 @@ int main() {
       read_source("src/ui/uniform_list.cpp");
   const std::string uniform_list_measurement_source =
       read_source("src/ui/uniform_list_measurement.cpp");
+  const std::string uniform_list_recycling_source =
+      read_source("src/ui/uniform_list_recycling.cpp");
   const std::string element_scroll_layout_source =
       read_source("src/ui/element_scroll_layout.cpp");
   if (!contains(uniform_list_source,
@@ -986,11 +993,17 @@ int main() {
                 "UniformListItemMeasurementCache::measure(") ||
       !contains(uniform_list_measurement_source,
                 "measure_uniform_list_items(") ||
+      !contains(uniform_list_recycling_source,
+                "UniformListRecyclingWindow::retains(") ||
+      !contains(uniform_list_recycling_source,
+                "calculate_uniform_list_recycling_window(") ||
       !contains(element_scroll_layout_source,
                 "ScrollableListElement::layout(") ||
       !contains(element_scroll_layout_source, "layout_snapshot_") ||
       !contains(element_scroll_layout_source, "measurement_cache_") ||
       !contains(element_scroll_layout_source, "measure_uniform_list_items(") ||
+      !contains(element_scroll_layout_source,
+                "calculate_uniform_list_recycling_window(") ||
       !contains(element_scroll_layout_source,
                 "apply_uniform_list_scroll_anchor(") ||
       contains(element_scroll_nodes_header,
