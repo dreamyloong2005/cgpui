@@ -2484,3 +2484,15 @@ implementation slice.
   `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
   priorities, structured task groups, and direct `WindowRuntime`/private
   include usage. Step 358 is the next window/examples widget slice.
+- Phase C Step 358, window/examples interaction states, continues the same
+  band in `.worktrees/phase-c-window-example-interaction-states`: add a
+  prelude-only
+  `examples/api_parity/public_window_examples_interaction_states/main.cpp`
+  target plus
+  `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` to
+  guard hover/focus/active/disabled interaction states, focus ring and
+  tab-index examples, keyed controls, click handlers, and window options
+  inside a public window example. Keep this slice out of `ClipboardItem`,
+  upstream `gpui::test` macros, action macro payloads, task priorities,
+  structured task groups, and direct `WindowRuntime`/private include usage.
+  Step 359 is the next window/examples widget slice.

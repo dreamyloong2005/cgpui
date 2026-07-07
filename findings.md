@@ -6580,3 +6580,22 @@
 - Step 358 should continue the window/examples widget band without adding
   `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
   priorities, structured task groups, or private runtime headers.
+
+## 2026-07-08 Phase C Step 358 Window Examples Interaction States
+
+- Step 358 stays in the window/examples band and adds a public
+  interaction-state example, not new production window/runtime behavior.
+- Durable example ownership is
+  `examples/api_parity/public_window_examples_interaction_states/main.cpp`; it
+  includes only `cgpui/prelude.hpp` and uses public hover/focus/active/disabled
+  style overlays, focus ring and tab-index metadata, keyed controls, click
+  handlers, command-palette entries, key bindings, text input, and window
+  options.
+- Durable guard ownership is
+  `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp`,
+  registered in `xmake.lua`; it freezes the example target/source, the
+  prelude-only boundary, the roadmap/ledger/vocabulary handoff, and the Step
+  359 next slice.
+- Future WSL verification for this and subsequent Phase C slices should use a
+  D-drive build output under `/mnt/d/Dev/Projects/cgpui/.build-wsl/...`, not a
+  WSL-home build directory.

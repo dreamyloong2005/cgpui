@@ -14337,3 +14337,57 @@
   free, `.build-wsl/master` was 2.4G, and `/home/dreamyloong` remained 4.0K.
 - Step 357 is complete on `master`; Step 358 window/examples widgets is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 358 Window Examples Interaction States
+
+- Created `.worktrees/phase-c-window-example-interaction-states` on
+  `codex/phase-c-window-example-interaction-states` from
+  `1ef713f docs: mark phase c step 357 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 358 to a public interaction-state example inside the existing
+  window/examples band. This is example/API evidence only, not new production
+  widget or runtime behavior.
+- Added RED coverage in
+  `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` and
+  registered the test target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_window_examples_interaction_states_test/default`
+  failed as expected because the interaction-states example and docs were not
+  present yet.
+- Added
+  `examples/api_parity/public_window_examples_interaction_states/main.cpp` and
+  `api_parity_public_window_examples_interaction_states` to cover
+  hover/focus/active/disabled interaction states, focus ring and tab-index
+  examples, keyed controls, click handlers, command-palette entries, key
+  bindings, text input, and window options through public prelude-only window
+  example code.
+- WSL verification for this slice must keep using D-drive build output under
+  `/mnt/d/Dev/Projects/cgpui/.build-wsl/...`; do not place xmake build output
+  under WSL home.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified diff hygiene:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Verified the new public interaction-states example target builds:
+  `xmake build -P . api_parity_public_window_examples_interaction_states`
+  exited 0.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . phase_c_window_examples_interaction_states_test/default
+  gpui_parity_ledger_test/default phase_c_window_examples_public_api_test/default
+  phase_c_window_examples_workflow_test/default
+  phase_c_window_examples_widget_catalog_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 6/6 after keeping the
+  frozen `hover/focus/active/disabled interaction states` and
+  `focus ring and tab-index examples` phrases contiguous in every guarded doc.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 108/108.
+- Verified WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-window-example-interaction-states -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-interaction-states -P .`
+  passed 105/105.
+- After WSL verification, C: was 20.29GB free, D: was 19.26GB free,
+  `/home/dreamyloong` was 4.0K, `/tmp` was 52K, and the D-drive feature WSL
+  cache `.build-wsl/phase-c-window-example-interaction-states` was 2.31GB.
+  Clean that feature cache after Step 358 is merged and post-merge verification
+  can use `.build-wsl/master`.

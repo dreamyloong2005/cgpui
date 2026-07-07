@@ -36,8 +36,8 @@ bool contains(const std::string& text, const char* value) {
 } // namespace
 
 int main() {
-  const std::string example =
-      read_source("examples/api_parity/public_window_examples/main.cpp");
+  const std::string example = read_source(
+      "examples/api_parity/public_window_examples_interaction_states/main.cpp");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string roadmap = read_source(
@@ -53,54 +53,46 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"api_parity_public_window_examples\")") ||
-      !contains(xmake,
-                "examples/api_parity/public_window_examples/main.cpp") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_public_api_test\")") ||
+  if (!contains(
+          xmake,
+          "target(\"api_parity_public_window_examples_interaction_states\")") ||
       !contains(
           xmake,
-          "tests/api_parity/phase_c_window_examples_public_api_test.cpp")) {
+          "examples/api_parity/public_window_examples_interaction_states/main.cpp") ||
+      !contains(
+          xmake,
+          "target(\"phase_c_window_examples_interaction_states_test\")") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_window_examples_interaction_states_test.cpp")) {
     return 2;
   }
 
   constexpr std::array required_example_fragments{
       "#include \"cgpui/prelude.hpp\"",
-      "class PublicWindowExamplesView",
+      "class PublicWindowExamplesInteractionStatesView",
       "cgpui::IntoElement render(",
-      "cgpui::Context<PublicWindowExamplesView>&",
-      "static_assert(cgpui::Render<PublicWindowExamplesView>)",
-      "cgpui::Application::create()",
-      "cgpui::AppRunnerOptions",
-      "cgpui::WindowOptions{}",
-      ".title(\"CGPUI Window Examples\")",
-      ".size(",
-      ".decorations(true)",
-      ".resizable(true)",
-      ".transparent(false)",
-      ".titlebar_visible(true)",
-      "cgpui::NativeMenuModel",
-      "cgpui::NativeMenuItemKind::submenu",
-      "cgpui::NativeMenuItemKind::separator",
-      "cgpui::NativeMenuAccelerator",
-      "try_install_native_menu(",
-      "cgpui::CommandPaletteEntry",
-      "bind_key(",
-      "cgpui::TextModel",
-      "cgpui::text_input(",
-      "cgpui::menu_item(",
+      "cgpui::Context<PublicWindowExamplesInteractionStatesView>&",
+      "static_assert(cgpui::Render<PublicWindowExamplesInteractionStatesView>)",
+      "cgpui::StyleState",
+      "cgpui::StyleOverlay",
+      ".hover_style(",
+      ".focus_style(",
+      ".active_style(",
+      ".disabled_style(",
+      ".focusable()",
+      ".tab_index(",
+      ".focus_ring(cgpui::FocusRingVisibility::visible)",
+      ".on_click(",
+      ".disabled()",
       "cgpui::button(",
-      "cgpui::label(",
-      "cgpui::BoxShadow",
-      ".shadow(",
-      ".shadow_sm()",
-      ".fixed()",
-      ".top(",
-      ".left(",
-      "window_positioning",
-      "window_shadow",
-      "set_menus",
-      "input",
+      "cgpui::menu_item(",
+      "cgpui::checkbox(",
+      "cgpui::text_input(",
+      "cgpui::KeyBindingContext::window()",
+      "context.register_command_palette_entry<ActivateInteractionStateAction>",
+      "cgpui::WindowOptions{}",
+      "window/examples interaction states",
   };
   for (std::size_t index = 0; index < required_example_fragments.size();
        ++index) {
@@ -110,15 +102,13 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase C Step 355 window/examples widgets",
-      "examples/api_parity/public_window_examples/main.cpp",
-      "api_parity_public_window_examples",
-      "phase_c_window_examples_public_api_test.cpp",
-      "menu demos",
-      "shadow",
-      "window positioning",
-      "window shadow",
-      "input examples",
+      "Phase C Step 358 window/examples interaction states",
+      "examples/api_parity/public_window_examples_interaction_states/main.cpp",
+      "api_parity_public_window_examples_interaction_states",
+      "phase_c_window_examples_interaction_states_test.cpp",
+      "hover/focus/active/disabled interaction states",
+      "focus ring and tab-index examples",
+      "Step 359 should continue the window/examples widget band",
   };
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
@@ -129,13 +119,7 @@ int main() {
     }
   }
 
-  if (!contains(roadmap,
-                "Phase C Step 356 window/examples workflow deepens") ||
-      !contains(ledger_json,
-                "\"step_356\": \"Phase C Step 356 window/examples workflow\"") ||
-      !contains(ledger_json,
-                "\"step_357\": \"Phase C Step 357 window/examples widget catalog\"") ||
-      !contains(ledger_json,
+  if (!contains(ledger_json,
                 "\"next_step\": \"Phase C Step 359 window/examples widgets\"")) {
     return 80;
   }

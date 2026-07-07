@@ -122,7 +122,7 @@ int main() {
   }
 
   if (!contains(ledger_json,
-                "\"next_step\": \"Phase C Step 358 window/examples widgets\"")) {
+                "\"next_step\": \"Phase C Step 359 window/examples widgets\"")) {
     return 80;
   }
 

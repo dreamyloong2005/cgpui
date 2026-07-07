@@ -219,6 +219,15 @@ public window example band. It is guarded by
 `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp` and must
 stay prelude-only. Step 358 should continue the window/examples widget band.
 
+Phase C Step 358 window/examples interaction states adds
+`examples/api_parity/public_window_examples_interaction_states/main.cpp` and
+`api_parity_public_window_examples_interaction_states` as the public interaction
+state entry for hover/focus/active/disabled interaction states, focus ring and tab-index examples,
+keyed controls, and click handlers inside a window example.
+It is guarded by
+`tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` and must
+stay prelude-only. Step 359 should continue the window/examples widget band.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

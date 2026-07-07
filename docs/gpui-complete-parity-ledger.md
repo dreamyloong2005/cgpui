@@ -319,7 +319,16 @@ upstream example inventory includes:
   `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp` keeps the
   source prelude-only and synchronized with the roadmap, ledger, vocabulary,
   and xmake target.
-- Handoff: Phase C Step 358 window/examples widgets is next. Step 358 should continue the window/examples widget band.
+- Phase C Step 358 window/examples interaction states:
+  `examples/api_parity/public_window_examples_interaction_states/main.cpp` and
+  `api_parity_public_window_examples_interaction_states` continue the
+  window/examples widget band with hover/focus/active/disabled interaction states,
+  focus ring and tab-index examples, keyed controls, and click handlers
+  using public APIs. The guard
+  `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` keeps
+  the source prelude-only and synchronized with the roadmap, ledger,
+  vocabulary, and xmake target.
+- Handoff: Phase C Step 359 window/examples widgets is next. Step 358 should continue the window/examples widget band. Step 359 should continue the window/examples widget band.
 
 ## Phase A Closure
 
