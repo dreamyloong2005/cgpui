@@ -12849,3 +12849,58 @@
   `XMAKE_ROOT=y xmake test -P .` passed 96/96.
 - Step 334 is complete on `master`; Step 335, dynamic style invalidation, is
   the next Phase C style-cascade slice.
+
+## 2026-07-07 Phase C Step 335 Dynamic Style Invalidation
+
+- Continued `.worktrees/phase-c-dynamic-style-invalidation` on
+  `codex/phase-c-dynamic-style-invalidation` from
+  `ebe398e docs: mark phase c step 334 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  `.codex` skill path, and confirmed it produced no additional report.
+- Confirmed the Step 335 feature worktree initially had no tracked changes;
+  `git status` required per-command `safe.directory` because the sandbox user
+  differs from the repository owner.
+- Baseline focused Windows gate from the handoff passed:
+  `xmake test -y -P . element_test/default style_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_phase_b_completion_audit_test/default` passed 5/5.
+- RED added behavior coverage in `tests/ui/window_runtime_input_test.cpp` and
+  `tests/ui/window_runtime_focus_test.cpp` for hover/focus element transitions
+  requesting render invalidation, and structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring focused
+  `src/ui/runtime_style_invalidation.cpp` ownership. The focused RED
+  `xmake test -y -P . window_runtime_input_test/default
+  window_runtime_focus_test/default ui_source_structure_test/default` failed
+  as expected before the helper existed.
+- GREEN added `WindowRuntime::request_style_state_invalidation(...)` in
+  `src/ui/runtime_style_invalidation.cpp`, called it from hover target changes
+  and keyboard focus element changes, and kept repeated same-target state
+  updates from invalidating again.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . window_runtime_input_test/default
+  window_runtime_focus_test/default ui_source_structure_test/default` passed
+  3/3.
+- Updated the parity ledger Markdown/JSON, ledger guard, roadmap, and
+  `task_plan.md` with Step 335 dynamic style invalidation evidence:
+  `src/ui/runtime_style_invalidation.cpp`,
+  `WindowRuntime::request_style_state_invalidation(...)`, hover/focus
+  transition callers, and the input/focus/structure tests. The next tracked
+  style-cascade marker is Step 336 style cascade depth closeout.
+- Focused ledger/public/structure gates passed:
+  `xmake test -y -P . window_runtime_input_test/default
+  window_runtime_focus_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default` passed 6/6 after the ledger
+  row kept Step 335 as completed evidence and advanced `next_step` to Step 336.
+- Windows full debug initially exposed two existing test assumptions that
+  predated runtime style-state invalidation: pointer hover into a rendered root
+  now causes an extra redraw/render pass, and element focus/release now splits
+  or carries style invalidation into accessibility and view-context
+  invalidation snapshots. Updated `window_runtime_rendering_test.cpp` and
+  `window_runtime_text_test.cpp` to assert the new invalidation behavior while
+  preserving route, focus-live-update, value/text-live-update, and clear-state
+  coverage.
+- Feature-worktree verification passed JSON validation, `git diff --check`,
+  focused public/structure gates 6/6, Windows debug config, Windows full debug
+  99/99, WSL Arch Linux debug config, and WSL Arch Linux full debug 96/96.

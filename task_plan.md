@@ -2078,3 +2078,19 @@ implementation slice.
   Windows full debug 99/99, WSL Arch Linux debug config, and WSL Arch Linux
   full debug 96/96. Step 335 dynamic style invalidation is the next focused
   Phase C style-cascade slice.
+
+- Phase C Step 335, focused dynamic style invalidation, is implemented in
+  `.worktrees/phase-c-dynamic-style-invalidation`:
+  `WindowRuntime::request_style_state_invalidation(...)` now owns
+  style-affecting element-state transition comparison and delegates real
+  hover/focus transitions to `request_render()`. Hover-target updates in
+  `src/ui/runtime_event_input.cpp` and keyboard-focus element updates in
+  `src/ui/runtime_focus.cpp` call the focused helper, with behavior coverage
+  in `tests/ui/window_runtime_input_test.cpp` and
+  `tests/ui/window_runtime_focus_test.cpp` plus structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp`. Focused Windows GREEN
+  verification passed 3/3; the ledger and roadmap now move the next slice to
+  Step 336 style cascade depth closeout. Feature-worktree verification passed
+  JSON validation, `git diff --check`, focused public/structure gates 6/6,
+  Windows debug config, Windows full debug 99/99, WSL Arch Linux debug config,
+  and WSL Arch Linux full debug 96/96.

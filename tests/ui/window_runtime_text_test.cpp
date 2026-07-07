@@ -640,10 +640,25 @@ RuntimeFixture* accessibility_live_update_fixture = nullptr;
 cgpui::WindowRuntime* accessibility_live_update_runtime = nullptr;
 cgpui::ElementId accessibility_live_update_input_id;
 cgpui::TextModel* accessibility_live_update_model = nullptr;
+bool accessibility_live_update_saw_focus_changed = false;
 
 void dispatch_accessibility_live_update_sequence() {
   accessibility_live_update_runtime->request_keyboard_focus(
       accessibility_live_update_input_id);
+  if (const auto& update =
+          accessibility_live_update_fixture->window.last_accessibility_update;
+      update.has_value()) {
+    const auto focus_changed = std::ranges::find_if(
+        update->live_updates,
+        [](const cgpui::PlatformAccessibilityLiveUpdate& event) {
+          return event.kind ==
+                     cgpui::PlatformAccessibilityLiveUpdateKind::focus_changed &&
+                 event.element_id == accessibility_live_update_input_id.value &&
+                 event.focused;
+        });
+    accessibility_live_update_saw_focus_changed =
+        focus_changed != update->live_updates.end();
+  }
   accessibility_live_update_model->insert_text("!");
   accessibility_live_update_fixture->window.request_redraw();
 }
@@ -652,6 +667,7 @@ int test_runtime_sends_accessibility_live_update_events_to_platform_window() {
   RuntimeFixture fixture;
   accessibility_live_update_fixture = &fixture;
   fixture.app.on_run = &dispatch_accessibility_live_update_sequence;
+  accessibility_live_update_saw_focus_changed = false;
 
   cgpui::TextModel model("query");
   auto tree = std::make_unique<cgpui::ElementTree>();
@@ -681,7 +697,7 @@ int test_runtime_sends_accessibility_live_update_events_to_platform_window() {
   if (result != 0) {
     return 332;
   }
-  if (fixture.window.accessibility_update_count != 2 ||
+  if (fixture.window.accessibility_update_count != 3 ||
       !fixture.window.last_accessibility_update.has_value()) {
     return 333;
   }
@@ -689,7 +705,7 @@ int test_runtime_sends_accessibility_live_update_events_to_platform_window() {
   const cgpui::PlatformAccessibilityTreeUpdate& update =
       *fixture.window.last_accessibility_update;
   if (update.root_element_id != root_id.value || update.nodes.size() != 2 ||
-      update.live_updates.size() != 3) {
+      update.live_updates.size() != 2) {
     return 334;
   }
 
@@ -715,14 +731,7 @@ int test_runtime_sends_accessibility_live_update_events_to_platform_window() {
     return 336;
   }
 
-  const auto has_focus_changed = std::ranges::find_if(
-      update.live_updates,
-      [input_id](const cgpui::PlatformAccessibilityLiveUpdate& event) {
-        return event.kind ==
-                   cgpui::PlatformAccessibilityLiveUpdateKind::focus_changed &&
-               event.element_id == input_id.value && event.focused;
-      });
-  if (has_focus_changed == update.live_updates.end()) {
+  if (!accessibility_live_update_saw_focus_changed) {
     return 337;
   }
 
@@ -1280,13 +1289,12 @@ int test_view_context_forwards_common_runtime_apis() {
              fixture.view.last_input_pointer_position)) {
     return 222;
   }
-  if (fixture.view.view_context_initial_invalidation.layout ||
-      fixture.view.view_context_initial_invalidation.paint ||
+  if (!fixture.view.view_context_initial_invalidation.layout ||
+      !fixture.view.view_context_initial_invalidation.paint ||
       !fixture.view.view_context_after_layout_request_invalidation.layout ||
       !fixture.view.view_context_after_layout_request_invalidation.paint ||
       fixture.view.view_context_after_clear_invalidation.layout ||
       fixture.view.view_context_after_clear_invalidation.paint ||
-      fixture.view.view_context_after_paint_request_invalidation.layout ||
       !fixture.view.view_context_after_paint_request_invalidation.paint) {
     return 217;
   }

@@ -5910,3 +5910,32 @@
   invalidation when style-affecting state changes. Keep runtime theme
   switching, widget behavior, pointer-active semantics, and broad cascade or
   layout rewrites out unless Step 335 explicitly owns them.
+
+## 2026-07-07 Phase C Step 335 Dynamic Style Invalidation
+
+- Step 335 stays scoped to invalidating existing render/layout/paint state
+  when runtime style-affecting element state changes. It does not add runtime
+  theme switching, real pointer-active semantics, widget behavior, or resolved
+  hover/focus style application to layout/paint.
+- Hover state changes are observed through redraw scheduling because the test
+  fake window processes redraw requests synchronously, so transient
+  invalidation bits are cleared before the pointer event reaches the view.
+  Repeated pointer movement within the same hovered element must not schedule
+  another redraw.
+- Keyboard focus element changes can be tested directly through
+  `WindowRuntime::invalidation_state()` because the runtime can request focus
+  before a platform window is running. Re-requesting the same focus element,
+  releasing the wrong element, and empty focus requests must remain no-ops.
+- Durable ownership is `src/ui/runtime_style_invalidation.cpp` for the
+  transition comparison and `request_render()` delegation. Input and focus
+  runtime files call the focused helper instead of directly requesting render
+  invalidation.
+- After Step 335 lands, Step 336 should be a style-cascade depth closeout and
+  evidence audit for Steps 331-335. Do not start focusable/interactable
+  semantics, pointer-active behavior, focus rings, or widget behavior until the
+  Step 337 band opens.
+- Tests that observe render/accessibility counts must account for new
+  style-state invalidation. Hovering into an element can add one redraw/render
+  pass, focus requests can send a focus accessibility live update before a
+  later value/text update, and focus release can leave layout/paint invalidated
+  before a subsequent explicit paint request.

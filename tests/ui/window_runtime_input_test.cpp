@@ -1310,6 +1310,74 @@ int test_runtime_tracks_hovered_pointer_element() {
   return 0;
 }
 
+RuntimeFixture* hover_style_invalidation_fixture = nullptr;
+int hover_redraws_after_first_move = 0;
+int hover_redraws_after_repeat_move = 0;
+int hover_redraws_after_second_target = 0;
+int hover_redraws_after_leave = 0;
+
+void dispatch_hover_style_invalidation_sequence() {
+  auto& callback = hover_style_invalidation_fixture->window.callback;
+  callback(cgpui::PointerMoved{.position = {5.0F, 5.0F}});
+  hover_redraws_after_first_move =
+      hover_style_invalidation_fixture->window.request_redraw_count;
+  callback(cgpui::PointerMoved{.position = {6.0F, 5.0F}});
+  hover_redraws_after_repeat_move =
+      hover_style_invalidation_fixture->window.request_redraw_count;
+  callback(cgpui::PointerMoved{.position = {5.0F, 15.0F}});
+  hover_redraws_after_second_target =
+      hover_style_invalidation_fixture->window.request_redraw_count;
+  callback(cgpui::PointerMoved{.position = {100.0F, 100.0F}});
+  hover_redraws_after_leave =
+      hover_style_invalidation_fixture->window.request_redraw_count;
+}
+
+int test_hover_state_changes_request_style_invalidation_redraw() {
+  RuntimeFixture fixture;
+  hover_style_invalidation_fixture = &fixture;
+  fixture.app.on_run = &dispatch_hover_style_invalidation_sequence;
+
+  cgpui::VerticalStackElement stack;
+  stack.assign_id(cgpui::ElementId{20});
+  auto first = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  first->assign_id(cgpui::ElementId{21});
+  auto second = std::make_unique<cgpui::FixedSizeElement>(
+      cgpui::Size{.width = 40.0F, .height = 10.0F});
+  second->assign_id(cgpui::ElementId{22});
+  stack.append_child(std::move(first));
+  stack.append_child(std::move(second));
+  (void)stack.layout(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(&stack);
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  hover_style_invalidation_fixture = nullptr;
+
+  if (result != 0) {
+    return 290;
+  }
+  if (hover_redraws_after_first_move != 1 ||
+      hover_redraws_after_repeat_move != 1 ||
+      hover_redraws_after_second_target != 2 ||
+      hover_redraws_after_leave != 3) {
+    return 291;
+  }
+  if (fixture.renderer.begin_frame_count != 3 ||
+      fixture.view.paint_count != 3) {
+    return 292;
+  }
+  return 0;
+}
+
 RuntimeFixture* cursor_shape_fixture = nullptr;
 
 void dispatch_cursor_shape_sequence() {
@@ -1951,6 +2019,9 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_tracks_hovered_pointer_element(); result != 0) {
+    return result;
+  }
+  if (const int result = test_hover_state_changes_request_style_invalidation_redraw(); result != 0) {
     return result;
   }
   if (const int result = test_runtime_routes_cursor_shape_from_hovered_element(); result != 0) {

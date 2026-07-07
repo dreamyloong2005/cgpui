@@ -718,6 +718,58 @@ int test_focus_handle_requests_releases_and_queries_focus() {
   return 0;
 }
 
+int test_keyboard_focus_element_changes_request_style_invalidation() {
+  RuntimeFixture fixture;
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+
+  runtime.request_keyboard_focus(cgpui::ElementId{51});
+  cgpui::InvalidationState state = runtime.invalidation_state();
+  if (!state.render || !state.layout || !state.paint) {
+    return 407;
+  }
+
+  runtime.clear_invalidation();
+  runtime.request_keyboard_focus(cgpui::ElementId{51});
+  state = runtime.invalidation_state();
+  if (state.render || state.layout || state.paint) {
+    return 408;
+  }
+
+  runtime.request_keyboard_focus(cgpui::ElementId{52});
+  state = runtime.invalidation_state();
+  if (!state.render || !state.layout || !state.paint) {
+    return 409;
+  }
+
+  runtime.clear_invalidation();
+  runtime.release_keyboard_focus(cgpui::ElementId{51});
+  state = runtime.invalidation_state();
+  if (state.render || state.layout || state.paint) {
+    return 410;
+  }
+
+  runtime.release_keyboard_focus(cgpui::ElementId{52});
+  state = runtime.invalidation_state();
+  if (!state.render || !state.layout || !state.paint) {
+    return 411;
+  }
+
+  runtime.clear_invalidation();
+  runtime.release_keyboard_focus(cgpui::ElementId{52});
+  runtime.request_keyboard_focus(cgpui::ElementId{});
+  state = runtime.invalidation_state();
+  if (state.render || state.layout || state.paint) {
+    return 412;
+  }
+
+  return 0;
+}
+
 int test_view_context_focus_handle_requests_releases_and_queries_focus() {
   RuntimeFixture fixture;
   keyboard_focus_fixture = &fixture;
@@ -837,6 +889,9 @@ int main() {
     return result;
   }
   if (const int result = test_focus_handle_requests_releases_and_queries_focus(); result != 0) {
+    return result;
+  }
+  if (const int result = test_keyboard_focus_element_changes_request_style_invalidation(); result != 0) {
     return result;
   }
   if (const int result = test_view_context_focus_handle_requests_releases_and_queries_focus(); result != 0) {

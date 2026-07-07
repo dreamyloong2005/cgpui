@@ -613,6 +613,18 @@ expect, keeping each widget in its own module from the first version.
   style for layout and paint, and styled/flex/vertical-stack plus common
   wrapper elements forward inherited text style without adding runtime theme
   switching or dynamic invalidation.
+  Step 335 adds focused dynamic style invalidation when runtime
+  style-affecting element state changes: hover-target transitions from
+  `src/ui/runtime_event_input.cpp` and keyboard-focus element transitions from
+  `src/ui/runtime_focus.cpp` call
+  `WindowRuntime::request_style_state_invalidation(...)`, while
+  `src/ui/runtime_style_invalidation.cpp` owns the transition comparison and
+  `request_render()` delegation. Behavior coverage lives in
+  `tests/ui/window_runtime_input_test.cpp` and
+  `tests/ui/window_runtime_focus_test.cpp`, with structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp`. It deliberately leaves
+  runtime theme switching, real pointer-active semantics, widget behavior, and
+  full resolved-style layout/paint application to later focused slices.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -892,7 +904,7 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 335 should continue Phase C element/style/layout work from the frozen
+Step 336 should close the current Phase C style-cascade depth band from the frozen
 Phase B public authoring boundary after the focused layout behavior band from
 Steps 319-330. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -925,8 +937,11 @@ inherited text style through `StyleAuthoredTextFields`,
 `src/ui/text_style_inheritance.cpp`, effective text styles on text nodes, and
 container/wrapper forwarding for foreground color, font family, and font size
 on `master` at `a472317`.
-Step 335 should continue the style cascade depth band with dynamic invalidation
-when style-affecting state changes.
+Step 335 adds focused dynamic style invalidation through
+`WindowRuntime::request_style_state_invalidation(...)`, hover/focus element
+transition hooks, and `src/ui/runtime_style_invalidation.cpp` ownership.
+Step 336 should audit and close out Steps 331-335 style-cascade evidence,
+keeping the next focusable/interactable semantics band ready for Step 337.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

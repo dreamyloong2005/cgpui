@@ -69,6 +69,8 @@ void WindowRuntime::update_hover_cursor_for_event(
     return;
   }
 
+  const std::optional<ElementId> previous_hovered_element_id =
+      hovered_element_id_;
   hovered_element_id_.reset();
   cursor_shape_ = CursorShape::default_arrow;
   if (element_root() != nullptr) {
@@ -84,6 +86,9 @@ void WindowRuntime::update_hover_cursor_for_event(
     }
   }
   apply_cursor_shape(cursor_shape_);
+  request_style_state_invalidation(
+      previous_hovered_element_id,
+      hovered_element_id_);
 }
 
 void WindowRuntime::resolve_event_route_target(

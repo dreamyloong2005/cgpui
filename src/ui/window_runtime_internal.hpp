@@ -10,6 +10,7 @@ void update_input_state_for_event(const PlatformEvent& event);
 void update_hover_cursor_for_event(
     const PlatformEvent& event,
     std::optional<ElementId> hit_element_id);
+void request_style_state_invalidation(std::optional<ElementId> previous, std::optional<ElementId> next);
 void resolve_event_route_target(
     const PlatformEvent& event,
     std::optional<ElementId> hit_element_id);

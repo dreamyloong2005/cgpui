@@ -1313,6 +1313,7 @@ int main() {
       "src/ui/runtime_command_palette.cpp",
       "src/ui/runtime_command_palette_keys.cpp",
       "src/ui/runtime_focus.cpp",
+      "src/ui/runtime_style_invalidation.cpp",
       "src/ui/runtime_key_bindings.cpp",
       "src/ui/runtime_key_binding_sequences.cpp",
       "src/ui/runtime_windows.cpp",
@@ -2215,6 +2216,8 @@ int main() {
 
   const std::string runtime_focus_source =
       read_source("src/ui/runtime_focus.cpp");
+  const std::string runtime_style_invalidation_source =
+      read_source("src/ui/runtime_style_invalidation.cpp");
   if (line_count(runtime_focus_source) > 110 ||
       !contains(runtime_focus_source,
                 "void WindowRuntime::request_keyboard_focus(") ||
@@ -2227,6 +2230,14 @@ int main() {
       contains(runtime_focus_source, "dispatch_action(") ||
       contains(runtime_focus_source, "register_command_palette_entry(")) {
     return 73;
+  }
+  if (line_count(runtime_style_invalidation_source) > 80 ||
+      !contains(runtime_style_invalidation_source,
+                "void WindowRuntime::request_style_state_invalidation(") ||
+      !contains(runtime_style_invalidation_source, "request_render();") ||
+      contains(runtime_event_input_source, "request_render();") ||
+      contains(runtime_focus_source, "request_render();")) {
+    return 144;
   }
 
   const std::string runtime_action_dispatch_source =

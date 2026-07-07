@@ -131,7 +131,7 @@ int test_runtime_render_pass_installs_rendered_element_tree() {
   if (result != 0) {
     return 305;
   }
-  if (view.render_count != 1 || view.paint_count != 1) {
+  if (view.render_count != 2 || view.paint_count != 2) {
     return 306;
   }
   if (!view.saw_context_view_id || !view.saw_context_viewport_size ||
@@ -736,7 +736,7 @@ int test_runtime_lays_out_owned_element_tree_on_redraw() {
   if (result != 0) {
     return 205;
   }
-  if (fixture.renderer.begin_frame_count != 1 ||
+  if (fixture.renderer.begin_frame_count != 2 ||
       runtime.element_root() == nullptr ||
       !runtime.element_root()->layout_bounds().has_value()) {
     return 206;
