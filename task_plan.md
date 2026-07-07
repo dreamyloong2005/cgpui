@@ -2280,3 +2280,26 @@ implementation slice.
   config, Windows full debug 103/103, WSL Arch Linux debug config, and WSL
   Arch Linux full debug 100/100. Step 345 slider widget is the next tracked
   Phase C slice.
+
+- Phase C Step 345, slider widget, is implemented in
+  `.worktrees/phase-c-slider-widget`: `SliderBuilder` and `slider(...)` expose
+  focused slider authoring through the public widget leaf
+  `include/cgpui/ui/slider_builder.hpp`, while `SliderElement` owns range,
+  value, step, click-to-value change handling, painting, focusability, and
+  slider accessibility role/value metadata in
+  `include/cgpui/ui/element_slider_nodes.hpp`. Implementation bodies stay in
+  focused sources: `src/ui/widgets/slider_builder.cpp`,
+  `src/ui/element_slider_nodes.cpp`, `src/ui/element_slider_layout.cpp`, and
+  `src/ui/element_slider_paint.cpp`. Aggregate headers remain thin, platform
+  accessibility role mapping includes slider, and the public vocabulary plus
+  Markdown/JSON parity ledger handoff now move to Phase C Step 346 list/menu
+  widget follow-up. Focused verification passed JSON validation plus
+  `builtin_widget_test/default`, `widget_source_structure_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`, and
+  `phase_c_focusable_interactable_audit_test/default` 5/5. Feature-worktree
+  full verification passed `git diff --check` with only expected LF-to-CRLF
+  warnings, Windows debug config plus full debug 103/103, and WSL Arch Linux
+  debug config plus full debug 100/100. Step 346 list/menu widget follow-up is
+  the next tracked Phase C slice; pause after landing Step 345 per user
+  request.

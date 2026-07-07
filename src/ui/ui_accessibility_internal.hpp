@@ -27,6 +27,8 @@ inline PlatformAccessibilityRole platform_accessibility_role(
       return PlatformAccessibilityRole::radio;
     case AccessibilityRole::switch_control:
       return PlatformAccessibilityRole::switch_control;
+    case AccessibilityRole::slider:
+      return PlatformAccessibilityRole::slider;
     case AccessibilityRole::generic:
       return PlatformAccessibilityRole::generic;
   }

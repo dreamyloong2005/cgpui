@@ -691,7 +691,12 @@ expect, keeping each widget in its own module from the first version.
   ownership, focused `ToggleControlElement` element behavior split across
   `src/ui/element_choice_nodes.cpp`, `src/ui/element_choice_layout.cpp`, and
   `src/ui/element_choice_paint.cpp`, and accessibility role/value metadata for
-  checked/selected/on state before slider work starts.
+  checked/selected/on state. Step 345 adds slider widget authoring through
+  `SliderBuilder`, `slider(...)`, focused `src/ui/widgets/slider_builder.cpp`
+  ownership, focused `SliderElement` element behavior split across
+  `src/ui/element_slider_nodes.cpp`, `src/ui/element_slider_layout.cpp`, and
+  `src/ui/element_slider_paint.cpp`, and accessibility role/value metadata for
+  the current slider value before list/menu widget work starts.
 - [ ] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection.
@@ -959,9 +964,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 345 continues built-in widget expansion from the frozen Phase B public authoring boundary
+Step 346 continues built-in widget expansion from the frozen Phase B public authoring boundary
 after the focused layout, style, focusable/interactable, and first widget
-bands from Steps 319-344. Step 319 landed the child-list foundation on `master` at
+bands from Steps 319-345. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -1025,9 +1030,13 @@ checkbox/radio/switch widgets through `ToggleBuilder`, `checkbox(...)`,
 `radio(...)`, `toggle_switch(...)`, `ToggleControlElement`, focused
 `src/ui/widgets/toggle_builder.cpp`, `src/ui/element_choice_nodes.cpp`,
 `src/ui/element_choice_layout.cpp`, and `src/ui/element_choice_paint.cpp`,
-plus accessibility role/value metadata for checked/selected/on state. Step
-345 should continue with a focused slider widget before list item, menu item,
-icon/image, and container primitive gaps.
+plus accessibility role/value metadata for checked/selected/on state. Step 345
+adds a focused slider widget through `SliderBuilder`, `slider(...)`,
+`SliderElement`, focused `src/ui/widgets/slider_builder.cpp`,
+`src/ui/element_slider_nodes.cpp`, `src/ui/element_slider_layout.cpp`, and
+`src/ui/element_slider_paint.cpp`, plus accessibility role/value metadata for
+the current slider value. Step 346 should continue with list item and menu item
+widgets before icon/image and container primitive gaps.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

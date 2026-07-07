@@ -13420,3 +13420,45 @@
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
 - Step 344 is complete on `master`; Step 345 slider widget is the next Phase C
   slice. Paused here per user request.
+
+## 2026-07-07 Phase C Step 345 Slider Widget
+
+- Continued from existing `.worktrees/phase-c-slider-widget` on
+  `codex/phase-c-slider-widget` at
+  `74b29af docs: mark phase c step 344 merged`; root `master` still only had
+  the existing untracked `.vscode/`.
+- Implemented `SliderBuilder` and `slider(...)` in
+  `include/cgpui/ui/slider_builder.hpp` and
+  `src/ui/widgets/slider_builder.cpp`, keeping widget builder bodies under the
+  focused `src/ui/widgets/*` boundary.
+- Added `SliderElement` in `include/cgpui/ui/element_slider_nodes.hpp` with
+  behavior, layout, and paint split across `src/ui/element_slider_nodes.cpp`,
+  `src/ui/element_slider_layout.cpp`, and
+  `src/ui/element_slider_paint.cpp`.
+- Added slider role mapping through `AccessibilityRole::slider`,
+  `PlatformAccessibilityRole::slider`, and `platform_accessibility_role(...)`;
+  slider accessibility values report the current clamped/stepped value as a
+  string.
+- Extended `tests/ui/builtin_widget_test.cpp` for range/value/step state,
+  click-to-value change handling, dispatch, painting, disabled input, and
+  prelude-visible `slider(...)` authoring.
+- Extended `tests/architecture/widget_source_structure_test.cpp` so slider
+  public leaves, focused implementation files, aggregate thinness, and source
+  line-count caps are guarded.
+- Updated `docs/gpui-public-authoring-vocabulary.md`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, the complete-replication roadmap,
+  `gpui_parity_ledger_test`, `public_authoring_vocabulary_freeze_test`, and
+  `phase_c_focusable_interactable_audit_test` so Step 345 evidence is required
+  and the handoff moves to Phase C Step 346 list/menu widget follow-up.
+- Focused verification passed: `python -m json.tool
+  docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 5/5.
+- Final feature-worktree verification passed: `git diff --check` exited 0
+  with only expected LF-to-CRLF normalization warnings, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  103/103, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 100/100.

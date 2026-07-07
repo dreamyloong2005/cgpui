@@ -134,8 +134,20 @@ int main() {
       !contains(ledger_json, "toggle_switch(...)") ||
       !contains(ledger_md, "src/ui/widgets/toggle_builder.cpp") ||
       !contains(ledger_json, "src/ui/widgets/toggle_builder.cpp") ||
+      !contains(ledger_md, "Phase C Step 345 slider widget") ||
+      !contains(ledger_json, "Phase C Step 345 slider widget") ||
+      !contains(ledger_md, "SliderBuilder") ||
+      !contains(ledger_json, "SliderBuilder") ||
+      !contains(ledger_md, "slider(...)") ||
+      !contains(ledger_json, "slider(...)") ||
+      !contains(ledger_md, "src/ui/widgets/slider_builder.cpp") ||
+      !contains(ledger_json, "src/ui/widgets/slider_builder.cpp") ||
+      !contains(ledger_md, "src/ui/element_slider_nodes.cpp") ||
+      !contains(ledger_json, "src/ui/element_slider_nodes.cpp") ||
+      !contains(ledger_md, "PlatformAccessibilityRole::slider") ||
+      !contains(ledger_json, "PlatformAccessibilityRole::slider") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 345 slider widget\"")) {
+                "\"next_step\": \"Phase C Step 346 list/menu widget follow-up\"")) {
     return 50;
   }
 

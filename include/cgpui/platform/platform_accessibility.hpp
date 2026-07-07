@@ -19,6 +19,7 @@ enum class PlatformAccessibilityRole {
   checkbox,
   radio,
   switch_control,
+  slider,
 };
 
 struct PlatformAccessibilityNodeUpdate {

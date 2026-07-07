@@ -163,6 +163,98 @@ int test_switch_widget_builder_uses_on_off_value_and_disabled_state() {
   return !toggle->on() && !result.consumed && !result.cancelled ? 0 : 43;
 }
 
+int test_slider_widget_builder_tracks_range_value_and_click_updates() {
+  float changed_value = -1.0F;
+  std::string_view dispatched_action;
+  cgpui::AnyElement element =
+      cgpui::slider("audio.volume")
+          .style(cgpui::Style{}.with_preferred_size({.width = 100.0F,
+                                                     .height = 20.0F}))
+          .range(0.0F, 100.0F)
+          .value(25.0F)
+          .step(5.0F)
+          .on_change([&](float value, const cgpui::ElementEventContext&) {
+            changed_value = value;
+            return cgpui::EventResult::unhandled();
+          })
+          .key("volume-slider")
+          .build();
+
+  auto* slider = dynamic_cast<cgpui::SliderElement*>(element.get());
+  if (slider == nullptr ||
+      slider->accessibility_role() != cgpui::AccessibilityRole::slider ||
+      slider->action_name() != "audio.volume") {
+    return 50;
+  }
+  if (slider->min() != 0.0F || slider->max() != 100.0F ||
+      slider->value() != 25.0F || slider->step() != 5.0F ||
+      slider->accessibility_value() != "25") {
+    return 51;
+  }
+  if (!slider->focusable() || !slider->key().has_value() ||
+      slider->key()->value != "volume-slider") {
+    return 52;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 100.0F || output.size.height != 20.0F) {
+    return 53;
+  }
+
+  cgpui::ElementEventContext click_context{.target_element_id = slider->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
+  click_context.dispatch_action = [&](std::string_view action) {
+    dispatched_action = action;
+    return cgpui::EventResult::consumed_event();
+  };
+  const cgpui::EventResult result = slider->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 72.0F, .y = 10.0F}},
+      click_context);
+  if (changed_value != 70.0F || dispatched_action != "audio.volume" ||
+      !result.consumed || result.cancelled) {
+    return 54;
+  }
+  return slider->value() == 70.0F && slider->accessibility_value() == "70" ? 0
+                                                                           : 55;
+}
+
+int test_slider_widget_builder_paints_and_ignores_disabled_input() {
+  cgpui::AnyElement element =
+      cgpui::slider("timeline.scrub")
+          .style(cgpui::Style{}.with_preferred_size({.width = 80.0F,
+                                                     .height = 16.0F}))
+          .range(-1.0F, 1.0F)
+          .value(0.0F)
+          .disabled()
+          .build();
+
+  auto* slider = dynamic_cast<cgpui::SliderElement*>(element.get());
+  if (slider == nullptr || slider->enabled() ||
+      slider->accessibility_value() != "0") {
+    return 60;
+  }
+  (void)element->layout(cgpui::LayoutInput{});
+  cgpui::PaintList paint_list;
+  slider->paint(paint_list);
+  if (paint_list.commands().size() < 3) {
+    return 61;
+  }
+
+  cgpui::ElementEventContext click_context{.target_element_id = slider->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
+  const cgpui::EventResult result = slider->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 80.0F, .y = 8.0F}},
+      click_context);
+  return slider->value() == 0.0F && !result.consumed && !result.cancelled ? 0
+                                                                          : 62;
+}
+
 int test_text_input_widget_builder_keeps_text_model_boundary() {
   cgpui::TextModel model("typed");
   cgpui::AnyElement element =
@@ -200,6 +292,16 @@ int main() {
   }
   if (const int result =
           test_switch_widget_builder_uses_on_off_value_and_disabled_state();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_slider_widget_builder_tracks_range_value_and_click_updates();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_slider_widget_builder_paints_and_ignores_disabled_input();
       result != 0) {
     return result;
   }

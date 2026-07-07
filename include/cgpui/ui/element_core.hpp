@@ -48,6 +48,7 @@ enum class AccessibilityRole {
   checkbox,
   radio,
   switch_control,
+  slider,
 };
 
 struct AccessibilitySnapshotOptions {

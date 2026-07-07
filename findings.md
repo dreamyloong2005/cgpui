@@ -6252,3 +6252,33 @@
   `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
   priorities, and structured task groups out unless a later slice explicitly
   owns them.
+
+## 2026-07-07 Phase C Step 345 Slider Widget
+
+- Step 345 stays scoped to a focused slider widget in the built-in widget band.
+  It should not add list item, menu item, icon/image, container primitives,
+  runtime theme switching, broad resolved-style layout/paint rewrites,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- Durable public widget ownership is `include/cgpui/ui/slider_builder.hpp`
+  plus `src/ui/widgets/slider_builder.cpp`, matching the Step 343/344
+  `src/ui/widgets/*` builder boundary. Aggregate headers stay thin and only
+  include the new leaf.
+- Durable element ownership is a focused slider element leaf:
+  `include/cgpui/ui/element_slider_nodes.hpp`, with behavior in
+  `src/ui/element_slider_nodes.cpp`, layout in
+  `src/ui/element_slider_layout.cpp`, and paint in
+  `src/ui/element_slider_paint.cpp`. The structure test keeps these source
+  files inside local line-count caps and prevents broad `src/ui/*` builder
+  dumping.
+- The smallest accessibility extension for this slice is slider role plus
+  string value metadata: `AccessibilityRole::slider`,
+  `PlatformAccessibilityRole::slider`, and `SliderElement::accessibility_value()`
+  report the current clamped/stepped value. A broader accessibility state model
+  remains later work.
+- Existing `ElementGestureKind` only carries `none` and `click`, so this slice
+  implements click-to-value slider updates rather than introducing a broader
+  drag gesture/event surface. Drag/capture-depth slider behavior should be a
+  later focused input slice if needed.
+- Step 346 should continue the built-in widget band with list item and menu
+  item widgets before icon/image and container primitive gaps.
