@@ -2236,3 +2236,21 @@ implementation slice.
   debug 101/101, WSL Arch Linux debug config, and WSL Arch Linux full debug
   98/98. Step 343 built-in widget expansion is the next tracked Phase C
   slice.
+
+- Phase C Step 343, built-in widget expansion, is implemented in
+  `.worktrees/phase-c-built-in-widget-expansion`: `ButtonBuilder::label(...)`
+  composes an internal label child for button authoring, button/label/text-input
+  builder implementation bodies moved into focused `src/ui/widgets/*.cpp`
+  sources, `xmake.lua` now compiles that widget module, and
+  `tests/ui/builtin_widget_test.cpp` plus
+  `tests/architecture/widget_source_structure_test.cpp` guard the public widget
+  behavior and module boundary. This slice deliberately leaves
+  checkbox/radio/switch, slider, list item, menu item, icon/image, container
+  primitive expansion, runtime theme switching, broad resolved-style layout and
+  paint rewrites, `ClipboardItem`, upstream `gpui::test` macros, action macro
+  payloads, task priorities, and structured task groups out. Step 344
+  checkbox/radio/switch widgets is the next tracked Phase C slice after this
+  work lands. Feature-worktree verification passed JSON validation, diff
+  hygiene with only expected LF-to-CRLF warnings, focused Phase C/ledger gates
+  6/6, adjacent UI/structure/API gates 7/7, Windows full debug 103/103, and
+  WSL Arch Linux full debug 100/100.

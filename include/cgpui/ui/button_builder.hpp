@@ -21,6 +21,7 @@ class ButtonBuilder {
   [[nodiscard]] ButtonBuilder focus_style(StyleOverlay overlay) &&;
   [[nodiscard]] ButtonBuilder active_style(StyleOverlay overlay) &&;
   [[nodiscard]] ButtonBuilder disabled_style(StyleOverlay overlay) &&;
+  [[nodiscard]] ButtonBuilder label(std::string_view text) &&;
   [[nodiscard]] ButtonBuilder child(std::unique_ptr<Element> child) &&;
   [[nodiscard]] ButtonBuilder child(ElementBuilder child) &&;
 

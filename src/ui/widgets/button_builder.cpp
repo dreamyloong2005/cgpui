@@ -1,5 +1,7 @@
 #include "cgpui/ui/button_builder.hpp"
 
+#include "cgpui/ui/label_builder.hpp"
+
 #include <utility>
 
 namespace cgpui {
@@ -30,6 +32,10 @@ ButtonBuilder ButtonBuilder::active_style(StyleOverlay overlay) && {
 ButtonBuilder ButtonBuilder::disabled_style(StyleOverlay overlay) && {
   style_state_.disabled = std::move(overlay);
   return std::move(*this);
+}
+
+ButtonBuilder ButtonBuilder::label(std::string_view text) && {
+  return std::move(*this).child(cgpui::label(text).build());
 }
 
 ButtonBuilder ButtonBuilder::child(std::unique_ptr<Element> child) && {
@@ -74,12 +80,12 @@ AnyElement ButtonBuilder::build() && {
       std::move(child_));
   element->set_enabled(enabled_);
   element->set_key(key_);
-  element->set_flex_grow(style_state_.base.flex_grow);
-  element->set_flex_shrink(style_state_.base.flex_shrink);
-  element->set_position(style_state_.base.position);
-  element->set_inset(style_state_.base.inset);
-  element->set_z_index(style_state_.base.z_index);
-  element->set_layer(style_state_.base.layer);
+  element->set_flex_grow(element->style_state().base.flex_grow);
+  element->set_flex_shrink(element->style_state().base.flex_shrink);
+  element->set_position(element->style_state().base.position);
+  element->set_inset(element->style_state().base.inset);
+  element->set_z_index(element->style_state().base.z_index);
+  element->set_layer(element->style_state().base.layer);
   return element;
 }
 

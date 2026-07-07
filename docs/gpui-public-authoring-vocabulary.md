@@ -82,6 +82,18 @@ macro equivalents.
 Platform-service vocabulary stays public through Result-returning menu and file
 dialog helpers. Production-depth native platform behavior remains later work.
 
+## Built-in widget vocabulary
+
+- `button(...)`
+- `ButtonBuilder::label(...)`
+- `label(...)`
+- `text_input(...)`
+- `TextModel`
+
+Phase C Step 343 starts the built-in widget surface with button, label, and
+text-input builder spelling. Widget implementation bodies live under focused
+`src/ui/widgets/*` sources rather than broad UI entry files.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

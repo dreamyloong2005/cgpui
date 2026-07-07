@@ -534,6 +534,13 @@ int main() {
               "Phase C Step 342 focusable/interactable band closeout",
               "phase_c_focusable_interactable_audit_test.cpp",
               "Phase C Step 343 built-in widget expansion",
+              "ButtonBuilder::label",
+              "src/ui/widgets/button_builder.cpp",
+              "src/ui/widgets/label_builder.cpp",
+              "src/ui/widgets/text_input_builder.cpp",
+              "builtin_widget_test.cpp",
+              "widget_source_structure_test.cpp",
+              "Phase C Step 344 checkbox/radio/switch widgets",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -1519,6 +1526,8 @@ int main() {
                 "target(\"phase_c_style_cascade_depth_audit_test\")") ||
       !contains(xmake,
                 "target(\"phase_c_focusable_interactable_audit_test\")") ||
+      !contains(xmake, "target(\"builtin_widget_test\")") ||
+      !contains(xmake, "target(\"widget_source_structure_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1606,6 +1615,11 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_focusable_interactable_audit_test.cpp") ||
+      !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/architecture/widget_source_structure_test.cpp") ||
+      !contains(xmake, "add_files(\"src/ui/widgets/*.cpp\")") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
           xmake,

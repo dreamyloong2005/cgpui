@@ -120,9 +120,13 @@ int main() {
                 "phase_c_focusable_interactable_audit_test.cpp") ||
       !contains(ledger_md, "Phase C Step 343 built-in widget expansion") ||
       !contains(ledger_json, "Phase C Step 343 built-in widget expansion") ||
+      !contains(ledger_md, "ButtonBuilder::label") ||
+      !contains(ledger_json, "ButtonBuilder::label") ||
+      !contains(ledger_md, "widget_source_structure_test.cpp") ||
+      !contains(ledger_json, "widget_source_structure_test.cpp") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 343 built-in widget "
-                "expansion\"")) {
+                "\"next_step\": \"Phase C Step 344 checkbox/radio/switch "
+                "widgets\"")) {
     return 50;
   }
 

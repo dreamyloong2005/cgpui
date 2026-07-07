@@ -6181,3 +6181,25 @@
   101/101, WSL Arch Linux debug config, and WSL Arch Linux full debug 98/98.
 - Step 343 should start built-in widget expansion from this closed
   focusable/interactable boundary. Do not start it in this pause point.
+
+## 2026-07-07 Phase C Step 343 Built-In Widget Expansion
+
+- Step 343 should stay focused on button/label/text-input widget module
+  ownership and authoring ergonomics. It adds `ButtonBuilder::label(...)` and
+  moves existing builder implementation bodies under `src/ui/widgets/*` without
+  changing the lower-level element node ownership.
+- Durable ownership for this slice is public leaf headers
+  `include/cgpui/ui/button_builder.hpp`, `label_builder.hpp`, and
+  `text_input_builder.hpp`, implementation files under `src/ui/widgets/`, and
+  focused coverage in `tests/ui/builtin_widget_test.cpp` plus
+  `tests/architecture/widget_source_structure_test.cpp`.
+- Step 344 should continue the built-in widget band with checkbox/radio/switch
+  widgets. Keep slider, list item, menu item, icon/image, container primitive
+  expansion, runtime theme switching, broad resolved-style layout/paint
+  rewrites, `ClipboardItem`, upstream `gpui::test` macros, action macro
+  payloads, task priorities, and structured task groups out unless a later
+  slice explicitly owns them.
+- After Step 343 lands, closeout/audit tests that previously expected
+  `next_step` to be Step 343 must move their handoff expectation to Step 344
+  while still requiring the Step 343 evidence. This avoids turning a completed
+  handoff into stale audit drift.

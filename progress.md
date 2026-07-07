@@ -13295,3 +13295,40 @@
   `XMAKE_ROOT=y xmake test -P .` passed 98/98.
 - Step 342 is complete on `master`; Step 343 built-in widget expansion is the
   next Phase C slice. Paused here per user request.
+
+## 2026-07-07 Phase C Step 343 Built-In Widget Expansion
+
+- Created `.worktrees/phase-c-built-in-widget-expansion` on
+  `codex/phase-c-built-in-widget-expansion` from
+  `036dbe3 docs: mark phase c step 342 merged`.
+- Restored planning context, confirmed root `master` had only the existing
+  untracked `.vscode/`, and used the roadmap/ledger handoff to scope Step 343
+  to button/label/text-input widget module ownership before
+  checkbox/radio/switch work.
+- RED added `tests/ui/builtin_widget_test.cpp` and
+  `tests/architecture/widget_source_structure_test.cpp`. Focused RED failed as
+  expected because `ButtonBuilder::label(...)` was missing.
+- GREEN added `ButtonBuilder::label(...)`, moved button/label/text-input builder
+  implementation bodies to `src/ui/widgets/button_builder.cpp`,
+  `src/ui/widgets/label_builder.cpp`, and
+  `src/ui/widgets/text_input_builder.cpp`, and updated `xmake.lua` to compile
+  `src/ui/widgets/*.cpp`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` passed 2/2.
+- Adjacent focused verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default element_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  public_authoring_surface_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 7/7.
+- Updated `phase_c_focusable_interactable_audit_test` after Step 343 moved the
+  parity ledger handoff forward: the audit still guards the Step 342 closeout
+  evidence, now also requires Step 343 widget evidence, and expects Step 344
+  checkbox/radio/switch widgets as `next_step`.
+- Final feature-worktree verification passed: JSON validation exited 0,
+  focused Phase C/ledger gates passed 6/6, adjacent UI/structure/API gates
+  passed 7/7, `git diff --check` exited 0 with only expected LF-to-CRLF
+  warnings, Windows debug config exited 0, Windows full debug passed 103/103,
+  WSL Arch Linux debug config exited 0, and WSL Arch Linux full debug passed
+  100/100.

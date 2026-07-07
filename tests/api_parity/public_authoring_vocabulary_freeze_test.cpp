@@ -57,6 +57,7 @@ int main() {
       "Action and key vocabulary",
       "Async, test, and Result vocabulary",
       "Platform service vocabulary",
+      "Built-in widget vocabulary",
       "Out of scope for this freeze",
       "Forbidden from public examples",
   };
@@ -92,6 +93,11 @@ int main() {
       "`TestContextCapability`",
       "`NativeMenuModel`",
       "`NativeFileDialogOptions`",
+      "`button(...)`",
+      "`ButtonBuilder::label(...)`",
+      "`label(...)`",
+      "`text_input(...)`",
+      "`TextModel`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {
