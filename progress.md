@@ -14098,3 +14098,24 @@
   exited 0, and
   `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-uniform-list-closeout -P .`
   passed 101/101.
+
+## 2026-07-08 Phase C Step 354 Merge
+
+- Fast-forward merged `codex/phase-c-uniform-list-closeout` into root
+  `master` at `d2edd15 test: close phase c uniform list band`; root `master`
+  still had no tracked diff and only the existing untracked `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 104/104.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-master-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  101/101.
+- Step 354 is complete on `master`; Step 355 window/examples widgets is the
+  next Phase C slice.
