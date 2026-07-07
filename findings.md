@@ -6203,3 +6203,13 @@
   `next_step` to be Step 343 must move their handoff expectation to Step 344
   while still requiring the Step 343 evidence. This avoids turning a completed
   handoff into stale audit drift.
+
+## 2026-07-07 Phase C Step 343 Merge
+
+- Step 343 is merged on `master` at
+  `10907e2 feat: add built-in widget module boundary` and post-merge verified
+  with JSON validation, diff hygiene, Windows debug config, Windows full debug
+  103/103, WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100.
+- Step 344 should continue the built-in widget band with checkbox/radio/switch
+  widgets, reusing the focused `src/ui/widgets/*` ownership rather than putting
+  widget implementation bodies back into broad `src/ui/*` files.

@@ -954,8 +954,8 @@ usable as a C++23 GPUI replacement.
 ## Immediate Next Slice
 
 Step 344 continues built-in widget expansion from the frozen Phase B public authoring boundary
-after the focused layout, style, and focusable/interactable bands from
-Steps 319-342. Step 319 landed the child-list foundation on `master` at
+after the focused layout, style, focusable/interactable, and first widget
+bands from Steps 319-343. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -1013,7 +1013,8 @@ button labels without caller-side `label(...).build()` boilerplate, widget
 builder implementation bodies move under `src/ui/widgets/*`, `xmake.lua`
 compiles that module, and focused behavior/structure coverage lives in
 `tests/ui/builtin_widget_test.cpp` and
-`tests/architecture/widget_source_structure_test.cpp`. Step 344 should continue
+`tests/architecture/widget_source_structure_test.cpp`; it landed on `master`
+at `10907e2 feat: add built-in widget module boundary`. Step 344 should continue
 with checkbox/radio/switch widgets before slider, list item, menu item,
 icon/image, and container primitive gaps.
 Keep the Phase B closeout exclusions out of this slice:

@@ -13332,3 +13332,20 @@
   warnings, Windows debug config exited 0, Windows full debug passed 103/103,
   WSL Arch Linux debug config exited 0, and WSL Arch Linux full debug passed
   100/100.
+
+## 2026-07-07 Phase C Step 343 Merge
+
+- Fast-forward merged `codex/phase-c-built-in-widget-expansion` into `master`
+  at `10907e2 feat: add built-in widget module boundary`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0 and `git status --short --branch` showed only
+  the existing untracked `.vscode/`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+- Step 343 is complete on `master`; Step 344 checkbox/radio/switch widgets is
+  the next Phase C slice.
