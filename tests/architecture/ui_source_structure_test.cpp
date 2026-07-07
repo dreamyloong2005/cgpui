@@ -58,6 +58,7 @@ int main() {
       "include/cgpui/ui/style_core.hpp",
       "include/cgpui/ui/style_cascade.hpp",
       "include/cgpui/ui/style.hpp",
+      "include/cgpui/ui/focus_metadata.hpp",
       "include/cgpui/ui/text_edit_actions.hpp",
       "include/cgpui/ui/text_font.hpp",
       "include/cgpui/ui/text_shape.hpp",
@@ -737,6 +738,8 @@ int main() {
 
   const std::string element_core_header =
       read_source("include/cgpui/ui/element_core.hpp");
+  const std::string focus_metadata_header =
+      read_source("include/cgpui/ui/focus_metadata.hpp");
   const std::string element_nodes_header =
       read_source("include/cgpui/ui/element_nodes.hpp");
   const std::string element_layout_nodes_header =
@@ -825,7 +828,17 @@ int main() {
       contains(element_builders_header, "class ScrollableListBuilder")) {
     return 30;
   }
+  if (line_count(focus_metadata_header) > 40 ||
+      !contains(focus_metadata_header, "enum class FocusRingVisibility") ||
+      !contains(focus_metadata_header, "struct FocusMetadata") ||
+      !contains(focus_metadata_header, "std::optional<int> tab_index") ||
+      contains(element_core_header, "enum class FocusRingVisibility")) {
+    return 146;
+  }
   if (!contains(element_core_header, "class Element") ||
+      !contains(element_core_header,
+                "#include \"cgpui/ui/focus_metadata.hpp\"") ||
+      !contains(element_core_header, "FocusMetadata focus_metadata() const") ||
       !contains(element_layout_nodes_header, "class FlexElement") ||
       !contains(element_style_nodes_header, "class StyledElement") ||
       !contains(element_containers_header,
@@ -897,6 +910,7 @@ int main() {
       "src/ui/element_builder_interaction.cpp",
       "src/ui/element_builder_build.cpp",
       "src/ui/element_builder_finish.cpp",
+      "src/ui/element_focus_metadata.cpp",
       "src/ui/style_cascade.cpp",
       "src/ui/element_layer_ordering.cpp",
       "src/ui/text_style_inheritance.cpp",
@@ -933,6 +947,8 @@ int main() {
       read_source("src/ui/element_style_nodes.cpp");
   const std::string element_style_paint_layout_source =
       read_source("src/ui/element_style_paint.cpp");
+  const std::string element_focus_metadata_source =
+      read_source("src/ui/element_focus_metadata.cpp");
   const std::string element_layer_ordering_source =
       read_source("src/ui/element_layer_ordering.cpp");
   const std::string text_style_inheritance_source =
@@ -952,6 +968,14 @@ int main() {
       read_source("src/ui/paint_shadow.cpp");
   const std::string shadow_render_view_commands_source =
       read_source("src/ui/render_view_commands.cpp");
+  if (!contains(element_focus_metadata_source,
+                "FocusMetadata Element::focus_metadata() const") ||
+      !contains(element_focus_metadata_source,
+                "void Element::set_focus_metadata(") ||
+      contains(element_core_header,
+               "FocusMetadata Element::focus_metadata() const")) {
+    return 148;
+  }
   if (!contains(element_builder_layout_source,
                 "ElementBuilder ElementBuilder::items_center()") ||
       !contains(element_builder_layout_source,
@@ -1313,6 +1337,7 @@ int main() {
       "src/ui/runtime_command_palette.cpp",
       "src/ui/runtime_command_palette_keys.cpp",
       "src/ui/runtime_focus.cpp",
+      "src/ui/runtime_focus_order.cpp",
       "src/ui/runtime_style_invalidation.cpp",
       "src/ui/runtime_key_bindings.cpp",
       "src/ui/runtime_key_binding_sequences.cpp",
@@ -1901,13 +1926,25 @@ int main() {
 
   const std::string runtime_event_focus_routes_source =
       read_source("src/ui/runtime_event_focus_routes.cpp");
+  const std::string runtime_focus_order_source =
+      read_source("src/ui/runtime_focus_order.cpp");
   if (line_count(runtime_event_focus_routes_source) > 80 ||
       !contains(runtime_event_focus_routes_source,
                 "bool WindowRuntime::focus_next_element(") ||
-      !contains(runtime_event_focus_routes_source, "enabled_preorder_ids") ||
+      !contains(runtime_event_focus_routes_source,
+                "ordered_focusable_element_ids()") ||
+      contains(runtime_event_focus_routes_source, "enabled_preorder_ids") ||
       contains(runtime_event_focus_routes_source,
                "EventResult WindowRuntime::dispatch_routed_element_event(")) {
     return 81;
+  }
+  if (line_count(runtime_focus_order_source) > 120 ||
+      !contains(runtime_focus_order_source,
+                "WindowRuntime::ordered_focusable_element_ids()") ||
+      !contains(runtime_focus_order_source, "focus_metadata().tab_index") ||
+      !contains(runtime_focus_order_source, "enabled_preorder_ids") ||
+      contains(runtime_event_input_source, "focus_metadata().tab_index")) {
+    return 147;
   }
 
   const std::string runtime_event_route_dispatch_source =

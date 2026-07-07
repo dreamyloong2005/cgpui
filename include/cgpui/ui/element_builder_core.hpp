@@ -109,6 +109,8 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder enabled(bool value) &&;
   [[nodiscard]] ElementBuilder disabled() &&;
   [[nodiscard]] ElementBuilder focusable() &&;
+  [[nodiscard]] ElementBuilder tab_index(int value) &&;
+  [[nodiscard]] ElementBuilder focus_ring(FocusRingVisibility visibility) &&;
   [[nodiscard]] ElementBuilder on_click(ClickHandler handler) &&;
   [[nodiscard]] ElementBuilder on_pointer_down(
       PointerButtonHandler handler) &&;
@@ -151,6 +153,7 @@ class ElementBuilder {
   Size size_;
   TextModel* text_model_ = nullptr;
   ViewId child_view_id_;
+  FocusMetadata focus_metadata_;
   bool enabled_ = true;
   bool focusable_ = false;
   ClickHandler click_handler_;

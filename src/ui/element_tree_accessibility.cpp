@@ -21,6 +21,7 @@ void ElementTree::append_accessibility_nodes(
   }
 
   const Element& element = *node->element;
+  const FocusMetadata focus_metadata = element.focus_metadata();
   nodes.push_back(AccessibilityNode{
       .element_id = id,
       .parent_element_id = node->parent,
@@ -30,6 +31,8 @@ void ElementTree::append_accessibility_nodes(
       .enabled = element.enabled(),
       .focusable = element.focusable(),
       .focused = options.focused_element_id == id,
+      .tab_index = focus_metadata.tab_index,
+      .focus_ring = focus_metadata.focus_ring,
       .bounds = element.layout_bounds(),
       .children = node->children,
   });

@@ -7,13 +7,7 @@ bool WindowRuntime::focus_next_element(bool reverse) {
     return false;
   }
 
-  std::vector<ElementId> focusable_ids;
-  for (ElementId element_id : owned_element_tree_->enabled_preorder_ids()) {
-    const Element* element = routed_element(element_id);
-    if (element != nullptr && element->focusable()) {
-      focusable_ids.push_back(element_id);
-    }
-  }
+  const std::vector<ElementId> focusable_ids = ordered_focusable_element_ids();
   if (focusable_ids.empty()) {
     return false;
   }

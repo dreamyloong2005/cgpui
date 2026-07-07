@@ -641,7 +641,13 @@ expect, keeping each widget in its own module from the first version.
   active transitions reuse `request_style_state_invalidation(...)`. This keeps
   tab order, focus ring metadata, click/drag gestures, keyboard activation,
   widget behavior, runtime theme switching, and broad resolved-style
-  layout/paint rewrites in later focused slices.
+  layout/paint rewrites in later focused slices. Step 338 adds
+  tab-order/focus-ring metadata through `FocusMetadata`,
+  `ElementBuilder::tab_index(...)`, `ElementBuilder::focus_ring(...)`,
+  accessibility metadata reporting, and `src/ui/runtime_focus_order.cpp`
+  traversal ordering. Step 339 should continue the band with click/drag
+  gesture synthesis while leaving keyboard activation, broad widget behavior,
+  runtime theme switching, and broad resolved-style layout/paint rewrites out.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -963,8 +969,10 @@ Step 336 closes the Phase C style-cascade depth band through
 Steps 331-335 evidence and the explicit Step 337 handoff. Step 337 opens the
 focusable/interactable semantics band with pointer-active input behavior while
 leaving broad style cascade behavior and broad resolved-style layout/paint
-rewrites closed. Step 338 should continue the band with tab-order/focus-ring
-metadata.
+rewrites closed. Step 338 adds tab-order/focus-ring metadata through
+`FocusMetadata`, `ElementBuilder::tab_index(...)`, accessibility metadata, and
+`src/ui/runtime_focus_order.cpp`. Step 339 should continue the band with
+click/drag gesture synthesis.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

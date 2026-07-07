@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/core/events.hpp"
+#include "cgpui/ui/focus_metadata.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/style.hpp"
 
@@ -59,6 +60,8 @@ struct AccessibilityNode {
   bool enabled = true;
   bool focusable = false;
   bool focused = false;
+  std::optional<int> tab_index;
+  FocusRingVisibility focus_ring = FocusRingVisibility::automatic;
   std::optional<Rect> bounds;
   std::vector<ElementId> children;
 };
@@ -166,6 +169,9 @@ class Element {
   void set_enabled(bool enabled) {
     enabled_ = enabled;
   }
+
+  [[nodiscard]] FocusMetadata focus_metadata() const;
+  void set_focus_metadata(FocusMetadata metadata);
 
   [[nodiscard]] float flex_grow() const {
     return flex_grow_;
@@ -275,6 +281,7 @@ class Element {
  private:
   ElementId id_;
   std::optional<ElementKey> key_;
+  FocusMetadata focus_metadata_;
   bool enabled_ = true;
   float flex_grow_ = 0.0F;
   float flex_shrink_ = 0.0F;

@@ -4254,6 +4254,26 @@ int test_accessibility_tree_reports_roles_names_and_focus_state() {
   return 0;
 }
 
+int test_accessibility_tree_reports_focus_metadata() {
+  cgpui::ElementTree tree;
+  std::unique_ptr<cgpui::Element> root =
+      cgpui::ElementBuilder::box()
+          .focusable()
+          .tab_index(2)
+          .focus_ring(cgpui::FocusRingVisibility::hidden)
+          .build();
+  const cgpui::ElementId root_id = tree.set_root(std::move(root));
+
+  const cgpui::AccessibilityTreeSnapshot snapshot =
+      tree.accessibility_snapshot();
+  const cgpui::AccessibilityNode* root_node = snapshot.node(root_id);
+  if (root_node == nullptr || root_node->tab_index != 2 ||
+      root_node->focus_ring != cgpui::FocusRingVisibility::hidden) {
+    return 415;
+  }
+  return 0;
+}
+
 int test_element_tree_enabled_preorder_ids_handles_empty_tree() {
   cgpui::ElementTree tree;
   return tree.enabled_preorder_ids().empty() ? 0 : 185;
@@ -4415,6 +4435,26 @@ int test_element_builder_focusable_helper_preserves_disabled_state() {
     return 168;
   }
   return element->focusable() ? 0 : 169;
+}
+
+int test_element_builder_records_focus_metadata() {
+  std::unique_ptr<cgpui::Element> element =
+      cgpui::ElementBuilder::box()
+          .tab_index(4)
+          .focus_ring(cgpui::FocusRingVisibility::visible)
+          .focusable()
+          .build();
+
+  if (element == nullptr || !element->focusable()) {
+    return 413;
+  }
+
+  const cgpui::FocusMetadata metadata = element->focus_metadata();
+  if (!metadata.tab_index.has_value() || *metadata.tab_index != 4 ||
+      metadata.focus_ring != cgpui::FocusRingVisibility::visible) {
+    return 414;
+  }
+  return 0;
 }
 
 int test_element_builder_focusable_helper_composes_with_click_handler() {
@@ -5649,6 +5689,10 @@ int main() {
       result != 0) {
     return result;
   }
+  if (const int result = test_accessibility_tree_reports_focus_metadata();
+      result != 0) {
+    return result;
+  }
   if (const int result =
           test_element_tree_enabled_preorder_ids_handles_empty_tree();
       result != 0) {
@@ -5698,6 +5742,10 @@ int main() {
   }
   if (const int result =
           test_element_builder_focusable_helper_preserves_disabled_state();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_element_builder_records_focus_metadata();
       result != 0) {
     return result;
   }

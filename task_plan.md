@@ -2134,3 +2134,20 @@ implementation slice.
   JSON validation, Windows debug config, Windows full debug 100/100, WSL Arch
   Linux debug config, and WSL Arch Linux full debug 97/97. Step 338
   tab-order/focus-ring metadata is the next focused Phase C slice.
+
+- Phase C Step 338, tab-order/focus-ring metadata, is implemented in
+  `.worktrees/phase-c-tab-focus-metadata`: `FocusMetadata` and
+  `FocusRingVisibility` live in the focused public leaf
+  `include/cgpui/ui/focus_metadata.hpp`, `Element` stores the metadata through
+  non-template bodies in `src/ui/element_focus_metadata.cpp`,
+  `ElementBuilder::tab_index(...)` and `focus_ring(...)` apply it during
+  build, accessibility snapshots report `AccessibilityNode::tab_index` and
+  `focus_ring`, and `src/ui/runtime_focus_order.cpp` owns focus traversal
+  ordering so positive tab indices precede default tree order and negative tab
+  indices are skipped. Focused Windows verification passed JSON validation,
+  `git diff --check` with only expected LF-to-CRLF warnings, and focused
+  public/ledger/structure gates 7/7. Feature-worktree full verification
+  passed Windows debug config, Windows full debug 100/100, WSL Arch Linux
+  debug config, and WSL Arch Linux full debug 97/97. Step 339 click/drag
+  gesture synthesis is the next focused Phase C slice after Step 338 lands on
+  `master`.

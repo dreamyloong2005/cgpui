@@ -13012,3 +13012,45 @@
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
 - Step 337 is complete on `master`; Step 338 tab-order/focus-ring metadata is
   the next Phase C focusable/interactable slice.
+
+## 2026-07-07 Phase C Step 338 Tab Order Focus Ring Metadata
+
+- Continued `.worktrees/phase-c-tab-focus-metadata` on
+  `codex/phase-c-tab-focus-metadata` from
+  `17d4ef0 docs: mark phase c step 337 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files session catchup helper at the
+  `.codex` skill path, and confirmed it produced no additional report.
+- RED behavior coverage was already observed for missing
+  `ElementBuilder::tab_index(...)`, `FocusRingVisibility`, `FocusMetadata`,
+  `AccessibilityNode` metadata fields, and `Element::focus_metadata()`.
+- GREEN adds focused metadata ownership through
+  `include/cgpui/ui/focus_metadata.hpp`, non-template `Element`
+  accessors in `src/ui/element_focus_metadata.cpp`, builder setters in
+  `src/ui/element_builder_interaction.cpp`, build-time propagation in
+  `src/ui/element_builder_finish.cpp`, accessibility reporting in
+  `src/ui/element_tree_accessibility.cpp`, and traversal ordering in
+  `src/ui/runtime_focus_order.cpp`.
+- Scope remains narrow: positive `tab_index` values traverse before default
+  tree order, negative values are skipped by Tab traversal, and
+  `focus_ring(...)` is metadata only. This slice does not add click/drag
+  gestures, keyboard activation, broad widget behavior, runtime theme
+  switching, or broad resolved-style layout/paint rewrites.
+- Focused verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, and
+  `xmake test -y -P . element_test/default window_runtime_focus_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default
+  phase_c_style_cascade_depth_audit_test/default` passed 7/7.
+- Updated the Markdown/JSON parity ledger, ledger guard, complete replication
+  roadmap, `task_plan.md`, and `findings.md` with Step 338 evidence. Step 339
+  click/drag gesture synthesis is the next Phase C focusable/interactable
+  slice after Step 338 lands on `master`.
+- Feature-worktree full verification passed:
+  Windows `xmake f -c -m debug -P .` exited 0, Windows
+  `xmake test -P .` passed 100/100, WSL Arch Linux
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.

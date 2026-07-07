@@ -83,6 +83,7 @@ void refresh_route_ancestry(EventRoute& route) const;
 [[nodiscard]] std::vector<ViewId> view_ancestry_for(ViewId view_id) const;
 [[nodiscard]] std::optional<ViewId> child_view_target_for(
     ElementId element_id) const;
+[[nodiscard]] std::vector<ElementId> ordered_focusable_element_ids() const;
 [[nodiscard]] bool focus_next_element(bool reverse);
 [[nodiscard]] std::optional<ViewId> action_dispatch_view_id() const;
 [[nodiscard]] ScrollState* scroll_state_for_route(const EventRoute& route);
@@ -115,7 +116,6 @@ struct RegisteredView {
   View* view = nullptr;
   std::unique_ptr<View> owned_view;
 };
-
 struct RuntimeTimer {
   TimerId id;
   std::uint64_t due_ms = 0;

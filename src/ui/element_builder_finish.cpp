@@ -9,6 +9,7 @@ ElementBuilder::ElementBuilder(Kind kind) : kind_(kind) {}
 void ElementBuilder::apply_element_attributes(Element& element) const {
   element.set_enabled(enabled_);
   element.set_key(key_);
+  element.set_focus_metadata(focus_metadata_);
   element.set_flex_grow(style_state_.base.flex_grow);
   element.set_flex_shrink(style_state_.base.flex_shrink);
   element.set_position(style_state_.base.position);

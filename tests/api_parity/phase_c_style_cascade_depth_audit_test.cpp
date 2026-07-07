@@ -63,7 +63,9 @@ int main() {
       !contains(roadmap,
                 "Step 337 starts the focusable/interactable band") ||
       !contains(roadmap,
-                "Step 338 should continue the band") ||
+                "Step 338 adds tab-order/focus-ring metadata") ||
+      !contains(roadmap,
+                "Step 339 should continue the band") ||
       !contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;
@@ -105,15 +107,17 @@ int main() {
       !contains(ledger_md,
                 "Phase C Step 338 tab-order/focus-ring metadata") ||
       !contains(ledger_json,
-                "Phase C Step 338 tab-order/focus-ring metadata")) {
+                "Phase C Step 338 tab-order/focus-ring metadata") ||
+      !contains(ledger_md,
+                "Phase C Step 339 click/drag gesture synthesis") ||
+      !contains(ledger_json,
+                "Phase C Step 339 click/drag gesture synthesis")) {
     return 30;
   }
 
   constexpr std::array exclusions{
       "runtime theme switching",
       "widget behavior",
-      "tab order",
-      "focus ring metadata",
       "click/drag gestures",
       "keyboard activation",
       "broad resolved-style",

@@ -6006,3 +6006,32 @@
   activation, broad widget behavior, runtime theme switching, and broad
   resolved-style layout/paint rewrites out unless that slice explicitly owns
   them.
+
+## 2026-07-07 Phase C Step 338 Tab Order Focus Ring Metadata
+
+- Step 338 stays scoped to tab-order and focus-ring metadata. It adds
+  `FocusMetadata`, `FocusRingVisibility`, `ElementBuilder::tab_index(...)`,
+  `ElementBuilder::focus_ring(...)`, accessibility reporting, and runtime Tab
+  ordering without adding click/drag gesture synthesis, keyboard activation,
+  broad widget behavior, runtime theme switching, or broad resolved-style
+  layout/paint rewrites.
+- Durable ownership is split across a focused public leaf
+  `include/cgpui/ui/focus_metadata.hpp`, non-template Element accessors in
+  `src/ui/element_focus_metadata.cpp`, builder setter bodies in
+  `src/ui/element_builder_interaction.cpp`, build propagation in
+  `src/ui/element_builder_finish.cpp`, accessibility copy-out in
+  `src/ui/element_tree_accessibility.cpp`, and runtime focus ordering in
+  `src/ui/runtime_focus_order.cpp`. `runtime_event_focus_routes.cpp` should
+  remain a small traversal route delegator.
+- Runtime Tab ordering treats positive `tab_index` values as an explicit
+  ordered prefix before default tree order. Equal positive indices and all
+  default/zero entries keep tree-order stability. Negative `tab_index` values
+  remain focusable metadata but are skipped by Tab traversal.
+- Structure coverage should keep `FocusRingVisibility` out of
+  `element_core.hpp` as an enum definition, keep `Element` method bodies out
+  of the public header, keep focus-order sorting out of
+  `runtime_event_focus_routes.cpp`, and preserve the private runtime header
+  line-count guard.
+- Step 339 should continue the focusable/interactable band with click/drag
+  gesture synthesis while keeping keyboard activation and broad widget
+  behavior out unless that slice explicitly owns them.

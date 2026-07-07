@@ -292,6 +292,140 @@ int test_runtime_shift_tab_focuses_previous_enabled_focusable_element() {
   return 0;
 }
 
+int test_runtime_tabs_follow_explicit_tab_index_before_tree_order() {
+  RuntimeFixture fixture;
+  focus_traversal_fixture = &fixture;
+  fixture.app.on_run = &dispatch_focus_traversal_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 100.0F, .height = 100.0F}));
+  const cgpui::ElementId default_id = tree->append_child(
+      root_id,
+      std::make_unique<RuntimeFocusableElement>(
+          cgpui::Size{.width = 20.0F, .height = 20.0F}));
+  auto first_tab = std::make_unique<RuntimeFocusableElement>(
+      cgpui::Size{.width = 20.0F, .height = 20.0F});
+  first_tab->set_focus_metadata(cgpui::FocusMetadata{
+      .tab_index = 1,
+      .focus_ring = cgpui::FocusRingVisibility::visible,
+  });
+  const cgpui::ElementId first_tab_id =
+      tree->append_child(root_id, std::move(first_tab));
+  auto second_tab = std::make_unique<RuntimeFocusableElement>(
+      cgpui::Size{.width = 20.0F, .height = 20.0F});
+  second_tab->set_focus_metadata(cgpui::FocusMetadata{
+      .tab_index = 2,
+  });
+  const cgpui::ElementId second_tab_id =
+      tree->append_child(root_id, std::move(second_tab));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> focus_after_first_tab;
+  std::optional<cgpui::ElementId> focus_after_second_tab;
+  int tab_count = 0;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind != cgpui::EventKind::keyboard_key) {
+          return;
+        }
+        tab_count += 1;
+        if (tab_count == 1) {
+          focus_after_first_tab = context.input.keyboard_focus_element_owner;
+        } else if (tab_count == 2) {
+          focus_after_second_tab = context.input.keyboard_focus_element_owner;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  focus_traversal_fixture = nullptr;
+
+  if (result != 0) {
+    return 413;
+  }
+  if (default_id.value == 0 || first_tab_id.value == 0 ||
+      second_tab_id.value == 0) {
+    return 414;
+  }
+  if (!focus_after_first_tab.has_value() ||
+      *focus_after_first_tab != first_tab_id) {
+    return 415;
+  }
+  if (!focus_after_second_tab.has_value() ||
+      *focus_after_second_tab != second_tab_id ||
+      *focus_after_second_tab == default_id) {
+    return 416;
+  }
+  return 0;
+}
+
+int test_runtime_tabs_skip_negative_tab_index_metadata() {
+  RuntimeFixture fixture;
+  focus_traversal_fixture = &fixture;
+  fixture.app.on_run = &dispatch_focus_traversal_sequence;
+
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId root_id =
+      tree->set_root(std::make_unique<cgpui::FixedSizeElement>(
+          cgpui::Size{.width = 100.0F, .height = 100.0F}));
+  auto skipped = std::make_unique<RuntimeFocusableElement>(
+      cgpui::Size{.width = 20.0F, .height = 20.0F});
+  skipped->set_focus_metadata(cgpui::FocusMetadata{.tab_index = -1});
+  const cgpui::ElementId skipped_id =
+      tree->append_child(root_id, std::move(skipped));
+  const cgpui::ElementId target_id = tree->append_child(
+      root_id,
+      std::make_unique<RuntimeFocusableElement>(
+          cgpui::Size{.width = 20.0F, .height = 20.0F}));
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  std::optional<cgpui::ElementId> focus_after_first_tab;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::keyboard_key &&
+            !focus_after_first_tab.has_value()) {
+          focus_after_first_tab = context.input.keyboard_focus_element_owner;
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
+  focus_traversal_fixture = nullptr;
+
+  if (result != 0) {
+    return 417;
+  }
+  if (skipped_id.value == 0 || target_id.value == 0) {
+    return 418;
+  }
+  if (!focus_after_first_tab.has_value() ||
+      *focus_after_first_tab != target_id ||
+      *focus_after_first_tab == skipped_id) {
+    return 419;
+  }
+  return 0;
+}
+
 int test_runtime_does_not_focus_disabled_focusable_elements() {
   RuntimeFixture fixture;
   click_focus_fixture = &fixture;
@@ -868,6 +1002,15 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_shift_tab_focuses_previous_enabled_focusable_element(); result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_runtime_tabs_follow_explicit_tab_index_before_tree_order();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_tabs_skip_negative_tab_index_metadata();
+      result != 0) {
     return result;
   }
   if (const int result = test_runtime_does_not_focus_disabled_focusable_elements(); result != 0) {

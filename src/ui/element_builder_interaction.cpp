@@ -19,6 +19,16 @@ ElementBuilder ElementBuilder::focusable() && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::tab_index(int value) && {
+  focus_metadata_.tab_index = value;
+  return std::move(*this);
+}
+
+ElementBuilder ElementBuilder::focus_ring(FocusRingVisibility visibility) && {
+  focus_metadata_.focus_ring = visibility;
+  return std::move(*this);
+}
+
 ElementBuilder ElementBuilder::on_click(ClickHandler handler) && {
   click_handler_ = std::move(handler);
   return std::move(*this);
