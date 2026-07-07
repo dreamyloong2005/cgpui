@@ -6344,3 +6344,12 @@
   depth remains later work.
 - Step 348 should continue the built-in widget band with container primitive
   follow-up.
+
+## 2026-07-08 Phase C Step 347 Merge
+
+- Step 347 is merged on `master` at
+  `c4c0c85 feat: add image icon widgets` and post-merge verified with JSON
+  validation, diff hygiene, Windows debug config, Windows full debug 103/103,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100.
+- Step 348 should stay scoped to container primitives and should not start
+  until the user resumes after this pause.

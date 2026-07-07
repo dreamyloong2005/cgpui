@@ -2354,3 +2354,9 @@ implementation slice.
   `phase_c_focusable_interactable_audit_test/default` 5/5. Diff hygiene passed
   with only expected LF-to-CRLF warnings; Windows feature-worktree full debug
   passed 103/103 and WSL Arch Linux feature-worktree full debug passed 100/100.
+
+- Phase C Step 347 is merged on `master` at
+  `c4c0c85 feat: add image icon widgets` and post-merge verified with JSON
+  validation, diff hygiene, Windows debug config, Windows full debug 103/103,
+  WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100. Step
+  348 container primitive follow-up is next, but pause here per user request.
