@@ -5960,3 +5960,12 @@
 - The closeout keeps runtime theme switching, real pointer-active semantics,
   widget behavior, focusable/interactable semantics, and broad resolved-style
   layout/paint rewrites out of Step 336. Those remain future focused slices.
+
+## 2026-07-07 Phase C Step 336 Merge
+
+- Step 336 is merged on `master` at
+  `f794b22 test: close phase c style cascade band` and post-merge verified with
+  WSL Arch Linux debug config plus WSL Arch Linux full debug 97/97.
+- Step 337 should start the focusable/interactable semantics band. Keep broad
+  widget behavior, runtime theme switching, and broad resolved-style
+  layout/paint rewrites out unless that slice explicitly owns them.

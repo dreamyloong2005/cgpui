@@ -12945,3 +12945,16 @@
   `xmake test -P .` passed 100/100, WSL Arch Linux
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+
+## 2026-07-07 Phase C Step 336 Merge
+
+- Step 336 was already committed as
+  `f794b22 test: close phase c style cascade band` and fast-forward merged
+  into `master` when this continuation resumed.
+- Confirmed the main worktree had no tracked diff and only the pre-existing
+  untracked `.vscode/` directory before post-merge verification.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+- Step 336 is complete on `master`; Step 337 focusable/interactable semantics
+  is the next Phase C slice.
