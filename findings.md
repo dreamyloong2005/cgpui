@@ -6077,3 +6077,15 @@
   activation semantics. Keep OS drag/drop payload behavior, widget-specific
   drag APIs, broad widget behavior, runtime theme switching, and broad
   resolved-style layout/paint rewrites out unless that future slice owns them.
+
+## 2026-07-07 Phase C Step 339 Merge
+
+- Step 339 is merged on `master` at
+  `66125aa feat: synthesize click drag gestures` and post-merge verified with
+  JSON validation, Windows debug config, Windows full debug 100/100, WSL Arch
+  Linux debug config, and WSL Arch Linux full debug 97/97.
+- Step 340 should continue the focusable/interactable band with keyboard
+  activation semantics. Keep OS drag/drop payload behavior, widget-specific
+  drag APIs, broad widget behavior, runtime theme switching, and broad
+  resolved-style layout/paint rewrites out unless that slice explicitly owns
+  them.

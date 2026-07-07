@@ -2153,8 +2153,8 @@ implementation slice.
   WSL Arch Linux debug config, and WSL Arch Linux full debug 97/97. Step 339
   click/drag gesture synthesis is the next focused Phase C slice.
 
-- Phase C Step 339, click/drag gesture synthesis, is implemented in
-  `.worktrees/phase-c-click-drag-gestures`: `ElementGestureKind::click` and
+- Phase C Step 339, click/drag gesture synthesis, is merged on `master` at
+  `66125aa feat: synthesize click drag gestures`: `ElementGestureKind::click` and
   `ElementEventContext::gesture` distinguish synthesized clicks from raw
   pointer events, `ViewInputState` exposes pointer-down/click/drag gesture
   metadata, focused `src/ui/runtime_gesture_synthesis.hpp` / `.cpp` helpers
@@ -2166,4 +2166,10 @@ implementation slice.
   `xmake test -y -P . element_test/default window_runtime_input_test/default
   ui_source_structure_test/default` 3/3. The parity ledger and roadmap now
   move the next focusable/interactable slice to Step 340 keyboard activation
-  semantics.
+  semantics. Feature-worktree verification passed JSON validation,
+  `git diff --check`, focused public/ledger/structure gates 8/8, Windows
+  debug config, Windows full debug 100/100, WSL Arch Linux debug config, and
+  WSL Arch Linux full debug 97/97. Post-merge verification passed JSON
+  validation, Windows debug config, Windows full debug 100/100, WSL Arch Linux
+  debug config, and WSL Arch Linux full debug 97/97. Step 340 keyboard
+  activation semantics is the next focused Phase C slice.
