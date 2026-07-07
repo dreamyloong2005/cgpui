@@ -169,6 +169,7 @@ class ElementBuilder {
 [[nodiscard]] ElementBuilder div();
 [[nodiscard]] ElementBuilder h_flex();
 [[nodiscard]] ElementBuilder v_flex();
+[[nodiscard]] ElementBuilder h_stack();
 [[nodiscard]] ElementBuilder v_stack();
 [[nodiscard]] ElementBuilder text(TextModel& model);
 [[nodiscard]] ElementBuilder child_view(ViewId view_id);

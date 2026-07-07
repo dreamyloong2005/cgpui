@@ -466,6 +466,36 @@ int test_icon_widget_builder_uses_square_size_and_tint() {
              : 104;
 }
 
+int test_container_primitive_builder_exposes_horizontal_stack() {
+  cgpui::AnyElement element =
+      cgpui::h_stack()
+          .gap(3.0F)
+          .key("toolbar-row")
+          .child(cgpui::div().size(10.0F, 4.0F))
+          .child(cgpui::div().size(20.0F, 6.0F))
+          .build();
+
+  auto* stack = dynamic_cast<cgpui::FlexElement*>(element.get());
+  if (stack == nullptr ||
+      stack->direction() != cgpui::FlexDirection::row ||
+      stack->gap() != 3.0F || !stack->key().has_value() ||
+      stack->key()->value != "toolbar-row") {
+    return 110;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 33.0F || output.size.height != 6.0F ||
+      stack->children().size() != 2) {
+    return 111;
+  }
+  const std::optional<cgpui::Rect> second_bounds =
+      stack->children()[1]->layout_bounds();
+  return second_bounds.has_value() && second_bounds->origin.x == 13.0F &&
+                 second_bounds->size.width == 20.0F
+             ? 0
+             : 112;
+}
+
 int test_text_input_widget_builder_keeps_text_model_boundary() {
   cgpui::TextModel model("typed");
   cgpui::AnyElement element =
@@ -533,6 +563,11 @@ int main() {
   }
   if (const int result =
           test_icon_widget_builder_uses_square_size_and_tint();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_container_primitive_builder_exposes_horizontal_stack();
       result != 0) {
     return result;
   }

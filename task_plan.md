@@ -2360,3 +2360,17 @@ implementation slice.
   validation, diff hygiene, Windows debug config, Windows full debug 103/103,
   WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100. Step
   348 container primitive follow-up is next, but pause here per user request.
+
+- Phase C Step 348, container primitive follow-up, is implemented in
+  `.worktrees/phase-c-container-primitives`: public container free functions
+  now live in `include/cgpui/ui/container_builder.hpp` and
+  `src/ui/widgets/container_builder.cpp`, `widget_builders.hpp` includes that
+  focused leaf, and `h_stack()` exposes horizontal stack authoring over the
+  existing row/flex semantics. The broad `src/ui/element_builder_factories.cpp`
+  keeps low-level `ElementBuilder` static factories but no longer owns the
+  public container free-function bodies. Focused Windows GREEN verification
+  passed `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` 2/2 after the expected RED failure for
+  missing `cgpui::h_stack`. The public vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, and audit guards now move the handoff to Phase
+  C Step 349 uniform list parity.

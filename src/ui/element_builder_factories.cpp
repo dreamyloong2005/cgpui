@@ -44,22 +44,6 @@ AnyElement into_element(ElementBuilder builder) {
   return std::move(builder).build();
 }
 
-ElementBuilder div() {
-  return ElementBuilder::box();
-}
-
-ElementBuilder h_flex() {
-  return ElementBuilder::row();
-}
-
-ElementBuilder v_flex() {
-  return ElementBuilder::column();
-}
-
-ElementBuilder v_stack() {
-  return ElementBuilder::v_stack();
-}
-
 ElementBuilder text(TextModel& model) {
   return ElementBuilder::text(model);
 }

@@ -174,8 +174,16 @@ int main() {
       !contains(ledger_json, "src/ui/element_image_nodes.cpp") ||
       !contains(ledger_md, "PlatformAccessibilityRole::image") ||
       !contains(ledger_json, "PlatformAccessibilityRole::image") ||
+      !contains(ledger_md, "Phase C Step 348 container primitive follow-up") ||
+      !contains(ledger_json, "Phase C Step 348 container primitive follow-up") ||
+      !contains(ledger_md, "container_builder.hpp") ||
+      !contains(ledger_json, "container_builder.hpp") ||
+      !contains(ledger_md, "src/ui/widgets/container_builder.cpp") ||
+      !contains(ledger_json, "src/ui/widgets/container_builder.cpp") ||
+      !contains(ledger_md, "h_stack()") ||
+      !contains(ledger_json, "h_stack()") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 348 container primitive follow-up\"")) {
+                "\"next_step\": \"Phase C Step 349 uniform list parity\"")) {
     return 50;
   }
 

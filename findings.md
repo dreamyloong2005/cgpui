@@ -6353,3 +6353,28 @@
   WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100.
 - Step 348 should stay scoped to container primitives and should not start
   until the user resumes after this pause.
+
+## 2026-07-08 Phase C Step 348 Container Primitives
+
+- Step 348 stays scoped to container primitive public authoring in the built-in
+  widget band. It should not add uniform list behavior, new layout engines,
+  runtime theme switching, broad resolved-style layout/paint rewrites,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- Durable public widget ownership is `include/cgpui/ui/container_builder.hpp`
+  plus `src/ui/widgets/container_builder.cpp`, matching the Step 343-347
+  `src/ui/widgets/*` builder boundary. Aggregate headers stay thin and only
+  include the new leaf.
+- The smallest useful container addition is `h_stack()`, implemented as the
+  horizontal row/flex-row counterpart to the existing `v_stack()` public
+  spelling. `div()`, `h_flex()`, `v_flex()`, and `v_stack()` keep their
+  existing semantics while their public free-function bodies move out of the
+  broad element-builder factory file.
+- `src/ui/element_builder_factories.cpp` should keep the low-level
+  `ElementBuilder::box()`, `row()`, `column()`, and `v_stack()` factories
+  because those are lower-level builder construction helpers. The structure
+  guard should only forbid public container free-function bodies there.
+- Step 349 should move Phase C into uniform list parity, starting with stable
+  item identity and virtualized range calculation before scroll anchoring,
+  measurement-cache, large-list recycling, and keyboard/pointer selection
+  depth.

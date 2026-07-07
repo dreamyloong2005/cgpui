@@ -675,7 +675,7 @@ expect, keeping each widget in its own module from the first version.
 - [x] Steps 337-342: Complete focusable/interactable element semantics:
   hover, active, disabled, tab order, focus ring metadata, pointer capture,
   click/drag gestures, and keyboard activation.
-- [ ] Steps 343-348: Expand built-in widgets: button, label, text input,
+- [x] Steps 343-348: Expand built-in widgets: button, label, text input,
   checkbox, radio, switch, slider, list item, menu item, icon/image, and
   container primitives. Step 343 starts this band with focused button, label,
   and text-input builder module ownership: `ButtonBuilder::label(...)` composes
@@ -708,7 +708,13 @@ expect, keeping each widget in its own module from the first version.
   behavior split across `src/ui/element_image_nodes.cpp`,
   `src/ui/element_image_layout.cpp`, and `src/ui/element_image_paint.cpp`, and
   source-rect, alternate-text, and optional icon tint metadata before
-  container primitive gaps.
+  container primitive gaps. Step 348 closes this band by moving container
+  primitive free-function authoring into
+  `include/cgpui/ui/container_builder.hpp` and
+  `src/ui/widgets/container_builder.cpp`, exposing `div()`, `h_flex()`,
+  `v_flex()`, `h_stack()`, and `v_stack()` through the focused widget builder
+  aggregate and guarding the module boundary with
+  `tests/architecture/widget_source_structure_test.cpp`.
 - [ ] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection.
@@ -976,9 +982,11 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 348 continues built-in widget expansion from the frozen Phase B public authoring boundary
-after the focused layout, style, focusable/interactable, and first widget
-bands from Steps 319-347. Step 319 landed the child-list foundation on `master` at
+Step 349 starts uniform list parity from the frozen Phase B public authoring
+boundary after the focused layout, style, focusable/interactable, and built-in
+widget bands from Steps 319-348. Step 319 landed the child-list foundation on `master` at
+The Phase B public authoring boundary remains the source of truth for this
+slice.
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -1057,7 +1065,13 @@ Step 347 adds icon/image widgets through `ImageBuilder`, `image(...)`,
 `src/ui/element_image_nodes.cpp`, `src/ui/element_image_layout.cpp`, and
 `src/ui/element_image_paint.cpp`, plus source-rect, alternate-text, and icon
 tint metadata over the existing image asset descriptor and paint command path.
-Step 348 should continue with container primitive gaps.
+Step 348 closes the built-in widget band with focused container primitive
+free-function authoring through `include/cgpui/ui/container_builder.hpp`,
+`src/ui/widgets/container_builder.cpp`, and `div()`, `h_flex()`, `v_flex()`,
+`h_stack()`, and `v_stack()` public vocabulary. Step 349 should start uniform
+list parity with stable item identity and the first virtualized range
+calculation boundary before deeper scroll anchoring, measurement cache,
+large-list recycling, and keyboard/pointer selection slices.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

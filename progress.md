@@ -13618,3 +13618,50 @@
 - WSL Arch Linux feature-worktree verification passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+
+## 2026-07-08 Phase C Step 348 Container Primitives
+
+- Continued existing `.worktrees/phase-c-container-primitives` on
+  `codex/phase-c-container-primitives` from
+  `bba8391 docs: mark phase c step 347 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 348 to container primitive authoring after the Step 343-347
+  widget-builder band: move public `div()`, `h_flex()`, `v_flex()`, and
+  `v_stack()` free-function bodies out of the broad
+  `src/ui/element_builder_factories.cpp` file and add the missing `h_stack()`
+  spelling without introducing a new element class.
+- RED extended `tests/ui/builtin_widget_test.cpp` and
+  `tests/architecture/widget_source_structure_test.cpp`. Focused RED failed
+  as expected because `cgpui::h_stack` did not exist.
+- GREEN added `include/cgpui/ui/container_builder.hpp` and
+  `src/ui/widgets/container_builder.cpp`, updated `widget_builders.hpp` and
+  compatibility declarations in `element_builder_core.hpp`, and kept the
+  low-level `ElementBuilder::{box,row,column,v_stack}` factories in their
+  existing focused factory file.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` passed 2/2.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `gpui_parity_ledger_test`,
+  `public_authoring_vocabulary_freeze_test`,
+  `phase_c_focusable_interactable_audit_test`, `task_plan.md`, and
+  `findings.md` so Step 348 evidence is required and the handoff moves to
+  Phase C Step 349 uniform list parity.
+- Focused documentation/API/widget verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default
+  public_phase_b_completion_audit_test/default` passed 6/6.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0 and the final `xmake test -P .` rerun
+  passed 103/103. The first full run failed only
+  `public_phase_b_completion_audit_test/default` because the roadmap wrapped
+  the required `Phase B public authoring boundary` phrase across lines; adding
+  that exact sentence fixed the audit, and the focused rerun passed.
+- WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.

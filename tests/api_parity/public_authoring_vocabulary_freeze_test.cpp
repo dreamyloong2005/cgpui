@@ -110,6 +110,11 @@ int main() {
       "`image(...)`",
       "`icon(...)`",
       "`ImageBuilder`",
+      "`div()`",
+      "`h_flex()`",
+      "`v_flex()`",
+      "`h_stack()`",
+      "`v_stack()`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {
