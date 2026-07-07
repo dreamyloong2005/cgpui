@@ -13279,3 +13279,19 @@
   `xmake test -P .` passed 101/101, WSL Arch Linux
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
   `XMAKE_ROOT=y xmake test -P .` passed 98/98.
+
+## 2026-07-07 Phase C Step 342 Merge
+
+- Fast-forward merged `codex/phase-c-focusable-interactable-closeout` into
+  `master` at `7ad6133 test: close phase c focusable band`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --stat` produced no output and `git diff --check` exited 0.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 101/101.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 98/98.
+- Step 342 is complete on `master`; Step 343 built-in widget expansion is the
+  next Phase C slice. Paused here per user request.

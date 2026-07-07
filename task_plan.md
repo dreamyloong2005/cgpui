@@ -2230,5 +2230,9 @@ implementation slice.
   layout/paint rewrites out of Step 342. Feature-worktree verification passed
   JSON validation, `git diff --check` with only expected LF-to-CRLF warnings,
   focused audit/ledger/public gates 5/5, Windows full debug 101/101, and WSL
-  Arch Linux full debug 98/98. Step 343 built-in widget expansion is the next
-  tracked Phase C slice after this closeout is landed.
+  Arch Linux full debug 98/98. Merged on `master` at
+  `7ad6133 test: close phase c focusable band`; post-merge verification passed
+  JSON validation, `git diff --check`, Windows debug config, Windows full
+  debug 101/101, WSL Arch Linux debug config, and WSL Arch Linux full debug
+  98/98. Step 343 built-in widget expansion is the next tracked Phase C
+  slice.
