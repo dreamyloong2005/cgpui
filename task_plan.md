@@ -2260,8 +2260,8 @@ implementation slice.
   Arch Linux full debug 100/100. Step 344 checkbox/radio/switch widgets is the
   next tracked Phase C slice.
 
-- Phase C Step 344, checkbox/radio/switch widgets, is implemented in
-  `.worktrees/phase-c-checkbox-radio-switch-widgets`: `ToggleBuilder`,
+- Phase C Step 344, checkbox/radio/switch widgets, is merged on `master` at
+  `8c6f788 feat: add checkbox radio switch widgets`: `ToggleBuilder`,
   `checkbox(...)`, `radio(...)`, and `toggle_switch(...)` expose the focused
   widget factories, `ToggleControlElement` owns checked/selected/on state and
   synthesized-click behavior, and accessibility role/value metadata now carries
@@ -2275,5 +2275,8 @@ implementation slice.
   `public_authoring_vocabulary_freeze_test/default`, and
   `phase_c_focusable_interactable_audit_test/default` 5/5. Feature-worktree
   full verification passed Windows debug config plus full debug 103/103 and
-  WSL Arch Linux debug config plus full debug 100/100. Step 345 slider widget
-  is the next tracked Phase C slice after this work lands.
+  WSL Arch Linux debug config plus full debug 100/100. Post-merge
+  verification passed JSON validation, `git diff --check`, Windows debug
+  config, Windows full debug 103/103, WSL Arch Linux debug config, and WSL
+  Arch Linux full debug 100/100. Step 345 slider widget is the next tracked
+  Phase C slice.

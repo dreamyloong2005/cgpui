@@ -6239,3 +6239,16 @@
 - Step 345 should continue the built-in widget band with a focused slider
   widget, reusing the same public leaf plus focused implementation/source
   structure pattern.
+
+## 2026-07-07 Phase C Step 344 Merge
+
+- Step 344 is merged on `master` at
+  `8c6f788 feat: add checkbox radio switch widgets` and post-merge verified
+  with JSON validation, diff hygiene, Windows debug config, Windows full debug
+  103/103, WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100.
+- Step 345 should stay scoped to a focused slider widget in the built-in
+  widget band. Keep list item, menu item, icon/image, container primitives,
+  runtime theme switching, broad resolved-style layout/paint rewrites,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, and structured task groups out unless a later slice explicitly
+  owns them.

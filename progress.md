@@ -13402,3 +13402,21 @@
   `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
   103/103, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
   0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+
+## 2026-07-07 Phase C Step 344 Merge
+
+- Committed `codex/phase-c-checkbox-radio-switch-widgets` as
+  `8c6f788 feat: add checkbox radio switch widgets`.
+- Fast-forward merged the branch into `master` at `8c6f788`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0 and `git status --short --branch` showed only
+  the existing untracked `.vscode/`.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+- Step 344 is complete on `master`; Step 345 slider widget is the next Phase C
+  slice. Paused here per user request.
