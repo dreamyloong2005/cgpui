@@ -13236,3 +13236,17 @@
 - Feature-worktree WSL Arch Linux verification passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+
+## 2026-07-07 Phase C Step 341 Merge
+
+- Fast-forward merged `codex/phase-c-disabled-interaction` into `master` at
+  `7bd5ad5 feat: clear disabled interaction state`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 100/100.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+- Step 341 is complete on `master`; Step 342 focusable/interactable band
+  closeout is the next Phase C slice.

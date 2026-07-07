@@ -2213,3 +2213,9 @@ implementation slice.
   window_runtime_input_test/default ui_source_structure_test/default` 2/2.
   Step 342 focusable/interactable band closeout is the next focused Phase C
   slice after Step 341 lands.
+
+- Phase C Step 341 is merged on `master` at
+  `7bd5ad5 feat: clear disabled interaction state` and post-merge verified
+  with JSON validation, Windows debug config, Windows full debug 100/100, WSL
+  Arch Linux debug config, and WSL Arch Linux full debug 97/97. Step 342
+  focusable/interactable band closeout is the next focused Phase C slice.

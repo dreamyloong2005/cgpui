@@ -6148,3 +6148,12 @@
   assigned child ids lose valid hover state.
 - Step 342 should close the focusable/interactable band before Phase C moves
   into built-in widget expansion.
+
+## 2026-07-07 Phase C Step 341 Merge
+
+- Step 341 is merged on `master` at
+  `7bd5ad5 feat: clear disabled interaction state` and post-merge verified
+  with JSON validation, Windows debug config, Windows full debug 100/100, WSL
+  Arch Linux debug config, and WSL Arch Linux full debug 97/97.
+- Step 342 should be a focused focusable/interactable band closeout before
+  Phase C starts built-in widget expansion.
