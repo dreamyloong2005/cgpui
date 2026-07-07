@@ -8,6 +8,7 @@
 #include "cgpui/ui/element_context.hpp"
 #include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/uniform_list.hpp"
+#include "cgpui/ui/uniform_list_selection.hpp"
 #include "cgpui/ui/view_context.hpp"
 #include "cgpui/ui/view_handle.hpp"
 #include "cgpui/ui/view.hpp"

@@ -79,6 +79,7 @@ int main() {
       "include/cgpui/ui/element_button_nodes.hpp",
       "include/cgpui/ui/element_interaction_nodes.hpp",
       "include/cgpui/ui/uniform_list.hpp",
+      "include/cgpui/ui/uniform_list_selection.hpp",
       "include/cgpui/ui/element_scroll_nodes.hpp",
       "include/cgpui/ui/element_nodes.hpp",
       "include/cgpui/ui/element_builder_core.hpp",
@@ -195,6 +196,8 @@ int main() {
       !contains(ui_header, "#include \"cgpui/ui/async_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/test_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/uniform_list.hpp\"") ||
+      !contains(ui_header,
+                "#include \"cgpui/ui/uniform_list_selection.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/element_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
@@ -762,6 +765,8 @@ int main() {
       read_source("include/cgpui/ui/element_interaction_nodes.hpp");
   const std::string uniform_list_header =
       read_source("include/cgpui/ui/uniform_list.hpp");
+  const std::string uniform_list_selection_header =
+      read_source("include/cgpui/ui/uniform_list_selection.hpp");
   const std::string element_scroll_nodes_header =
       read_source("include/cgpui/ui/element_scroll_nodes.hpp");
   const std::string element_builders_header =
@@ -877,11 +882,26 @@ int main() {
       !contains(uniform_list_header,
                 "capture_uniform_list_scroll_anchor(") ||
       !contains(uniform_list_header, "apply_uniform_list_scroll_anchor(") ||
+      !contains(uniform_list_selection_header,
+                "enum class UniformListSelectionSource") ||
+      !contains(uniform_list_selection_header,
+                "enum class UniformListSelectionDirection") ||
+      !contains(uniform_list_selection_header,
+                "struct UniformListSelection") ||
+      !contains(uniform_list_selection_header,
+                "class UniformListSelectionState") ||
+      !contains(uniform_list_selection_header,
+                "select_uniform_list_item_at_point(") ||
+      !contains(uniform_list_selection_header,
+                "move_uniform_list_selection(") ||
       !contains(element_scroll_nodes_header, "class ScrollableListElement") ||
       !contains(element_scroll_nodes_header,
                 "#include \"cgpui/ui/uniform_list.hpp\"") ||
+      !contains(element_scroll_nodes_header,
+                "#include \"cgpui/ui/uniform_list_selection.hpp\"") ||
       !contains(element_scroll_nodes_header, "layout_snapshot() const") ||
       !contains(element_scroll_nodes_header, "measurement_cache() const") ||
+      !contains(element_scroll_nodes_header, "selection() const") ||
       !contains(element_builder_core_header, "class ElementBuilder") ||
       !contains(element_builder_header,
                 "#include \"cgpui/ui/element_builder_core.hpp\"") ||
@@ -909,6 +929,7 @@ int main() {
       line_count(element_containers_header) > 220 ||
       line_count(element_interaction_nodes_header) > 220 ||
       line_count(uniform_list_header) > 120 ||
+      line_count(uniform_list_selection_header) > 90 ||
       line_count(element_builder_header) > 220 ||
       line_count(widget_builders_header) > 220 ||
       contains(element_tree_header, "ElementTree::state(ElementId id)") ||
@@ -916,6 +937,8 @@ int main() {
       contains(element_containers_header, "class FlexElement : public Element") ||
       contains(element_interaction_nodes_header,
                "class ButtonElement : public Element") ||
+      contains(element_scroll_nodes_header,
+               "return content_.handle_event(event, context);") ||
       contains(element_builder_header, "class ElementBuilder {") ||
       contains(widget_builders_header, "class ButtonBuilder {")) {
     return 103;
@@ -948,7 +971,9 @@ int main() {
       "src/ui/uniform_list.cpp",
       "src/ui/uniform_list_measurement.cpp",
       "src/ui/uniform_list_recycling.cpp",
+      "src/ui/uniform_list_selection.cpp",
       "src/ui/element_scroll_layout.cpp",
+      "src/ui/element_scroll_events.cpp",
       "src/ui/element_style_nodes.cpp",
       "src/ui/element_style_paint.cpp",
       "src/ui/element_button_paint.cpp",
@@ -971,7 +996,9 @@ int main() {
       line_count(read_source("src/ui/uniform_list.cpp")) > 120 ||
       line_count(read_source("src/ui/uniform_list_measurement.cpp")) > 90 ||
       line_count(read_source("src/ui/uniform_list_recycling.cpp")) > 90 ||
-      line_count(read_source("src/ui/element_scroll_layout.cpp")) > 140) {
+      line_count(read_source("src/ui/uniform_list_selection.cpp")) > 120 ||
+      line_count(read_source("src/ui/element_scroll_layout.cpp")) > 140 ||
+      line_count(read_source("src/ui/element_scroll_events.cpp")) > 120) {
     return 106;
   }
   const std::string uniform_list_source =
@@ -980,8 +1007,12 @@ int main() {
       read_source("src/ui/uniform_list_measurement.cpp");
   const std::string uniform_list_recycling_source =
       read_source("src/ui/uniform_list_recycling.cpp");
+  const std::string uniform_list_selection_source =
+      read_source("src/ui/uniform_list_selection.cpp");
   const std::string element_scroll_layout_source =
       read_source("src/ui/element_scroll_layout.cpp");
+  const std::string element_scroll_events_source =
+      read_source("src/ui/element_scroll_events.cpp");
   if (!contains(uniform_list_source,
                 "UniformListVisibleRange::contains(") ||
       !contains(uniform_list_source,
@@ -997,15 +1028,28 @@ int main() {
                 "UniformListRecyclingWindow::retains(") ||
       !contains(uniform_list_recycling_source,
                 "calculate_uniform_list_recycling_window(") ||
+      !contains(uniform_list_selection_source,
+                "UniformListSelectionState::set(") ||
+      !contains(uniform_list_selection_source,
+                "select_uniform_list_item_at_point(") ||
+      !contains(uniform_list_selection_source,
+                "move_uniform_list_selection(") ||
       !contains(element_scroll_layout_source,
                 "ScrollableListElement::layout(") ||
       !contains(element_scroll_layout_source, "layout_snapshot_") ||
       !contains(element_scroll_layout_source, "measurement_cache_") ||
+      !contains(element_scroll_layout_source, "selection_.selected(") ||
       !contains(element_scroll_layout_source, "measure_uniform_list_items(") ||
       !contains(element_scroll_layout_source,
                 "calculate_uniform_list_recycling_window(") ||
       !contains(element_scroll_layout_source,
                 "apply_uniform_list_scroll_anchor(") ||
+      !contains(element_scroll_events_source,
+                "ScrollableListElement::handle_event(") ||
+      !contains(element_scroll_events_source,
+                "select_uniform_list_item_at_point(") ||
+      !contains(element_scroll_events_source,
+                "move_uniform_list_selection(") ||
       contains(element_scroll_nodes_header,
                "calculate_uniform_list_visible_range(")) {
     return 150;

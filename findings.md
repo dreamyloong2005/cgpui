@@ -6478,3 +6478,26 @@
   aimed at the new Step 352 boundary.
 - Step 353 should continue uniform list parity with keyboard/pointer selection
   over the Step 349-352 snapshot, anchor, measurement, and recycling state.
+
+## 2026-07-08 Phase C Step 353 Keyboard Pointer Selection
+
+- Step 353 stays scoped to single-selection state over the existing uniform-list
+  snapshot boundary. It should not add multi-select/range selection, broad text
+  selection/caret behavior, cache eviction, a new layout engine,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- Durable public ownership is `include/cgpui/ui/uniform_list_selection.hpp`.
+  `include/cgpui/ui/uniform_list.hpp` only gains the snapshot `selected` flag,
+  preserving the existing uniform-list leaf line cap.
+- Durable implementation ownership is split between
+  `src/ui/uniform_list_selection.cpp` for state/hit/movement helpers and
+  `src/ui/element_scroll_events.cpp` for `ScrollableListElement::handle_event(...)`.
+  This keeps event logic out of `element_scroll_nodes.hpp` and layout logic out
+  of the selection helper source.
+- Pointer selection uses content-local snapshot bounds, so the scroll element
+  converts viewport pointer positions by adding the current `ScrollState`
+  offset before calling `select_uniform_list_item_at_point(...)`.
+- Keyboard movement only handles pressed ArrowUp, ArrowDown, Home, and End.
+  Unhandled or non-moving key events continue to the list content.
+- Step 354 should close the uniform-list band with audit/docs evidence before
+  Phase C moves to the Steps 355-360 window/examples widget band.

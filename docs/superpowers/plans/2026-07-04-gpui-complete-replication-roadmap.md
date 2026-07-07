@@ -723,7 +723,9 @@ expect, keeping each widget in its own module from the first version.
   keyed scroll anchoring over that snapshot boundary. Step 351 adds keyed item
   measurement caching over the same layout snapshot boundary. Step 352 adds
   retained/recycled large-list windows with focused paint skipping outside the
-  visible-plus-overscan range.
+  visible-plus-overscan range. Step 353 adds keyboard/pointer selection over
+  the same snapshot boundary. Step 354 closes the uniform-list band with audit
+  evidence before the window/examples widget band starts.
 - [ ] Steps 355-360: Implement window/examples widgets for menu demos, shadow,
   window positioning, window shadow, and input examples using public APIs.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
@@ -988,15 +990,14 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 353 should continue uniform list parity with keyboard/pointer selection
-from the
-frozen Phase B public authoring boundary after the focused layout, style,
-focusable/interactable, built-in widget, and Step 349 stable identity/range
-plus Step 350 scroll anchoring and Step 351 item measurement cache boundaries
-from Steps 319-351. Step 319 landed the child-list foundation on `master` at
-The Phase B public authoring boundary remains the source of truth for this
-slice.
-`14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
+Step 354 should close the uniform-list parity band with audit/docs evidence
+from the frozen Phase B public authoring boundary after the focused layout,
+style, focusable/interactable, built-in widget, Step 349 stable identity/range,
+Step 350 scroll anchoring, Step 351 item measurement cache, Step 352 recycling,
+and Step 353 keyboard/pointer selection boundaries from Steps 319-353. The
+Phase B public authoring boundary remains the source of truth for this slice.
+Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320
+landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
 `master` at `f4f2fc2`; Step 323 landed text-style aliases on `master` at
@@ -1093,8 +1094,13 @@ hit/miss observability. Step 352 adds `UniformListRecyclingWindow`,
 `calculate_uniform_list_recycling_window(...)`,
 `UniformListLayoutSnapshot::recycling_window`, `UniformListItemIdentity::recycled`,
 focused `src/ui/uniform_list_recycling.cpp` ownership, and retained-window
-painting before the Step 353 keyboard/pointer selection slice.
-Keep the Phase B closeout exclusions out of this slice:
+painting. Step 353 adds `UniformListSelectionSource`,
+`UniformListSelectionDirection`, `UniformListSelection`,
+`UniformListSelectionState`, `select_uniform_list_item_at_point(...)`,
+`move_uniform_list_selection(...)`, `ScrollableListElement::selection()`,
+focused `src/ui/uniform_list_selection.cpp` and
+`src/ui/element_scroll_events.cpp` ownership, and snapshot selected flags.
+Keep the Phase B closeout exclusions out of the Step 354 closeout slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
 

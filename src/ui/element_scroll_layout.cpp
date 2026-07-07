@@ -26,6 +26,10 @@ const UniformListItemMeasurementCache& ScrollableListElement::measurement_cache(
   return measurement_cache_;
 }
 
+const UniformListSelectionState& ScrollableListElement::selection() const {
+  return selection_;
+}
+
 LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
   std::optional<UniformListScrollAnchor> scroll_anchor;
   Point offset;
@@ -99,6 +103,7 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
   for (UniformListItemIdentity& item : layout_snapshot_.items) {
     item.visible = layout_snapshot_.visible_range.contains(item.index);
     item.recycled = layout_snapshot_.recycling_window.recycles(item.index);
+    item.selected = selection_.selected(item.key);
   }
 
   content_.set_layout_bounds(Rect{

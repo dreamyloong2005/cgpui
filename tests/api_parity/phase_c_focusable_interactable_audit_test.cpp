@@ -194,6 +194,14 @@ int main() {
       !contains(ledger_json, "UniformListItemMeasurementResult") ||
       !contains(ledger_md, "UniformListRecyclingWindow") ||
       !contains(ledger_json, "UniformListRecyclingWindow") ||
+      !contains(ledger_md, "UniformListSelectionSource") ||
+      !contains(ledger_json, "UniformListSelectionSource") ||
+      !contains(ledger_md, "UniformListSelectionDirection") ||
+      !contains(ledger_json, "UniformListSelectionDirection") ||
+      !contains(ledger_md, "UniformListSelection") ||
+      !contains(ledger_json, "UniformListSelection") ||
+      !contains(ledger_md, "UniformListSelectionState") ||
+      !contains(ledger_json, "UniformListSelectionState") ||
       !contains(ledger_md, "UniformListLayoutSnapshot") ||
       !contains(ledger_json, "UniformListLayoutSnapshot") ||
       !contains(ledger_md, "UniformListScrollAnchor") ||
@@ -206,6 +214,10 @@ int main() {
       !contains(ledger_json, "measure_uniform_list_items") ||
       !contains(ledger_md, "calculate_uniform_list_recycling_window") ||
       !contains(ledger_json, "calculate_uniform_list_recycling_window") ||
+      !contains(ledger_md, "select_uniform_list_item_at_point") ||
+      !contains(ledger_json, "select_uniform_list_item_at_point") ||
+      !contains(ledger_md, "move_uniform_list_selection") ||
+      !contains(ledger_json, "move_uniform_list_selection") ||
       !contains(ledger_md, "capture_uniform_list_scroll_anchor") ||
       !contains(ledger_json, "capture_uniform_list_scroll_anchor") ||
       !contains(ledger_md, "apply_uniform_list_scroll_anchor") ||
@@ -214,22 +226,30 @@ int main() {
       !contains(ledger_json, "ScrollableListElement::layout_snapshot") ||
       !contains(ledger_md, "ScrollableListElement::measurement_cache") ||
       !contains(ledger_json, "ScrollableListElement::measurement_cache") ||
+      !contains(ledger_md, "ScrollableListElement::selection") ||
+      !contains(ledger_json, "ScrollableListElement::selection") ||
       !contains(ledger_md, "src/ui/uniform_list.cpp") ||
       !contains(ledger_json, "src/ui/uniform_list.cpp") ||
       !contains(ledger_md, "src/ui/uniform_list_measurement.cpp") ||
       !contains(ledger_json, "src/ui/uniform_list_measurement.cpp") ||
       !contains(ledger_md, "src/ui/uniform_list_recycling.cpp") ||
       !contains(ledger_json, "src/ui/uniform_list_recycling.cpp") ||
+      !contains(ledger_md, "src/ui/uniform_list_selection.cpp") ||
+      !contains(ledger_json, "src/ui/uniform_list_selection.cpp") ||
       !contains(ledger_md, "src/ui/element_scroll_layout.cpp") ||
       !contains(ledger_json, "src/ui/element_scroll_layout.cpp") ||
+      !contains(ledger_md, "src/ui/element_scroll_events.cpp") ||
+      !contains(ledger_json, "src/ui/element_scroll_events.cpp") ||
       !contains(ledger_md, "Phase C Step 350 scroll anchoring") ||
       !contains(ledger_json, "Phase C Step 350 scroll anchoring") ||
       !contains(ledger_md, "Phase C Step 351 item measurement cache") ||
       !contains(ledger_json, "Phase C Step 351 item measurement cache") ||
       !contains(ledger_md, "Phase C Step 352 large-list recycling") ||
       !contains(ledger_json, "Phase C Step 352 large-list recycling") ||
+      !contains(ledger_md, "Phase C Step 353 keyboard/pointer selection") ||
+      !contains(ledger_json, "Phase C Step 353 keyboard/pointer selection") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 353 keyboard/pointer selection\"")) {
+                "\"next_step\": \"Phase C Step 354 uniform list closeout\"")) {
     return 50;
   }
 

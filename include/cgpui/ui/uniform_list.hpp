@@ -6,7 +6,6 @@
 #include <optional>
 #include <span>
 #include <vector>
-
 namespace cgpui {
 
 struct UniformListVisibleRange {
@@ -24,6 +23,7 @@ struct UniformListItemIdentity {
   Rect content_bounds;
   bool visible = false;
   bool recycled = false;
+  bool selected = false;
 };
 
 struct UniformListItemMeasurement {

@@ -121,16 +121,23 @@ int main() {
       "`UniformListItemMeasurement`",
       "`UniformListItemMeasurementResult`",
       "`UniformListRecyclingWindow`",
+      "`UniformListSelectionSource`",
+      "`UniformListSelectionDirection`",
+      "`UniformListSelection`",
+      "`UniformListSelectionState`",
       "`UniformListLayoutSnapshot`",
       "`UniformListScrollAnchor`",
       "`UniformListItemMeasurementCache`",
       "`calculate_uniform_list_visible_range(...)`",
       "`measure_uniform_list_items(...)`",
       "`calculate_uniform_list_recycling_window(...)`",
+      "`select_uniform_list_item_at_point(...)`",
+      "`move_uniform_list_selection(...)`",
       "`capture_uniform_list_scroll_anchor(...)`",
       "`apply_uniform_list_scroll_anchor(...)`",
       "`ScrollableListElement::layout_snapshot()`",
       "`ScrollableListElement::measurement_cache()`",
+      "`ScrollableListElement::selection()`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {

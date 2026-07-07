@@ -2423,14 +2423,31 @@ implementation slice.
   guards now require the Step 351 evidence. The handoff moves to Phase C Step
   352 large-list recycling.
 
-- Phase C Step 352, large-list recycling, is in progress in
-  `.worktrees/phase-c-large-list-recycling`: `UniformListRecyclingWindow`,
+- Phase C Step 352, large-list recycling, is merged on `master` at
+  `90df746 feat: add uniform list recycling window`: `UniformListRecyclingWindow`,
   `calculate_uniform_list_recycling_window(...)`,
   `UniformListLayoutSnapshot::recycling_window`, and
   `UniformListItemIdentity::recycled` are scoped to a retained
   visible-plus-overscan window over the Step 351 measurement cache boundary.
   `ScrollableListElement::paint(...)` skips recycled children while the layout
-  path still preserves the existing full measurement pass. RED coverage failed
-  as expected on missing recycling helper symbols before the focused
-  implementation was added. The handoff will move to Phase C Step 353
-  keyboard/pointer selection after GREEN verification and merge.
+  path still preserves the existing full measurement pass. Post-merge
+  verification passed JSON validation, diff hygiene, Windows debug config,
+  Windows full debug 103/103, WSL Arch Linux debug config, and WSL Arch Linux
+  full debug 100/100.
+
+- Phase C Step 353, keyboard/pointer selection, is implemented in
+  `.worktrees/phase-c-uniform-list-selection`: `UniformListSelectionSource`,
+  `UniformListSelectionDirection`, `UniformListSelection`,
+  `UniformListSelectionState`, `select_uniform_list_item_at_point(...)`, and
+  `move_uniform_list_selection(...)` live in the focused public leaf
+  `include/cgpui/ui/uniform_list_selection.hpp`, with non-template bodies in
+  `src/ui/uniform_list_selection.cpp`. `ScrollableListElement::handle_event(...)`
+  moved to `src/ui/element_scroll_events.cpp`, pointer hit selection accounts
+  for scroll offset, keyboard pressed ArrowUp/ArrowDown/Home/End moves
+  selection, `ScrollableListElement::selection()` exposes the state, and
+  `UniformListItemIdentity::selected` marks layout snapshots. Focused GREEN
+  verification passed `xmake test -y -P . scroll_test/default
+  element_test/default ui_source_structure_test/default` 3/3 after the
+  expected RED failure for missing selection APIs. The public vocabulary,
+  Markdown/JSON parity ledger, complete-replication roadmap, and audit guards
+  now move the handoff to Phase C Step 354 uniform list closeout.

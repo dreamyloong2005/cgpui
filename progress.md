@@ -13986,3 +13986,57 @@
   100/100.
 - Step 352 is complete on `master`; Step 353 keyboard/pointer selection is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 353 Keyboard Pointer Selection
+
+- Continued `.worktrees/phase-c-uniform-list-selection` on
+  `codex/phase-c-uniform-list-selection` from
+  `4aadf44 docs: mark phase c step 352 merged`.
+- Scoped Step 353 to single keyboard/pointer selection over the existing
+  uniform-list snapshot, scroll anchor, measurement cache, and recycling window.
+  Multi-select/range behavior, broad text selection/caret behavior, cache
+  eviction, and new layout engines remain out of this slice.
+- Added RED behavior coverage in `tests/ui/scroll_test.cpp` and
+  `tests/ui/element_test.cpp`, plus structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp`.
+- The focused RED run
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default` failed as expected on missing
+  `ScrollableListElement::selection()`, `UniformListItemIdentity::selected`,
+  and the new selection helper APIs.
+- Implemented `UniformListSelectionSource`,
+  `UniformListSelectionDirection`, `UniformListSelection`,
+  `UniformListSelectionState`, `select_uniform_list_item_at_point(...)`, and
+  `move_uniform_list_selection(...)` in
+  `include/cgpui/ui/uniform_list_selection.hpp` and
+  `src/ui/uniform_list_selection.cpp`.
+- Moved `ScrollableListElement::handle_event(...)` out of
+  `element_scroll_nodes.hpp` into `src/ui/element_scroll_events.cpp`.
+  Pointer selection converts viewport positions to content-local coordinates
+  with the current scroll offset, keyboard pressed ArrowUp/ArrowDown/Home/End
+  moves selection, and `src/ui/element_scroll_layout.cpp` records selected
+  snapshot flags.
+- Focused GREEN verification passed:
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, API parity/audit guards, `task_plan.md`, and
+  `findings.md` so Step 353 evidence is required and the handoff moves to
+  Phase C Step 354 uniform list closeout.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Focused documentation/API/behavior verification passed:
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 6/6.
+- Diff hygiene passed:
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Feature-worktree Windows verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- Feature-worktree WSL Arch Linux verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-phase-c-uniform-list-selection-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-uniform-list-selection -P .`
+  passed 100/100.

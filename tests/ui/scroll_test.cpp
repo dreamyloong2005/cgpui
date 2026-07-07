@@ -1,5 +1,6 @@
 #include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/uniform_list.hpp"
+#include "cgpui/ui/uniform_list_selection.hpp"
 
 #include <optional>
 #include <span>
@@ -345,6 +346,87 @@ int test_uniform_list_recycling_window_expands_visible_range_with_overscan() {
              : 25;
 }
 
+int test_uniform_list_selection_state_tracks_pointer_and_keyboard() {
+  const std::vector<cgpui::UniformListItemIdentity> items{
+      {
+          .index = 0,
+          .key = cgpui::ElementKey{.value = "alpha"},
+          .element_id = cgpui::ElementId{10},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 0.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 1,
+          .key = cgpui::ElementKey{.value = "beta"},
+          .element_id = cgpui::ElementId{11},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 12.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 2,
+          .key = cgpui::ElementKey{.value = "gamma"},
+          .element_id = cgpui::ElementId{12},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 24.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+  };
+
+  cgpui::UniformListSelectionState state;
+  if (!state.empty() || state.selected_index().has_value() ||
+      state.selected_key().has_value()) {
+    return 26;
+  }
+
+  const std::optional<cgpui::UniformListSelection> pointer_selection =
+      cgpui::select_uniform_list_item_at_point(
+          items,
+          cgpui::Point{.x = 5.0F, .y = 13.0F},
+          cgpui::UniformListSelectionSource::pointer);
+  if (!pointer_selection.has_value() || pointer_selection->index != 1 ||
+      pointer_selection->key.value != "beta" ||
+      pointer_selection->element_id != cgpui::ElementId{11} ||
+      pointer_selection->source !=
+          cgpui::UniformListSelectionSource::pointer) {
+    return 27;
+  }
+
+  state.set(*pointer_selection);
+  if (state.empty() || state.selected_index() != 1 ||
+      state.selected_key()->value != "beta" ||
+      !state.selected(cgpui::ElementKey{.value = "beta"}) ||
+      state.selected(cgpui::ElementKey{.value = "gamma"})) {
+    return 28;
+  }
+
+  const std::optional<cgpui::UniformListSelection> next =
+      cgpui::move_uniform_list_selection(
+          items,
+          state,
+          cgpui::UniformListSelectionDirection::next);
+  if (!next.has_value() || next->index != 2 || next->key.value != "gamma" ||
+      next->source != cgpui::UniformListSelectionSource::keyboard) {
+    return 29;
+  }
+
+  const std::optional<cgpui::UniformListSelection> first =
+      cgpui::move_uniform_list_selection(
+          items,
+          state,
+          cgpui::UniformListSelectionDirection::first);
+  const std::optional<cgpui::UniformListSelection> previous =
+      cgpui::move_uniform_list_selection(
+          items,
+          state,
+          cgpui::UniformListSelectionDirection::previous);
+  return first.has_value() && first->index == 0 && previous.has_value() &&
+                 previous->index == 0
+             ? 0
+             : 30;
+}
+
 } // namespace
 
 int main() {
@@ -384,6 +466,11 @@ int main() {
   }
   if (const int result =
           test_uniform_list_recycling_window_expands_visible_range_with_overscan();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_uniform_list_selection_state_tracks_pointer_and_keyboard();
       result != 0) {
     return result;
   }

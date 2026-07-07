@@ -5345,6 +5345,61 @@ int test_scrollable_list_recycles_large_list_paint_to_retained_window() {
   return list->measurement_cache().entry_count() == 10 ? 0 : 613;
 }
 
+int test_scrollable_list_updates_selection_from_pointer_and_keyboard() {
+  cgpui::ScrollState state;
+  cgpui::AnyElement element =
+      cgpui::scrollable_list(state)
+          .size(50.0F, 35.0F)
+          .item("alpha", cgpui::div().size(50.0F, 10.0F))
+          .item("beta", cgpui::div().size(50.0F, 10.0F))
+          .item("gamma", cgpui::div().size(50.0F, 10.0F))
+          .build();
+
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr) {
+    return 614;
+  }
+
+  (void)list->layout(cgpui::LayoutInput{});
+  if (!list->selection().empty()) {
+    return 615;
+  }
+
+  const cgpui::EventResult pointer_result = list->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = true,
+          .position = {.x = 5.0F, .y = 16.0F}},
+      cgpui::ElementEventContext{.target_element_id = list->id()});
+  if (!pointer_result.consumed || list->selection().selected_index() != 1 ||
+      list->selection().selected_key()->value != "beta") {
+    return 616;
+  }
+
+  const cgpui::UniformListLayoutSnapshot& pointer_snapshot =
+      list->layout_snapshot();
+  if (pointer_snapshot.items.size() != 3 ||
+      pointer_snapshot.items[0].selected || !pointer_snapshot.items[1].selected ||
+      pointer_snapshot.items[2].selected) {
+    return 617;
+  }
+
+  const cgpui::EventResult keyboard_result = list->handle_event(
+      cgpui::KeyboardKey{.key_code = 40, .action = cgpui::KeyAction::pressed},
+      cgpui::ElementEventContext{.target_element_id = list->id()});
+  if (!keyboard_result.consumed || list->selection().selected_index() != 2 ||
+      list->selection().selected_key()->value != "gamma") {
+    return 618;
+  }
+
+  const cgpui::EventResult release_result = list->handle_event(
+      cgpui::KeyboardKey{.key_code = 40, .action = cgpui::KeyAction::released},
+      cgpui::ElementEventContext{.target_element_id = list->id()});
+  return !release_result.consumed && list->selection().selected_index() == 2
+             ? 0
+             : 619;
+}
+
 int test_hidden_overflow_intersects_nested_scrollable_list_clip() {
   cgpui::ScrollState state;
   cgpui::AnyElement list =
@@ -6084,6 +6139,11 @@ int main() {
   }
   if (const int result =
           test_scrollable_list_recycles_large_list_paint_to_retained_window();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scrollable_list_updates_selection_from_pointer_and_keyboard();
       result != 0) {
     return result;
   }

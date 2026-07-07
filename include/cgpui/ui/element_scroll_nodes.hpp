@@ -3,6 +3,7 @@
 #include "cgpui/ui/element_containers.hpp"
 #include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/uniform_list.hpp"
+#include "cgpui/ui/uniform_list_selection.hpp"
 
 #include <memory>
 #include <optional>
@@ -127,6 +128,7 @@ class ScrollableListElement : public Element {
 
   [[nodiscard]] const UniformListLayoutSnapshot& layout_snapshot() const;
   [[nodiscard]] const UniformListItemMeasurementCache& measurement_cache() const;
+  [[nodiscard]] const UniformListSelectionState& selection() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
 
   [[nodiscard]] ElementId hit_test(Point point) const override {
@@ -137,12 +139,7 @@ class ScrollableListElement : public Element {
 
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
-      const ElementEventContext& context) override {
-    if (!enabled()) {
-      return EventResult::unhandled();
-    }
-    return content_.handle_event(event, context);
-  }
+      const ElementEventContext& context) override;
 
   [[nodiscard]] int z_index() const override {
     return style_.z_index;
@@ -158,6 +155,7 @@ class ScrollableListElement : public Element {
   mutable VerticalStackElement content_;
   mutable UniformListLayoutSnapshot layout_snapshot_;
   mutable UniformListItemMeasurementCache measurement_cache_;
+  mutable UniformListSelectionState selection_;
 };
 
 } // namespace cgpui
