@@ -2126,9 +2126,11 @@ implementation slice.
   `tests/architecture/ui_source_structure_test.cpp`. Focused Windows GREEN
   verification passed
   `xmake test -y -P . window_runtime_input_test/default
-  ui_source_structure_test/default` 2/2. Step 338 tab-order/focus-ring
-  metadata is the next focused Phase C slice after Step 337 lands on `master`.
-  Feature-worktree verification passed JSON validation, `git diff --check`,
-  focused public/ledger/structure gates 6/6, Windows debug config, Windows
-  full debug 100/100, WSL Arch Linux debug config, and WSL Arch Linux full
-  debug 97/97.
+  ui_source_structure_test/default` 2/2. Feature-worktree verification passed
+  JSON validation, `git diff --check`, focused public/ledger/structure gates
+  6/6, Windows debug config, Windows full debug 100/100, WSL Arch Linux debug
+  config, and WSL Arch Linux full debug 97/97. Merged on `master` at
+  `6f60668 feat: add pointer active state`; post-merge verification passed
+  JSON validation, Windows debug config, Windows full debug 100/100, WSL Arch
+  Linux debug config, and WSL Arch Linux full debug 97/97. Step 338
+  tab-order/focus-ring metadata is the next focused Phase C slice.

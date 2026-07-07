@@ -5994,3 +5994,15 @@
   `RecordingView` comparison state.
 - Step 338 should continue the focusable/interactable band with
   tab-order/focus-ring metadata unless a narrower roadmap slice supersedes it.
+
+## 2026-07-07 Phase C Step 337 Merge
+
+- Step 337 is merged on `master` at
+  `6f60668 feat: add pointer active state` and post-merge verified with JSON
+  validation, Windows debug config, Windows full debug 100/100, WSL Arch Linux
+  debug config, and WSL Arch Linux full debug 97/97.
+- Step 338 should stay scoped to tab-order/focus-ring metadata in the
+  focusable/interactable band. Keep click/drag gesture synthesis, keyboard
+  activation, broad widget behavior, runtime theme switching, and broad
+  resolved-style layout/paint rewrites out unless that slice explicitly owns
+  them.
