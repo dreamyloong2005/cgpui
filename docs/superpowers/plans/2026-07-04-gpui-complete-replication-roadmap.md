@@ -685,7 +685,13 @@ expect, keeping each widget in its own module from the first version.
   bodies, `xmake.lua` compiles `src/ui/widgets/*.cpp`, and
   `tests/ui/builtin_widget_test.cpp` plus
   `tests/architecture/widget_source_structure_test.cpp` guard the public
-  behavior and source boundary before checkbox/radio/switch work starts.
+  behavior and source boundary. Step 344 adds checkbox, radio, and switch
+  widget authoring through `ToggleBuilder`, `checkbox(...)`, `radio(...)`,
+  and `toggle_switch(...)`, focused `src/ui/widgets/toggle_builder.cpp`
+  ownership, focused `ToggleControlElement` element behavior split across
+  `src/ui/element_choice_nodes.cpp`, `src/ui/element_choice_layout.cpp`, and
+  `src/ui/element_choice_paint.cpp`, and accessibility role/value metadata for
+  checked/selected/on state before slider work starts.
 - [ ] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection.
@@ -953,9 +959,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 344 continues built-in widget expansion from the frozen Phase B public authoring boundary
+Step 345 continues built-in widget expansion from the frozen Phase B public authoring boundary
 after the focused layout, style, focusable/interactable, and first widget
-bands from Steps 319-343. Step 319 landed the child-list foundation on `master` at
+bands from Steps 319-344. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -1014,8 +1020,13 @@ builder implementation bodies move under `src/ui/widgets/*`, `xmake.lua`
 compiles that module, and focused behavior/structure coverage lives in
 `tests/ui/builtin_widget_test.cpp` and
 `tests/architecture/widget_source_structure_test.cpp`; it landed on `master`
-at `10907e2 feat: add built-in widget module boundary`. Step 344 should continue
-with checkbox/radio/switch widgets before slider, list item, menu item,
+at `10907e2 feat: add built-in widget module boundary`. Step 344 adds
+checkbox/radio/switch widgets through `ToggleBuilder`, `checkbox(...)`,
+`radio(...)`, `toggle_switch(...)`, `ToggleControlElement`, focused
+`src/ui/widgets/toggle_builder.cpp`, `src/ui/element_choice_nodes.cpp`,
+`src/ui/element_choice_layout.cpp`, and `src/ui/element_choice_paint.cpp`,
+plus accessibility role/value metadata for checked/selected/on state. Step
+345 should continue with a focused slider widget before list item, menu item,
 icon/image, and container primitive gaps.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,

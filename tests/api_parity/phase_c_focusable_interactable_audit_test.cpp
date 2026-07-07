@@ -124,9 +124,18 @@ int main() {
       !contains(ledger_json, "ButtonBuilder::label") ||
       !contains(ledger_md, "widget_source_structure_test.cpp") ||
       !contains(ledger_json, "widget_source_structure_test.cpp") ||
+      !contains(ledger_md,
+                "Phase C Step 344 checkbox/radio/switch widgets") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 344 checkbox/radio/switch "
-                "widgets\"")) {
+                "Phase C Step 344 checkbox/radio/switch widgets") ||
+      !contains(ledger_md, "ToggleBuilder") ||
+      !contains(ledger_json, "ToggleBuilder") ||
+      !contains(ledger_md, "toggle_switch(...)") ||
+      !contains(ledger_json, "toggle_switch(...)") ||
+      !contains(ledger_md, "src/ui/widgets/toggle_builder.cpp") ||
+      !contains(ledger_json, "src/ui/widgets/toggle_builder.cpp") ||
+      !contains(ledger_json,
+                "\"next_step\": \"Phase C Step 345 slider widget\"")) {
     return 50;
   }
 

@@ -6213,3 +6213,29 @@
 - Step 344 should continue the built-in widget band with checkbox/radio/switch
   widgets, reusing the focused `src/ui/widgets/*` ownership rather than putting
   widget implementation bodies back into broad `src/ui/*` files.
+
+## 2026-07-07 Phase C Step 344 Checkbox Radio Switch Widgets
+
+- Step 344 stays scoped to checkbox/radio/switch widget authoring and state
+  metadata. It should not add slider, list item, menu item, icon/image,
+  container primitives, runtime theme switching, broad resolved-style
+  layout/paint rewrites, `ClipboardItem`, upstream `gpui::test` macros, action
+  macro payloads, task priorities, or structured task groups.
+- Durable public widget ownership is `include/cgpui/ui/toggle_builder.hpp` plus
+  `src/ui/widgets/toggle_builder.cpp`, matching the Step 343
+  `src/ui/widgets/*` builder boundary. The aggregate headers should stay thin
+  and only include the new leaf.
+- Durable element ownership is a focused choice element leaf:
+  `include/cgpui/ui/element_choice_nodes.hpp`, with behavior in
+  `src/ui/element_choice_nodes.cpp`, layout in
+  `src/ui/element_choice_layout.cpp`, and paint in
+  `src/ui/element_choice_paint.cpp`. Splitting layout keeps the behavior file
+  under the structure-test cap and avoids growing broad element files.
+- The smallest accessibility extension for this slice is role plus string
+  value metadata: checkbox/radio report checked or unchecked, switch reports on
+  or off, and text input preserves its existing platform value behavior through
+  `TextInputElement::accessibility_value()`. This avoids adding a broader
+  accessibility state model before a later accessibility parity slice owns it.
+- Step 345 should continue the built-in widget band with a focused slider
+  widget, reusing the same public leaf plus focused implementation/source
+  structure pattern.

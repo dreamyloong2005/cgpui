@@ -45,6 +45,9 @@ enum class AccessibilityRole {
   button,
   text,
   text_input,
+  checkbox,
+  radio,
+  switch_control,
 };
 
 struct AccessibilitySnapshotOptions {
@@ -57,6 +60,7 @@ struct AccessibilityNode {
   AccessibilityRole role = AccessibilityRole::generic;
   std::string name;
   std::string text;
+  std::string value;
   bool enabled = true;
   bool focusable = false;
   bool focused = false;
@@ -245,6 +249,10 @@ class Element {
   }
 
   [[nodiscard]] virtual std::string accessibility_text() const {
+    return {};
+  }
+
+  [[nodiscard]] virtual std::string accessibility_value() const {
     return {};
   }
 

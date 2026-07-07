@@ -13349,3 +13349,56 @@
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
 - Step 343 is complete on `master`; Step 344 checkbox/radio/switch widgets is
   the next Phase C slice.
+
+## 2026-07-07 Phase C Step 344 Checkbox Radio Switch Widgets
+
+- Created `.worktrees/phase-c-checkbox-radio-switch-widgets` on
+  `codex/phase-c-checkbox-radio-switch-widgets` from
+  `3f85db4 docs: mark phase c step 343 merged`.
+- Restored planning context, ran the planning-with-files catchup helper at the
+  `.codex` skill path, confirmed root `master` had only the existing untracked
+  `.vscode/`, and scoped Step 344 to checkbox/radio/switch widgets before
+  slider/list/menu/icon/image/container primitive gaps.
+- RED extended `tests/ui/builtin_widget_test.cpp` and
+  `tests/architecture/widget_source_structure_test.cpp`. Focused RED failed as
+  expected because `checkbox(...)`, `radio(...)`, `toggle_switch(...)`,
+  `ToggleControlElement`, and the new focused widget/choice source files did
+  not exist.
+- GREEN added `ToggleBuilder` plus `checkbox(...)`, `radio(...)`, and
+  `toggle_switch(...)` in `include/cgpui/ui/toggle_builder.hpp` and
+  `src/ui/widgets/toggle_builder.cpp`; added `ToggleControlElement` in
+  `include/cgpui/ui/element_choice_nodes.hpp`; and split choice behavior,
+  layout, and paint across `src/ui/element_choice_nodes.cpp`,
+  `src/ui/element_choice_layout.cpp`, and `src/ui/element_choice_paint.cpp`.
+- Added minimal accessibility state support for this widget slice:
+  `AccessibilityRole::checkbox`, `radio`, and `switch_control`,
+  `AccessibilityNode::value`, platform role mapping for checkbox/radio/switch,
+  and text-input value preservation through `TextInputElement`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` passed 2/2.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `gpui_parity_ledger_test`,
+  `public_authoring_vocabulary_freeze_test`, and
+  `phase_c_focusable_interactable_audit_test` so Step 344 evidence is required
+  and the ledger handoff moves to Phase C Step 345 slider widget.
+- Focused documentation/API/widget verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 5/5.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default element_test/default
+  window_runtime_text_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default core_header_cleanliness/default
+  public_authoring_surface_test/default
+  public_authoring_vocabulary_freeze_test/default
+  gpui_parity_ledger_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 11/11.
+- Final feature-worktree verification passed: `git diff --check` exited 0 with
+  only expected LF-to-CRLF normalization warnings, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  103/103, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 100/100.

@@ -98,6 +98,10 @@ int main() {
       "`label(...)`",
       "`text_input(...)`",
       "`TextModel`",
+      "`checkbox(...)`",
+      "`radio(...)`",
+      "`toggle_switch(...)`",
+      "`ToggleBuilder`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {

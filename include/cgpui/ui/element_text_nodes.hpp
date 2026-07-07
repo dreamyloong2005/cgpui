@@ -100,6 +100,10 @@ class TextInputElement : public TextElement {
     return AccessibilityRole::text_input;
   }
 
+  [[nodiscard]] std::string accessibility_value() const override {
+    return std::string(text());
+  }
+
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
       const ElementEventContext& context) override {

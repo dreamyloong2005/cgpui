@@ -89,10 +89,16 @@ dialog helpers. Production-depth native platform behavior remains later work.
 - `label(...)`
 - `text_input(...)`
 - `TextModel`
+- `checkbox(...)`
+- `radio(...)`
+- `toggle_switch(...)`
+- `ToggleBuilder`
 
 Phase C Step 343 starts the built-in widget surface with button, label, and
-text-input builder spelling. Widget implementation bodies live under focused
-`src/ui/widgets/*` sources rather than broad UI entry files.
+text-input builder spelling. Phase C Step 344 adds checkbox, radio, and switch
+builder spelling with checked/selected/on state metadata. Widget implementation
+bodies live under focused `src/ui/widgets/*` sources rather than broad UI entry
+files.
 
 ## Out of scope for this freeze
 

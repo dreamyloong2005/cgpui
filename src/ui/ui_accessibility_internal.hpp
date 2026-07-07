@@ -21,6 +21,12 @@ inline PlatformAccessibilityRole platform_accessibility_role(
       return PlatformAccessibilityRole::text;
     case AccessibilityRole::text_input:
       return PlatformAccessibilityRole::text_input;
+    case AccessibilityRole::checkbox:
+      return PlatformAccessibilityRole::checkbox;
+    case AccessibilityRole::radio:
+      return PlatformAccessibilityRole::radio;
+    case AccessibilityRole::switch_control:
+      return PlatformAccessibilityRole::switch_control;
     case AccessibilityRole::generic:
       return PlatformAccessibilityRole::generic;
   }
@@ -48,8 +54,7 @@ inline PlatformAccessibilityTreeUpdate platform_accessibility_update_from(
         .role = platform_accessibility_role(node.role),
         .name = node.name,
         .text = node.text,
-        .value = node.role == AccessibilityRole::text_input ? node.text
-                                                            : std::string{},
+        .value = node.value,
         .enabled = node.enabled,
         .focusable = node.focusable,
         .focused = node.focused,
