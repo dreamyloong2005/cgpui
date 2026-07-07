@@ -6117,3 +6117,14 @@
   be Step 341 disabled interaction semantics, leaving broad widget behavior,
   runtime theme switching, and broad resolved-style layout/paint rewrites out
   unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 340 Merge
+
+- Step 340 is merged on `master` at
+  `2edda1a feat: add keyboard activation semantics` and post-merge verified
+  with JSON validation, Windows debug config, Windows full debug 100/100, WSL
+  Arch Linux debug config, and WSL Arch Linux full debug 97/97.
+- Step 341 should stay focused on disabled interaction semantics in the
+  focusable/interactable band. Keep broad widget behavior, runtime theme
+  switching, and broad resolved-style layout/paint rewrites out unless that
+  slice explicitly owns them.

@@ -13167,3 +13167,18 @@
 - Feature-worktree WSL Arch Linux full debug verification passed:
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+
+## 2026-07-07 Phase C Step 340 Merge
+
+- Committed `codex/phase-c-keyboard-activation` as
+  `2edda1a feat: add keyboard activation semantics`.
+- Fast-forward merged the branch into `master` at `2edda1a`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge Windows:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 100/100.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 97/97.
+- Step 340 is complete on `master`; Step 341 disabled interaction semantics is
+  the next Phase C focusable/interactable slice.

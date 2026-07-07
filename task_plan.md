@@ -2191,3 +2191,9 @@ implementation slice.
   ui_source_structure_test/default` 4/4. Step 341 disabled interaction
   semantics is the next focused Phase C focusable/interactable slice after
   Step 340 lands on `master`.
+
+- Phase C Step 340 is merged on `master` at
+  `2edda1a feat: add keyboard activation semantics` and post-merge verified
+  with JSON validation, Windows debug config, Windows full debug 100/100, WSL
+  Arch Linux debug config, and WSL Arch Linux full debug 97/97. Step 341
+  disabled interaction semantics is the next focused Phase C slice.
