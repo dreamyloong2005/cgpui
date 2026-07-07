@@ -146,8 +146,22 @@ int main() {
       !contains(ledger_json, "src/ui/element_slider_nodes.cpp") ||
       !contains(ledger_md, "PlatformAccessibilityRole::slider") ||
       !contains(ledger_json, "PlatformAccessibilityRole::slider") ||
+      !contains(ledger_md, "Phase C Step 346 list/menu widget follow-up") ||
+      !contains(ledger_json, "Phase C Step 346 list/menu widget follow-up") ||
+      !contains(ledger_md, "ItemBuilder") ||
+      !contains(ledger_json, "ItemBuilder") ||
+      !contains(ledger_md, "list_item(...)") ||
+      !contains(ledger_json, "list_item(...)") ||
+      !contains(ledger_md, "menu_item(...)") ||
+      !contains(ledger_json, "menu_item(...)") ||
+      !contains(ledger_md, "src/ui/widgets/item_builder.cpp") ||
+      !contains(ledger_json, "src/ui/widgets/item_builder.cpp") ||
+      !contains(ledger_md, "src/ui/element_item_nodes.cpp") ||
+      !contains(ledger_json, "src/ui/element_item_nodes.cpp") ||
+      !contains(ledger_md, "PlatformAccessibilityRole::list_item") ||
+      !contains(ledger_json, "PlatformAccessibilityRole::list_item") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 346 list/menu widget follow-up\"")) {
+                "\"next_step\": \"Phase C Step 347 icon/image widget follow-up\"")) {
     return 50;
   }
 

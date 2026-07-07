@@ -20,6 +20,8 @@ enum class PlatformAccessibilityRole {
   radio,
   switch_control,
   slider,
+  list_item,
+  menu_item,
 };
 
 struct PlatformAccessibilityNodeUpdate {

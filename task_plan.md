@@ -2304,5 +2304,23 @@ implementation slice.
   validation, `git diff --check`, Windows debug config, Windows full debug
   103/103 after a transient `clipboard_test/default` rerun, WSL Arch Linux
   debug config, and WSL Arch Linux full debug 100/100. Step 346 list/menu
-  widget follow-up is the next tracked Phase C slice; pause here per user
-  request.
+  widget follow-up is the next tracked Phase C slice.
+
+- Phase C Step 346, list/menu widget follow-up, is implemented in
+  `.worktrees/phase-c-list-menu-widgets`: `ItemBuilder`, `list_item(...)`,
+  `menu_item(...)`, and `ItemElement` expose focused item authoring through
+  public widget leaves and focused element implementation files. Public builder
+  bodies stay under `src/ui/widgets/item_builder.cpp`, while item behavior,
+  layout, and paint are split across `src/ui/element_item_nodes.cpp`,
+  `src/ui/element_item_layout.cpp`, and `src/ui/element_item_paint.cpp`.
+  Accessibility role mapping now includes list item and menu item roles, list
+  items report selected/unselected values, menu items remain action-only, and
+  disabled items ignore synthesized clicks. Focused Windows GREEN verification
+  passed `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` 2/2. The public vocabulary,
+  Markdown/JSON parity ledger, complete-replication roadmap, and audit guards
+  now move the handoff to Phase C Step 347 icon/image widget follow-up.
+  Feature-worktree verification passed JSON validation, `git diff --check`
+  with only expected LF-to-CRLF warnings, Windows debug config, Windows full
+  debug 103/103, WSL Arch Linux debug config, and WSL Arch Linux full debug
+  100/100.

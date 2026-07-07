@@ -255,6 +255,99 @@ int test_slider_widget_builder_paints_and_ignores_disabled_input() {
                                                                           : 62;
 }
 
+int test_list_item_widget_builder_tracks_selection_and_clicks() {
+  int click_count = 0;
+  std::string_view dispatched_action;
+  cgpui::AnyElement element =
+      cgpui::list_item("sidebar.inbox")
+          .label("Inbox")
+          .selected(true)
+          .on_click([&](const cgpui::ElementEventContext&) {
+            click_count += 1;
+            return cgpui::EventResult::unhandled();
+          })
+          .key("inbox-item")
+          .build();
+
+  auto* item = dynamic_cast<cgpui::ItemElement*>(element.get());
+  if (item == nullptr || item->kind() != cgpui::ItemKind::list_item ||
+      item->accessibility_role() != cgpui::AccessibilityRole::list_item ||
+      item->action_name() != "sidebar.inbox") {
+    return 70;
+  }
+  if (!item->selected() || item->accessibility_value() != "selected" ||
+      item->accessibility_name() != "Inbox") {
+    return 71;
+  }
+  if (!item->focusable() || !item->key().has_value() ||
+      item->key()->value != "inbox-item") {
+    return 72;
+  }
+
+  cgpui::ElementEventContext click_context{.target_element_id = item->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
+  click_context.dispatch_action = [&](std::string_view action) {
+    dispatched_action = action;
+    return cgpui::EventResult::consumed_event();
+  };
+  const cgpui::EventResult result = item->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 4.0F, .y = 4.0F}},
+      click_context);
+  if (click_count != 1 || dispatched_action != "sidebar.inbox" ||
+      !result.consumed || result.cancelled) {
+    return 73;
+  }
+  return item->selected() && item->accessibility_value() == "selected" ? 0
+                                                                       : 74;
+}
+
+int test_menu_item_widget_builder_paints_and_ignores_disabled_input() {
+  int click_count = 0;
+  cgpui::AnyElement element =
+      cgpui::menu_item("file.open")
+          .label("Open...")
+          .disabled()
+          .on_click([&](const cgpui::ElementEventContext&) {
+            click_count += 1;
+            return cgpui::EventResult::consumed_event();
+          })
+          .build();
+
+  auto* item = dynamic_cast<cgpui::ItemElement*>(element.get());
+  if (item == nullptr || item->kind() != cgpui::ItemKind::menu_item ||
+      item->accessibility_role() != cgpui::AccessibilityRole::menu_item ||
+      item->accessibility_name() != "Open...") {
+    return 80;
+  }
+  if (item->selected() || item->accessibility_value() != "" ||
+      item->enabled() || !item->focusable()) {
+    return 81;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 56.0F || output.size.height != 16.0F) {
+    return 82;
+  }
+  cgpui::PaintList paint_list;
+  item->paint(paint_list);
+  if (paint_list.commands().empty()) {
+    return 83;
+  }
+
+  cgpui::ElementEventContext click_context{.target_element_id = item->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
+  const cgpui::EventResult result = item->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 4.0F, .y = 4.0F}},
+      click_context);
+  return click_count == 0 && !result.consumed && !result.cancelled ? 0 : 84;
+}
+
 int test_text_input_widget_builder_keeps_text_model_boundary() {
   cgpui::TextModel model("typed");
   cgpui::AnyElement element =
@@ -302,6 +395,16 @@ int main() {
   }
   if (const int result =
           test_slider_widget_builder_paints_and_ignores_disabled_input();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_list_item_widget_builder_tracks_selection_and_clicks();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_menu_item_widget_builder_paints_and_ignores_disabled_input();
       result != 0) {
     return result;
   }

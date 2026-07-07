@@ -696,7 +696,13 @@ expect, keeping each widget in its own module from the first version.
   ownership, focused `SliderElement` element behavior split across
   `src/ui/element_slider_nodes.cpp`, `src/ui/element_slider_layout.cpp`, and
   `src/ui/element_slider_paint.cpp`, and accessibility role/value metadata for
-  the current slider value before list/menu widget work starts.
+  the current slider value. Step 346 adds list item and menu item widget
+  authoring through `ItemBuilder`, `list_item(...)`, `menu_item(...)`, focused
+  `src/ui/widgets/item_builder.cpp` ownership, focused `ItemElement` behavior
+  split across `src/ui/element_item_nodes.cpp`,
+  `src/ui/element_item_layout.cpp`, and `src/ui/element_item_paint.cpp`, and
+  accessibility role/value metadata for selected list items and menu actions
+  before icon/image and container primitive gaps.
 - [ ] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
   large-list recycling, and keyboard/pointer selection.
@@ -964,9 +970,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 346 continues built-in widget expansion from the frozen Phase B public authoring boundary
+Step 347 continues built-in widget expansion from the frozen Phase B public authoring boundary
 after the focused layout, style, focusable/interactable, and first widget
-bands from Steps 319-345. Step 319 landed the child-list foundation on `master` at
+bands from Steps 319-346. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -1035,8 +1041,13 @@ adds a focused slider widget through `SliderBuilder`, `slider(...)`,
 `SliderElement`, focused `src/ui/widgets/slider_builder.cpp`,
 `src/ui/element_slider_nodes.cpp`, `src/ui/element_slider_layout.cpp`, and
 `src/ui/element_slider_paint.cpp`, plus accessibility role/value metadata for
-the current slider value. Step 346 should continue with list item and menu item
-widgets before icon/image and container primitive gaps.
+the current slider value. Step 346 adds list item and menu item widgets through
+`ItemBuilder`, `list_item(...)`, `menu_item(...)`, `ItemElement`, focused
+`src/ui/widgets/item_builder.cpp`, `src/ui/element_item_nodes.cpp`,
+`src/ui/element_item_layout.cpp`, and `src/ui/element_item_paint.cpp`, plus
+accessibility role/value metadata for selected list items and menu actions.
+Step 347 should continue with icon/image widgets before container primitive
+gaps.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

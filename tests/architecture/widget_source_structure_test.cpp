@@ -56,11 +56,16 @@ int main() {
                 "#include \"cgpui/ui/slider_builder.hpp\"")) {
     return 2;
   }
+  if (!contains(widget_aggregate,
+                "#include \"cgpui/ui/item_builder.hpp\"")) {
+    return 2;
+  }
   if (line_count(widget_aggregate) > 20 ||
       contains(widget_aggregate, "class ButtonBuilder") ||
       contains(widget_aggregate, "class TextInputBuilder") ||
       contains(widget_aggregate, "class ToggleBuilder") ||
-      contains(widget_aggregate, "class SliderBuilder")) {
+      contains(widget_aggregate, "class SliderBuilder") ||
+      contains(widget_aggregate, "class ItemBuilder")) {
     return 3;
   }
 
@@ -74,12 +79,16 @@ int main() {
       read_source("include/cgpui/ui/toggle_builder.hpp");
   const std::string slider_header =
       read_source("include/cgpui/ui/slider_builder.hpp");
+  const std::string item_header =
+      read_source("include/cgpui/ui/item_builder.hpp");
   const std::string element_nodes_header =
       read_source("include/cgpui/ui/element_nodes.hpp");
   const std::string element_choice_header =
       read_source("include/cgpui/ui/element_choice_nodes.hpp");
   const std::string element_slider_header =
       read_source("include/cgpui/ui/element_slider_nodes.hpp");
+  const std::string element_item_header =
+      read_source("include/cgpui/ui/element_item_nodes.hpp");
   if (!contains(button_header, "ButtonBuilder label(std::string_view text)") ||
       !contains(button_header, "class ButtonBuilder") ||
       !contains(label_header, "class LabelBuilder") ||
@@ -90,12 +99,18 @@ int main() {
       !contains(toggle_header, "toggle_switch(std::string_view action_name)") ||
       !contains(slider_header, "class SliderBuilder") ||
       !contains(slider_header, "slider(std::string_view action_name)") ||
+      !contains(item_header, "class ItemBuilder") ||
+      !contains(item_header, "list_item(std::string_view action_name)") ||
+      !contains(item_header, "menu_item(std::string_view action_name)") ||
       !contains(element_nodes_header,
                 "#include \"cgpui/ui/element_choice_nodes.hpp\"") ||
       !contains(element_nodes_header,
                 "#include \"cgpui/ui/element_slider_nodes.hpp\"") ||
+      !contains(element_nodes_header,
+                "#include \"cgpui/ui/element_item_nodes.hpp\"") ||
       !contains(element_choice_header, "class ToggleControlElement") ||
-      !contains(element_slider_header, "class SliderElement")) {
+      !contains(element_slider_header, "class SliderElement") ||
+      !contains(element_item_header, "class ItemElement")) {
     return 4;
   }
 
@@ -109,6 +124,8 @@ int main() {
       read_source("src/ui/widgets/toggle_builder.cpp");
   const std::string widget_slider =
       read_source("src/ui/widgets/slider_builder.cpp");
+  const std::string widget_item =
+      read_source("src/ui/widgets/item_builder.cpp");
   const std::string element_choice =
       read_source("src/ui/element_choice_nodes.cpp");
   const std::string element_choice_layout =
@@ -121,12 +138,20 @@ int main() {
       read_source("src/ui/element_slider_layout.cpp");
   const std::string element_slider_paint =
       read_source("src/ui/element_slider_paint.cpp");
+  const std::string element_item =
+      read_source("src/ui/element_item_nodes.cpp");
+  const std::string element_item_layout =
+      read_source("src/ui/element_item_layout.cpp");
+  const std::string element_item_paint =
+      read_source("src/ui/element_item_paint.cpp");
   if (widget_button.empty() || widget_label.empty() ||
       widget_text_input.empty() || widget_toggle.empty() ||
       element_choice.empty() || element_choice_layout.empty() ||
       element_choice_paint.empty() || widget_slider.empty() ||
       element_slider.empty() || element_slider_layout.empty() ||
-      element_slider_paint.empty()) {
+      element_slider_paint.empty() || widget_item.empty() ||
+      element_item.empty() || element_item_layout.empty() ||
+      element_item_paint.empty()) {
     return 5;
   }
   if (!contains(widget_button, "ButtonBuilder::label(") ||
@@ -139,12 +164,18 @@ int main() {
       !contains(widget_toggle, "ToggleControlKind::toggle_switch") ||
       !contains(widget_slider, "SliderBuilder::range(") ||
       !contains(widget_slider, "SliderElement") ||
+      !contains(widget_item, "ItemBuilder::label(") ||
+      !contains(widget_item, "ItemKind::list_item") ||
+      !contains(widget_item, "ItemKind::menu_item") ||
       !contains(element_choice, "ToggleControlElement::accessibility_value()") ||
       !contains(element_choice_layout, "ToggleControlElement::layout(") ||
       !contains(element_choice_paint, "ToggleControlElement::paint(") ||
       !contains(element_slider, "SliderElement::accessibility_value()") ||
       !contains(element_slider_layout, "SliderElement::layout(") ||
-      !contains(element_slider_paint, "SliderElement::paint(")) {
+      !contains(element_slider_paint, "SliderElement::paint(") ||
+      !contains(element_item, "ItemElement::accessibility_value()") ||
+      !contains(element_item_layout, "ItemElement::layout(") ||
+      !contains(element_item_paint, "ItemElement::paint(")) {
     return 6;
   }
 
@@ -154,12 +185,14 @@ int main() {
       read_source("src/ui/text_input_builder.cpp");
   const std::string root_toggle = read_source("src/ui/toggle_builder.cpp");
   const std::string root_slider = read_source("src/ui/slider_builder.cpp");
+  const std::string root_item = read_source("src/ui/item_builder.cpp");
   if (contains(root_button, "ButtonBuilder::build()") ||
       contains(root_button, "ButtonBuilder::label(") ||
       contains(root_label, "LabelBuilder::build()") ||
       contains(root_text_input, "TextInputBuilder::build()") ||
       contains(root_toggle, "ToggleBuilder::build()") ||
-      contains(root_slider, "SliderBuilder::build()")) {
+      contains(root_slider, "SliderBuilder::build()") ||
+      contains(root_item, "ItemBuilder::build()")) {
     return 7;
   }
 
@@ -171,7 +204,11 @@ int main() {
       line_count(element_choice_paint) > 80 ||
       line_count(element_slider) > 180 ||
       line_count(element_slider_layout) > 80 ||
-      line_count(element_slider_paint) > 100) {
+      line_count(element_slider_paint) > 100 ||
+      line_count(widget_item) > 180 ||
+      line_count(element_item) > 180 ||
+      line_count(element_item_layout) > 80 ||
+      line_count(element_item_paint) > 100) {
     return 8;
   }
 

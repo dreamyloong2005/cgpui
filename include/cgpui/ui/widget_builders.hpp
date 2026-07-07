@@ -5,4 +5,5 @@
 #include "cgpui/ui/button_builder.hpp"
 #include "cgpui/ui/toggle_builder.hpp"
 #include "cgpui/ui/slider_builder.hpp"
+#include "cgpui/ui/item_builder.hpp"
 #include "cgpui/ui/scrollable_list_builder.hpp"

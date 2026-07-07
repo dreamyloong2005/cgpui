@@ -13484,4 +13484,50 @@
   `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
 - Step 345 is complete on `master`; Step 346 list/menu widget follow-up is
-  next, but paused here per user request.
+  next.
+
+## 2026-07-08 Phase C Step 346 List Menu Widgets
+
+- Continued existing `.worktrees/phase-c-list-menu-widgets` on
+  `codex/phase-c-list-menu-widgets`; after stashing the WIP, fast-forwarded
+  the branch to `367d0d4 docs: mark phase c step 345 merged`, then restored
+  the Step 346 changes and resolved planning-file conflicts by preserving the
+  Step 345 merge record plus the Step 346 implementation record.
+- Scoped Step 346 to list item and menu item widgets before icon/image widgets
+  and container primitive gaps.
+- RED extended `tests/ui/builtin_widget_test.cpp` and
+  `tests/architecture/widget_source_structure_test.cpp`. Focused RED failed as
+  expected because `cgpui::list_item`, `cgpui::menu_item`,
+  `cgpui::ItemElement`, and `cgpui::ItemKind` were missing.
+- GREEN added `ItemBuilder`, `list_item(...)`, and `menu_item(...)` in
+  `include/cgpui/ui/item_builder.hpp` and
+  `src/ui/widgets/item_builder.cpp`.
+- Added `ItemElement` in `include/cgpui/ui/element_item_nodes.hpp`, with
+  behavior, layout, and paint split across `src/ui/element_item_nodes.cpp`,
+  `src/ui/element_item_layout.cpp`, and `src/ui/element_item_paint.cpp`.
+- Added list/menu item accessibility role mapping through
+  `AccessibilityRole::list_item`, `AccessibilityRole::menu_item`,
+  `PlatformAccessibilityRole::list_item`, and
+  `PlatformAccessibilityRole::menu_item`.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default` passed 2/2.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `gpui_parity_ledger_test`,
+  `public_authoring_vocabulary_freeze_test`,
+  `phase_c_focusable_interactable_audit_test`, `task_plan.md`, and
+  `findings.md` so Step 346 evidence is required and the handoff moves to
+  Phase C Step 347 icon/image widget follow-up.
+- Focused documentation/API/widget verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . builtin_widget_test/default
+  widget_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 5/5.
+- `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.

@@ -104,6 +104,9 @@ int main() {
       "`ToggleBuilder`",
       "`slider(...)`",
       "`SliderBuilder`",
+      "`list_item(...)`",
+      "`menu_item(...)`",
+      "`ItemBuilder`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {

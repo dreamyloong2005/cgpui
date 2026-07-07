@@ -29,6 +29,10 @@ inline PlatformAccessibilityRole platform_accessibility_role(
       return PlatformAccessibilityRole::switch_control;
     case AccessibilityRole::slider:
       return PlatformAccessibilityRole::slider;
+    case AccessibilityRole::list_item:
+      return PlatformAccessibilityRole::list_item;
+    case AccessibilityRole::menu_item:
+      return PlatformAccessibilityRole::menu_item;
     case AccessibilityRole::generic:
       return PlatformAccessibilityRole::generic;
   }

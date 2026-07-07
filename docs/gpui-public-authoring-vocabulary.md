@@ -95,11 +95,16 @@ dialog helpers. Production-depth native platform behavior remains later work.
 - `ToggleBuilder`
 - `slider(...)`
 - `SliderBuilder`
+- `list_item(...)`
+- `menu_item(...)`
+- `ItemBuilder`
 
 Phase C Step 343 starts the built-in widget surface with button, label, and
 text-input builder spelling. Phase C Step 344 adds checkbox, radio, and switch
 builder spelling with checked/selected/on state metadata. Phase C Step 345 adds
 slider builder spelling with range, value, step, and change-handler metadata.
+Phase C Step 346 adds list item and menu item builder spelling with focused
+item element action, selection, disabled, and accessibility metadata.
 Widget implementation bodies live under focused `src/ui/widgets/*` sources
 rather than broad UI entry files.
 

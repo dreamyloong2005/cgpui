@@ -49,6 +49,8 @@ enum class AccessibilityRole {
   radio,
   switch_control,
   slider,
+  list_item,
+  menu_item,
 };
 
 struct AccessibilitySnapshotOptions {

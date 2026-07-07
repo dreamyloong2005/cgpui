@@ -6294,4 +6294,28 @@
   Focused `clipboard_test/default`, the shortened reproduction sequence, and a
   later full Windows suite all passed, so this was recorded as transient
   validation noise rather than a Step 345 regression.
-- Stop here before Step 346 per the user request.
+
+## 2026-07-08 Phase C Step 346 List Menu Widgets
+
+- Step 346 stays scoped to list item and menu item widgets in the built-in
+  widget band. It should not add icon/image widgets, container primitives,
+  runtime theme switching, broad resolved-style layout/paint rewrites,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- Durable public widget ownership is `include/cgpui/ui/item_builder.hpp` plus
+  `src/ui/widgets/item_builder.cpp`, matching the Step 343-345
+  `src/ui/widgets/*` builder boundary. Aggregate headers stay thin and only
+  include the new leaf.
+- Durable element ownership is a focused item element leaf:
+  `include/cgpui/ui/element_item_nodes.hpp`, with behavior in
+  `src/ui/element_item_nodes.cpp`, layout in
+  `src/ui/element_item_layout.cpp`, and paint in
+  `src/ui/element_item_paint.cpp`. The structure test keeps these files inside
+  local line-count caps and prevents broad `src/ui/*` widget dumping.
+- The smallest accessibility extension for this slice is list/menu role plus
+  string value metadata: `AccessibilityRole::list_item`,
+  `AccessibilityRole::menu_item`, `PlatformAccessibilityRole::list_item`, and
+  `PlatformAccessibilityRole::menu_item`. List items report selected or
+  unselected values; menu items are action-only and report no selection value.
+- Step 347 should continue the built-in widget band with icon/image widgets
+  before container primitive gaps.
