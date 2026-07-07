@@ -58,6 +58,10 @@ struct ViewInputState {
   std::optional<ElementId> keyboard_focus_element_owner;
   std::optional<ElementId> hovered_element_id;
   std::optional<ElementId> active_element_id;
+  std::optional<ElementId> pointer_down_element_id;
+  std::optional<ElementId> clicked_element_id;
+  std::optional<ElementId> dragging_element_id;
+  bool dragging = false;
   CursorShape cursor_shape = CursorShape::default_arrow;
   Point pointer_position{};
 };

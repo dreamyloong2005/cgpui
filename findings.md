@@ -6046,3 +6046,34 @@
   click/drag gesture synthesis. Keep keyboard activation, broad widget
   behavior, runtime theme switching, and broad resolved-style layout/paint
   rewrites out unless that slice explicitly owns them.
+
+## 2026-07-07 Phase C Step 339 Click Drag Gesture Synthesis
+
+- Step 339 should stay scoped to mouse gesture synthesis for existing
+  element handlers. It should make `on_click(...)` run from a synthesized
+  click after left press/release over the same enabled routed element, not
+  from raw pointer-down alone.
+- Drag gesture state can be represented as runtime input metadata while the
+  left press is active: a pointer move after a valid press marks the pressed
+  element as dragging and suppresses the later click. This slice should not
+  add OS drag/drop payload behavior, widget-specific drag APIs, keyboard
+  activation, or broad widget behavior.
+- Durable ownership should be a focused private
+  `src/ui/runtime_gesture_synthesis.hpp` / `.cpp` helper pair. The broad
+  input router should keep pointer-position, hover, cursor, and route
+  resolution only; route dispatch should call the helper instead of owning
+  gesture-state details.
+- Final Step 339 ownership keeps the public event signal minimal:
+  `ElementGestureKind::click` plus `ElementEventContext::gesture` identify
+  synthesized clicks, while `ViewInputState` exposes pointer-down, clicked,
+  dragging element id, and dragging boolean metadata for runtime/test
+  observability. `runtime_active_state.cpp` computes the enabled routed target
+  and delegates gesture-state transitions to `runtime_gesture_synthesis.cpp`.
+- Runtime route dispatch should only synthesize click after raw routed element
+  handlers decline a left-button release. A pointer move while the left press
+  is active marks dragging and suppresses the later click. Raw pointer press
+  and release alone should not invoke `on_click(...)`.
+- Step 340 should continue the focusable/interactable band with keyboard
+  activation semantics. Keep OS drag/drop payload behavior, widget-specific
+  drag APIs, broad widget behavior, runtime theme switching, and broad
+  resolved-style layout/paint rewrites out unless that future slice owns them.

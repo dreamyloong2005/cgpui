@@ -1339,6 +1339,7 @@ int main() {
       "src/ui/runtime_focus.cpp",
       "src/ui/runtime_focus_order.cpp",
       "src/ui/runtime_style_invalidation.cpp",
+      "src/ui/runtime_gesture_synthesis.cpp",
       "src/ui/runtime_key_bindings.cpp",
       "src/ui/runtime_key_binding_sequences.cpp",
       "src/ui/runtime_windows.cpp",
@@ -1949,6 +1950,10 @@ int main() {
 
   const std::string runtime_event_route_dispatch_source =
       read_source("src/ui/runtime_event_route_dispatch.cpp");
+  const std::string runtime_gesture_synthesis_header =
+      read_source("src/ui/runtime_gesture_synthesis.hpp");
+  const std::string runtime_gesture_synthesis_source =
+      read_source("src/ui/runtime_gesture_synthesis.cpp");
   if (line_count(runtime_event_route_dispatch_source) > 90 ||
       !contains(runtime_event_route_dispatch_source,
                 "WindowRuntime::action_dispatch_view_id(") ||
@@ -1959,6 +1964,16 @@ int main() {
       contains(runtime_event_route_dispatch_source,
                "std::vector<ElementId> WindowRuntime::element_ancestry_for(")) {
     return 82;
+  }
+  if (runtime_gesture_synthesis_header.empty() ||
+      line_count(runtime_gesture_synthesis_source) > 120 ||
+      !contains(runtime_gesture_synthesis_source,
+                "synthesize_pointer_gesture_state(") ||
+      !contains(runtime_gesture_synthesis_source,
+                "dispatch_synthesized_click_event(") ||
+      contains(runtime_event_input_source, "clicked_element_id") ||
+      contains(runtime_event_route_dispatch_source, "clicked_element_id")) {
+    return 148;
   }
 
   const std::string runtime_context_source =

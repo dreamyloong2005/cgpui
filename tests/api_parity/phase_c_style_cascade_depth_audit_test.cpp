@@ -65,7 +65,9 @@ int main() {
       !contains(roadmap,
                 "Step 338 adds tab-order/focus-ring metadata") ||
       !contains(roadmap,
-                "Step 339 should continue the band") ||
+                "Step 339 adds focused click/drag gesture synthesis") ||
+      !contains(roadmap,
+                "Step 340 should continue the band") ||
       !contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;

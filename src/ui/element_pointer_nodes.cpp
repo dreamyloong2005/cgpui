@@ -56,8 +56,7 @@ EventResult ClickElement::handle_event(
   if (!enabled()) {
     return EventResult::unhandled();
   }
-  if (const auto* pointer_button = std::get_if<PointerButton>(&event);
-      pointer_button != nullptr && pointer_button->pressed && handler_) {
+  if (context.gesture == ElementGestureKind::click && handler_) {
     return handler_(context);
   }
   return child_ == nullptr || !child_->enabled()
@@ -121,6 +120,12 @@ EventResult PointerElement::handle_event(
     const ElementEventContext& context) {
   if (!enabled()) {
     return EventResult::unhandled();
+  }
+
+  if (context.gesture == ElementGestureKind::click) {
+    return child_ == nullptr || !child_->enabled()
+               ? EventResult::unhandled()
+               : child_->handle_event(event, context);
   }
 
   if (const auto* pointer_button = std::get_if<PointerButton>(&event);

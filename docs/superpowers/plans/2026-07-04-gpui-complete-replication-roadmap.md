@@ -645,9 +645,15 @@ expect, keeping each widget in its own module from the first version.
   tab-order/focus-ring metadata through `FocusMetadata`,
   `ElementBuilder::tab_index(...)`, `ElementBuilder::focus_ring(...)`,
   accessibility metadata reporting, and `src/ui/runtime_focus_order.cpp`
-  traversal ordering. Step 339 should continue the band with click/drag
-  gesture synthesis while leaving keyboard activation, broad widget behavior,
-  runtime theme switching, and broad resolved-style layout/paint rewrites out.
+  traversal ordering. Step 339 adds focused click/drag gesture synthesis:
+  `ElementGestureKind::click` and `ElementEventContext::gesture` distinguish
+  synthesized clicks from raw pointer events, `ViewInputState` records
+  pointer-down/click/drag gesture metadata, `src/ui/runtime_gesture_synthesis.cpp`
+  owns synthesis and dispatch helpers, runtime pointer moves suppress the later
+  click as dragging, and `ClickElement` / `ButtonElement` run click handlers
+  only for synthesized click gestures. Step 340 should continue the band with
+  keyboard activation semantics while leaving broad widget behavior, runtime
+  theme switching, and broad resolved-style layout/paint rewrites out.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
@@ -971,8 +977,10 @@ focusable/interactable semantics band with pointer-active input behavior while
 leaving broad style cascade behavior and broad resolved-style layout/paint
 rewrites closed. Step 338 adds tab-order/focus-ring metadata through
 `FocusMetadata`, `ElementBuilder::tab_index(...)`, accessibility metadata, and
-`src/ui/runtime_focus_order.cpp`. Step 339 should continue the band with
-click/drag gesture synthesis.
+`src/ui/runtime_focus_order.cpp`. Step 339 adds focused click/drag gesture
+synthesis through `ElementGestureKind::click`, runtime gesture state, and
+`src/ui/runtime_gesture_synthesis.cpp`. Step 340 should continue the band with
+keyboard activation semantics.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

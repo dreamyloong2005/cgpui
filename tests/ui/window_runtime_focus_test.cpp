@@ -11,6 +11,10 @@ void dispatch_click_focus_sequence() {
       .button = cgpui::MouseButton::left,
       .pressed = true,
       .position = {5.0F, 5.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .position = {5.0F, 5.0F}});
   callback(cgpui::KeyboardKey{
       .key_code = 65,
       .action = cgpui::KeyAction::pressed});

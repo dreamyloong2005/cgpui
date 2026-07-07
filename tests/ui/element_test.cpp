@@ -4395,12 +4395,15 @@ int test_element_builder_disabled_helper_composes_with_wrappers() {
           .disabled()
           .build();
 
+  cgpui::ElementEventContext click_context{
+      .target_element_id = element->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
   const cgpui::EventResult result = element->handle_event(
       cgpui::PointerButton{
           .button = cgpui::MouseButton::left,
-          .pressed = true,
+          .pressed = false,
           .position = {.x = 1.0F, .y = 2.0F}},
-      cgpui::ElementEventContext{.target_element_id = element->id()});
+      click_context);
 
   if (element->enabled()) {
     return 180;
@@ -4473,17 +4476,34 @@ int test_element_builder_focusable_helper_composes_with_click_handler() {
     return 170;
   }
 
-  const cgpui::EventResult result = element->handle_event(
+  const cgpui::EventResult press_result = element->handle_event(
       cgpui::PointerButton{
           .button = cgpui::MouseButton::left,
           .pressed = true,
           .position = {.x = 1.0F, .y = 2.0F}},
       cgpui::ElementEventContext{.target_element_id = element->id()});
 
-  if (click_count != 1) {
+  if (click_count != 0) {
     return 171;
   }
-  return result.consumed && !result.cancelled ? 0 : 172;
+
+  cgpui::ElementEventContext click_context{
+      .target_element_id = element->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
+  const cgpui::EventResult click_result = element->handle_event(
+      cgpui::PointerButton{
+          .button = cgpui::MouseButton::left,
+          .pressed = false,
+          .position = {.x = 1.0F, .y = 2.0F}},
+      click_context);
+
+  if (click_count != 1) {
+    return 172;
+  }
+  if (press_result.consumed || press_result.cancelled) {
+    return 173;
+  }
+  return click_result.consumed && !click_result.cancelled ? 0 : 174;
 }
 
 int test_element_builder_key_handler_runs_on_keyboard_event() {
@@ -4550,7 +4570,7 @@ int test_element_builder_key_handler_respects_disabled_state() {
   return !result.consumed && !result.cancelled ? 0 : 178;
 }
 
-int test_element_builder_click_handler_runs_on_pointer_press() {
+int test_element_builder_click_handler_runs_on_synthesized_click() {
   int click_count = 0;
   cgpui::ElementId clicked_element_id{};
   std::unique_ptr<cgpui::Element> element =
@@ -4569,20 +4589,23 @@ int test_element_builder_click_handler_runs_on_pointer_press() {
           .pressed = true,
           .position = {.x = 1.0F, .y = 2.0F}},
       cgpui::ElementEventContext{.target_element_id = element->id()});
+  cgpui::ElementEventContext click_context{
+      .target_element_id = element->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
   const cgpui::EventResult release_result = element->handle_event(
       cgpui::PointerButton{
           .button = cgpui::MouseButton::left,
           .pressed = false,
           .position = {.x = 1.0F, .y = 2.0F}},
-      cgpui::ElementEventContext{.target_element_id = element->id()});
+      click_context);
 
   if (click_count != 1 || clicked_element_id != cgpui::ElementId{35}) {
     return 160;
   }
-  if (!press_result.consumed || press_result.cancelled) {
+  if (press_result.consumed || press_result.cancelled) {
     return 161;
   }
-  return !release_result.consumed && !release_result.cancelled ? 0 : 162;
+  return release_result.consumed && !release_result.cancelled ? 0 : 162;
 }
 
 int test_element_builder_click_handler_respects_disabled_state() {
@@ -4664,12 +4687,15 @@ int test_button_widget_composes_click_focus_disabled_and_style_state() {
     return 343;
   }
 
+  cgpui::ElementEventContext click_context{
+      .target_element_id = button->id()};
+  click_context.gesture = cgpui::ElementGestureKind::click;
   const cgpui::EventResult result = button->handle_event(
       cgpui::PointerButton{
           .button = cgpui::MouseButton::left,
-          .pressed = true,
+          .pressed = false,
           .position = {.x = 1.0F, .y = 2.0F}},
-      cgpui::ElementEventContext{.target_element_id = button->id()});
+      click_context);
   if (click_count != 39 || result.consumed || result.cancelled) {
     return 344;
   }
@@ -4678,9 +4704,9 @@ int test_button_widget_composes_click_focus_disabled_and_style_state() {
   const cgpui::EventResult disabled_result = button->handle_event(
       cgpui::PointerButton{
           .button = cgpui::MouseButton::left,
-          .pressed = true,
+          .pressed = false,
           .position = {.x = 1.0F, .y = 2.0F}},
-      cgpui::ElementEventContext{.target_element_id = button->id()});
+      click_context);
   if (click_count != 39 || disabled_result.consumed ||
       disabled_result.cancelled) {
     return 345;
@@ -5765,7 +5791,7 @@ int main() {
     return result;
   }
   if (const int result =
-          test_element_builder_click_handler_runs_on_pointer_press();
+          test_element_builder_click_handler_runs_on_synthesized_click();
       result != 0) {
     return result;
   }

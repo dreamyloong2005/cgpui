@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_gesture_synthesis.hpp"
 
 namespace cgpui {
 
@@ -60,6 +61,16 @@ EventResult WindowRuntime::dispatch_routed_element_event(
     if (result.consumed || result.cancelled) {
       return result;
     }
+  }
+
+  if (should_dispatch_synthesized_click_event(input_, event, route)) {
+    return dispatch_synthesized_click_event(
+        event,
+        route,
+        context,
+        [this](ElementId element_id) {
+          return routed_element(element_id);
+        });
   }
 
   return EventResult::unhandled();

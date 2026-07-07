@@ -98,9 +98,15 @@ struct EventResult {
   }
 };
 
+enum class ElementGestureKind {
+  none,
+  click,
+};
+
 struct ElementEventContext {
   ElementId target_element_id;
   std::function<EventResult(std::string_view)> dispatch_action;
+  ElementGestureKind gesture = ElementGestureKind::none;
 };
 
 struct ElementFocusContext {

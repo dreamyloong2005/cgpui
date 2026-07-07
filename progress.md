@@ -13069,3 +13069,48 @@
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
 - Step 338 is complete on `master`; Step 339 click/drag gesture synthesis is
   the next Phase C focusable/interactable slice.
+
+## 2026-07-07 Phase C Step 339 Click Drag Gesture Synthesis
+
+- Created `.worktrees/phase-c-click-drag-gestures` on
+  `codex/phase-c-click-drag-gestures` from
+  `e79ef3e docs: mark phase c step 338 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files catchup helper at the `.codex`
+  skill path, and confirmed the root tracked tree had no diff before the
+  slice started.
+- RED added runtime input coverage for click synthesis on left-button release
+  over the pressed element, no click after a drag gesture, and observable
+  pointer-down/click/drag gesture state in `ViewInputState`. RED structure
+  coverage requires focused `src/ui/runtime_gesture_synthesis.hpp` / `.cpp`
+  ownership and keeps the broad input/route-dispatch files from owning
+  `clicked_element_id` directly.
+- Focused RED failed as expected:
+  `xmake test -y -P . window_runtime_input_test/default
+  ui_source_structure_test/default` failed to compile because
+  `ElementGestureKind`, `ElementEventContext::gesture`, and the new
+  `ViewInputState` gesture fields do not exist yet.
+- GREEN added `ElementGestureKind::click`, `ElementEventContext::gesture`,
+  `ViewInputState` pointer-down/click/drag metadata, and focused
+  `src/ui/runtime_gesture_synthesis.hpp` / `.cpp` ownership. Runtime active
+  state updates now feed gesture synthesis, routed element dispatch sends a
+  synthesized click after raw release handlers decline the event, and
+  `ClickElement` / `ButtonElement` only run click handlers for synthesized
+  click gestures.
+- Fixed the stale `element_test` focusable-click expectation so raw pointer
+  press stays unhandled and only an explicit synthesized click context invokes
+  the click handler.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . element_test/default window_runtime_input_test/default
+  ui_source_structure_test/default` passed 3/3.
+- Updated the Markdown/JSON parity ledger, the ledger guard, and the complete
+  replication roadmap with Step 339 click/drag gesture synthesis evidence.
+  The next tracked focusable/interactable slice is Step 340 keyboard activation
+  semantics.
+- Feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, focused public/ledger/structure gates passed 8/8, Windows
+  `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
+  100/100, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
+  0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 97/97.
