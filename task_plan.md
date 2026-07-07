@@ -2374,3 +2374,23 @@ implementation slice.
   missing `cgpui::h_stack`. The public vocabulary, Markdown/JSON parity ledger,
   complete-replication roadmap, and audit guards now move the handoff to Phase
   C Step 349 uniform list parity.
+
+- Phase C Step 349, uniform list parity, is implemented in
+  `.worktrees/phase-c-uniform-list-identity`: `UniformListVisibleRange`,
+  `UniformListItemIdentity`, `UniformListLayoutSnapshot`, and
+  `calculate_uniform_list_visible_range(...)` live in the focused public leaf
+  `include/cgpui/ui/uniform_list.hpp`, with non-template bodies in
+  `src/ui/uniform_list.cpp`. `ScrollableListElement::layout(...)` moved out
+  of `element_scroll_nodes.hpp` into `src/ui/element_scroll_layout.cpp` and
+  now records keyed content-local item identity plus a visible range snapshot
+  before applying scroll offsets. Focused Windows GREEN verification passed
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default` 3/3 after the expected RED failure for
+  missing the uniform-list snapshot API. Focused documentation/API
+  verification passed JSON validation and `scroll_test/default`,
+  `element_test/default`, `ui_source_structure_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`, and
+  `phase_c_focusable_interactable_audit_test/default` 6/6. The public
+  vocabulary, Markdown/JSON parity ledger, complete-replication roadmap, and
+  audit guards now move the handoff to Phase C Step 350 scroll anchoring.

@@ -78,6 +78,7 @@ int main() {
       "include/cgpui/ui/element_focus_nodes.hpp",
       "include/cgpui/ui/element_button_nodes.hpp",
       "include/cgpui/ui/element_interaction_nodes.hpp",
+      "include/cgpui/ui/uniform_list.hpp",
       "include/cgpui/ui/element_scroll_nodes.hpp",
       "include/cgpui/ui/element_nodes.hpp",
       "include/cgpui/ui/element_builder_core.hpp",
@@ -193,6 +194,7 @@ int main() {
       !contains(ui_header, "#include \"cgpui/ui/action.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/async_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/test_context.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/uniform_list.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/element_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
@@ -758,6 +760,8 @@ int main() {
       read_source("include/cgpui/ui/element_button_nodes.hpp");
   const std::string element_interaction_nodes_header =
       read_source("include/cgpui/ui/element_interaction_nodes.hpp");
+  const std::string uniform_list_header =
+      read_source("include/cgpui/ui/uniform_list.hpp");
   const std::string element_scroll_nodes_header =
       read_source("include/cgpui/ui/element_scroll_nodes.hpp");
   const std::string element_builders_header =
@@ -855,7 +859,15 @@ int main() {
                 "#include \"cgpui/ui/element_focus_nodes.hpp\"") ||
       !contains(element_interaction_nodes_header,
                 "#include \"cgpui/ui/element_button_nodes.hpp\"") ||
+      !contains(uniform_list_header, "struct UniformListVisibleRange") ||
+      !contains(uniform_list_header, "struct UniformListItemIdentity") ||
+      !contains(uniform_list_header, "struct UniformListLayoutSnapshot") ||
+      !contains(uniform_list_header,
+                "calculate_uniform_list_visible_range(") ||
       !contains(element_scroll_nodes_header, "class ScrollableListElement") ||
+      !contains(element_scroll_nodes_header,
+                "#include \"cgpui/ui/uniform_list.hpp\"") ||
+      !contains(element_scroll_nodes_header, "layout_snapshot() const") ||
       !contains(element_builder_core_header, "class ElementBuilder") ||
       !contains(element_builder_header,
                 "#include \"cgpui/ui/element_builder_core.hpp\"") ||
@@ -882,6 +894,7 @@ int main() {
   if (line_count(element_tree_header) > 220 ||
       line_count(element_containers_header) > 220 ||
       line_count(element_interaction_nodes_header) > 220 ||
+      line_count(uniform_list_header) > 120 ||
       line_count(element_builder_header) > 220 ||
       line_count(widget_builders_header) > 220 ||
       contains(element_tree_header, "ElementTree::state(ElementId id)") ||
@@ -918,6 +931,8 @@ int main() {
       "src/ui/element_vertical_stack_node.cpp",
       "src/ui/element_flex_node.cpp",
       "src/ui/element_flex_layout.cpp",
+      "src/ui/uniform_list.cpp",
+      "src/ui/element_scroll_layout.cpp",
       "src/ui/element_style_nodes.cpp",
       "src/ui/element_style_paint.cpp",
       "src/ui/element_button_paint.cpp",
@@ -936,8 +951,25 @@ int main() {
       line_count(read_source("src/ui/element_tree_reconcile.cpp")) > 140 ||
       line_count(read_source("src/ui/element_builder_build.cpp")) > 140 ||
       line_count(read_source("src/ui/element_flex_node.cpp")) > 120 ||
-      line_count(read_source("src/ui/element_flex_layout.cpp")) > 180) {
+      line_count(read_source("src/ui/element_flex_layout.cpp")) > 180 ||
+      line_count(read_source("src/ui/uniform_list.cpp")) > 120 ||
+      line_count(read_source("src/ui/element_scroll_layout.cpp")) > 140) {
     return 106;
+  }
+  const std::string uniform_list_source =
+      read_source("src/ui/uniform_list.cpp");
+  const std::string element_scroll_layout_source =
+      read_source("src/ui/element_scroll_layout.cpp");
+  if (!contains(uniform_list_source,
+                "UniformListVisibleRange::contains(") ||
+      !contains(uniform_list_source,
+                "calculate_uniform_list_visible_range(") ||
+      !contains(element_scroll_layout_source,
+                "ScrollableListElement::layout(") ||
+      !contains(element_scroll_layout_source, "layout_snapshot_") ||
+      contains(element_scroll_nodes_header,
+               "calculate_uniform_list_visible_range(")) {
+    return 150;
   }
   const std::string element_builder_layout_source =
       read_source("src/ui/element_builder_layout.cpp");

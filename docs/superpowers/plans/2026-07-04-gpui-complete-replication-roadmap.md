@@ -717,7 +717,9 @@ expect, keeping each widget in its own module from the first version.
   `tests/architecture/widget_source_structure_test.cpp`.
 - [ ] Steps 349-354: Implement uniform list parity: stable item identity,
   virtualized range calculation, scroll anchoring, item measurement cache,
-  large-list recycling, and keyboard/pointer selection.
+  large-list recycling, and keyboard/pointer selection. Step 349 starts this
+  band with stable item identity and the first virtualized visible-range
+  calculation boundary over the existing `scrollable_list` path.
 - [ ] Steps 355-360: Implement window/examples widgets for menu demos, shadow,
   window positioning, window shadow, and input examples using public APIs.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
@@ -982,9 +984,10 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 349 starts uniform list parity from the frozen Phase B public authoring
-boundary after the focused layout, style, focusable/interactable, and built-in
-widget bands from Steps 319-348. Step 319 landed the child-list foundation on `master` at
+Step 350 should continue uniform list parity with scroll anchoring from the
+frozen Phase B public authoring boundary after the focused layout, style,
+focusable/interactable, built-in widget, and Step 349 stable identity/range
+boundary from Steps 319-349. Step 319 landed the child-list foundation on `master` at
 The Phase B public authoring boundary remains the source of truth for this
 slice.
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
@@ -1068,9 +1071,11 @@ tint metadata over the existing image asset descriptor and paint command path.
 Step 348 closes the built-in widget band with focused container primitive
 free-function authoring through `include/cgpui/ui/container_builder.hpp`,
 `src/ui/widgets/container_builder.cpp`, and `div()`, `h_flex()`, `v_flex()`,
-`h_stack()`, and `v_stack()` public vocabulary. Step 349 should start uniform
-list parity with stable item identity and the first virtualized range
-calculation boundary before deeper scroll anchoring, measurement cache,
+`h_stack()`, and `v_stack()` public vocabulary. Step 349 starts uniform list
+parity with `UniformListVisibleRange`, `UniformListItemIdentity`,
+`UniformListLayoutSnapshot`, `calculate_uniform_list_visible_range(...)`, and
+`ScrollableListElement::layout_snapshot()` over the existing
+`scrollable_list` path before Step 350 scroll anchoring, measurement cache,
 large-list recycling, and keyboard/pointer selection slices.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,

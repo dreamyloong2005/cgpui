@@ -13682,3 +13682,62 @@
   `XMAKE_ROOT=y xmake test -P .` passed 100/100.
 - Step 348 is complete on `master`; Step 349 uniform list parity is the next
   Phase C slice.
+
+## 2026-07-08 Phase C Step 349 Uniform List Identity
+
+- Continued `.worktrees/phase-c-uniform-list-identity` on
+  `codex/phase-c-uniform-list-identity`; root `master` baseline is
+  `4bf8fd9 docs: mark phase c step 348 merged`.
+- Scoped Step 349 to uniform-list stable item identity and visible-range
+  calculation for the existing scrollable-list path, before scroll anchoring,
+  measurement caches, large-list recycling, and keyboard/pointer selection.
+- RED coverage had been added in `tests/ui/scroll_test.cpp`,
+  `tests/ui/element_test.cpp`, and
+  `tests/architecture/ui_source_structure_test.cpp`, failing as expected on
+  missing `UniformListLayoutSnapshot` and
+  `ScrollableListElement::layout_snapshot()`.
+- GREEN added `include/cgpui/ui/uniform_list.hpp` and
+  `src/ui/uniform_list.cpp` for `UniformListVisibleRange`,
+  `UniformListItemIdentity`, `UniformListLayoutSnapshot`, and
+  `calculate_uniform_list_visible_range(...)`.
+- GREEN moved `ScrollableListElement::layout(...)` out of
+  `include/cgpui/ui/element_scroll_nodes.hpp` into
+  `src/ui/element_scroll_layout.cpp`, preserving current scroll offset
+  behavior while recording content-local item bounds, element id, stable key,
+  item index, visibility flags, and visible range.
+- Updated the public authoring vocabulary, Markdown/JSON parity ledger,
+  complete-replication roadmap, `gpui_parity_ledger_test`,
+  `public_authoring_vocabulary_freeze_test`, and
+  `phase_c_focusable_interactable_audit_test` so Step 349 evidence is
+  required and the handoff moves to Phase C Step 350 scroll anchoring.
+- Focused verification passed before full gates:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `xmake test -y -P . scroll_test/default element_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_focusable_interactable_audit_test/default` passed 6/6.
+- Windows feature-worktree verification passed:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 103/103.
+- The first WSL Arch Linux full-test attempt after
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` failed during compilation before
+  tests ran because xmake could not copy
+  `runtime_command_palette_keys.cpp.o` into `.build_cache`, reporting
+  `Input/output error`. This is being retried with compiler cache disabled
+  instead of repeating the same cache-copy path.
+- The retry with `--ccache=n` avoided the cache-copy error but failed during
+  compilation with `No space left on device` while writing an object under the
+  worktree build directory. `df -h` showed WSL `/` and `/tmp` had ample space,
+  but `/mnt/d` had only about 144 KB free and this worktree's `build` directory
+  used about 2.5 GB, so the next retry should free or redirect generated build
+  output before running WSL full verification again.
+- Removed the current feature worktree `build` directory after resolving and
+  checking that the absolute path stayed inside
+  `D:\Dev\Projects\cgpui\.worktrees\phase-c-uniform-list-identity`.
+- A `/tmp` builddir retry exposed cwd-sensitive structure/example tests, so
+  the final WSL verification used a build directory under WSL home while
+  keeping the xmake test workdir pinned to the source tree.
+- WSL Arch Linux feature-worktree verification passed:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /home/dreamyloong/cgpui-phase-c-uniform-list-build -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-uniform-list-identity -P .`
+  passed 100/100.

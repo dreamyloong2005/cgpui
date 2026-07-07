@@ -5120,6 +5120,54 @@ int test_scrollable_list_container_keys_clip_and_scroll_offset() {
   return 0;
 }
 
+int test_scrollable_list_records_stable_identity_and_visible_range() {
+  cgpui::ScrollState state;
+  cgpui::AnyElement element =
+      cgpui::scrollable_list(state)
+          .size(50.0F, 25.0F)
+          .gap(2.0F)
+          .item("alpha", cgpui::div().size(50.0F, 10.0F))
+          .item("beta", cgpui::div().size(50.0F, 10.0F))
+          .item("gamma", cgpui::div().size(50.0F, 10.0F))
+          .item("delta", cgpui::div().size(50.0F, 10.0F))
+          .build();
+
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr) {
+    return 372;
+  }
+
+  (void)list->layout(cgpui::LayoutInput{});
+  state.set_offset(cgpui::Point{.x = 0.0F, .y = 13.0F});
+  (void)list->layout(cgpui::LayoutInput{});
+
+  const cgpui::UniformListLayoutSnapshot& snapshot =
+      list->layout_snapshot();
+  if (snapshot.items.size() != 4 ||
+      snapshot.visible_range.start_index != 1 ||
+      snapshot.visible_range.end_index != 4) {
+    return 373;
+  }
+  if (snapshot.items[0].key.value != "alpha" || snapshot.items[1].index != 1 ||
+      snapshot.items[1].key.value != "beta" ||
+      snapshot.items[3].key.value != "delta") {
+    return 374;
+  }
+  if (snapshot.items[0].visible || !snapshot.items[1].visible ||
+      !snapshot.items[2].visible || !snapshot.items[3].visible) {
+    return 375;
+  }
+  if (snapshot.items[1].content_bounds.origin.y != 12.0F ||
+      snapshot.items[3].content_bounds.origin.y != 36.0F ||
+      snapshot.items[3].content_bounds.size.height != 10.0F) {
+    return 376;
+  }
+
+  const std::optional<cgpui::Rect> beta_bounds =
+      list->content().children()[1]->layout_bounds();
+  return beta_bounds.has_value() && beta_bounds->origin.y == -1.0F ? 0 : 377;
+}
+
 int test_hidden_overflow_intersects_nested_scrollable_list_clip() {
   cgpui::ScrollState state;
   cgpui::AnyElement list =
@@ -5839,6 +5887,11 @@ int main() {
   }
   if (const int result =
           test_scrollable_list_container_keys_clip_and_scroll_offset();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_scrollable_list_records_stable_identity_and_visible_range();
       result != 0) {
     return result;
   }

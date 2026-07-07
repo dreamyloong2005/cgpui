@@ -54,7 +54,7 @@ Status meanings:
 | gpui key_context | `KeyBindingContext` for app/window/view/focused-element key binding activation | Required | context-aware key bindings exist without the full upstream key-context tree API | Phase B |
 | gpui keymap dispatch | `KeyBinding`, `KeyBindingChord`, `KeyBindingContext`, `parse_key_binding(...)`, `parse_key_binding(..., DesktopPlatformTarget)`, `Context<T>::bind_key("ctrl-shift-s", "action")`, `Context<T>::bind_key("ctrl-k ctrl-s", "action")`, `Context<T>::bind_key(..., KeyBindingContext)`, command-palette-owned key binding metadata, and action registry dispatch | Required | deterministic key binding plus GPUI-style chord grammar, platform modifier semantics, active context filtering, pending partial sequence matching, disabled key scope filtering, and command palette key integration exist; `secondary-*` maps to Ctrl on Windows/Linux and Super on macOS, while `platform-*` / `cmd-*` / `win-*` map to the platform key. Action macro payloads remain missing | Phase B |
 | gpui element styling | `Style`, `StyleOverlay`, builders | Required | many primitives exist, tailwind-style vocabulary incomplete | Phase C |
-| gpui uniform_list | `scrollable_list` skeleton | Required | stable items exist, virtualization incomplete | Phase C |
+| gpui uniform_list | `scrollable_list` plus `UniformListVisibleRange`, `UniformListItemIdentity`, `UniformListLayoutSnapshot`, `calculate_uniform_list_visible_range(...)`, and `ScrollableListElement::layout_snapshot()` | Required | stable item identity and first visible-range boundary exist; scroll anchoring, measurement cache, recycling, and list selection remain incomplete | Phase C Step 350 scroll anchoring |
 | gpui text system | `TextModel`, shaping, wrap, glyph records | Required | deterministic text depth exists, production shaping incomplete | Phase D |
 | gpui image assets | image paint/upload skeleton | Required | in-memory RGBA8 only | Phase G |
 | gpui SVG | no production SVG element/render path | Required | SVG is only tracked as future asset path | Phase C/G |
@@ -243,7 +243,19 @@ upstream example inventory includes:
   `include/cgpui/ui/widget_builders.hpp`, and focused coverage in
   `tests/ui/builtin_widget_test.cpp` plus
   `tests/architecture/widget_source_structure_test.cpp`.
-- Handoff: Phase C Step 349 uniform list parity is next.
+- Phase C Step 349 uniform list parity: `UniformListVisibleRange`,
+  `UniformListItemIdentity`, `UniformListLayoutSnapshot`,
+  `calculate_uniform_list_visible_range(...)`, and
+  `ScrollableListElement::layout_snapshot()` expose stable item identity and
+  the first virtualized visible-range boundary over the existing
+  `scrollable_list` path.
+- Uniform list source ownership evidence:
+  `include/cgpui/ui/uniform_list.hpp`, `src/ui/uniform_list.cpp`,
+  `include/cgpui/ui/element_scroll_nodes.hpp`,
+  `src/ui/element_scroll_layout.cpp`, `tests/ui/scroll_test.cpp`,
+  `tests/ui/element_test.cpp`, and
+  `tests/architecture/ui_source_structure_test.cpp`.
+- Handoff: Phase C Step 350 scroll anchoring is next.
 
 ## Phase A Closure
 

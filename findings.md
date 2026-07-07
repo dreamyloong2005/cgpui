@@ -6378,3 +6378,30 @@
   item identity and virtualized range calculation before scroll anchoring,
   measurement-cache, large-list recycling, and keyboard/pointer selection
   depth.
+
+## 2026-07-08 Phase C Step 349 Uniform List Identity
+
+- Step 349 stays scoped to uniform-list identity/range observability on the
+  existing `scrollable_list(...)` element. It should not add scroll anchoring,
+  measurement-cache invalidation, large-list item recycling, selection, or new
+  layout engines.
+- Durable public ownership is `include/cgpui/ui/uniform_list.hpp`; aggregate
+  exposure is through the existing thin `include/cgpui/ui/ui.hpp` include
+  edge. Non-template behavior lives in `src/ui/uniform_list.cpp`.
+- Durable scroll element ownership is `src/ui/element_scroll_layout.cpp` for
+  `ScrollableListElement::layout(...)` and
+  `ScrollableListElement::layout_snapshot()`. The broad
+  `element_scroll_nodes.hpp` header keeps declarations and storage only.
+- The snapshot records content-local bounds before scroll offsets are applied
+  to child layout bounds. This preserves current paint/hit-test behavior while
+  giving future anchoring/recycling slices stable keyed identity and visible
+  range data to consume.
+- Missing child keys use deterministic index-string fallback keys for the
+  snapshot only; this does not replace keyed reconciliation or create a broader
+  item recycling model.
+- The ledger `status_counts` field is not a simple count of `rows.status`
+  values, so Step 349 leaves it unchanged while adding the new required
+  `gpui uniform_list` row and explicit Step 350 handoff.
+- Step 350 should continue with focused scroll anchoring over the Step 349
+  snapshot boundary. Keep measurement caches, item recycling, and selection
+  behavior for later slices unless Step 350 explicitly owns them.

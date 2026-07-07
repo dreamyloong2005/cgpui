@@ -58,6 +58,7 @@ int main() {
       "Async, test, and Result vocabulary",
       "Platform service vocabulary",
       "Built-in widget vocabulary",
+      "Uniform list vocabulary",
       "Out of scope for this freeze",
       "Forbidden from public examples",
   };
@@ -115,6 +116,11 @@ int main() {
       "`v_flex()`",
       "`h_stack()`",
       "`v_stack()`",
+      "`UniformListVisibleRange`",
+      "`UniformListItemIdentity`",
+      "`UniformListLayoutSnapshot`",
+      "`calculate_uniform_list_visible_range(...)`",
+      "`ScrollableListElement::layout_snapshot()`",
   };
   for (std::size_t index = 0; index < frozen_terms.size(); ++index) {
     if (!contains(vocabulary, frozen_terms[index])) {
@@ -156,6 +162,7 @@ int main() {
       "cgpui/ui/key_binding.hpp",
       "cgpui/ui/render.hpp",
       "cgpui/ui/test_context.hpp",
+      "cgpui/ui/uniform_list.hpp",
       "cgpui/ui/view_context.hpp",
       "cgpui/ui/view_handle.hpp",
       "cgpui/ui/window_context.hpp",

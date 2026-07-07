@@ -121,6 +121,19 @@ focused container builder leaf.
 Widget implementation bodies live under focused `src/ui/widgets/*` sources
 rather than broad UI entry files.
 
+## Uniform list vocabulary
+
+- `UniformListVisibleRange`
+- `UniformListItemIdentity`
+- `UniformListLayoutSnapshot`
+- `calculate_uniform_list_visible_range(...)`
+- `ScrollableListElement::layout_snapshot()`
+
+Phase C Step 349 starts uniform list parity with stable item identity records
+and a virtualized visible-range calculation boundary. Scroll anchoring,
+measurement caching, large-list recycling, and keyboard/pointer list selection
+remain later Phase C slices.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

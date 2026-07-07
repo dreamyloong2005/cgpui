@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/element_containers.hpp"
 #include "cgpui/ui/scroll.hpp"
+#include "cgpui/ui/uniform_list.hpp"
 
 #include <memory>
 #include <optional>
@@ -124,49 +125,8 @@ class ScrollableListElement : public Element {
     return style_;
   }
 
-  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const LayoutOutput content_output =
-        content_.layout(LayoutInput{.scale = input.scale});
-    Size preferred = style_.preferred_size;
-    if (preferred.width == 0.0F) {
-      preferred.width = content_output.size.width;
-    }
-    if (preferred.height == 0.0F) {
-      preferred.height = content_output.size.height;
-    }
-
-    const LayoutOutput output{
-        .size = constrain_size(preferred, input.constraints),
-    };
-    set_layout_bounds(Rect{
-        .origin = output.origin,
-        .size = output.size,
-    });
-
-    Point offset;
-    if (state_ != nullptr) {
-      state_->set_viewport_size(output.size);
-      state_->set_content_size(content_output.size);
-      offset = state_->offset();
-    }
-
-    content_.set_layout_bounds(Rect{
-        .origin = {.x = -offset.x, .y = -offset.y},
-        .size = content_output.size,
-    });
-    for (const auto& child : content_.children()) {
-      if (const std::optional<Rect> bounds = child->layout_bounds();
-          bounds.has_value()) {
-        child->set_layout_bounds(Rect{
-            .origin = {.x = bounds->origin.x - offset.x,
-                       .y = bounds->origin.y - offset.y},
-            .size = bounds->size,
-        });
-      }
-    }
-
-    return output;
-  }
+  [[nodiscard]] const UniformListLayoutSnapshot& layout_snapshot() const;
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
 
   [[nodiscard]] ElementId hit_test(Point point) const override {
     return Element::hit_test(point);
@@ -195,6 +155,7 @@ class ScrollableListElement : public Element {
   ScrollState* state_ = nullptr;
   Style style_;
   mutable VerticalStackElement content_;
+  mutable UniformListLayoutSnapshot layout_snapshot_;
 };
 
 } // namespace cgpui

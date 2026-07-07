@@ -182,8 +182,24 @@ int main() {
       !contains(ledger_json, "src/ui/widgets/container_builder.cpp") ||
       !contains(ledger_md, "h_stack()") ||
       !contains(ledger_json, "h_stack()") ||
+      !contains(ledger_md, "Phase C Step 349 uniform list parity") ||
+      !contains(ledger_json, "Phase C Step 349 uniform list parity") ||
+      !contains(ledger_md, "UniformListVisibleRange") ||
+      !contains(ledger_json, "UniformListVisibleRange") ||
+      !contains(ledger_md, "UniformListItemIdentity") ||
+      !contains(ledger_json, "UniformListItemIdentity") ||
+      !contains(ledger_md, "UniformListLayoutSnapshot") ||
+      !contains(ledger_json, "UniformListLayoutSnapshot") ||
+      !contains(ledger_md, "calculate_uniform_list_visible_range") ||
+      !contains(ledger_json, "calculate_uniform_list_visible_range") ||
+      !contains(ledger_md, "ScrollableListElement::layout_snapshot") ||
+      !contains(ledger_json, "ScrollableListElement::layout_snapshot") ||
+      !contains(ledger_md, "src/ui/uniform_list.cpp") ||
+      !contains(ledger_json, "src/ui/uniform_list.cpp") ||
+      !contains(ledger_md, "src/ui/element_scroll_layout.cpp") ||
+      !contains(ledger_json, "src/ui/element_scroll_layout.cpp") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 349 uniform list parity\"")) {
+                "\"next_step\": \"Phase C Step 350 scroll anchoring\"")) {
     return 50;
   }
 

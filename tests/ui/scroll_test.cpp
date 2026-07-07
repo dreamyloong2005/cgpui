@@ -1,6 +1,8 @@
 #include "cgpui/ui/scroll.hpp"
+#include "cgpui/ui/uniform_list.hpp"
 
 #include <type_traits>
+#include <vector>
 
 namespace {
 
@@ -86,6 +88,66 @@ int test_scroll_state_alias_preserves_scroll_model_semantics() {
              : 11;
 }
 
+int test_uniform_list_visible_range_uses_stable_item_bounds() {
+  const std::vector<cgpui::UniformListItemIdentity> items{
+      {
+          .index = 0,
+          .key = cgpui::ElementKey{.value = "alpha"},
+          .element_id = cgpui::ElementId{10},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 0.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 1,
+          .key = cgpui::ElementKey{.value = "beta"},
+          .element_id = cgpui::ElementId{11},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 12.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 2,
+          .key = cgpui::ElementKey{.value = "gamma"},
+          .element_id = cgpui::ElementId{12},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 24.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+      {
+          .index = 3,
+          .key = cgpui::ElementKey{.value = "delta"},
+          .element_id = cgpui::ElementId{13},
+          .content_bounds =
+              cgpui::Rect{.origin = {.x = 0.0F, .y = 36.0F},
+                           .size = {.width = 60.0F, .height = 10.0F}},
+      },
+  };
+
+  const cgpui::UniformListVisibleRange range =
+      cgpui::calculate_uniform_list_visible_range(
+          items,
+          cgpui::Point{.x = 0.0F, .y = 13.0F},
+          cgpui::Size{.width = 60.0F, .height = 24.0F});
+  if (range.start_index != 1 || range.end_index != 4 || range.empty()) {
+    return 12;
+  }
+  if (!range.contains(1) || !range.contains(3) || range.contains(0) ||
+      range.contains(4)) {
+    return 13;
+  }
+
+  const cgpui::UniformListVisibleRange empty_range =
+      cgpui::calculate_uniform_list_visible_range(
+          items,
+          cgpui::Point{.x = 0.0F, .y = 100.0F},
+          cgpui::Size{.width = 60.0F, .height = 24.0F});
+  return empty_range.empty() && empty_range.start_index == 0 &&
+                 empty_range.end_index == 0
+             ? 0
+             : 14;
+}
+
 } // namespace
 
 int main() {
@@ -106,6 +168,10 @@ int main() {
     return result;
   }
   if (const int result = test_scroll_state_alias_preserves_scroll_model_semantics();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_uniform_list_visible_range_uses_stable_item_bounds();
       result != 0) {
     return result;
   }
