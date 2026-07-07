@@ -14391,3 +14391,24 @@
   cache `.build-wsl/phase-c-window-example-interaction-states` was 2.31GB.
   Clean that feature cache after Step 358 is merged and post-merge verification
   can use `.build-wsl/master`.
+
+## 2026-07-08 Phase C Step 358 Merge
+
+- Fast-forward merged `codex/phase-c-window-example-interaction-states` into
+  root `master` at
+  `a6dccb7 test: add phase c window interaction state example`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 108/108.
+- Verified post-merge WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  105/105.
+- Step 358 is complete on `master`; Step 359 window/examples widgets is the
+  next Phase C slice.
