@@ -71,7 +71,7 @@ int main() {
       !contains(roadmap,
                 "Step 341 adds disabled interaction semantics") ||
       !contains(roadmap,
-                "Step 342 should close the focusable/interactable semantics band") ||
+                "Step 342 closes the focusable/interactable band") ||
       !contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;

@@ -661,15 +661,18 @@ expect, keeping each widget in its own module from the first version.
   element-owned pointer capture, pointer-down, click, and drag state when the
   owning element becomes disabled or missing, restores the default cursor, and
   keeps broad widget behavior, runtime theme switching, and broad
-  resolved-style layout/paint rewrites out. Step 342 should close the
-  focusable/interactable band before built-in widget expansion starts.
+  resolved-style layout/paint rewrites out. Step 342 closes the focusable/interactable band through
+  `tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`, guarding
+  the Steps 337-341 evidence and the explicit Step 343 built-in widget
+  expansion handoff while keeping broad widget behavior, runtime theme
+  switching, and broad resolved-style layout/paint rewrites out.
 - [x] Steps 325-330: Complete layout behavior beyond the current primitives:
   min/max constraints, percentage-like sizing, margins, padding, gaps,
   absolute/fixed positioning, overlay layers, and nested scroll clipping.
 - [x] Steps 331-336: Add style cascade depth: pseudo/state selectors,
   class-like reuse, theme token fallback, inherited text style, and dynamic
   invalidation when style-affecting state changes.
-- [ ] Steps 337-342: Complete focusable/interactable element semantics:
+- [x] Steps 337-342: Complete focusable/interactable element semantics:
   hover, active, disabled, tab order, focus ring metadata, pointer capture,
   click/drag gestures, and keyboard activation.
 - [ ] Steps 343-348: Expand built-in widgets: button, label, text input,
@@ -942,9 +945,9 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 342 should close the focusable/interactable semantics band from the frozen
-Phase B public authoring boundary after the focused layout and style bands from
-Steps 319-341. Step 319 landed the child-list foundation on `master` at
+Step 343 starts built-in widget expansion from the frozen Phase B public authoring boundary
+after the focused layout, style, and focusable/interactable bands from
+Steps 319-342. Step 319 landed the child-list foundation on `master` at
 `14aaff0`; Step 320 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`
 at `694d64e`; Step 322 landed overflow/opacity/position helper aliases on
@@ -993,8 +996,12 @@ semantics through focused Enter/Space synthesized clicks and raw-key-handler
 first refusal. Step 341 adds disabled interaction semantics through
 `WindowRuntime::refresh_disabled_interaction_state()`, focused
 `src/ui/runtime_disabled_interaction.cpp` ownership, and stale interaction
-state cleanup for disabled or missing elements. Step 342 should close the
-focusable/interactable band.
+state cleanup for disabled or missing elements. Step 342 closes the focusable/interactable band through
+`tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`, guarding the
+Steps 337-341 evidence and the explicit Step 343 built-in widget expansion
+handoff. Step 343 starts built-in widget expansion with the existing button,
+label, text input, checkbox/radio/switch, slider, list item, menu item,
+icon/image, and container primitive gaps as the next Phase C surface.
 Keep the Phase B closeout exclusions out of this slice:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.

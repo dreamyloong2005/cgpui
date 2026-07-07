@@ -531,6 +531,9 @@ int main() {
               "WindowRuntime::refresh_disabled_interaction_state",
               "runtime_disabled_interaction.cpp",
               "test_runtime_clears_disabled_interaction_state",
+              "Phase C Step 342 focusable/interactable band closeout",
+              "phase_c_focusable_interactable_audit_test.cpp",
+              "Phase C Step 343 built-in widget expansion",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -1514,6 +1517,8 @@ int main() {
                 "target(\"public_phase_b_completion_audit_test\")") ||
       !contains(xmake,
                 "target(\"phase_c_style_cascade_depth_audit_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_focusable_interactable_audit_test\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1598,6 +1603,9 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_focusable_interactable_audit_test.cpp") ||
       !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
       !contains(
           xmake,

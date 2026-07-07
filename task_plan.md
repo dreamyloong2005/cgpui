@@ -2219,3 +2219,16 @@ implementation slice.
   with JSON validation, Windows debug config, Windows full debug 100/100, WSL
   Arch Linux debug config, and WSL Arch Linux full debug 97/97. Step 342
   focusable/interactable band closeout is the next focused Phase C slice.
+
+- Phase C Step 342, focusable/interactable band closeout, is implemented in
+  `.worktrees/phase-c-focusable-interactable-closeout` as an audit-only slice:
+  `tests/api_parity/phase_c_focusable_interactable_audit_test.cpp` guards the
+  Steps 337-341 evidence, the roadmap marks Steps 337-342 complete, and the
+  parity ledger now hands `gpui::div` to Phase C Step 343 built-in widget
+  expansion. No runtime/widget behavior was added. The closeout keeps broad
+  widget behavior, runtime theme switching, and broad resolved-style
+  layout/paint rewrites out of Step 342. Feature-worktree verification passed
+  JSON validation, `git diff --check` with only expected LF-to-CRLF warnings,
+  focused audit/ledger/public gates 5/5, Windows full debug 101/101, and WSL
+  Arch Linux full debug 98/98. Step 343 built-in widget expansion is the next
+  tracked Phase C slice after this closeout is landed.

@@ -13250,3 +13250,32 @@
   `XMAKE_ROOT=y xmake test -P .` passed 97/97.
 - Step 341 is complete on `master`; Step 342 focusable/interactable band
   closeout is the next Phase C slice.
+
+## 2026-07-07 Phase C Step 342 Focusable Interactable Closeout
+
+- Continued `.worktrees/phase-c-focusable-interactable-closeout` on
+  `codex/phase-c-focusable-interactable-closeout` from
+  `88a9f33 docs: mark phase c step 341 merged`.
+- Restored planning context from `task_plan.md`, `progress.md`, and
+  `findings.md`, ran the planning-with-files catchup helper at the `.codex`
+  skill path, and confirmed it produced no additional report.
+- RED added `tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`
+  and the `phase_c_focusable_interactable_audit_test` xmake target. After
+  refreshing xmake configuration, the focused RED failed as expected because
+  the roadmap and parity ledger still treated Step 342 as future work.
+- GREEN updated the complete-replication roadmap, Markdown/JSON parity ledger,
+  existing ledger guard, and style-cascade audit guard so Step 342 closes the
+  Steps 337-341 focusable/interactable evidence band and hands `gpui::div` to
+  Phase C Step 343 built-in widget expansion.
+- Focused Windows GREEN verification passed:
+  `xmake test -y -P . phase_c_focusable_interactable_audit_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  public_phase_b_completion_audit_test/default
+  phase_c_style_cascade_depth_audit_test/default` passed 5/5.
+- Feature-worktree verification passed:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0,
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings, Windows `xmake f -c -m debug -P .` exited 0, Windows
+  `xmake test -P .` passed 101/101, WSL Arch Linux
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0, and WSL Arch Linux
+  `XMAKE_ROOT=y xmake test -P .` passed 98/98.

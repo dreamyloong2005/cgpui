@@ -6157,3 +6157,18 @@
   Arch Linux debug config, and WSL Arch Linux full debug 97/97.
 - Step 342 should be a focused focusable/interactable band closeout before
   Phase C starts built-in widget expansion.
+
+## 2026-07-07 Phase C Step 342 Focusable Interactable Closeout
+
+- Step 342 is an audit-only closeout slice. Durable ownership is
+  `tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`, which
+  guards the Steps 337-341 focusable/interactable evidence, the roadmap
+  checkbox for Steps 337-342, the ledger evidence, and the handoff to Phase C
+  Step 343 built-in widget expansion.
+- The closeout does not add runtime or widget behavior. Keep broad widget
+  behavior, runtime theme switching, broad resolved-style layout/paint
+  rewrites, `ClipboardItem`, upstream `gpui::test` macro equivalents, action
+  macro payloads, task priorities, and structured task groups out of Step 342.
+- Step 343 should start built-in widget expansion from the frozen
+  focusable/interactable boundary, with button/label/text-input and adjacent
+  widget primitive gaps as the next Phase C surface.
