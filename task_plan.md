@@ -2281,8 +2281,8 @@ implementation slice.
   Arch Linux full debug 100/100. Step 345 slider widget is the next tracked
   Phase C slice.
 
-- Phase C Step 345, slider widget, is implemented in
-  `.worktrees/phase-c-slider-widget`: `SliderBuilder` and `slider(...)` expose
+- Phase C Step 345, slider widget, is merged on `master` at
+  `ff12a4c feat: add slider widget`: `SliderBuilder` and `slider(...)` expose
   focused slider authoring through the public widget leaf
   `include/cgpui/ui/slider_builder.hpp`, while `SliderElement` owns range,
   value, step, click-to-value change handling, painting, focusability, and
@@ -2300,6 +2300,9 @@ implementation slice.
   `phase_c_focusable_interactable_audit_test/default` 5/5. Feature-worktree
   full verification passed `git diff --check` with only expected LF-to-CRLF
   warnings, Windows debug config plus full debug 103/103, and WSL Arch Linux
-  debug config plus full debug 100/100. Step 346 list/menu widget follow-up is
-  the next tracked Phase C slice; pause after landing Step 345 per user
+  debug config plus full debug 100/100. Post-merge verification passed JSON
+  validation, `git diff --check`, Windows debug config, Windows full debug
+  103/103 after a transient `clipboard_test/default` rerun, WSL Arch Linux
+  debug config, and WSL Arch Linux full debug 100/100. Step 346 list/menu
+  widget follow-up is the next tracked Phase C slice; pause here per user
   request.

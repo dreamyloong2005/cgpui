@@ -13462,3 +13462,26 @@
   `xmake f -c -m debug -P .` exited 0, Windows `xmake test -P .` passed
   103/103, WSL Arch Linux `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited
   0, and WSL Arch Linux `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+
+## 2026-07-08 Phase C Step 345 Merge
+
+- Confirmed `codex/phase-c-slider-widget` and root `master` both point at
+  `ff12a4c feat: add slider widget`; the feature worktree had no remaining
+  uncommitted diff, and root `master` still only had the existing untracked
+  `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Windows full debug initially failed twice only on `clipboard_test/default`;
+  the focused `xmake test -y -P . clipboard_test/default` passed, the short
+  reproduction sequence later passed, and the final full rerun passed
+  `xmake test -P .` 103/103. No code change was made for the transient
+  clipboard failure.
+- Verified post-merge WSL Arch Linux:
+  `XMAKE_ROOT=y xmake f -y -c -m debug -P .` exited 0 and
+  `XMAKE_ROOT=y xmake test -P .` passed 100/100.
+- Step 345 is complete on `master`; Step 346 list/menu widget follow-up is
+  next, but paused here per user request.

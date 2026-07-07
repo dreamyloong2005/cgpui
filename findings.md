@@ -6282,3 +6282,16 @@
   later focused input slice if needed.
 - Step 346 should continue the built-in widget band with list item and menu
   item widgets before icon/image and container primitive gaps.
+
+## 2026-07-08 Phase C Step 345 Merge
+
+- Step 345 is merged on `master` at
+  `ff12a4c feat: add slider widget` and post-merge verified with JSON
+  validation, diff hygiene, Windows debug config, final Windows full debug
+  103/103, WSL Arch Linux debug config, and WSL Arch Linux full debug 100/100.
+- The first two Windows full debug attempts failed only
+  `clipboard_test/default` with xmake exit code 14 and no assertion output.
+  Focused `clipboard_test/default`, the shortened reproduction sequence, and a
+  later full Windows suite all passed, so this was recorded as transient
+  validation noise rather than a Step 345 regression.
+- Stop here before Step 346 per the user request.
