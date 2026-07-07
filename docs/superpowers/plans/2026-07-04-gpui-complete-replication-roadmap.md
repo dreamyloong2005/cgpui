@@ -733,8 +733,14 @@ expect, keeping each widget in its own module from the first version.
   `api_parity_public_window_examples`, and
   `tests/api_parity/phase_c_window_examples_public_api_test.cpp`. The example
   covers menu demos, shadow, window positioning, window shadow, and input
-  examples using public APIs and remains prelude-only. Step 356 should deepen
-  the window/examples widget band without introducing private runtime headers.
+  examples using public APIs and remains prelude-only. Phase C Step 356 window/examples workflow deepens the window/examples widget band with
+  `examples/api_parity/public_window_examples_workflow/main.cpp`,
+  `api_parity_public_window_examples_workflow`, and
+  `tests/api_parity/phase_c_window_examples_workflow_test.cpp`, using a public
+  test-context workflow for menu installation, window activation/focus, key
+  binding simulation, pointer dispatch, text input, and shadow/fixed positioning
+  examples. Step 357 should continue the window/examples widget band without
+  introducing private runtime headers.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
   pipeline without adding renderer details to public element headers.
 - [ ] Steps 367-372: Add structure tests requiring every widget family to have
@@ -997,8 +1003,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 356 should deepen the window/examples widget band from the Step 355
-public example entry. Step 354 closes the uniform-list band through
+Step 357 should continue the window/examples widget band after the Step 356
+public test-context workflow. Step 354 closes the uniform-list band through
 `tests/api_parity/phase_c_uniform_list_audit_test.cpp`, guarding the focused
 layout, style, focusable/interactable, built-in widget, Step 349 stable
 identity/range, Step 350 scroll anchoring, Step 351 item measurement cache,
@@ -1115,8 +1121,13 @@ Step 354 closes the uniform-list band through
 `api_parity_public_window_examples`, and
 `tests/api_parity/phase_c_window_examples_public_api_test.cpp` for menu demos,
 shadow, window positioning, window shadow, and input examples using public
-APIs. Step 356 should deepen the window/examples widget band. Keep the Phase B closeout
-exclusions out of the Step 355 start:
+APIs. Step 356 adds `examples/api_parity/public_window_examples_workflow/main.cpp`,
+`api_parity_public_window_examples_workflow`, and
+`tests/api_parity/phase_c_window_examples_workflow_test.cpp` for a public
+test-context workflow covering menu installation, window activation/focus, key
+binding simulation, pointer dispatch, text input, and shadow/fixed positioning
+examples. Step 357 should continue the window/examples widget band. Keep the Phase B closeout
+exclusions out of the Step 355/356 band:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
 

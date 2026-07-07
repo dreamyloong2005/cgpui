@@ -2465,3 +2465,13 @@ implementation slice.
   demos, shadow, window positioning, window shadow, and input examples using
   public APIs. Keep this slice out of private runtime headers and leave deeper
   production window positioning/window shadow behavior for later steps.
+- Phase C Step 356, window/examples workflow, deepens the same band in
+  `.worktrees/phase-c-window-example-workflow`: add a prelude-only
+  `examples/api_parity/public_window_examples_workflow/main.cpp` target plus
+  `tests/api_parity/phase_c_window_examples_workflow_test.cpp` to guard a
+  public test-context workflow for menu installation, window activation/focus,
+  key binding simulation, pointer dispatch, text input, and shadow/fixed
+  positioning examples. Keep this slice out of `ClipboardItem`, upstream
+  `gpui::test` macros, action macro payloads, task priorities, structured task
+  groups, and direct `WindowRuntime`/private include usage. Step 357 is the
+  next window/examples widget slice.

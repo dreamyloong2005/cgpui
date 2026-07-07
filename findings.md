@@ -6540,3 +6540,25 @@
 - Step 356 should deepen the same band without adding `ClipboardItem`, upstream
   `gpui::test` macros, action macro payloads, task priorities, structured task
   groups, or direct `WindowRuntime`/private include usage.
+
+## 2026-07-08 Phase C Step 356 Window Examples Workflow
+
+- Step 356 stays in the window/examples band and deepens Step 355 through a
+  public workflow example, not new production window behavior.
+- Durable example ownership is
+  `examples/api_parity/public_window_examples_workflow/main.cpp`; it includes
+  only `cgpui/prelude.hpp` and uses `TestContextCapability` to exercise public
+  window activation/focus, redraw/frame-pump, key binding simulation, and
+  pointer dispatch alongside menu installation, text input, shadow, and
+  fixed-positioning authoring.
+- Durable guard ownership is
+  `tests/api_parity/phase_c_window_examples_workflow_test.cpp`, registered in
+  `xmake.lua`; it freezes the example target/source, the prelude-only boundary,
+  the roadmap/ledger/vocabulary handoff, and the Step 357 next slice.
+- The older Step 355 public-example guard needed its handoff assertion updated
+  from Step 356 to Step 357 once Step 356 evidence landed. Frozen phrases in
+  roadmap/docs should stay contiguous because these source guards use simple
+  substring checks.
+- Step 357 should continue the window/examples widget band without adding
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, structured task groups, or private runtime headers.

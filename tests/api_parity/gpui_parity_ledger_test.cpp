@@ -633,8 +633,12 @@ int main() {
               "Phase C Step 353 keyboard/pointer selection",
               "Phase C Step 354 uniform list closeout",
               "Phase C Step 355 window/examples widgets",
+              "Phase C Step 356 window/examples workflow",
               "phase_c_uniform_list_audit_test.cpp",
               "phase_c_window_examples_public_api_test.cpp",
+              "phase_c_window_examples_workflow_test.cpp",
+              "public_window_examples_workflow/main.cpp",
+              "api_parity_public_window_examples_workflow",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -1624,9 +1628,13 @@ int main() {
                 "target(\"phase_c_uniform_list_audit_test\")") ||
       !contains(xmake,
                 "target(\"phase_c_window_examples_public_api_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_window_examples_workflow_test\")") ||
       !contains(xmake, "target(\"builtin_widget_test\")") ||
       !contains(xmake, "target(\"widget_source_structure_test\")") ||
       !contains(xmake, "target(\"api_parity_public_window_examples\")") ||
+      !contains(xmake,
+                "target(\"api_parity_public_window_examples_workflow\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1719,6 +1727,9 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_window_examples_public_api_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_window_examples_workflow_test.cpp") ||
       !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
       !contains(
           xmake,
@@ -1748,6 +1759,12 @@ int main() {
 
   if (!contains(xmake,
                 "examples/api_parity/public_window_examples/main.cpp")) {
+    return 14;
+  }
+
+  if (!contains(
+          xmake,
+          "examples/api_parity/public_window_examples_workflow/main.cpp")) {
     return 14;
   }
 

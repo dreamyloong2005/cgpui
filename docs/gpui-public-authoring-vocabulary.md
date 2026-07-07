@@ -189,6 +189,14 @@ shadow, window positioning, window shadow, and input examples. The example is
 guarded by `tests/api_parity/phase_c_window_examples_public_api_test.cpp` and
 must stay prelude-only.
 
+Phase C Step 356 window/examples workflow adds
+`examples/api_parity/public_window_examples_workflow/main.cpp` and
+`api_parity_public_window_examples_workflow` as the public test-context workflow
+entry for menu installation, window activation/focus, key binding simulation,
+pointer dispatch, text input, and shadow/fixed positioning examples. It is
+guarded by `tests/api_parity/phase_c_window_examples_workflow_test.cpp` and
+must stay prelude-only. Step 357 should continue the window/examples widget band.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

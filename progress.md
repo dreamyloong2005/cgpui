@@ -14196,3 +14196,50 @@
   102/102.
 - Step 355 is complete on `master`; Step 356 window/examples widget deepening
   is the next Phase C slice.
+
+## 2026-07-08 Phase C Step 356 Window Examples Workflow
+
+- Created `.worktrees/phase-c-window-example-workflow` on
+  `codex/phase-c-window-example-workflow` from
+  `8ae17a6 docs: mark phase c step 355 merged`.
+- Added RED coverage in
+  `tests/api_parity/phase_c_window_examples_workflow_test.cpp` and registered
+  the test/example targets in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_window_examples_workflow_test/default` failed as
+  expected because the public workflow example and docs were not present yet.
+- Added `examples/api_parity/public_window_examples_workflow/main.cpp` and
+  `api_parity_public_window_examples_workflow` to deepen the Step 355 public
+  example band with a prelude-only test-context workflow for menu installation,
+  window activation/focus, key binding simulation, pointer dispatch, text input,
+  and shadow/fixed positioning examples.
+- Updated `docs/gpui-complete-parity-ledger.json`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-public-authoring-vocabulary.md`, and the complete-replication
+  roadmap so the Step 356 evidence is recorded and the handoff moves to Step
+  357.
+- Updated `tests/api_parity/gpui_parity_ledger_test.cpp` and the Step 355
+  public-example guard so global and focused API gates require the Step 356
+  target/source and Step 357 handoff.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified the new public workflow example target builds:
+  `xmake build -P . api_parity_public_window_examples_workflow` exited 0 after
+  replacing MSVC-unfriendly nested aggregate menu accelerator initialization
+  with explicit public `NativeMenuItem` construction.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . phase_c_window_examples_workflow_test/default
+  gpui_parity_ledger_test/default phase_c_window_examples_public_api_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 4/4 after keeping the
+  new frozen roadmap/ledger/vocabulary phrases contiguous.
+- Resumed the Step 356 handoff before commit. `git diff --check` passed with
+  only expected LF-to-CRLF normalization warnings, and
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- The sandboxed public workflow example build failed twice with
+  `cannot create filelock for package(vulkansdk)`. Rerunning
+  `xmake build -P . api_parity_public_window_examples_workflow` outside the
+  sandbox passed, so this was treated as xmake global package-cache locking
+  rather than a source regression.
+- Focused Step 356 rerun passed:
+  `xmake test -y -P . phase_c_window_examples_workflow_test/default
+  gpui_parity_ledger_test/default phase_c_window_examples_public_api_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 4/4.

@@ -302,7 +302,16 @@ upstream example inventory includes:
   APIs only. `tests/api_parity/phase_c_window_examples_public_api_test.cpp`
   guards the source against private headers and keeps the roadmap, ledger,
   vocabulary, and xmake target aligned.
-- Handoff: Phase C Step 356 window/examples widgets is next.
+- Phase C Step 356 window/examples workflow:
+  `examples/api_parity/public_window_examples_workflow/main.cpp` and
+  `api_parity_public_window_examples_workflow` deepen the window/examples band
+  with a public test-context workflow for menu installation, window
+  activation/focus, key binding simulation, pointer dispatch, text input, and
+  shadow/fixed positioning examples. The guard
+  `tests/api_parity/phase_c_window_examples_workflow_test.cpp` keeps the source
+  prelude-only and synchronized with the roadmap, ledger, vocabulary, and xmake
+  target.
+- Handoff: Phase C Step 357 window/examples widgets is next. Step 357 should continue the window/examples widget band.
 
 ## Phase A Closure
 

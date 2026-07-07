@@ -37,7 +37,7 @@ bool contains(const std::string& text, const char* value) {
 
 int main() {
   const std::string example =
-      read_source("examples/api_parity/public_window_examples/main.cpp");
+      read_source("examples/api_parity/public_window_examples_workflow/main.cpp");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string roadmap = read_source(
@@ -53,54 +53,46 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"api_parity_public_window_examples\")") ||
-      !contains(xmake,
-                "examples/api_parity/public_window_examples/main.cpp") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_public_api_test\")") ||
+  if (!contains(xmake,
+                "target(\"api_parity_public_window_examples_workflow\")") ||
       !contains(
           xmake,
-          "tests/api_parity/phase_c_window_examples_public_api_test.cpp")) {
+          "examples/api_parity/public_window_examples_workflow/main.cpp") ||
+      !contains(xmake,
+                "target(\"phase_c_window_examples_workflow_test\")") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_window_examples_workflow_test.cpp")) {
     return 2;
   }
 
   constexpr std::array required_example_fragments{
       "#include \"cgpui/prelude.hpp\"",
-      "class PublicWindowExamplesView",
+      "class PublicWindowExamplesWorkflowView",
       "cgpui::IntoElement render(",
-      "cgpui::Context<PublicWindowExamplesView>&",
-      "static_assert(cgpui::Render<PublicWindowExamplesView>)",
-      "cgpui::Application::create()",
-      "cgpui::AppRunnerOptions",
-      "cgpui::WindowOptions{}",
-      ".title(\"CGPUI Window Examples\")",
-      ".size(",
-      ".decorations(true)",
-      ".resizable(true)",
-      ".transparent(false)",
-      ".titlebar_visible(true)",
-      "cgpui::NativeMenuModel",
+      "cgpui::Context<PublicWindowExamplesWorkflowView>&",
+      "static_assert(cgpui::Render<PublicWindowExamplesWorkflowView>)",
+      "const cgpui::TestContextCapability test = context.test_context()",
+      "test.dispatch_window_activation(true)",
+      "test.dispatch_window_focus(true)",
+      "test.request_redraw()",
+      "test.try_draw_frame()",
+      "test.simulate_keystrokes(\"ctrl-shift-m\")",
+      "test.dispatch_pointer_move(",
+      "test.dispatch_pointer_button(",
+      "context.register_command_palette_entry<InstallWorkflowMenuAction>",
+      "cgpui::KeyBindingContext::window()",
+      "context.try_install_native_menu(",
       "cgpui::NativeMenuItemKind::submenu",
-      "cgpui::NativeMenuItemKind::separator",
       "cgpui::NativeMenuAccelerator",
-      "try_install_native_menu(",
-      "cgpui::CommandPaletteEntry",
-      "bind_key(",
       "cgpui::TextModel",
       "cgpui::text_input(",
-      "cgpui::menu_item(",
       "cgpui::button(",
-      "cgpui::label(",
+      "cgpui::menu_item(",
       "cgpui::BoxShadow",
       ".shadow(",
-      ".shadow_sm()",
       ".fixed()",
-      ".top(",
-      ".left(",
-      "window_positioning",
-      "window_shadow",
-      "set_menus",
-      "input",
+      "window/examples public workflow",
   };
   for (std::size_t index = 0; index < required_example_fragments.size();
        ++index) {
@@ -110,15 +102,12 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase C Step 355 window/examples widgets",
-      "examples/api_parity/public_window_examples/main.cpp",
-      "api_parity_public_window_examples",
-      "phase_c_window_examples_public_api_test.cpp",
-      "menu demos",
-      "shadow",
-      "window positioning",
-      "window shadow",
-      "input examples",
+      "Phase C Step 356 window/examples workflow",
+      "examples/api_parity/public_window_examples_workflow/main.cpp",
+      "api_parity_public_window_examples_workflow",
+      "phase_c_window_examples_workflow_test.cpp",
+      "public test-context workflow",
+      "Step 357 should continue the window/examples widget band",
   };
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
@@ -129,11 +118,7 @@ int main() {
     }
   }
 
-  if (!contains(roadmap,
-                "Phase C Step 356 window/examples workflow deepens") ||
-      !contains(ledger_json,
-                "\"step_356\": \"Phase C Step 356 window/examples workflow\"") ||
-      !contains(ledger_json,
+  if (!contains(ledger_json,
                 "\"next_step\": \"Phase C Step 357 window/examples widgets\"")) {
     return 80;
   }
