@@ -6923,3 +6923,15 @@
   preserved on the shape run.
 - This is HarfBuzz input plumbing, not script detection or bidirectional text
   layout yet.
+
+## 2026-07-09 Phase D Step 384 HarfBuzz Backend Boundary
+
+- Step 384 adds the future HarfBuzz backend insertion point without claiming
+  that production HarfBuzz shaping is available on this machine.
+- Durable ownership is `src/ui/text_shaping_harfbuzz.cpp`, routed from
+  `src/ui/text_shaping_dispatch.cpp` through
+  `shape_text_with_harfbuzz(...)` in `src/ui/text_shaping_internal.hpp`.
+- Disabled builds rewrite the internal request to deterministic fallback with
+  `TextShapingFallbackReason::backend_unavailable`; defining
+  `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` before the real implementation lands is
+  intentionally a build-time error instead of a fake successful backend.

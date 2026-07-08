@@ -889,6 +889,9 @@ behavior that can support GPUI examples and editor-like widgets.
   and unwrapped glyph paint metadata; deterministic fallback offsets stay zero.
   Step 383 adds direction/script/language shaping metadata to options and
   shape runs so the future HarfBuzz backend has explicit input records.
+  Step 384 adds a guarded HarfBuzz backend source boundary and dispatch
+  insertion point while preserving deterministic fallback when the real
+  HarfBuzz backend is not compiled in.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,

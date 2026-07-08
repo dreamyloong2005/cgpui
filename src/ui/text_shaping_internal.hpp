@@ -21,6 +21,9 @@ struct TextShapingRequest {
 [[nodiscard]] TextShapeRun shape_text_with_selected_backend(
     TextShapingRequest request);
 
+[[nodiscard]] TextShapeRun shape_text_with_harfbuzz(
+    TextShapingRequest request);
+
 [[nodiscard]] TextShapeRun shape_text_with_deterministic_fallback(
     TextShapingRequest request);
 

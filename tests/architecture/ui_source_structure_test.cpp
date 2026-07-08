@@ -124,6 +124,7 @@ int main() {
   const std::vector<const char*> text_implementation_files{
       "src/ui/text_shaping_backend.cpp",
       "src/ui/text_shaping_dispatch.cpp",
+      "src/ui/text_shaping_harfbuzz.cpp",
       "src/ui/text_shaping_fallback.cpp",
       "src/ui/text_shape.cpp",
       "src/ui/text_glyph_raster.cpp",
@@ -140,10 +141,26 @@ int main() {
       read_source("src/ui/text_shaping_backend.cpp");
   const std::string text_shaping_internal_header =
       read_source("src/ui/text_shaping_internal.hpp");
+  const std::string text_shaping_dispatch_source =
+      read_source("src/ui/text_shaping_dispatch.cpp");
+  const std::string text_shaping_harfbuzz_source =
+      read_source("src/ui/text_shaping_harfbuzz.cpp");
   const std::string text_shape_source = read_source("src/ui/text_shape.cpp");
+  const std::string xmake_source = read_source("xmake.lua");
   if (!contains(text_shaping_backend_source,
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
       !contains(text_shaping_internal_header, "TextShapingRequest") ||
+      !contains(text_shaping_internal_header, "shape_text_with_harfbuzz") ||
+      !contains(text_shaping_dispatch_source, "shape_text_with_harfbuzz") ||
+      !contains(text_shaping_dispatch_source, "TextShapingBackend::harfbuzz") ||
+      !contains(text_shaping_harfbuzz_source,
+                "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
+      !contains(text_shaping_harfbuzz_source,
+                "shape_text_with_deterministic_fallback") ||
+      !contains(xmake_source,
+                "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
+      !contains(xmake_source,
+                "remove_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
       contains(text_shape_source, "run.glyphs.push_back")) {
     return 143;
   }

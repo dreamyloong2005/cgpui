@@ -50,6 +50,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 383 adds shaping direction, script, and language metadata to
   `TextShapingOptions` and `TextShapeRun`; auto direction/script resolve to
   deterministic LTR/common until a real shaping backend provides detection.
+- Step 384 adds a guarded HarfBuzz backend source boundary and dispatch
+  insertion point: `text_shaping_harfbuzz.cpp` is compiled with the renderer
+  text files, disabled builds still route to deterministic fallback, and the
+  real HarfBuzz backend remains incomplete until the dependency is linked and
+  verified.
 
 ## Definition Of Done For This 20-Step Goal
 
