@@ -257,6 +257,17 @@ without adding SVG decoding, renderer upload, or GPU lifetime details to public
 element APIs. Phase C Step 363 SVG/image public example coverage is the next
 handoff.
 
+Phase C Step 363 SVG/image public example coverage adds
+`examples/api_parity/public_svg_image_sources/main.cpp` and
+`api_parity_public_svg_image_sources` as the prelude-only example for
+registered raster and SVG sources. The `public_svg_image_sources` example shows
+`ImageAssetRegistry`, `RegisteredImageAsset`, `ImageSourceKind`,
+`register_image(...)`, `register_svg(...)`, `raster_assets()`, `image(...)`,
+and `svg(...)` together without exposing decoder, upload, or runtime internals.
+It is guarded by
+`tests/api_parity/phase_c_svg_image_public_examples_test.cpp`. Phase C Step 364
+SVG/image band closeout is the next handoff.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

@@ -117,7 +117,16 @@
       "tests/api_parity/phase_c_svg_image_asset_registration_test.cpp",
       "tests/architecture/widget_source_structure_test.cpp"
     ],
-    "image_front_end_next": "Phase C Step 363 SVG/image public example coverage",
+    "step_363": "Phase C Step 363 SVG/image public example coverage",
+    "public_svg_image_sources": "examples/api_parity/public_svg_image_sources/main.cpp",
+    "image_public_example_surface": "api_parity_public_svg_image_sources demonstrates ImageAssetRegistry, RegisteredImageAsset, ImageSourceKind, register_image(...), register_svg(...), raster_assets(), image(...), and svg(...) over registered raster and SVG sources",
+    "image_public_example_sources": [
+      "examples/api_parity/public_svg_image_sources/main.cpp",
+      "tests/api_parity/phase_c_svg_image_public_examples_test.cpp",
+      "docs/gpui-public-authoring-vocabulary.md",
+      "docs/gpui-complete-parity-ledger.md"
+    ],
+    "image_front_end_next": "Phase C Step 364 SVG/image band closeout",
     "step_348": "Phase C Step 348 container primitive follow-up",
     "container_surface": "div(), h_flex(), v_flex(), h_stack(), v_stack() container primitive free functions",
     "container_sources": [
@@ -255,7 +264,7 @@
     ],
     "window_examples_status": "closed",
     "window_examples_next": "Phase C Step 360 closes the window/examples widget band. Phase C Step 361 SVG/image element front-end APIs follows, and Step 362 SVG/image asset registration is implemented",
-    "next_step": "Phase C Step 363 SVG/image public example coverage"
+    "next_step": "Phase C Step 364 SVG/image band closeout"
   },
   "categories": [
     "application_and_app_context",

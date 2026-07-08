@@ -773,7 +773,13 @@ expect, keeping each widget in its own module from the first version.
   `register_image(...)`, and `register_svg(...)` as the deterministic public
   registration boundary over `ImageSource`, without SVG decoding, renderer
   upload, or GPU lifetime behavior. Phase C Step 363 SVG/image public example
-  coverage is next.
+  coverage adds `examples/api_parity/public_svg_image_sources/main.cpp`,
+  `api_parity_public_svg_image_sources`, and
+  `tests/api_parity/phase_c_svg_image_public_examples_test.cpp` as a
+  prelude-only registered raster/SVG source example. It feeds
+  `RegisteredImageAsset::source()` into `image(...)` and `svg(...)` without
+  exposing decoder, upload, or runtime internals. Phase C Step 364 SVG/image
+  band closeout is next.
 - [ ] Steps 367-372: Add structure tests requiring every widget family to have
   a public leaf header, a focused source file, and focused behavior tests.
 - [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
@@ -1043,7 +1049,9 @@ adds the focused `ImageSource` layer and hands off to Phase C Step 362 SVG/image
 asset registration. Phase C Step 362 SVG/image asset registration adds the
 focused `ImageAssetRegistry` layer over `ImageSource` and hands off to Phase C
 Step 363 SVG/image public example coverage. Phase C Step 363 SVG/image public
-example coverage is the next slice.
+example coverage adds the `public_svg_image_sources` example and hands off to
+Phase C Step 364 SVG/image band closeout. Phase C Step 364 SVG/image band
+closeout is the next slice.
 The Phase B public authoring boundary remains the source of truth for this
 next slice.
 Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320

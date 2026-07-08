@@ -365,7 +365,17 @@ upstream example inventory includes:
   `src/ui/image_asset_registry.cpp`,
   `tests/api_parity/phase_c_svg_image_asset_registration_test.cpp`, and
   `tests/architecture/widget_source_structure_test.cpp`.
-- Handoff: Phase C Step 363 SVG/image public example coverage is next.
+- Phase C Step 363 SVG/image public example coverage:
+  `examples/api_parity/public_svg_image_sources/main.cpp`,
+  `api_parity_public_svg_image_sources`, and
+  `tests/api_parity/phase_c_svg_image_public_examples_test.cpp` keep the
+  registered raster/SVG source workflow prelude-only. The
+  `public_svg_image_sources` example registers an in-memory raster asset and an
+  SVG source string with `ImageAssetRegistry`, checks the resulting
+  `ImageSourceKind` values, uses `registry.raster_assets()` for upload-planning
+  observability, and feeds `RegisteredImageAsset::source()` into `image(...)`
+  and `svg(...)`.
+- Handoff: Phase C Step 364 SVG/image band closeout is next.
 
 ## Phase A Closure
 

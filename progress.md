@@ -14690,3 +14690,58 @@
   packages, or app state directories were deleted.
 - Step 362 is complete on `master`; Step 363 SVG/image public example coverage
   is the next Phase C slice.
+
+## 2026-07-08 Phase C Step 363 SVG Image Public Examples
+
+- Created `.worktrees/phase-c-svg-image-public-examples` on
+  `codex/phase-c-svg-image-public-examples` from
+  `76d1d88 docs: mark phase c step 362 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Added RED coverage in
+  `tests/api_parity/phase_c_svg_image_public_examples_test.cpp` and registered
+  the focused test target in `xmake.lua`. The RED run
+  `xmake test -y -P . phase_c_svg_image_public_examples_test/default` failed
+  as expected because the public example and docs/ledger evidence were missing.
+- Added `examples/api_parity/public_svg_image_sources/main.cpp` and
+  `api_parity_public_svg_image_sources` as a prelude-only example that
+  registers an in-memory raster asset and SVG source string with
+  `ImageAssetRegistry`, checks `ImageSourceKind`, observes
+  `registry.raster_assets()`, and feeds `RegisteredImageAsset::source()` into
+  `image(...)` and `svg(...)`.
+- Updated `docs/gpui-public-authoring-vocabulary.md`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-complete-parity-ledger.json`, and the complete-replication
+  roadmap so Step 363 evidence is recorded and the handoff moves to Phase C
+  Step 364 SVG/image band closeout.
+- Verified JSON with
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`:
+  exited 0.
+- Focused GREEN verification passed:
+  `xmake test -y -P . phase_c_svg_image_public_examples_test/default
+  phase_c_svg_image_asset_registration_test/default
+  phase_c_svg_image_front_end_test/default
+  public_authoring_vocabulary_freeze_test/default gpui_parity_ledger_test/default
+  phase_c_window_examples_closeout_test/default widget_source_structure_test/default`
+  passed 7/7.
+- Verified the new public example target in debug mode:
+  `xmake build -P . api_parity_public_svg_image_sources` exited 0.
+- Corrected the global JSON handoff after the first docs pass so
+  `docs/gpui-complete-parity-ledger.json` now reports
+  `"next_step": "Phase C Step 364 SVG/image band closeout"`.
+- Re-verified the corrected handoff with JSON validation and focused guards:
+  `phase_c_svg_image_public_examples_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`, and
+  `phase_c_window_examples_closeout_test/default` passed 4/4.
+- Verified Windows full debug after the correction:
+  `xmake test -P .` passed 113/113.
+- WSL Arch Linux verification first used the right D-drive caches but missed
+  `-w`, so source-reading structure/API tests ran from the wrong directory and
+  failed. The corrected rerun used
+  `-w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-svg-image-public-examples`
+  with D-drive xmake global/package output plus `/dev/shm/cgpui` transient temp
+  and passed 110/110.
+- Disk placement check after the corrected WSL rerun: the Step 363 D-drive
+  WSL build/log directory was 2.9G, `/tmp` was 0, and `/root/.xmake` was
+  absent. Future WSL runs should keep using `.build-wsl/master` for reusable
+  global/package caches and step-specific `.build-wsl/.../logs` for logs.

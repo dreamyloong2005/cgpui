@@ -6673,3 +6673,19 @@
   `/root/.xmake` remained absent and `/tmp` remained empty.
 - Step 363 should continue the SVG/image band with public example coverage over
   registered image and SVG sources.
+
+## 2026-07-08 Phase C Step 363 SVG/Image Public Example Coverage
+
+- Step 363 stays in the public example/documentation layer. It adds
+  `examples/api_parity/public_svg_image_sources/main.cpp`,
+  `api_parity_public_svg_image_sources`, and
+  `tests/api_parity/phase_c_svg_image_public_examples_test.cpp` to show
+  registered raster and SVG sources through the prelude-only authoring
+  boundary.
+- The example constructs `ImageAssetRegistry`, registers an id-less in-memory
+  raster `ImageAsset` and an SVG source string, checks `ImageSourceKind`, uses
+  `registry.raster_assets()` for upload-planning observability, and feeds
+  `RegisteredImageAsset::source()` into `image(...)` and `svg(...)`.
+- This slice intentionally does not add SVG decoding, PNG/JPEG loading,
+  renderer upload behavior, GPU texture lifetime, private runtime headers, or
+  direct `WindowRuntime` use. Step 364 should close the SVG/image band.
