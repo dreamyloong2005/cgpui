@@ -151,6 +151,13 @@ if is_plat("linux") then
         add_includedirs("tests/platform")
         add_tests("default")
 
+    target("wayland_font_discovery_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_font_discovery_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_includedirs(public_includedirs)
+        add_tests("default")
+
     target("wayland_vulkan_surface_test")
         set_kind("binary")
         add_files("tests/renderer/wayland_vulkan_surface_test.cpp")

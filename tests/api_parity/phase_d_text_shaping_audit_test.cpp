@@ -66,6 +66,8 @@ int main() {
       read_source("src/ui/text_shaping_harfbuzz.cpp");
   const std::string fallback_source =
       read_source("src/ui/text_shaping_fallback.cpp");
+  const std::string wayland_fontconfig_source =
+      read_source("src/platform/linux/wayland_fontconfig_discovery.cpp");
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
@@ -73,13 +75,16 @@ int main() {
       task_plan.empty() || findings.empty() || backend_header.empty() ||
       shape_header.empty() || backend_source.empty() ||
       dispatch_source.empty() || harfbuzz_source.empty() ||
-      fallback_source.empty() || text_model_test.empty()) {
+      fallback_source.empty() || wayland_fontconfig_source.empty() ||
+      text_model_test.empty()) {
     return 1;
   }
 
   if (!contains(xmake, "target(\"phase_d_text_shaping_audit_test\")") ||
       !contains(xmake,
-                "tests/api_parity/phase_d_text_shaping_audit_test.cpp")) {
+                "tests/api_parity/phase_d_text_shaping_audit_test.cpp") ||
+      !contains(xmake, "target(\"wayland_font_discovery_test\")") ||
+      !contains(xmake, "tests/platform/wayland_font_discovery_test.cpp")) {
     return 2;
   }
 
@@ -100,6 +105,7 @@ int main() {
   if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "text-shaping readiness audit") ||
       !contains(text_row, "PlatformFontDiscoveryResult") ||
+      !contains(text_row, "wayland_fontconfig_discovery.cpp") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
@@ -124,11 +130,22 @@ int main() {
     return 6;
   }
 
+  if (!contains(wayland_fontconfig_source,
+                "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
+      !contains(wayland_fontconfig_source, "FcFontList") ||
+      !contains(wayland_fontconfig_source,
+                "PlatformFontDiscoveryStatus::native_available") ||
+      !contains(findings,
+                "native Linux font discovery cannot honestly be marked "
+                "complete")) {
+    return 8;
+  }
+
   if (!contains(text_model_test, "default_run.backend_selection()") ||
       !contains(text_model_test, "default_run.used_fallback()") ||
       !contains(text_model_test, "fallback_run.used_fallback()") ||
       !contains(text_model_test, "selection.capabilities.harfbuzz_available")) {
-    return 7;
+    return 9;
   }
 
   return 0;

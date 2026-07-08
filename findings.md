@@ -7012,3 +7012,23 @@
   directly.
 - Linux fontconfig/FreeType enumeration, font file paths, coverage checks, and
   richer face metadata remain later Phase D work.
+
+## 2026-07-09 Phase D Step 390 Linux Fontconfig Backend Boundary
+
+- The current WSL Arch host exposes `pkg-config` itself but no visible
+  fontconfig/FreeType pkg-config entries, headers, CLI, or runtime libraries;
+  native Linux font discovery cannot honestly be marked complete on this
+  machine without adding dependencies.
+- Step 390 therefore adds the guarded Linux backend insertion point rather
+  than a false native implementation. `WaylandApplication::discover_font_discovery()`
+  now routes through `wayland_discover_fonts_with_fontconfig()`, with private
+  ownership in `src/platform/linux/wayland_font_discovery_internal.hpp` and
+  `src/platform/linux/wayland_fontconfig_discovery.cpp`.
+- Default builds continue to return the deterministic `sans-serif`
+  fontconfig fallback. Defining `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND`
+  enables the future Fontconfig C API path that enumerates `FC_FAMILY`,
+  `FC_STYLE`, `FC_FILE`, and PostScript metadata into platform font records.
+- `tests/platform/wayland_font_discovery_test.cpp` accepts both the current
+  deterministic fallback and future native-available diagnostics, so the test
+  will keep guarding the bridge when the dependency-backed path becomes
+  available.

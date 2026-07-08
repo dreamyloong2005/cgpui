@@ -15151,6 +15151,51 @@
 - Diff hygiene passed `git diff --check` with only expected LF-to-CRLF
   working-copy warnings.
 
+## 2026-07-09 Phase D Step 390 Linux Fontconfig Backend Boundary
+
+- Started from clean `master` after
+  `000add5 feat: add win32 directwrite font discovery`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Probed the WSL Arch host without installing dependencies: `pkg-config`
+  exists, but fontconfig/FreeType pkg-config entries, headers, `fc-list`, and
+  visible `/usr/lib/libfontconfig*` / `/usr/lib/libfreetype*` runtime
+  libraries were absent.
+- Added `src/platform/linux/wayland_font_discovery_internal.hpp` and
+  `src/platform/linux/wayland_fontconfig_discovery.cpp`. The Wayland font
+  discovery entry now routes through the focused fontconfig backend boundary;
+  default builds keep the deterministic `sans-serif` fallback, while
+  `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND` gates the future Fontconfig C API
+  enumeration path.
+- Added Linux behavior coverage in
+  `tests/platform/wayland_font_discovery_test.cpp` and registered
+  `wayland_font_discovery_test/default` in `xmake.lua`. Expanded
+  `platform_font_discovery_structure_test/default` to require the private
+  boundary, guarded fontconfig source, and fallback/native diagnostic path.
+- Focused Windows structure verification passed:
+  `xmake test -y -P . platform_font_discovery_structure_test/default
+  platform_font_discovery_test/default` 2/2.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp, compiled
+  `wayland_fontconfig_discovery.cpp`, and passed
+  `wayland_font_discovery_test/default`,
+  `platform_font_discovery_structure_test/default`, and
+  `platform_font_discovery_test/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . platform_font_discovery_structure_test/default
+  platform_font_discovery_test/default phase_d_text_shaping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default` 5/5.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `wayland_font_discovery_test/default`,
+  `platform_font_discovery_test/default`,
+  `platform_font_discovery_structure_test/default`,
+  `platform_source_structure_test/default`,
+  `wayland_window_source_test/default`, `wayland_keyboard_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`,
+  `render_view_test/default`, `gpui_parity_ledger_test/default`,
+  `phase_d_text_shaping_audit_test/default`, and
+  `phase_c_final_ledger_audit_test/default` 12/12.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

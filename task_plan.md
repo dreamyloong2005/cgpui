@@ -83,6 +83,14 @@ Windows/Linux core API is stable enough for parity work.
   family records when `DWriteCreateFactory` and the system collection succeed,
   and keeps the deterministic Segoe UI fallback only for DirectWrite failures.
   Linux fontconfig/FreeType enumeration remains future work.
+- Step 390 adds the Linux fontconfig backend insertion point without claiming
+  dependency-backed native enumeration on this WSL host. Wayland font discovery
+  now routes through focused `wayland_fontconfig_discovery.cpp` and a private
+  `wayland_font_discovery_internal.hpp` boundary; default builds keep the
+  deterministic `sans-serif` fallback, while
+  `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND` gates the future Fontconfig C API
+  path. Native Linux fontconfig/FreeType enumeration remains incomplete until
+  the dependency is present and verified.
 
 ## Definition Of Done For This 20-Step Goal
 

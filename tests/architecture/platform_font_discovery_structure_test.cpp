@@ -86,12 +86,17 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_application_services.cpp");
   const std::string wayland_font =
       read_source("src/platform/linux/wayland_font_discovery.cpp");
+  const std::string wayland_font_internal =
+      read_source("src/platform/linux/wayland_font_discovery_internal.hpp");
+  const std::string wayland_fontconfig =
+      read_source("src/platform/linux/wayland_fontconfig_discovery.cpp");
 
   if (public_leaf.empty() || platform_application.empty() ||
       platform_source.empty() || empty_source.empty() ||
       win32_internal.empty() || win32_application.empty() ||
       win32_font.empty() || wayland_application_core.empty() ||
-      wayland_services.empty() || wayland_font.empty()) {
+      wayland_services.empty() || wayland_font.empty() ||
+      wayland_font_internal.empty() || wayland_fontconfig.empty()) {
     return 1;
   }
 
@@ -142,12 +147,31 @@ int main(int argc, char** argv) {
     return 8;
   }
   if (!contains(wayland_font, "WaylandApplication::discover_font_discovery(") ||
+      !contains(wayland_font, "wayland_discover_fonts_with_fontconfig()") ||
+      !contains(wayland_font, "wayland_deterministic_font_fallback()") ||
       !contains(wayland_font, "PlatformFontDiscoveryBackend::fontconfig") ||
       !contains(
           wayland_font,
           "PlatformFontDiscoveryStatus::deterministic_fallback") ||
       !contains(wayland_font, "fontconfig://sans-serif")) {
     return 9;
+  }
+  if (!contains(wayland_font_internal,
+                "wayland_discover_fonts_with_fontconfig()") ||
+      !contains(wayland_font_internal,
+                "wayland_deterministic_font_fallback()")) {
+    return 10;
+  }
+  if (!contains(wayland_fontconfig, "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
+      !contains(wayland_fontconfig, "#include <fontconfig/fontconfig.h>") ||
+      !contains(wayland_fontconfig, "FcFontList") ||
+      !contains(wayland_fontconfig, "FC_FAMILY") ||
+      !contains(wayland_fontconfig, "FC_FILE") ||
+      !contains(wayland_fontconfig,
+                "PlatformFontDiscoveryStatus::native_available") ||
+      !contains(wayland_fontconfig,
+                "wayland_deterministic_font_fallback()")) {
+    return 11;
   }
 
   return 0;

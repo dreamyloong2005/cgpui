@@ -1,12 +1,12 @@
 #include "wayland_application_internal.hpp"
+#include "wayland_font_discovery_internal.hpp"
 
 #include <utility>
 #include <vector>
 
 namespace cgpui {
 
-PlatformFontDiscoveryResult WaylandApplication::discover_font_discovery()
-    const {
+PlatformFontDiscoveryResult wayland_deterministic_font_fallback() {
   std::vector<FontFaceDescriptor> records{
       FontFaceDescriptor{
           .font = FontDescriptor{.family = "sans-serif"},
@@ -19,6 +19,11 @@ PlatformFontDiscoveryResult WaylandApplication::discover_font_discovery()
       PlatformFontDiscoveryBackend::fontconfig,
       PlatformFontDiscoveryStatus::deterministic_fallback,
       std::move(records));
+}
+
+PlatformFontDiscoveryResult WaylandApplication::discover_font_discovery()
+    const {
+  return wayland_discover_fonts_with_fontconfig();
 }
 
 } // namespace cgpui
