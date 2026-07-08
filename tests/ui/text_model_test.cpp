@@ -978,6 +978,7 @@ int test_shape_text_records_color_glyph_plans() {
       .path = "noto-color-emoji.ttf",
       .coverage = {
           cgpui::FontUnicodeRange{.first = 0x2665, .last = 0x2665},
+          cgpui::FontUnicodeRange{.first = 0x1F400, .last = 0x1F5FF},
           cgpui::FontUnicodeRange{.first = 0x1F600, .last = 0x1F64F},
       },
   });
@@ -1044,8 +1045,23 @@ int test_shape_text_records_color_glyph_plans() {
     return 178;
   }
 
+  const cgpui::TextShapeRun zwj_run = cgpui::shape_text(
+      "\xF0\x9F\x91\xA9\xE2\x80\x8D\xF0\x9F\x92\xBB",
+      chain,
+      18.0F);
+  if (zwj_run.glyph_count() != 3 || !zwj_run.missing_glyphs.empty() ||
+      zwj_run.color_glyphs.size() != 2) {
+    return 179;
+  }
+  if (zwj_run.color_glyphs[0].codepoint != 0x1F469 ||
+      zwj_run.color_glyphs[0].glyph_index != 0 ||
+      zwj_run.color_glyphs[1].codepoint != 0x1F4BB ||
+      zwj_run.color_glyphs[1].glyph_index != 2) {
+    return 180;
+  }
+
   const cgpui::TextShapeRun text_run = cgpui::shape_text("AB", chain, 18.0F);
-  return text_run.color_glyphs.empty() ? 0 : 179;
+  return text_run.color_glyphs.empty() ? 0 : 181;
 }
 
 int test_shape_text_records_backend_selection_and_fallback_reason() {

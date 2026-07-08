@@ -15855,3 +15855,38 @@
   `phase_d_font_fallback_audit_test/default`,
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
+
+## 2026-07-09 Phase D Step 400 Emoji ZWJ Missing-Glyph Suppression
+
+- Started from clean `master` after
+  `879ee6d feat: record emoji selector spans`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring a
+  covered emoji ZWJ sequence (`U+1F469 U+200D U+1F4BB`) to keep three
+  deterministic glyph records, produce two color glyph plans, and not record a
+  missing-glyph diagnostic for the joiner.
+- Added RED structure coverage in `tests/architecture/ui_source_structure_test.cpp`
+  requiring `is_emoji_sequence_joiner(...)`, `next_utf8_codepoint_after(...)`,
+  and `is_emoji_sequence_joiner_between_emoji(...)` to stay in
+  `src/ui/text_shaping_fallback.cpp`. RED failed as expected:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  failed 2/2.
+- GREEN implementation suppresses missing-glyph diagnostics only when `U+200D`
+  sits between emoji-capable codepoints. It preserves deterministic glyph
+  records and per-codepoint color glyph plans without claiming native ZWJ
+  ligature shaping.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.

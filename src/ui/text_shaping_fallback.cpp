@@ -97,6 +97,34 @@ bool codepoint_accepts_emoji_presentation(char32_t codepoint) {
          codepoint == 0x3297 || codepoint == 0x3299;
 }
 
+bool is_emoji_sequence_joiner(char32_t codepoint) {
+  return codepoint == 0x200D;
+}
+
+char32_t next_utf8_codepoint_after(
+    std::string_view text,
+    std::size_t byte_offset) {
+  if (byte_offset >= text.size()) {
+    return U'\0';
+  }
+  std::size_t byte_length = 1;
+  while (byte_offset + byte_length < text.size() &&
+         is_utf8_continuation_byte(text[byte_offset + byte_length])) {
+    byte_length += 1;
+  }
+  return decode_utf8_codepoint(text, byte_offset, byte_length);
+}
+
+bool is_emoji_sequence_joiner_between_emoji(
+    char32_t codepoint,
+    bool has_previous_codepoint,
+    char32_t previous_codepoint,
+    char32_t next_codepoint) {
+  return is_emoji_sequence_joiner(codepoint) && has_previous_codepoint &&
+         codepoint_accepts_emoji_presentation(previous_codepoint) &&
+         codepoint_accepts_emoji_presentation(next_codepoint);
+}
+
 void append_font_fallback_run_span(
     TextShapeRun& run,
     std::size_t font_fallback_face_index,
@@ -246,6 +274,14 @@ TextShapeRun shape_text_with_deterministic_fallback(
         decode_utf8_codepoint(request.text, byte_offset, byte_length);
     const bool emoji_presentation_selector =
         is_emoji_presentation_selector(codepoint);
+    const char32_t next_codepoint =
+        next_utf8_codepoint_after(request.text, byte_offset + byte_length);
+    const bool emoji_sequence_joiner =
+        is_emoji_sequence_joiner_between_emoji(
+            codepoint,
+            has_previous_codepoint,
+            previous_codepoint,
+            next_codepoint);
     const std::size_t font_fallback_face_index =
         select_font_fallback_face_index(run.font_fallback_faces, codepoint);
     const std::size_t glyph_index = run.glyphs.size();
@@ -267,7 +303,7 @@ TextShapeRun shape_text_with_deterministic_fallback(
         byte_length,
         fallback_advance,
         device_advance);
-    if (!emoji_presentation_selector &&
+    if (!emoji_presentation_selector && !emoji_sequence_joiner &&
         font_fallback_faces_have_known_miss(
             run.font_fallback_faces,
             codepoint)) {
@@ -299,7 +335,7 @@ TextShapeRun shape_text_with_deterministic_fallback(
           byte_length,
           font_fallback_face_index);
     }
-    if (!emoji_presentation_selector) {
+    if (!emoji_presentation_selector && !is_emoji_sequence_joiner(codepoint)) {
       has_previous_codepoint = true;
       previous_codepoint = codepoint;
       previous_glyph_index = glyph_index;

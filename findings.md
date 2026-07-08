@@ -7166,3 +7166,18 @@
 - This is still metadata for future native shaping/rendering. It does not add
   full Unicode emoji data, HarfBuzz variation shaping, COLR/CBDT/SBIX/SVG font
   selection, or renderer-side color glyph drawing.
+
+## 2026-07-09 Phase D Step 400 Emoji ZWJ Missing-Glyph Suppression
+
+- Step 400 prevents deterministic fallback shaping from reporting `U+200D` as
+  a missing glyph when it is serving as an emoji ZWJ sequence joiner.
+- The suppression is deliberately narrow: `is_emoji_sequence_joiner_between_emoji(...)`
+  requires a previous emoji-capable codepoint and a next emoji-capable
+  codepoint before the missing-glyph diagnostic is skipped.
+- `next_utf8_codepoint_after(...)` keeps the lookahead local to
+  `src/ui/text_shaping_fallback.cpp`; it does not introduce Unicode
+  segmentation tables or a HarfBuzz dependency.
+- `U+200D` still remains a deterministic glyph record, and each emoji
+  codepoint in the sequence still gets its own `TextColorGlyphPlan`. Native
+  ZWJ ligature shaping and single-glyph emoji sequence rendering remain future
+  HarfBuzz/color-font work.

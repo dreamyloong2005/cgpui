@@ -189,6 +189,10 @@ int main() {
       !contains(fallback_source, "codepoint_prefers_color_glyph(") ||
       !contains(fallback_source, "is_emoji_presentation_selector(") ||
       !contains(fallback_source, "codepoint_accepts_emoji_presentation(") ||
+      !contains(fallback_source, "is_emoji_sequence_joiner(") ||
+      !contains(fallback_source, "next_utf8_codepoint_after(") ||
+      !contains(fallback_source,
+                "is_emoji_sequence_joiner_between_emoji(") ||
       !contains(fallback_source,
                 "append_emoji_presentation_color_glyph_plan(") ||
       !contains(fallback_source, "mark_emoji_presentation_selector_span(") ||

@@ -967,6 +967,10 @@ behavior that can support GPUI examples and editor-like widgets.
   `emoji_presentation_selector_byte_length`, so both BMP symbol emoji
   presentation and emoji-plane codepoints followed by `U+FE0F` preserve the
   selector bytes for future native shaping/rendering.
+  Step 400 suppresses false missing-glyph diagnostics for `U+200D` only when
+  it is acting as an emoji ZWJ sequence joiner between emoji-capable
+  codepoints, keeping deterministic glyph records and per-codepoint color
+  plans without claiming native ZWJ ligature shaping.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.

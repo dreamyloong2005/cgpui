@@ -134,6 +134,10 @@ Windows/Linux core API is stable enough for parity work.
   present plus its byte offset and length, so future native shaping/rendering
   can distinguish base-glyph color planning from selector-authored color
   presentation.
+- Step 400 suppresses false missing-glyph diagnostics for emoji ZWJ sequence
+  joiners. `U+200D` remains a deterministic glyph record, but when it sits
+  between emoji-capable codepoints the fallback shaper treats it as sequence
+  glue instead of reporting it as a missing glyph.
 
 ## Definition Of Done For This 20-Step Goal
 

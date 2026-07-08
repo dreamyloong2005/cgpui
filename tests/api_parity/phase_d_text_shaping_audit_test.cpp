@@ -120,7 +120,10 @@ int main() {
       !contains(text_row, "U+FE0F") ||
       !contains(text_row, "has_emoji_presentation_selector") ||
       !contains(text_row, "emoji_presentation_selector_byte_offset") ||
+      !contains(text_row, "emoji ZWJ joiner diagnostic suppression") ||
+      !contains(text_row, "U+200D") ||
       !contains(text_row, "production HarfBuzz shaping") ||
+      !contains(text_row, "native ZWJ ligature shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
   }
@@ -161,6 +164,12 @@ int main() {
       !contains(fallback_source, "mark_emoji_presentation_selector_span(")) {
     return 10;
   }
+  if (!contains(fallback_source, "is_emoji_sequence_joiner(") ||
+      !contains(fallback_source, "next_utf8_codepoint_after(") ||
+      !contains(fallback_source,
+                "is_emoji_sequence_joiner_between_emoji(")) {
+    return 11;
+  }
 
   if (!contains(wayland_fontconfig_source,
                 "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
@@ -186,7 +195,8 @@ int main() {
       !contains(text_model_test, "variation_run.color_glyphs.size()") ||
       !contains(text_model_test, "emoji_variation_run.color_glyphs.size()") ||
       !contains(text_model_test,
-                "emoji_presentation_selector_byte_offset")) {
+                "emoji_presentation_selector_byte_offset") ||
+      !contains(text_model_test, "zwj_run.missing_glyphs.empty()")) {
     return 9;
   }
 
