@@ -65,6 +65,29 @@ slices unless the user explicitly changes it:
   yet, but the renderer architecture must keep backend extension boundaries
   clean enough that they can be added later without rewriting public UI APIs.
 
+## Zero-Cost Abstraction Principle
+
+Future slices must treat zero-cost abstraction as an engineering constraint,
+not a slogan. Ergonomic public APIs are welcome, but hot runtime paths must not
+pay hidden costs that a direct C++ implementation would avoid.
+
+- Static fast paths come first for layout, element diff/reconcile, render
+  command generation, event routing, and reactive invalidation.
+- Templates, concepts, `constexpr`, `std::expected`, `std::optional`, and
+  ranges should express type-safe APIs without forcing extra heap allocation,
+  virtual dispatch, broad type erasure, or cross-module handle wrapping on hot
+  paths.
+- Dynamic widget/plugin/editor escape hatches are allowed, but they must be
+  explicit boundaries with measurable cost; they must not leak into the static
+  widget fast path by default.
+- Renderer and UI internals should lower declarative builders into compact
+  data-oriented structures, retained node storage, or command buffers before
+  hot traversal. Avoid per-frame tree-wide scans, repeated string lookups, and
+  avoidable `std::function`/heap churn.
+- When a slice introduces or depends on an abstraction boundary, add behavior,
+  structure, or micro-benchmark style tests that can catch accidental
+  allocation, type-erasure, virtual-dispatch, or command-buffer regressions.
+
 ## Completion Definition
 
 CGPUI is not "fully replicated" until all of these are true:

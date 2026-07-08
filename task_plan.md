@@ -21,6 +21,11 @@ Windows/Linux core API is stable enough for parity work.
   depth, low-allocation runtime structures, static and dynamic widget support,
   editor/AI-IDE-class text/tool UI primitives, Win32/Wayland production
   behavior, and later macOS Cocoa + Metal parity.
+- Zero-cost abstraction is a hard future-work constraint: public APIs may be
+  declarative and ergonomic, but hot paths must avoid hidden allocation,
+  broad type erasure, avoidable virtual dispatch, repeated handle wrapping, and
+  tree-wide per-frame scans. Static widget fast paths and dynamic escape hatches
+  must stay explicit and separately testable.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -6781,3 +6781,19 @@
 - DirectX/WebGPU/other backend names should remain clean extension boundaries
   rather than accidental implementation promises until the user opens those
   tracks explicitly.
+
+## 2026-07-08 Zero-Cost Abstraction Principle
+
+- User confirmed zero-cost abstraction should be achievable and should be
+  recorded so future implementation slices do not forget it.
+- Treat zero-cost abstraction as a measurable engineering constraint: hot paths
+  for layout, reconcile/diff, render command generation, event routing,
+  reactive invalidation, and renderer submission must not gain hidden heap
+  allocation, broad type erasure, avoidable virtual dispatch, repeated handle
+  wrapping, or tree-wide per-frame scans.
+- Keep static widget composition and dynamic widget/plugin/editor escape
+  hatches as separate paths. Dynamic behavior is allowed, but its cost must be
+  explicit and must not become the default for static UI composition.
+- Future slices that add abstraction boundaries should add behavior, structure,
+  or micro-benchmark style guards when the boundary could affect allocation,
+  dispatch, or per-frame work.

@@ -15046,3 +15046,13 @@
   low-allocation runtime structures, static and dynamic widget support,
   editor/AI-IDE-class text/tool UI primitives, Win32/Wayland production
   behavior, and later macOS Cocoa + Metal parity.
+
+## 2026-07-08 Zero-Cost Abstraction Documentation
+
+- Recorded zero-cost abstraction as a hard design and execution principle in
+  the complete roadmap and C++23 architecture design.
+- Also mirrored the principle into `task_plan.md` and `findings.md`: hot paths
+  should avoid hidden allocation, broad type erasure, avoidable virtual
+  dispatch, repeated handle wrapping, and tree-wide per-frame scans; static
+  widget fast paths and dynamic escape hatches must remain explicit and
+  separately testable.

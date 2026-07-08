@@ -16,6 +16,31 @@ The first stage targets desktop platforms only:
 
 The build system is Xmake with C++23 enabled for all C++ targets.
 
+## Zero-Cost Abstraction Principle
+
+CGPUI should use C++23 abstractions only when they compile down to direct,
+predictable runtime work on hot paths. The framework can expose pleasant
+declarative APIs, but layout, reconciliation, event routing, render command
+generation, reactive invalidation, and renderer submission must not
+accidentally add heap allocation, broad type erasure, virtual dispatch, or
+extra handle translation compared with a direct C++ implementation.
+
+Preferred patterns:
+
+- use templates, concepts, `constexpr`, `std::expected`, and `std::optional`
+  for type safety and compile-time selection;
+- keep static widget composition and dynamic widget/plugin escape hatches as
+  separate paths;
+- lower builder APIs into retained node storage, compact value records, spans,
+  or command buffers before hot traversal;
+- measure or test abstraction boundaries when they could affect allocation,
+  dispatch, or per-frame work.
+
+Dynamic dispatch and type erasure are allowed only where the behavior is truly
+dynamic, such as plugin/editor surfaces, runtime-generated widgets, or platform
+backend boundaries. They should be visible in the owning module and should not
+become the default implementation mechanism for static UI composition.
+
 ## Architecture
 
 ### Core
