@@ -15247,6 +15247,47 @@
   `text_model_test/default`, `ui_header_cleanliness/default`, and
   `ui_source_structure_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 387 Font Database Boundary
+
+- Started from clean `master` after
+  `113d322 test: add text shaping readiness audit`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `src/ui/text_font.cpp` ownership for `FontDatabase` and deterministic
+  discovery helper bodies, and requiring `text_font.hpp` to stop carrying
+  non-template implementation details such as `faces_.push_back(...)` and
+  `std::find(...)`. RED failed as expected with
+  `ui_source_structure_test/default`.
+- GREEN implementation moved `FontDatabase`, `FontFallbackChain`,
+  `font_database_from_discovered_faces(...)`, and `discover_test_fonts(...)`
+  bodies into `src/ui/text_font.cpp` while preserving existing behavior.
+- Focused GREEN verification passed:
+  `xmake test -y -P . ui_source_structure_test/default
+  text_model_test/default ui_header_cleanliness/default` 3/3.
+- First adjacent Windows verification found only a stale
+  `phase_d_text_shaping_audit_test/default` failure: the audit pinned the text
+  ledger row to `Steps 379-386`, while Step 387 legitimately extended the row.
+  Updated the audit to check the stable text-shaping readiness and HarfBuzz-gap
+  facts instead of pinning the trailing step number.
+- WSL focused verification initially failed at link:
+  `PlatformApplication::discover_fonts()` in `cgpui_platform` referenced
+  `font_database_from_discovered_faces(...)`, but `text_font.cpp` was compiled
+  only through `cgpui_ui`. Fixed ownership by compiling `src/ui/text_font.cpp`
+  into `cgpui_platform` and removing it from `cgpui_ui`'s wildcard source set.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  gpui_parity_ledger_test/default phase_d_text_shaping_audit_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 7/7.
+
 ## 2026-07-09 Phase D Step 385 Shaping Diagnostics
 
 - Started from clean `master` after

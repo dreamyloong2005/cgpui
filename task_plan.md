@@ -63,6 +63,13 @@ Windows/Linux core API is stable enough for parity work.
   boundary, HarfBuzz insertion point, capability snapshots, fallback
   diagnostics, and the explicit fact that production HarfBuzz shaping remains
   incomplete until the dependency-backed backend is linked and verified.
+- Step 387 starts the font discovery/fallback band by moving
+  `FontDatabase`, `FontFallbackChain`, `font_database_from_discovered_faces(...)`,
+  and `discover_test_fonts(...)` bodies out of `text_font.hpp` into the focused
+  `src/ui/text_font.cpp` implementation file, compiled through
+  `cgpui_platform` because `PlatformApplication::discover_fonts()` consumes the
+  helper. Native DirectWrite/fontconfig discovery remains future work over
+  this boundary.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -900,6 +900,11 @@ behavior that can support GPUI examples and editor-like widgets.
   later dependency-backed shaping work.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
+  Step 387 starts this band by moving `FontDatabase`, `FontFallbackChain`, and
+  deterministic discovery helper bodies out of `text_font.hpp` into
+  `src/ui/text_font.cpp`, compiled through `cgpui_platform` because platform
+  applications produce discovered font records, giving native
+  DirectWrite/fontconfig adapters a focused font boundary to feed later.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

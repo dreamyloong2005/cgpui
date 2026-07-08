@@ -6958,3 +6958,19 @@
 - The audit lets subsequent Phase D text/font work proceed without losing the
   real dependency-backed HarfBuzz task: `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND`
   must still require a real implementation and verification on Windows/Linux.
+
+## 2026-07-09 Phase D Step 387 Font Database Boundary
+
+- Step 387 starts the font discovery/fallback band with a module-boundary
+  cleanup before native backend work.
+- Durable ownership is `src/ui/text_font.cpp`; public `text_font.hpp` now keeps
+  declarations for `FontDatabase`, `FontFallbackChain`,
+  `font_database_from_discovered_faces(...)`, and `discover_test_fonts(...)`
+  while non-template bodies live in the implementation file.
+- Build ownership is `cgpui_platform`, with `cgpui_ui` removing
+  `src/ui/text_font.cpp` from its wildcard source set, because
+  `PlatformApplication::discover_fonts()` calls the discovered-face helper
+  before UI targets are necessarily linked.
+- This does not add DirectWrite, fontconfig, FreeType, or CoreText discovery
+  yet. It creates the focused UI font boundary those platform adapters should
+  feed in subsequent slices.

@@ -389,6 +389,7 @@ int main() {
 
   const std::string text_font_header =
       read_source("include/cgpui/ui/text_font.hpp");
+  const std::string text_font_source = read_source("src/ui/text_font.cpp");
   const std::string text_edit_actions_header =
       read_source("include/cgpui/ui/text_edit_actions.hpp");
   const std::string text_shape_header =
@@ -406,6 +407,9 @@ int main() {
   const std::string text_model_header =
       read_source("include/cgpui/ui/text_model.hpp");
   if (!contains(text_font_header, "class FontDatabase") ||
+      !contains(text_font_source, "void FontDatabase::add_face(") ||
+      !contains(text_font_source,
+                "FontDatabase font_database_from_discovered_faces(") ||
       !contains(text_edit_actions_header, "enum class TextEditAction") ||
       !contains(text_shape_header, "struct TextShapeRun") ||
       !contains(text_glyphs_header, "struct RasterizedGlyph") ||
@@ -432,6 +436,14 @@ int main() {
       contains(text_wrapping_header, " inline ") ||
       contains(text_hit_testing_header, " inline ")) {
     return 114;
+  }
+  if (line_count(text_font_header) > 120 ||
+      contains(text_font_header, "faces_.push_back") ||
+      contains(text_font_header, "generic_fallback_families_.push_back") ||
+      contains(text_font_header, "std::find(") ||
+      !contains(xmake_source, "add_files(\"src/ui/text_font.cpp\")") ||
+      !contains(xmake_source, "remove_files(\"src/ui/text_font.cpp\")")) {
+    return 150;
   }
 
   const std::string runtime_header =

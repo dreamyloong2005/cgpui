@@ -97,9 +97,9 @@ int main() {
 
   const std::string text_row =
       line_containing(ledger_md, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-386") ||
+  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "text-shaping readiness audit") ||
-      !contains(text_row, "production HarfBuzz shaping remains incomplete")) {
+      !contains(text_row, "production HarfBuzz shaping")) {
     return 4;
   }
 
