@@ -4,12 +4,14 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace cgpui {
 
 struct TextShapingRequest {
   std::string_view text;
   FontDescriptor font;
+  std::vector<FontFaceDescriptor> font_fallback_faces;
   float font_size = 16.0F;
   DpiScale scale;
   TextShapingBackendSelection backend;

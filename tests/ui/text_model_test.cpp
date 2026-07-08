@@ -779,6 +779,47 @@ int test_shape_text_produces_deterministic_fallback_glyphs() {
   return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 47;
 }
 
+int test_shape_text_preserves_font_fallback_chain() {
+  cgpui::FontDatabase database;
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "inter.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = U' ', .last = U'~'}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Sans CJK"},
+      .postscript_name = "NotoSansCJK-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "noto-cjk.otf",
+      .coverage = {cgpui::FontUnicodeRange{.first = 0x4E00, .last = 0x9FFF}},
+  });
+  database.add_generic_fallback_family("Noto Sans CJK");
+
+  const cgpui::FontFallbackChain cjk_chain =
+      database.resolve_chain_for_codepoint(
+          cgpui::FontDescriptor{.family = "Inter"},
+          U'\u4E2D');
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("\xE4\xB8\xAD", cjk_chain, 18.0F);
+  if (run.font.family != "Noto Sans CJK" ||
+      run.font_fallback_faces.size() != 1 ||
+      run.font_fallback_faces[0].postscript_name != "NotoSansCJK-Regular" ||
+      run.glyph_count() != 1 || run.glyphs[0].byte_length != 3) {
+    return 159;
+  }
+
+  const cgpui::TextShapeRun empty_chain_run =
+      cgpui::shape_text("A", cgpui::FontFallbackChain{}, 18.0F);
+  if (!empty_chain_run.font.family.empty() ||
+      !empty_chain_run.font_fallback_faces.empty()) {
+    return 160;
+  }
+
+  return 0;
+}
+
 int test_shape_text_records_backend_selection_and_fallback_reason() {
   const cgpui::TextShapeRun default_run =
       cgpui::shape_text("ffi", cgpui::FontDescriptor{.family = "Inter"});
@@ -1182,6 +1223,10 @@ int main() {
     return result;
   }
   if (const int result = test_shape_text_produces_deterministic_fallback_glyphs();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_shape_text_preserves_font_fallback_chain();
       result != 0) {
     return result;
   }

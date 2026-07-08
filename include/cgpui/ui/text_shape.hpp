@@ -23,6 +23,7 @@ struct TextGlyphRun {
 struct TextShapeRun {
   std::string text;
   FontDescriptor font;
+  std::vector<FontFaceDescriptor> font_fallback_faces;
   float font_size = 16.0F;
   DpiScale scale;
   std::vector<TextGlyphRun> glyphs;
@@ -51,6 +52,13 @@ struct TextShapeRun {
 [[nodiscard]] TextShapeRun shape_text(
     std::string_view text,
     FontDescriptor font = {},
+    float font_size = 16.0F,
+    DpiScale scale = {},
+    TextShapingOptions options = {});
+
+[[nodiscard]] TextShapeRun shape_text(
+    std::string_view text,
+    const FontFallbackChain& fallback_chain,
     float font_size = 16.0F,
     DpiScale scale = {},
     TextShapingOptions options = {});

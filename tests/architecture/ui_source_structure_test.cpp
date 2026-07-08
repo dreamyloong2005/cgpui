@@ -157,6 +157,9 @@ int main() {
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
       !contains(text_shaping_harfbuzz_source,
                 "shape_text_with_deterministic_fallback") ||
+      !contains(text_shape_source, "copy_font_fallback_faces(") ||
+      !contains(text_shape_source, "FontFallbackChain& fallback_chain") ||
+      !contains(text_shape_source, "font_fallback_faces") ||
       !contains(xmake_source,
                 "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
       !contains(xmake_source,

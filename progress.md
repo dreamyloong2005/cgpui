@@ -15228,6 +15228,35 @@
   `gpui_parity_ledger_test/default`, `phase_d_text_shaping_audit_test/default`,
   and `phase_c_final_ledger_audit_test/default` 9/9.
 
+## 2026-07-09 Phase D Step 392 Explicit Fallback-Chain Shaping
+
+- Started from clean `master` after
+  `f9be4c9 feat: add coverage aware font fallback`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring
+  `shape_text(text, FontFallbackChain, ...)` and
+  `TextShapeRun::font_fallback_faces`, plus structure coverage requiring the
+  fallback-chain copy to live in `src/ui/text_shape.cpp`. RED failed as
+  expected on missing overload and run diagnostics.
+- GREEN implementation added the explicit fallback-chain overload, copied the
+  caller-provided chain into `TextShapeRun::font_fallback_faces`, used the
+  chain primary as `TextShapeRun::font`, and threaded the copied metadata
+  through the internal shaping request into the deterministic fallback run.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default` 4/4.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  gpui_parity_ledger_test/default phase_d_text_shaping_audit_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `text_model_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `render_view_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_d_text_shaping_audit_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 7/7.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

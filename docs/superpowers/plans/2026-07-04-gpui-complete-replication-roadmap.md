@@ -926,6 +926,11 @@ behavior that can support GPUI examples and editor-like widgets.
   `FontDatabase::resolve_chain_for_codepoint(...)`, so a later shaping run can
   choose a fallback chain for a specific Unicode codepoint while retaining the
   existing ordered fallback behavior when coverage metadata is absent.
+  Step 392 threads that explicit chain into shaping with a
+  `shape_text(..., FontFallbackChain, ...)` overload and
+  `TextShapeRun::font_fallback_faces` diagnostics, keeping fallback selection
+  caller-controlled instead of adding hidden global font lookup to the shaping
+  hot path.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

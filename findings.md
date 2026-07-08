@@ -7051,3 +7051,19 @@
   extraction from DirectWrite/fontconfig/FreeType, per-script shaping splits,
   emoji/color glyph planning, and missing-glyph diagnostics remain later Phase
   D work.
+
+## 2026-07-09 Phase D Step 392 Explicit Fallback-Chain Shaping
+
+- Step 392 connects the Step 391 coverage-aware chain to shaping through an
+  explicit overload: `shape_text(text, FontFallbackChain, ...)`.
+- The overload copies the caller-provided chain into
+  `TextShapeRun::font_fallback_faces` and uses the first face as the run's
+  primary `FontDescriptor`. Empty chains preserve the existing empty-font
+  behavior.
+- This deliberately avoids hidden global `FontDatabase` lookup inside
+  `shape_text(...)`. Callers that want coverage-aware fallback must resolve the
+  chain explicitly, which keeps the cost visible and compatible with the
+  zero-cost abstraction rule.
+- Real per-glyph fallback splitting is still future work: the deterministic
+  fallback shaper records the chain on the run but does not yet split one run
+  into multiple font-specific glyph spans.

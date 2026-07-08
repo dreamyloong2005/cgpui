@@ -11,6 +11,7 @@ TextShapeRun shape_text_with_deterministic_fallback(
   TextShapeRun run{
       .text = std::string(request.text),
       .font = std::move(request.font),
+      .font_fallback_faces = std::move(request.font_fallback_faces),
       .font_size = request.font_size,
       .scale = request.scale,
       .byte_length = request.text.size(),

@@ -96,6 +96,10 @@ Windows/Linux core API is stable enough for parity work.
   `FontDatabase::resolve_chain_for_codepoint(...)` let font records choose a
   fallback chain for a specific Unicode codepoint while preserving the
   existing ordered fallback chain when coverage metadata is absent.
+- Step 392 connects the explicit fallback chain to shaping. `shape_text(...)`
+  now has a `FontFallbackChain` overload that copies the caller-provided chain
+  into `TextShapeRun::font_fallback_faces`, uses the chain primary as the run
+  font, and avoids hidden global font database lookup.
 
 ## Definition Of Done For This 20-Step Goal
 
