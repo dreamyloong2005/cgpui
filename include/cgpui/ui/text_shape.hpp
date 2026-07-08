@@ -16,6 +16,7 @@ struct TextGlyphRun {
   std::uint32_t glyph_id = 0;
   std::size_t byte_offset = 0;
   std::size_t byte_length = 0;
+  std::size_t font_fallback_face_index = 0;
   float advance = 0.0F;
   Point offset;
 };

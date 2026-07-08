@@ -2,8 +2,56 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace cgpui {
+namespace {
+
+char32_t decode_utf8_codepoint(
+    std::string_view text,
+    std::size_t byte_offset,
+    std::size_t byte_length) {
+  if (byte_offset >= text.size() || byte_length == 0) {
+    return U'\0';
+  }
+
+  const auto byte_at = [text](std::size_t index) {
+    return static_cast<unsigned char>(text[index]);
+  };
+  const unsigned char first = byte_at(byte_offset);
+  if (byte_length == 1 || (first & 0x80U) == 0U) {
+    return static_cast<char32_t>(first);
+  }
+  if (byte_length == 2 && byte_offset + 1 < text.size()) {
+    return static_cast<char32_t>(((first & 0x1FU) << 6U) |
+                                 (byte_at(byte_offset + 1) & 0x3FU));
+  }
+  if (byte_length == 3 && byte_offset + 2 < text.size()) {
+    return static_cast<char32_t>(((first & 0x0FU) << 12U) |
+                                 ((byte_at(byte_offset + 1) & 0x3FU) << 6U) |
+                                 (byte_at(byte_offset + 2) & 0x3FU));
+  }
+  if (byte_length == 4 && byte_offset + 3 < text.size()) {
+    return static_cast<char32_t>(((first & 0x07U) << 18U) |
+                                 ((byte_at(byte_offset + 1) & 0x3FU) << 12U) |
+                                 ((byte_at(byte_offset + 2) & 0x3FU) << 6U) |
+                                 (byte_at(byte_offset + 3) & 0x3FU));
+  }
+  return static_cast<char32_t>(first);
+}
+
+std::size_t select_font_fallback_face_index(
+    const std::vector<FontFaceDescriptor>& faces,
+    char32_t codepoint) {
+  for (std::size_t index = 0; index < faces.size(); ++index) {
+    if (font_face_covers_codepoint(faces[index], codepoint)) {
+      return index;
+    }
+  }
+  return 0;
+}
+
+} // namespace
 
 TextShapeRun shape_text_with_deterministic_fallback(
     TextShapingRequest request) {
@@ -36,10 +84,15 @@ TextShapeRun shape_text_with_deterministic_fallback(
            is_utf8_continuation_byte(request.text[byte_offset + byte_length])) {
       byte_length += 1;
     }
+    const char32_t codepoint =
+        decode_utf8_codepoint(request.text, byte_offset, byte_length);
     run.glyphs.push_back(TextGlyphRun{
         .glyph_id = glyph_id,
         .byte_offset = byte_offset,
         .byte_length = byte_length,
+        .font_fallback_face_index = select_font_fallback_face_index(
+            run.font_fallback_faces,
+            codepoint),
         .advance = fallback_advance,
     });
     run.total_advance += fallback_advance;

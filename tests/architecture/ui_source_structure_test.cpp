@@ -145,6 +145,8 @@ int main() {
       read_source("src/ui/text_shaping_dispatch.cpp");
   const std::string text_shaping_harfbuzz_source =
       read_source("src/ui/text_shaping_harfbuzz.cpp");
+  const std::string fallback_source =
+      read_source("src/ui/text_shaping_fallback.cpp");
   const std::string text_shape_source = read_source("src/ui/text_shape.cpp");
   const std::string xmake_source = read_source("xmake.lua");
   if (!contains(text_shaping_backend_source,
@@ -160,6 +162,8 @@ int main() {
       !contains(text_shape_source, "copy_font_fallback_faces(") ||
       !contains(text_shape_source, "FontFallbackChain& fallback_chain") ||
       !contains(text_shape_source, "font_fallback_faces") ||
+      !contains(fallback_source, "font_fallback_face_index") ||
+      !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(xmake_source,
                 "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
       !contains(xmake_source,

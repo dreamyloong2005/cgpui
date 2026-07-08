@@ -15257,6 +15257,34 @@
   `gpui_parity_ledger_test/default`, `phase_d_text_shaping_audit_test/default`,
   and `phase_c_final_ledger_audit_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 393 Glyph Fallback Face Indices
+
+- Started from clean `master` after
+  `cfab5a0 feat: add explicit font fallback shaping`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextGlyphRun::font_fallback_face_index` to distinguish Inter and Noto CJK
+  glyphs in one shaped run, plus structure coverage requiring the selection
+  helper to live in `src/ui/text_shaping_fallback.cpp`. RED failed as expected
+  on the missing glyph field.
+- GREEN implementation added `font_fallback_face_index` to glyph runs and made
+  the deterministic fallback shaper decode each UTF-8 glyph codepoint and pick
+  the first fallback face that covers it.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default` 4/4.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  gpui_parity_ledger_test/default phase_d_text_shaping_audit_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `text_model_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `render_view_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_d_text_shaping_audit_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 7/7.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

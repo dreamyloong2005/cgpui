@@ -931,6 +931,10 @@ behavior that can support GPUI examples and editor-like widgets.
   `TextShapeRun::font_fallback_faces` diagnostics, keeping fallback selection
   caller-controlled instead of adding hidden global font lookup to the shaping
   hot path.
+  Step 393 adds `TextGlyphRun::font_fallback_face_index` and deterministic
+  UTF-8 codepoint-to-face selection over the explicit fallback chain, so glyph
+  records can identify which fallback face covers each codepoint before later
+  multi-font run splitting lands.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

@@ -100,6 +100,10 @@ Windows/Linux core API is stable enough for parity work.
   now has a `FontFallbackChain` overload that copies the caller-provided chain
   into `TextShapeRun::font_fallback_faces`, uses the chain primary as the run
   font, and avoids hidden global font database lookup.
+- Step 393 records glyph-level fallback face selection. `TextGlyphRun` now
+  carries `font_fallback_face_index`, and the deterministic fallback shaper
+  decodes each UTF-8 codepoint to choose the first provided fallback face that
+  covers that codepoint. Full multi-font run splitting remains later work.
 
 ## Definition Of Done For This 20-Step Goal
 

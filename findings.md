@@ -7067,3 +7067,15 @@
 - Real per-glyph fallback splitting is still future work: the deterministic
   fallback shaper records the chain on the run but does not yet split one run
   into multiple font-specific glyph spans.
+
+## 2026-07-09 Phase D Step 393 Glyph Fallback Face Indices
+
+- Step 393 adds `TextGlyphRun::font_fallback_face_index`, giving each shaped
+  glyph a stable index into `TextShapeRun::font_fallback_faces`.
+- The deterministic fallback shaper now decodes the UTF-8 codepoint for each
+  glyph and selects the first provided fallback face whose coverage metadata
+  includes that codepoint. With no fallback chain or no matching coverage, the
+  index remains 0.
+- This is still diagnostic/planning metadata, not full multi-font shaping.
+  Glyph advances and deterministic glyph ids remain unchanged; later steps
+  should use the face index to split font runs and record missing-glyph cases.

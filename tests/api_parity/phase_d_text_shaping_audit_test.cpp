@@ -109,6 +109,7 @@ int main() {
       !contains(text_row, "FontUnicodeRange") ||
       !contains(text_row, "FontDatabase::resolve_chain_for_codepoint") ||
       !contains(text_row, "TextShapeRun::font_fallback_faces") ||
+      !contains(text_row, "TextGlyphRun::font_fallback_face_index") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
