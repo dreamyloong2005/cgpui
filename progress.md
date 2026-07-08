@@ -15346,6 +15346,35 @@
   `phase_d_font_fallback_audit_test/default`, `gpui_parity_ledger_test/default`,
   and `phase_c_final_ledger_audit_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 396 Missing Glyph Diagnostics
+
+- Started from clean `master` after
+  `6bc4183 feat: add fallback font run spans`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextShapeRun::missing_glyphs` and `TextMissingGlyphDiagnostic` for an emoji
+  codepoint missed by every declared-coverage face, plus a no-false-positive
+  case for unknown platform coverage. Structure coverage now guards the
+  public text-shape leaf and fallback-shaper helper ownership.
+- GREEN implementation adds the missing-glyph diagnostic vector in
+  `include/cgpui/ui/text_shape.hpp` and appends diagnostics from
+  `src/ui/text_shaping_fallback.cpp` only when every explicit fallback face
+  declares coverage and none covers the codepoint.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `text_model_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `phase_d_text_shaping_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`, `gpui_parity_ledger_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 7/7.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

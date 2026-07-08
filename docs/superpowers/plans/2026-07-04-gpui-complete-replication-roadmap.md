@@ -947,6 +947,11 @@ behavior that can support GPUI examples and editor-like widgets.
   shaping exposes byte/glyph/advance ranges for each selected fallback face
   before renderer-side font switching, emoji/color glyph planning, and
   missing-glyph diagnostics land.
+  Step 396 adds explicit missing-glyph diagnostics through
+  `TextMissingGlyphDiagnostic` and `TextShapeRun::missing_glyphs` when every
+  face in the explicit fallback chain declares coverage and none covers the
+  codepoint. Unknown platform coverage remains non-diagnostic until native
+  coverage extraction lands.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.

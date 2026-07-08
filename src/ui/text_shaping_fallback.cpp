@@ -51,6 +51,23 @@ std::size_t select_font_fallback_face_index(
   return 0;
 }
 
+bool font_fallback_faces_have_known_miss(
+    const std::vector<FontFaceDescriptor>& faces,
+    char32_t codepoint) {
+  if (faces.empty()) {
+    return false;
+  }
+  for (const FontFaceDescriptor& face : faces) {
+    if (!font_face_declares_coverage(face)) {
+      return false;
+    }
+    if (font_face_covers_codepoint(face, codepoint)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void append_font_fallback_run_span(
     TextShapeRun& run,
     std::size_t font_fallback_face_index,
@@ -76,6 +93,22 @@ void append_font_fallback_run_span(
   font_run.byte_end = byte_offset + byte_length;
   font_run.advance += advance;
   font_run.device_advance += device_advance;
+}
+
+void append_missing_glyph_diagnostic(
+    TextShapeRun& run,
+    char32_t codepoint,
+    std::size_t glyph_index,
+    std::size_t byte_offset,
+    std::size_t byte_length,
+    std::size_t font_fallback_face_index) {
+  run.missing_glyphs.push_back(TextMissingGlyphDiagnostic{
+      .codepoint = codepoint,
+      .glyph_index = glyph_index,
+      .byte_offset = byte_offset,
+      .byte_length = byte_length,
+      .font_fallback_face_index = font_fallback_face_index,
+  });
 }
 
 } // namespace
@@ -105,6 +138,7 @@ TextShapeRun shape_text_with_deterministic_fallback(
   const float fallback_advance = request.font_size * 0.5F;
   run.glyphs.reserve(request.text.size());
   run.font_runs.reserve(request.text.size());
+  run.missing_glyphs.reserve(request.text.size());
   std::size_t byte_offset = 0;
   std::uint32_t glyph_id = 0;
   while (byte_offset < request.text.size()) {
@@ -136,6 +170,17 @@ TextShapeRun shape_text_with_deterministic_fallback(
         byte_length,
         fallback_advance,
         device_advance);
+    if (font_fallback_faces_have_known_miss(
+            run.font_fallback_faces,
+            codepoint)) {
+      append_missing_glyph_diagnostic(
+          run,
+          codepoint,
+          glyph_index,
+          byte_offset,
+          byte_length,
+          font_fallback_face_index);
+    }
     byte_offset += byte_length;
     glyph_id += 1;
   }

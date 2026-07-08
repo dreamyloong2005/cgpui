@@ -116,6 +116,10 @@ Windows/Linux core API is stable enough for parity work.
   fallback face into byte/glyph/advance spans, with deterministic fallback
   shaping preserving the explicit caller-provided chain and avoiding hidden
   global font database lookup.
+- Step 396 adds conservative missing-glyph diagnostics. `TextMissingGlyphDiagnostic`
+  and `TextShapeRun::missing_glyphs` record byte/glyph/codepoint evidence only
+  when every face in the explicit fallback chain declares coverage and none
+  covers the codepoint; unknown platform coverage remains non-diagnostic.
 
 ## Definition Of Done For This 20-Step Goal
 

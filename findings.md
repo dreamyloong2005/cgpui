@@ -7107,3 +7107,16 @@
   `src/ui/text_shaping_fallback.cpp` via `append_font_fallback_run_span(...)`;
   it is driven only by the explicit `FontFallbackChain` passed to
   `shape_text(...)`, so Step 395 keeps the zero-hidden-global-lookup rule.
+
+## 2026-07-09 Phase D Step 396 Missing Glyph Diagnostics
+
+- Step 396 adds missing-glyph metadata rather than renderer-side replacement
+  glyph rendering.
+- `TextMissingGlyphDiagnostic` lives in the public `text_shape.hpp` leaf and
+  `TextShapeRun::missing_glyphs` records codepoint, glyph index, byte range,
+  and fallback face index for known coverage misses.
+- The fallback shaper records a miss only when the explicit fallback chain is
+  non-empty, every face declares coverage, and no face covers the codepoint.
+  Faces with unknown coverage keep the existing unknown-but-usable behavior so
+  platform records do not produce false missing-glyph diagnostics before native
+  coverage extraction lands.

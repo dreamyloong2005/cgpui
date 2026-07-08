@@ -911,6 +911,57 @@ int test_shape_text_splits_contiguous_font_fallback_runs() {
   return 0;
 }
 
+int test_shape_text_records_missing_glyph_diagnostics() {
+  cgpui::FontDatabase database;
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "inter.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = U' ', .last = U'~'}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Sans CJK"},
+      .postscript_name = "NotoSansCJK-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "noto-cjk.otf",
+      .coverage = {cgpui::FontUnicodeRange{.first = 0x4E00, .last = 0x9FFF}},
+  });
+  database.add_generic_fallback_family("Noto Sans CJK");
+
+  const cgpui::FontFallbackChain chain =
+      database.resolve_chain(cgpui::FontDescriptor{.family = "Inter"});
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("A\xF0\x9F\x98\x80", chain, 18.0F);
+  if (run.missing_glyphs.size() != 1 || run.glyph_count() != 2) {
+    return 168;
+  }
+  const cgpui::TextMissingGlyphDiagnostic& missing = run.missing_glyphs[0];
+  if (missing.codepoint != 0x1F600 || missing.glyph_index != 1 ||
+      missing.byte_offset != 1 || missing.byte_length != 4 ||
+      missing.font_fallback_face_index != 0 ||
+      run.glyphs[1].font_fallback_face_index != 0) {
+    return 169;
+  }
+
+  cgpui::FontDatabase unknown_coverage_database;
+  unknown_coverage_database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Platform Sans"},
+      .postscript_name = "PlatformSans-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "platform-sans.ttf",
+  });
+  const cgpui::FontFallbackChain unknown_coverage_chain =
+      unknown_coverage_database.resolve_chain(
+          cgpui::FontDescriptor{.family = "Platform Sans"});
+  const cgpui::TextShapeRun unknown_coverage_run =
+      cgpui::shape_text(
+          "\xF0\x9F\x98\x80",
+          unknown_coverage_chain,
+          18.0F);
+  return unknown_coverage_run.missing_glyphs.empty() ? 0 : 170;
+}
+
 int test_shape_text_records_backend_selection_and_fallback_reason() {
   const cgpui::TextShapeRun default_run =
       cgpui::shape_text("ffi", cgpui::FontDescriptor{.family = "Inter"});
@@ -1328,6 +1379,11 @@ int main() {
   }
   if (const int result =
           test_shape_text_splits_contiguous_font_fallback_runs();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_shape_text_records_missing_glyph_diagnostics();
       result != 0) {
     return result;
   }
