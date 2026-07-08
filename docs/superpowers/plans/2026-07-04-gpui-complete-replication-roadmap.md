@@ -46,6 +46,25 @@ opacity, menus, shadow, SVG, text wrapping, uniform lists, and window behavior.
   platform matrix parity" is later interpreted literally, X11 should be added
   as a late optional backend after Wayland production behavior is stable.
 
+## User Scope Decision After Phase C
+
+The post-Phase-C execution target is a desktop C++23 GPUI runtime, not a game
+engine integration project. The following scope decision is binding for future
+slices unless the user explicitly changes it:
+
+- Deferred: game-engine-specific integration, engine runtime embedding, shared
+  engine renderer/resource/asset/command systems, game editor/runtime UI depth,
+  Android, iOS, and X11.
+- Required for the active track: C++23-native public APIs without Rust FFI,
+  modern C++ result/optional/concepts/constexpr/ranges usage, Vulkan-first
+  production renderer depth, declarative widgets, reactive state/subscription
+  depth, low-allocation runtime structures, static and dynamic widget support,
+  editor/AI-IDE-class text and tool UI primitives, Win32 and Wayland production
+  platform behavior, and later macOS Cocoa + Metal parity.
+- DirectX/WebGPU/other renderer backends are not active implementation tracks
+  yet, but the renderer architecture must keep backend extension boundaries
+  clean enough that they can be added later without rewriting public UI APIs.
+
 ## Completion Definition
 
 CGPUI is not "fully replicated" until all of these are true:
@@ -70,8 +89,9 @@ CGPUI is not "fully replicated" until all of these are true:
   input, IME, clipboard, drag/drop, menus, dialogs, accessibility, cursors,
   multi-window, and platform diagnostics.
 - [ ] Cocoa + Metal reaches the same public behavior as Windows/Linux.
-- [ ] The parity ledger has no required gaps. Any non-goal, such as active X11
-  exclusion, is explicitly accepted by the user.
+- [ ] The parity ledger has no required gaps. Any non-goal, such as active X11,
+  Android/iOS, or game-engine-specific integration exclusion, is explicitly
+  accepted by the user.
 
 ## Step Count Estimate
 

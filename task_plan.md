@@ -14,6 +14,13 @@ Windows/Linux core API is stable enough for parity work.
 - Linux platform target is Wayland.
 - Step 88 adds the explicit macOS/Cocoa + Metal target boundary without making
   macOS parity part of the active Windows/Linux implementation track.
+- Post-Phase-C user scope decision: defer game-engine-specific integration,
+  engine runtime embedding, Android, iOS, and X11; keep the rest of the C++23
+  desktop GPUI runtime goals required. That means future work must still close
+  Vulkan production depth, declarative widgets, reactive state/subscription
+  depth, low-allocation runtime structures, static and dynamic widget support,
+  editor/AI-IDE-class text/tool UI primitives, Win32/Wayland production
+  behavior, and later macOS Cocoa + Metal parity.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -6767,3 +6767,17 @@
 - Completion audit must check the actual Phase C checkbox ranges, not only the
   per-step prose: the `Steps 319-324` range was stale as unchecked while its
   embedded evidence already recorded all six slices as merged and verified.
+
+## 2026-07-08 Post-Phase-C Scope Decision
+
+- User accepted deferring game-engine-specific integration, engine runtime
+  embedding/sharing, Android, iOS, and X11.
+- User did not accept deferring the other C++23 GPUI platform goals. Future
+  slices should treat Vulkan production depth, declarative widgets, reactive
+  state/subscription depth, low-allocation runtime structures, static and
+  dynamic widget support, editor/AI-IDE-class text/tool UI primitives,
+  Win32/Wayland production behavior, and later macOS Cocoa + Metal parity as
+  required work.
+- DirectX/WebGPU/other backend names should remain clean extension boundaries
+  rather than accidental implementation promises until the user opens those
+  tracks explicitly.

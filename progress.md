@@ -15034,3 +15034,15 @@
   Windows `xmake test -P .` passed 116/116, and WSL
   `phase_c_final_ledger_audit_test/default` passed 1/1 using the D-drive
   `.build-wsl/master` configuration.
+
+## 2026-07-08 Post-Phase-C Scope Alignment
+
+- Recorded the user's post-Phase-C scope decision in the roadmap, task plan,
+  and findings: game-engine-specific integration, engine runtime embedding,
+  Android, iOS, and X11 may be deferred.
+- Recorded the non-deferred requirements for future work: C++23-native public
+  APIs without Rust FFI, modern C++ idioms, Vulkan-first production renderer
+  depth, declarative widgets, reactive state/subscription depth,
+  low-allocation runtime structures, static and dynamic widget support,
+  editor/AI-IDE-class text/tool UI primitives, Win32/Wayland production
+  behavior, and later macOS Cocoa + Metal parity.
