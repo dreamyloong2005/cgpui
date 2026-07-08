@@ -2542,3 +2542,18 @@ implementation slice.
   using D-drive WSL build/cache output plus `/dev/shm/cgpui` for transient
   Wayland socket temp. Step 362 SVG/image asset registration is the next
   tracked Phase C slice.
+- Phase C Step 362, SVG/image asset registration, is implemented in
+  `.worktrees/phase-c-svg-image-asset-registration`:
+  `ImageAssetRegistry`, `RegisteredImageAsset`, `register_image(...)`,
+  `register_svg(...)`, `find(...)`, `registrations()`, and `raster_assets()`
+  provide deterministic public registration over the Step 361 `ImageSource`
+  boundary without SVG decoding, PNG/JPEG loading, renderer upload behavior,
+  GPU texture lifetime, private runtime headers, or direct `WindowRuntime`
+  use. The public leaf is `include/cgpui/ui/image_asset_registry.hpp`, with
+  non-template bodies in `src/ui/image_asset_registry.cpp`; stale
+  window/examples handoff guards now check the closed window/examples band
+  evidence instead of pinning the global `next_step` to Step 361. Focused
+  gates passed 7/7, Windows debug full verification passed 112/112, and WSL
+  Arch Linux debug full verification passed 109/109 using D-drive WSL
+  build/cache output plus `/dev/shm/cgpui` for transient temp. Step 363
+  SVG/image public example coverage is the next tracked Phase C slice.

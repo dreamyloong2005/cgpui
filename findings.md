@@ -6653,3 +6653,23 @@
   command.
 - Step 362 should continue with SVG/image asset registration examples over
   this source boundary.
+
+## 2026-07-08 Phase C Step 362 SVG Image Asset Registration
+
+- Step 362 stays scoped to deterministic registration of raster image assets
+  and SVG source strings over the existing `ImageSource` boundary. It should
+  not add SVG decoding, PNG/JPEG loading, renderer upload behavior, GPU
+  texture lifetime, private runtime headers, or direct `WindowRuntime` use.
+- Durable public ownership is `include/cgpui/ui/image_asset_registry.hpp`,
+  with non-template bodies in `src/ui/image_asset_registry.cpp`.
+  `ImageAssetRegistry` allocates ids for id-less raster assets and SVG sources,
+  stores `RegisteredImageAsset` records, exposes registered raster assets for
+  later upload planning, and returns `ImageSource` values that feed
+  `image(...)`/`svg(...)`.
+- Verification passed JSON validation, diff hygiene, focused Step 362 and
+  adjacent guard tests 7/7, Windows debug full 112/112, and WSL Arch Linux
+  debug full 109/109. WSL output stayed under
+  `.build-wsl/phase-c-svg-image-asset-registration` on D:, while
+  `/root/.xmake` remained absent and `/tmp` remained empty.
+- Step 363 should continue the SVG/image band with public example coverage over
+  registered image and SVG sources.

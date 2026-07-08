@@ -91,6 +91,8 @@ int main() {
       read_source("include/cgpui/ui/image_builder.hpp");
   const std::string image_source_header =
       read_source("include/cgpui/ui/image_source.hpp");
+  const std::string image_asset_registry_header =
+      read_source("include/cgpui/ui/image_asset_registry.hpp");
   const std::string container_header =
       read_source("include/cgpui/ui/container_builder.hpp");
   const std::string element_nodes_header =
@@ -124,6 +126,10 @@ int main() {
       !contains(image_source_header, "enum class ImageSourceKind") ||
       !contains(image_source_header, "class ImageSource") ||
       !contains(image_source_header, "svg_image_source(") ||
+      !contains(image_asset_registry_header, "class RegisteredImageAsset") ||
+      !contains(image_asset_registry_header, "class ImageAssetRegistry") ||
+      !contains(widget_aggregate,
+                "#include \"cgpui/ui/image_asset_registry.hpp\"") ||
       !contains(container_header, "h_stack()") ||
       !contains(container_header, "div()") ||
       !contains(container_header, "h_flex()") ||
@@ -160,6 +166,8 @@ int main() {
       read_source("src/ui/widgets/image_builder.cpp");
   const std::string image_source =
       read_source("src/ui/image_source.cpp");
+  const std::string image_asset_registry =
+      read_source("src/ui/image_asset_registry.cpp");
   const std::string widget_container =
       read_source("src/ui/widgets/container_builder.cpp");
   const std::string element_choice =
@@ -195,6 +203,7 @@ int main() {
       element_item.empty() || element_item_layout.empty() ||
       element_item_paint.empty() || widget_image.empty() ||
       image_source.empty() ||
+      image_asset_registry.empty() ||
       widget_container.empty() ||
       element_image.empty() || element_image_layout.empty() ||
       element_image_paint.empty()) {
@@ -219,6 +228,8 @@ int main() {
       !contains(widget_image, "ImageElementKind::svg") ||
       !contains(image_source, "ImageSource::svg_source()") ||
       !contains(image_source, "svg_image_source(") ||
+      !contains(image_asset_registry, "ImageAssetRegistry::register_svg(") ||
+      !contains(image_asset_registry, "ImageAssetRegistry::raster_assets()") ||
       !contains(widget_container, "ElementBuilder h_stack()") ||
       !contains(widget_container, "ElementBuilder::row()") ||
       !contains(widget_container, "ElementBuilder div()") ||
@@ -277,6 +288,7 @@ int main() {
       line_count(element_item_paint) > 100 ||
       line_count(widget_image) > 180 ||
       line_count(image_source) > 120 ||
+      line_count(image_asset_registry) > 160 ||
       line_count(widget_container) > 120 ||
       line_count(element_image) > 160 ||
       line_count(element_image_layout) > 80 ||

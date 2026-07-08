@@ -353,7 +353,19 @@ upstream example inventory includes:
   behavior is guarded by `tests/api_parity/phase_c_svg_image_front_end_test.cpp`,
   `tests/ui/builtin_widget_test.cpp`, and
   `tests/architecture/widget_source_structure_test.cpp`.
-- Handoff: Phase C Step 362 SVG/image asset registration is next.
+- Phase C Step 362 SVG/image asset registration: `ImageAssetRegistry`,
+  `RegisteredImageAsset`, `register_image(...)`, `register_svg(...)`,
+  `ImageAssetRegistry::find(...)`, `registrations()`, and `raster_assets()`
+  provide deterministic public asset registration over the Step 361
+  `ImageSource` boundary. Raster registrations can allocate ids for id-less
+  `ImageAsset` values and retain raster assets for later upload planning; SVG
+  registrations preserve source strings and descriptor metadata without decoding
+  or renderer upload behavior. Evidence lives in
+  `include/cgpui/ui/image_asset_registry.hpp`,
+  `src/ui/image_asset_registry.cpp`,
+  `tests/api_parity/phase_c_svg_image_asset_registration_test.cpp`, and
+  `tests/architecture/widget_source_structure_test.cpp`.
+- Handoff: Phase C Step 363 SVG/image public example coverage is next.
 
 ## Phase A Closure
 

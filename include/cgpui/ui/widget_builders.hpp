@@ -7,5 +7,6 @@
 #include "cgpui/ui/slider_builder.hpp"
 #include "cgpui/ui/item_builder.hpp"
 #include "cgpui/ui/image_builder.hpp"
+#include "cgpui/ui/image_asset_registry.hpp"
 #include "cgpui/ui/container_builder.hpp"
 #include "cgpui/ui/scrollable_list_builder.hpp"

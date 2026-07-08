@@ -657,6 +657,9 @@ int main() {
               "Phase C Step 361 SVG/image element front-end APIs",
               "Phase C Step 361 SVG/image front-end source APIs",
               "Phase C Step 362 SVG/image asset registration",
+              "Phase C Step 363 SVG/image public example coverage",
+              "ImageAssetRegistry",
+              "RegisteredImageAsset",
               "api_parity_public_window_examples_workflow",
               "api_parity_public_window_examples_widget_catalog",
               "api_parity_public_window_examples_interaction_states",
@@ -1662,6 +1665,9 @@ int main() {
                 "target(\"phase_c_window_examples_service_matrix_test\")") ||
       !contains(xmake,
                 "target(\"phase_c_window_examples_closeout_test\")") ||
+      !contains(xmake, "target(\"phase_c_svg_image_front_end_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_svg_image_asset_registration_test\")") ||
       !contains(xmake, "target(\"builtin_widget_test\")") ||
       !contains(xmake, "target(\"widget_source_structure_test\")") ||
       !contains(xmake, "target(\"api_parity_public_window_examples\")") ||
@@ -1783,6 +1789,12 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_window_examples_closeout_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_svg_image_front_end_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_svg_image_asset_registration_test.cpp") ||
       !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
       !contains(
           xmake,

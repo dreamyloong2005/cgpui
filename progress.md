@@ -14627,3 +14627,39 @@
   `/dev/shm/cgpui` for transient Wayland socket temp.
 - Step 361 is complete on `master`; Step 362 SVG/image asset registration is
   the next Phase C slice.
+
+## 2026-07-08 Phase C Step 362 SVG Image Asset Registration
+
+- Resumed `.worktrees/phase-c-svg-image-asset-registration` on
+  `codex/phase-c-svg-image-asset-registration` from
+  `f451fc1 docs: mark phase c step 361 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Current Step 362 scope stays on deterministic raster/SVG registration over
+  the Step 361 `ImageSource` boundary: `ImageAssetRegistry`,
+  `RegisteredImageAsset`, `register_image(...)`, `register_svg(...)`,
+  `find(...)`, `registrations()`, and `raster_assets()`. This slice still does
+  not add SVG decoding, PNG/JPEG loading, renderer upload behavior, GPU texture
+  lifetime, private runtime headers, or direct `WindowRuntime` use.
+- Verified JSON with
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`
+  and diff hygiene with `git diff --check`; both exited 0, with only expected
+  LF-to-CRLF working-copy warnings from Git.
+- Initial focused gate run passed 6/7 and failed only
+  `phase_c_window_examples_closeout_test/default` because the Step 360 closeout
+  guard still pinned the global JSON `next_step` to Step 361 after Step 362 had
+  advanced it to Step 363. Updated that guard to check the window/examples
+  closeout-owned `window_examples_next` evidence instead.
+- Focused GREEN verification then passed:
+  `xmake test -y -P . phase_c_svg_image_asset_registration_test/default
+  phase_c_svg_image_front_end_test/default builtin_widget_test/default
+  widget_source_structure_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_window_examples_closeout_test/default` passed 7/7.
+- Windows full-debug verification passed after updating the stale
+  window/examples handoff guards: `xmake f -c -m debug -P .` exited 0 and
+  `xmake test -P .` passed 112/112.
+- WSL Arch Linux full-debug verification used D-drive xmake global/package
+  output plus `/dev/shm/cgpui` transient temp: `xmake f -y -c -m debug -P .
+  --ccache=n` exited 0 and `xmake test -j 1 -P .` passed 109/109.
+- Disk placement check after WSL verification: the Step 362 WSL build/cache
+  directory on D: was 506M, `/root/.xmake` was absent, and `/tmp` was 0.

@@ -249,6 +249,14 @@ and `svg(...)`, and `ImageElement` preserves SVG source metadata without
 placing renderer upload details in the public element API. Phase C Step 362
 SVG/image asset registration is the next handoff.
 
+Phase C Step 362 SVG/image asset registration adds `ImageAssetRegistry`,
+`RegisteredImageAsset`, `register_image(...)`, and `register_svg(...)` as the
+public registration boundary for raster image assets and SVG source strings.
+Registrations produce `ImageSource` values that feed `image(...)` and `svg(...)`
+without adding SVG decoding, renderer upload, or GPU lifetime details to public
+element APIs. Phase C Step 363 SVG/image public example coverage is the next
+handoff.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

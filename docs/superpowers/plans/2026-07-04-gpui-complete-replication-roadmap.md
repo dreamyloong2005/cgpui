@@ -768,7 +768,12 @@ expect, keeping each widget in its own module from the first version.
   `ImageSource`, `ImageSourceKind`, `image_source(...)`,
   `svg_image_source(...)`, and `svg(...)` authoring boundary, with
   `ImageElement` preserving SVG source metadata while paint still feeds the
-  existing image descriptor pipeline. Phase C Step 362 SVG/image asset registration should continue with asset registration examples.
+  existing image descriptor pipeline. Phase C Step 362 SVG/image asset
+  registration adds `ImageAssetRegistry`, `RegisteredImageAsset`,
+  `register_image(...)`, and `register_svg(...)` as the deterministic public
+  registration boundary over `ImageSource`, without SVG decoding, renderer
+  upload, or GPU lifetime behavior. Phase C Step 363 SVG/image public example
+  coverage is next.
 - [ ] Steps 367-372: Add structure tests requiring every widget family to have
   a public leaf header, a focused source file, and focused behavior tests.
 - [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
@@ -1034,7 +1039,11 @@ window/examples closeout. Step 360 closes the window/examples widget band
 through `tests/api_parity/phase_c_window_examples_closeout_test.cpp`, guarding
 the Steps 355-359 public example evidence and the prelude-only boundary before
 the SVG/image band starts. Phase C Step 361 SVG/image front-end source APIs
-adds the focused `ImageSource` layer and hands off to Phase C Step 362 SVG/image asset registration. Phase C Step 362 SVG/image asset registration is the next slice.
+adds the focused `ImageSource` layer and hands off to Phase C Step 362 SVG/image
+asset registration. Phase C Step 362 SVG/image asset registration adds the
+focused `ImageAssetRegistry` layer over `ImageSource` and hands off to Phase C
+Step 363 SVG/image public example coverage. Phase C Step 363 SVG/image public
+example coverage is the next slice.
 The Phase B public authoring boundary remains the source of truth for this
 next slice.
 Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320
