@@ -42,6 +42,8 @@ Windows/Linux core API is stable enough for parity work.
   backend split: public `shape_text(...)` now routes through
   `TextShapingRequest`, `text_shaping_dispatch.cpp`, and
   `text_shaping_fallback.cpp` before future HarfBuzz integration.
+- Step 381 preserves shaped glyph ids through wrapped text paint metadata so
+  soft-wrap rendering uses the same atlas identity as unwrapped glyph paint.
 
 ## Definition Of Done For This 20-Step Goal
 

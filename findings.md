@@ -6893,3 +6893,13 @@
 - Structure coverage now fails if `text_shape.cpp` grows the fallback glyph
   loop again, which protects the backend boundary before the real HarfBuzz
   implementation lands.
+
+## 2026-07-09 Phase D Step 381 Wrapped Glyph Id Propagation
+
+- Step 381 fixes the wrapped text paint path so
+  `text_glyph_paint_metadata(run, lines, origin)` copies each
+  `TextGlyphRun::glyph_id` into `GlyphAtlasKey::glyph_id`.
+- The unwrapped glyph paint path already preserved glyph ids after Step 379;
+  the wrapped overload was still defaulting every atlas key to glyph id 0.
+- This keeps atlas identity stable after soft wrapping and avoids forcing a
+  later HarfBuzz backend to special-case wrapped lines.

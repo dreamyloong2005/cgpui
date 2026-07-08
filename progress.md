@@ -15222,3 +15222,26 @@
   header, focused verification passed
   `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
   2/2.
+
+## 2026-07-09 Phase D Step 381 Wrapped Glyph Id Propagation
+
+- Started from clean `master` after
+  `379ad19 refactor: split text shaping dispatch`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring wrapped text
+  paint metadata to preserve each shaped glyph id. RED failed as expected with
+  `text_model_test/default` because the wrapped overload left
+  `GlyphAtlasKey::glyph_id` at its default value.
+- GREEN implementation adds `.glyph_id = glyph.glyph_id` in
+  `src/ui/text_wrapping.cpp`.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default` 2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  4/4.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`, `render_view_test/default`, and
+  `text_model_test/default` 4/4.

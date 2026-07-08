@@ -886,6 +886,31 @@ int test_text_soft_wrap_records_split_measured_glyphs_by_width() {
              : 68;
 }
 
+int test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "abcd",
+      cgpui::FontDescriptor{.family = "Inter"},
+      16.0F);
+  const cgpui::TextWrapLayout layout =
+      cgpui::wrap_text_measurement(measurement, 16.0F);
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(
+          measurement.shape_run,
+          std::span<const cgpui::TextWrapLine>(
+              layout.lines.data(),
+              layout.lines.size()));
+  if (glyphs.size() != measurement.shape_run.glyphs.size()) {
+    return 143;
+  }
+  for (std::size_t index = 0; index < glyphs.size(); ++index) {
+    if (glyphs[index].key.glyph_id !=
+        measurement.shape_run.glyphs[index].glyph_id) {
+      return 144;
+    }
+  }
+  return 0;
+}
+
 int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
   const cgpui::TextShapeRun run = cgpui::shape_text(
       "A\xE4\xB8\xAD",
@@ -1021,6 +1046,11 @@ int main() {
   }
   if (const int result =
           test_text_soft_wrap_records_split_measured_glyphs_by_width();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids();
       result != 0) {
     return result;
   }
