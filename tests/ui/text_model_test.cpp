@@ -700,6 +700,46 @@ int test_shape_text_produces_deterministic_fallback_glyphs() {
   return run.total_advance == 20.0F && run.line_height == 20.0F ? 0 : 47;
 }
 
+int test_shape_text_records_backend_selection_and_fallback_reason() {
+  const cgpui::TextShapeRun default_run =
+      cgpui::shape_text("ffi", cgpui::FontDescriptor{.family = "Inter"});
+  if (default_run.requested_backend != cgpui::TextShapingBackend::harfbuzz) {
+    return 92;
+  }
+  if (cgpui::text_shaping_backend_capabilities().harfbuzz_available) {
+    if (default_run.used_backend != cgpui::TextShapingBackend::harfbuzz ||
+        default_run.fallback_reason != cgpui::TextShapingFallbackReason::none) {
+      return 93;
+    }
+  } else if (
+      default_run.used_backend !=
+          cgpui::TextShapingBackend::deterministic_fallback ||
+      default_run.fallback_reason !=
+          cgpui::TextShapingFallbackReason::backend_unavailable) {
+    return 94;
+  }
+
+  const cgpui::TextShapeRun fallback_run = cgpui::shape_text(
+      "AB",
+      cgpui::FontDescriptor{.family = "Inter"},
+      18.0F,
+      {},
+      cgpui::TextShapingOptions{
+          .preferred_backend =
+              cgpui::TextShapingBackend::deterministic_fallback});
+  if (fallback_run.requested_backend !=
+          cgpui::TextShapingBackend::deterministic_fallback ||
+      fallback_run.used_backend !=
+          cgpui::TextShapingBackend::deterministic_fallback ||
+      fallback_run.fallback_reason !=
+          cgpui::TextShapingFallbackReason::none) {
+    return 95;
+  }
+  return fallback_run.glyphs.size() == 2 && fallback_run.glyphs[0].glyph_id == 0
+             ? 0
+             : 96;
+}
+
 int test_text_measurement_cache_reuses_same_text_tuple() {
   cgpui::TextMeasurementCache cache;
   const cgpui::FontDescriptor font{.family = "Inter"};
@@ -962,6 +1002,11 @@ int main() {
     return result;
   }
   if (const int result = test_shape_text_produces_deterministic_fallback_glyphs();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_shape_text_records_backend_selection_and_fallback_reason();
       result != 0) {
     return result;
   }

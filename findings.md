@@ -6853,3 +6853,28 @@
   event-route storage still uses public vector-backed route records, and text
   input/scroll/action capability dispatch still has explicit dynamic escape
   paths for editor/plugin/runtime UI.
+
+## 2026-07-09 Phase D Step 379 Text Shaping Backend Boundary
+
+- Phase D covers Steps 379-458: text shaping, font fallback, measurement,
+  wrapping, selection/caret behavior, edit history, IME, rich text, examples,
+  and final text ledger closure.
+- The Step 379 entry slice should not claim HarfBuzz shaping is complete on
+  this machine: Windows has no visible `pkg-config`, WSL Arch reports no
+  HarfBuzz `pkg-config`, and a D-drive header search found no `hb.h`.
+- Implemented boundary: `include/cgpui/ui/text_shaping_backend.hpp` and
+  `src/ui/text_shaping_backend.cpp` expose backend selection, HarfBuzz
+  capability reporting, and explicit fallback reasons. `shape_text(...)`
+  now requests HarfBuzz by default, records the selected backend on
+  `TextShapeRun`, and uses deterministic fallback when HarfBuzz is not
+  available.
+- The capability flag is intentionally tied to
+  `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND`, not a raw dependency/header define, so
+  future dependency probing cannot make the deterministic implementation claim
+  it used HarfBuzz before the backend exists.
+- `TextGlyphRun::glyph_id` and `GlyphAtlasKey::glyph_id` are now present so a
+  later HarfBuzz backend can pass stable shaped glyph ids into paint/atlas
+  metadata without changing text authoring APIs.
+- Steps 379-386 remain open until the real HarfBuzz dependency/backend is
+  linked on Windows/Linux and verified; this slice is the backend boundary and
+  fallback observability needed before that work.

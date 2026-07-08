@@ -15,6 +15,7 @@ struct GlyphAtlasKey {
   float scale = 1.0F;
   float device_font_size = 16.0F;
   std::size_t glyph_index = 0;
+  std::uint32_t glyph_id = 0;
   std::size_t byte_offset = 0;
   std::size_t byte_length = 0;
 

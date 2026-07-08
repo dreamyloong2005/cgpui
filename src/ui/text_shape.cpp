@@ -17,8 +17,11 @@ TextShapeRun shape_text(
     std::string_view text,
     FontDescriptor font,
     float font_size,
-    DpiScale scale) {
+    DpiScale scale,
+    TextShapingOptions options) {
   const float scale_value = normalized_scale(scale);
+  const TextShapingBackendSelection backend =
+      select_text_shaping_backend(options);
   TextShapeRun run{
       .text = std::string(text),
       .font = std::move(font),
@@ -28,9 +31,13 @@ TextShapeRun shape_text(
       .line_height = font_size,
       .device_font_size = font_size * scale_value,
       .device_line_height = font_size * scale_value,
+      .requested_backend = backend.requested,
+      .used_backend = backend.used,
+      .fallback_reason = backend.fallback_reason,
   };
   const float fallback_advance = font_size * 0.5F;
   std::size_t byte_offset = 0;
+  std::uint32_t glyph_id = 0;
   while (byte_offset < text.size()) {
     std::size_t byte_length = 1;
     while (byte_offset + byte_length < text.size() &&
@@ -38,6 +45,7 @@ TextShapeRun shape_text(
       byte_length += 1;
     }
     run.glyphs.push_back(TextGlyphRun{
+        .glyph_id = glyph_id,
         .byte_offset = byte_offset,
         .byte_length = byte_length,
         .advance = fallback_advance,
@@ -45,6 +53,7 @@ TextShapeRun shape_text(
     run.total_advance += fallback_advance;
     run.device_total_advance += fallback_advance * scale_value;
     byte_offset += byte_length;
+    glyph_id += 1;
   }
   return run;
 }

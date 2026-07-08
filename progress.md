@@ -15143,3 +15143,48 @@
   total `.build-wsl` was 19G on D:, `/tmp` was 0, `/root/.xmake` was absent,
   `/dev/shm/cgpui` was absent after the run, C: had 23.32GB free, and D: had
   1.95GB free. No cleanup was performed.
+
+## 2026-07-09 Phase D Step 379 Text Shaping Backend Boundary
+
+- Started Phase D on clean `master` after `dd6d2fa feat: add runtime static
+  render path`; `git status --short --branch` showed only the existing
+  untracked `.vscode/`.
+- Restored planning context and confirmed Phase D is Steps 379-458. The first
+  active band is Steps 379-386: replace fallback-only shaping with
+  HarfBuzz-backed shaping while preserving deterministic test fallback.
+- Checked local HarfBuzz availability without downloading dependencies:
+  Windows had no `pkg-config`, WSL Arch reported no HarfBuzz `pkg-config`, and
+  a D-drive header search found no `hb.h`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring shaping
+  backend selection metadata, HarfBuzz capability reporting, explicit fallback
+  reasons, explicit deterministic fallback request support, and glyph ids. RED
+  failed as expected on missing `TextShapingBackend`, `TextShapingOptions`,
+  `text_shaping_backend_capabilities()`, `TextShapeRun` backend fields, and
+  `TextGlyphRun::glyph_id`.
+- GREEN implementation added `include/cgpui/ui/text_shaping_backend.hpp`,
+  `src/ui/text_shaping_backend.cpp`, backend metadata on `TextShapeRun`, glyph
+  ids in glyph runs and atlas keys, default HarfBuzz-preferred shaping
+  selection with deterministic fallback when unavailable, and xmake ownership
+  under the renderer text file group.
+- Tightened the backend capability guard so `harfbuzz_available` only becomes
+  true behind `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND`, preventing a future raw
+  dependency/header define from making this deterministic fallback slice report
+  that it used HarfBuzz before the real backend lands.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  2/2.
+- Adjacent verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  window_runtime_rendering_test/default
+  renderer_frame_result_conventions_test/default` 6/6.
+- After tightening the capability guard, Windows focused verification passed
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  4/4.
+- After tightening the capability guard, WSL focused verification reused
+  `.build-wsl/master` on D: plus `/dev/shm/cgpui` for transient temp and
+  passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`, `text_model_test/default`, and
+  `ui_source_structure_test/default` 4/4.

@@ -88,6 +88,7 @@ std::vector<TextGlyphPaint> text_glyph_paint_metadata(
                 .scale = normalized_scale(run.scale),
                 .device_font_size = run.device_font_size,
                 .glyph_index = index,
+                .glyph_id = glyph.glyph_id,
                 .byte_offset = glyph.byte_offset,
                 .byte_length = glyph.byte_length,
             },

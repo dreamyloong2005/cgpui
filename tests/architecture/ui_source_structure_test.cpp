@@ -61,6 +61,7 @@ int main() {
       "include/cgpui/ui/focus_metadata.hpp",
       "include/cgpui/ui/text_edit_actions.hpp",
       "include/cgpui/ui/text_font.hpp",
+      "include/cgpui/ui/text_shaping_backend.hpp",
       "include/cgpui/ui/text_shape.hpp",
       "include/cgpui/ui/text_glyphs.hpp",
       "include/cgpui/ui/text_measurement.hpp",
@@ -121,6 +122,7 @@ int main() {
   }
 
   const std::vector<const char*> text_implementation_files{
+      "src/ui/text_shaping_backend.cpp",
       "src/ui/text_shape.cpp",
       "src/ui/text_glyph_raster.cpp",
       "src/ui/text_measurement.cpp",
@@ -131,6 +133,12 @@ int main() {
     if (read_source(source).empty()) {
       return 113;
     }
+  }
+  const std::string text_shaping_backend_source =
+      read_source("src/ui/text_shaping_backend.cpp");
+  if (!contains(text_shaping_backend_source,
+                "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND")) {
+    return 143;
   }
 
   const std::vector<const char*> runtime_test_files{

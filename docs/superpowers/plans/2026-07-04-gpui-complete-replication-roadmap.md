@@ -875,6 +875,11 @@ behavior that can support GPUI examples and editor-like widgets.
 
 - [ ] Steps 379-386: Replace fallback-only shaping with HarfBuzz-backed
   shaping on Windows/Linux while preserving deterministic test fallbacks.
+  Step 379 starts this band with an explicit text-shaping backend boundary:
+  `TextShapingBackend`, `TextShapingOptions`, capability reporting, fallback
+  reason metadata, and glyph ids are recorded on `TextShapeRun`, while the
+  current Windows/WSL hosts continue to use deterministic fallback because
+  HarfBuzz is not installed yet.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,

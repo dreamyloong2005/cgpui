@@ -32,6 +32,12 @@ Windows/Linux core API is stable enough for parity work.
   spans, `View` can opt into `render_static(...)`, and the runtime records,
   routes, and exposes the installed static tree before falling back to the
   visible polymorphic `AnyElement`/`ElementTree` dynamic escape hatch.
+- Phase D has started with Step 379 text-shaping backend boundaries:
+  `TextShapingBackend`, `TextShapingOptions`, capability reporting, fallback
+  reason metadata, and glyph ids now make the HarfBuzz-vs-deterministic
+  fallback decision explicit. The Windows/WSL hosts do not currently expose
+  HarfBuzz, so Steps 379-386 remain open until the real HarfBuzz backend is
+  linked and verified.
 
 ## Definition Of Done For This 20-Step Goal
 
