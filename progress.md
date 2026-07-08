@@ -15103,3 +15103,43 @@
   the run, C: had about 27.3GB free, and D: had about 2.35GB free.
 - Diff hygiene passed `git diff --check` with only expected LF-to-CRLF
   working-copy warnings.
+
+## 2026-07-09 Zero-Cost Runtime Static Render Path
+
+- Resumed on `master` after `cbb15a2 feat: add static element fast path` with
+  only the existing untracked `.vscode/` present. Re-read `task_plan.md`,
+  `findings.md`, and `progress.md`, then ran the planning-with-files catchup
+  helper; it reported the current user intent: do not enter Phase D until the
+  zero-cost default-path gap is closed.
+- Added RED coverage in `tests/ui/static_render_runtime_test.cpp` plus
+  expanded `tests/architecture/zero_cost_abstraction_structure_test.cpp`.
+  The RED run failed as expected on missing `View::supports_static_render`,
+  `View::render_static`, `WindowRuntime::static_element_tree`,
+  `RenderTreeKind`, and `static_node_count`.
+- GREEN implementation adds the runtime static-render hook, static render
+  installation boundary, static tree runtime storage/accessors, static
+  accessibility snapshot generation, static hit-testing/event-route support,
+  and render diagnostics that distinguish static and dynamic trees.
+- Focused GREEN verification passed:
+  `xmake test -y -P . static_render_runtime_test/default
+  zero_cost_abstraction_structure_test/default` 2/2.
+- Adjacent verification passed:
+  `xmake test -y -P . static_element_tree_test/default
+  static_render_runtime_test/default
+  zero_cost_abstraction_structure_test/default
+  window_runtime_rendering_test/default window_runtime_input_test/default
+  window_runtime_focus_test/default element_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  context_render_spelling_test/default public_authoring_surface_test/default`
+  11/11.
+- Windows full debug verification passed `xmake test -P .` with 119/119
+  tests.
+- WSL Arch Linux full debug verification reused `.build-wsl/master` on D:
+  with `TMPDIR=/dev/shm/cgpui`, `XMAKE_GLOBALDIR`, `XMAKE_TMPDIR`,
+  `XMAKE_PKG_CACHEDIR`, and `XMAKE_PKG_INSTALLDIR` all pointed away from WSL
+  home; `xmake f` exited 0 and `xmake test -j 1 -w
+  /mnt/d/Dev/Projects/cgpui -P .` passed 116/116.
+- Disk placement after WSL verification: `.build-wsl/master` was 5.3G on D:,
+  total `.build-wsl` was 19G on D:, `/tmp` was 0, `/root/.xmake` was absent,
+  `/dev/shm/cgpui` was absent after the run, C: had 23.32GB free, and D: had
+  1.95GB free. No cleanup was performed.

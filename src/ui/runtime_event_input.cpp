@@ -43,12 +43,18 @@ void WindowRuntime::update_input_state_for_event(const PlatformEvent& event) {
 
 std::optional<ElementId> WindowRuntime::hit_test_target_for_event(
     const PlatformEvent& event) {
-  if (element_root() == nullptr) {
+  const std::optional<Point> pointer_position = pointer_position_for(event);
+  if (!pointer_position.has_value()) {
     return {};
   }
 
-  const std::optional<Point> pointer_position = pointer_position_for(event);
-  if (!pointer_position.has_value()) {
+  if (static_element_tree_installed()) {
+    const ElementId hit = static_element_tree_.hit_test(*pointer_position);
+    return hit.value == 0 ? std::optional<ElementId>{}
+                          : std::optional<ElementId>{hit};
+  }
+
+  if (element_root() == nullptr) {
     return {};
   }
 
@@ -73,11 +79,15 @@ void WindowRuntime::update_hover_cursor_for_event(
       hovered_element_id_;
   hovered_element_id_.reset();
   cursor_shape_ = CursorShape::default_arrow;
-  if (element_root() != nullptr) {
+  if (static_element_tree_installed() || element_root() != nullptr) {
     hovered_element_id_ = hit_element_id;
     if (hit_element_id.has_value()) {
       const Element* hovered_element = routed_element(*hit_element_id);
-      if (hovered_element == nullptr || hovered_element->enabled()) {
+      const bool enabled =
+          static_element_tree_installed()
+              ? element_enabled(*hit_element_id)
+              : (hovered_element == nullptr || hovered_element->enabled());
+      if (enabled) {
         if (const auto cursor = element_cursors_.find(hit_element_id->value);
             cursor != element_cursors_.end()) {
           cursor_shape_ = cursor->second;
@@ -118,15 +128,17 @@ void WindowRuntime::apply_focus_activation_for_event(
     return;
   }
 
-  Element* element = routed_element(*current_event_route_->target_element_id);
-  if (element == nullptr || !element->enabled() || !element->focusable()) {
+  if (!element_focusable(*current_event_route_->target_element_id)) {
     return;
   }
 
   request_keyboard_focus(*current_event_route_->target_element_id);
-  element->focus(ElementFocusContext{
-      .element_id = *current_event_route_->target_element_id,
-  });
+  if (Element* element = routed_element(*current_event_route_->target_element_id);
+      element != nullptr) {
+    element->focus(ElementFocusContext{
+        .element_id = *current_event_route_->target_element_id,
+    });
+  }
 }
 
 } // namespace cgpui

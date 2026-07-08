@@ -26,10 +26,12 @@ Windows/Linux core API is stable enough for parity work.
   broad type erasure, avoidable virtual dispatch, repeated handle wrapping, and
   tree-wide per-frame scans. Static widget fast paths and dynamic escape hatches
   must stay explicit and separately testable.
-- Post-Phase-C zero-cost code alignment has started with an explicit static
-  element fast path: ids live in a small public leaf, static element traversal
-  uses compact dense records plus spans, and the existing polymorphic
-  `AnyElement`/`ElementTree` path remains the visible dynamic escape hatch.
+- Post-Phase-C zero-cost code alignment now includes an explicit static
+  element fast path and a runtime static-render frame path: ids live in a
+  small public leaf, static element traversal uses compact dense records plus
+  spans, `View` can opt into `render_static(...)`, and the runtime records,
+  routes, and exposes the installed static tree before falling back to the
+  visible polymorphic `AnyElement`/`ElementTree` dynamic escape hatch.
 
 ## Definition Of Done For This 20-Step Goal
 

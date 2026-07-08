@@ -23,6 +23,19 @@ std::vector<ElementId> WindowRuntime::element_ancestry_for(
     return ancestry;
   }
 
+  if (static_element_tree_installed()) {
+    ElementId current = element_id;
+    while (current.value != 0 && static_element_node(current) != nullptr) {
+      ancestry.push_back(current);
+      const std::optional<ElementId> parent = element_parent(current);
+      if (!parent.has_value()) {
+        break;
+      }
+      current = *parent;
+    }
+    return ancestry;
+  }
+
   if (owned_element_tree_ != nullptr) {
     ElementId current = element_id;
     while (current.value != 0 && owned_element_tree_->get(current) != nullptr) {

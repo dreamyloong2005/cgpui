@@ -6826,3 +6826,30 @@
   `ElementTree`; `StaticIntoElement`/`StaticRender` are separate spellings so
   later declarative templates can choose the static route without hiding the
   cost of dynamic widget/plugin UI.
+
+## 2026-07-09 Zero-Cost Runtime Static Render Path
+
+- The static authoring concept is now connected to the runtime frame path:
+  `View::supports_static_render()` gates an opt-in `render_static(...)` hook,
+  and `WindowRuntime::try_draw_frame()` calls the static path before dynamic
+  `render(...)`.
+- Static render installation is isolated in
+  `src/ui/runtime_static_rendering.cpp` and private declarations are split
+  into `src/ui/runtime_static_rendering_internal.hpp`; structure tests guard
+  this path from using `AnyElement`, `std::function`, `std::any`,
+  `dynamic_cast`, `std::unique_ptr`, or unordered-map storage.
+- The runtime now retains the last installed `StaticElementTreeView`, exposes
+  it through `WindowRuntime::static_element_tree()`, records
+  `RenderTreeKind::static_element_tree` and `static_node_count`, and clears
+  the static tree when a dynamic `ElementTree` or manual element root is
+  installed.
+- Pointer hit testing, route ancestry, hover/active/focus metadata, focus
+  ordering, disabled-state cleanup, and accessibility snapshots now read the
+  static tree when it is installed. The dynamic `AnyElement`/`ElementTree`
+  path remains the explicit fallback and preserves existing manual
+  `set_element_root(...)` cursor behavior.
+- Remaining zero-cost work after this slice is deeper than the runtime root
+  frame path: static widget builders still need lowering into static records,
+  event-route storage still uses public vector-backed route records, and text
+  input/scroll/action capability dispatch still has explicit dynamic escape
+  paths for editor/plugin/runtime UI.

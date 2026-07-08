@@ -19,8 +19,28 @@ bool has_positive_tab_index(const FocusOrderEntry& entry) {
 
 std::vector<ElementId> WindowRuntime::ordered_focusable_element_ids() const {
   std::vector<FocusOrderEntry> entries;
+  if (static_element_tree_installed()) {
+    std::size_t tree_order = 0;
+    static_element_tree_.for_each_preorder(
+        [&](const StaticElementNode& node) {
+          if (!node.enabled || !node.focusable) {
+            return;
+          }
+          entries.push_back(FocusOrderEntry{
+              .element_id = node.id,
+              .tree_order = tree_order,
+          });
+          tree_order += 1;
+        });
+  }
+
   if (owned_element_tree_ == nullptr) {
-    return {};
+    std::vector<ElementId> focusable_ids;
+    focusable_ids.reserve(entries.size());
+    for (const FocusOrderEntry& entry : entries) {
+      focusable_ids.push_back(entry.element_id);
+    }
+    return focusable_ids;
   }
 
   std::size_t tree_order = 0;

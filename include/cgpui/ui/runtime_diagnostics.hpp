@@ -45,11 +45,19 @@ struct FrameStatistics {
   double paint_time_ms = 0.0;
 };
 
+enum class RenderTreeKind {
+  none,
+  dynamic_element_tree,
+  static_element_tree,
+};
+
 struct RenderRecord {
   int sequence = 0;
   ViewId view_id;
   Size viewport_size;
+  RenderTreeKind tree_kind = RenderTreeKind::none;
   std::optional<ElementId> root_element_id;
+  std::size_t static_node_count = 0;
   std::optional<FrameStatistics> statistics;
 };
 

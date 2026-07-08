@@ -45,9 +45,14 @@ namespace {
   return nullptr;
 }
 
-[[nodiscard]] bool disabled_or_missing(
-    const WindowRuntime& runtime,
-    ElementId element_id) {
+[[nodiscard]] bool disabled_or_missing(const WindowRuntime& runtime, ElementId element_id) {
+  if (const cgpui::StaticElementTreeView* static_tree =
+          runtime.static_element_tree();
+      static_tree != nullptr) {
+    const cgpui::StaticElementNode* node = static_tree->get(element_id);
+    return node == nullptr || !node->enabled;
+  }
+
   const Element* element = nullptr;
   if (runtime.element_tree() != nullptr) {
     element = runtime.element_tree()->get(element_id);

@@ -44,6 +44,7 @@ void fail_and_quit(Error error);
 void activate_native_window_for_record(WindowRuntimeRecord& record);
 [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor, std::string_view empty_renderer_message);
 [[nodiscard]] Result<void> try_draw_frame_for_record(WindowRuntimeRecord& record, View& view);
+#include "runtime_static_rendering_internal.hpp"
 [[nodiscard]] RuntimeTaskDiagnostics task_diagnostics() const;
 [[nodiscard]] WindowRuntimeContext context_for_record(
     const WindowRuntimeRecord& record);
@@ -152,12 +153,10 @@ struct RuntimeTaskDiagnostics {
   std::size_t cancelled_task_count = 0;
   std::size_t background_task_count = 0;
 };
-
 struct TextPointerSelectionDrag {
   ElementId element_id;
   std::size_t anchor_offset = 0;
 };
-
 PlatformApplication& application_;
 View& view_;
 RendererFactory renderer_factory_;
@@ -188,6 +187,8 @@ std::optional<ActionDispatchResult> last_action_dispatch_;
 std::optional<EventRoute> current_event_route_;
 std::unique_ptr<ElementTree> owned_element_tree_;
 const Element* element_root_ = nullptr;
+StaticElementTreeView static_element_tree_;
+bool has_static_element_tree_ = false;
 ViewId root_view_id_{1};
 std::uint64_t next_view_id_ = 2;
 std::unordered_map<std::uint64_t, RegisteredView> view_registry_;

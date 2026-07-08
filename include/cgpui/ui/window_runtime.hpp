@@ -64,6 +64,7 @@ class WindowRuntime {
   void set_element_tree(std::unique_ptr<ElementTree> tree);
   [[nodiscard]] const ElementTree* element_tree() const;
   [[nodiscard]] const Element* element_root() const;
+  [[nodiscard]] const StaticElementTreeView* static_element_tree() const;
 
   template <typename T>
   [[nodiscard]] T* element_state(ElementId element_id);

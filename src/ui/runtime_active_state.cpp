@@ -16,8 +16,7 @@ void WindowRuntime::update_active_state_for_event(
   if (current_event_route_.has_value() &&
       current_event_route_->target_element_id.has_value()) {
     const ElementId target = *current_event_route_->target_element_id;
-    const Element* element = routed_element(target);
-    if (element != nullptr && element->enabled()) {
+    if (element_enabled(target)) {
       enabled_target_element_id = target;
     }
   }

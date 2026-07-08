@@ -2,6 +2,15 @@
 
 namespace cgpui {
 
+bool View::supports_static_render() const {
+  return false;
+}
+
+StaticElementTreeView View::render_static(ViewContext& context) {
+  (void)context;
+  return {};
+}
+
 AnyElement View::render(ViewContext& context) {
   (void)context;
   return {};

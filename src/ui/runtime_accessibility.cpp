@@ -3,6 +3,11 @@
 namespace cgpui {
 
 AccessibilityTreeSnapshot WindowRuntime::accessibility_snapshot() const {
+  if (static_element_tree_installed()) {
+    return static_accessibility_snapshot(AccessibilitySnapshotOptions{
+        .focused_element_id = keyboard_focus_element_owner_,
+    });
+  }
   if (owned_element_tree_ == nullptr) {
     return {};
   }
@@ -13,7 +18,8 @@ AccessibilityTreeSnapshot WindowRuntime::accessibility_snapshot() const {
 }
 
 void WindowRuntime::update_platform_accessibility_tree() {
-  if (window_ == nullptr || owned_element_tree_ == nullptr) {
+  if (window_ == nullptr ||
+      (owned_element_tree_ == nullptr && !static_element_tree_installed())) {
     return;
   }
   PlatformAccessibilityTreeUpdate update = build_platform_accessibility_update();

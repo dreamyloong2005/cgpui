@@ -11,19 +11,34 @@ Result<void> WindowRuntime::try_draw_frame() {
   frame_statistics.render_pass_count = 1;
 
   ViewContext render_context = context();
-  AnyElement rendered = view_.render(render_context);
+  RenderTreeKind tree_kind = RenderTreeKind::none;
   std::optional<ElementId> rendered_root_id;
-  if (rendered != nullptr) {
-    auto tree = std::make_unique<ElementTree>();
-    rendered_root_id = tree->set_root(std::move(rendered));
-    set_element_tree(std::move(tree));
+  std::size_t static_node_count = 0;
+
+  const StaticRenderInstallResult static_render =
+      install_static_render_tree(view_, render_context);
+  if (static_render.installed) {
+    rendered_root_id = static_render.root_id;
+    static_node_count = static_render.node_count;
+    tree_kind = RenderTreeKind::static_element_tree;
+  } else {
+    clear_static_element_tree();
+    AnyElement rendered = view_.render(render_context);
+    if (rendered != nullptr) {
+      auto tree = std::make_unique<ElementTree>();
+      rendered_root_id = tree->set_root(std::move(rendered));
+      set_element_tree(std::move(tree));
+      tree_kind = RenderTreeKind::dynamic_element_tree;
+    }
   }
 
   last_render_record_ = RenderRecord{
       .sequence = ++render_sequence_,
       .view_id = root_view_id_,
       .viewport_size = viewport_size_,
+      .tree_kind = tree_kind,
       .root_element_id = rendered_root_id,
+      .static_node_count = static_node_count,
   };
   if (after_render_callback_) {
     after_render_callback_(context(), *last_render_record_);
@@ -80,12 +95,28 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   frame_statistics.render_pass_count = 1;
 
   ViewContext render_context = context_for_record(record);
-  (void)view.render(render_context);
+  RenderTreeKind tree_kind = RenderTreeKind::none;
+  std::optional<ElementId> rendered_root_id;
+  std::size_t static_node_count = 0;
+  if (view.supports_static_render()) {
+    const StaticElementTreeView rendered = view.render_static(render_context);
+    if (!rendered.empty() && rendered.valid()) {
+      rendered_root_id = rendered.root_id();
+      static_node_count = rendered.size();
+      tree_kind = RenderTreeKind::static_element_tree;
+    }
+  }
+  if (tree_kind != RenderTreeKind::static_element_tree) {
+    (void)view.render(render_context);
+  }
 
   last_render_record_ = RenderRecord{
       .sequence = ++render_sequence_,
       .view_id = record.root_view_id,
       .viewport_size = viewport_size,
+      .tree_kind = tree_kind,
+      .root_element_id = rendered_root_id,
+      .static_node_count = static_node_count,
   };
   if (after_render_callback_) {
     after_render_callback_(context_for_record(record), *last_render_record_);

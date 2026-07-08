@@ -4,12 +4,14 @@ namespace cgpui {
 
 void WindowRuntime::set_element_root(const Element* element) {
   owned_element_tree_.reset();
+  clear_static_element_tree();
   element_root_ = element;
   apply_focused_text_ime_placement();
 }
 
 void WindowRuntime::set_element_tree(std::unique_ptr<ElementTree> tree) {
   owned_element_tree_ = std::move(tree);
+  clear_static_element_tree();
   element_root_ = nullptr;
   apply_focused_text_ime_placement();
 }

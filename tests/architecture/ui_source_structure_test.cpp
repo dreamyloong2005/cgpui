@@ -140,6 +140,7 @@ int main() {
       "tests/ui/window_runtime_actions_test.cpp",
       "tests/ui/window_runtime_text_test.cpp",
       "tests/ui/window_runtime_rendering_test.cpp",
+      "tests/ui/static_render_runtime_test.cpp",
       "tests/ui/window_runtime_scheduling_test.cpp",
       "tests/ui/window_runtime_multiwindow_test.cpp",
       "tests/ui/window_runtime_theme_test.cpp",
@@ -169,6 +170,8 @@ int main() {
       line_count(read_source("tests/ui/window_runtime_text_test.cpp")) > 1800 ||
       line_count(read_source("tests/ui/window_runtime_rendering_test.cpp")) >
           1200 ||
+      line_count(read_source("tests/ui/static_render_runtime_test.cpp")) >
+          420 ||
       line_count(read_source("tests/ui/window_runtime_scheduling_test.cpp")) >
           1800 ||
       line_count(read_source("tests/ui/window_runtime_multiwindow_test.cpp")) >
