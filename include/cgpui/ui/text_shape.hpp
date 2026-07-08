@@ -17,6 +17,7 @@ struct TextGlyphRun {
   std::size_t byte_offset = 0;
   std::size_t byte_length = 0;
   float advance = 0.0F;
+  Point offset;
 };
 
 struct TextShapeRun {

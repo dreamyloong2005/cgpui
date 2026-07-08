@@ -885,6 +885,8 @@ behavior that can support GPUI examples and editor-like widgets.
   same path without changing public text authoring APIs.
   Step 381 preserves shaped glyph ids through wrapped text paint metadata so
   atlas keys remain stable after soft wrapping.
+  Step 382 adds shaped glyph positioning offsets and applies them in wrapped
+  and unwrapped glyph paint metadata; deterministic fallback offsets stay zero.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,

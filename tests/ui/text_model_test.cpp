@@ -911,6 +911,43 @@ int test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids() {
   return 0;
 }
 
+int test_glyph_paint_metadata_applies_shaping_offsets() {
+  cgpui::TextShapeRun run = cgpui::shape_text(
+      "ab",
+      cgpui::FontDescriptor{.family = "Inter"},
+      10.0F,
+      cgpui::DpiScale{.value = 2.0F});
+  if (run.glyphs.size() != 2) {
+    return 145;
+  }
+  run.glyphs[1].offset = {.x = 1.5F, .y = -2.0F};
+
+  const std::vector<cgpui::TextGlyphPaint> unwrapped =
+      cgpui::text_glyph_paint_metadata(run, {.x = 10.0F, .y = 5.0F});
+  if (unwrapped[1].origin.x != 16.5F || unwrapped[1].origin.y != 3.0F ||
+      unwrapped[1].device_origin.x != 33.0F ||
+      unwrapped[1].device_origin.y != 6.0F) {
+    return 146;
+  }
+
+  const std::vector<cgpui::TextWrapLine> lines{
+      cgpui::TextWrapLine{
+          .glyph_start = 0,
+          .glyph_end = 2,
+          .origin = {.x = 4.0F, .y = 7.0F},
+          .size = {.width = 10.0F, .height = 10.0F},
+      },
+  };
+  const std::vector<cgpui::TextGlyphPaint> wrapped =
+      cgpui::text_glyph_paint_metadata(
+          run,
+          std::span<const cgpui::TextWrapLine>(lines.data(), lines.size()),
+          {.x = 10.0F, .y = 5.0F});
+  return wrapped[1].origin.x == 20.5F && wrapped[1].origin.y == 10.0F
+             ? 0
+             : 147;
+}
+
 int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
   const cgpui::TextShapeRun run = cgpui::shape_text(
       "A\xE4\xB8\xAD",
@@ -1051,6 +1088,10 @@ int main() {
   }
   if (const int result =
           test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_glyph_paint_metadata_applies_shaping_offsets();
       result != 0) {
     return result;
   }

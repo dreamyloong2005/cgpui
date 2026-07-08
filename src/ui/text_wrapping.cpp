@@ -84,7 +84,10 @@ std::vector<TextGlyphPaint> text_glyph_paint_metadata(
     const std::size_t glyph_end = std::min(line.glyph_end, run.glyphs.size());
     for (std::size_t index = line.glyph_start; index < glyph_end; ++index) {
       const TextGlyphRun& glyph = run.glyphs[index];
-      const Point logical_origin{.x = x, .y = y};
+      const Point logical_origin{
+          .x = x + glyph.offset.x,
+          .y = y + glyph.offset.y,
+      };
       glyphs.push_back(TextGlyphPaint{
           .key =
               GlyphAtlasKey{

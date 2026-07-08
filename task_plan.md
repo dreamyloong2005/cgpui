@@ -44,6 +44,9 @@ Windows/Linux core API is stable enough for parity work.
   `text_shaping_fallback.cpp` before future HarfBuzz integration.
 - Step 381 preserves shaped glyph ids through wrapped text paint metadata so
   soft-wrap rendering uses the same atlas identity as unwrapped glyph paint.
+- Step 382 adds `TextGlyphRun::offset` and applies shaped glyph positioning
+  offsets in wrapped and unwrapped glyph paint metadata, with deterministic
+  fallback offsets remaining zero.
 
 ## Definition Of Done For This 20-Step Goal
 

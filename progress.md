@@ -15238,6 +15238,15 @@
   `xmake test -y -P . text_model_test/default render_view_test/default` 2/2.
 - Adjacent Windows verification passed:
   `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_header_cleanliness/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 5/5.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, and `ui_header_cleanliness/default` 5/5.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
   gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
   4/4.
 - WSL focused verification reused `.build-wsl/master` on D: plus
@@ -15245,3 +15254,17 @@
   `gpui_parity_ledger_test/default`,
   `phase_c_final_ledger_audit_test/default`, `render_view_test/default`, and
   `text_model_test/default` 4/4.
+
+## 2026-07-09 Phase D Step 382 Shaped Glyph Offsets
+
+- Started from clean `master` after
+  `38e1a0f fix: preserve wrapped glyph ids`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring a
+  `TextGlyphRun::offset` field and requiring unwrapped and wrapped glyph paint
+  metadata to apply shaped offsets to logical/device glyph origins. RED failed
+  as expected on missing `TextGlyphRun::offset`.
+- GREEN implementation added `TextGlyphRun::offset` and applied it in
+  `src/ui/text_glyph_raster.cpp` and `src/ui/text_wrapping.cpp`.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default` 2/2.

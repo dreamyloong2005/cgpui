@@ -6903,3 +6903,13 @@
   the wrapped overload was still defaulting every atlas key to glyph id 0.
 - This keeps atlas identity stable after soft wrapping and avoids forcing a
   later HarfBuzz backend to special-case wrapped lines.
+
+## 2026-07-09 Phase D Step 382 Shaped Glyph Offsets
+
+- Step 382 adds `TextGlyphRun::offset` as the public record needed for
+  HarfBuzz-style glyph positioning.
+- Deterministic fallback leaves offsets at zero, preserving existing advances
+  and measurements.
+- Both `text_glyph_paint_metadata(...)` overloads add the shaped offset to the
+  logical glyph origin before computing device origin, so wrapped and
+  unwrapped paint paths share the same positioning behavior.
