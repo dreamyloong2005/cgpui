@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cgpui/renderer/renderer_types.hpp"
 #include "cgpui/ui/element_core.hpp"
+#include "cgpui/ui/image_source.hpp"
 
 #include <optional>
 #include <string>
@@ -12,19 +12,21 @@ namespace cgpui {
 enum class ImageElementKind {
   image,
   icon,
+  svg,
 };
 
 class ImageElement : public Element {
  public:
   ImageElement(
       ImageElementKind kind,
-      ImageAssetDescriptor asset,
+      ImageSource source,
       StyleState style_state,
       std::optional<Rect> source_rect = std::nullopt,
       std::optional<Color> tint = std::nullopt,
       std::string alt = {});
 
   [[nodiscard]] ImageElementKind kind() const;
+  [[nodiscard]] const ImageSource& source() const;
   [[nodiscard]] const ImageAssetDescriptor& asset() const;
   [[nodiscard]] const StyleState& style_state() const;
   [[nodiscard]] const std::optional<Rect>& source_rect() const;
@@ -42,7 +44,7 @@ class ImageElement : public Element {
   [[nodiscard]] Rect content_rect() const;
 
   ImageElementKind kind_;
-  ImageAssetDescriptor asset_;
+  ImageSource source_;
   StyleState style_state_;
   std::optional<Rect> source_rect_;
   std::optional<Color> tint_;

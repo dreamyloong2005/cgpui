@@ -2522,3 +2522,17 @@ implementation slice.
   110/110, WSL Arch Linux debug config, and WSL Arch Linux full debug 107/107
   using D-drive WSL build output. Step 361 SVG/image element front-end APIs is
   the next tracked Phase C slice.
+- Phase C Step 361, SVG/image front-end source APIs, is implemented in
+  `.worktrees/phase-c-svg-image-front-end`: `ImageSource`, `ImageSourceKind`,
+  `image_source(...)`, `svg_image_source(...)`, and `svg(...)` live behind the
+  focused public leaf `include/cgpui/ui/image_source.hpp` with non-template
+  bodies in `src/ui/image_source.cpp`. `ImageElement` now preserves source
+  metadata while paint still feeds the existing `ImageAssetDescriptor`
+  pipeline. Focused GREEN verification passed `phase_c_svg_image_front_end_test/default`,
+  `builtin_widget_test/default`, `widget_source_structure_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`, and
+  `phase_c_window_examples_closeout_test/default` 6/6. Windows full debug
+  passed 111/111, and WSL Arch Linux full debug passed 108/108 with xmake
+  build/package output on D: and Wayland socket temp in `/dev/shm/cgpui`.
+  Step 362 SVG/image asset registration is the next tracked Phase C slice.

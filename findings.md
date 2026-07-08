@@ -6631,3 +6631,25 @@
 - The closeout keeps `ClipboardItem`, upstream `gpui::test` macros, action
   macro payloads, task priorities, structured task groups, private runtime
   headers, and direct `WindowRuntime` use out of the window/examples band.
+
+## 2026-07-08 Phase C Step 361 SVG Image Front End
+
+- Step 361 stays scoped to author-facing image source metadata. It should not
+  add SVG decoding, asset registries, renderer upload behavior, GPU texture
+  lifetime, `ClipboardItem`, upstream `gpui::test` macros, action macro
+  payloads, task priorities, structured task groups, private runtime headers,
+  or direct `WindowRuntime` use.
+- Durable public ownership is `include/cgpui/ui/image_source.hpp`, with
+  non-template bodies in `src/ui/image_source.cpp`. `image_builder.hpp` remains
+  the widget authoring leaf and `element_image_nodes.hpp` stores the source
+  metadata without growing renderer-specific upload/report declarations.
+- `ImageSource` is the front-end bridge: raster sources wrap an existing
+  `ImageAssetDescriptor`, while SVG sources preserve the SVG string and expose
+  descriptor metadata so the existing paint and render paths keep receiving an
+  `ImageAssetDescriptor`.
+- `svg(...)` is intentionally front-end only in this slice. It builds an
+  `ImageElementKind::svg` element and preserves SVG metadata for later asset
+  registration/decoding work, but paint still emits the existing image paint
+  command.
+- Step 362 should continue with SVG/image asset registration examples over
+  this source boundary.

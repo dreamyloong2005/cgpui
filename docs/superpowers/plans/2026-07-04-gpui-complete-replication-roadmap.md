@@ -764,6 +764,11 @@ expect, keeping each widget in its own module from the first version.
   and hands off to Step 361. Step 361 starts SVG/image element front-end APIs.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
   pipeline without adding renderer details to public element headers.
+  Phase C Step 361 SVG/image front-end source APIs adds the public
+  `ImageSource`, `ImageSourceKind`, `image_source(...)`,
+  `svg_image_source(...)`, and `svg(...)` authoring boundary, with
+  `ImageElement` preserving SVG source metadata while paint still feeds the
+  existing image descriptor pipeline. Phase C Step 362 SVG/image asset registration should continue with asset registration examples.
 - [ ] Steps 367-372: Add structure tests requiring every widget family to have
   a public leaf header, a focused source file, and focused behavior tests.
 - [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
@@ -1028,8 +1033,10 @@ Step 361 starts SVG/image element front-end APIs after the Step 360
 window/examples closeout. Step 360 closes the window/examples widget band
 through `tests/api_parity/phase_c_window_examples_closeout_test.cpp`, guarding
 the Steps 355-359 public example evidence and the prelude-only boundary before
-the SVG/image band starts. The Phase B public authoring boundary remains the
-source of truth for this next slice.
+the SVG/image band starts. Phase C Step 361 SVG/image front-end source APIs
+adds the focused `ImageSource` layer and hands off to Phase C Step 362 SVG/image asset registration. Phase C Step 362 SVG/image asset registration is the next slice.
+The Phase B public authoring boundary remains the source of truth for this
+next slice.
 Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320
 landed the flex vocabulary helpers on `master` at
 `5040365`; Step 321 landed the sizing/color/border helper aliases on `master`

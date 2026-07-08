@@ -14554,3 +14554,49 @@
   passed 107/107.
 - Step 360 is complete on `master`; Step 361 SVG/image element front-end APIs
   is the next Phase C slice.
+
+## 2026-07-08 Phase C Step 361 SVG Image Front End
+
+- Created `.worktrees/phase-c-svg-image-front-end` on
+  `codex/phase-c-svg-image-front-end` from
+  `92624d1 docs: mark phase c step 360 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 361 to front-end source APIs for raster image descriptors and SVG
+  source strings. This slice does not add SVG decoding, asset registries,
+  renderer upload behavior, GPU texture lifetime, `ClipboardItem`, upstream
+  `gpui::test` macros, action macro payloads, task priorities, structured task
+  groups, private runtime headers, or direct `WindowRuntime` use.
+- Added RED coverage in
+  `tests/api_parity/phase_c_svg_image_front_end_test.cpp` and registered the
+  target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_svg_image_front_end_test/default` failed as
+  expected because `cgpui/ui/image_source.hpp` and the new source APIs were
+  missing.
+- Added `include/cgpui/ui/image_source.hpp` and `src/ui/image_source.cpp` for
+  `ImageSource`, `ImageSourceKind`, `image_source(...)`, and
+  `svg_image_source(...)`. `ImageBuilder` now accepts `ImageSource`,
+  `image(...)`, `icon(...)`, and `svg(...)` front-end sources, while
+  `ImageElement` preserves the source metadata and still paints through the
+  existing `ImageAssetDescriptor` path.
+- Updated `docs/gpui-complete-parity-ledger.json`,
+  `docs/gpui-complete-parity-ledger.md`,
+  `docs/gpui-public-authoring-vocabulary.md`, and the complete-replication
+  roadmap so Step 361 evidence is recorded and the handoff moves to Phase C
+  Step 362 SVG/image asset registration.
+- Focused GREEN verification passed:
+  `xmake test -y -P . phase_c_svg_image_front_end_test/default
+  builtin_widget_test/default widget_source_structure_test/default
+  gpui_parity_ledger_test/default public_authoring_vocabulary_freeze_test/default
+  phase_c_window_examples_closeout_test/default` passed 6/6.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed
+  111/111.
+- Verified WSL Arch Linux full debug with D-drive build/cache output and
+  memory-backed Wayland socket temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-svg-image-front-end/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-svg-image-front-end/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-svg-image-front-end/pkg-install xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-svg-image-front-end -P .`
+  passed 108/108.
+- Disk placement check after WSL verification: `/root/.xmake` was absent,
+  `/tmp` was 0, and the Step 361 WSL build/cache directory on D: was 2.9G.
+  A D-drive `TMPDIR` is not usable for Wayland socket tests because DrvFS does
+  not support socket `bind()`; use `/dev/shm/cgpui` for those transient sockets
+  and keep xmake build/package output under `.build-wsl/...` on D:.

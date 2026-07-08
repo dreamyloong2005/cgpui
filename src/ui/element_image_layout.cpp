@@ -20,13 +20,14 @@ Size resolved_image_size(ImageElementKind kind, const Style& style, Size asset) 
 } // namespace
 
 Size ImageElement::intrinsic_size() const {
+  const ImageAssetDescriptor& image_asset = asset();
   return Size{
-      .width = asset_.logical_size.width > 0.0F
-                   ? asset_.logical_size.width
-                   : static_cast<float>(asset_.pixel_width),
-      .height = asset_.logical_size.height > 0.0F
-                    ? asset_.logical_size.height
-                    : static_cast<float>(asset_.pixel_height),
+      .width = image_asset.logical_size.width > 0.0F
+                   ? image_asset.logical_size.width
+                   : static_cast<float>(image_asset.pixel_width),
+      .height = image_asset.logical_size.height > 0.0F
+                    ? image_asset.logical_size.height
+                    : static_cast<float>(image_asset.pixel_height),
   };
 }
 

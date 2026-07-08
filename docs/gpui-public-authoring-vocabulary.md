@@ -241,6 +241,14 @@ Phase C Step 360 window/examples closeout adds
 Steps 355-359 public window/example evidence, keep the examples prelude-only,
 and close the window/examples widget band before Phase C Step 361 SVG/image element front-end APIs.
 
+Phase C Step 361 SVG/image front-end source APIs adds `ImageSource`,
+`ImageSourceKind`, `image_source(...)`, `svg_image_source(...)`, and
+`svg(...)` as the public source boundary for raster image descriptors and SVG
+source strings. `ImageBuilder` continues to expose `image(...)`, `icon(...)`,
+and `svg(...)`, and `ImageElement` preserves SVG source metadata without
+placing renderer upload details in the public element API. Phase C Step 362
+SVG/image asset registration is the next handoff.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity

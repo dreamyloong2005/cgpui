@@ -466,6 +466,49 @@ int test_icon_widget_builder_uses_square_size_and_tint() {
              : 104;
 }
 
+int test_svg_image_source_builds_front_end_element() {
+  constexpr std::string_view svg_markup =
+      "<svg viewBox=\"0 0 18 10\"><path d=\"M0 0h18v10H0z\"/></svg>";
+  cgpui::ImageSource source = cgpui::svg_image_source(
+      cgpui::ImageAssetId{303},
+      {.width = 18.0F, .height = 10.0F},
+      svg_markup);
+
+  if (source.kind() != cgpui::ImageSourceKind::svg ||
+      source.asset().id.value != 303 ||
+      source.asset().byte_size != svg_markup.size() ||
+      source.svg_source() != svg_markup) {
+    return 105;
+  }
+
+  cgpui::AnyElement element =
+      cgpui::svg(source)
+          .alt("Vector logo")
+          .style(cgpui::Style{}.with_preferred_size({.width = 36.0F,
+                                                     .height = 20.0F}))
+          .build();
+  auto* image = dynamic_cast<cgpui::ImageElement*>(element.get());
+  if (image == nullptr ||
+      image->kind() != cgpui::ImageElementKind::svg ||
+      image->source().kind() != cgpui::ImageSourceKind::svg ||
+      image->asset().id.value != 303 ||
+      image->accessibility_name() != "Vector logo") {
+    return 106;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  if (output.size.width != 36.0F || output.size.height != 20.0F) {
+    return 107;
+  }
+  cgpui::PaintList paint_list;
+  image->paint(paint_list);
+  return paint_list.commands().size() == 1 &&
+                 paint_list.commands()[0].kind == cgpui::PaintCommandKind::image &&
+                 paint_list.commands()[0].image.asset.id.value == 303
+             ? 0
+             : 108;
+}
+
 int test_container_primitive_builder_exposes_horizontal_stack() {
   cgpui::AnyElement element =
       cgpui::h_stack()
@@ -563,6 +606,11 @@ int main() {
   }
   if (const int result =
           test_icon_widget_builder_uses_square_size_and_tint();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_svg_image_source_builds_front_end_element();
       result != 0) {
     return result;
   }

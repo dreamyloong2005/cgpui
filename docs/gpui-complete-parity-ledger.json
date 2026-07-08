@@ -83,7 +83,9 @@
     "image_accessibility": "AccessibilityRole::image, PlatformAccessibilityRole::image, image alternate text, ImagePaint and ImageDraw icon tint metadata",
     "image_sources": [
       "include/cgpui/ui/image_builder.hpp",
+      "include/cgpui/ui/image_source.hpp",
       "include/cgpui/ui/element_image_nodes.hpp",
+      "src/ui/image_source.cpp",
       "src/ui/widgets/image_builder.cpp",
       "src/ui/element_image_nodes.cpp",
       "src/ui/element_image_layout.cpp",
@@ -91,6 +93,22 @@
       "tests/ui/builtin_widget_test.cpp",
       "tests/architecture/widget_source_structure_test.cpp"
     ],
+    "step_361": "Phase C Step 361 SVG/image front-end source APIs",
+    "image_front_end_surface": "ImageSource, ImageSourceKind, image_source(...), svg_image_source(...), svg(...), ImageElement::source(), and ImageElementKind::svg",
+    "image_front_end_sources": [
+      "include/cgpui/ui/image_source.hpp",
+      "src/ui/image_source.cpp",
+      "include/cgpui/ui/image_builder.hpp",
+      "src/ui/widgets/image_builder.cpp",
+      "include/cgpui/ui/element_image_nodes.hpp",
+      "src/ui/element_image_nodes.cpp",
+      "src/ui/element_image_layout.cpp",
+      "src/ui/element_image_paint.cpp",
+      "tests/api_parity/phase_c_svg_image_front_end_test.cpp",
+      "tests/ui/builtin_widget_test.cpp",
+      "tests/architecture/widget_source_structure_test.cpp"
+    ],
+    "image_front_end_next": "Phase C Step 362 SVG/image asset registration",
     "step_348": "Phase C Step 348 container primitive follow-up",
     "container_surface": "div(), h_flex(), v_flex(), h_stack(), v_stack() container primitive free functions",
     "container_sources": [

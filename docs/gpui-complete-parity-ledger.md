@@ -343,6 +343,17 @@ upstream example inventory includes:
   example boundary, and closes the window/examples widget band before Phase C
   Step 361 SVG/image element front-end APIs.
 - Handoff: Phase C Step 361 SVG/image element front-end APIs is next.
+- Phase C Step 361 SVG/image front-end source APIs:
+  `ImageSource`, `ImageSourceKind`, `image_source(...)`,
+  `svg_image_source(...)`, and `svg(...)` provide the author-facing source
+  boundary for raster image descriptors and SVG source strings. The focused
+  leaf `include/cgpui/ui/image_source.hpp` and implementation
+  `src/ui/image_source.cpp` preserve SVG metadata on `ImageElement` while
+  paint continues to feed the existing `ImageAssetDescriptor` pipeline. The
+  behavior is guarded by `tests/api_parity/phase_c_svg_image_front_end_test.cpp`,
+  `tests/ui/builtin_widget_test.cpp`, and
+  `tests/architecture/widget_source_structure_test.cpp`.
+- Handoff: Phase C Step 362 SVG/image asset registration is next.
 
 ## Phase A Closure
 

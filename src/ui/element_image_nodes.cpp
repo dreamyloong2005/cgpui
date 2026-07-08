@@ -6,13 +6,13 @@ namespace cgpui {
 
 ImageElement::ImageElement(
     ImageElementKind kind,
-    ImageAssetDescriptor asset,
+    ImageSource source,
     StyleState style_state,
     std::optional<Rect> source_rect,
     std::optional<Color> tint,
     std::string alt)
     : kind_(kind),
-      asset_(asset),
+      source_(std::move(source)),
       style_state_(std::move(style_state)),
       source_rect_(source_rect),
       tint_(tint),
@@ -22,8 +22,12 @@ ImageElementKind ImageElement::kind() const {
   return kind_;
 }
 
+const ImageSource& ImageElement::source() const {
+  return source_;
+}
+
 const ImageAssetDescriptor& ImageElement::asset() const {
-  return asset_;
+  return source_.asset();
 }
 
 const StyleState& ImageElement::style_state() const {

@@ -5,8 +5,11 @@
 namespace cgpui {
 
 ImageBuilder::ImageBuilder(ImageElementKind kind, ImageAssetDescriptor asset)
+    : ImageBuilder(kind, image_source(asset)) {}
+
+ImageBuilder::ImageBuilder(ImageElementKind kind, ImageSource source)
     : kind_(kind),
-      asset_(asset) {}
+      source_(std::move(source)) {}
 
 ImageBuilder ImageBuilder::style(Style style) && {
   style_state_.base = std::move(style);
@@ -60,7 +63,7 @@ ImageBuilder ImageBuilder::key(std::string_view value) && {
 AnyElement ImageBuilder::build() && {
   auto element = std::make_unique<ImageElement>(
       kind_,
-      asset_,
+      std::move(source_),
       style_state_,
       source_rect_,
       tint_,
@@ -76,20 +79,39 @@ AnyElement ImageBuilder::build() && {
   return element;
 }
 
+ImageBuilder image(ImageSource source) {
+  return ImageBuilder(ImageElementKind::image, std::move(source));
+}
+
 ImageBuilder image(ImageAssetDescriptor asset) {
-  return ImageBuilder(ImageElementKind::image, asset);
+  return image(image_source(asset));
 }
 
 ImageBuilder image(const ImageAsset& asset) {
-  return image(describe_image_asset(asset));
+  return image(image_source(asset));
+}
+
+ImageBuilder icon(ImageSource source) {
+  return ImageBuilder(ImageElementKind::icon, std::move(source));
 }
 
 ImageBuilder icon(ImageAssetDescriptor asset) {
-  return ImageBuilder(ImageElementKind::icon, asset);
+  return icon(image_source(asset));
 }
 
 ImageBuilder icon(const ImageAsset& asset) {
-  return icon(describe_image_asset(asset));
+  return icon(image_source(asset));
+}
+
+ImageBuilder svg(ImageSource source) {
+  return ImageBuilder(ImageElementKind::svg, std::move(source));
+}
+
+ImageBuilder svg(
+    ImageAssetId id,
+    Size logical_size,
+    std::string_view svg_source) {
+  return svg(svg_image_source(id, logical_size, svg_source));
 }
 
 } // namespace cgpui
