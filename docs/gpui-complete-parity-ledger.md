@@ -337,7 +337,12 @@ upstream example inventory includes:
   `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp` keeps the
   source prelude-only and synchronized with the roadmap, ledger, vocabulary,
   and xmake target.
-- Handoff: Phase C Step 360 window/examples closeout is next. Step 360 should close the window/examples widget band.
+- Phase C Step 360 window/examples closeout:
+  `tests/api_parity/phase_c_window_examples_closeout_test.cpp` guards the
+  Steps 355-359 window/examples evidence, freezes the prelude-only public
+  example boundary, and closes the window/examples widget band before Phase C
+  Step 361 SVG/image element front-end APIs.
+- Handoff: Phase C Step 361 SVG/image element front-end APIs is next.
 
 ## Phase A Closure
 

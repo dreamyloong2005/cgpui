@@ -234,7 +234,12 @@ Phase C Step 359 window/examples service matrix adds
 entry for menu accelerators and command palette service matrix plus
 window options, shadow, fixed positioning, and text input service examples.
 It is guarded by `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp`
-and must stay prelude-only. Step 360 should close the window/examples widget band.
+and must stay prelude-only.
+
+Phase C Step 360 window/examples closeout adds
+`tests/api_parity/phase_c_window_examples_closeout_test.cpp` to guard the
+Steps 355-359 public window/example evidence, keep the examples prelude-only,
+and close the window/examples widget band before Phase C Step 361 SVG/image element front-end APIs.
 
 ## Out of scope for this freeze
 
@@ -243,6 +248,8 @@ and must stay prelude-only. Step 360 should close the window/examples widget ban
 - action macro payloads
 - task priorities
 - structured task groups
+- private runtime headers
+- direct `WindowRuntime` use
 
 These items remain deferred Phase C or production-depth work and should not be
 introduced while freezing the current public vocabulary.

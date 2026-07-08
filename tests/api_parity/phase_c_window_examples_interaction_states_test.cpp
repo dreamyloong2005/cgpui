@@ -108,7 +108,7 @@ int main() {
       "phase_c_window_examples_interaction_states_test.cpp",
       "hover/focus/active/disabled interaction states",
       "focus ring and tab-index examples",
-      "Step 360 should close the window/examples widget band",
+      "Phase C Step 360 window/examples closeout",
   };
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
@@ -120,7 +120,10 @@ int main() {
   }
 
   if (!contains(ledger_json,
-                "\"next_step\": \"Phase C Step 360 window/examples closeout\"")) {
+                "\"step_360\": \"Phase C Step 360 window/examples closeout\"") ||
+      !contains(ledger_json,
+                "\"next_step\": \"Phase C Step 361 SVG/image element "
+                "front-end APIs\"")) {
     return 80;
   }
 

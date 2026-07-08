@@ -122,7 +122,10 @@ int main() {
   }
 
   if (!contains(ledger_json,
-                "\"next_step\": \"Phase C Step 360 window/examples closeout\"")) {
+                "\"step_360\": \"Phase C Step 360 window/examples closeout\"") ||
+      !contains(ledger_json,
+                "\"next_step\": \"Phase C Step 361 SVG/image element "
+                "front-end APIs\"")) {
     return 80;
   }
 

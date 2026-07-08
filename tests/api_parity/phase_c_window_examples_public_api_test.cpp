@@ -136,7 +136,10 @@ int main() {
       !contains(ledger_json,
                 "\"step_357\": \"Phase C Step 357 window/examples widget catalog\"") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 360 window/examples closeout\"")) {
+                "\"step_360\": \"Phase C Step 360 window/examples closeout\"") ||
+      !contains(ledger_json,
+                "\"next_step\": \"Phase C Step 361 SVG/image element "
+                "front-end APIs\"")) {
     return 80;
   }
 

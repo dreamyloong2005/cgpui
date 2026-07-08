@@ -643,10 +643,13 @@ int main() {
               "phase_c_window_examples_widget_catalog_test.cpp",
               "phase_c_window_examples_interaction_states_test.cpp",
               "phase_c_window_examples_service_matrix_test.cpp",
+              "phase_c_window_examples_closeout_test.cpp",
               "public_window_examples_workflow/main.cpp",
               "public_window_examples_widget_catalog/main.cpp",
               "public_window_examples_interaction_states/main.cpp",
               "public_window_examples_service_matrix/main.cpp",
+              "Phase C Step 360 window/examples closeout",
+              "Phase C Step 361 SVG/image element front-end APIs",
               "api_parity_public_window_examples_workflow",
               "api_parity_public_window_examples_widget_catalog",
               "api_parity_public_window_examples_interaction_states",
@@ -1650,6 +1653,8 @@ int main() {
           "target(\"phase_c_window_examples_interaction_states_test\")") ||
       !contains(xmake,
                 "target(\"phase_c_window_examples_service_matrix_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_window_examples_closeout_test\")") ||
       !contains(xmake, "target(\"builtin_widget_test\")") ||
       !contains(xmake, "target(\"widget_source_structure_test\")") ||
       !contains(xmake, "target(\"api_parity_public_window_examples\")") ||
@@ -1768,6 +1773,9 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_window_examples_service_matrix_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_window_examples_closeout_test.cpp") ||
       !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
       !contains(
           xmake,

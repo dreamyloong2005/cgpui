@@ -6617,3 +6617,17 @@
 - Step 360 should close the window/examples widget band without adding
   `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
   priorities, structured task groups, or private runtime headers.
+
+## 2026-07-08 Phase C Step 360 Window Examples Closeout
+
+- Step 360 is an audit-only closeout over the existing Steps 355-359 public
+  window/example band. It should not add production runtime/window behavior.
+- Durable guard ownership is
+  `tests/api_parity/phase_c_window_examples_closeout_test.cpp`, registered in
+  `xmake.lua`; it freezes the five public example targets/sources, the
+  prelude-only boundary, the roadmap checkbox, the Markdown/JSON ledger,
+  public vocabulary evidence, and the handoff to Phase C Step 361 SVG/image
+  element front-end APIs.
+- The closeout keeps `ClipboardItem`, upstream `gpui::test` macros, action
+  macro payloads, task priorities, structured task groups, private runtime
+  headers, and direct `WindowRuntime` use out of the window/examples band.

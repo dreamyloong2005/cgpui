@@ -14487,3 +14487,48 @@
   106/106.
 - Step 359 is complete on `master`; Step 360 window/examples closeout is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 360 Window Examples Closeout
+
+- Created `.worktrees/phase-c-window-examples-closeout` on
+  `codex/phase-c-window-examples-closeout` from
+  `0745044 docs: mark phase c step 359 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 360 to an audit-only closeout over the existing Steps 355-359
+  public window/examples band. No production runtime/window behavior is added.
+- Added RED coverage in
+  `tests/api_parity/phase_c_window_examples_closeout_test.cpp` and registered
+  the target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_window_examples_closeout_test/default
+  phase_c_window_examples_service_matrix_test/default
+  phase_c_window_examples_interaction_states_test/default
+  gpui_parity_ledger_test/default` failed as expected because the closeout
+  evidence and Step 361 handoff were not present yet.
+- Updated the complete-replication roadmap, Markdown/JSON parity ledger,
+  public authoring vocabulary, and existing window-example guards so the Steps
+  355-360 band is closed and the handoff moves to Phase C Step 361 SVG/image
+  element front-end APIs.
+- Verified JSON after the docs update:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . phase_c_window_examples_closeout_test/default
+  phase_c_window_examples_service_matrix_test/default
+  phase_c_window_examples_interaction_states_test/default
+  phase_c_window_examples_widget_catalog_test/default
+  phase_c_window_examples_workflow_test/default
+  phase_c_window_examples_public_api_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 8/8.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed
+  110/110.
+- Verified WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-window-examples-closeout -P /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-examples-closeout`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-examples-closeout -P /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-examples-closeout`
+  passed 107/107.
+- Disk placement check after the WSL run: C: had 25.98GB free, D: had
+  19.30GB free, `/home/dreamyloong` was 4.0K, `/tmp` was 0, and the D-drive
+  WSL build caches were `.build-wsl/master` 2.4G plus
+  `.build-wsl/phase-c-window-examples-closeout` 2.4G. Future WSL verification
+  must keep xmake output under `/mnt/d/Dev/Projects/cgpui/.build-wsl/...`;
+  the Step 360 feature cache should be removed after merge.
