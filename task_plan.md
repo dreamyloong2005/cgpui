@@ -2516,3 +2516,9 @@ implementation slice.
   priorities, structured task groups, private runtime headers, and direct
   `WindowRuntime` use out of the band. No production runtime/window behavior
   was added.
+- Phase C Step 360 is merged on `master` at
+  `de54ff4 test: close phase c window examples band` and post-merge verified
+  with JSON validation, diff hygiene, Windows debug config, Windows full debug
+  110/110, WSL Arch Linux debug config, and WSL Arch Linux full debug 107/107
+  using D-drive WSL build output. Step 361 SVG/image element front-end APIs is
+  the next tracked Phase C slice.

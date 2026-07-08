@@ -14532,3 +14532,25 @@
   `.build-wsl/phase-c-window-examples-closeout` 2.4G. Future WSL verification
   must keep xmake output under `/mnt/d/Dev/Projects/cgpui/.build-wsl/...`;
   the Step 360 feature cache should be removed after merge.
+
+## 2026-07-08 Phase C Step 360 Merge
+
+- Fast-forward merged `codex/phase-c-window-examples-closeout` into root
+  `master` at `de54ff4 test: close phase c window examples band`; root
+  `master` still had no tracked diff and only the existing untracked
+  `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 110/110.
+- Verified post-merge WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master -P /mnt/d/Dev/Projects/cgpui`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P /mnt/d/Dev/Projects/cgpui`
+  passed 107/107.
+- Step 360 is complete on `master`; Step 361 SVG/image element front-end APIs
+  is the next Phase C slice.
