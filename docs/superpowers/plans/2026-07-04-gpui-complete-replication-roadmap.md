@@ -955,8 +955,12 @@ behavior that can support GPUI examples and editor-like widgets.
   Step 397 adds emoji-plane color glyph planning through `TextColorGlyphPlan`
   and `TextShapeRun::color_glyphs`, recording byte/glyph/codepoint/fallback
   face metadata for default emoji-plane codepoints while leaving real color
-  glyph rendering and variation-selector-specific emoji shaping to later
-  focused steps.
+  glyph rendering to later focused steps.
+  Step 398 adds emoji presentation selector planning for `U+FE0F`, associating
+  the selector with the immediately preceding emoji-capable base glyph for
+  color glyph metadata while suppressing false missing-glyph diagnostics for
+  the selector itself. Full Unicode emoji data, HarfBuzz variation shaping, and
+  native color glyph rendering remain later work.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.

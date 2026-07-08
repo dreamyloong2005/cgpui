@@ -116,6 +116,8 @@ int main() {
       !contains(text_row, "TextShapeRun::missing_glyphs") ||
       !contains(text_row, "TextColorGlyphPlan") ||
       !contains(text_row, "TextShapeRun::color_glyphs") ||
+      !contains(text_row, "emoji presentation selector planning") ||
+      !contains(text_row, "U+FE0F") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
@@ -147,6 +149,12 @@ int main() {
       !contains(fallback_source, ".backend_capabilities")) {
     return 6;
   }
+  if (!contains(fallback_source, "is_emoji_presentation_selector(") ||
+      !contains(fallback_source, "codepoint_accepts_emoji_presentation(") ||
+      !contains(fallback_source,
+                "append_emoji_presentation_color_glyph_plan(")) {
+    return 10;
+  }
 
   if (!contains(wayland_fontconfig_source,
                 "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
@@ -168,7 +176,8 @@ int main() {
       !contains(text_model_test,
                 "test_shape_text_records_missing_glyph_diagnostics") ||
       !contains(text_model_test,
-                "test_shape_text_records_color_glyph_plans")) {
+                "test_shape_text_records_color_glyph_plans") ||
+      !contains(text_model_test, "variation_run.color_glyphs.size()")) {
     return 9;
   }
 

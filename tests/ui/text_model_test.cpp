@@ -976,7 +976,10 @@ int test_shape_text_records_color_glyph_plans() {
       .postscript_name = "NotoColorEmoji",
       .source = cgpui::FontSource::test,
       .path = "noto-color-emoji.ttf",
-      .coverage = {cgpui::FontUnicodeRange{.first = 0x1F600, .last = 0x1F64F}},
+      .coverage = {
+          cgpui::FontUnicodeRange{.first = 0x2665, .last = 0x2665},
+          cgpui::FontUnicodeRange{.first = 0x1F600, .last = 0x1F64F},
+      },
   });
   database.add_generic_fallback_family("Noto Color Emoji");
 
@@ -1000,8 +1003,25 @@ int test_shape_text_records_color_glyph_plans() {
     return 173;
   }
 
+  const cgpui::TextShapeRun variation_run =
+      cgpui::shape_text("\xE2\x99\xA5\xEF\xB8\x8F", chain, 18.0F);
+  if (variation_run.color_glyphs.size() != 1 ||
+      variation_run.glyph_count() != 2 ||
+      !variation_run.missing_glyphs.empty()) {
+    return 174;
+  }
+  const cgpui::TextColorGlyphPlan& variation_color_glyph =
+      variation_run.color_glyphs[0];
+  if (variation_color_glyph.codepoint != 0x2665 ||
+      variation_color_glyph.glyph_index != 0 ||
+      variation_color_glyph.byte_offset != 0 ||
+      variation_color_glyph.byte_length != 3 ||
+      variation_color_glyph.font_fallback_face_index != 1) {
+    return 175;
+  }
+
   const cgpui::TextShapeRun text_run = cgpui::shape_text("AB", chain, 18.0F);
-  return text_run.color_glyphs.empty() ? 0 : 174;
+  return text_run.color_glyphs.empty() ? 0 : 176;
 }
 
 int test_shape_text_records_backend_selection_and_fallback_reason() {

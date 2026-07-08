@@ -15473,6 +15473,18 @@
 - Focused GREEN verification passed:
   `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
   2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
 - Adjacent verification passed:
   `xmake test -y -P . text_model_test/default ui_source_structure_test/default
   ui_header_cleanliness/default render_view_test/default
@@ -15506,6 +15518,33 @@
   selects the backend and routes through the internal dispatch path.
 - Focused GREEN verification passed:
   `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
+  2/2.
+
+## 2026-07-09 Phase D Step 398 Emoji Presentation Selector Planning
+
+- Started from clean `master` after
+  `41e24bb feat: add color glyph planning`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Ran planning catchup from the Codex skill path after the default `.claude`
+  path was absent; catchup only surfaced this continuation's current tool
+  context and recommended the usual diff/stat check.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `shape_text("\xE2\x99\xA5\xEF\xB8\x8F", chain, 18.0F)` to record one
+  `TextColorGlyphPlan` for base codepoint `U+2665`, glyph index 0, fallback
+  face index 1, and no missing-glyph diagnostic for `U+FE0F`.
+- Added RED structure coverage in `tests/architecture/ui_source_structure_test.cpp`
+  requiring `is_emoji_presentation_selector(...)`,
+  `codepoint_accepts_emoji_presentation(...)`, and
+  `append_emoji_presentation_color_glyph_plan(...)` to live in
+  `src/ui/text_shaping_fallback.cpp`. RED failed as expected:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  failed 2/2.
+- GREEN implementation keeps deterministic selector glyph records, suppresses
+  selector-only missing-glyph diagnostics, and attaches `U+FE0F` color
+  presentation metadata to the previous emoji-capable base glyph without
+  claiming real HarfBuzz variation shaping or native color glyph rendering.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
   2/2.
 
 ## 2026-07-09 Phase D Step 388 Recovery

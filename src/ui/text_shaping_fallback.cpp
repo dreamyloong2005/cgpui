@@ -72,6 +72,31 @@ bool codepoint_prefers_color_glyph(char32_t codepoint) {
   return 0x1F000 <= codepoint && codepoint <= 0x1FAFF;
 }
 
+bool is_emoji_presentation_selector(char32_t codepoint) {
+  return codepoint == 0xFE0F;
+}
+
+bool codepoint_accepts_emoji_presentation(char32_t codepoint) {
+  return codepoint_prefers_color_glyph(codepoint) ||
+         codepoint == 0x00A9 || codepoint == 0x00AE ||
+         codepoint == 0x203C || codepoint == 0x2049 ||
+         codepoint == 0x2122 || codepoint == 0x2139 ||
+         (0x2194 <= codepoint && codepoint <= 0x21AA) ||
+         (0x231A <= codepoint && codepoint <= 0x231B) ||
+         codepoint == 0x2328 || codepoint == 0x23CF ||
+         (0x23E9 <= codepoint && codepoint <= 0x23F3) ||
+         (0x23F8 <= codepoint && codepoint <= 0x23FA) ||
+         codepoint == 0x24C2 ||
+         (0x25AA <= codepoint && codepoint <= 0x25AB) ||
+         codepoint == 0x25B6 || codepoint == 0x25C0 ||
+         (0x25FB <= codepoint && codepoint <= 0x25FE) ||
+         (0x2600 <= codepoint && codepoint <= 0x27BF) ||
+         (0x2934 <= codepoint && codepoint <= 0x2935) ||
+         (0x2B05 <= codepoint && codepoint <= 0x2B55) ||
+         codepoint == 0x3030 || codepoint == 0x303D ||
+         codepoint == 0x3297 || codepoint == 0x3299;
+}
+
 void append_font_fallback_run_span(
     TextShapeRun& run,
     std::size_t font_fallback_face_index,
@@ -132,6 +157,29 @@ void append_color_glyph_plan(
   });
 }
 
+void append_emoji_presentation_color_glyph_plan(
+    TextShapeRun& run,
+    char32_t previous_codepoint,
+    std::size_t previous_glyph_index,
+    std::size_t previous_byte_offset,
+    std::size_t previous_byte_length,
+    std::size_t previous_font_fallback_face_index) {
+  if (!codepoint_accepts_emoji_presentation(previous_codepoint)) {
+    return;
+  }
+  if (!run.color_glyphs.empty() &&
+      run.color_glyphs.back().glyph_index == previous_glyph_index) {
+    return;
+  }
+  append_color_glyph_plan(
+      run,
+      previous_codepoint,
+      previous_glyph_index,
+      previous_byte_offset,
+      previous_byte_length,
+      previous_font_fallback_face_index);
+}
+
 } // namespace
 
 TextShapeRun shape_text_with_deterministic_fallback(
@@ -163,6 +211,12 @@ TextShapeRun shape_text_with_deterministic_fallback(
   run.color_glyphs.reserve(request.text.size());
   std::size_t byte_offset = 0;
   std::uint32_t glyph_id = 0;
+  bool has_previous_codepoint = false;
+  char32_t previous_codepoint = U'\0';
+  std::size_t previous_glyph_index = 0;
+  std::size_t previous_byte_offset = 0;
+  std::size_t previous_byte_length = 0;
+  std::size_t previous_font_fallback_face_index = 0;
   while (byte_offset < request.text.size()) {
     std::size_t byte_length = 1;
     while (byte_offset + byte_length < request.text.size() &&
@@ -171,6 +225,8 @@ TextShapeRun shape_text_with_deterministic_fallback(
     }
     const char32_t codepoint =
         decode_utf8_codepoint(request.text, byte_offset, byte_length);
+    const bool emoji_presentation_selector =
+        is_emoji_presentation_selector(codepoint);
     const std::size_t font_fallback_face_index =
         select_font_fallback_face_index(run.font_fallback_faces, codepoint);
     const std::size_t glyph_index = run.glyphs.size();
@@ -192,7 +248,8 @@ TextShapeRun shape_text_with_deterministic_fallback(
         byte_length,
         fallback_advance,
         device_advance);
-    if (font_fallback_faces_have_known_miss(
+    if (!emoji_presentation_selector &&
+        font_fallback_faces_have_known_miss(
             run.font_fallback_faces,
             codepoint)) {
       append_missing_glyph_diagnostic(
@@ -203,6 +260,15 @@ TextShapeRun shape_text_with_deterministic_fallback(
           byte_length,
           font_fallback_face_index);
     }
+    if (emoji_presentation_selector && has_previous_codepoint) {
+      append_emoji_presentation_color_glyph_plan(
+          run,
+          previous_codepoint,
+          previous_glyph_index,
+          previous_byte_offset,
+          previous_byte_length,
+          previous_font_fallback_face_index);
+    }
     if (codepoint_prefers_color_glyph(codepoint)) {
       append_color_glyph_plan(
           run,
@@ -211,6 +277,14 @@ TextShapeRun shape_text_with_deterministic_fallback(
           byte_offset,
           byte_length,
           font_fallback_face_index);
+    }
+    if (!emoji_presentation_selector) {
+      has_previous_codepoint = true;
+      previous_codepoint = codepoint;
+      previous_glyph_index = glyph_index;
+      previous_byte_offset = byte_offset;
+      previous_byte_length = byte_length;
+      previous_font_fallback_face_index = font_fallback_face_index;
     }
     byte_offset += byte_length;
     glyph_id += 1;

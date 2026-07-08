@@ -124,6 +124,11 @@ Windows/Linux core API is stable enough for parity work.
   and `TextShapeRun::color_glyphs` record byte/glyph/codepoint/fallback-face
   metadata for later native color glyph rendering without changing deterministic
   fallback glyph advances or claiming variation-selector shaping.
+- Step 398 adds emoji presentation selector planning. The deterministic
+  fallback shaper treats `U+FE0F` as a request to color-render the immediately
+  preceding emoji-capable base glyph, keeps selector misses out of
+  `TextMissingGlyphDiagnostic`, and still leaves full native color glyph
+  rendering to later work.
 
 ## Definition Of Done For This 20-Step Goal
 

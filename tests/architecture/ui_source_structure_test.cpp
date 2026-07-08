@@ -181,6 +181,10 @@ int main() {
       !contains(fallback_source, "font_fallback_faces_have_known_miss(") ||
       !contains(fallback_source, "append_missing_glyph_diagnostic(") ||
       !contains(fallback_source, "codepoint_prefers_color_glyph(") ||
+      !contains(fallback_source, "is_emoji_presentation_selector(") ||
+      !contains(fallback_source, "codepoint_accepts_emoji_presentation(") ||
+      !contains(fallback_source,
+                "append_emoji_presentation_color_glyph_plan(") ||
       !contains(fallback_source, "append_color_glyph_plan(") ||
       !contains(xmake_source,
                 "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||

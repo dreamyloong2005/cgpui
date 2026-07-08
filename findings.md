@@ -7130,6 +7130,22 @@
   fallback face index, and requested native-color format.
 - The deterministic fallback shaper appends plans through
   `append_color_glyph_plan(...)` when `codepoint_prefers_color_glyph(...)`
-  detects U+1F000..U+1FAFF. Variation-selector-specific emoji presentation,
-  COLR/CBDT/SBIX/SVG font format selection, and renderer-side color glyph
-  drawing remain later Phase D/G work.
+  detects U+1F000..U+1FAFF. Step 398 follows up on variation-selector-specific
+  emoji presentation; full Unicode emoji data, COLR/CBDT/SBIX/SVG font format
+  selection, and renderer-side color glyph drawing remain later Phase D/G work.
+
+## 2026-07-09 Phase D Step 398 Emoji Presentation Selector Planning
+
+- Step 398 adds deterministic planning for `U+FE0F` emoji presentation
+  selectors without claiming real HarfBuzz variation shaping.
+- The fallback shaper keeps the selector as a deterministic glyph record but
+  associates its color-glyph request with the immediately preceding
+  emoji-capable base glyph through
+  `append_emoji_presentation_color_glyph_plan(...)`.
+- `is_emoji_presentation_selector(...)` suppresses false missing-glyph
+  diagnostics for the selector itself, so explicit fallback chains that cover
+  the base symbol but not `U+FE0F` do not report a missing glyph for the
+  selector.
+- The implementation remains in `src/ui/text_shaping_fallback.cpp`; behavior
+  coverage lives in `test_shape_text_records_color_glyph_plans`, and structure
+  coverage guards the new helper names in `ui_source_structure_test`.
