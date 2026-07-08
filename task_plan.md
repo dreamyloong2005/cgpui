@@ -77,6 +77,12 @@ Windows/Linux core API is stable enough for parity work.
   platform fallback records in focused `win32_font_discovery.cpp` and
   `wayland_font_discovery.cpp` files. Real DirectWrite/fontconfig enumeration
   remains future work over these source boundaries.
+- Step 389 adds real Win32 DirectWrite system font-family enumeration over the
+  Step 388 boundary. `win32_discover_fonts()` now returns
+  `PlatformFontDiscoveryStatus::native_available` with DirectWrite-backed
+  family records when `DWriteCreateFactory` and the system collection succeed,
+  and keeps the deterministic Segoe UI fallback only for DirectWrite failures.
+  Linux fontconfig/FreeType enumeration remains future work.
 
 ## Definition Of Done For This 20-Step Goal
 

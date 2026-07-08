@@ -124,10 +124,13 @@ int main(int argc, char** argv) {
     return 6;
   }
   if (!contains(win32_font, "win32_discover_fonts()") ||
+      !contains(win32_font, "#include <dwrite.h>") ||
+      !contains(win32_font, "DWriteCreateFactory") ||
+      !contains(win32_font, "GetSystemFontCollection") ||
+      !contains(win32_font, "GetFontFamilyCount") ||
       !contains(win32_font, "PlatformFontDiscoveryBackend::direct_write") ||
-      !contains(
-          win32_font,
-          "PlatformFontDiscoveryStatus::deterministic_fallback") ||
+      !contains(win32_font, "PlatformFontDiscoveryStatus::native_available") ||
+      !contains(win32_font, "PlatformFontDiscoveryStatus::deterministic_fallback") ||
       !contains(win32_font, "Segoe UI") ||
       !contains(win32_font, "win32://Segoe UI")) {
     return 7;

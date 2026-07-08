@@ -910,6 +910,10 @@ behavior that can support GPUI examples and editor-like widgets.
   `win32_font_discovery.cpp` / `wayland_font_discovery.cpp` boundaries so the
   current deterministic platform fallback records are observable without
   claiming real DirectWrite/fontconfig enumeration yet.
+  Step 389 promotes the Win32 side to real DirectWrite system font-family
+  enumeration with native-available diagnostics and keeps the Segoe UI
+  deterministic fallback only for DirectWrite failures; Linux
+  fontconfig/FreeType enumeration remains pending.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

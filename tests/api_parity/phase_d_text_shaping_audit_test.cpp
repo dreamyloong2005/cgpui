@@ -101,7 +101,7 @@ int main() {
       !contains(text_row, "text-shaping readiness audit") ||
       !contains(text_row, "PlatformFontDiscoveryResult") ||
       !contains(text_row, "production HarfBuzz shaping") ||
-      !contains(text_row, "native DirectWrite/fontconfig font enumeration")) {
+      !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
   }
 

@@ -45,7 +45,7 @@ if is_plat("windows") then
         add_files("src/platform/win32/*.cpp")
         add_deps("cgpui_core", "cgpui_platform")
         add_includedirs(public_includedirs, {public = true})
-        add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32")
+        add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32", "dwrite")
 
     target("win32_input_event_test")
         set_kind("binary")
@@ -77,6 +77,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs)
         add_syslinks("user32", "imm32")
+        add_tests("default")
+
+    target("win32_font_discovery_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_font_discovery_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32", "dwrite")
         add_tests("default")
 end
 

@@ -6993,3 +6993,22 @@
   DirectWrite/fontconfig as deterministic fallback, not native availability.
 - Real DirectWrite/fontconfig enumeration, FreeType face metadata, and native
   coverage checks remain later steps over this boundary.
+
+## 2026-07-09 Phase D Step 389 Win32 DirectWrite Font Discovery
+
+- Step 389 promotes only the Win32 side from deterministic platform fallback
+  to real DirectWrite system font-family enumeration. `win32_discover_fonts()`
+  creates a shared DirectWrite factory, reads the system font collection, emits
+  one platform `FontFaceDescriptor` per family, and reports
+  `PlatformFontDiscoveryStatus::native_available` when records are found.
+- The deterministic Segoe UI fallback remains inside
+  `src/platform/win32/win32_font_discovery.cpp` and is used only if
+  `DWriteCreateFactory`, `GetSystemFontCollection`, or record construction
+  fails.
+- The local SDK exposes PostScript informational strings through
+  `IDWriteFont::GetInformationalStrings(...)`, not
+  `IDWriteFontFace::GetInformationalStrings(...)`; the first GREEN compile
+  caught this and the implementation now queries the representative font
+  directly.
+- Linux fontconfig/FreeType enumeration, font file paths, coverage checks, and
+  richer face metadata remain later Phase D work.
