@@ -7149,3 +7149,20 @@
 - The implementation remains in `src/ui/text_shaping_fallback.cpp`; behavior
   coverage lives in `test_shape_text_records_color_glyph_plans`, and structure
   coverage guards the new helper names in `ui_source_structure_test`.
+
+## 2026-07-09 Phase D Step 399 Emoji Selector Span Metadata
+
+- Step 399 keeps Step 398's deterministic fallback behavior and adds the
+  selector span to `TextColorGlyphPlan`.
+- `TextColorGlyphPlan::has_emoji_presentation_selector`,
+  `emoji_presentation_selector_byte_offset`, and
+  `emoji_presentation_selector_byte_length` record whether `U+FE0F` authored
+  the color presentation request and where that selector lives in the original
+  UTF-8 text.
+- `mark_emoji_presentation_selector_span(...)` updates an existing default
+  emoji-plane plan when a selector follows a color-default codepoint, or marks
+  the newly appended BMP-symbol emoji plan when the base needed the selector to
+  request color presentation.
+- This is still metadata for future native shaping/rendering. It does not add
+  full Unicode emoji data, HarfBuzz variation shaping, COLR/CBDT/SBIX/SVG font
+  selection, or renderer-side color glyph drawing.

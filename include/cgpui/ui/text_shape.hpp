@@ -40,6 +40,9 @@ struct TextColorGlyphPlan {
   std::size_t byte_length = 0;
   std::size_t font_fallback_face_index = 0;
   TextColorGlyphFormat format = TextColorGlyphFormat::native_color;
+  bool has_emoji_presentation_selector = false;
+  std::size_t emoji_presentation_selector_byte_offset = 0;
+  std::size_t emoji_presentation_selector_byte_length = 0;
 };
 
 struct TextFontFallbackRun {

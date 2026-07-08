@@ -175,6 +175,12 @@ int main() {
       !contains(text_shape_public_header, "struct TextColorGlyphPlan") ||
       !contains(text_shape_public_header,
                 "std::vector<TextColorGlyphPlan> color_glyphs") ||
+      !contains(text_shape_public_header,
+                "bool has_emoji_presentation_selector") ||
+      !contains(text_shape_public_header,
+                "emoji_presentation_selector_byte_offset") ||
+      !contains(text_shape_public_header,
+                "emoji_presentation_selector_byte_length") ||
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
@@ -185,6 +191,7 @@ int main() {
       !contains(fallback_source, "codepoint_accepts_emoji_presentation(") ||
       !contains(fallback_source,
                 "append_emoji_presentation_color_glyph_plan(") ||
+      !contains(fallback_source, "mark_emoji_presentation_selector_span(") ||
       !contains(fallback_source, "append_color_glyph_plan(") ||
       !contains(xmake_source,
                 "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||

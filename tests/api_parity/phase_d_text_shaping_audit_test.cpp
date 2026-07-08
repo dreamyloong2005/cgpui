@@ -118,6 +118,8 @@ int main() {
       !contains(text_row, "TextShapeRun::color_glyphs") ||
       !contains(text_row, "emoji presentation selector planning") ||
       !contains(text_row, "U+FE0F") ||
+      !contains(text_row, "has_emoji_presentation_selector") ||
+      !contains(text_row, "emoji_presentation_selector_byte_offset") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
@@ -135,6 +137,9 @@ int main() {
       !contains(shape_header, "enum class TextColorGlyphFormat") ||
       !contains(shape_header, "struct TextColorGlyphPlan") ||
       !contains(shape_header, "std::vector<TextColorGlyphPlan> color_glyphs") ||
+      !contains(shape_header, "bool has_emoji_presentation_selector") ||
+      !contains(shape_header, "emoji_presentation_selector_byte_offset") ||
+      !contains(shape_header, "emoji_presentation_selector_byte_length") ||
       !contains(backend_source, "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND")) {
     return 5;
   }
@@ -152,7 +157,8 @@ int main() {
   if (!contains(fallback_source, "is_emoji_presentation_selector(") ||
       !contains(fallback_source, "codepoint_accepts_emoji_presentation(") ||
       !contains(fallback_source,
-                "append_emoji_presentation_color_glyph_plan(")) {
+                "append_emoji_presentation_color_glyph_plan(") ||
+      !contains(fallback_source, "mark_emoji_presentation_selector_span(")) {
     return 10;
   }
 
@@ -177,7 +183,10 @@ int main() {
                 "test_shape_text_records_missing_glyph_diagnostics") ||
       !contains(text_model_test,
                 "test_shape_text_records_color_glyph_plans") ||
-      !contains(text_model_test, "variation_run.color_glyphs.size()")) {
+      !contains(text_model_test, "variation_run.color_glyphs.size()") ||
+      !contains(text_model_test, "emoji_variation_run.color_glyphs.size()") ||
+      !contains(text_model_test,
+                "emoji_presentation_selector_byte_offset")) {
     return 9;
   }
 

@@ -15822,3 +15822,36 @@
 - Focused GREEN verification passed:
   `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
   2/2.
+
+## 2026-07-09 Phase D Step 399 Emoji Selector Span Metadata
+
+- Started from clean `master` after
+  `78b5c38 feat: add emoji presentation selector planning`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextColorGlyphPlan` to record `has_emoji_presentation_selector`,
+  `emoji_presentation_selector_byte_offset`, and
+  `emoji_presentation_selector_byte_length` for both `U+2665 U+FE0F` and
+  `U+1F600 U+FE0F`. RED failed as expected on missing public fields.
+- Added RED structure coverage in `tests/architecture/ui_source_structure_test.cpp`
+  requiring the selector-span fields in `text_shape.hpp` and
+  `mark_emoji_presentation_selector_span(...)` in
+  `src/ui/text_shaping_fallback.cpp`.
+- GREEN implementation extends `TextColorGlyphPlan` with selector-span
+  metadata and marks either an existing emoji-plane color glyph plan or the
+  appended BMP-symbol color glyph plan when `U+FE0F` follows the base glyph.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.

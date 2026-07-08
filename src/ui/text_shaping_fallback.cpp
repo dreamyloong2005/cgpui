@@ -157,18 +157,33 @@ void append_color_glyph_plan(
   });
 }
 
+void mark_emoji_presentation_selector_span(
+    TextColorGlyphPlan& plan,
+    std::size_t selector_byte_offset,
+    std::size_t selector_byte_length) {
+  plan.has_emoji_presentation_selector = true;
+  plan.emoji_presentation_selector_byte_offset = selector_byte_offset;
+  plan.emoji_presentation_selector_byte_length = selector_byte_length;
+}
+
 void append_emoji_presentation_color_glyph_plan(
     TextShapeRun& run,
     char32_t previous_codepoint,
     std::size_t previous_glyph_index,
     std::size_t previous_byte_offset,
     std::size_t previous_byte_length,
-    std::size_t previous_font_fallback_face_index) {
+    std::size_t previous_font_fallback_face_index,
+    std::size_t selector_byte_offset,
+    std::size_t selector_byte_length) {
   if (!codepoint_accepts_emoji_presentation(previous_codepoint)) {
     return;
   }
   if (!run.color_glyphs.empty() &&
       run.color_glyphs.back().glyph_index == previous_glyph_index) {
+    mark_emoji_presentation_selector_span(
+        run.color_glyphs.back(),
+        selector_byte_offset,
+        selector_byte_length);
     return;
   }
   append_color_glyph_plan(
@@ -178,6 +193,10 @@ void append_emoji_presentation_color_glyph_plan(
       previous_byte_offset,
       previous_byte_length,
       previous_font_fallback_face_index);
+  mark_emoji_presentation_selector_span(
+      run.color_glyphs.back(),
+      selector_byte_offset,
+      selector_byte_length);
 }
 
 } // namespace
@@ -267,7 +286,9 @@ TextShapeRun shape_text_with_deterministic_fallback(
           previous_glyph_index,
           previous_byte_offset,
           previous_byte_length,
-          previous_font_fallback_face_index);
+          previous_font_fallback_face_index,
+          byte_offset,
+          byte_length);
     }
     if (codepoint_prefers_color_glyph(codepoint)) {
       append_color_glyph_plan(

@@ -961,6 +961,12 @@ behavior that can support GPUI examples and editor-like widgets.
   color glyph metadata while suppressing false missing-glyph diagnostics for
   the selector itself. Full Unicode emoji data, HarfBuzz variation shaping, and
   native color glyph rendering remain later work.
+  Step 399 extends `TextColorGlyphPlan` with selector-span metadata through
+  `has_emoji_presentation_selector`,
+  `emoji_presentation_selector_byte_offset`, and
+  `emoji_presentation_selector_byte_length`, so both BMP symbol emoji
+  presentation and emoji-plane codepoints followed by `U+FE0F` preserve the
+  selector bytes for future native shaping/rendering.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.

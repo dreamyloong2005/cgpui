@@ -1019,9 +1019,33 @@ int test_shape_text_records_color_glyph_plans() {
       variation_color_glyph.font_fallback_face_index != 1) {
     return 175;
   }
+  if (!variation_color_glyph.has_emoji_presentation_selector ||
+      variation_color_glyph.emoji_presentation_selector_byte_offset != 3 ||
+      variation_color_glyph.emoji_presentation_selector_byte_length != 3) {
+    return 176;
+  }
+
+  const cgpui::TextShapeRun emoji_variation_run =
+      cgpui::shape_text("\xF0\x9F\x98\x80\xEF\xB8\x8F", chain, 18.0F);
+  if (emoji_variation_run.color_glyphs.size() != 1 ||
+      emoji_variation_run.glyph_count() != 2 ||
+      !emoji_variation_run.missing_glyphs.empty()) {
+    return 177;
+  }
+  const cgpui::TextColorGlyphPlan& emoji_variation_color_glyph =
+      emoji_variation_run.color_glyphs[0];
+  if (emoji_variation_color_glyph.codepoint != 0x1F600 ||
+      emoji_variation_color_glyph.glyph_index != 0 ||
+      !emoji_variation_color_glyph.has_emoji_presentation_selector ||
+      emoji_variation_color_glyph.emoji_presentation_selector_byte_offset !=
+          4 ||
+      emoji_variation_color_glyph.emoji_presentation_selector_byte_length !=
+          3) {
+    return 178;
+  }
 
   const cgpui::TextShapeRun text_run = cgpui::shape_text("AB", chain, 18.0F);
-  return text_run.color_glyphs.empty() ? 0 : 176;
+  return text_run.color_glyphs.empty() ? 0 : 179;
 }
 
 int test_shape_text_records_backend_selection_and_fallback_reason() {

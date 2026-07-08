@@ -92,6 +92,7 @@ int main() {
       !contains(text_row, "TextMissingGlyphDiagnostic") ||
       !contains(text_row, "TextColorGlyphPlan") ||
       !contains(text_row, "emoji presentation selector planning") ||
+      !contains(text_row, "has_emoji_presentation_selector") ||
       !contains(text_row, "FontDatabase::resolve_chain_for_codepoint") ||
       !contains(text_row, "wayland_fontconfig_discovery.cpp") ||
       !contains(text_row, "production HarfBuzz shaping")) {
@@ -114,6 +115,7 @@ int main() {
       !contains(fallback_source, "append_color_glyph_plan(") ||
       !contains(fallback_source,
                 "append_emoji_presentation_color_glyph_plan(") ||
+      !contains(fallback_source, "mark_emoji_presentation_selector_span(") ||
       !contains(fallback_source, "decode_utf8_codepoint(")) {
     return 5;
   }
@@ -138,7 +140,10 @@ int main() {
                 "test_shape_text_records_missing_glyph_diagnostics") ||
       !contains(text_model_test,
                 "test_shape_text_records_color_glyph_plans") ||
-      !contains(text_model_test, "variation_run.color_glyphs.size()")) {
+      !contains(text_model_test, "variation_run.color_glyphs.size()") ||
+      !contains(text_model_test, "emoji_variation_run.color_glyphs.size()") ||
+      !contains(text_model_test,
+                "emoji_presentation_selector_byte_length")) {
     return 7;
   }
 

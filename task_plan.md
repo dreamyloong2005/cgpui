@@ -129,6 +129,11 @@ Windows/Linux core API is stable enough for parity work.
   preceding emoji-capable base glyph, keeps selector misses out of
   `TextMissingGlyphDiagnostic`, and still leaves full native color glyph
   rendering to later work.
+- Step 399 extends color glyph plans with selector-span metadata.
+  `TextColorGlyphPlan` now records whether an emoji presentation selector was
+  present plus its byte offset and length, so future native shaping/rendering
+  can distinguish base-glyph color planning from selector-authored color
+  presentation.
 
 ## Definition Of Done For This 20-Step Goal
 
