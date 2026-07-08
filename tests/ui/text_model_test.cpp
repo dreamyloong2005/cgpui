@@ -711,10 +711,26 @@ int test_shape_text_records_backend_selection_and_fallback_reason() {
       !default_run.language.empty()) {
     return 148;
   }
+  const cgpui::TextShapingBackendCapabilities capabilities =
+      cgpui::text_shaping_backend_capabilities();
+  const cgpui::TextShapingBackendSelection selection =
+      default_run.backend_selection();
+  if (default_run.backend_capabilities.harfbuzz_available !=
+          capabilities.harfbuzz_available ||
+      selection.capabilities.harfbuzz_available !=
+          default_run.backend_capabilities.harfbuzz_available ||
+      selection.requested != default_run.requested_backend ||
+      selection.used != default_run.used_backend ||
+      selection.fallback_reason != default_run.fallback_reason) {
+    return 150;
+  }
   if (cgpui::text_shaping_backend_capabilities().harfbuzz_available) {
     if (default_run.used_backend != cgpui::TextShapingBackend::harfbuzz ||
         default_run.fallback_reason != cgpui::TextShapingFallbackReason::none) {
       return 93;
+    }
+    if (default_run.used_fallback()) {
+      return 151;
     }
   } else if (
       default_run.used_backend !=
@@ -722,6 +738,8 @@ int test_shape_text_records_backend_selection_and_fallback_reason() {
       default_run.fallback_reason !=
           cgpui::TextShapingFallbackReason::backend_unavailable) {
     return 94;
+  } else if (!default_run.used_fallback()) {
+    return 152;
   }
 
   const cgpui::TextShapeRun fallback_run = cgpui::shape_text(
@@ -747,6 +765,9 @@ int test_shape_text_records_backend_selection_and_fallback_reason() {
       fallback_run.script != cgpui::TextShapingScript::arabic ||
       fallback_run.language != "ar") {
     return 149;
+  }
+  if (fallback_run.used_fallback()) {
+    return 153;
   }
   return fallback_run.glyphs.size() == 2 && fallback_run.glyphs[0].glyph_id == 0
              ? 0

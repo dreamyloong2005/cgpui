@@ -55,6 +55,7 @@ struct TextShapingBackendSelection {
   TextShapingBackend used = TextShapingBackend::deterministic_fallback;
   TextShapingFallbackReason fallback_reason =
       TextShapingFallbackReason::backend_unavailable;
+  TextShapingBackendCapabilities capabilities;
 
   [[nodiscard]] bool used_fallback() const;
 };

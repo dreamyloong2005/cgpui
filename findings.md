@@ -6935,3 +6935,13 @@
   `TextShapingFallbackReason::backend_unavailable`; defining
   `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` before the real implementation lands is
   intentionally a build-time error instead of a fake successful backend.
+
+## 2026-07-09 Phase D Step 385 Shaping Diagnostics
+
+- Step 385 keeps shaping diagnostics allocation-free by adding capability
+  snapshots to `TextShapingBackendSelection` and `TextShapeRun` instead of
+  introducing diagnostic strings.
+- `TextShapeRun::used_fallback()` mirrors backend requested-vs-used state, and
+  `TextShapeRun::backend_selection()` reconstructs the public selection record
+  from run metadata so measurement/wrapping callers can inspect the same
+  diagnostic shape without reaching into private shaping dispatch.

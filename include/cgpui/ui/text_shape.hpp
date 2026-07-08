@@ -36,11 +36,14 @@ struct TextShapeRun {
   TextShapingBackend used_backend = TextShapingBackend::deterministic_fallback;
   TextShapingFallbackReason fallback_reason =
       TextShapingFallbackReason::backend_unavailable;
+  TextShapingBackendCapabilities backend_capabilities;
   TextShapingDirection direction = TextShapingDirection::left_to_right;
   TextShapingScript script = TextShapingScript::common;
   std::string language;
 
   [[nodiscard]] std::size_t glyph_count() const;
+  [[nodiscard]] bool used_fallback() const;
+  [[nodiscard]] TextShapingBackendSelection backend_selection() const;
 };
 
 [[nodiscard]] bool is_utf8_continuation_byte(char value);

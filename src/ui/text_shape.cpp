@@ -8,6 +8,19 @@ std::size_t TextShapeRun::glyph_count() const {
   return glyphs.size();
 }
 
+bool TextShapeRun::used_fallback() const {
+  return requested_backend != used_backend;
+}
+
+TextShapingBackendSelection TextShapeRun::backend_selection() const {
+  return TextShapingBackendSelection{
+      .requested = requested_backend,
+      .used = used_backend,
+      .fallback_reason = fallback_reason,
+      .capabilities = backend_capabilities,
+  };
+}
+
 bool is_utf8_continuation_byte(char value) {
   return (static_cast<unsigned char>(value) & 0xC0U) == 0x80U;
 }

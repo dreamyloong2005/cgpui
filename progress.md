@@ -15218,6 +15218,34 @@
   `phase_c_final_ledger_audit_test/default`, `render_view_test/default`,
   `text_model_test/default`, `ui_header_cleanliness/default`, and
   `ui_source_structure_test/default` 6/6.
+
+## 2026-07-09 Phase D Step 385 Shaping Diagnostics
+
+- Started from clean `master` after
+  `fa4d752 feat: add harfbuzz shaping boundary`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextShapingBackendSelection::capabilities`,
+  `TextShapeRun::backend_capabilities`, `TextShapeRun::used_fallback()`, and
+  `TextShapeRun::backend_selection()`. RED failed as expected on missing
+  members/methods.
+- GREEN implementation added capability snapshots to backend selections and
+  shape runs, plus lightweight `TextShapeRun` helpers in `src/ui/text_shape.cpp`.
+  No diagnostic strings or extra hot-path allocations were introduced.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_header_cleanliness/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  6/6.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 6/6.
 - Adjacent Windows verification passed:
   `xmake test -y -P . text_model_test/default ui_source_structure_test/default
   ui_header_cleanliness/default render_view_test/default

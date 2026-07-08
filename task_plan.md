@@ -55,6 +55,10 @@ Windows/Linux core API is stable enough for parity work.
   text files, disabled builds still route to deterministic fallback, and the
   real HarfBuzz backend remains incomplete until the dependency is linked and
   verified.
+- Step 385 adds lightweight backend diagnostics: shaping backend selections
+  and shape runs now carry capability snapshots, and `TextShapeRun` exposes
+  `used_fallback()` plus `backend_selection()` without adding string
+  diagnostics or extra hot-path allocation.
 
 ## Definition Of Done For This 20-Step Goal
 
