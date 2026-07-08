@@ -2557,3 +2557,10 @@ implementation slice.
   Arch Linux debug full verification passed 109/109 using D-drive WSL
   build/cache output plus `/dev/shm/cgpui` for transient temp. Step 363
   SVG/image public example coverage is the next tracked Phase C slice.
+- Phase C Step 362 is merged on `master` at
+  `0798992 feat: add svg image asset registry` and post-merge verified with
+  JSON validation, diff hygiene, Windows debug config, Windows full debug
+  112/112, WSL Arch Linux debug config, and WSL Arch Linux full debug 109/109
+  using D-drive WSL build/cache output plus `/dev/shm/cgpui` for transient
+  Wayland/socket temp. Step 363 SVG/image public example coverage remains the
+  next tracked Phase C slice.

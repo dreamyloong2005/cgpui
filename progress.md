@@ -14663,3 +14663,30 @@
   --ccache=n` exited 0 and `xmake test -j 1 -P .` passed 109/109.
 - Disk placement check after WSL verification: the Step 362 WSL build/cache
   directory on D: was 506M, `/root/.xmake` was absent, and `/tmp` was 0.
+
+## 2026-07-08 Phase C Step 362 Merge
+
+- Root `master` is at `0798992 feat: add svg image asset registry`; it has no
+  tracked diff and only the pre-existing untracked `.vscode/`.
+- Verified post-merge JSON:
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`
+  exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 112/112.
+- Verified post-merge WSL Arch Linux with D-drive build/cache output and
+  memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui -P .` passed 109/109.
+- Disk-space interlude: after the user reported C: pressure, paused Phase C and
+  cleaned only low-risk cache/temp children (`Temp`, VS Code VSIX cache,
+  vscode-cpptools `ipch`, `CrashDumps`, Codex temp dirs, and
+  `.cache/codex-runtimes`). C: free space rose from 25.88GB to 29.15GB; no
+  `.codex` sessions/log databases, WSL VHDs, Arduino packages, global npm
+  packages, or app state directories were deleted.
+- Step 362 is complete on `master`; Step 363 SVG/image public example coverage
+  is the next Phase C slice.
