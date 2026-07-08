@@ -6945,3 +6945,16 @@
   `TextShapeRun::backend_selection()` reconstructs the public selection record
   from run metadata so measurement/wrapping callers can inspect the same
   diagnostic shape without reaching into private shaping dispatch.
+
+## 2026-07-09 Phase D Step 386 Text Shaping Readiness Audit
+
+- Step 386 is a readiness audit rather than a false HarfBuzz completion.
+- Durable guard ownership is
+  `tests/api_parity/phase_d_text_shaping_audit_test.cpp`; it verifies the
+  Step 379-385 shaping boundary evidence, xmake target registration, the
+  guarded HarfBuzz source insertion point, fallback/capability diagnostics,
+  and the roadmap/ledger wording that production HarfBuzz shaping remains
+  incomplete.
+- The audit lets subsequent Phase D text/font work proceed without losing the
+  real dependency-backed HarfBuzz task: `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND`
+  must still require a real implementation and verification on Windows/Linux.

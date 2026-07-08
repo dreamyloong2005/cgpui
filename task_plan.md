@@ -59,6 +59,10 @@ Windows/Linux core API is stable enough for parity work.
   and shape runs now carry capability snapshots, and `TextShapeRun` exposes
   `used_fallback()` plus `backend_selection()` without adding string
   diagnostics or extra hot-path allocation.
+- Step 386 adds a text-shaping readiness audit that locks the backend
+  boundary, HarfBuzz insertion point, capability snapshots, fallback
+  diagnostics, and the explicit fact that production HarfBuzz shaping remains
+  incomplete until the dependency-backed backend is linked and verified.
 
 ## Definition Of Done For This 20-Step Goal
 

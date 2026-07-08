@@ -564,6 +564,13 @@ target("phase_c_final_ledger_audit_test")
     add_files("tests/api_parity/phase_c_final_ledger_audit_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_d_text_shaping_audit_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/api_parity/phase_d_text_shaping_audit_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("entity_lifecycle_creation_test")
     set_kind("binary")
     add_files("tests/api_parity/entity_lifecycle_creation_test.cpp")

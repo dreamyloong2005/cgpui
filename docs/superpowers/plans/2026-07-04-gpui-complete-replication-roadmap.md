@@ -895,6 +895,9 @@ behavior that can support GPUI examples and editor-like widgets.
   Step 385 adds lightweight backend diagnostic snapshots on shaping
   selections and shape runs so unavailable/fallback paths are observable
   without string diagnostics or hot-path allocation.
+  Step 386 adds this text-shaping readiness audit to freeze the backend
+  boundary, fallback diagnostics, and explicit production-HarfBuzz gap before
+  later dependency-backed shaping work.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,

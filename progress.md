@@ -15219,6 +15219,34 @@
   `text_model_test/default`, `ui_header_cleanliness/default`, and
   `ui_source_structure_test/default` 6/6.
 
+## 2026-07-09 Phase D Step 386 Text Shaping Readiness Audit
+
+- Started from clean `master` after
+  `65b2713 feat: add text shaping diagnostics`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED audit coverage in
+  `tests/api_parity/phase_d_text_shaping_audit_test.cpp` plus xmake target
+  registration. RED failed as expected because the roadmap, ledger, task plan,
+  and findings did not yet record Step 386.
+- GREEN documentation updates record Step 386 as a readiness audit that guards
+  the Step 379-385 backend boundary, fallback diagnostics, and the explicit
+  production-HarfBuzz gap rather than claiming real HarfBuzz shaping is done.
+- Focused GREEN verification passed:
+  `xmake test -y -P . phase_d_text_shaping_audit_test/default` 1/1.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . phase_d_text_shaping_audit_test/default
+  text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  7/7.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 7/7.
+
 ## 2026-07-09 Phase D Step 385 Shaping Diagnostics
 
 - Started from clean `master` after
