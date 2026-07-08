@@ -15285,6 +15285,38 @@
   `gpui_parity_ledger_test/default`, `phase_d_text_shaping_audit_test/default`,
   and `phase_c_final_ledger_audit_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 394 Font Fallback Band Audit
+
+- Started from clean `master` after
+  `16d33e5 feat: add glyph fallback face indices`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED audit coverage in
+  `tests/api_parity/phase_d_font_fallback_audit_test.cpp` plus xmake
+  registration. RED failed as expected because the roadmap, ledger, task plan,
+  and findings did not yet record the Step 394 closeout evidence.
+- GREEN documentation updates mark Step 394 as an audit-only closeout for the
+  Step 387-393 font discovery/fallback band while preserving the explicit
+  dependency-backed Linux fontconfig/FreeType and production HarfBuzz gaps.
+- Focused GREEN verification passed:
+  `xmake test -y -P . phase_d_font_fallback_audit_test/default
+  phase_d_text_shaping_audit_test/default gpui_parity_ledger_test/default`
+  3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . phase_d_font_fallback_audit_test/default
+  phase_d_text_shaping_audit_test/default text_model_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  render_view_test/default platform_font_discovery_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  9/9.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `ui_source_structure_test/default`, `ui_header_cleanliness/default`,
+  `render_view_test/default`, `platform_font_discovery_test/default`,
+  `wayland_font_discovery_test/default`, `gpui_parity_ledger_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 10/10.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

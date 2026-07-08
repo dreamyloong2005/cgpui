@@ -104,6 +104,13 @@ Windows/Linux core API is stable enough for parity work.
   carries `font_fallback_face_index`, and the deterministic fallback shaper
   decodes each UTF-8 codepoint to choose the first provided fallback face that
   covers that codepoint. Full multi-font run splitting remains later work.
+- Step 394 closes the font discovery/fallback band with an audit-only guard.
+  `phase_d_font_fallback_audit_test` freezes the Step 387-393 evidence for
+  font database boundaries, platform discovery diagnostics, Win32 DirectWrite,
+  guarded Linux fontconfig, coverage-aware fallback chains, explicit shaping
+  fallback chains, and glyph-level fallback face indices. Dependency-backed
+  Linux fontconfig/FreeType enumeration and production HarfBuzz shaping remain
+  incomplete.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -935,6 +935,10 @@ behavior that can support GPUI examples and editor-like widgets.
   UTF-8 codepoint-to-face selection over the explicit fallback chain, so glyph
   records can identify which fallback face covers each codepoint before later
   multi-font run splitting lands.
+  Step 394 closes the font discovery/fallback band with an audit-only guard
+  over Steps 387-393, preserving the explicit remaining gaps for
+  dependency-backed Linux fontconfig/FreeType enumeration and production
+  HarfBuzz shaping before the next Phase D fallback-splitting band starts.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

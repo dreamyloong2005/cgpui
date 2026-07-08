@@ -7079,3 +7079,18 @@
 - This is still diagnostic/planning metadata, not full multi-font shaping.
   Glyph advances and deterministic glyph ids remain unchanged; later steps
   should use the face index to split font runs and record missing-glyph cases.
+
+## 2026-07-09 Phase D Step 394 Font Fallback Band Audit
+
+- Step 394 is an audit-only closeout for the Step 387-393 font discovery and
+  fallback band.
+- Durable guard ownership is
+  `tests/api_parity/phase_d_font_fallback_audit_test.cpp`; it checks xmake
+  registration, roadmap/ledger/task-plan/finding evidence, Win32 DirectWrite
+  enumeration, guarded Linux fontconfig insertion, coverage-aware fallback
+  chain APIs, explicit fallback-chain shaping, and glyph-level fallback face
+  indices.
+- This closeout does not claim dependency-backed Linux fontconfig/FreeType
+  enumeration or production HarfBuzz shaping is complete. It hands Phase D to
+  the next fallback-splitting, emoji/color glyph, and missing-glyph diagnostic
+  band.
