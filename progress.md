@@ -14817,3 +14817,29 @@
 - Disk placement check after WSL verification: the Step 364 D-drive
   WSL build/log directory was 2.4G, `/tmp` was 0, and `/root/.xmake` was
   absent.
+
+## 2026-07-08 Phase C Step 364 Merge
+
+- Fast-forward merged `codex/phase-c-svg-image-closeout` into root `master` at
+  `2a2be31 test: close phase c svg image band`; root `master` still had no
+  tracked diff and only the existing untracked `.vscode/`.
+- Verified post-merge JSON:
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`
+  exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 114/114.
+- Verified post-merge WSL Arch Linux with D-drive build/cache output and
+  memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui -P .` passed 111/111.
+- Disk placement check after post-merge WSL verification: `/tmp` was 0,
+  `/root/.xmake` was absent, `.build-wsl/master` on D: was 5.2G, C: had
+  26.98GB free, and D: had 6.90GB free. The WMI disk query was denied, so the
+  free-space reading used `Get-PSDrive`.
+- Step 364 is complete on `master`; Step 367 widget family structure tests are
+  the next Phase C slice.

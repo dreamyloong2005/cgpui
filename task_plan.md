@@ -2569,5 +2569,11 @@ implementation slice.
   verified with JSON validation, diff hygiene, Windows debug config, Windows
   full debug 113/113, WSL Arch Linux debug config, and WSL Arch Linux full
   debug 110/110 using D-drive WSL build/cache output plus `/dev/shm/cgpui` for
-  transient Wayland/socket temp. Step 364 SVG/image band closeout is the next
+  transient Wayland/socket temp.
+- Phase C Step 364, SVG/image band closeout, is merged on `master` at
+  `2a2be31 test: close phase c svg image band` and post-merge verified with
+  JSON validation, diff hygiene, Windows debug config, Windows full debug
+  114/114, WSL Arch Linux debug config, and WSL Arch Linux full debug 111/111
+  using D-drive WSL build/cache output plus `/dev/shm/cgpui` for transient
+  Wayland/socket temp. Step 367 widget family structure tests are the next
   tracked Phase C slice.
