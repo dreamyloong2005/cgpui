@@ -3,9 +3,9 @@
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/platform_file_dialog.hpp"
+#include "cgpui/platform/platform_font_discovery.hpp"
 #include "cgpui/platform/platform_native_menu.hpp"
 #include "cgpui/platform/platform_window.hpp"
-#include "cgpui/ui/text.hpp"
 
 #include <memory>
 #include <vector>
@@ -19,6 +19,8 @@ class PlatformApplication {
   virtual Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) = 0;
+  [[nodiscard]] virtual PlatformFontDiscoveryResult discover_font_discovery()
+      const;
   [[nodiscard]] virtual std::vector<FontFaceDescriptor> discover_font_records()
       const;
   [[nodiscard]] virtual FontDatabase discover_fonts() const;

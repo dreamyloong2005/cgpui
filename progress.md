@@ -15207,6 +15207,69 @@
 - Focused GREEN verification passed:
   `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
   2/2.
+
+## 2026-07-09 Phase D Step 388 Recovery
+
+- Resumed the active `/goal` on `master` after
+  `59c71f0 refactor: split text font database`; `git status --short --branch`
+  showed no tracked changes and only the existing untracked `.vscode/`.
+- Ran the planning-with-files catchup helper; it reported unsynced context
+  from the previous continuation and recommended `git diff --stat`, which
+  produced no output.
+- Confirmed Step 388 has not started yet. The next slice should add platform
+  font discovery records/diagnostics over the Step 387 `text_font.cpp`
+  boundary without creating a new worktree, without running cleanup/prune, and
+  without claiming native DirectWrite/fontconfig discovery is implemented
+  before there is a verified adapter.
+
+## 2026-07-09 Phase D Step 388 Platform Font Discovery Diagnostics
+
+- Added RED behavior and structure coverage through
+  `tests/platform/platform_font_discovery_test.cpp` and
+  `tests/architecture/platform_font_discovery_structure_test.cpp`, then
+  registered both targets in `xmake.lua`. RED failed as expected on missing
+  `PlatformFontDiscoveryResult`, `PlatformFontDiscoveryBackend`,
+  `PlatformFontDiscoveryStatus`, and
+  `PlatformApplication::discover_font_discovery()`.
+- GREEN implementation added
+  `include/cgpui/platform/platform_font_discovery.hpp` and
+  `src/platform/platform_font_discovery.cpp`; base
+  `PlatformApplication::discover_font_records()` and `discover_fonts()` now
+  bridge from `discover_font_discovery()` instead of living in
+  `src/platform/empty.cpp`.
+- Moved the deterministic Win32 and Wayland platform fallback font records
+  into focused files:
+  `src/platform/win32/win32_font_discovery.cpp` and
+  `src/platform/linux/wayland_font_discovery.cpp`. The diagnostics mark those
+  records as DirectWrite/fontconfig deterministic fallback, not native
+  availability.
+- Focused GREEN verification passed:
+  `xmake test -y -P . platform_font_discovery_test/default
+  platform_font_discovery_structure_test/default
+  platform_source_structure_test/default win32_window_source_test/default
+  wayland_window_source_test/default` 5/5.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . platform_font_discovery_test/default
+  platform_font_discovery_structure_test/default
+  platform_source_structure_test/default win32_window_source_test/default
+  wayland_window_source_test/default win32_text_input_test/default
+  text_model_test/default ui_header_cleanliness/default render_view_test/default
+  gpui_parity_ledger_test/default phase_d_text_shaping_audit_test/default
+  phase_c_final_ledger_audit_test/default` 12/12.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `platform_font_discovery_test/default`,
+  `platform_font_discovery_structure_test/default`,
+  `platform_source_structure_test/default`,
+  `wayland_window_source_test/default`, `wayland_keyboard_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`,
+  `render_view_test/default`, `gpui_parity_ledger_test/default`,
+  `phase_d_text_shaping_audit_test/default`, and
+  `phase_c_final_ledger_audit_test/default` 11/11. This compiled
+  `src/platform/linux/wayland_font_discovery.cpp` into
+  `cgpui_platform_linux_wayland`.
+- Diff hygiene passed `git diff --check` with only expected LF-to-CRLF
+  working-copy warnings.
 - Adjacent Windows verification passed:
   `xmake test -y -P . text_model_test/default ui_source_structure_test/default
   ui_header_cleanliness/default render_view_test/default

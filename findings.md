@@ -6974,3 +6974,22 @@
 - This does not add DirectWrite, fontconfig, FreeType, or CoreText discovery
   yet. It creates the focused UI font boundary those platform adapters should
   feed in subsequent slices.
+
+## 2026-07-09 Phase D Step 388 Platform Font Discovery Diagnostics
+
+- Step 388 adds a platform-facing result and diagnostics boundary rather than
+  real native enumeration. `PlatformFontDiscoveryResult` carries discovered
+  font records plus allocation-light backend/status/count booleans, and
+  `PlatformApplication::discover_font_discovery()` now feeds the older
+  `discover_font_records()` and `discover_fonts()` adapters.
+- Durable ownership is `include/cgpui/platform/platform_font_discovery.hpp`
+  and `src/platform/platform_font_discovery.cpp`; this keeps the platform font
+  discovery API out of broad application files and removes the base font
+  adapter bodies from `src/platform/empty.cpp`.
+- Win32 and Wayland no longer keep static font records in the application or
+  services files. The current deterministic platform fallback records live in
+  `src/platform/win32/win32_font_discovery.cpp` and
+  `src/platform/linux/wayland_font_discovery.cpp` with diagnostics reporting
+  DirectWrite/fontconfig as deterministic fallback, not native availability.
+- Real DirectWrite/fontconfig enumeration, FreeType face metadata, and native
+  coverage checks remain later steps over this boundary.

@@ -38,6 +38,7 @@ KeyboardModifiers current_modifiers();
 const wchar_t* cursor_id_for(CursorShape cursor_shape);
 DWORD win32_window_style_for(const WindowChromeOptions& chrome);
 DWORD win32_window_extended_style_for(const WindowChromeOptions& chrome);
+PlatformFontDiscoveryResult win32_discover_fonts();
 LRESULT CALLBACK win32_window_proc(
     HWND hwnd,
     UINT message,

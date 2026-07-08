@@ -117,16 +117,9 @@ class Win32Application final : public PlatformApplication {
     PostQuitMessage(0);
   }
 
-  [[nodiscard]] std::vector<FontFaceDescriptor> discover_font_records()
+  [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
       const override {
-    return {
-        FontFaceDescriptor{
-            .font = FontDescriptor{.family = "Segoe UI"},
-            .postscript_name = "SegoeUI",
-            .source = FontSource::platform,
-            .path = "win32://Segoe UI",
-        },
-    };
+    return win32_discover_fonts();
   }
 
  private:

@@ -175,6 +175,7 @@ int main(int argc, char** argv) {
       "src/platform/linux/wayland_application_window_creation.cpp",
       "src/platform/linux/wayland_application_lifecycle.cpp",
       "src/platform/linux/wayland_application_services.cpp",
+      "src/platform/linux/wayland_font_discovery.cpp",
       "src/platform/linux/wayland_application_factory.cpp",
       "src/platform/linux/wayland_application.cpp",
   };
@@ -192,6 +193,7 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
   };
   for (const char* path : win32_files) {
@@ -601,6 +603,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_application_lifecycle.cpp");
   const std::string application_services =
       read_source("src/platform/linux/wayland_application_services.cpp");
+  const std::string wayland_font_discovery =
+      read_source("src/platform/linux/wayland_font_discovery.cpp");
   const std::string application_factory =
       read_source("src/platform/linux/wayland_application_factory.cpp");
   if (!contains(application_internal,
@@ -671,7 +675,7 @@ int main(int argc, char** argv) {
       contains(application, "WaylandApplication::create_window(") ||
       contains(application, "WaylandApplication::run(") ||
       contains(application, "WaylandApplication::install_native_menu(") ||
-      contains(application, "WaylandApplication::discover_font_records(") ||
+      contains(application, "WaylandApplication::discover_font_discovery(") ||
       contains(application, "create_platform_application(")) {
     return 23;
   }
@@ -708,8 +712,12 @@ int main(int argc, char** argv) {
                 "WaylandApplication::install_native_menu(") ||
       !contains(application_services,
                 "WaylandApplication::show_native_file_dialog(") ||
-      !contains(application_services,
-                "WaylandApplication::discover_font_records(") ||
+      contains(application_services,
+               "WaylandApplication::discover_font_discovery(") ||
+      !contains(wayland_font_discovery,
+                "WaylandApplication::discover_font_discovery(") ||
+      !contains(wayland_font_discovery,
+                "PlatformFontDiscoveryBackend::fontconfig") ||
       !contains(application_factory, "create_platform_application(")) {
     return 30;
   }
@@ -843,6 +851,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/win32/win32_drag_drop_ole_payload.cpp");
   const std::string win32_input_helpers =
       read_source("src/platform/win32/win32_input_helpers.cpp");
+  const std::string win32_font_discovery =
+      read_source("src/platform/win32/win32_font_discovery.cpp");
   if (line_count(win32_helpers) > 60 ||
       contains(win32_helpers, "std::wstring widen(") ||
       contains(win32_helpers, "KeyboardModifiers current_modifiers()") ||
@@ -876,6 +886,16 @@ int main(int argc, char** argv) {
       contains(win32_input_helpers,
                "DragDropPayload drag_payload_from_ole_data_object(")) {
     return 17;
+  }
+  if (!contains(win32_font_discovery, "win32_discover_fonts()") ||
+      !contains(
+          win32_font_discovery,
+          "PlatformFontDiscoveryBackend::direct_write") ||
+      !contains(
+          win32_font_discovery,
+          "PlatformFontDiscoveryStatus::deterministic_fallback") ||
+      contains(win32_application, "FontFaceDescriptor{")) {
+    return 42;
   }
 
   return 0;

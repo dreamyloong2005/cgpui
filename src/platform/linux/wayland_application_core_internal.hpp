@@ -19,7 +19,7 @@ class WaylandApplication final : public PlatformApplication {
       NativeMenuModel menu) override;
   NativeFileDialogResult show_native_file_dialog(
       NativeFileDialogOptions options) override;
-  [[nodiscard]] std::vector<FontFaceDescriptor> discover_font_records()
+  [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
       const override;
 
  private:

@@ -99,7 +99,9 @@ int main() {
       line_containing(ledger_md, "| gpui text system |");
   if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "text-shaping readiness audit") ||
-      !contains(text_row, "production HarfBuzz shaping")) {
+      !contains(text_row, "PlatformFontDiscoveryResult") ||
+      !contains(text_row, "production HarfBuzz shaping") ||
+      !contains(text_row, "native DirectWrite/fontconfig font enumeration")) {
     return 4;
   }
 

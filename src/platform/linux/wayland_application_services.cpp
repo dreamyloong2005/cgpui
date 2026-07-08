@@ -18,16 +18,4 @@ NativeFileDialogResult WaylandApplication::show_native_file_dialog(
   return last_file_dialog_result_;
 }
 
-std::vector<FontFaceDescriptor> WaylandApplication::discover_font_records()
-    const {
-  return {
-      FontFaceDescriptor{
-          .font = FontDescriptor{.family = "sans-serif"},
-          .postscript_name = "fontconfig:sans-serif",
-          .source = FontSource::platform,
-          .path = "fontconfig://sans-serif",
-      },
-  };
-}
-
 } // namespace cgpui

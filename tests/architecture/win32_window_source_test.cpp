@@ -44,6 +44,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
       "src/platform/win32/win32_native.cpp",
       "src/platform/win32/win32_ole_drop_target.cpp",
@@ -246,10 +247,12 @@ int main() {
       !contains(win32_text, "CGPUI.Win32.TestDragExit")) {
     return 54;
   }
-  if (!contains(win32_text, "discover_font_records()") ||
+  if (!contains(win32_text, "discover_font_discovery()") ||
       !contains(win32_text, "const override") ||
-      !contains(win32_text, "FontFaceDescriptor") ||
-      !contains(win32_text, "FontSource::platform") ||
+      !contains(win32_text, "PlatformFontDiscoveryBackend::direct_write") ||
+      !contains(
+          win32_text,
+          "PlatformFontDiscoveryStatus::deterministic_fallback") ||
       !contains(win32_text, "Segoe UI") ||
       !contains(win32_text, "win32://Segoe UI")) {
     return 57;
@@ -312,6 +315,8 @@ int main() {
       read_source("src/platform/win32/win32_drag_drop_ole_payload.cpp");
   const std::string win32_input_helpers =
       read_source("src/platform/win32/win32_input_helpers.cpp");
+  const std::string win32_font_discovery =
+      read_source("src/platform/win32/win32_font_discovery.cpp");
   const std::string win32_native =
       read_source("src/platform/win32/win32_native.cpp");
   const std::string win32_ole_drop_target =
@@ -347,7 +352,8 @@ int main() {
       win32_string.empty() || win32_drag_drop_helpers.empty() ||
       win32_drag_drop_payload.empty() ||
       win32_drag_drop_ole_payload.empty() ||
-      win32_input_helpers.empty() || win32_native.empty() ||
+      win32_input_helpers.empty() || win32_font_discovery.empty() ||
+      win32_native.empty() ||
       win32_ole_drop_target.empty() || win32_window.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
       win32_window_drag_drop.empty() || win32_window_events.empty() ||
@@ -462,6 +468,17 @@ int main() {
       contains(win32_input_helpers,
                "DragDropPayload drag_payload_from_ole_data_object(")) {
     return 84;
+  }
+  if (!contains(win32_font_discovery, "win32_discover_fonts()") ||
+      !contains(
+          win32_font_discovery,
+          "PlatformFontDiscoveryBackend::direct_write") ||
+      !contains(
+          win32_font_discovery,
+          "PlatformFontDiscoveryStatus::deterministic_fallback") ||
+      !contains(win32_font_discovery, "win32://Segoe UI") ||
+      contains(win32_application, "FontFaceDescriptor{")) {
+    return 94;
   }
   if (!contains(win32_window_internal, "class Win32Window final") ||
       !contains(win32_window_internal, "public PlatformWindow") ||

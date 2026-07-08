@@ -70,6 +70,13 @@ Windows/Linux core API is stable enough for parity work.
   `cgpui_platform` because `PlatformApplication::discover_fonts()` consumes the
   helper. Native DirectWrite/fontconfig discovery remains future work over
   this boundary.
+- Step 388 adds platform font discovery result/diagnostics boundaries:
+  `PlatformFontDiscoveryResult`, backend/status diagnostics, and
+  `PlatformApplication::discover_font_discovery()` now feed the existing
+  record/database adapters, while Win32 and Wayland keep their deterministic
+  platform fallback records in focused `win32_font_discovery.cpp` and
+  `wayland_font_discovery.cpp` files. Real DirectWrite/fontconfig enumeration
+  remains future work over these source boundaries.
 
 ## Definition Of Done For This 20-Step Goal
 

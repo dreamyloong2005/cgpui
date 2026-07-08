@@ -156,6 +156,7 @@ std::string read_wayland_source() {
       "src/platform/linux/wayland_application_window_creation.cpp",
       "src/platform/linux/wayland_application_lifecycle.cpp",
       "src/platform/linux/wayland_application_services.cpp",
+      "src/platform/linux/wayland_font_discovery.cpp",
       "src/platform/linux/wayland_application_factory.cpp",
       "src/platform/linux/wayland_application.cpp",
   };
@@ -298,10 +299,12 @@ int main(int argc, char** argv) {
   if (!contains(text, "TextInput{")) {
     return 61;
   }
-  if (!contains(text, "discover_font_records()") ||
+  if (!contains(text, "discover_font_discovery()") ||
       !contains(text, "const override") ||
-      !contains(text, "FontFaceDescriptor") ||
-      !contains(text, "FontSource::platform") ||
+      !contains(text, "PlatformFontDiscoveryBackend::fontconfig") ||
+      !contains(
+          text,
+          "PlatformFontDiscoveryStatus::deterministic_fallback") ||
       !contains(text, "sans-serif") ||
       !contains(text, "fontconfig://sans-serif")) {
     return 67;
@@ -904,6 +907,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_application_lifecycle.cpp");
   const std::string wayland_application_services =
       read_source("src/platform/linux/wayland_application_services.cpp");
+  const std::string wayland_font_discovery =
+      read_source("src/platform/linux/wayland_font_discovery.cpp");
   const std::string wayland_application_factory =
       read_source("src/platform/linux/wayland_application_factory.cpp");
   if (wayland_application.empty() || wayland_application_internal.empty() ||
@@ -921,6 +926,7 @@ int main(int argc, char** argv) {
       wayland_application_window_creation.empty() ||
       wayland_application_lifecycle.empty() ||
       wayland_application_services.empty() ||
+      wayland_font_discovery.empty() ||
       wayland_application_factory.empty()) {
     return 82;
   }
@@ -938,7 +944,7 @@ int main(int argc, char** argv) {
       contains(wayland_application,
                "WaylandApplication::show_native_file_dialog(") ||
       contains(wayland_application,
-               "WaylandApplication::discover_font_records(") ||
+               "WaylandApplication::discover_font_discovery(") ||
       contains(wayland_application, "create_platform_application(") ||
       contains(wayland_application,
                "void WaylandApplication::handle_pointer_button(") ||
@@ -1082,10 +1088,17 @@ int main(int argc, char** argv) {
                 "WaylandApplication::install_native_menu(") ||
       !contains(wayland_application_services,
                 "WaylandApplication::show_native_file_dialog(") ||
-      !contains(wayland_application_services,
-                "WaylandApplication::discover_font_records(") ||
-      !contains(wayland_application_services, "FontSource::platform") ||
-      !contains(wayland_application_services, "fontconfig://sans-serif")) {
+      contains(wayland_application_services,
+               "WaylandApplication::discover_font_discovery(") ||
+      contains(wayland_application_services, "FontFaceDescriptor{") ||
+      !contains(wayland_font_discovery,
+                "WaylandApplication::discover_font_discovery(") ||
+      !contains(wayland_font_discovery,
+                "PlatformFontDiscoveryBackend::fontconfig") ||
+      !contains(
+          wayland_font_discovery,
+          "PlatformFontDiscoveryStatus::deterministic_fallback") ||
+      !contains(wayland_font_discovery, "fontconfig://sans-serif")) {
     return 110;
   }
   if (!contains(wayland_application_factory,

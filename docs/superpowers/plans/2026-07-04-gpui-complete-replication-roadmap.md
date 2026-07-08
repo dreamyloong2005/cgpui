@@ -905,6 +905,11 @@ behavior that can support GPUI examples and editor-like widgets.
   `src/ui/text_font.cpp`, compiled through `cgpui_platform` because platform
   applications produce discovered font records, giving native
   DirectWrite/fontconfig adapters a focused font boundary to feed later.
+  Step 388 adds `PlatformFontDiscoveryResult`, backend/status diagnostics,
+  `PlatformApplication::discover_font_discovery()`, and focused
+  `win32_font_discovery.cpp` / `wayland_font_discovery.cpp` boundaries so the
+  current deterministic platform fallback records are observable without
+  claiming real DirectWrite/fontconfig enumeration yet.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.
