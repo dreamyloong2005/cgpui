@@ -199,6 +199,7 @@
       "docs/gpui-complete-parity-ledger.md",
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md"
     ],
+    "window_examples_widget_catalog_handoff": "Step 358 should continue the window/examples widget band",
     "step_358": "Phase C Step 358 window/examples interaction states",
     "window_examples_interaction_states_surface": "examples/api_parity/public_window_examples_interaction_states/main.cpp and api_parity_public_window_examples_interaction_states continue the window/examples widget band with hover/focus/active/disabled interaction states, focus ring and tab-index examples, keyed controls, and click handlers using public APIs",
     "window_examples_interaction_states_sources": [
@@ -208,8 +209,17 @@
       "docs/gpui-complete-parity-ledger.md",
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md"
     ],
-    "window_examples_next": "Step 358 should continue the window/examples widget band. Step 359 should continue the window/examples widget band",
-    "next_step": "Phase C Step 359 window/examples widgets"
+    "step_359": "Phase C Step 359 window/examples service matrix",
+    "window_examples_service_matrix_surface": "examples/api_parity/public_window_examples_service_matrix/main.cpp and api_parity_public_window_examples_service_matrix continue the window/examples widget band with menu accelerators and command palette service matrix plus window options, shadow, fixed positioning, and text input service examples using public APIs",
+    "window_examples_service_matrix_sources": [
+      "examples/api_parity/public_window_examples_service_matrix/main.cpp",
+      "tests/api_parity/phase_c_window_examples_service_matrix_test.cpp",
+      "docs/gpui-public-authoring-vocabulary.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md"
+    ],
+    "window_examples_next": "Step 359 should continue the window/examples widget band. Step 360 should close the window/examples widget band",
+    "next_step": "Phase C Step 360 window/examples closeout"
   },
   "categories": [
     "application_and_app_context",

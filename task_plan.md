@@ -2496,3 +2496,13 @@ implementation slice.
   upstream `gpui::test` macros, action macro payloads, task priorities,
   structured task groups, and direct `WindowRuntime`/private include usage.
   Step 359 is the next window/examples widget slice.
+- Phase C Step 359, window/examples service matrix, continues the same band in
+  `.worktrees/phase-c-window-example-service-matrix`: add a prelude-only
+  `examples/api_parity/public_window_examples_service_matrix/main.cpp` target
+  plus `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp` to
+  guard menu accelerators and command palette service matrix plus window
+  options, shadow, fixed positioning, and text input service examples inside a
+  public window example. Keep this slice out of `ClipboardItem`, upstream
+  `gpui::test` macros, action macro payloads, task priorities, structured task
+  groups, and direct `WindowRuntime`/private include usage. Step 360 should
+  close the window/examples widget band.

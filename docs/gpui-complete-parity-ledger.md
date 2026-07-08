@@ -318,7 +318,7 @@ upstream example inventory includes:
   image/icon, and container widgets using public APIs. The guard
   `tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp` keeps the
   source prelude-only and synchronized with the roadmap, ledger, vocabulary,
-  and xmake target.
+  and xmake target. The frozen Step 357 handoff remains: Step 358 should continue the window/examples widget band.
 - Phase C Step 358 window/examples interaction states:
   `examples/api_parity/public_window_examples_interaction_states/main.cpp` and
   `api_parity_public_window_examples_interaction_states` continue the
@@ -328,7 +328,16 @@ upstream example inventory includes:
   `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` keeps
   the source prelude-only and synchronized with the roadmap, ledger,
   vocabulary, and xmake target.
-- Handoff: Phase C Step 359 window/examples widgets is next. Step 358 should continue the window/examples widget band. Step 359 should continue the window/examples widget band.
+- Phase C Step 359 window/examples service matrix:
+  `examples/api_parity/public_window_examples_service_matrix/main.cpp` and
+  `api_parity_public_window_examples_service_matrix` continue the
+  window/examples widget band with menu accelerators and command palette service matrix
+  plus window options, shadow, fixed positioning, and text input service examples
+  using public APIs. The guard
+  `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp` keeps the
+  source prelude-only and synchronized with the roadmap, ledger, vocabulary,
+  and xmake target.
+- Handoff: Phase C Step 360 window/examples closeout is next. Step 360 should close the window/examples widget band.
 
 ## Phase A Closure
 

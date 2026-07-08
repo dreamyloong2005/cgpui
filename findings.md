@@ -6599,3 +6599,21 @@
 - Future WSL verification for this and subsequent Phase C slices should use a
   D-drive build output under `/mnt/d/Dev/Projects/cgpui/.build-wsl/...`, not a
   WSL-home build directory.
+
+## 2026-07-08 Phase C Step 359 Window Examples Service Matrix
+
+- Step 359 stays in the window/examples band and adds a public service-matrix
+  example, not new production window/runtime behavior.
+- Durable example ownership is
+  `examples/api_parity/public_window_examples_service_matrix/main.cpp`; it
+  includes only `cgpui/prelude.hpp` and uses public menu accelerators,
+  command-palette entries, key bindings, test-context window hooks, window
+  options, shadow/fixed positioning, text input, buttons, and menu items.
+- Durable guard ownership is
+  `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp`,
+  registered in `xmake.lua`; it freezes the example target/source, the
+  prelude-only boundary, the roadmap/ledger/vocabulary handoff, and the Step
+  360 closeout handoff.
+- Step 360 should close the window/examples widget band without adding
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, structured task groups, or private runtime headers.

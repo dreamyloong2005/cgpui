@@ -136,7 +136,7 @@ int main() {
       !contains(ledger_json,
                 "\"step_357\": \"Phase C Step 357 window/examples widget catalog\"") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 359 window/examples widgets\"")) {
+                "\"next_step\": \"Phase C Step 360 window/examples closeout\"")) {
     return 80;
   }
 

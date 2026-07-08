@@ -37,7 +37,7 @@ bool contains(const std::string& text, const char* value) {
 
 int main() {
   const std::string example = read_source(
-      "examples/api_parity/public_window_examples_widget_catalog/main.cpp");
+      "examples/api_parity/public_window_examples_service_matrix/main.cpp");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string roadmap = read_source(
@@ -55,43 +55,48 @@ int main() {
 
   if (!contains(
           xmake,
-          "target(\"api_parity_public_window_examples_widget_catalog\")") ||
+          "target(\"api_parity_public_window_examples_service_matrix\")") ||
       !contains(
           xmake,
-          "examples/api_parity/public_window_examples_widget_catalog/main.cpp") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_widget_catalog_test\")") ||
+          "examples/api_parity/public_window_examples_service_matrix/main.cpp") ||
       !contains(
           xmake,
-          "tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp")) {
+          "target(\"phase_c_window_examples_service_matrix_test\")") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_window_examples_service_matrix_test.cpp")) {
     return 2;
   }
 
   constexpr std::array required_example_fragments{
       "#include \"cgpui/prelude.hpp\"",
-      "class PublicWindowExamplesWidgetCatalogView",
+      "class PublicWindowExamplesServiceMatrixView",
       "cgpui::IntoElement render(",
-      "cgpui::Context<PublicWindowExamplesWidgetCatalogView>&",
-      "static_assert(cgpui::Render<PublicWindowExamplesWidgetCatalogView>)",
-      "cgpui::checkbox(",
-      "cgpui::radio(",
-      "cgpui::toggle_switch(",
-      "cgpui::slider(",
-      "cgpui::list_item(",
-      "cgpui::menu_item(",
-      "cgpui::image(",
-      "cgpui::icon(",
-      "cgpui::h_stack()",
-      "cgpui::v_stack()",
-      "cgpui::button(",
-      "cgpui::text_input(",
-      "cgpui::ImageAsset",
-      "cgpui::ImageAssetId",
-      "cgpui::DecodedImageBitmap",
-      "cgpui::describe_image_asset(",
+      "cgpui::Context<PublicWindowExamplesServiceMatrixView>&",
+      "static_assert(cgpui::Render<PublicWindowExamplesServiceMatrixView>)",
+      "const cgpui::TestContextCapability test = context.test_context()",
+      "context.register_command_palette_entry<InstallServiceMenuAction>",
+      "context.try_install_native_menu(",
+      "cgpui::NativeMenuItemKind::submenu",
+      "cgpui::NativeMenuItemKind::separator",
+      "cgpui::NativeMenuAccelerator",
+      "cgpui::KeyBindingContext::window()",
+      "test.dispatch_window_activation(true)",
+      "test.dispatch_window_focus(true)",
+      "test.simulate_keystrokes(\"ctrl-alt-m\")",
       "cgpui::WindowOptions{}",
-      "cgpui::Application::create()",
-      "window/examples widget catalog",
+      ".decorations(true)",
+      ".resizable(true)",
+      ".transparent(false)",
+      ".titlebar_visible(true)",
+      "cgpui::BoxShadow",
+      ".shadow(",
+      ".shadow_sm()",
+      ".fixed()",
+      "cgpui::text_input(",
+      "cgpui::button(",
+      "cgpui::menu_item(",
+      "window/examples service matrix",
   };
   for (std::size_t index = 0; index < required_example_fragments.size();
        ++index) {
@@ -101,29 +106,26 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase C Step 357 window/examples widget catalog",
-      "examples/api_parity/public_window_examples_widget_catalog/main.cpp",
-      "api_parity_public_window_examples_widget_catalog",
-      "phase_c_window_examples_widget_catalog_test.cpp",
-      "checkbox/radio/switch",
-      "slider",
-      "list/menu",
-      "image/icon",
-      "container widgets",
-      "Step 358 should continue the window/examples widget band",
+      "Phase C Step 359 window/examples service matrix",
+      "examples/api_parity/public_window_examples_service_matrix/main.cpp",
+      "api_parity_public_window_examples_service_matrix",
+      "phase_c_window_examples_service_matrix_test.cpp",
+      "menu accelerators and command palette service matrix",
+      "window options, shadow, fixed positioning, and text input service examples",
+      "Step 360 should close the window/examples widget band",
   };
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
         !contains(ledger_md, required_docs[index]) ||
         !contains(ledger_json, required_docs[index]) ||
         !contains(vocabulary, required_docs[index])) {
-      return 60 + static_cast<int>(index);
+      return 70 + static_cast<int>(index);
     }
   }
 
   if (!contains(ledger_json,
                 "\"next_step\": \"Phase C Step 360 window/examples closeout\"")) {
-    return 80;
+    return 90;
   }
 
   constexpr std::array forbidden_example_fragments{
@@ -144,7 +146,7 @@ int main() {
   for (std::size_t index = 0; index < forbidden_example_fragments.size();
        ++index) {
     if (contains(example, forbidden_example_fragments[index])) {
-      return 100 + static_cast<int>(index);
+      return 110 + static_cast<int>(index);
     }
   }
 

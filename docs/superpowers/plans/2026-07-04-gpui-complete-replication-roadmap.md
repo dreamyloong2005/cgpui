@@ -753,7 +753,13 @@ expect, keeping each widget in its own module from the first version.
   `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` for
   hover/focus/active/disabled interaction states, focus ring and tab-index examples,
   keyed controls, and click handlers inside a prelude-only public
-  window example. Step 359 should continue the window/examples widget band.
+  window example. Phase C Step 359 window/examples service matrix adds
+  `examples/api_parity/public_window_examples_service_matrix/main.cpp`,
+  `api_parity_public_window_examples_service_matrix`, and
+  `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp` for
+  menu accelerators and command palette service matrix plus window options, shadow, fixed positioning, and text input service examples.
+  Step 360 should close the
+  window/examples widget band.
 - [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
   pipeline without adding renderer details to public element headers.
 - [ ] Steps 367-372: Add structure tests requiring every widget family to have
@@ -1016,8 +1022,8 @@ usable as a C++23 GPUI replacement.
 
 ## Immediate Next Slice
 
-Step 359 should continue the window/examples widget band after the Step 358
-interaction-state example. Step 354 closes the uniform-list band through
+Step 360 should close the window/examples widget band after the Step 359
+service-matrix example. Step 354 closes the uniform-list band through
 `tests/api_parity/phase_c_uniform_list_audit_test.cpp`, guarding the focused
 layout, style, focusable/interactable, built-in widget, Step 349 stable
 identity/range, Step 350 scroll anchoring, Step 351 item measurement cache,
@@ -1147,8 +1153,12 @@ image/icon, and container widgets. Step 358 should continue the window/examples 
 `api_parity_public_window_examples_interaction_states`, and
 `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` for
 hover/focus/active/disabled interaction states, focus ring and tab-index examples,
-keyed controls, and click handlers. Step 359 should continue the window/examples widget band. Keep the Phase B closeout
-exclusions out of the Step 355/356/357/358 band:
+keyed controls, and click handlers. Step 359 adds `examples/api_parity/public_window_examples_service_matrix/main.cpp`,
+`api_parity_public_window_examples_service_matrix`, and
+`tests/api_parity/phase_c_window_examples_service_matrix_test.cpp` for
+menu accelerators and command palette service matrix plus window options, shadow, fixed positioning, and text input service examples.
+Step 360 should close the window/examples widget band. Keep the Phase B closeout
+exclusions out of the Step 355/356/357/358/359 band:
 `ClipboardItem` payload parity, upstream `gpui::test` macro equivalents,
 action macro payloads, task priorities, or structured task groups.
 

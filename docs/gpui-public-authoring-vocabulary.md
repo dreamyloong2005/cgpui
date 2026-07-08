@@ -226,7 +226,15 @@ state entry for hover/focus/active/disabled interaction states, focus ring and t
 keyed controls, and click handlers inside a window example.
 It is guarded by
 `tests/api_parity/phase_c_window_examples_interaction_states_test.cpp` and must
-stay prelude-only. Step 359 should continue the window/examples widget band.
+stay prelude-only.
+
+Phase C Step 359 window/examples service matrix adds
+`examples/api_parity/public_window_examples_service_matrix/main.cpp` and
+`api_parity_public_window_examples_service_matrix` as the public service-matrix
+entry for menu accelerators and command palette service matrix plus
+window options, shadow, fixed positioning, and text input service examples.
+It is guarded by `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp`
+and must stay prelude-only. Step 360 should close the window/examples widget band.
 
 ## Out of scope for this freeze
 

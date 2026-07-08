@@ -108,7 +108,7 @@ int main() {
       "phase_c_window_examples_interaction_states_test.cpp",
       "hover/focus/active/disabled interaction states",
       "focus ring and tab-index examples",
-      "Step 359 should continue the window/examples widget band",
+      "Step 360 should close the window/examples widget band",
   };
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
@@ -120,7 +120,7 @@ int main() {
   }
 
   if (!contains(ledger_json,
-                "\"next_step\": \"Phase C Step 359 window/examples widgets\"")) {
+                "\"next_step\": \"Phase C Step 360 window/examples closeout\"")) {
     return 80;
   }
 

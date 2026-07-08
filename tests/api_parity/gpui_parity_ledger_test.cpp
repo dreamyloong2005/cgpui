@@ -636,17 +636,21 @@ int main() {
               "Phase C Step 356 window/examples workflow",
               "Phase C Step 357 window/examples widget catalog",
               "Phase C Step 358 window/examples interaction states",
+              "Phase C Step 359 window/examples service matrix",
               "phase_c_uniform_list_audit_test.cpp",
               "phase_c_window_examples_public_api_test.cpp",
               "phase_c_window_examples_workflow_test.cpp",
               "phase_c_window_examples_widget_catalog_test.cpp",
               "phase_c_window_examples_interaction_states_test.cpp",
+              "phase_c_window_examples_service_matrix_test.cpp",
               "public_window_examples_workflow/main.cpp",
               "public_window_examples_widget_catalog/main.cpp",
               "public_window_examples_interaction_states/main.cpp",
+              "public_window_examples_service_matrix/main.cpp",
               "api_parity_public_window_examples_workflow",
               "api_parity_public_window_examples_widget_catalog",
               "api_parity_public_window_examples_interaction_states",
+              "api_parity_public_window_examples_service_matrix",
               "runtime_clipboard.cpp",
               "dispatch_pointer_* helpers",
               "dispatch_window_* helpers",
@@ -1644,6 +1648,8 @@ int main() {
       !contains(
           xmake,
           "target(\"phase_c_window_examples_interaction_states_test\")") ||
+      !contains(xmake,
+                "target(\"phase_c_window_examples_service_matrix_test\")") ||
       !contains(xmake, "target(\"builtin_widget_test\")") ||
       !contains(xmake, "target(\"widget_source_structure_test\")") ||
       !contains(xmake, "target(\"api_parity_public_window_examples\")") ||
@@ -1655,6 +1661,9 @@ int main() {
       !contains(
           xmake,
           "target(\"api_parity_public_window_examples_interaction_states\")") ||
+      !contains(
+          xmake,
+          "target(\"api_parity_public_window_examples_service_matrix\")") ||
       !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
       !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
@@ -1756,6 +1765,9 @@ int main() {
       !contains(
           xmake,
           "tests/api_parity/phase_c_window_examples_interaction_states_test.cpp") ||
+      !contains(
+          xmake,
+          "tests/api_parity/phase_c_window_examples_service_matrix_test.cpp") ||
       !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
       !contains(
           xmake,
@@ -1803,6 +1815,12 @@ int main() {
   if (!contains(
           xmake,
           "examples/api_parity/public_window_examples_interaction_states/main.cpp")) {
+    return 14;
+  }
+
+  if (!contains(
+          xmake,
+          "examples/api_parity/public_window_examples_service_matrix/main.cpp")) {
     return 14;
   }
 

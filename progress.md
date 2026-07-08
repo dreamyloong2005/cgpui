@@ -14412,3 +14412,56 @@
   105/105.
 - Step 358 is complete on `master`; Step 359 window/examples widgets is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 359 Window Examples Service Matrix
+
+- Created `.worktrees/phase-c-window-example-service-matrix` on
+  `codex/phase-c-window-example-service-matrix` from
+  `4e25818 docs: mark phase c step 358 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 359 to a public service-matrix example inside the existing
+  window/examples band. This is example/API evidence only, not new production
+  widget or runtime behavior.
+- Added RED coverage in
+  `tests/api_parity/phase_c_window_examples_service_matrix_test.cpp` and
+  registered the test target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_window_examples_service_matrix_test/default`
+  failed as expected because the service-matrix example and docs were not
+  present yet.
+- Added
+  `examples/api_parity/public_window_examples_service_matrix/main.cpp` and
+  `api_parity_public_window_examples_service_matrix` to cover menu accelerators
+  and command palette service matrix plus window options, shadow, fixed
+  positioning, and text input service examples through public prelude-only
+  window example code.
+- WSL verification for this slice must keep using D-drive build output under
+  `/mnt/d/Dev/Projects/cgpui/.build-wsl/...`; do not place xmake build output
+  under WSL home.
+- Restored frozen documentation phrases after the Step 359 docs update so the
+  new service-matrix guard and the older Step 356/357 window-example guards all
+  keep their simple substring checks intact.
+- Verified JSON and diff hygiene:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0, and
+  `git diff --check` exited 0 with only expected LF-to-CRLF normalization
+  warnings.
+- The first sandboxed service-matrix example build hit the recurring xmake
+  `cannot create filelock for package(vulkansdk)` issue. Rerunning
+  `xmake build -P . api_parity_public_window_examples_service_matrix` outside
+  the sandbox passed.
+- Focused documentation/API verification passed:
+  `xmake test -y -P . phase_c_window_examples_service_matrix_test/default
+  gpui_parity_ledger_test/default phase_c_window_examples_public_api_test/default
+  phase_c_window_examples_workflow_test/default
+  phase_c_window_examples_widget_catalog_test/default
+  phase_c_window_examples_interaction_states_test/default
+  public_authoring_vocabulary_freeze_test/default` passed 7/7.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 109/109.
+- Verified WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-window-example-service-matrix -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-window-example-service-matrix -P .`
+  passed 106/106.
+- After WSL verification, C: was 20.19GB free and D: was 19.25GB free.
+  `/home/dreamyloong` was 4.0K, `/tmp` was 0, `.build-wsl/master` was 2.4G,
+  and `.build-wsl/phase-c-window-example-service-matrix` was 2.4G.
