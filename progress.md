@@ -14600,3 +14600,30 @@
   A D-drive `TMPDIR` is not usable for Wayland socket tests because DrvFS does
   not support socket `bind()`; use `/dev/shm/cgpui` for those transient sockets
   and keep xmake build/package output under `.build-wsl/...` on D:.
+
+## 2026-07-08 Phase C Step 361 Merge
+
+- Fast-forward merged `codex/phase-c-svg-image-front-end` into root `master`
+  at `0244ff1 feat: add svg image source front end`; root `master` still had
+  no tracked diff and only the existing untracked `.vscode/`.
+- Verified post-merge JSON:
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`
+  exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 111/111.
+- Verified post-merge WSL Arch Linux with D-drive build/cache output and
+  memory-backed Wayland socket temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui -P .` passed 108/108.
+- Disk placement check after post-merge WSL verification: C: had 25.74GiB
+  free, `/root/.xmake` was absent, `/tmp` was 0, and
+  `.build-wsl/master` on D: was 5.2G. Future WSL verification should keep
+  xmake global/package/build output under `.build-wsl/...` on D: and use
+  `/dev/shm/cgpui` for transient Wayland socket temp.
+- Step 361 is complete on `master`; Step 362 SVG/image asset registration is
+  the next Phase C slice.

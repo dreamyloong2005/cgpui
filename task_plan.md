@@ -2535,4 +2535,10 @@ implementation slice.
   `phase_c_window_examples_closeout_test/default` 6/6. Windows full debug
   passed 111/111, and WSL Arch Linux full debug passed 108/108 with xmake
   build/package output on D: and Wayland socket temp in `/dev/shm/cgpui`.
-  Step 362 SVG/image asset registration is the next tracked Phase C slice.
+  Step 361 is merged on `master` at
+  `0244ff1 feat: add svg image source front end` and post-merge verified with
+  JSON validation, diff hygiene, Windows debug config, Windows full debug
+  111/111, WSL Arch Linux debug config, and WSL Arch Linux full debug 108/108
+  using D-drive WSL build/cache output plus `/dev/shm/cgpui` for transient
+  Wayland socket temp. Step 362 SVG/image asset registration is the next
+  tracked Phase C slice.
