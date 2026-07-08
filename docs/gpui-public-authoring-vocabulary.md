@@ -246,7 +246,8 @@ Phase C Step 361 SVG/image front-end source APIs adds `ImageSource`,
 `svg(...)` as the public source boundary for raster image descriptors and SVG
 source strings. `ImageBuilder` continues to expose `image(...)`, `icon(...)`,
 and `svg(...)`, and `ImageElement` preserves SVG source metadata without
-placing renderer upload details in the public element API. Phase C Step 362
+placing renderer upload details in the public element API. It is guarded by
+`tests/api_parity/phase_c_svg_image_front_end_test.cpp`. Phase C Step 362
 SVG/image asset registration is the next handoff.
 
 Phase C Step 362 SVG/image asset registration adds `ImageAssetRegistry`,
@@ -254,8 +255,9 @@ Phase C Step 362 SVG/image asset registration adds `ImageAssetRegistry`,
 public registration boundary for raster image assets and SVG source strings.
 Registrations produce `ImageSource` values that feed `image(...)` and `svg(...)`
 without adding SVG decoding, renderer upload, or GPU lifetime details to public
-element APIs. Phase C Step 363 SVG/image public example coverage is the next
-handoff.
+element APIs. It is guarded by
+`tests/api_parity/phase_c_svg_image_asset_registration_test.cpp`. Phase C Step
+363 SVG/image public example coverage is the next handoff.
 
 Phase C Step 363 SVG/image public example coverage adds
 `examples/api_parity/public_svg_image_sources/main.cpp` and
@@ -265,8 +267,14 @@ registered raster and SVG sources. The `public_svg_image_sources` example shows
 `register_image(...)`, `register_svg(...)`, `raster_assets()`, `image(...)`,
 and `svg(...)` together without exposing decoder, upload, or runtime internals.
 It is guarded by
-`tests/api_parity/phase_c_svg_image_public_examples_test.cpp`. Phase C Step 364
-SVG/image band closeout is the next handoff.
+`tests/api_parity/phase_c_svg_image_public_examples_test.cpp`.
+
+Phase C Step 364 SVG/image band closeout adds
+`tests/api_parity/phase_c_svg_image_closeout_test.cpp` to guard the Step 361
+front-end source APIs, Step 362 asset registry, and Step 363 prelude-only
+registered-source example evidence. This closes the public SVG/image
+front-end authoring band before Phase C Step 367 widget family structure
+tests, while keeping SVG decoding, PNG/JPEG loading, renderer upload, GPU texture lifetime, private runtime headers, and direct `WindowRuntime` use out of scope for this freeze.
 
 ## Out of scope for this freeze
 

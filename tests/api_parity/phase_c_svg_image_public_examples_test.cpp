@@ -106,7 +106,7 @@ int main() {
       "`api_parity_public_svg_image_sources`",
       "\"step_363\"",
       "\"public_svg_image_sources\"",
-      "\"next_step\": \"Phase C Step 364 SVG/image band closeout\"",
+      "\"image_front_end_next\": \"Phase C Step 367 widget family structure tests\"",
       "Phase C Step 364 SVG/image band closeout",
   };
   const std::array docs_sources{

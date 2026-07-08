@@ -14772,3 +14772,48 @@
   only step-specific logs/build output under `.build-wsl/...` on D:.
 - Step 363 is complete on `master`; Step 364 SVG/image band closeout is the
   next Phase C slice.
+
+## 2026-07-08 Phase C Step 364 SVG Image Closeout
+
+- Created `.worktrees/phase-c-svg-image-closeout` on
+  `codex/phase-c-svg-image-closeout` from
+  `3a06bde docs: mark phase c step 363 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 364 to an audit-only closeout over the Step 361-363 SVG/image
+  front-end authoring band. No SVG decoding, PNG/JPEG loading, renderer
+  upload behavior, GPU texture lifetime, private runtime headers, or direct
+  `WindowRuntime` use is added.
+- Added RED coverage in
+  `tests/api_parity/phase_c_svg_image_closeout_test.cpp` and registered the
+  target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_svg_image_closeout_test/default` failed as
+  expected because the closeout evidence and Step 367 handoff were not present
+  yet.
+- Updated the complete-replication roadmap, Markdown/JSON parity ledger, and
+  public authoring vocabulary so the SVG/image front-end band is closed and
+  the handoff moves to Phase C Step 367 widget family structure tests.
+- Updated the older Step 363 public-example guard so it checks the SVG/image
+  closeout handoff evidence instead of pinning the global JSON `next_step` to
+  Step 364.
+- Verified JSON with
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`:
+  exited 0.
+- Focused closeout and adjacent guard verification passed:
+  `xmake test -y -P . phase_c_svg_image_closeout_test/default
+  phase_c_svg_image_public_examples_test/default
+  phase_c_svg_image_asset_registration_test/default
+  phase_c_svg_image_front_end_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_window_examples_closeout_test/default widget_source_structure_test/default`
+  passed 8/8.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 114/114.
+- Verified WSL Arch Linux full debug with D-drive build/cache output and
+  memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-svg-image-closeout/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-svg-image-closeout -P .`
+  passed 111/111.
+- Disk placement check after WSL verification: the Step 364 D-drive
+  WSL build/log directory was 2.4G, `/tmp` was 0, and `/root/.xmake` was
+  absent.

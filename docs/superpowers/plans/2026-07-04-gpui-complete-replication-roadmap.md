@@ -762,7 +762,7 @@ expect, keeping each widget in its own module from the first version.
   `tests/api_parity/phase_c_window_examples_closeout_test.cpp`, which guards
   the Steps 355-359 public example evidence, keeps the examples prelude-only,
   and hands off to Step 361. Step 361 starts SVG/image element front-end APIs.
-- [ ] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
+- [x] Steps 361-366: Add SVG/image element front-end APIs that feed the asset
   pipeline without adding renderer details to public element headers.
   Phase C Step 361 SVG/image front-end source APIs adds the public
   `ImageSource`, `ImageSourceKind`, `image_source(...)`,
@@ -772,14 +772,16 @@ expect, keeping each widget in its own module from the first version.
   registration adds `ImageAssetRegistry`, `RegisteredImageAsset`,
   `register_image(...)`, and `register_svg(...)` as the deterministic public
   registration boundary over `ImageSource`, without SVG decoding, renderer
-  upload, or GPU lifetime behavior. Phase C Step 363 SVG/image public example
-  coverage adds `examples/api_parity/public_svg_image_sources/main.cpp`,
+  upload, or GPU lifetime behavior. Phase C Step 363 SVG/image public example coverage adds `examples/api_parity/public_svg_image_sources/main.cpp`,
   `api_parity_public_svg_image_sources`, and
   `tests/api_parity/phase_c_svg_image_public_examples_test.cpp` as a
   prelude-only registered raster/SVG source example. It feeds
   `RegisteredImageAsset::source()` into `image(...)` and `svg(...)` without
-  exposing decoder, upload, or runtime internals. Phase C Step 364 SVG/image
-  band closeout is next.
+  exposing decoder, upload, or runtime internals. Phase C Step 364 closes the SVG/image band through
+  `tests/api_parity/phase_c_svg_image_closeout_test.cpp`, which guards the
+  Steps 361-363 public source, asset registry, and registered-source example
+  evidence. The closeout keeps SVG decoding, PNG/JPEG loading, renderer upload, GPU texture lifetime, private runtime headers, and direct
+  `WindowRuntime` use out of this band. Step 367 starts widget family structure tests.
 - [ ] Steps 367-372: Add structure tests requiring every widget family to have
   a public leaf header, a focused source file, and focused behavior tests.
 - [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
@@ -1051,7 +1053,9 @@ focused `ImageAssetRegistry` layer over `ImageSource` and hands off to Phase C
 Step 363 SVG/image public example coverage. Phase C Step 363 SVG/image public
 example coverage adds the `public_svg_image_sources` example and hands off to
 Phase C Step 364 SVG/image band closeout. Phase C Step 364 SVG/image band
-closeout is the next slice.
+closeout closes the front-end SVG/image authoring band with
+`tests/api_parity/phase_c_svg_image_closeout_test.cpp` and hands off to Phase C
+Step 367 widget family structure tests.
 The Phase B public authoring boundary remains the source of truth for this
 next slice.
 Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320

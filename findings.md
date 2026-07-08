@@ -6689,3 +6689,22 @@
 - This slice intentionally does not add SVG decoding, PNG/JPEG loading,
   renderer upload behavior, GPU texture lifetime, private runtime headers, or
   direct `WindowRuntime` use. Step 364 should close the SVG/image band.
+
+## 2026-07-08 Phase C Step 364 SVG/Image Band Closeout
+
+- Step 364 is an audit-only closeout over the Step 361-363 SVG/image
+  front-end authoring band. It should not add SVG decoding, PNG/JPEG loading,
+  renderer upload behavior, GPU texture lifetime, private runtime headers, or
+  direct `WindowRuntime` use.
+- Durable closeout ownership is
+  `tests/api_parity/phase_c_svg_image_closeout_test.cpp`, registered in
+  `xmake.lua`; it guards the Step 361 source APIs, Step 362 asset registry,
+  Step 363 prelude-only registered-source example, roadmap checkbox, ledger
+  JSON handoff, public vocabulary evidence, and Step 367 next slice.
+- The older Step 363 public-example guard needed its global `next_step`
+  assertion moved off Step 364 after the closeout advanced the global handoff
+  to Step 367. It now checks the SVG/image band handoff evidence instead of
+  pinning the global queue.
+- Step 367 should start widget family structure tests requiring widget
+  families to keep public leaf headers, focused source files, and focused
+  behavior tests.

@@ -56,8 +56,8 @@ Status meanings:
 | gpui element styling | `Style`, `StyleOverlay`, builders | Required | many primitives exist, tailwind-style vocabulary incomplete | Phase C |
 | gpui uniform_list | `scrollable_list` plus `UniformListVisibleRange`, `UniformListItemIdentity`, `UniformListItemMeasurement`, `UniformListItemMeasurementResult`, `UniformListRecyclingWindow`, `UniformListSelectionSource`, `UniformListSelectionDirection`, `UniformListSelection`, `UniformListSelectionState`, `UniformListLayoutSnapshot`, `UniformListScrollAnchor`, `UniformListItemMeasurementCache`, `calculate_uniform_list_visible_range(...)`, `measure_uniform_list_items(...)`, `calculate_uniform_list_recycling_window(...)`, `select_uniform_list_item_at_point(...)`, `move_uniform_list_selection(...)`, `capture_uniform_list_scroll_anchor(...)`, `apply_uniform_list_scroll_anchor(...)`, `ScrollableListElement::layout_snapshot()`, `ScrollableListElement::measurement_cache()`, and `ScrollableListElement::selection()` | Adapted | stable item identity, visible-range snapshots, keyed scroll anchoring, keyed item measurement cache stats, retained/recycled large-list paint windows, pointer hit selection, keyboard movement selection, snapshot selected flags, and Step 354 audit closeout exist | Phase C uniform-list band closed |
 | gpui text system | `TextModel`, shaping, wrap, glyph records | Required | deterministic text depth exists, production shaping incomplete | Phase D |
-| gpui image assets | image paint/upload skeleton | Required | in-memory RGBA8 only | Phase G |
-| gpui SVG | no production SVG element/render path | Required | SVG is only tracked as future asset path | Phase C/G |
+| gpui image assets | image paint/upload skeleton plus public source/registry authoring | Required | in-memory RGBA8 and deterministic registry only; production loading/upload remains later | Phase C/G |
+| gpui SVG | public SVG source and registry authoring | Required | SVG source strings are preserved for authoring; production decoding/rendering remains later | Phase C/G |
 | gpui animation | deterministic animation clock/tween | Required | upstream animation graph not complete | Phase G |
 | gpui::test | no macro-equivalent yet; public `TestContextCapability` exists with keystroke, pointer, window activation/focus, element focus, clipboard, run-until-parked timer/async, and redraw/frame pump simulation helpers | Required | internal tests plus public test-context facade, `simulate_keystrokes(...)`, `dispatch_pointer_*`, `dispatch_window_*`, `focus(...)`, `release_focus(...)`, `write_to_clipboard(...)`, `read_from_clipboard(...)`, copy/cut/paste helpers, `run_until_parked()`, `advance_time_until_parked(...)`, `request_redraw()`, `try_draw_frame()`, and `draw_frame()`, but no upstream-style test macro | Phase G |
 | gpui accessibility | snapshot + UIA/AT-SPI facades | Required | production providers missing | Phase G |
@@ -375,7 +375,14 @@ upstream example inventory includes:
   `ImageSourceKind` values, uses `registry.raster_assets()` for upload-planning
   observability, and feeds `RegisteredImageAsset::source()` into `image(...)`
   and `svg(...)`.
-- Handoff: Phase C Step 364 SVG/image band closeout is next.
+- Phase C Step 364 SVG/image band closeout:
+  `tests/api_parity/phase_c_svg_image_closeout_test.cpp` guards the Step 361
+  front-end source APIs, Step 362 asset registry, and Step 363 prelude-only
+  public registered-source example evidence. This closes the Phase C SVG/image
+  front-end authoring band while keeping SVG decoding, PNG/JPEG loading,
+  renderer upload, GPU texture lifetime, private runtime headers, and direct
+  `WindowRuntime` use out of scope for this band.
+- Handoff: Phase C Step 367 widget family structure tests are next.
 
 ## Phase A Closure
 
