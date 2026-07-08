@@ -15375,6 +15375,35 @@
   `phase_d_font_fallback_audit_test/default`, `gpui_parity_ledger_test/default`,
   and `phase_c_final_ledger_audit_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 397 Color Glyph Planning
+
+- Started from clean `master` after
+  `9aa68b3 feat: add missing glyph diagnostics`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextShapeRun::color_glyphs`, `TextColorGlyphPlan`, and
+  `TextColorGlyphFormat::native_color` for a covered emoji-plane codepoint,
+  plus structure coverage for public leaf ownership and fallback-shaper helper
+  ownership. RED failed as expected on missing color glyph plan types.
+- GREEN implementation records default emoji-plane color glyph plans in
+  `src/ui/text_shaping_fallback.cpp` through `codepoint_prefers_color_glyph(...)`
+  and `append_color_glyph_plan(...)`, without changing deterministic glyph
+  advances or claiming real native color glyph rendering.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `text_model_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `phase_d_text_shaping_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`, `gpui_parity_ledger_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 7/7.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

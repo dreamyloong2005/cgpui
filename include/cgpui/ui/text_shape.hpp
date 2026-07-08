@@ -29,6 +29,19 @@ struct TextMissingGlyphDiagnostic {
   std::size_t font_fallback_face_index = 0;
 };
 
+enum class TextColorGlyphFormat {
+  native_color,
+};
+
+struct TextColorGlyphPlan {
+  char32_t codepoint = U'\0';
+  std::size_t glyph_index = 0;
+  std::size_t byte_offset = 0;
+  std::size_t byte_length = 0;
+  std::size_t font_fallback_face_index = 0;
+  TextColorGlyphFormat format = TextColorGlyphFormat::native_color;
+};
+
 struct TextFontFallbackRun {
   std::size_t font_fallback_face_index = 0;
   std::size_t glyph_start = 0;
@@ -45,6 +58,7 @@ struct TextShapeRun {
   std::vector<FontFaceDescriptor> font_fallback_faces;
   std::vector<TextFontFallbackRun> font_runs;
   std::vector<TextMissingGlyphDiagnostic> missing_glyphs;
+  std::vector<TextColorGlyphPlan> color_glyphs;
   float font_size = 16.0F;
   DpiScale scale;
   std::vector<TextGlyphRun> glyphs;

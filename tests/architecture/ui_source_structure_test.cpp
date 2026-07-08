@@ -171,11 +171,17 @@ int main() {
                 "struct TextMissingGlyphDiagnostic") ||
       !contains(text_shape_public_header,
                 "std::vector<TextMissingGlyphDiagnostic> missing_glyphs") ||
+      !contains(text_shape_public_header, "enum class TextColorGlyphFormat") ||
+      !contains(text_shape_public_header, "struct TextColorGlyphPlan") ||
+      !contains(text_shape_public_header,
+                "std::vector<TextColorGlyphPlan> color_glyphs") ||
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
       !contains(fallback_source, "font_fallback_faces_have_known_miss(") ||
       !contains(fallback_source, "append_missing_glyph_diagnostic(") ||
+      !contains(fallback_source, "codepoint_prefers_color_glyph(") ||
+      !contains(fallback_source, "append_color_glyph_plan(") ||
       !contains(xmake_source,
                 "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
       !contains(xmake_source,

@@ -114,6 +114,8 @@ int main() {
       !contains(text_row, "TextShapeRun::font_runs") ||
       !contains(text_row, "TextMissingGlyphDiagnostic") ||
       !contains(text_row, "TextShapeRun::missing_glyphs") ||
+      !contains(text_row, "TextColorGlyphPlan") ||
+      !contains(text_row, "TextShapeRun::color_glyphs") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
@@ -128,6 +130,9 @@ int main() {
       !contains(shape_header, "struct TextMissingGlyphDiagnostic") ||
       !contains(shape_header,
                 "std::vector<TextMissingGlyphDiagnostic> missing_glyphs") ||
+      !contains(shape_header, "enum class TextColorGlyphFormat") ||
+      !contains(shape_header, "struct TextColorGlyphPlan") ||
+      !contains(shape_header, "std::vector<TextColorGlyphPlan> color_glyphs") ||
       !contains(backend_source, "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND")) {
     return 5;
   }
@@ -161,7 +166,9 @@ int main() {
       !contains(text_model_test,
                 "test_shape_text_splits_contiguous_font_fallback_runs") ||
       !contains(text_model_test,
-                "test_shape_text_records_missing_glyph_diagnostics")) {
+                "test_shape_text_records_missing_glyph_diagnostics") ||
+      !contains(text_model_test,
+                "test_shape_text_records_color_glyph_plans")) {
     return 9;
   }
 

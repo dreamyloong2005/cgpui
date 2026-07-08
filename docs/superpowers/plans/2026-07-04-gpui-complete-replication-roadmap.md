@@ -952,6 +952,11 @@ behavior that can support GPUI examples and editor-like widgets.
   face in the explicit fallback chain declares coverage and none covers the
   codepoint. Unknown platform coverage remains non-diagnostic until native
   coverage extraction lands.
+  Step 397 adds emoji-plane color glyph planning through `TextColorGlyphPlan`
+  and `TextShapeRun::color_glyphs`, recording byte/glyph/codepoint/fallback
+  face metadata for default emoji-plane codepoints while leaving real color
+  glyph rendering and variation-selector-specific emoji shaping to later
+  focused steps.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.

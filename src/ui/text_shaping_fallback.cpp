@@ -68,6 +68,10 @@ bool font_fallback_faces_have_known_miss(
   return true;
 }
 
+bool codepoint_prefers_color_glyph(char32_t codepoint) {
+  return 0x1F000 <= codepoint && codepoint <= 0x1FAFF;
+}
+
 void append_font_fallback_run_span(
     TextShapeRun& run,
     std::size_t font_fallback_face_index,
@@ -111,6 +115,23 @@ void append_missing_glyph_diagnostic(
   });
 }
 
+void append_color_glyph_plan(
+    TextShapeRun& run,
+    char32_t codepoint,
+    std::size_t glyph_index,
+    std::size_t byte_offset,
+    std::size_t byte_length,
+    std::size_t font_fallback_face_index) {
+  run.color_glyphs.push_back(TextColorGlyphPlan{
+      .codepoint = codepoint,
+      .glyph_index = glyph_index,
+      .byte_offset = byte_offset,
+      .byte_length = byte_length,
+      .font_fallback_face_index = font_fallback_face_index,
+      .format = TextColorGlyphFormat::native_color,
+  });
+}
+
 } // namespace
 
 TextShapeRun shape_text_with_deterministic_fallback(
@@ -139,6 +160,7 @@ TextShapeRun shape_text_with_deterministic_fallback(
   run.glyphs.reserve(request.text.size());
   run.font_runs.reserve(request.text.size());
   run.missing_glyphs.reserve(request.text.size());
+  run.color_glyphs.reserve(request.text.size());
   std::size_t byte_offset = 0;
   std::uint32_t glyph_id = 0;
   while (byte_offset < request.text.size()) {
@@ -174,6 +196,15 @@ TextShapeRun shape_text_with_deterministic_fallback(
             run.font_fallback_faces,
             codepoint)) {
       append_missing_glyph_diagnostic(
+          run,
+          codepoint,
+          glyph_index,
+          byte_offset,
+          byte_length,
+          font_fallback_face_index);
+    }
+    if (codepoint_prefers_color_glyph(codepoint)) {
+      append_color_glyph_plan(
           run,
           codepoint,
           glyph_index,

@@ -7120,3 +7120,16 @@
   Faces with unknown coverage keep the existing unknown-but-usable behavior so
   platform records do not produce false missing-glyph diagnostics before native
   coverage extraction lands.
+
+## 2026-07-09 Phase D Step 397 Color Glyph Planning
+
+- Step 397 adds planning metadata for default emoji-plane color glyphs, not
+  real native color font rendering.
+- `TextColorGlyphPlan` lives in the public `text_shape.hpp` leaf and
+  `TextShapeRun::color_glyphs` records codepoint, glyph index, byte range,
+  fallback face index, and requested native-color format.
+- The deterministic fallback shaper appends plans through
+  `append_color_glyph_plan(...)` when `codepoint_prefers_color_glyph(...)`
+  detects U+1F000..U+1FAFF. Variation-selector-specific emoji presentation,
+  COLR/CBDT/SBIX/SVG font format selection, and renderer-side color glyph
+  drawing remain later Phase D/G work.

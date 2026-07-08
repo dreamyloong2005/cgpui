@@ -120,6 +120,10 @@ Windows/Linux core API is stable enough for parity work.
   and `TextShapeRun::missing_glyphs` record byte/glyph/codepoint evidence only
   when every face in the explicit fallback chain declares coverage and none
   covers the codepoint; unknown platform coverage remains non-diagnostic.
+- Step 397 adds default emoji-plane color glyph planning. `TextColorGlyphPlan`
+  and `TextShapeRun::color_glyphs` record byte/glyph/codepoint/fallback-face
+  metadata for later native color glyph rendering without changing deterministic
+  fallback glyph advances or claiming variation-selector shaping.
 
 ## Definition Of Done For This 20-Step Goal
 

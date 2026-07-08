@@ -962,6 +962,48 @@ int test_shape_text_records_missing_glyph_diagnostics() {
   return unknown_coverage_run.missing_glyphs.empty() ? 0 : 170;
 }
 
+int test_shape_text_records_color_glyph_plans() {
+  cgpui::FontDatabase database;
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "inter.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = U' ', .last = U'~'}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Color Emoji"},
+      .postscript_name = "NotoColorEmoji",
+      .source = cgpui::FontSource::test,
+      .path = "noto-color-emoji.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = 0x1F600, .last = 0x1F64F}},
+  });
+  database.add_generic_fallback_family("Noto Color Emoji");
+
+  const cgpui::FontFallbackChain chain =
+      database.resolve_chain(cgpui::FontDescriptor{.family = "Inter"});
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("A\xF0\x9F\x98\x80", chain, 18.0F);
+  if (run.color_glyphs.size() != 1 || run.glyph_count() != 2) {
+    return 171;
+  }
+
+  const cgpui::TextColorGlyphPlan& color_glyph = run.color_glyphs[0];
+  if (color_glyph.codepoint != 0x1F600 || color_glyph.glyph_index != 1 ||
+      color_glyph.byte_offset != 1 || color_glyph.byte_length != 4 ||
+      color_glyph.font_fallback_face_index != 1 ||
+      color_glyph.format != cgpui::TextColorGlyphFormat::native_color) {
+    return 172;
+  }
+  if (!run.missing_glyphs.empty() ||
+      run.glyphs[1].font_fallback_face_index != 1) {
+    return 173;
+  }
+
+  const cgpui::TextShapeRun text_run = cgpui::shape_text("AB", chain, 18.0F);
+  return text_run.color_glyphs.empty() ? 0 : 174;
+}
+
 int test_shape_text_records_backend_selection_and_fallback_reason() {
   const cgpui::TextShapeRun default_run =
       cgpui::shape_text("ffi", cgpui::FontDescriptor{.family = "Inter"});
@@ -1384,6 +1426,10 @@ int main() {
   }
   if (const int result =
           test_shape_text_records_missing_glyph_diagnostics();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_shape_text_records_color_glyph_plans();
       result != 0) {
     return result;
   }
