@@ -920,6 +920,12 @@ behavior that can support GPUI examples and editor-like widgets.
   fontconfig/FreeType pkg-config metadata nor visible headers/runtime
   libraries, so default builds still report deterministic `sans-serif`
   fallback; dependency-backed native Linux enumeration remains pending.
+  Step 391 adds coverage-aware font fallback records through
+  `FontUnicodeRange`, `font_face_declares_coverage(...)`,
+  `font_face_covers_codepoint(...)`, and
+  `FontDatabase::resolve_chain_for_codepoint(...)`, so a later shaping run can
+  choose a fallback chain for a specific Unicode codepoint while retaining the
+  existing ordered fallback behavior when coverage metadata is absent.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

@@ -15196,6 +15196,38 @@
   `phase_d_text_shaping_audit_test/default`, and
   `phase_c_final_ledger_audit_test/default` 12/12.
 
+## 2026-07-09 Phase D Step 391 Coverage-Aware Font Fallback
+
+- Started from clean `master` after
+  `a3efdc7 feat: add wayland fontconfig discovery boundary`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` for
+  `FontUnicodeRange`, `font_face_declares_coverage(...)`,
+  `font_face_covers_codepoint(...)`, and
+  `FontDatabase::resolve_chain_for_codepoint(...)`, plus structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp`. RED failed as expected on
+  missing coverage types and methods.
+- GREEN implementation added coverage ranges to `FontFaceDescriptor`, kept
+  coverage helper bodies in `src/ui/text_font.cpp`, and added
+  codepoint-specific chain resolution that prefers declared matching coverage
+  before falling back to the existing ordered chain.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  platform_font_discovery_test/default gpui_parity_ledger_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_c_final_ledger_audit_test/default` 8/8.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `text_model_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `render_view_test/default`,
+  `platform_font_discovery_test/default`, `wayland_font_discovery_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_d_text_shaping_audit_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 9/9.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

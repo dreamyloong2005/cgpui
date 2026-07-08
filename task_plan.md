@@ -91,6 +91,11 @@ Windows/Linux core API is stable enough for parity work.
   `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND` gates the future Fontconfig C API
   path. Native Linux fontconfig/FreeType enumeration remains incomplete until
   the dependency is present and verified.
+- Step 391 adds coverage-aware font fallback records. `FontUnicodeRange`,
+  `font_face_declares_coverage(...)`, `font_face_covers_codepoint(...)`, and
+  `FontDatabase::resolve_chain_for_codepoint(...)` let font records choose a
+  fallback chain for a specific Unicode codepoint while preserving the
+  existing ordered fallback chain when coverage metadata is absent.
 
 ## Definition Of Done For This 20-Step Goal
 

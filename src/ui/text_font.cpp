@@ -6,6 +6,31 @@
 
 namespace cgpui {
 
+bool font_unicode_range_contains(
+    const FontUnicodeRange& range,
+    char32_t codepoint) {
+  return range.first <= range.last && range.first <= codepoint &&
+      codepoint <= range.last;
+}
+
+bool font_face_declares_coverage(const FontFaceDescriptor& face) {
+  return !face.coverage.empty();
+}
+
+bool font_face_covers_codepoint(
+    const FontFaceDescriptor& face,
+    char32_t codepoint) {
+  if (!font_face_declares_coverage(face)) {
+    return true;
+  }
+  return std::any_of(
+      face.coverage.begin(),
+      face.coverage.end(),
+      [codepoint](const FontUnicodeRange& range) {
+        return font_unicode_range_contains(range, codepoint);
+      });
+}
+
 bool FontFallbackChain::empty() const {
   return faces_.empty();
 }
@@ -101,6 +126,30 @@ FontFallbackChain FontDatabase::resolve_chain(
   return chain;
 }
 
+FontFallbackChain FontDatabase::resolve_chain_for_codepoint(
+    const FontDescriptor& descriptor,
+    char32_t codepoint) const {
+  FontFallbackChain chain;
+  if (faces_.empty()) {
+    return chain;
+  }
+
+  if (!descriptor.family.empty()) {
+    chain.add_face(find_covered_face_for_family(
+        descriptor.family,
+        codepoint));
+  }
+  for (const auto& fallback_family : generic_fallback_families_) {
+    chain.add_face(find_covered_face_for_family(fallback_family, codepoint));
+  }
+  const FontFaceDescriptor& primary_face = faces_.front();
+  if (font_face_declares_coverage(primary_face) &&
+      font_face_covers_codepoint(primary_face, codepoint)) {
+    chain.add_face(&primary_face);
+  }
+  return chain.empty() ? resolve_chain(descriptor) : chain;
+}
+
 const FontFaceDescriptor* FontDatabase::find_face_for_family(
     std::string_view family) const {
   for (const auto& face : faces_) {
@@ -109,6 +158,17 @@ const FontFaceDescriptor* FontDatabase::find_face_for_family(
     }
   }
   return nullptr;
+}
+
+const FontFaceDescriptor* FontDatabase::find_covered_face_for_family(
+    std::string_view family,
+    char32_t codepoint) const {
+  const FontFaceDescriptor* face = find_face_for_family(family);
+  if (face == nullptr || !font_face_declares_coverage(*face) ||
+      !font_face_covers_codepoint(*face, codepoint)) {
+    return nullptr;
+  }
+  return face;
 }
 
 FontDatabase font_database_from_discovered_faces(

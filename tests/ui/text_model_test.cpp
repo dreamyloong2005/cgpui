@@ -616,6 +616,85 @@ int test_font_database_resolves_ordered_fallback_chain() {
   return 0;
 }
 
+int test_font_database_resolves_codepoint_coverage_chain() {
+  cgpui::FontDatabase database;
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "inter.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = U' ', .last = U'~'}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Sans CJK"},
+      .postscript_name = "NotoSansCJK-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "noto-cjk.otf",
+      .coverage = {cgpui::FontUnicodeRange{.first = 0x4E00, .last = 0x9FFF}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Color Emoji"},
+      .postscript_name = "NotoColorEmoji",
+      .source = cgpui::FontSource::test,
+      .path = "emoji.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = 0x1F300, .last = 0x1FAFF}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "System UI"},
+      .postscript_name = "SystemUI-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "system-ui.ttf",
+  });
+  database.add_generic_fallback_family("Noto Sans CJK");
+  database.add_generic_fallback_family("Noto Color Emoji");
+  database.add_generic_fallback_family("System UI");
+
+  if (!cgpui::font_face_declares_coverage(database.faces()[0]) ||
+      !cgpui::font_face_covers_codepoint(database.faces()[0], U'A') ||
+      cgpui::font_face_covers_codepoint(database.faces()[0], U'\u4E2D') ||
+      !cgpui::font_face_covers_codepoint(database.faces()[3], U'\u4E2D')) {
+    return 154;
+  }
+
+  const cgpui::FontFallbackChain latin_chain =
+      database.resolve_chain_for_codepoint(
+          cgpui::FontDescriptor{.family = "Inter"},
+          U'A');
+  if (latin_chain.empty() || latin_chain.size() != 1 ||
+      latin_chain.primary()->postscript_name != "Inter-Regular") {
+    return 155;
+  }
+
+  const cgpui::FontFallbackChain cjk_chain =
+      database.resolve_chain_for_codepoint(
+          cgpui::FontDescriptor{.family = "Inter"},
+          U'\u4E2D');
+  if (cjk_chain.empty() || cjk_chain.size() != 1 ||
+      cjk_chain.primary()->postscript_name != "NotoSansCJK-Regular") {
+    return 156;
+  }
+
+  const cgpui::FontFallbackChain emoji_chain =
+      database.resolve_chain_for_codepoint(
+          cgpui::FontDescriptor{.family = "Inter"},
+          U'\U0001F642');
+  if (emoji_chain.empty() || emoji_chain.size() != 1 ||
+      emoji_chain.primary()->postscript_name != "NotoColorEmoji") {
+    return 157;
+  }
+
+  const cgpui::FontFallbackChain unknown_chain =
+      database.resolve_chain_for_codepoint(
+          cgpui::FontDescriptor{.family = "Inter"},
+          0x10FFFF);
+  if (unknown_chain.empty() ||
+      unknown_chain.primary()->postscript_name != "Inter-Regular") {
+    return 158;
+  }
+
+  return 0;
+}
+
 int test_fake_font_discovery_is_deterministic() {
   const std::vector<cgpui::FontFaceDescriptor> fixtures{
       cgpui::FontFaceDescriptor{
@@ -1085,6 +1164,11 @@ int main() {
     return result;
   }
   if (const int result = test_font_database_resolves_ordered_fallback_chain();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_font_database_resolves_codepoint_coverage_chain();
       result != 0) {
     return result;
   }

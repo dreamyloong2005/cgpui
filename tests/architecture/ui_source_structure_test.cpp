@@ -410,6 +410,9 @@ int main() {
       !contains(text_font_source, "void FontDatabase::add_face(") ||
       !contains(text_font_source,
                 "FontDatabase font_database_from_discovered_faces(") ||
+      !contains(text_font_header, "struct FontUnicodeRange") ||
+      !contains(text_font_source, "font_face_covers_codepoint(") ||
+      !contains(text_font_source, "FontDatabase::resolve_chain_for_codepoint(") ||
       !contains(text_edit_actions_header, "enum class TextEditAction") ||
       !contains(text_shape_header, "struct TextShapeRun") ||
       !contains(text_glyphs_header, "struct RasterizedGlyph") ||

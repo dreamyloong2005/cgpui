@@ -7032,3 +7032,22 @@
   deterministic fallback and future native-available diagnostics, so the test
   will keep guarding the bridge when the dependency-backed path becomes
   available.
+
+## 2026-07-09 Phase D Step 391 Coverage-Aware Font Fallback
+
+- Step 391 adds coverage metadata to font records without introducing a
+  shaping dependency or platform coverage probe. `FontUnicodeRange` records
+  inclusive Unicode ranges on `FontFaceDescriptor`, and the non-template
+  coverage helpers live in `src/ui/text_font.cpp`.
+- `font_face_covers_codepoint(...)` treats missing coverage metadata as
+  unknown-but-usable for legacy ordered fallback behavior, while
+  `FontDatabase::resolve_chain_for_codepoint(...)` first prefers faces that
+  explicitly declare coverage for the requested codepoint.
+- If no declared coverage face matches, the codepoint-specific resolver falls
+  back to the existing `resolve_chain(...)` order. This keeps current native
+  records, which do not yet expose coverage, from producing an empty font
+  chain.
+- This is the data-model and fallback selection step only. Real coverage
+  extraction from DirectWrite/fontconfig/FreeType, per-script shaping splits,
+  emoji/color glyph planning, and missing-glyph diagnostics remain later Phase
+  D work.
