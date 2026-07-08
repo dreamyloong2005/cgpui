@@ -29,6 +29,42 @@ bool same_color(cgpui::Color left, cgpui::Color right) {
 
 } // namespace
 
+int test_label_widget_builder_builds_accessible_text() {
+  cgpui::AnyElement element =
+      cgpui::label("Ready")
+          .foreground(cgpui::rgb(20, 80, 120))
+          .font_size(18.0F)
+          .key("status-label")
+          .build();
+
+  auto* label = dynamic_cast<cgpui::LabelElement*>(element.get());
+  if (label == nullptr ||
+      label->accessibility_role() != cgpui::AccessibilityRole::label) {
+    return 13;
+  }
+  if (label->text() != "Ready" || label->accessibility_name() != "Ready" ||
+      label->accessibility_text() != "Ready") {
+    return 14;
+  }
+  if (!label->enabled() || !label->key().has_value() ||
+      label->key()->value != "status-label") {
+    return 15;
+  }
+
+  const cgpui::LayoutOutput output = element->layout(cgpui::LayoutInput{});
+  const std::optional<cgpui::Rect> bounds = label->layout_bounds();
+  if (!bounds.has_value() || output.size.width <= 0.0F ||
+      output.size.height <= 0.0F ||
+      bounds->size.width != output.size.width ||
+      bounds->size.height != output.size.height) {
+    return 16;
+  }
+
+  cgpui::PaintList paint_list;
+  label->paint(paint_list);
+  return paint_list.commands().empty() ? 17 : 0;
+}
+
 int test_button_label_convenience_builds_accessible_button() {
   cgpui::AnyElement element =
       cgpui::button("dialog.confirm")
@@ -561,6 +597,10 @@ int test_text_input_widget_builder_keeps_text_model_boundary() {
 }
 
 int main() {
+  if (const int result = test_label_widget_builder_builds_accessible_text();
+      result != 0) {
+    return result;
+  }
   if (const int result =
           test_button_label_convenience_builds_accessible_button();
       result != 0) {

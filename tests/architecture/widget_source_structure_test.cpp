@@ -1,3 +1,5 @@
+#include <array>
+#include <cstddef>
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -32,14 +34,115 @@ std::size_t line_count(const std::string& text) {
   return count;
 }
 
+struct WidgetFamilyBoundary {
+  const char* name;
+  const char* public_header_path;
+  const char* public_header_signature;
+  const char* focused_source_path;
+  const char* focused_source_signature;
+  const char* behavior_test_path;
+  const char* behavior_test_signature;
+};
+
 } // namespace
 
 int main() {
   const std::string xmake = read_source("xmake.lua");
   if (!contains(xmake, "add_files(\"src/ui/widgets/*.cpp\")") ||
       !contains(xmake, "target(\"builtin_widget_test\")") ||
+      !contains(xmake, "target(\"element_test\")") ||
       !contains(xmake, "target(\"widget_source_structure_test\")")) {
     return 1;
+  }
+
+  constexpr std::array widget_families{
+      WidgetFamilyBoundary{
+          "label",
+          "include/cgpui/ui/label_builder.hpp",
+          "class LabelBuilder",
+          "src/ui/widgets/label_builder.cpp",
+          "LabelBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_label_widget_builder_builds_accessible_text"},
+      WidgetFamilyBoundary{
+          "button",
+          "include/cgpui/ui/button_builder.hpp",
+          "class ButtonBuilder",
+          "src/ui/widgets/button_builder.cpp",
+          "ButtonBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_button_label_convenience_builds_accessible_button"},
+      WidgetFamilyBoundary{
+          "text_input",
+          "include/cgpui/ui/text_input_builder.hpp",
+          "class TextInputBuilder",
+          "src/ui/widgets/text_input_builder.cpp",
+          "TextInputBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_text_input_widget_builder_keeps_text_model_boundary"},
+      WidgetFamilyBoundary{
+          "toggle_controls",
+          "include/cgpui/ui/toggle_builder.hpp",
+          "class ToggleBuilder",
+          "src/ui/widgets/toggle_builder.cpp",
+          "ToggleBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_checkbox_widget_builder_tracks_checked_state"},
+      WidgetFamilyBoundary{
+          "slider",
+          "include/cgpui/ui/slider_builder.hpp",
+          "class SliderBuilder",
+          "src/ui/widgets/slider_builder.cpp",
+          "SliderBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_slider_widget_builder_tracks_range_value_and_click_updates"},
+      WidgetFamilyBoundary{
+          "list_menu_items",
+          "include/cgpui/ui/item_builder.hpp",
+          "class ItemBuilder",
+          "src/ui/widgets/item_builder.cpp",
+          "ItemBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_list_item_widget_builder_tracks_selection_and_clicks"},
+      WidgetFamilyBoundary{
+          "image_icon_svg",
+          "include/cgpui/ui/image_builder.hpp",
+          "class ImageBuilder",
+          "src/ui/widgets/image_builder.cpp",
+          "ImageBuilder::build()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_svg_image_source_builds_front_end_element"},
+      WidgetFamilyBoundary{
+          "container_primitives",
+          "include/cgpui/ui/container_builder.hpp",
+          "h_stack()",
+          "src/ui/widgets/container_builder.cpp",
+          "ElementBuilder h_stack()",
+          "tests/ui/builtin_widget_test.cpp",
+          "test_container_primitive_builder_exposes_horizontal_stack"},
+      WidgetFamilyBoundary{
+          "scrollable_list",
+          "include/cgpui/ui/scrollable_list_builder.hpp",
+          "class ScrollableListBuilder",
+          "src/ui/scrollable_list_builder.cpp",
+          "ScrollableListBuilder::build()",
+          "tests/ui/element_test.cpp",
+          "test_scrollable_list_container_keys_clip_and_scroll_offset"},
+  };
+  for (std::size_t index = 0; index < widget_families.size(); ++index) {
+    const WidgetFamilyBoundary& family = widget_families[index];
+    const std::string public_header = read_source(family.public_header_path);
+    const std::string focused_source = read_source(family.focused_source_path);
+    const std::string behavior_test = read_source(family.behavior_test_path);
+    if (public_header.empty() || focused_source.empty() ||
+        behavior_test.empty()) {
+      return 20 + static_cast<int>(index);
+    }
+    if (!contains(public_header, family.public_header_signature) ||
+        !contains(focused_source, family.focused_source_signature) ||
+        !contains(behavior_test, family.behavior_test_signature)) {
+      return 40 + static_cast<int>(index);
+    }
   }
 
   const std::string widget_aggregate =
@@ -130,6 +233,8 @@ int main() {
       !contains(image_asset_registry_header, "class ImageAssetRegistry") ||
       !contains(widget_aggregate,
                 "#include \"cgpui/ui/image_asset_registry.hpp\"") ||
+      !contains(widget_aggregate,
+                "#include \"cgpui/ui/scrollable_list_builder.hpp\"") ||
       !contains(container_header, "h_stack()") ||
       !contains(container_header, "div()") ||
       !contains(container_header, "h_flex()") ||

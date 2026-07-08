@@ -782,8 +782,17 @@ expect, keeping each widget in its own module from the first version.
   Steps 361-363 public source, asset registry, and registered-source example
   evidence. The closeout keeps SVG decoding, PNG/JPEG loading, renderer upload, GPU texture lifetime, private runtime headers, and direct
   `WindowRuntime` use out of this band. Step 367 starts widget family structure tests.
-- [ ] Steps 367-372: Add structure tests requiring every widget family to have
+- [x] Steps 367-372: Add structure tests requiring every widget family to have
   a public leaf header, a focused source file, and focused behavior tests.
+  Phase C Step 367 widget family structure tests extend
+  `tests/architecture/widget_source_structure_test.cpp` with a
+  `WidgetFamilyBoundary` table for label, button, text input, toggle controls,
+  slider, list/menu items, image/icon/SVG, container primitives, and
+  scrollable list families. Each row names its public leaf header, focused
+  source file, and focused behavior tests; the new
+  `tests/api_parity/phase_c_widget_family_structure_test.cpp` keeps the
+  roadmap, ledger, and public vocabulary handoff aligned. Phase C Step 373
+  final element/style/widget ledger audit is next.
 - [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
   so element/style/widget rows are either complete or explicitly deferred.
 
@@ -1055,7 +1064,10 @@ example coverage adds the `public_svg_image_sources` example and hands off to
 Phase C Step 364 SVG/image band closeout. Phase C Step 364 SVG/image band
 closeout closes the front-end SVG/image authoring band with
 `tests/api_parity/phase_c_svg_image_closeout_test.cpp` and hands off to Phase C
-Step 367 widget family structure tests.
+Step 367 widget family structure tests. Step 367 adds the explicit widget
+family boundary table in `tests/architecture/widget_source_structure_test.cpp`,
+guards it with `tests/api_parity/phase_c_widget_family_structure_test.cpp`, and
+hands off to Phase C Step 373 final element/style/widget ledger audit.
 The Phase B public authoring boundary remains the source of truth for this
 next slice.
 Step 319 landed the child-list foundation on `master` at `14aaff0`; Step 320

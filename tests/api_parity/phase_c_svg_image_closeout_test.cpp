@@ -112,10 +112,7 @@ int main() {
                 "\"image_front_end_status\": \"phase_c_closed\"") ||
       !contains(ledger_json,
                 "\"image_front_end_next\": \"Phase C Step 367 widget "
-                "family structure tests\"") ||
-      !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 367 widget family "
-                "structure tests\"")) {
+                "family structure tests\"")) {
     return 60;
   }
   if (contains(ledger_md, "Step 364 SVG/image band closeout is next") ||

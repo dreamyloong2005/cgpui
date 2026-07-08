@@ -274,7 +274,18 @@ Phase C Step 364 SVG/image band closeout adds
 front-end source APIs, Step 362 asset registry, and Step 363 prelude-only
 registered-source example evidence. This closes the public SVG/image
 front-end authoring band before Phase C Step 367 widget family structure
-tests, while keeping SVG decoding, PNG/JPEG loading, renderer upload, GPU texture lifetime, private runtime headers, and direct `WindowRuntime` use out of scope for this freeze.
+tests, while keeping SVG decoding, PNG/JPEG loading, renderer upload,
+GPU texture lifetime, private runtime headers, and direct `WindowRuntime` use
+out of scope for this freeze.
+
+Phase C Step 367 widget family structure tests add an explicit
+`WidgetFamilyBoundary` table to
+`tests/architecture/widget_source_structure_test.cpp`. Every widget family
+must name a public leaf header, a focused source file, and focused behavior tests
+before it counts as frozen. The table covers label, button, text input, toggle
+controls, slider, list/menu items, image/icon/SVG, container primitives, and
+scrollable list families, with the handoff guarded by
+`tests/api_parity/phase_c_widget_family_structure_test.cpp`. Phase C Step 373 final element/style/widget ledger audit is the next handoff.
 
 ## Out of scope for this freeze
 

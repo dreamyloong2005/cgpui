@@ -14843,3 +14843,58 @@
   free-space reading used `Get-PSDrive`.
 - Step 364 is complete on `master`; Step 367 widget family structure tests are
   the next Phase C slice.
+
+## 2026-07-08 Phase C Step 367 Widget Family Structure Tests
+
+- Created `.worktrees/phase-c-widget-family-structure-tests` on
+  `codex/phase-c-widget-family-structure-tests` from
+  `5fbed21 docs: mark phase c step 364 merged`; root `master` had no tracked
+  diff and only the existing untracked `.vscode/`.
+- Scoped Step 367 to structure tests requiring every widget family to name a
+  public leaf header, focused source file, and focused behavior tests. No new
+  production widget behavior, renderer behavior, SVG decoding, PNG/JPEG
+  loading, GPU texture lifetime, private runtime headers, or direct
+  `WindowRuntime` use is added.
+- Added RED coverage in
+  `tests/api_parity/phase_c_widget_family_structure_test.cpp` and registered
+  the target in `xmake.lua`. The focused RED run
+  `xmake test -y -P . phase_c_widget_family_structure_test/default` failed as
+  expected because the widget family boundary table and docs/ledger evidence
+  were not present yet.
+- Updated `tests/architecture/widget_source_structure_test.cpp` to use a
+  `WidgetFamilyBoundary` table for label, button, text input, toggle controls,
+  slider, list/menu items, image/icon/SVG, container primitives, and scrollable
+  list families. Each row points at its public leaf header, focused source
+  file, and behavior test signature.
+- Added a direct label behavior check to `tests/ui/builtin_widget_test.cpp`
+  so every builder family has focused behavior-test evidence.
+- Updated the complete-replication roadmap, Markdown/JSON parity ledger,
+  public authoring vocabulary, and findings so the Step 367 structure freeze
+  hands off to Phase C Step 373 final element/style/widget ledger audit.
+- Verified JSON with
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`:
+  exited 0.
+- Verified diff hygiene:
+  `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
+  warnings.
+- Focused GREEN verification passed:
+  `xmake test -y -P . phase_c_widget_family_structure_test/default
+  widget_source_structure_test/default builtin_widget_test/default
+  element_test/default gpui_parity_ledger_test/default
+  public_authoring_vocabulary_freeze_test/default
+  phase_c_svg_image_closeout_test/default` passed 7/7.
+- Verified Windows full debug:
+  `xmake f -c -m debug -P .` exited 0 and `xmake test -P .` passed 115/115.
+- Verified WSL Arch Linux full debug with D-drive build/cache output and
+  memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-widget-family-structure-tests/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-widget-family-structure-tests -P .`
+  passed 112/112.
+- Disk placement check after WSL verification: `/tmp` was 0,
+  `/root/.xmake` was absent, `/dev/shm/cgpui` was absent after the run,
+  `.build-wsl/phase-c-widget-family-structure-tests` on D: was 2.4G,
+  `.build-wsl/master` on D: was 5.2G, C: had 26.23GB free, and D: had
+  4.57GB free. Future WSL runs should continue to keep xmake global,
+  package, and build output under `.build-wsl/...` on D: and use
+  `/dev/shm/cgpui` only for transient Wayland socket/temp.

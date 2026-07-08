@@ -382,7 +382,15 @@ upstream example inventory includes:
   front-end authoring band while keeping SVG decoding, PNG/JPEG loading,
   renderer upload, GPU texture lifetime, private runtime headers, and direct
   `WindowRuntime` use out of scope for this band.
-- Handoff: Phase C Step 367 widget family structure tests are next.
+- Phase C Step 367 widget family structure tests:
+  `tests/architecture/widget_source_structure_test.cpp` now uses a
+  `WidgetFamilyBoundary` table requiring every widget family to name its
+  public leaf header, focused source file, and focused behavior tests. The table
+  covers label, button, text input, toggle controls, slider, list/menu items,
+  image/icon/SVG, container primitives, and scrollable list families.
+  `tests/api_parity/phase_c_widget_family_structure_test.cpp` guards the
+  roadmap, ledger, and public vocabulary evidence for this structure freeze.
+- Handoff: Phase C Step 373 final element/style/widget ledger audit is next.
 
 ## Phase A Closure
 

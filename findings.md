@@ -6708,3 +6708,22 @@
 - Step 367 should start widget family structure tests requiring widget
   families to keep public leaf headers, focused source files, and focused
   behavior tests.
+
+## 2026-07-08 Phase C Step 367 Widget Family Structure Tests
+
+- Step 367 stays structure-focused. It should not add new widget behavior,
+  renderer behavior, SVG decoding, PNG/JPEG loading, GPU texture lifetime,
+  private runtime headers, or direct `WindowRuntime` use.
+- Durable structure ownership is
+  `tests/architecture/widget_source_structure_test.cpp`, which now uses a
+  `WidgetFamilyBoundary` table. Each widget family must name its public leaf
+  header, focused source file, and focused behavior tests.
+- The covered families are label, button, text input, toggle controls, slider,
+  list/menu items, image/icon/SVG, container primitives, and scrollable list.
+  Scrollable list keeps its focused source at `src/ui/scrollable_list_builder.cpp`
+  because that boundary predates the `src/ui/widgets/*.cpp` builder folder but
+  remains a dedicated source file.
+- The API parity guard for the docs/ledger handoff is
+  `tests/api_parity/phase_c_widget_family_structure_test.cpp`. Step 373 should
+  run the final element/style/widget ledger audit and decide which remaining
+  Phase C rows are complete or explicitly deferred.
