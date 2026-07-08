@@ -15236,6 +15236,31 @@
   `src/ui/text_wrapping.cpp`.
 - Focused GREEN verification passed:
   `xmake test -y -P . text_model_test/default render_view_test/default` 2/2.
+
+## 2026-07-09 Phase D Step 383 Shaping Metadata
+
+- Started from clean `master` after
+  `0154366 feat: add shaped glyph offsets`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextShapingDirection`, `TextShapingScript`, `TextShapingOptions::language`,
+  and matching `TextShapeRun` metadata. RED failed as expected on missing
+  members/types.
+- GREEN implementation added shaping direction/script/language metadata,
+  deterministic auto resolution to left-to-right/common, and propagation
+  through `TextShapingRequest` into fallback shape runs.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_header_cleanliness/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_header_cleanliness/default
+  render_view_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 5/5.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, and `ui_header_cleanliness/default` 5/5.
 - Adjacent Windows verification passed:
   `xmake test -y -P . text_model_test/default render_view_test/default
   ui_header_cleanliness/default gpui_parity_ledger_test/default

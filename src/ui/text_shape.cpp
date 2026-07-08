@@ -18,12 +18,17 @@ TextShapeRun shape_text(
     float font_size,
     DpiScale scale,
     TextShapingOptions options) {
+  const TextShapingBackendSelection backend =
+      select_text_shaping_backend(options);
   return shape_text_with_selected_backend(TextShapingRequest{
       .text = text,
       .font = std::move(font),
       .font_size = font_size,
       .scale = scale,
-      .backend = select_text_shaping_backend(options),
+      .backend = backend,
+      .direction = resolve_text_shaping_direction(options.direction),
+      .script = resolve_text_shaping_script(options.script),
+      .language = std::move(options.language),
   });
 }
 

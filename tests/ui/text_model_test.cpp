@@ -706,6 +706,11 @@ int test_shape_text_records_backend_selection_and_fallback_reason() {
   if (default_run.requested_backend != cgpui::TextShapingBackend::harfbuzz) {
     return 92;
   }
+  if (default_run.direction != cgpui::TextShapingDirection::left_to_right ||
+      default_run.script != cgpui::TextShapingScript::common ||
+      !default_run.language.empty()) {
+    return 148;
+  }
   if (cgpui::text_shaping_backend_capabilities().harfbuzz_available) {
     if (default_run.used_backend != cgpui::TextShapingBackend::harfbuzz ||
         default_run.fallback_reason != cgpui::TextShapingFallbackReason::none) {
@@ -726,7 +731,10 @@ int test_shape_text_records_backend_selection_and_fallback_reason() {
       {},
       cgpui::TextShapingOptions{
           .preferred_backend =
-              cgpui::TextShapingBackend::deterministic_fallback});
+              cgpui::TextShapingBackend::deterministic_fallback,
+          .direction = cgpui::TextShapingDirection::right_to_left,
+          .script = cgpui::TextShapingScript::arabic,
+          .language = "ar"});
   if (fallback_run.requested_backend !=
           cgpui::TextShapingBackend::deterministic_fallback ||
       fallback_run.used_backend !=
@@ -734,6 +742,11 @@ int test_shape_text_records_backend_selection_and_fallback_reason() {
       fallback_run.fallback_reason !=
           cgpui::TextShapingFallbackReason::none) {
     return 95;
+  }
+  if (fallback_run.direction != cgpui::TextShapingDirection::right_to_left ||
+      fallback_run.script != cgpui::TextShapingScript::arabic ||
+      fallback_run.language != "ar") {
+    return 149;
   }
   return fallback_run.glyphs.size() == 2 && fallback_run.glyphs[0].glyph_id == 0
              ? 0

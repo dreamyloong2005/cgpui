@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/text_shape.hpp"
 
+#include <string>
 #include <string_view>
 
 namespace cgpui {
@@ -12,6 +13,9 @@ struct TextShapingRequest {
   float font_size = 16.0F;
   DpiScale scale;
   TextShapingBackendSelection backend;
+  TextShapingDirection direction = TextShapingDirection::left_to_right;
+  TextShapingScript script = TextShapingScript::common;
+  std::string language;
 };
 
 [[nodiscard]] TextShapeRun shape_text_with_selected_backend(

@@ -20,6 +20,9 @@ TextShapeRun shape_text_with_deterministic_fallback(
       .requested_backend = request.backend.requested,
       .used_backend = request.backend.used,
       .fallback_reason = request.backend.fallback_reason,
+      .direction = request.direction,
+      .script = request.script,
+      .language = std::move(request.language),
   };
 
   const float fallback_advance = request.font_size * 0.5F;

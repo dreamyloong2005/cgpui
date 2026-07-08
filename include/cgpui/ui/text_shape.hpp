@@ -36,6 +36,9 @@ struct TextShapeRun {
   TextShapingBackend used_backend = TextShapingBackend::deterministic_fallback;
   TextShapingFallbackReason fallback_reason =
       TextShapingFallbackReason::backend_unavailable;
+  TextShapingDirection direction = TextShapingDirection::left_to_right;
+  TextShapingScript script = TextShapingScript::common;
+  std::string language;
 
   [[nodiscard]] std::size_t glyph_count() const;
 };

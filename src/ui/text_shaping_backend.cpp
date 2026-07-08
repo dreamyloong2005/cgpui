@@ -42,4 +42,16 @@ TextShapingBackendSelection select_text_shaping_backend(
   };
 }
 
+TextShapingDirection resolve_text_shaping_direction(
+    TextShapingDirection direction) {
+  return direction == TextShapingDirection::auto_direction
+      ? TextShapingDirection::left_to_right
+      : direction;
+}
+
+TextShapingScript resolve_text_shaping_script(TextShapingScript script) {
+  return script == TextShapingScript::auto_script ? TextShapingScript::common
+                                                  : script;
+}
+
 } // namespace cgpui

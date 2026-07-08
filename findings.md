@@ -6913,3 +6913,13 @@
 - Both `text_glyph_paint_metadata(...)` overloads add the shaped offset to the
   logical glyph origin before computing device origin, so wrapped and
   unwrapped paint paths share the same positioning behavior.
+
+## 2026-07-09 Phase D Step 383 Shaping Metadata
+
+- Step 383 adds `TextShapingDirection`, `TextShapingScript`, and language
+  metadata to `TextShapingOptions` and `TextShapeRun`.
+- Auto direction and auto script resolve deterministically to left-to-right and
+  common script for the fallback path; explicit direction/script/language are
+  preserved on the shape run.
+- This is HarfBuzz input plumbing, not script detection or bidirectional text
+  layout yet.

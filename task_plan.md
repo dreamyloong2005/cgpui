@@ -47,6 +47,9 @@ Windows/Linux core API is stable enough for parity work.
 - Step 382 adds `TextGlyphRun::offset` and applies shaped glyph positioning
   offsets in wrapped and unwrapped glyph paint metadata, with deterministic
   fallback offsets remaining zero.
+- Step 383 adds shaping direction, script, and language metadata to
+  `TextShapingOptions` and `TextShapeRun`; auto direction/script resolve to
+  deterministic LTR/common until a real shaping backend provides detection.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -887,6 +887,8 @@ behavior that can support GPUI examples and editor-like widgets.
   atlas keys remain stable after soft wrapping.
   Step 382 adds shaped glyph positioning offsets and applies them in wrapped
   and unwrapped glyph paint metadata; deterministic fallback offsets stay zero.
+  Step 383 adds direction/script/language shaping metadata to options and
+  shape runs so the future HarfBuzz backend has explicit input records.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
