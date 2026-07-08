@@ -6727,3 +6727,24 @@
   `tests/api_parity/phase_c_widget_family_structure_test.cpp`. Step 373 should
   run the final element/style/widget ledger audit and decide which remaining
   Phase C rows are complete or explicitly deferred.
+
+## 2026-07-08 Phase C Step 373 final ledger audit
+
+- Step 373 is an audit-only closeout: it should not add runtime behavior,
+  widget behavior, renderer behavior, SVG decoding, PNG/JPEG loading, GPU
+  texture lifetime, private runtime headers, direct `WindowRuntime`,
+  `ClipboardItem`, upstream `gpui::test` macros, action macro payloads, task
+  priorities, or structured task groups.
+- The stale closeout gap before this slice was `gpui::div` still handing off
+  to an older Phase C widget/examples step, while roadmap Steps 373-378 and
+  the global `phase_c_widget_evidence.next_step` still pointed at the Step 373
+  audit itself.
+- The final audit evidence should tie together
+  `phase_c_style_cascade_depth_audit_test.cpp`,
+  `phase_c_focusable_interactable_audit_test.cpp`,
+  `phase_c_uniform_list_audit_test.cpp`,
+  `phase_c_window_examples_closeout_test.cpp`,
+  `phase_c_svg_image_closeout_test.cpp`,
+  `phase_c_widget_family_structure_test.cpp`, and the new
+  `phase_c_final_ledger_audit_test.cpp`. The next non-Phase-C handoff is
+  Phase D Step 379 text/font shaping.

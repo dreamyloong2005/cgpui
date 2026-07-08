@@ -2587,4 +2587,12 @@ implementation slice.
   source file, and focused behavior tests, with
   `tests/api_parity/phase_c_widget_family_structure_test.cpp` guarding the
   roadmap, ledger, and public vocabulary evidence. Step 373 final
-  element/style/widget ledger audit is the next tracked Phase C slice.
+  element/style/widget ledger audit was the next tracked Phase C slice.
+- Phase C Step 373, final element/style/widget ledger audit, is implemented in
+  `.worktrees/phase-c-final-ledger-audit` as an audit-only closeout:
+  `tests/api_parity/phase_c_final_ledger_audit_test.cpp` guards the already
+  landed style-cascade, focusable/interactable, uniform-list, window/examples,
+  SVG/image, and widget-family closeout evidence. The roadmap marks Steps
+  373-378 complete, `gpui::div` and `gpui uniform_list` are adapted/closed,
+  image/SVG production loading/rendering work remains explicitly deferred, and
+  the global handoff moves to Phase D Step 379 text/font shaping.

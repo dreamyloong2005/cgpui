@@ -793,8 +793,22 @@ expect, keeping each widget in its own module from the first version.
   `tests/api_parity/phase_c_widget_family_structure_test.cpp` keeps the
   roadmap, ledger, and public vocabulary handoff aligned. Phase C Step 373
   final element/style/widget ledger audit is next.
-- [ ] Steps 373-378: Run full Windows/WSL verification and update the ledger
+- [x] Steps 373-378: Run full Windows/WSL verification and update the ledger
   so element/style/widget rows are either complete or explicitly deferred.
+  Phase C Step 373 final element/style/widget ledger audit closes Phase C with
+  `tests/api_parity/phase_c_final_ledger_audit_test.cpp`, which checks the
+  already-landed closeout evidence from
+  `tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp`,
+  `tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`,
+  `tests/api_parity/phase_c_uniform_list_audit_test.cpp`,
+  `tests/api_parity/phase_c_window_examples_closeout_test.cpp`,
+  `tests/api_parity/phase_c_svg_image_closeout_test.cpp`, and
+  `tests/api_parity/phase_c_widget_family_structure_test.cpp`. The audit keeps
+  `gpui::div` and `gpui uniform_list` adapted/closed, leaves image/SVG
+  production decoding/loading/upload/lifetime work explicitly deferred, and
+  does not add `ClipboardItem`, upstream `gpui::test` macros, action macro
+  payloads, task priorities, structured task groups, private runtime headers,
+  or direct `WindowRuntime` use. Phase D Step 379 text/font shaping follows.
 
 ## Phase D: Steps 379-458 - Text, Font, Editing, IME, And Rich Text
 

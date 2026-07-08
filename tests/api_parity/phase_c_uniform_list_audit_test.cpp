@@ -122,7 +122,7 @@ int main() {
       !contains(ledger_json,
                 "\"next_step\": \"Phase C uniform-list band closed\"") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 355 window/examples widgets\"")) {
+                "\"step_355\": \"Phase C Step 355 window/examples widgets\"")) {
     return 60;
   }
   if (contains(ledger_md, "uniform-list band closeout remains") ||

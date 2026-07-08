@@ -134,8 +134,8 @@ int main() {
       !contains(ledger_json,
                 "\"widget_family_structure_status\": \"phase_c_guarded\"") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 373 final element/style/widget "
-                "ledger audit\"")) {
+                "\"widget_family_structure_next\": \"Phase C Step 373 final "
+                "element/style/widget ledger audit\"")) {
     return 80;
   }
 

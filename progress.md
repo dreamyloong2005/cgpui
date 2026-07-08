@@ -14925,3 +14925,65 @@
   D: was 2.4G, C: had 26.17GB free, and D: had 4.56GB free.
 - Step 367 is complete on `master`; Phase C Step 373 final
   element/style/widget ledger audit is the next slice.
+
+## 2026-07-08 Phase C Step 373 Final Ledger Audit
+
+- Resumed in `.worktrees/phase-c-final-ledger-audit` on
+  `codex/phase-c-final-ledger-audit` from `d4980e9 docs: mark phase c step 367
+  merged`.
+- Added RED audit coverage in
+  `tests/api_parity/phase_c_final_ledger_audit_test.cpp` and registered
+  `target("phase_c_final_ledger_audit_test")` in `xmake.lua`. The test is
+  intentionally source-reading only: it guards roadmap Steps 373-378,
+  Markdown/JSON ledger closeout, public vocabulary closeout, stale `gpui::div`
+  handoff removal, uniform-list closed state preservation, explicit image/SVG
+  production deferrals, and Phase C closeout evidence files.
+- RED verification:
+  `xmake test -y -P . phase_c_final_ledger_audit_test/default` compiled the
+  new test and failed as expected; direct execution returned `exit=3`, proving
+  the roadmap Steps 373-378 closeout was still unchecked before the docs/ledger
+  updates.
+- Updated the roadmap, Markdown ledger, JSON ledger, and public vocabulary to
+  close Phase C Step 373: Steps 373-378 are checked, `gpui::div` now hands off
+  to `Phase C element/style/widget band closed`, `gpui uniform_list` remains
+  adapted/closed, image/SVG production loading/rendering work remains
+  explicitly deferred, `phase_c_widget_evidence` records Step 373, and the
+  global next step is `Phase D Step 379 text/font shaping`.
+- GREEN verification so far: JSON parsing exited 0 and
+  `xmake test -y -P . phase_c_final_ledger_audit_test/default` passed 1/1.
+- First adjacent focused gate run found three expected stale-handoff failures:
+  `phase_c_focusable_interactable_audit_test/default` returned `exit=50`,
+  `phase_c_uniform_list_audit_test/default` returned `exit=60`, and
+  `phase_c_widget_family_structure_test/default` returned `exit=80`. Updated
+  those older audit guards to check their own dedicated evidence fields
+  (`step_355` and `widget_family_structure_next`) while leaving the new final
+  audit test responsible for the global Phase D handoff.
+- Focused adjacent GREEN verification passed 10/10:
+  `phase_c_final_ledger_audit_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `public_authoring_vocabulary_freeze_test/default`,
+  `phase_c_widget_family_structure_test/default`,
+  `widget_source_structure_test/default`,
+  `phase_c_style_cascade_depth_audit_test/default`,
+  `phase_c_focusable_interactable_audit_test/default`,
+  `phase_c_uniform_list_audit_test/default`,
+  `phase_c_window_examples_closeout_test/default`, and
+  `phase_c_svg_image_closeout_test/default`.
+- Updated `task_plan.md` to record Step 373 as the current audit-only closeout
+  and Phase D Step 379 text/font shaping as the next global handoff.
+- Verified feature worktree diff/Windows gates:
+  `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
+  warnings, `xmake f -c -m debug -P .` exited 0, and `xmake test -P .` passed
+  116/116 on Windows.
+- Verified feature worktree WSL Arch Linux full debug with D-drive build/cache
+  output and memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/phase-c-final-ledger-audit/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui/.worktrees/phase-c-final-ledger-audit -P .`
+  passed 113/113.
+- Disk placement check after WSL verification: `/tmp` was 0, `/root/.xmake`
+  was absent, `/dev/shm/cgpui` was absent after the run,
+  `.build-wsl/master` on D: was 5.09GB,
+  `.build-wsl/phase-c-final-ledger-audit` on D: was 2.31GB, C: had 25.89GB
+  free, and D: had 2.29GB free. Future post-merge WSL verification should
+  reuse `.build-wsl/master` and avoid creating another feature build directory.

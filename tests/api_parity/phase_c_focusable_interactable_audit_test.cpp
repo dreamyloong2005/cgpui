@@ -253,7 +253,7 @@ int main() {
       !contains(ledger_md, "phase_c_uniform_list_audit_test.cpp") ||
       !contains(ledger_json, "phase_c_uniform_list_audit_test.cpp") ||
       !contains(ledger_json,
-                "\"next_step\": \"Phase C Step 355 window/examples widgets\"")) {
+                "\"step_355\": \"Phase C Step 355 window/examples widgets\"")) {
     return 50;
   }
 

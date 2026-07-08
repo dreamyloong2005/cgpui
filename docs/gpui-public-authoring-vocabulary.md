@@ -287,6 +287,18 @@ controls, slider, list/menu items, image/icon/SVG, container primitives, and
 scrollable list families, with the handoff guarded by
 `tests/api_parity/phase_c_widget_family_structure_test.cpp`. Phase C Step 373 final element/style/widget ledger audit is the next handoff.
 
+Phase C Step 373 final element/style/widget ledger audit closes the Phase C
+public authoring freeze through
+`tests/api_parity/phase_c_final_ledger_audit_test.cpp`. The closeout ties
+the already-landed audit gates together:
+`tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp`,
+`tests/api_parity/phase_c_focusable_interactable_audit_test.cpp`,
+`tests/api_parity/phase_c_uniform_list_audit_test.cpp`,
+`tests/api_parity/phase_c_window_examples_closeout_test.cpp`,
+`tests/api_parity/phase_c_svg_image_closeout_test.cpp`, and
+`tests/api_parity/phase_c_widget_family_structure_test.cpp`. The handoff after
+this freeze is Phase D Step 379 text/font shaping.
+
 ## Out of scope for this freeze
 
 - `ClipboardItem` payload parity
