@@ -853,6 +853,64 @@ int test_shape_text_records_glyph_fallback_face_indices() {
   return 0;
 }
 
+int test_shape_text_splits_contiguous_font_fallback_runs() {
+  cgpui::FontDatabase database;
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .postscript_name = "Inter-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "inter.ttf",
+      .coverage = {cgpui::FontUnicodeRange{.first = U' ', .last = U'~'}},
+  });
+  database.add_face(cgpui::FontFaceDescriptor{
+      .font = cgpui::FontDescriptor{.family = "Noto Sans CJK"},
+      .postscript_name = "NotoSansCJK-Regular",
+      .source = cgpui::FontSource::test,
+      .path = "noto-cjk.otf",
+      .coverage = {cgpui::FontUnicodeRange{.first = 0x4E00, .last = 0x9FFF}},
+  });
+  database.add_generic_fallback_family("Noto Sans CJK");
+
+  const cgpui::FontFallbackChain chain =
+      database.resolve_chain(cgpui::FontDescriptor{.family = "Inter"});
+  const cgpui::TextShapeRun run =
+      cgpui::shape_text("A\xE4\xB8\xAD" "B", chain, 18.0F);
+  if (run.font_runs.size() != 3 || run.glyph_count() != 3) {
+    return 163;
+  }
+  if (run.font_runs[0].font_fallback_face_index != 0 ||
+      run.font_runs[0].glyph_start != 0 || run.font_runs[0].glyph_end != 1 ||
+      run.font_runs[0].byte_start != 0 || run.font_runs[0].byte_end != 1 ||
+      run.font_runs[0].advance != 9.0F) {
+    return 164;
+  }
+  if (run.font_runs[1].font_fallback_face_index != 1 ||
+      run.font_runs[1].glyph_start != 1 || run.font_runs[1].glyph_end != 2 ||
+      run.font_runs[1].byte_start != 1 || run.font_runs[1].byte_end != 4 ||
+      run.font_runs[1].advance != 9.0F) {
+    return 165;
+  }
+  if (run.font_runs[2].font_fallback_face_index != 0 ||
+      run.font_runs[2].glyph_start != 2 || run.font_runs[2].glyph_end != 3 ||
+      run.font_runs[2].byte_start != 4 || run.font_runs[2].byte_end != 5 ||
+      run.font_runs[2].device_advance != 9.0F) {
+    return 166;
+  }
+
+  const cgpui::TextShapeRun primary_run =
+      cgpui::shape_text("AB", cgpui::FontFallbackChain{}, 18.0F);
+  if (primary_run.font_runs.size() != 1 ||
+      primary_run.font_runs[0].font_fallback_face_index != 0 ||
+      primary_run.font_runs[0].glyph_start != 0 ||
+      primary_run.font_runs[0].glyph_end != 2 ||
+      primary_run.font_runs[0].byte_start != 0 ||
+      primary_run.font_runs[0].byte_end != 2) {
+    return 167;
+  }
+
+  return 0;
+}
+
 int test_shape_text_records_backend_selection_and_fallback_reason() {
   const cgpui::TextShapeRun default_run =
       cgpui::shape_text("ffi", cgpui::FontDescriptor{.family = "Inter"});
@@ -1265,6 +1323,11 @@ int main() {
   }
   if (const int result =
           test_shape_text_records_glyph_fallback_face_indices();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_shape_text_splits_contiguous_font_fallback_runs();
       result != 0) {
     return result;
   }

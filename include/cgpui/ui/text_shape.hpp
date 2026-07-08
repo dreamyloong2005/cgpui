@@ -21,10 +21,21 @@ struct TextGlyphRun {
   Point offset;
 };
 
+struct TextFontFallbackRun {
+  std::size_t font_fallback_face_index = 0;
+  std::size_t glyph_start = 0;
+  std::size_t glyph_end = 0;
+  std::size_t byte_start = 0;
+  std::size_t byte_end = 0;
+  float advance = 0.0F;
+  float device_advance = 0.0F;
+};
+
 struct TextShapeRun {
   std::string text;
   FontDescriptor font;
   std::vector<FontFaceDescriptor> font_fallback_faces;
+  std::vector<TextFontFallbackRun> font_runs;
   float font_size = 16.0F;
   DpiScale scale;
   std::vector<TextGlyphRun> glyphs;

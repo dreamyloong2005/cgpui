@@ -15317,6 +15317,35 @@
   `wayland_font_discovery_test/default`, `gpui_parity_ledger_test/default`,
   and `phase_c_final_ledger_audit_test/default` 10/10.
 
+## 2026-07-09 Phase D Step 395 Contiguous Font Fallback Runs
+
+- Started from clean `master` after
+  `362ecbd test: close phase d font fallback band`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextShapeRun::font_runs` to split `A + CJK + B` into contiguous fallback
+  face spans, plus `tests/architecture/ui_source_structure_test.cpp` guards
+  for `TextFontFallbackRun` ownership and fallback-shaper coalescing. RED
+  failed as expected on missing `TextShapeRun::font_runs`.
+- GREEN implementation adds `TextFontFallbackRun` in the public text-shape
+  leaf and coalesces spans in `src/ui/text_shaping_fallback.cpp` through
+  `append_font_fallback_run_span(...)`, using only the explicit
+  caller-provided fallback chain.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `text_model_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `phase_d_text_shaping_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`, `gpui_parity_ledger_test/default`,
+  and `phase_c_final_ledger_audit_test/default` 7/7.
+
 ## 2026-07-09 Zero-Cost Runtime Static Render Path
 
 - Resumed on `master` after `cbb15a2 feat: add static element fast path` with

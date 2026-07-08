@@ -110,6 +110,8 @@ int main() {
       !contains(text_row, "FontDatabase::resolve_chain_for_codepoint") ||
       !contains(text_row, "TextShapeRun::font_fallback_faces") ||
       !contains(text_row, "TextGlyphRun::font_fallback_face_index") ||
+      !contains(text_row, "TextFontFallbackRun") ||
+      !contains(text_row, "TextShapeRun::font_runs") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
@@ -119,6 +121,8 @@ int main() {
       !contains(shape_header, "TextShapingBackendCapabilities backend_capabilities") ||
       !contains(shape_header, "TextShapingBackendSelection backend_selection()") ||
       !contains(shape_header, "bool used_fallback() const") ||
+      !contains(shape_header, "struct TextFontFallbackRun") ||
+      !contains(shape_header, "std::vector<TextFontFallbackRun> font_runs") ||
       !contains(backend_source, "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND")) {
     return 5;
   }
@@ -148,7 +152,9 @@ int main() {
   if (!contains(text_model_test, "default_run.backend_selection()") ||
       !contains(text_model_test, "default_run.used_fallback()") ||
       !contains(text_model_test, "fallback_run.used_fallback()") ||
-      !contains(text_model_test, "selection.capabilities.harfbuzz_available")) {
+      !contains(text_model_test, "selection.capabilities.harfbuzz_available") ||
+      !contains(text_model_test,
+                "test_shape_text_splits_contiguous_font_fallback_runs")) {
     return 9;
   }
 

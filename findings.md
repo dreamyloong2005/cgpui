@@ -7094,3 +7094,16 @@
   enumeration or production HarfBuzz shaping is complete. It hands Phase D to
   the next fallback-splitting, emoji/color glyph, and missing-glyph diagnostic
   band.
+
+## 2026-07-09 Phase D Step 395 Contiguous Font Fallback Runs
+
+- Step 395 adds deterministic per-codepoint fallback splitting metadata without
+  adding renderer-side font switching yet.
+- `TextFontFallbackRun` lives in the public `text_shape.hpp` leaf beside
+  `TextGlyphRun`, and `TextShapeRun::font_runs` records contiguous spans by
+  fallback face index with glyph range, byte range, logical advance, and device
+  advance.
+- The coalescing implementation stays in
+  `src/ui/text_shaping_fallback.cpp` via `append_font_fallback_run_span(...)`;
+  it is driven only by the explicit `FontFallbackChain` passed to
+  `shape_text(...)`, so Step 395 keeps the zero-hidden-global-lookup rule.

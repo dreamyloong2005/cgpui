@@ -51,6 +51,33 @@ std::size_t select_font_fallback_face_index(
   return 0;
 }
 
+void append_font_fallback_run_span(
+    TextShapeRun& run,
+    std::size_t font_fallback_face_index,
+    std::size_t glyph_index,
+    std::size_t byte_offset,
+    std::size_t byte_length,
+    float advance,
+    float device_advance) {
+  if (run.font_runs.empty() ||
+      run.font_runs.back().font_fallback_face_index !=
+          font_fallback_face_index) {
+    run.font_runs.push_back(TextFontFallbackRun{
+        .font_fallback_face_index = font_fallback_face_index,
+        .glyph_start = glyph_index,
+        .glyph_end = glyph_index,
+        .byte_start = byte_offset,
+        .byte_end = byte_offset,
+    });
+  }
+
+  TextFontFallbackRun& font_run = run.font_runs.back();
+  font_run.glyph_end = glyph_index + 1;
+  font_run.byte_end = byte_offset + byte_length;
+  font_run.advance += advance;
+  font_run.device_advance += device_advance;
+}
+
 } // namespace
 
 TextShapeRun shape_text_with_deterministic_fallback(
@@ -76,6 +103,8 @@ TextShapeRun shape_text_with_deterministic_fallback(
   };
 
   const float fallback_advance = request.font_size * 0.5F;
+  run.glyphs.reserve(request.text.size());
+  run.font_runs.reserve(request.text.size());
   std::size_t byte_offset = 0;
   std::uint32_t glyph_id = 0;
   while (byte_offset < request.text.size()) {
@@ -86,17 +115,27 @@ TextShapeRun shape_text_with_deterministic_fallback(
     }
     const char32_t codepoint =
         decode_utf8_codepoint(request.text, byte_offset, byte_length);
+    const std::size_t font_fallback_face_index =
+        select_font_fallback_face_index(run.font_fallback_faces, codepoint);
+    const std::size_t glyph_index = run.glyphs.size();
+    const float device_advance = fallback_advance * scale_value;
     run.glyphs.push_back(TextGlyphRun{
         .glyph_id = glyph_id,
         .byte_offset = byte_offset,
         .byte_length = byte_length,
-        .font_fallback_face_index = select_font_fallback_face_index(
-            run.font_fallback_faces,
-            codepoint),
+        .font_fallback_face_index = font_fallback_face_index,
         .advance = fallback_advance,
     });
     run.total_advance += fallback_advance;
-    run.device_total_advance += fallback_advance * scale_value;
+    run.device_total_advance += device_advance;
+    append_font_fallback_run_span(
+        run,
+        font_fallback_face_index,
+        glyph_index,
+        byte_offset,
+        byte_length,
+        fallback_advance,
+        device_advance);
     byte_offset += byte_length;
     glyph_id += 1;
   }

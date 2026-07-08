@@ -111,6 +111,11 @@ Windows/Linux core API is stable enough for parity work.
   fallback chains, and glyph-level fallback face indices. Dependency-backed
   Linux fontconfig/FreeType enumeration and production HarfBuzz shaping remain
   incomplete.
+- Step 395 starts the next fallback-splitting band. `TextFontFallbackRun` and
+  `TextShapeRun::font_runs` now coalesce contiguous glyphs that use the same
+  fallback face into byte/glyph/advance spans, with deterministic fallback
+  shaping preserving the explicit caller-provided chain and avoiding hidden
+  global font database lookup.
 
 ## Definition Of Done For This 20-Step Goal
 

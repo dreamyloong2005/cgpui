@@ -942,6 +942,11 @@ behavior that can support GPUI examples and editor-like widgets.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.
+  Step 395 starts this band by adding contiguous fallback font spans through
+  `TextFontFallbackRun` and `TextShapeRun::font_runs`, so deterministic
+  shaping exposes byte/glyph/advance ranges for each selected fallback face
+  before renderer-side font switching, emoji/color glyph planning, and
+  missing-glyph diagnostics land.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.
