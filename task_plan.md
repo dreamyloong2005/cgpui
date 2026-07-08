@@ -38,6 +38,10 @@ Windows/Linux core API is stable enough for parity work.
   fallback decision explicit. The Windows/WSL hosts do not currently expose
   HarfBuzz, so Steps 379-386 remain open until the real HarfBuzz backend is
   linked and verified.
+- Step 380 adds the internal shaping dispatch and deterministic fallback
+  backend split: public `shape_text(...)` now routes through
+  `TextShapingRequest`, `text_shaping_dispatch.cpp`, and
+  `text_shaping_fallback.cpp` before future HarfBuzz integration.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -6878,3 +6878,18 @@
 - Steps 379-386 remain open until the real HarfBuzz dependency/backend is
   linked on Windows/Linux and verified; this slice is the backend boundary and
   fallback observability needed before that work.
+
+## 2026-07-09 Phase D Step 380 Text Shaping Dispatch Split
+
+- Step 380 keeps the public `shape_text(...)` API stable and moves the real
+  glyph-run construction out of `src/ui/text_shape.cpp`.
+- Durable private ownership is `src/ui/text_shaping_internal.hpp`,
+  `src/ui/text_shaping_dispatch.cpp`, and `src/ui/text_shaping_fallback.cpp`.
+  `TextShapingRequest` is implementation-only, while public callers keep using
+  `TextShapingOptions` and `TextShapeRun`.
+- `shape_text_with_selected_backend(...)` is now the future HarfBuzz insertion
+  point. It currently routes to `shape_text_with_deterministic_fallback(...)`,
+  preserving Step 379 fallback metadata and glyph ids.
+- Structure coverage now fails if `text_shape.cpp` grows the fallback glyph
+  loop again, which protects the backend boundary before the real HarfBuzz
+  implementation lands.

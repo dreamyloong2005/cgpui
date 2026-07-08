@@ -123,6 +123,8 @@ int main() {
 
   const std::vector<const char*> text_implementation_files{
       "src/ui/text_shaping_backend.cpp",
+      "src/ui/text_shaping_dispatch.cpp",
+      "src/ui/text_shaping_fallback.cpp",
       "src/ui/text_shape.cpp",
       "src/ui/text_glyph_raster.cpp",
       "src/ui/text_measurement.cpp",
@@ -136,8 +138,13 @@ int main() {
   }
   const std::string text_shaping_backend_source =
       read_source("src/ui/text_shaping_backend.cpp");
+  const std::string text_shaping_internal_header =
+      read_source("src/ui/text_shaping_internal.hpp");
+  const std::string text_shape_source = read_source("src/ui/text_shape.cpp");
   if (!contains(text_shaping_backend_source,
-                "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND")) {
+                "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
+      !contains(text_shaping_internal_header, "TextShapingRequest") ||
+      contains(text_shape_source, "run.glyphs.push_back")) {
     return 143;
   }
 

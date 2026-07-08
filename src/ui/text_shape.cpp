@@ -1,6 +1,5 @@
-#include "cgpui/ui/text_shape.hpp"
+#include "text_shaping_internal.hpp"
 
-#include <string>
 #include <utility>
 
 namespace cgpui {
@@ -19,43 +18,13 @@ TextShapeRun shape_text(
     float font_size,
     DpiScale scale,
     TextShapingOptions options) {
-  const float scale_value = normalized_scale(scale);
-  const TextShapingBackendSelection backend =
-      select_text_shaping_backend(options);
-  TextShapeRun run{
-      .text = std::string(text),
+  return shape_text_with_selected_backend(TextShapingRequest{
+      .text = text,
       .font = std::move(font),
       .font_size = font_size,
       .scale = scale,
-      .byte_length = text.size(),
-      .line_height = font_size,
-      .device_font_size = font_size * scale_value,
-      .device_line_height = font_size * scale_value,
-      .requested_backend = backend.requested,
-      .used_backend = backend.used,
-      .fallback_reason = backend.fallback_reason,
-  };
-  const float fallback_advance = font_size * 0.5F;
-  std::size_t byte_offset = 0;
-  std::uint32_t glyph_id = 0;
-  while (byte_offset < text.size()) {
-    std::size_t byte_length = 1;
-    while (byte_offset + byte_length < text.size() &&
-           is_utf8_continuation_byte(text[byte_offset + byte_length])) {
-      byte_length += 1;
-    }
-    run.glyphs.push_back(TextGlyphRun{
-        .glyph_id = glyph_id,
-        .byte_offset = byte_offset,
-        .byte_length = byte_length,
-        .advance = fallback_advance,
-    });
-    run.total_advance += fallback_advance;
-    run.device_total_advance += fallback_advance * scale_value;
-    byte_offset += byte_length;
-    glyph_id += 1;
-  }
-  return run;
+      .backend = select_text_shaping_backend(options),
+  });
 }
 
 } // namespace cgpui

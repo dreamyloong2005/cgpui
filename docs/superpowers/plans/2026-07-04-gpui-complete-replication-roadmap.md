@@ -880,6 +880,9 @@ behavior that can support GPUI examples and editor-like widgets.
   reason metadata, and glyph ids are recorded on `TextShapeRun`, while the
   current Windows/WSL hosts continue to use deterministic fallback because
   HarfBuzz is not installed yet.
+  Step 380 splits shaping dispatch and deterministic fallback shaping into
+  focused internal backend files so a later HarfBuzz backend can plug into the
+  same path without changing public text authoring APIs.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
 - [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,

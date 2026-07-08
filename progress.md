@@ -15188,3 +15188,37 @@
   `gpui_parity_ledger_test/default`,
   `phase_c_final_ledger_audit_test/default`, `text_model_test/default`, and
   `ui_source_structure_test/default` 4/4.
+
+## 2026-07-09 Phase D Step 380 Text Shaping Dispatch Split
+
+- Started from clean `master` after
+  `db829fe feat: add text shaping backend boundary`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `src/ui/text_shaping_internal.hpp`, `src/ui/text_shaping_dispatch.cpp`, and
+  `src/ui/text_shaping_fallback.cpp`, and requiring the fallback glyph loop to
+  leave `src/ui/text_shape.cpp`. RED failed as expected with
+  `ui_source_structure_test/default`.
+- GREEN implementation added `TextShapingRequest`,
+  `shape_text_with_selected_backend(...)`, and
+  `shape_text_with_deterministic_fallback(...)`; `shape_text(...)` now only
+  selects the backend and routes through the internal dispatch path.
+- Focused GREEN verification passed:
+  `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default render_view_test/default
+  window_runtime_rendering_test/default
+  renderer_frame_result_conventions_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 8/8.
+- WSL focused verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`, `text_model_test/default`, and
+  `ui_source_structure_test/default` 4/4.
+- After adding an explicit `<string_view>` include to the internal shaping
+  header, focused verification passed
+  `xmake test -y -P . ui_source_structure_test/default text_model_test/default`
+  2/2.
