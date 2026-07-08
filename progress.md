@@ -14465,3 +14465,25 @@
 - After WSL verification, C: was 20.19GB free and D: was 19.25GB free.
   `/home/dreamyloong` was 4.0K, `/tmp` was 0, `.build-wsl/master` was 2.4G,
   and `.build-wsl/phase-c-window-example-service-matrix` was 2.4G.
+
+## 2026-07-08 Phase C Step 359 Merge
+
+- Fast-forward merged `codex/phase-c-window-example-service-matrix` into root
+  `master` at `c6b89e8 test: add phase c window service matrix example`; root
+  `master` still had no tracked diff and only the existing untracked
+  `.vscode/`.
+- Verified post-merge JSON:
+  `python -m json.tool docs\gpui-complete-parity-ledger.json` exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 109/109.
+- Verified post-merge WSL Arch Linux with D-drive build output:
+  `XMAKE_ROOT=y xmake f -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master -P .`
+  exited 0, and
+  `XMAKE_ROOT=y xmake test -w /mnt/d/Dev/Projects/cgpui -P .` passed
+  106/106.
+- Step 359 is complete on `master`; Step 360 window/examples closeout is the
+  next Phase C slice.
