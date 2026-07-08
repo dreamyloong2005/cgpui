@@ -2577,3 +2577,14 @@ implementation slice.
   using D-drive WSL build/cache output plus `/dev/shm/cgpui` for transient
   Wayland/socket temp. Step 367 widget family structure tests are the next
   tracked Phase C slice.
+- Phase C Step 367, widget family structure tests, is merged on `master` at
+  `a4efcf9 test: add widget family structure guard` and post-merge verified
+  with JSON validation, diff hygiene, Windows debug config, Windows full debug
+  115/115, WSL Arch Linux debug config, and WSL Arch Linux full debug 112/112
+  using D-drive WSL build/cache output plus `/dev/shm/cgpui` for transient
+  Wayland/socket temp. `tests/architecture/widget_source_structure_test.cpp`
+  now requires every widget family to name its public leaf header, focused
+  source file, and focused behavior tests, with
+  `tests/api_parity/phase_c_widget_family_structure_test.cpp` guarding the
+  roadmap, ledger, and public vocabulary evidence. Step 373 final
+  element/style/widget ledger audit is the next tracked Phase C slice.

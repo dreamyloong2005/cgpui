@@ -14898,3 +14898,30 @@
   4.57GB free. Future WSL runs should continue to keep xmake global,
   package, and build output under `.build-wsl/...` on D: and use
   `/dev/shm/cgpui` only for transient Wayland socket/temp.
+
+## 2026-07-08 Phase C Step 367 Merge
+
+- Fast-forward merged `codex/phase-c-widget-family-structure-tests` into root
+  `master` at `a4efcf9 test: add widget family structure guard`; root
+  `master` still had no tracked diff and only the existing untracked
+  `.vscode/`.
+- Verified post-merge JSON:
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`
+  exited 0.
+- Verified post-merge diff hygiene:
+  `git diff --check` exited 0.
+- Verified post-merge Windows debug config:
+  `xmake f -c -m debug -P .` exited 0.
+- Verified post-merge Windows full debug:
+  `xmake test -P .` passed 115/115.
+- Verified post-merge WSL Arch Linux with D-drive build/cache output and
+  memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake f -P . -y -c -m debug --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master/build-root`
+  exited 0, and the matching
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui -P .` passed 112/112.
+- Disk placement check after post-merge WSL verification: `/tmp` was 0,
+  `/root/.xmake` was absent, `/dev/shm/cgpui` was absent after the run,
+  `.build-wsl/master` on D: was 5.2G, the Step 367 feature WSL directory on
+  D: was 2.4G, C: had 26.17GB free, and D: had 4.56GB free.
+- Step 367 is complete on `master`; Phase C Step 373 final
+  element/style/widget ledger audit is the next slice.
