@@ -14987,3 +14987,50 @@
   `.build-wsl/phase-c-final-ledger-audit` on D: was 2.31GB, C: had 25.89GB
   free, and D: had 2.29GB free. Future post-merge WSL verification should
   reuse `.build-wsl/master` and avoid creating another feature build directory.
+
+## 2026-07-08 Phase C Step 373 Post-Merge Verification
+
+- Resumed on root `master` at `707309a` with only the existing untracked
+  `.vscode/` in `git status --short --branch`.
+- Session catchup reported unsynced context from the C-drive disk triage. No
+  cleanup was performed during this continuation: `.build-wsl`, worktrees,
+  WSL VHDs, Codex logs, Git loose objects, and caches were left intact pending
+  explicit user approval.
+- Verified no tracked diff before post-merge closeout: `git diff --stat`
+  produced no output.
+- Verified JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('docs/gpui-complete-parity-ledger.json','utf8')); console.log('json ok')"`
+  exited 0.
+- After updating the planning records, verified diff hygiene:
+  `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
+  warnings for `findings.md`, `progress.md`, and `task_plan.md`.
+- After updating the planning records, verified current Windows full test:
+  `xmake test -P .` passed 116/116.
+- `rg --files docs | Select-String -Pattern 'roadmap|parity-ledger'` failed
+  with a Windows `rg.exe` access-denied startup error. Used the PowerShell
+  fallback `Get-ChildItem -LiteralPath docs -File -Recurse` to locate the
+  parity ledger and roadmap files instead.
+- Prepared memory-backed transient WSL temp with
+  `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc "mkdir -p /dev/shm/cgpui"`.
+- Verified post-merge WSL Arch Linux full debug with D-drive build/cache output
+  and memory-backed transient temp:
+  `TMPDIR=/dev/shm/cgpui XMAKE_ROOT=y XMAKE_GLOBALDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/global XMAKE_TMPDIR=/dev/shm/cgpui XMAKE_PKG_CACHEDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-cache XMAKE_PKG_INSTALLDIR=/mnt/d/Dev/Projects/cgpui/.build-wsl/master/pkg-install xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui -P .`
+  passed 113/113.
+- Disk placement after post-merge WSL verification: `/tmp` was 0,
+  `/root/.xmake` was absent, `/dev/shm/cgpui` was absent after the run,
+  `.build-wsl/master` on D: was 5.09GB, total `.build-wsl` on D: was 18.15GB,
+  `.worktrees` on D: was 4.75GB, root `build` on D: was 4.88GB, C: had
+  25.86GB free, and D: had 2.28GB free.
+- Completion audit found the Phase C roadmap `Steps 319-324` checkbox still
+  unchecked even though the embedded evidence records Steps 319-324 as
+  merged/verified. Updated that roadmap checkbox to `[x]` before the final
+  audit.
+- Final range-aware roadmap audit confirmed Steps 319-378 are covered by
+  checked roadmap ranges, no Phase C ranges remain unchecked, Phase D starts at
+  Step 379, and JSON `phase_c_widget_evidence.next_step` is
+  `Phase D Step 379 text/font shaping`.
+- Final post-checkbox-fix verification passed: `git diff --check` exited 0
+  with only expected LF-to-CRLF working-copy warnings, JSON parsing exited 0,
+  Windows `xmake test -P .` passed 116/116, and WSL
+  `phase_c_final_ledger_audit_test/default` passed 1/1 using the D-drive
+  `.build-wsl/master` configuration.

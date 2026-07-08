@@ -2596,3 +2596,8 @@ implementation slice.
   373-378 complete, `gpui::div` and `gpui uniform_list` are adapted/closed,
   image/SVG production loading/rendering work remains explicitly deferred, and
   the global handoff moves to Phase D Step 379 text/font shaping.
+- Phase C Step 373 is merged on `master` at `707309a` and post-merge verified
+  with JSON parsing, diff hygiene, Windows full test `116/116`, and WSL Arch
+  Linux full debug `113/113`. WSL verification reused `.build-wsl/master` on
+  D:, kept `/tmp` empty, left `/root/.xmake` absent, and confirms Phase C is
+  closed with Phase D Step 379 text/font shaping as the next global handoff.

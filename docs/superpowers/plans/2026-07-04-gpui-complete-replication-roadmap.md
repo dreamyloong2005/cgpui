@@ -477,7 +477,7 @@ expect, keeping each widget in its own module from the first version.
 - `tests/ui/style_*`
 - `tests/examples/*`
 
-- [ ] Steps 319-324: Add the upstream-style `div` element vocabulary:
+- [x] Steps 319-324: Add the upstream-style `div` element vocabulary:
   child/children handling, flex helpers, sizing, colors, borders, radius,
   shadow, text styling, overflow, and layout shortcuts.
   Step 319 adds `div` child-list ownership: repeated `.child(...)` retains

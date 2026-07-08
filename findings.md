@@ -6748,3 +6748,22 @@
   `phase_c_widget_family_structure_test.cpp`, and the new
   `phase_c_final_ledger_audit_test.cpp`. The next non-Phase-C handoff is
   Phase D Step 379 text/font shaping.
+
+## 2026-07-08 Phase C Step 373 post-merge closeout
+
+- Root `master` post-merge WSL verification passed 113/113 using
+  `.build-wsl/master` on D: for xmake global, package, and build output, with
+  `/dev/shm/cgpui` only as transient temp.
+- Disk placement after the WSL run confirmed `/tmp` was 0, `/root/.xmake` was
+  absent, `/dev/shm/cgpui` was absent after the run, `.build-wsl/master` was
+  5.09GB, total `.build-wsl` was 18.15GB, `.worktrees` was 4.75GB, root
+  `build` was 4.88GB, C: had 25.86GB free, and D: had 2.28GB free.
+- On this Windows environment, `rg --files docs | Select-String ...` can fail
+  at process startup with an `rg.exe` access-denied error from the WinGet link.
+  Use `Get-ChildItem -LiteralPath docs -File -Recurse` as the local fallback.
+- No disk cleanup was performed in this closeout continuation; keep
+  `.build-wsl`, worktrees, WSL VHDs, Codex logs, Git loose objects, and caches
+  untouched unless the user explicitly approves removal.
+- Completion audit must check the actual Phase C checkbox ranges, not only the
+  per-step prose: the `Steps 319-324` range was stale as unchecked while its
+  embedded evidence already recorded all six slices as merged and verified.
