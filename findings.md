@@ -6797,3 +6797,32 @@
 - Future slices that add abstraction boundaries should add behavior, structure,
   or micro-benchmark style guards when the boundary could affect allocation,
   dispatch, or per-frame work.
+
+## 2026-07-08 Zero-Cost Static Element Fast Path
+
+- The existing UI authoring path still defaults to dynamic ownership:
+  `AnyElement = std::unique_ptr<Element>`, virtual layout/paint/event hooks,
+  `std::function` handlers, and `ElementTree` state backed by `std::any` and
+  `dynamic_cast`. That path should remain as the explicit dynamic escape hatch
+  for plugins/editor runtime cases, not the long-term default for static
+  widget composition.
+- The first code slice should create a separate compact static element fast
+  path rather than broad-rewriting `Element`. Durable ownership should be a
+  focused public leaf over dense `ElementId` records and `std::span` views, so
+  traversal and hit testing do not need heap allocation, broad type erasure,
+  virtual dispatch, or tree-wide id scans.
+- `ElementId`, `ViewId`, and `ElementKey` should move to a small public id
+  leaf so static UI code can reference ids without including the dynamic
+  `Element`/handler surface.
+- Implemented boundary: `include/cgpui/ui/element_ids.hpp` owns ids,
+  `include/cgpui/ui/static_element_tree.hpp` owns the compact public records,
+  and `src/ui/static_element_tree.cpp` owns non-template lookup, validation,
+  and hit-testing behavior.
+- Static element records are dense-id indexed: `ElementId{1}` maps to
+  `nodes()[0]`, so hot lookup avoids tree-wide id scans. Child relationships
+  are explicit `std::span<const ElementId>` ranges rather than per-node
+  heap-owned child vectors.
+- The dynamic path stays visible through `IntoElement = AnyElement` and
+  `ElementTree`; `StaticIntoElement`/`StaticRender` are separate spellings so
+  later declarative templates can choose the static route without hiding the
+  cost of dynamic widget/plugin UI.

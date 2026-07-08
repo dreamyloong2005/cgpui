@@ -69,6 +69,7 @@ int main() {
       "include/cgpui/ui/text_layout.hpp",
       "include/cgpui/ui/text_model.hpp",
       "include/cgpui/ui/text.hpp",
+      "include/cgpui/ui/element_ids.hpp",
       "include/cgpui/ui/element_core.hpp",
       "include/cgpui/ui/element_layout_nodes.hpp",
       "include/cgpui/ui/element_style_nodes.hpp",
@@ -90,6 +91,7 @@ int main() {
       "include/cgpui/ui/scrollable_list_builder.hpp",
       "include/cgpui/ui/widget_builders.hpp",
       "include/cgpui/ui/element_builders.hpp",
+      "include/cgpui/ui/static_element_tree.hpp",
       "include/cgpui/ui/element_tree_templates.hpp",
       "include/cgpui/ui/element_tree.hpp",
       "include/cgpui/ui/element.hpp",
@@ -198,6 +200,7 @@ int main() {
       !contains(ui_header, "#include \"cgpui/ui/uniform_list.hpp\"") ||
       !contains(ui_header,
                 "#include \"cgpui/ui/uniform_list_selection.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/static_element_tree.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/render.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/element_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/view_context.hpp\"") ||
@@ -223,12 +226,43 @@ int main() {
   if (!contains(render_header, "using ViewContext = WindowRuntimeContext") ||
       !contains(render_header, "using Context = ViewContext") ||
       !contains(render_header, "using IntoElement = AnyElement") ||
-      !contains(render_header, "concept Render")) {
+      !contains(render_header, "using StaticIntoElement = StaticElementTreeView") ||
+      !contains(render_header, "concept Render") ||
+      !contains(render_header, "concept StaticRender")) {
     return 6;
   }
-  if (line_count(render_header) > 80 ||
+  if (line_count(render_header) > 90 ||
       contains(render_header, "class View")) {
     return 115;
+  }
+
+  const std::string element_ids_header =
+      read_source("include/cgpui/ui/element_ids.hpp");
+  const std::string element_core_ids_header =
+      read_source("include/cgpui/ui/element_core.hpp");
+  const std::string static_element_tree_header =
+      read_source("include/cgpui/ui/static_element_tree.hpp");
+  const std::string static_element_tree_source =
+      read_source("src/ui/static_element_tree.cpp");
+  if (!contains(element_ids_header, "struct ElementId") ||
+      !contains(element_ids_header, "struct ViewId") ||
+      !contains(element_ids_header, "struct ElementKey") ||
+      !contains(element_core_ids_header,
+                "#include \"cgpui/ui/element_ids.hpp\"") ||
+      contains(element_core_ids_header, "struct ElementId")) {
+    return 140;
+  }
+  if (!contains(static_element_tree_header, "class StaticElementTreeView") ||
+      !contains(static_element_tree_header,
+                "std::span<const StaticElementNode>") ||
+      !contains(static_element_tree_header, "for_each_preorder") ||
+      contains(static_element_tree_header, "std::function") ||
+      contains(static_element_tree_header, "virtual") ||
+      contains(static_element_tree_header, "std::unique_ptr") ||
+      contains(static_element_tree_header, "AnyElement") ||
+      contains(static_element_tree_source, "dynamic_cast") ||
+      contains(static_element_tree_source, "std::function")) {
+    return 141;
   }
 
   const std::string view_header = read_source("include/cgpui/ui/view.hpp");

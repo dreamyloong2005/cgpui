@@ -15056,3 +15056,50 @@
   dispatch, repeated handle wrapping, and tree-wide per-frame scans; static
   widget fast paths and dynamic escape hatches must remain explicit and
   separately testable.
+
+## 2026-07-08 Zero-Cost Static Element Fast Path
+
+- Resumed after Phase C closeout and zero-cost documentation commits on
+  `master`; `git status --short --branch` showed no tracked diff and only the
+  existing untracked `.vscode/`.
+- Re-read the planning files, ran the planning-with-files catchup helper, and
+  confirmed the continuation target is code work after the user asked to
+  fully fix the existing zero-cost abstraction gap.
+- Audited the current hot path: `element_core.hpp` owns dynamic element ids,
+  `AnyElement`, virtual `Element` hooks, and `std::function` handlers;
+  `element_tree.hpp` owns dynamic element storage plus `std::any` state; and
+  `render.hpp` currently exposes only the dynamic `IntoElement = AnyElement`
+  render spelling.
+- Chosen implementation boundary: add a compact static element-tree public
+  leaf and structure guard first, keep the dynamic `ElementTree` escape hatch
+  explicit, and avoid a broad rewrite of the dynamic element hierarchy in this
+  slice.
+- Added RED tests for the new boundary:
+  `tests/ui/static_element_tree_test.cpp` and
+  `tests/architecture/zero_cost_abstraction_structure_test.cpp`. The first
+  focused run failed as expected on missing
+  `cgpui/ui/static_element_tree.hpp`.
+- GREEN implementation adds `include/cgpui/ui/element_ids.hpp`,
+  `include/cgpui/ui/static_element_tree.hpp`,
+  `src/ui/static_element_tree.cpp`, `StaticIntoElement`, and `StaticRender`.
+  The static path uses dense id records and span-backed child ranges; the
+  dynamic `Render`/`AnyElement` path remains explicit.
+- Focused GREEN verification passed
+  `static_element_tree_test/default` and
+  `zero_cost_abstraction_structure_test/default` 2/2.
+- Adjacent verification passed `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `element_test/default`,
+  `context_render_spelling_test/default`, and
+  `public_authoring_surface_test/default` 5/5 after fixing a duplicate local
+  variable declaration in `ui_source_structure_test.cpp`.
+- Windows full debug verification passed `xmake test -P .` with 118/118 tests.
+- WSL Arch Linux verification reused `.build-wsl/master` on D: with
+  `TMPDIR=/dev/shm/cgpui`, `XMAKE_GLOBALDIR`,
+  `XMAKE_PKG_CACHEDIR`, and `XMAKE_PKG_INSTALLDIR` all under
+  `/mnt/d/Dev/Projects/cgpui/.build-wsl/master`; `xmake f` exited 0 and
+  `xmake test -j 1 -w /mnt/d/Dev/Projects/cgpui -P .` passed 115/115.
+- Disk placement after WSL verification: `.build-wsl/master` was 5.2G on D:,
+  `/tmp` was 0, `/root/.xmake` was absent, `/dev/shm/cgpui` was absent after
+  the run, C: had about 27.3GB free, and D: had about 2.35GB free.
+- Diff hygiene passed `git diff --check` with only expected LF-to-CRLF
+  working-copy warnings.

@@ -88,6 +88,12 @@ pay hidden costs that a direct C++ implementation would avoid.
   structure, or micro-benchmark style tests that can catch accidental
   allocation, type-erasure, virtual-dispatch, or command-buffer regressions.
 
+The first enforcement slice after Phase C is the static element fast path:
+dense `StaticElementNode` records, span-backed child lists,
+`StaticElementTreeView`, and `StaticRender` provide a static composition route
+while `AnyElement` and the polymorphic `ElementTree` remain an explicit
+dynamic escape hatch.
+
 ## Completion Definition
 
 CGPUI is not "fully replicated" until all of these are true:

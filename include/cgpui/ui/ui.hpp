@@ -6,6 +6,7 @@
 #include "cgpui/ui/paint.hpp"
 #include "cgpui/ui/render.hpp"
 #include "cgpui/ui/element_context.hpp"
+#include "cgpui/ui/static_element_tree.hpp"
 #include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/uniform_list.hpp"
 #include "cgpui/ui/uniform_list_selection.hpp"

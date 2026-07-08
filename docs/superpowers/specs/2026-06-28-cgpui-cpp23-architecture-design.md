@@ -41,6 +41,19 @@ dynamic, such as plugin/editor surfaces, runtime-generated widgets, or platform
 backend boundaries. They should be visible in the owning module and should not
 become the default implementation mechanism for static UI composition.
 
+Initial enforcement after Phase C:
+
+- `ElementId`, `ViewId`, and `ElementKey` live in a small public id leaf so
+  static UI data can reference ids without including the dynamic `Element`
+  hierarchy.
+- `StaticElementTreeView` is the first compact fast path: it consumes dense
+  `StaticElementNode` records and `std::span<const ElementId>` child lists for
+  traversal and hit testing without virtual dispatch, `std::function`,
+  `AnyElement`, `std::any`, or `dynamic_cast`.
+- `StaticRender` is separate from the existing `Render` concept. The existing
+  `IntoElement = AnyElement` path remains the explicit dynamic escape hatch
+  for runtime-generated or plugin/editor UI.
+
 ## Architecture
 
 ### Core

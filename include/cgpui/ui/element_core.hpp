@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/core/events.hpp"
+#include "cgpui/ui/element_ids.hpp"
 #include "cgpui/ui/focus_metadata.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/style.hpp"
@@ -20,24 +21,6 @@ namespace cgpui {
 class PaintList;
 class Element;
 class ElementBuilder;
-
-struct ElementId {
-  std::uint64_t value = 0;
-
-  friend bool operator==(ElementId, ElementId) = default;
-};
-
-struct ViewId {
-  std::uint64_t value = 0;
-
-  friend bool operator==(ViewId, ViewId) = default;
-};
-
-struct ElementKey {
-  std::string value;
-
-  friend bool operator==(const ElementKey&, const ElementKey&) = default;
-};
 
 enum class AccessibilityRole {
   generic,
