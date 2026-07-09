@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Resume And Step 460 Descriptor Binding
+
+- The authoritative Phase E scope is Steps 459-538 in the complete replication
+  roadmap, not only the first 20-step wording retained in older planning
+  history. Step 459 is complete; 79 steps remain.
+- Phase E Step 460 introduces private `VulkanGlyphAtlasResources` ownership
+  while keeping the public production plan handle-free.
+- Step 460 preserves the Step 459 ownership split: public atlas records stay
+  free of Vulkan handles, while descriptor pools/layouts/sets, R8_UNORM images,
+  device-local memory, image views, samplers, and renderer-owned lifetime state
+  live in focused private Vulkan files.
+- Descriptor allocation/update belongs in the descriptor module, not the image
+  module. The first GREEN audit caught this boundary mismatch with exit 22;
+  moving `vkAllocateDescriptorSets` and `vkUpdateDescriptorSets` to
+  `vulkan_glyph_atlas_descriptors.cpp` made the module ownership explicit.
+- Atlas resource reconciliation runs only after `vkWaitForFences` succeeds, so
+  dropped or resized page resources are not destroyed while a prior submitted
+  frame may still reference them.
+- Planner state is copied before resource reconciliation and committed only
+  after Vulkan resource creation succeeds. A failed allocation therefore does
+  not advance `uploaded_count` and hide the same dirty glyphs on retry.
+- Step 461 is the remaining production gap for dirty glyph pixels: staging
+  buffers, image layout transitions, `vkCmdCopyBufferToImage`, and upload
+  resource retirement are not part of Step 460.
+- The current tracked `master` baseline is clean at `12753ba5` with only the
+  pre-existing untracked `.vscode/`. Step 459 already passed Windows 140/140
+  and WSL Arch Linux 137/137.
+- The local WinGet `rg.exe` launcher is broken in this PowerShell environment;
+  repository searches for this Phase should use `git ls-files`,
+  `Get-ChildItem`, and `Select-String` unless the launcher is repaired.
+
 ## 2026-07-04 Complete GPUI Replication Planning
 
 - Official GPUI sources checked for the roadmap were the Zed GPUI README,

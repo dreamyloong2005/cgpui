@@ -79,6 +79,24 @@ int main() {
   }
 
   frame->clear(cgpui::Color{.r = 0.30F, .g = 0.33F, .b = 0.35F, .a = 1.0F});
+  frame->draw_text(cgpui::TextDraw{
+      .bounds =
+          cgpui::Rect{
+              .origin = cgpui::Point{.x = 4.0F, .y = 4.0F},
+              .size = cgpui::Size{.width = 48.0F, .height = 24.0F},
+          },
+      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .content = "atlas",
+      .byte_length = 5,
+      .font_size = 16.0F,
+      .glyphs = cgpui::text_glyph_paint_metadata(
+          cgpui::shape_text(
+              "atlas",
+              cgpui::FontDescriptor{.family = "Inter"},
+              16.0F),
+          cgpui::Point{.x = 4.0F, .y = 4.0F}),
+  });
   const auto presented = frame->present();
   return presented ? 0 : 3;
 }

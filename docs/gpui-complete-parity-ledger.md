@@ -315,7 +315,20 @@ consume C: drive space again.
   `vulkan_plan_glyph_atlas_production_resources(...)` convert glyph atlas
   upload batches into alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness while preserving handle-free public records. descriptor set binding remains Step 460, along with private Vulkan renderer-state handle
   ownership and command-buffer recording.
-- Handoff: Phase E Step 460 glyph atlas descriptor set binding.
+- Phase E Step 460 Vulkan glyph atlas descriptor binding is implemented through
+  private handle-bearing renderer modules. `VulkanRendererState` now owns
+  `VulkanGlyphAtlasResources`; the descriptor module creates the combined image
+  sampler layout/pool in `vulkan_glyph_atlas_descriptors.cpp`, allocates
+  per-page descriptor sets, and calls
+  `vkUpdateDescriptorSets`; the image module creates R8_UNORM images,
+  device-local memory, image views, and the shared sampler; and the resource
+  module reconciles/destroys page lifetimes after the in-flight fence completes.
+  Public atlas leaves remain free of `Vk*` handles. A real text-frame smoke test
+  exercises atlas page and descriptor creation.
+- Remaining Phase E glyph-atlas gap: Step 461 must stage dirty alpha payloads,
+  record image layout transitions and buffer-to-image copies, and retire the
+  upload resources safely.
+- Handoff: Phase E Step 461 glyph atlas dirty upload command recording.
 
 ## Categories
 

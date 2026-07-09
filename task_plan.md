@@ -477,6 +477,45 @@ Windows/Linux core API is stable enough for parity work.
   `vulkan_plan_glyph_atlas_production_resources(...)` convert glyph atlas
   upload batches into alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness. descriptor set binding remains Step 460, alongside private
   Vulkan renderer-state handle ownership and command-buffer recording.
+- Phase E Step 460 Vulkan glyph atlas descriptor binding adds focused private
+  Vulkan ownership through `VulkanGlyphAtlasResources` without leaking handles
+  into public renderer headers.
+  `vulkan_glyph_atlas_resources_internal.hpp` defines page/resource ownership;
+  descriptor layout, pool, allocation, and `vkUpdateDescriptorSets` writes live in
+  `vulkan_glyph_atlas_descriptors.cpp`; R8_UNORM image, device-local memory,
+  image-view, and sampler creation live in `vulkan_glyph_atlas_images.cpp`; and
+  reconciliation/destruction live in `vulkan_glyph_atlas_resources.cpp`.
+  `VulkanRendererState` consumes the Step 459 plan after the in-flight fence.
+  Dirty alpha staging, image transitions, and buffer-to-image copies remain
+  Step 461.
+
+## Active Phase E Execution Goal (2026-07-10)
+
+- Status: in_progress
+- Authoritative scope: Phase E Steps 459-538 in
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+- Completed: Steps 459-460 Vulkan glyph atlas production planning, private
+  image/memory/view/sampler ownership, and descriptor-set binding.
+- In progress: Step 461 dirty alpha staging, layout transitions, and
+  buffer-to-image command recording against the live frame command buffers.
+- Pending bands: Steps 462-466 remaining atlas integration; Steps 467-474 text
+  pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
+  transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
+  507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  tests; Steps 531-538 full verification and closeout.
+- Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
+  focused WSL when shared renderer/build/header surfaces change, Windows full
+  debug after the slice, `git diff --check`, docs/ledger/planning updates, and
+  an intentional commit on `master`. WSL full debug is batched at renderer
+  milestones and required at Phase E closeout.
+
+## Errors Encountered During Phase E Resume
+
+| Error | Attempt | Resolution |
+|-------|---------|------------|
+| WinGet-linked `rg.exe` failed to start because Windows reported no associated application | Initial Phase E repository and memory searches | Use `git ls-files`, `Get-ChildItem`, and `Select-String` for this run; do not repeat the failing `rg.exe` invocation |
+| `vulkan_glyph_atlas_descriptor_test` initially failed to compile because the private resource header did not exist | Step 460 RED | Expected RED; added the private descriptor/image/resource module set |
+| Step 460 focused run compiled and the real text-frame smoke passed, but the new audit exited 22 | First GREEN attempt | Moved descriptor allocation/update out of the image module into `vulkan_glyph_atlas_descriptors.cpp`, restoring the intended ownership boundary |
 
 ## Definition Of Done For This 20-Step Goal
 

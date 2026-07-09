@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_device_internal.hpp"
+#include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 
 namespace cgpui {
@@ -85,6 +86,8 @@ class VulkanRendererState final {
   VkSemaphore render_finished_ = VK_NULL_HANDLE;
   VkFence in_flight_ = VK_NULL_HANDLE;
   GlyphCache glyph_cache_;
+  GlyphAtlasProductionResourceState glyph_atlas_plan_state_;
+  VulkanGlyphAtlasResources glyph_atlas_resources_;
   std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;
 };

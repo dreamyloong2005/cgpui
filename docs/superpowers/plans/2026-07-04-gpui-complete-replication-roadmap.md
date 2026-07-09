@@ -1393,7 +1393,19 @@ draw calls for the Windows/Linux renderer.
   `GlyphAtlasProductionResourceState` plus
   `vulkan_plan_glyph_atlas_production_resources(...)` for alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness. descriptor set binding remains Step 460 so the public leaf stays handle-free and the Vulkan
   state integration can land in focused private renderer files.
-- [ ] Steps 460-466: Create real Vulkan glyph atlas descriptor sets, bind
+- [x] Phase E Step 460 creates real Vulkan glyph atlas descriptor resources in
+  focused private modules. `VulkanRendererState` owns
+  `VulkanGlyphAtlasResources` as handle-bearing atlas
+  state through `vulkan_glyph_atlas_resources_internal.hpp`; descriptor layout,
+  pool, set allocation, and `vkUpdateDescriptorSets` live in
+  `vulkan_glyph_atlas_descriptors.cpp`; R8_UNORM image, device-local memory,
+  image-view, and shared sampler creation live in
+  `vulkan_glyph_atlas_images.cpp`; and resource reconciliation/destruction live
+  in `vulkan_glyph_atlas_resources.cpp`. The handle-free Step 459 plan is
+  consumed after the in-flight fence completes, and a real text-frame smoke
+  exercises descriptor-bound atlas page creation. Dirty staging buffers,
+  layout transitions, and buffer-to-image copies remain Step 461.
+- [ ] Steps 461-466: Bind
   production atlas resources into renderer state, and record dirty upload
   command paths against the live command buffers.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured

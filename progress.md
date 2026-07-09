@@ -1,5 +1,54 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Goal Resume
+
+- Restored the active persistent goal `做完Phase E` and read the existing
+  `task_plan.md`, `findings.md`, and `progress.md` plus the planning-with-files
+  skill instructions. The session catchup helper produced no unsynced output.
+- Confirmed Phase E is the 80-step Vulkan renderer production path, Steps
+  459-538. Step 459 is committed; Step 460 is the active implementation slice.
+- Confirmed `master` is at `12753ba5 docs: record verification cadence`, the
+  tracked worktree is clean, and only the existing untracked `.vscode/` is
+  present.
+- Initial `rg.exe` searches failed because the WinGet-linked executable could
+  not be started. Switched to PowerShell `Select-String`, `Get-ChildItem`, and
+  `git ls-files` and recorded the error in `task_plan.md`.
+
+## 2026-07-10 Phase E Step 460 Vulkan Glyph Atlas Descriptor Binding
+
+- Added RED coverage with
+  `tests/renderer/vulkan_glyph_atlas_descriptor_test.cpp`, the matching xmake
+  target, a text draw in `vulkan_frame_lifetime_test`, and renderer structure
+  expectations. The first run failed as expected on the missing private header.
+- Added focused private modules for atlas resource ownership, descriptor
+  layout/pool/set creation and writes, R8_UNORM image/device-memory/image-view/
+  sampler creation, and page reconciliation/destruction.
+- Integrated the Step 459 production plan into `VulkanRendererState` and update
+  resources after the in-flight fence completes. Dirty alpha uploads remain
+  Step 461.
+- The first GREEN run compiled and passed the real text-frame smoke but the new
+  audit exited 22 because descriptor allocation/update lived in the image
+  module. Moved those calls into the descriptor module.
+- Focused Windows GREEN passed 4/4:
+  `vulkan_glyph_atlas_descriptor_test/default`,
+  `renderer_source_structure_test/default`,
+  `vulkan_frame_lifetime_test/default`, and
+  `phase_e_glyph_atlas_production_test/default`.
+- Follow-up review populated the lifetime smoke `TextDraw::glyphs` so it really
+  creates an atlas page, and made glyph-atlas planner state transactional across
+  Vulkan resource creation failures.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 4/4:
+  `vulkan_glyph_atlas_descriptor_test/default`,
+  `renderer_source_structure_test/default`,
+  `phase_e_glyph_atlas_production_test/default`, and
+  `gpui_parity_ledger_test/default`. The Win32-only lifetime smoke is covered by
+  the focused Windows gate.
+- Windows full debug verification passed: `xmake test -y -P .` 141/141.
+- WSL full debug was intentionally skipped for this individual slice under the
+  Phase E verification cadence; focused WSL passed and full WSL remains required
+  at the glyph-atlas renderer milestone or Phase E closeout.
+
 ## 2026-07-04 Complete GPUI Replication Roadmap
 
 - Restored planning context from `task_plan.md`, `progress.md`, and

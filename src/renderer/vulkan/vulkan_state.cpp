@@ -10,6 +10,7 @@ VulkanRendererState::~VulkanRendererState() {
     vkDeviceWaitIdle(device_);
     destroy_swapchain();
     destroy_sync_objects();
+    vulkan_destroy_glyph_atlas_resources(device_, glyph_atlas_resources_);
     if (command_pool_ != VK_NULL_HANDLE) {
       vkDestroyCommandPool(device_, command_pool_, nullptr);
     }
@@ -40,6 +41,12 @@ Result<std::shared_ptr<VulkanRendererState>> VulkanRendererState::create(
     return std::unexpected(result.error());
   }
   if (auto result = renderer->create_command_pool(); !result) {
+    return std::unexpected(result.error());
+  }
+  if (auto result = vulkan_create_glyph_atlas_descriptor_resources(
+          renderer->device_,
+          renderer->glyph_atlas_resources_);
+      !result) {
     return std::unexpected(result.error());
   }
   if (auto result = renderer->create_swapchain(); !result) {

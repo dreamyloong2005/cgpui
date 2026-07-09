@@ -24,6 +24,16 @@ Result<void> VulkanRendererState::present_frame(
       text_draws,
       text_selections,
       text_carets);
+  const std::vector<GlyphAtlasUploadBatch> glyph_upload_batches =
+      vulkan_plan_glyph_atlas_uploads(
+          glyph_cache_.upload_records(),
+          glyph_cache_.atlas_pages());
+  GlyphAtlasProductionResourceState next_glyph_atlas_plan_state =
+      glyph_atlas_plan_state_;
+  const GlyphAtlasProductionPlan glyph_atlas_plan =
+      vulkan_plan_glyph_atlas_production_resources(
+          next_glyph_atlas_plan_state,
+          glyph_upload_batches);
 
   if (auto result = require_vk_success(
           vkWaitForFences(device_, 1, &in_flight_, VK_TRUE, UINT64_MAX),
@@ -31,6 +41,15 @@ Result<void> VulkanRendererState::present_frame(
       !result) {
     return result;
   }
+  if (auto result = vulkan_update_glyph_atlas_resources(
+          physical_device_,
+          device_,
+          glyph_atlas_plan,
+          glyph_atlas_resources_);
+      !result) {
+    return result;
+  }
+  glyph_atlas_plan_state_ = std::move(next_glyph_atlas_plan_state);
 
   for (std::uint32_t image_index = 0; image_index < command_buffers_.size();
        ++image_index) {

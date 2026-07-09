@@ -150,6 +150,7 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_state_internal.hpp",
       "src/renderer/vulkan/vulkan_swapchain_internal.hpp",
       "src/renderer/vulkan/vulkan_device_internal.hpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
       "src/renderer/vulkan/vulkan_device.cpp",
       "src/renderer/vulkan/vulkan_errors.cpp",
@@ -174,6 +175,9 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_report_text_quads.cpp",
       "src/renderer/vulkan/vulkan_report_texture_resources.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_production.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_descriptors.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_images.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp",
       "src/renderer/vulkan/vulkan_report_uploads.cpp",
       "src/renderer/vulkan/vulkan_presentation.cpp",
       "src/renderer/vulkan/vulkan_presentation_recovery.cpp",
@@ -883,6 +887,14 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_report_texture_resources.cpp");
   const std::string glyph_atlas_production_source =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_production.cpp");
+  const std::string glyph_atlas_resources_internal = read_source(
+      "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp");
+  const std::string glyph_atlas_descriptors = read_source(
+      "src/renderer/vulkan/vulkan_glyph_atlas_descriptors.cpp");
+  const std::string glyph_atlas_images =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_images.cpp");
+  const std::string glyph_atlas_resources =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp");
   if (line_count(report_texture_resources) > 150 ||
       !contains(
           report_texture_resources,
@@ -908,6 +920,18 @@ int main(int argc, char** argv) {
       contains(glyph_atlas_production_source,
                "vulkan_build_textured_glyph_quads(")) {
     return 58;
+  }
+  if (line_count(glyph_atlas_resources_internal) > 100 ||
+      line_count(glyph_atlas_descriptors) > 130 ||
+      line_count(glyph_atlas_images) > 220 ||
+      line_count(glyph_atlas_resources) > 150 ||
+      !contains(glyph_atlas_resources_internal,
+                "struct VulkanGlyphAtlasResources") ||
+      !contains(glyph_atlas_descriptors, "vkCreateDescriptorSetLayout") ||
+      !contains(glyph_atlas_images, "vkCreateImage") ||
+      !contains(glyph_atlas_resources,
+                "vulkan_update_glyph_atlas_resources(")) {
+    return 59;
   }
 
   const std::string report_image_uploads =
