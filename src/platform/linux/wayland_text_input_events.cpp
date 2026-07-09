@@ -75,7 +75,6 @@ void WaylandTextInput::handle_done(
     zwp_text_input_v3* text_input,
     std::uint32_t serial) {
   (void)text_input;
-  (void)serial;
   auto* self = static_cast<WaylandTextInput*>(data);
   if (self->active_window_ == nullptr) {
     self->pending_preedit_.reset();
@@ -88,20 +87,23 @@ void WaylandTextInput::handle_done(
     wayland_window_text_input_preedit(
         *self->active_window_,
         std::move(*self->pending_preedit_),
-        modifiers);
+        modifiers,
+        serial);
   }
   if (self->pending_delete_surrounding_.has_value()) {
     wayland_window_text_input_delete_surrounding(
         *self->active_window_,
         self->pending_delete_surrounding_->before_length,
         self->pending_delete_surrounding_->after_length,
-        modifiers);
+        modifiers,
+        serial);
   }
   if (self->pending_commit_.has_value()) {
     wayland_window_text_input_commit(
         *self->active_window_,
         std::move(*self->pending_commit_),
-        modifiers);
+        modifiers,
+        serial);
   }
   self->pending_preedit_.reset();
   self->pending_commit_.reset();

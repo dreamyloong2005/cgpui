@@ -7556,3 +7556,14 @@
   while the platform-placement test still used a collapsed `set_selection(3, 3)`.
   Changing that test fixture to `set_selection(1, 3)` kept the cursor at byte 3
   and made the anchor assertion meaningful.
+
+## 2026-07-09 Phase D Step 428 Wayland IME Serial Propagation
+
+- Wayland text-input v3 `done(serial)` is now preserved on the emitted IME
+  events instead of being discarded in the protocol listener. The serial is
+  forwarded only at the Wayland text-input/window bridge boundary and stored as
+  a scalar on `ImeComposition` / `ImeDeleteSurroundingText`, so the slice does
+  not add hidden allocation, broad policy state, or per-frame work.
+- This closes serial transport, not the full IME policy story. Richer Wayland
+  serial policy, preedit styling, candidate placement, and Win32 TSF depth
+  remain explicit Phase D gaps.

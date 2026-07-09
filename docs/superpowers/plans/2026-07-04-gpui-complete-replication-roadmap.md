@@ -1125,6 +1125,12 @@ behavior that can support GPUI examples and editor-like widgets.
   `set_surrounding_text` / `set_content_type`, and Win32 IMM keeps the same
   placement state surface while preserving candidate/composition rectangle
   placement.
+  Step 428 propagates Wayland text-input v3 `done(serial)` through the focused
+  event path: `ImeComposition` and `ImeDeleteSurroundingText` carry the serial,
+  `wayland_text_input_events.cpp` forwards it through the Wayland window bridge,
+  and `tests/platform/wayland_keyboard_test.cpp` verifies preedit,
+  delete-surrounding, and commit serials. Richer Wayland policy, preedit
+  styling, candidate placement, and Win32 TSF depth remain open in this band.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility

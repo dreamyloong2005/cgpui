@@ -59,12 +59,19 @@ class WaylandWindow final : public PlatformWindow {
   void text_input(std::string text, KeyboardModifiers modifiers);
   void text_input_entered();
   void text_input_left(KeyboardModifiers modifiers);
-  void text_input_preedit(std::string text, KeyboardModifiers modifiers);
-  void text_input_commit(std::string text, KeyboardModifiers modifiers);
+  void text_input_preedit(
+      std::string text,
+      KeyboardModifiers modifiers,
+      std::uint32_t serial);
+  void text_input_commit(
+      std::string text,
+      KeyboardModifiers modifiers,
+      std::uint32_t serial);
   void text_input_delete_surrounding(
       std::uint32_t before_length,
       std::uint32_t after_length,
-      KeyboardModifiers modifiers);
+      KeyboardModifiers modifiers,
+      std::uint32_t serial);
   void text_input_surrounding_text(
       std::string text,
       std::int32_t cursor,

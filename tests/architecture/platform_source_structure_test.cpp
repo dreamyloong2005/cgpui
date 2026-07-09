@@ -736,6 +736,7 @@ int main(int argc, char** argv) {
       !contains(text_input_core, "WaylandTextInput::bind_to_seat(") ||
       !contains(text_input_events, "wayland_window_text_input_preedit") ||
       !contains(text_input_events, "wayland_window_text_input_commit") ||
+      contains(text_input_events, "(void)serial") ||
       !contains(text_input_requests, "zwp_text_input_v3_commit") ||
       !contains(text_input_requests, "placement->surrounding_text") ||
       !contains(text_input_requests, "placement->selection_anchor") ||

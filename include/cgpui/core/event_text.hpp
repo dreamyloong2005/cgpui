@@ -22,12 +22,14 @@ struct ImeComposition {
   ImeCompositionPhase phase = ImeCompositionPhase::update;
   std::string text;
   KeyboardModifiers modifiers;
+  std::uint32_t serial = 0;
 };
 
 struct ImeDeleteSurroundingText {
   std::uint32_t before_length = 0;
   std::uint32_t after_length = 0;
   KeyboardModifiers modifiers;
+  std::uint32_t serial = 0;
 };
 
 } // namespace cgpui

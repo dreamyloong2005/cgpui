@@ -290,6 +290,12 @@ Windows/Linux core API is stable enough for parity work.
   text-input v3 submits those fields through `set_surrounding_text` and
   `set_content_type`, and Win32 IMM placement preserves the same state surface
   while continuing to own candidate/composition rectangle placement.
+- Step 428 propagates Wayland text-input v3 `done(serial)` into emitted IME
+  events. `ImeComposition` and `ImeDeleteSurroundingText` now carry a small
+  serial field, `wayland_text_input_events.cpp` forwards the protocol serial
+  through the focused Wayland window bridge, and `wayland_keyboard_test`
+  verifies preedit, delete-surrounding, and commit serials without adding
+  hidden allocation or policy state.
 
 ## Definition Of Done For This 20-Step Goal
 

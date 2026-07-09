@@ -17073,3 +17073,41 @@
   `phase_d_edit_history_audit_test/default`,
   `phase_d_selection_caret_audit_test/default`, and
   `gpui_parity_ledger_test/default`.
+
+## 2026-07-09 Phase D Step 428 Wayland IME Serial Propagation
+
+- Started from tracked `master` after
+  `dcd5f4a8 feat: add ime surrounding text placement`; `git status
+  --short --branch` showed the Step 428 working files plus the existing
+  untracked `.vscode/`.
+- Added serial fields to `ImeComposition` and `ImeDeleteSurroundingText`, then
+  threaded Wayland text-input v3 `done(serial)` through
+  `wayland_text_input_events.cpp`, `wayland_window_api.hpp`,
+  `wayland_window_bridge.cpp`, `wayland_window_internal.hpp`, and
+  `wayland_window_text_events.cpp`.
+- Updated `tests/platform/wayland_keyboard_test.cpp` to assert distinct
+  preedit, delete-surrounding, and commit serials, and updated
+  `tests/architecture/platform_source_structure_test.cpp` so the focused
+  Wayland text-input events file may not discard `serial`.
+- Focused Windows verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  win32_text_input_test/default platform_source_structure_test/default
+  wayland_window_source_test/default` 4/4.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 4/4:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, and
+  `wayland_window_source_test/default`.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  win32_text_input_test/default platform_source_structure_test/default
+  wayland_window_source_test/default phase_d_edit_history_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default`
+  7/7.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 7/7:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, `wayland_window_source_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `gpui_parity_ledger_test/default`.

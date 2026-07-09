@@ -90,16 +90,19 @@ void wayland_window_text_input_left(
 void wayland_window_text_input_preedit(
     WaylandWindow& window,
     std::string text,
-    KeyboardModifiers modifiers);
+    KeyboardModifiers modifiers,
+    std::uint32_t serial);
 void wayland_window_text_input_commit(
     WaylandWindow& window,
     std::string text,
-    KeyboardModifiers modifiers);
+    KeyboardModifiers modifiers,
+    std::uint32_t serial);
 void wayland_window_text_input_delete_surrounding(
     WaylandWindow& window,
     std::uint32_t before_length,
     std::uint32_t after_length,
-    KeyboardModifiers modifiers);
+    KeyboardModifiers modifiers,
+    std::uint32_t serial);
 void wayland_window_text_input_surrounding_text(
     WaylandWindow& window,
     std::string text,

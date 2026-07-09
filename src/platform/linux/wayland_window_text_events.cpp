@@ -28,24 +28,34 @@ void WaylandWindow::text_input_left(KeyboardModifiers modifiers) {
 
 void WaylandWindow::text_input_preedit(
     std::string text,
-    KeyboardModifiers modifiers) {
-  callback_(text_input_state_.preedit(std::move(text), modifiers));
+    KeyboardModifiers modifiers,
+    std::uint32_t serial) {
+  ImeComposition event =
+      text_input_state_.preedit(std::move(text), modifiers);
+  event.serial = serial;
+  callback_(std::move(event));
 }
 
 void WaylandWindow::text_input_commit(
     std::string text,
-    KeyboardModifiers modifiers) {
-  callback_(text_input_state_.commit(std::move(text), modifiers));
+    KeyboardModifiers modifiers,
+    std::uint32_t serial) {
+  ImeComposition event =
+      text_input_state_.commit(std::move(text), modifiers);
+  event.serial = serial;
+  callback_(std::move(event));
 }
 
 void WaylandWindow::text_input_delete_surrounding(
     std::uint32_t before_length,
     std::uint32_t after_length,
-    KeyboardModifiers modifiers) {
+    KeyboardModifiers modifiers,
+    std::uint32_t serial) {
   callback_(ImeDeleteSurroundingText{
       .before_length = before_length,
       .after_length = after_length,
-      .modifiers = modifiers});
+      .modifiers = modifiers,
+      .serial = serial});
 }
 
 void WaylandWindow::text_input_surrounding_text(

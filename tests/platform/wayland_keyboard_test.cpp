@@ -44,6 +44,9 @@ int main() {
   bool ime_preedit_received = false;
   bool ime_delete_surrounding_received = false;
   bool ime_commit_received = false;
+  std::uint32_t ime_preedit_serial = 0;
+  std::uint32_t ime_delete_surrounding_serial = 0;
+  std::uint32_t ime_commit_serial = 0;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Keyboard Test",
@@ -75,10 +78,12 @@ int main() {
           if (composition->phase == cgpui::ImeCompositionPhase::update &&
               composition->text == "draft") {
             ime_preedit_received = true;
+            ime_preedit_serial = composition->serial;
           }
           if (composition->phase == cgpui::ImeCompositionPhase::commit &&
               composition->text == "\xE4\xB8\xAD") {
             ime_commit_received = true;
+            ime_commit_serial = composition->serial;
           }
         }
         if (const auto* delete_surrounding =
@@ -91,6 +96,9 @@ int main() {
               !delete_surrounding->modifiers.control &&
               !delete_surrounding->modifiers.alt &&
               !delete_surrounding->modifiers.super;
+          if (ime_delete_surrounding_received) {
+            ime_delete_surrounding_serial = delete_surrounding->serial;
+          }
         }
         if (std::holds_alternative<cgpui::WindowCloseRequested>(event)) {
           (*app)->quit();
@@ -245,11 +253,20 @@ int main() {
   if (!ime_preedit_received) {
     return 23;
   }
+  if (ime_preedit_serial != 1) {
+    return 27;
+  }
   if (!ime_delete_surrounding_received) {
     return 26;
   }
+  if (ime_delete_surrounding_serial != 2) {
+    return 28;
+  }
   if (!ime_commit_received) {
     return 24;
+  }
+  if (ime_commit_serial != 3) {
+    return 29;
   }
 
   return 0;
