@@ -397,7 +397,17 @@
       "tests/platform/win32_text_input_test.cpp",
       "tests/ui/window_runtime_text_test.cpp"
     ],
-    "ime_platform_closeout_remaining_gap": "production candidate UI policy, deeper Win32 TSF integration, and richer platform-specific composition styling remain later Phase D work"
+    "ime_platform_closeout_remaining_gap": "production candidate UI policy, deeper Win32 TSF integration, and richer platform-specific composition styling remain later Phase D work",
+    "step_435": "Phase D Step 435 rich text run core",
+    "rich_text_run_core_surface": "RichTextSpan, RichTextRun, RichTextRunBuildScratch, RichTextAttributes, RichTextDecoration, RichTextLinkId, and build_rich_text_runs(...) normalize caller-provided rich text spans into clipped, merged, coalesced byte runs with reusable caller-owned output and scratch",
+    "rich_text_run_core_sources": [
+      "include/cgpui/ui/text_rich_text.hpp",
+      "src/ui/text_rich_text.cpp",
+      "include/cgpui/ui/text.hpp",
+      "tests/ui/rich_text_run_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp"
+    ],
+    "rich_text_run_core_remaining_gap": "inline images, rich-text paint integration, link activation, syntax-theme wiring, and run-aware hit testing remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

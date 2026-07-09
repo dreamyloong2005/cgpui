@@ -138,6 +138,18 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   boundaries focused.
 - Remaining gap: production candidate UI policy, deeper Win32 TSF integration,
   and richer platform-specific composition styling remain later Phase D work.
+- Step 435 starts the rich-text band with a focused run-core leaf:
+  `include/cgpui/ui/text_rich_text.hpp` and `src/ui/text_rich_text.cpp` define
+  `RichTextSpan`, `RichTextRun`, `RichTextRunBuildScratch`,
+  `RichTextAttributes`, decoration metadata, numeric `RichTextLinkId`, and
+  `build_rich_text_runs(...)` overloads that normalize caller-provided spans
+  into clipped, merged, coalesced byte runs with caller-owned output/scratch
+  reuse.
+  `tests/ui/rich_text_run_test.cpp` covers plain-text fallback, overlapping
+  foreground/background/decorations/link attributes, out-of-range span
+  clipping, empty span dropping, and adjacent equal-run coalescing.
+- Remaining gap: inline images, rich-text paint integration, link activation,
+  syntax-theme wiring, and run-aware hit testing remain later Phase D work.
 
 ## Categories
 

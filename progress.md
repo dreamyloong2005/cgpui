@@ -17123,6 +17123,30 @@
   `wayland_keyboard_test/default` in place of the Win32-only IME behavior
   target.
 
+## 2026-07-09 Phase D Step 435 Rich Text Run Core
+
+- Started from clean tracked `master` after
+  `42db2aec test: close ime platform band`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED `tests/ui/rich_text_run_test.cpp` and xmake
+  `rich_text_run_test`; the first run failed as expected because
+  `cgpui/ui/text_rich_text.hpp` did not exist.
+- Added focused `include/cgpui/ui/text_rich_text.hpp` and
+  `src/ui/text_rich_text.cpp`, plus the `text.hpp` aggregate include and
+  `ui_source_structure_test` guards. The API covers rich-text spans, runs,
+  foreground/background attributes, underline/strikethrough decoration flags,
+  numeric link ids, merge helpers, and caller-owned output/scratch run
+  construction.
+- Focused Windows verification passed:
+  `xmake test -y -P . rich_text_run_test/default` 1/1.
+- Final focused Windows gate passed 6/6:
+  `rich_text_run_test/default`, `ui_source_structure_test/default`,
+  `core_header_cleanliness/default`, `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 6/6 focused tests.
+
 ## 2026-07-09 Pre-Phase-D Entry Gate Follow-Up
 
 - Latest user direction is to finish all required pre-Phase-D alignment before

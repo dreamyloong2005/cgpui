@@ -1196,6 +1196,16 @@ behavior that can support GPUI examples and editor-like widgets.
   text runs.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
+  Step 435 starts this band with the focused rich-text run core:
+  `include/cgpui/ui/text_rich_text.hpp` and `src/ui/text_rich_text.cpp` define
+  `RichTextSpan`, `RichTextRun`, `RichTextAttributes`, decoration metadata,
+  numeric link ids, and `build_rich_text_runs(...)` overloads that normalize,
+  clip, merge, and coalesce caller-provided spans into explicit byte ranges.
+  The caller-owned output/scratch overload keeps allocation visible and
+  reusable, while `tests/ui/rich_text_run_test.cpp` freezes plain-text fallback,
+  overlapping attribute merge, out-of-range span clipping, empty span dropping,
+  and adjacent equal-run coalescing. Inline images, rich-text painting, link
+  activation, and run-aware hit testing remain later steps in this band.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

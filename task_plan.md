@@ -339,6 +339,12 @@ Windows/Linux core API is stable enough for parity work.
   Step 427-433 evidence and handing the roadmap to Step 435 rich text runs
   while keeping production candidate UI policy, deeper Win32 TSF integration,
   and richer platform-specific composition styling as explicit later gaps.
+- Step 435 starts rich text runs with a focused run-core module:
+  `text_rich_text.hpp/.cpp` define span attributes, decoration/link metadata,
+  and `build_rich_text_runs(...)` normalization over caller-provided spans with
+  caller-owned output/scratch reuse. Inline images, rich-text painting, link
+  activation, syntax-theme wiring, and run-aware hit testing remain later Phase
+  D work.
 
 ## Definition Of Done For This 20-Step Goal
 

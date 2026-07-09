@@ -78,6 +78,7 @@ int main() {
       "include/cgpui/ui/text_wrapping.hpp",
       "include/cgpui/ui/text_hit_testing.hpp",
       "include/cgpui/ui/text_layout.hpp",
+      "include/cgpui/ui/text_rich_text.hpp",
       "include/cgpui/ui/text_model.hpp",
       "include/cgpui/ui/text.hpp",
       "include/cgpui/ui/element_ids.hpp",
@@ -145,6 +146,7 @@ int main() {
       "src/ui/text_paragraph_layout.cpp",
       "src/ui/text_wrapping.cpp",
       "src/ui/text_hit_testing.cpp",
+      "src/ui/text_rich_text.cpp",
   };
   for (const char* source : text_implementation_files) {
     if (read_source(source).empty()) {
@@ -164,6 +166,10 @@ int main() {
   const std::string text_shape_public_header =
       read_source("include/cgpui/ui/text_shape.hpp");
   const std::string text_shape_source = read_source("src/ui/text_shape.cpp");
+  const std::string text_rich_text_header =
+      read_source("include/cgpui/ui/text_rich_text.hpp");
+  const std::string text_rich_text_source =
+      read_source("src/ui/text_rich_text.cpp");
   const std::string xmake_source = read_source("xmake.lua");
   if (!contains(text_shaping_backend_source,
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
@@ -198,6 +204,16 @@ int main() {
                 "emoji_presentation_selector_byte_offset") ||
       !contains(text_shape_public_header,
                 "emoji_presentation_selector_byte_length") ||
+      !contains(text_rich_text_header, "struct RichTextSpan") ||
+      !contains(text_rich_text_header, "struct RichTextRun") ||
+      !contains(text_rich_text_header, "struct RichTextRunBuildScratch") ||
+      !contains(text_rich_text_header, "std::optional<Color> foreground") ||
+      !contains(text_rich_text_header, "underline = 1") ||
+      !contains(text_rich_text_header, "std::optional<RichTextLinkId>") ||
+      !contains(text_rich_text_source, "merge_rich_text_attributes(") ||
+      !contains(text_rich_text_source, "std::span<const RichTextSpan>") ||
+      !contains(text_rich_text_source, "std::vector<RichTextRun>& runs") ||
+      !contains(text_rich_text_source, "RichTextRunBuildScratch& scratch") ||
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||

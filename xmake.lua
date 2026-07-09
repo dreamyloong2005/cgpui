@@ -1109,6 +1109,13 @@ target("text_model_test")
     add_includedirs(public_includedirs)
     add_tests("default")
 
+target("rich_text_run_test")
+    set_kind("binary")
+    add_files("tests/ui/rich_text_run_test.cpp")
+    add_deps("cgpui_core", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("scroll_test")
     set_kind("binary")
     add_files("tests/ui/scroll_test.cpp")

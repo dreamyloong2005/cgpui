@@ -7673,3 +7673,17 @@
 - Remaining gaps stay explicit: production candidate UI policy, deeper Win32
   TSF integration, and richer platform-specific composition styling are later
   work rather than hidden by the audit.
+
+## 2026-07-09 Phase D Step 435 Rich Text Run Core
+
+- Step 435 should start the rich-text band with a focused run-core leaf rather
+  than adding rich-text state to `TextModel` or renderer files.
+- `RichTextSpan`, `RichTextRun`, `RichTextAttributes`, `RichTextDecoration`,
+  `RichTextRunBuildScratch`, `RichTextLinkId`, and
+  `build_rich_text_runs(...)` form the first public surface. The implementation
+  clips spans to the text length, drops empty spans, merges overlapping
+  attributes in caller order, coalesces adjacent equal runs, and exposes a
+  caller-owned output/scratch overload so callers can reuse storage.
+- This closes rich-text run normalization only. Inline images, painting,
+  syntax-theme integration, link activation, and run-aware hit testing remain
+  explicit later Phase D work.
