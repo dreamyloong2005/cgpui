@@ -504,18 +504,24 @@ Windows/Linux core API is stable enough for parity work.
   keeps frame-outlives-renderer coverage and adds `ab -> ab -> abc` frames for
   initial upload, no-dirty reuse, and incremental upload. Step 463 takes
   multi-page atlas allocation, descriptor capacity, and cross-page upload.
+- Phase E Step 463 proves multi-page allocation and cross-page uploads with 9
+  synthetic 128x128 glyphs spanning three atlas pages. The private
+  `vulkan_glyph_atlas_descriptor_capacity` constant owns pool capacity and the
+  resource-update preflight, which rejects oversized plans before page
+  destruction. Each page retains an independent descriptor set, upload batch,
+  staging buffer, and copy list; the Win32 Vulkan smoke submits the same
+  workload. Step 464 continues remaining atlas integration.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-462 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-463 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
-  multi-frame reuse.
-- In progress: Step 463 multi-page atlas allocation, descriptor capacity, and
-  cross-page uploads.
+  multi-frame reuse, including three atlas pages and cross-page uploads.
+- In progress: Step 464 remaining renderer-state atlas integration.
 - Pending bands: Steps 464-466 remaining atlas integration; Steps 467-474 text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
@@ -539,6 +545,10 @@ Windows/Linux core API is stable enough for parity work.
 | Renderer structure audit exited 32 after upload orchestration expanded `vulkan_presentation.cpp` past 150 lines | First structure GREEN attempt | Split frame preparation/commit into focused `vulkan_glyph_atlas_frame.cpp`; presentation returned below its existing limit |
 | Step 460 descriptor audit exited 23 after the ownership split | Regression gate after structure split | Updated the audit to inspect the new frame module owner instead of presentation |
 | `vulkan_glyph_atlas_frame_lifecycle_test` failed on the pre-Step-462 recording order | Step 462 RED | Expected RED; moved acquisition before recording and removed the all-command-buffer recording loop |
+| Planning session catch-up used a nonexistent `C:\\Users\\dreamyloong\\.codex\\workspace-python\\python.exe` path | Step 463 resume | Resolve Python with `Get-Command` and run the skill script through the installed interpreter instead of repeating the missing path |
+| `vulkan_glyph_atlas_multi_page_test` initially failed to compile because the private descriptor capacity contract did not exist | Step 463 RED | Expected RED; add `vulkan_glyph_atlas_descriptor_capacity` and a resource-update preflight before destructive reconciliation |
+| First Step 463 GREEN run exited 40 after successful compile/link | Step 463 documentation gate | Keep the required `cross-page uploads` evidence contiguous in the roadmap instead of splitting the phrase across a Markdown line break |
+| PowerShell rejected a direct `foreach (...) { ... } | Format-Table` line-count diagnostic with an empty-pipe parser error | Step 463 structure check | Assign the loop output to a variable before piping it; focused structure tests already passed and no source change was involved |
 
 ## Definition Of Done For This 20-Step Goal
 

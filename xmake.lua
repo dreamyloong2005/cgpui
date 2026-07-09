@@ -752,6 +752,20 @@ if is_plat("windows", "linux") then
         end
         add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+    target("vulkan_glyph_atlas_multi_page_test")
+        set_kind("binary")
+        set_rundir(os.projectdir())
+        add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+        add_files("tests/renderer/vulkan_glyph_atlas_multi_page_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_includedirs(public_includedirs, "src/renderer/vulkan")
+        if is_plat("windows") then
+            add_packages("vulkansdk")
+        elseif is_plat("linux") then
+            add_syslinks("vulkan")
+        end
+        add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
     target("vulkan_glyph_atlas_frame_lifecycle_test")
         set_kind("binary")
         set_rundir(os.projectdir())

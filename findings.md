@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 463 Multi-Page Glyph Atlas
+
+- Nine deterministic 128x128 glyphs fill a 256x256 page four-at-a-time, giving
+  stable coverage of three atlas pages with page indices 0, 1, and 2.
+- The focused staging design already handles cross-page uploads: each production
+  upload command resolves its batch by page index and appends one independent
+  staging allocation with its own copy list.
+- Descriptor capacity must be a private shared contract, not a local magic
+  number. `vulkan_glyph_atlas_descriptor_capacity` now sizes the pool and gates
+  resource reconciliation before any existing page is destroyed.
+- The Win32 frame smoke submits the same three-page synthetic workload so the
+  test covers actual image, memory, view, descriptor, staging, command-buffer,
+  and queue submission paths. Step 464 continues remaining atlas integration.
+
 ## 2026-07-10 Phase E Step 462 Multi-Frame Atlas Lifecycle
 
 - Phase E Step 462 records only the acquired command buffer. Re-recording every

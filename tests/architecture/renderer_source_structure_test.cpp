@@ -901,6 +901,8 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_images.cpp");
   const std::string glyph_atlas_resources =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp");
+  const std::string glyph_atlas_multi_page_test =
+      read_source("tests/renderer/vulkan_glyph_atlas_multi_page_test.cpp");
   const std::string glyph_atlas_uploads_internal = read_source(
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp");
   const std::string command_recording_internal = read_source(
@@ -943,12 +945,23 @@ int main(int argc, char** argv) {
       line_count(glyph_atlas_descriptors) > 130 ||
       line_count(glyph_atlas_images) > 220 ||
       line_count(glyph_atlas_resources) > 150 ||
+      line_count(glyph_atlas_multi_page_test) > 260 ||
       !contains(glyph_atlas_resources_internal,
                 "struct VulkanGlyphAtlasResources") ||
+      !contains(glyph_atlas_resources_internal,
+                "vulkan_glyph_atlas_descriptor_capacity") ||
       !contains(glyph_atlas_descriptors, "vkCreateDescriptorSetLayout") ||
+      !contains(glyph_atlas_descriptors,
+                "vulkan_glyph_atlas_descriptor_capacity") ||
       !contains(glyph_atlas_images, "vkCreateImage") ||
       !contains(glyph_atlas_resources,
-                "vulkan_update_glyph_atlas_resources(")) {
+                "vulkan_update_glyph_atlas_resources(") ||
+      !contains(glyph_atlas_resources,
+                "vulkan_glyph_atlas_plan_fits_descriptor_capacity(plan)") ||
+      !contains(glyph_atlas_multi_page_test,
+                "test_three_page_allocation_and_upload_planning(") ||
+      !contains(glyph_atlas_multi_page_test,
+                "test_descriptor_capacity_rejection_is_preflight(")) {
     return 59;
   }
   if (line_count(glyph_atlas_uploads_internal) > 80 ||

@@ -1,11 +1,6 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 
 namespace cgpui {
-namespace {
-
-constexpr std::uint32_t max_glyph_atlas_pages = 256;
-
-} // namespace
 
 VkDescriptorSetLayoutBinding vulkan_glyph_atlas_descriptor_layout_binding() {
   return VkDescriptorSetLayoutBinding{
@@ -69,11 +64,14 @@ Result<void> vulkan_create_glyph_atlas_descriptor_resources(
   }
 
   const VkDescriptorPoolSize pool_size =
-      vulkan_glyph_atlas_descriptor_pool_size(max_glyph_atlas_pages);
+      vulkan_glyph_atlas_descriptor_pool_size(
+          static_cast<std::uint32_t>(
+              vulkan_glyph_atlas_descriptor_capacity));
   const VkDescriptorPoolCreateInfo pool_info{
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
       .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
-      .maxSets = max_glyph_atlas_pages,
+      .maxSets = static_cast<std::uint32_t>(
+          vulkan_glyph_atlas_descriptor_capacity),
       .poolSizeCount = 1,
       .pPoolSizes = &pool_size,
   };

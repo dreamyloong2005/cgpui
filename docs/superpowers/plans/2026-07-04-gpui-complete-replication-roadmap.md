@@ -1423,9 +1423,15 @@ draw calls for the Windows/Linux renderer.
   The Win32 Vulkan lifetime smoke preserves frame-outlives-renderer coverage and
   adds an `ab -> ab -> abc` sequence for initial upload, no-dirty reuse, and
   shader-readable incremental upload.
-- Step 463 takes multi-page glyph atlas allocation, descriptor capacity, and
-  cross-page upload coverage.
-- [ ] Steps 463-466: Bind
+- [x] Phase E Step 463 proves multi-page glyph atlas allocation and
+  cross-page uploads with 9 synthetic 128x128 glyphs spanning three atlas pages.
+  The private `vulkan_glyph_atlas_descriptor_capacity` constant is shared by pool
+  creation and a resource-update preflight, so an over-capacity production plan
+  is rejected before existing pages are destroyed. Each page keeps its own
+  descriptor set, upload batch, staging buffer, and buffer-to-image copies; the
+  Win32 Vulkan smoke submits the same three-page workload. Step 464 continues
+  the remaining atlas integration band.
+- [ ] Steps 464-466: Bind
   production atlas resources into renderer state, and record dirty upload
   command paths against the live command buffers.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured

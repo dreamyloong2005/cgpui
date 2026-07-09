@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string_view>
+#include <utility>
 
 namespace {
 
@@ -73,15 +74,53 @@ cgpui::TextDraw text_draw(std::string_view content) {
   };
 }
 
-bool present_text_frame(cgpui::Renderer& renderer, std::string_view content) {
+cgpui::TextDraw multi_page_text_draw() {
+  cgpui::TextDraw draw{
+      .bounds = cgpui::Rect{.size = cgpui::Size{64.0F, 64.0F}},
+      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+      .font = cgpui::FontDescriptor{.family = "Inter"},
+      .content = "multi-page",
+      .byte_length = 10,
+      .font_size = 128.0F,
+      .device_font_size = 128.0F,
+  };
+  draw.glyphs.reserve(9);
+  for (std::size_t index = 0; index < 9; ++index) {
+    draw.glyphs.push_back(cgpui::TextGlyphPaint{
+        .key =
+            cgpui::GlyphAtlasKey{
+                .font_family = "Inter",
+                .font_size = 128.0F,
+                .scale = 1.0F,
+                .device_font_size = 128.0F,
+                .glyph_index = index,
+                .glyph_id = static_cast<std::uint32_t>(index + 1),
+                .byte_offset = index,
+                .byte_length = 1,
+            },
+        .origin = cgpui::Point{.x = static_cast<float>(index) * 128.0F},
+        .advance = 128.0F,
+        .device_origin =
+            cgpui::Point{.x = static_cast<float>(index) * 128.0F},
+        .device_advance = 128.0F,
+    });
+  }
+  return draw;
+}
+
+bool present_draw_frame(cgpui::Renderer& renderer, cgpui::TextDraw draw) {
   auto frame = renderer.begin_frame();
   if (!frame) {
     return false;
   }
   (*frame)->clear(
       cgpui::Color{.r = 0.30F, .g = 0.33F, .b = 0.35F, .a = 1.0F});
-  (*frame)->draw_text(text_draw(content));
+  (*frame)->draw_text(std::move(draw));
   return static_cast<bool>((*frame)->present());
+}
+
+bool present_text_frame(cgpui::Renderer& renderer, std::string_view content) {
+  return present_draw_frame(renderer, text_draw(content));
 }
 
 int test_frame_outlives_renderer(const HiddenWindow& window) {
@@ -124,6 +163,17 @@ int test_incremental_glyph_atlas_frames(const HiddenWindow& window) {
   return present_text_frame(**renderer, "abc") ? 0 : 8;
 }
 
+int test_multi_page_glyph_atlas_frame(const HiddenWindow& window) {
+  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+      .native_surface = window.surface(),
+      .framebuffer_size = cgpui::Size{64.0F, 64.0F},
+      .scale = cgpui::DpiScale{1.0F}});
+  if (!renderer) {
+    return 9;
+  }
+  return present_draw_frame(**renderer, multi_page_text_draw()) ? 0 : 10;
+}
+
 } // namespace
 
 int main() {
@@ -134,5 +184,9 @@ int main() {
   if (const int result = test_frame_outlives_renderer(window); result != 0) {
     return result;
   }
-  return test_incremental_glyph_atlas_frames(window);
+  if (const int result = test_incremental_glyph_atlas_frames(window);
+      result != 0) {
+    return result;
+  }
+  return test_multi_page_glyph_atlas_frame(window);
 }

@@ -5,6 +5,8 @@
 
 namespace cgpui {
 
+inline constexpr std::size_t vulkan_glyph_atlas_descriptor_capacity = 256;
+
 struct VulkanGlyphAtlasPageResource {
   std::size_t page_index = 0;
   std::size_t generation = 0;
@@ -58,6 +60,8 @@ void vulkan_destroy_glyph_atlas_page_resource(
 void vulkan_destroy_glyph_atlas_resources(
     VkDevice device,
     VulkanGlyphAtlasResources& resources);
+[[nodiscard]] bool vulkan_glyph_atlas_plan_fits_descriptor_capacity(
+    const GlyphAtlasProductionPlan& plan);
 Result<void> vulkan_update_glyph_atlas_resources(
     VkPhysicalDevice physical_device,
     VkDevice device,

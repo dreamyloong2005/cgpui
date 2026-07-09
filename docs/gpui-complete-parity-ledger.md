@@ -340,9 +340,16 @@ consume C: drive space again.
   until swapchain recreation. The Win32 smoke retains frame-outlives-renderer
   behavior and adds `ab -> ab -> abc` frames covering initial upload, no-dirty
   reuse, and incremental shader-readable upload.
-- Remaining Phase E glyph-atlas gap: Step 463 must cover multi-page atlas
-  allocation, descriptor capacity, and cross-page uploads.
-- Handoff: Phase E Step 463 multi-page glyph atlas resources.
+- Phase E Step 463 covers multi-page atlas allocation and cross-page uploads.
+  A 9-glyph synthetic workload fills three atlas pages with independent upload
+  batches, staging buffers, descriptor sets, and buffer-to-image copy lists.
+  The private `vulkan_glyph_atlas_descriptor_capacity` constant drives both
+  descriptor-pool sizing and a preflight that rejects an over-capacity plan
+  before existing resources change. The Win32 Vulkan smoke submits the same
+  three-page workload.
+- Remaining Phase E glyph-atlas gap: Step 464 continues renderer-state atlas
+  integration before the text shader pipeline band.
+- Handoff: Phase E Step 464 remaining glyph atlas integration.
 
 ## Categories
 

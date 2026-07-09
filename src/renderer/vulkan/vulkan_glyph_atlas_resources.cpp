@@ -59,11 +59,23 @@ void vulkan_destroy_glyph_atlas_resources(
   }
 }
 
+bool vulkan_glyph_atlas_plan_fits_descriptor_capacity(
+    const GlyphAtlasProductionPlan& plan) {
+  return plan.live_resources.size() <=
+         vulkan_glyph_atlas_descriptor_capacity;
+}
+
 Result<void> vulkan_update_glyph_atlas_resources(
     VkPhysicalDevice physical_device,
     VkDevice device,
     const GlyphAtlasProductionPlan& plan,
     VulkanGlyphAtlasResources& resources) {
+  if (!vulkan_glyph_atlas_plan_fits_descriptor_capacity(plan)) {
+    return std::unexpected(vulkan_error(
+        ErrorCode::renderer_initialization_failed,
+        "glyph atlas descriptor capacity exceeded"));
+  }
+
   for (auto page = resources.pages.begin(); page != resources.pages.end();) {
     const bool live = std::ranges::any_of(
         plan.live_resources,

@@ -18063,3 +18063,39 @@
 - WSL Arch Linux full verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed 137/137:
   `wsl.exe -d archlinux --cd /mnt/d/Dev/Projects/cgpui -- bash -lc "..."`.
+
+## 2026-07-10 Phase E Step 463 Multi-Page Glyph Atlas Resume
+
+- Resumed from clean tracked `master` at
+  `1d575ddc perf: record acquired vulkan frames`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed Step 463 owns multi-page atlas allocation, descriptor capacity,
+  and cross-page staging/upload coverage. The slice stays inside focused
+  private Vulkan glyph-atlas modules plus behavior/structure and ledger tests.
+- The planning catch-up helper's guessed workspace Python path was absent;
+  the retry will resolve the installed interpreter through PowerShell.
+- Added `vulkan_glyph_atlas_multi_page_test` and observed the expected RED
+  compile failure because `vulkan_glyph_atlas_descriptor_capacity` and the
+  capacity preflight did not exist.
+- Added the private shared capacity contract, resource-update preflight,
+  three-page planning/cross-page staging coverage, and a real Win32 frame smoke
+  with 9 synthetic 128x128 glyphs. Updated roadmap, Markdown/JSON ledger,
+  `task_plan.md`, and `findings.md`; Step 464 is the next slice.
+- The first compiled GREEN run exited 40 because the roadmap split the required
+  `cross-page uploads` evidence across a line break; normalized the wording for
+  the documentation audit.
+- Windows focused Step 463 gate passed 9/9, including multi-page, descriptor,
+  upload, acquired-buffer lifecycle, real frame lifetime, production planning,
+  renderer structure, parity ledger, and solid-rect renderer regression tests.
+- JSON parsing and `git diff --check` passed; only the repository's existing
+  LF/CRLF conversion notices were emitted. A separate PowerShell line-count
+  diagnostic used invalid direct-loop pipeline syntax and will be retried via
+  an intermediate variable.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 7/7: multi-page, descriptor,
+  upload, acquired-buffer lifecycle, production planning, renderer structure,
+  and parity-ledger tests.
+- Windows full debug verification passed 144/144, including the real three-page
+  Vulkan frame smoke.
+- Final Windows full debug rerun after the explicit test include also passed
+  144/144.
