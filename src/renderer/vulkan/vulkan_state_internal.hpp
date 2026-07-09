@@ -85,6 +85,7 @@ class VulkanRendererState final {
   std::vector<VkImage> swapchain_images_;
   std::vector<VkImageView> swapchain_image_views_;
   VkRenderPass render_pass_ = VK_NULL_HANDLE;
+  VulkanTextPipelineResources text_pipeline_resources_;
   std::vector<VkFramebuffer> framebuffers_;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   std::vector<VkCommandBuffer> command_buffers_;

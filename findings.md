@@ -31,6 +31,17 @@
   The optimized 289-word vertex and 189-word fragment binaries pass
   `spirv-val` on Windows and WSL; Step 469 creates pipeline-layout and graphics-
   pipeline handles.
+- Phase E Step 469 pipeline resources are render-pass compatible and therefore
+  belong to the private swapchain resource lifetime. A focused resource header
+  and source can own the pipeline layout and graphics pipeline, create them
+  after the swapchain render pass using the glyph-atlas descriptor-set layout,
+  move them through install/resize, and destroy them before the render pass.
+- The text vertex shader's `vec2 framebuffer_size` maps to an explicit 8-byte
+  vertex-stage push-constant contract. Shader modules remain transient during
+  graphics-pipeline creation; only the layout and pipeline handles persist.
+  `VulkanTextPipelineResources` and `vulkan_create_text_pipeline_resources`
+  now implement that contract. Step 470 adds text vertex-buffer upload
+  resources before command-recorded textured glyph draws.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

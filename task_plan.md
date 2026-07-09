@@ -540,21 +540,27 @@ Windows/Linux core API is stable enough for parity work.
   feed focused `vulkan_create_text_shader_modules`, destroy, and stage helpers.
   Both optimized binaries pass `spirv-val` on Windows and WSL. Step 469 owns
   pipeline-layout and graphics-pipeline handle creation.
+- Phase E Step 469 adds private swapchain-owned
+  `VulkanTextPipelineResources`. `vulkan_create_text_pipeline_resources`
+  creates the glyph-atlas descriptor-compatible layout and graphics pipeline,
+  uses an 8-byte vertex push constant, retires transient shader modules, and
+  follows swapchain create/install/resize/destroy. Step 470 adds text vertex-
+  buffer upload resources.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-468 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-469 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
   descriptor bindings, renderer-ready flat quad ranges, and the integration
-  closeout audit, text-pipeline vertex/fixed-state contract, and embedded shader
-  module boundaries.
-- In progress: Step 469 text pipeline layout and graphics pipeline handles.
-- Pending bands: Steps 469-474 remaining text
+  closeout audit, text-pipeline vertex/fixed-state contract, embedded shader
+  module boundaries, and swapchain-owned pipeline resources.
+- In progress: Step 470 text vertex-buffer upload resources.
+- Pending bands: Steps 470-474 remaining text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -597,6 +603,8 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_text_shader_module_test` initially failed to compile because embedded shader binary/module APIs did not exist | Step 468 RED | Expected RED; add reviewable GLSL, validated embedded SPIR-V, and focused shader-module lifecycle helpers |
 | The first compiled Step 468 shader-module test exited 40 while pipeline-state and renderer-structure tests passed | Step 468 documentation gate | Expected RED after embedded binaries and lifecycle helpers compiled; update roadmap, ledger, planning, and findings with the Step 469 pipeline-handle handoff |
 | A Step 468 cleanup patch mixed progress-file context into the shader-test update and failed verification | Step 468 final cleanup | Retry the same narrow changes with explicit file sections; the failed patch changed no files |
+| `vulkan_text_pipeline_resources_test` initially failed to compile because the focused private resource header did not exist | Step 469 RED | Expected RED; add swapchain-owned pipeline-layout/graphics-pipeline resources and lifecycle integration in focused files |
+| The first compiled Step 469 resource test exited 40 while structure, state, and shader tests passed | Step 469 documentation gate | Expected RED after resource/lifecycle behavior compiled; update roadmap, ledger, planning, and findings with the Step 470 vertex-buffer handoff |
 
 ## Definition Of Done For This 20-Step Goal
 

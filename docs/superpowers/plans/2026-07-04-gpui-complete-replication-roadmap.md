@@ -1468,7 +1468,15 @@ draw calls for the Windows/Linux renderer.
   binaries pass `spirv-val` on Windows and WSL without making GLSL compilation
   a host build requirement. Step 469 creates pipeline-layout and graphics-
   pipeline handle ownership.
-- [ ] Steps 469-474: Complete the text graphics pipeline, descriptor layout,
+- [x] Phase E Step 469 adds swapchain-owned text graphics-pipeline resources in
+  focused `vulkan_text_pipeline_resources_internal.hpp` and
+  `vulkan_text_pipeline_resources.cpp` boundaries.
+  `VulkanTextPipelineResources` persists the render-pass-compatible layout and
+  pipeline handles, `vulkan_create_text_pipeline_resources` consumes the glyph-
+  atlas descriptor-set layout plus an 8-byte vertex push constant, and shader
+  modules stay transient during creation. Create/install/resize/destroy follow
+  the swapchain lifetime. Step 470 adds text vertex-buffer upload resources.
+- [ ] Steps 470-474: Complete the remaining text graphics pipeline,
   textured glyph draw calls, subpixel positioning policy, and gamma/alpha
   handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

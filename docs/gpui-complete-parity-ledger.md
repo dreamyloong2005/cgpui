@@ -380,6 +380,12 @@ consume C: drive space again.
   both optimized binaries pass `spirv-val` on Windows and WSL without a host
   GLSL-compiler requirement.
 - Handoff: Phase E Step 469 text pipeline layout and graphics pipeline handles.
+- Phase E Step 469 adds private swapchain-owned
+  `VulkanTextPipelineResources`. `vulkan_create_text_pipeline_resources`
+  creates the glyph-atlas descriptor-compatible pipeline layout and graphics
+  pipeline with an 8-byte vertex push constant, destroys transient shader
+  modules after creation, and follows swapchain create/install/resize/destroy.
+- Handoff: Phase E Step 470 text vertex-buffer upload resources.
 
 ## Categories
 

@@ -50,6 +50,15 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
     destroy_swapchain_resources(resources);
     return std::unexpected(result.error());
   }
+  if (auto result = vulkan_create_text_pipeline_resources(
+          device_,
+          resources.render_pass,
+          glyph_atlas_resources_.descriptor_set_layout,
+          resources.text_pipeline);
+      !result) {
+    destroy_swapchain_resources(resources);
+    return std::unexpected(result.error());
+  }
   if (auto result = create_swapchain_framebuffers(resources); !result) {
     destroy_swapchain_resources(resources);
     return std::unexpected(result.error());

@@ -18256,3 +18256,40 @@
 - A combined cleanup patch initially used progress-file context while still
   targeting the shader test and was rejected without changing files. Retried
   with explicit file boundaries.
+
+## 2026-07-10 Phase E Step 469 Text Pipeline Resources
+
+- Started from clean tracked `master` at
+  `900ba900 feat: embed vulkan text shaders`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed pipeline ownership follows render-pass compatibility: persistent
+  layout/pipeline handles belong in `VulkanSwapchainResources`, while shader
+  modules stay transient during creation.
+- Step 469 will add a focused private resource header/source, an 8-byte vertex
+  push-constant contract, create/install/destroy integration, behavior and
+  structure coverage, and live renderer creation/resize validation.
+- Added `vulkan_text_pipeline_resources_test` and observed the expected RED
+  compile failure because the focused private resource header did not exist.
+- Added focused text pipeline resource ownership and creation, including the
+  8-byte vertex push constant, glyph-atlas descriptor layout, transient shader
+  modules, fixed pipeline state, and swapchain create/install/destroy wiring.
+- The first compiled focused gate passed renderer structure, text state, and
+  shader-module tests; the resource test exited 40 only at its expected
+  documentation gate.
+- Real Win32 Vulkan validation passed `vulkan_frame_lifetime_test/default` and
+  `vulkan_resize_test/default`, covering renderer creation, text presentation,
+  destruction, and resize with the new pipeline resources.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md` to
+  complete Step 469 and hand Step 470 to text vertex-buffer upload resources.
+- Focused Windows Step 469 verification passed 8/8: pipeline resources,
+  renderer structure, pipeline state, shader modules, parity ledger, glyph-
+  atlas closeout, real frame lifetime, and resize.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the corresponding 6/6 shared
+  resource, structure, state, shader, ledger, and closeout tests.
+- Windows full debug verification passed 150/150 with
+  `xmake test -y -P .`.
+- Live WSL Wayland verification passed 2/2:
+  `hello_window/linux_first_frame` and
+  `hello_window/linux_resize_after_first_frame`, covering real renderer startup,
+  text-pipeline creation, first presentation, and swapchain recreation.

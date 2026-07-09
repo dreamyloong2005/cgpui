@@ -195,6 +195,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_surface_selection.cpp",
       "src/renderer/vulkan/vulkan_sync.cpp",
       "src/renderer/vulkan/vulkan_text_pipeline_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_pipeline_resources_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_pipeline_resources.cpp",
       "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
@@ -1041,6 +1043,21 @@ int main(int argc, char** argv) {
                 "layout(set = 0, binding = 0)") ||
       contains(command_recording, "vkCreateShaderModule")) {
     return 62;
+  }
+
+  const std::string text_pipeline_resources_header = read_source(
+      "src/renderer/vulkan/vulkan_text_pipeline_resources_internal.hpp");
+  const std::string text_pipeline_resources = read_source(
+      "src/renderer/vulkan/vulkan_text_pipeline_resources.cpp");
+  if (line_count(text_pipeline_resources_header) > 60 ||
+      line_count(text_pipeline_resources) > 190 ||
+      !contains(text_pipeline_resources_header,
+                "struct VulkanTextPipelineResources") ||
+      !contains(text_pipeline_resources, "vkCreatePipelineLayout") ||
+      !contains(text_pipeline_resources, "vkCreateGraphicsPipelines") ||
+      !contains(text_pipeline_resources, "vkDestroyPipeline") ||
+      contains(command_recording, "vkCreateGraphicsPipelines")) {
+    return 63;
   }
 
   const std::string report_image_uploads =
