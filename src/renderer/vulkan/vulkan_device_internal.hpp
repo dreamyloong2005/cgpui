@@ -16,4 +16,9 @@ struct VulkanQueueFamilySearch {
   bool suitable = false;
 };
 
+Result<std::uint32_t> vulkan_find_memory_type(
+    VkPhysicalDevice physical_device,
+    std::uint32_t supported_types,
+    VkMemoryPropertyFlags required_flags);
+
 } // namespace cgpui

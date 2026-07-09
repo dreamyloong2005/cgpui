@@ -79,8 +79,8 @@ int test_private_resource_ownership_structure() {
       "src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp");
   const std::string state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
-  const std::string presentation =
-      read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  const std::string frame =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   const std::string public_production =
       read_source("include/cgpui/renderer/glyph_atlas_production.hpp");
   const std::string roadmap = read_source(
@@ -93,7 +93,7 @@ int test_private_resource_ownership_structure() {
   const std::string findings = read_source("findings.md");
 
   if (internal.empty() || descriptors.empty() || images.empty() ||
-      resources.empty() || state.empty() || presentation.empty() ||
+      resources.empty() || state.empty() || frame.empty() ||
       public_production.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 20;
@@ -124,8 +124,8 @@ int test_private_resource_ownership_structure() {
       !contains(state, "VulkanGlyphAtlasResources glyph_atlas_resources_") ||
       !contains(state,
                 "GlyphAtlasProductionResourceState glyph_atlas_plan_state_") ||
-      !contains(presentation, "vulkan_plan_glyph_atlas_production_resources(") ||
-      !contains(presentation, "vulkan_update_glyph_atlas_resources(")) {
+      !contains(frame, "vulkan_plan_glyph_atlas_production_resources(") ||
+      !contains(frame, "vulkan_update_glyph_atlas_resources(")) {
     return 23;
   }
   return contains(public_production, "VkImage") ||

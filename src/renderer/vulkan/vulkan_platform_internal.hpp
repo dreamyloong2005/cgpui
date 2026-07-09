@@ -52,12 +52,4 @@ Result<WaylandSurfaceHandle> require_wayland_surface(
 [[nodiscard]] VkExtent2D choose_vulkan_extent(
     const VkSurfaceCapabilitiesKHR& capabilities,
     Size framebuffer_size);
-Result<void> record_vulkan_frame_command_buffer(
-    VkCommandBuffer command_buffer,
-    VkRenderPass render_pass,
-    VkFramebuffer framebuffer,
-    VkExtent2D extent,
-    Color color,
-    std::span<const SolidRect> rects);
-
 } // namespace cgpui

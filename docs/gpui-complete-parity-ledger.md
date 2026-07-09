@@ -325,10 +325,18 @@ consume C: drive space again.
   module reconciles/destroys page lifetimes after the in-flight fence completes.
   Public atlas leaves remain free of `Vk*` handles. A real text-frame smoke test
   exercises atlas page and descriptor creation.
-- Remaining Phase E glyph-atlas gap: Step 461 must stage dirty alpha payloads,
-  record image layout transitions and buffer-to-image copies, and retire the
-  upload resources safely.
-- Handoff: Phase E Step 461 glyph atlas dirty upload command recording.
+- Phase E Step 461 Vulkan glyph atlas dirty uploads are implemented through
+  private `VulkanGlyphAtlasUploadResources` ownership.
+  `vulkan_glyph_atlas_staging.cpp` creates host-visible/coherent transfer-source
+  buffers, repacks each dirty glyph at a 4-byte-aligned buffer offset, maps only
+  the dirty alpha payload, and retires staging after the in-flight fence.
+  `vulkan_glyph_atlas_upload_recording.cpp` records image barriers,
+  `vkCmdCopyBufferToImage`, and the final shader-readable layout. Atlas planner
+  and image-layout state commit only after `vkQueueSubmit` succeeds.
+- Remaining Phase E glyph-atlas gap: Step 462 must exercise multi-frame
+  incremental upload reuse and acquired command-buffer lifetime before the
+  remaining atlas integration closeout.
+- Handoff: Phase E Step 462 multi-frame glyph atlas upload lifecycle.
 
 ## Categories
 

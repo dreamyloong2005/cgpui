@@ -1405,7 +1405,19 @@ draw calls for the Windows/Linux renderer.
   consumed after the in-flight fence completes, and a real text-frame smoke
   exercises descriptor-bound atlas page creation. Dirty staging buffers,
   layout transitions, and buffer-to-image copies remain Step 461.
-- [ ] Steps 461-466: Bind
+- [x] Phase E Step 461 records real dirty glyph-atlas uploads. Focused private
+  upload state owns host-visible/coherent staging buffers and copy regions;
+  `vulkan_glyph_atlas_staging.cpp` repacks each glyph at a 4-byte-aligned buffer
+  offset, maps and copies only dirty alpha payloads, and retires staging after
+  the in-flight fence. `vulkan_glyph_atlas_upload_recording.cpp` records
+  UNDEFINED or SHADER_READ_ONLY to TRANSFER_DST barriers,
+  `vkCmdCopyBufferToImage`, and the transition back to
+  SHADER_READ_ONLY_OPTIMAL. `VulkanGlyphAtlasUploadResources` stays private,
+  frame preparation lives in `vulkan_glyph_atlas_frame.cpp`, and planner/image
+  layout state commits only after `vkQueueSubmit` succeeds.
+- Step 462 takes the multi-frame incremental upload and acquired
+  command-buffer lifetime handoff.
+- [ ] Steps 462-466: Bind
   production atlas resources into renderer state, and record dirty upload
   command paths against the live command buffers.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured

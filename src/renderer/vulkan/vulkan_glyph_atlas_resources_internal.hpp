@@ -13,6 +13,7 @@ struct VulkanGlyphAtlasPageResource {
   VkDeviceMemory memory = VK_NULL_HANDLE;
   VkImageView image_view = VK_NULL_HANDLE;
   VkDescriptorSet descriptor_set = VK_NULL_HANDLE;
+  VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
 };
 
 struct VulkanGlyphAtlasResources {

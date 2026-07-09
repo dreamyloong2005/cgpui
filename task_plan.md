@@ -488,17 +488,27 @@ Windows/Linux core API is stable enough for parity work.
   `VulkanRendererState` consumes the Step 459 plan after the in-flight fence.
   Dirty alpha staging, image transitions, and buffer-to-image copies remain
   Step 461.
+- Phase E Step 461 Vulkan glyph atlas dirty uploads add private
+  `VulkanGlyphAtlasUploadResources`, host-visible/coherent staging buffers, and
+  focused command recording. `vulkan_glyph_atlas_staging.cpp` repacks glyphs at
+  4-byte-aligned buffer offsets and copies only dirty alpha payloads;
+  `vulkan_glyph_atlas_upload_recording.cpp` records layout barriers,
+  `vkCmdCopyBufferToImage`, and shader-readable transitions. Staging is retired
+  after the in-flight fence, while planner and image-layout state commit only
+  after `vkQueueSubmit` succeeds. Step 462 takes the multi-frame incremental
+  upload and acquired command-buffer lifetime handoff.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-460 Vulkan glyph atlas production planning, private
-  image/memory/view/sampler ownership, and descriptor-set binding.
-- In progress: Step 461 dirty alpha staging, layout transitions, and
-  buffer-to-image command recording against the live frame command buffers.
-- Pending bands: Steps 462-466 remaining atlas integration; Steps 467-474 text
+- Completed: Steps 459-461 Vulkan glyph atlas production planning, private
+  image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
+  layout transitions, and buffer-to-image command recording.
+- In progress: Step 462 multi-frame incremental upload reuse and acquired
+  command-buffer lifetime.
+- Pending bands: Steps 463-466 remaining atlas integration; Steps 467-474 text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -516,6 +526,10 @@ Windows/Linux core API is stable enough for parity work.
 | WinGet-linked `rg.exe` failed to start because Windows reported no associated application | Initial Phase E repository and memory searches | Use `git ls-files`, `Get-ChildItem`, and `Select-String` for this run; do not repeat the failing `rg.exe` invocation |
 | `vulkan_glyph_atlas_descriptor_test` initially failed to compile because the private resource header did not exist | Step 460 RED | Expected RED; added the private descriptor/image/resource module set |
 | Step 460 focused run compiled and the real text-frame smoke passed, but the new audit exited 22 | First GREEN attempt | Moved descriptor allocation/update out of the image module into `vulkan_glyph_atlas_descriptors.cpp`, restoring the intended ownership boundary |
+| `vulkan_glyph_atlas_upload_test` initially failed to compile because the private upload header did not exist | Step 461 RED | Expected RED; added the private upload state, staging, recording, and memory-selection modules |
+| Step 461 first GREEN compile rejected a temporary upload state passed to a non-const cleanup reference | First GREEN attempt | Added one-resource `destroy_staging_upload(...)` and reused it from all failure and batch cleanup paths |
+| Renderer structure audit exited 32 after upload orchestration expanded `vulkan_presentation.cpp` past 150 lines | First structure GREEN attempt | Split frame preparation/commit into focused `vulkan_glyph_atlas_frame.cpp`; presentation returned below its existing limit |
+| Step 460 descriptor audit exited 23 after the ownership split | Regression gate after structure split | Updated the audit to inspect the new frame module owner instead of presentation |
 
 ## Definition Of Done For This 20-Step Goal
 

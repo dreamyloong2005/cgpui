@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 461 Dirty Glyph Atlas Uploads
+
+- Phase E Step 461 uses private `VulkanGlyphAtlasUploadResources`; the public
+  glyph-atlas plan remains free of Vulkan handles and staging allocations.
+- `vulkan_glyph_atlas_staging.cpp` owns staging allocation, mapping, aligned
+  payload repacking, and fence-safe retirement.
+- Vulkan buffer-to-image offsets require 4-byte alignment. Dirty glyph payloads
+  therefore cannot directly reuse arbitrary offsets from the tightly packed
+  public alpha batch; staging repacks each glyph at a 4-byte-aligned buffer
+  offset and builds copy regions against those offsets.
+- Atlas images transition from UNDEFINED on first upload or
+  SHADER_READ_ONLY_OPTIMAL on incremental upload to TRANSFER_DST_OPTIMAL, then
+  back to SHADER_READ_ONLY_OPTIMAL after `vkCmdCopyBufferToImage`.
+- A single in-flight fence allows prior staging buffers to be destroyed before
+  new frame recording. Planner state and tracked image layout still must not
+  advance until `vkQueueSubmit` succeeds, because recording alone does not
+  change device state.
+- Moving atlas preparation/commit to `vulkan_glyph_atlas_frame.cpp` keeps
+  `vulkan_presentation.cpp` under its existing 150-line structure limit and
+  leaves acquire/submit/present orchestration readable.
+- Step 462 should cover multi-frame no-op reuse, incremental glyph additions,
+  and acquired command-buffer lifetime.
+
 ## 2026-07-10 Phase E Resume And Step 460 Descriptor Binding
 
 - The authoritative Phase E scope is Steps 459-538 in the complete replication

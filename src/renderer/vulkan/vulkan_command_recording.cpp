@@ -82,7 +82,9 @@ Result<void> record_vulkan_frame_command_buffer(
     VkFramebuffer framebuffer,
     VkExtent2D extent,
     Color color,
-    std::span<const SolidRect> rects) {
+    std::span<const SolidRect> rects,
+    const VulkanGlyphAtlasResources& glyph_atlas_resources,
+    const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads) {
   if (auto result = require_vk_success(
           vkResetCommandBuffer(command_buffer, 0),
           "vkResetCommandBuffer failed");
@@ -97,6 +99,13 @@ Result<void> record_vulkan_frame_command_buffer(
   if (auto result = require_vk_success(
           vkBeginCommandBuffer(command_buffer, &begin_info),
           "vkBeginCommandBuffer failed");
+      !result) {
+    return result;
+  }
+  if (auto result = vulkan_record_glyph_atlas_uploads(
+          command_buffer,
+          glyph_atlas_resources,
+          glyph_atlas_uploads);
       !result) {
     return result;
   }

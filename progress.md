@@ -1,5 +1,44 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 461 Vulkan Glyph Atlas Dirty Uploads
+
+- Added RED coverage with
+  `tests/renderer/vulkan_glyph_atlas_upload_test.cpp` and the matching xmake
+  target. The first run failed as expected because the private upload header did
+  not exist.
+- Added focused private command-recording, upload-state, staging, upload-
+  recording, frame-orchestration, and device-memory boundaries. The image path
+  now shares the device memory-type selector instead of duplicating it.
+- Staging buffers use host-visible/coherent memory, map only dirty alpha
+  payloads, repack glyphs at 4-byte-aligned buffer offsets, and build
+  `VkBufferImageCopy` regions for the dirty glyphs only.
+- Command buffers record initial/incremental layout transitions,
+  `vkCmdCopyBufferToImage`, and shader-readable transitions before the render
+  pass. Upload buffers are retired after the in-flight fence; planner/layout
+  state commits after successful `vkQueueSubmit`.
+- Fixed the first GREEN cleanup-reference compile error, then split atlas frame
+  orchestration out of `vulkan_presentation.cpp` after the structure audit
+  correctly rejected the file at 164 lines. Updated the Step 460 regression
+  audit to follow the new owner.
+- Focused Windows GREEN passed 6/6:
+  `vulkan_glyph_atlas_upload_test/default`,
+  `vulkan_glyph_atlas_descriptor_test/default`,
+  `renderer_source_structure_test/default`,
+  `vulkan_frame_lifetime_test/default`,
+  `phase_e_glyph_atlas_production_test/default`, and
+  `gpui_parity_ledger_test/default`.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 5/5:
+  `vulkan_glyph_atlas_upload_test/default`,
+  `vulkan_glyph_atlas_descriptor_test/default`,
+  `renderer_source_structure_test/default`,
+  `phase_e_glyph_atlas_production_test/default`, and
+  `gpui_parity_ledger_test/default`.
+- Windows full debug verification passed: `xmake test -y -P .` 142/142.
+- WSL full debug was intentionally skipped for this individual slice under the
+  Phase E cadence; focused WSL passed and full WSL remains scheduled for the
+  glyph-atlas milestone or Phase E closeout.
+
 ## 2026-07-10 Phase E Goal Resume
 
 - Restored the active persistent goal `做完Phase E` and read the existing

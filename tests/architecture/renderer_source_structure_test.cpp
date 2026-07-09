@@ -150,9 +150,12 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_state_internal.hpp",
       "src/renderer/vulkan/vulkan_swapchain_internal.hpp",
       "src/renderer/vulkan/vulkan_device_internal.hpp",
+      "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
       "src/renderer/vulkan/vulkan_device.cpp",
+      "src/renderer/vulkan/vulkan_device_memory.cpp",
       "src/renderer/vulkan/vulkan_errors.cpp",
       "src/renderer/vulkan/vulkan_helpers.cpp",
       "src/renderer/vulkan/vulkan_instance_surface.cpp",
@@ -176,8 +179,11 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_report_texture_resources.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_production.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_descriptors.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_images.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_staging.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_upload_recording.cpp",
       "src/renderer/vulkan/vulkan_report_uploads.cpp",
       "src/renderer/vulkan/vulkan_presentation.cpp",
       "src/renderer/vulkan/vulkan_presentation_recovery.cpp",
@@ -895,6 +901,18 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_images.cpp");
   const std::string glyph_atlas_resources =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp");
+  const std::string glyph_atlas_uploads_internal = read_source(
+      "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp");
+  const std::string command_recording_internal = read_source(
+      "src/renderer/vulkan/vulkan_command_recording_internal.hpp");
+  const std::string device_memory =
+      read_source("src/renderer/vulkan/vulkan_device_memory.cpp");
+  const std::string glyph_atlas_staging =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_staging.cpp");
+  const std::string glyph_atlas_upload_recording = read_source(
+      "src/renderer/vulkan/vulkan_glyph_atlas_upload_recording.cpp");
+  const std::string glyph_atlas_frame =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   if (line_count(report_texture_resources) > 150 ||
       !contains(
           report_texture_resources,
@@ -932,6 +950,17 @@ int main(int argc, char** argv) {
       !contains(glyph_atlas_resources,
                 "vulkan_update_glyph_atlas_resources(")) {
     return 59;
+  }
+  if (line_count(glyph_atlas_uploads_internal) > 80 ||
+      line_count(command_recording_internal) > 40 ||
+      line_count(device_memory) > 50 ||
+      line_count(glyph_atlas_staging) > 230 ||
+      line_count(glyph_atlas_upload_recording) > 170 ||
+      line_count(glyph_atlas_frame) > 80 ||
+      !contains(glyph_atlas_staging, "VK_BUFFER_USAGE_TRANSFER_SRC_BIT") ||
+      !contains(glyph_atlas_upload_recording, "vkCmdCopyBufferToImage") ||
+      !contains(glyph_atlas_frame, "prepare_glyph_atlas_frame(")) {
+    return 60;
   }
 
   const std::string report_image_uploads =

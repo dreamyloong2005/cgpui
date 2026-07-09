@@ -2,6 +2,7 @@
 
 #include "vulkan_device_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
+#include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 
 namespace cgpui {
@@ -32,6 +33,9 @@ class VulkanRendererState final {
 
   Result<void> create_command_pool();
   Result<void> create_sync_objects();
+  Result<void> prepare_glyph_atlas_frame(
+      std::span<const TextDraw> text_draws);
+  void commit_glyph_atlas_frame();
   Result<void> recover_after_failed_submit(std::string message);
   Result<void> recover_after_failed_acquire(
       ErrorCode code,
@@ -87,7 +91,9 @@ class VulkanRendererState final {
   VkFence in_flight_ = VK_NULL_HANDLE;
   GlyphCache glyph_cache_;
   GlyphAtlasProductionResourceState glyph_atlas_plan_state_;
+  GlyphAtlasProductionResourceState pending_glyph_atlas_plan_state_;
   VulkanGlyphAtlasResources glyph_atlas_resources_;
+  VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
   std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;
 };
