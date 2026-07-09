@@ -1250,6 +1250,16 @@ behavior that can support GPUI examples and editor-like widgets.
   entry out of broad paint/runtime files. Actual multi-color glyph painting,
   inline image drawing/loading, click activation, syntax parsing, and editor
   token source integration remain later work.
+  Step 441 adds focused link activation metadata through
+  `include/cgpui/ui/text_rich_text_activation.hpp` and
+  `src/ui/text_rich_text_activation.cpp`: `RichTextLinkActivation`,
+  `rich_text_pointer_button_can_activate_link(...)`, and
+  `rich_text_link_activation_at_point(...)` convert primary single-button
+  release hits into numeric link activation records by composing the existing
+  point-hit helper. This keeps activation detection out of runtime/renderer
+  state and string link targets. Runtime element dispatch, actual link command
+  handling, inline image drawing/loading, syntax parsing, and editor token
+  source integration remain later work.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

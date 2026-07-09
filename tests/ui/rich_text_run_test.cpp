@@ -1,4 +1,5 @@
 #include "cgpui/ui/text_rich_text.hpp"
+#include "cgpui/ui/text_rich_text_activation.hpp"
 #include "cgpui/ui/text_rich_text_hit_testing.hpp"
 #include "cgpui/ui/text_rich_text_inline_image.hpp"
 #include "cgpui/ui/text_rich_text_syntax.hpp"
@@ -336,6 +337,106 @@ int test_syntax_tokens_build_rich_text_spans() {
   return 0;
 }
 
+int test_link_activation_uses_primary_single_release_hits() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "abcd",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const cgpui::Rect bounds{
+      .origin = {.x = 10.0F, .y = 5.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  };
+  std::vector<cgpui::RichTextRun> runs{
+      cgpui::RichTextRun{
+          .byte_start = 0,
+          .byte_end = 2,
+      },
+      cgpui::RichTextRun{
+          .byte_start = 2,
+          .byte_end = 4,
+          .attributes = cgpui::RichTextAttributes{
+              .link_id = cgpui::RichTextLinkId{91},
+          },
+      },
+  };
+
+  const cgpui::PointerButton release{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .click_count = 1,
+      .position = {39.0F, 10.0F},
+  };
+  const std::optional<cgpui::RichTextLinkActivation> activation =
+      cgpui::rich_text_link_activation_at_point(
+          runs,
+          measurement,
+          bounds,
+          release);
+  if (!activation.has_value() ||
+      activation->link_id.value != 91 ||
+      activation->run_index != 1 ||
+      activation->byte_start != 2 ||
+      activation->byte_end != 4 ||
+      activation->text_hit.byte_offset != 3 ||
+      activation->button != cgpui::MouseButton::left ||
+      activation->click_count != 1) {
+    return 80;
+  }
+
+  const cgpui::PointerButton press = cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .click_count = 1,
+      .position = {39.0F, 10.0F},
+  };
+  const cgpui::PointerButton right_release = cgpui::PointerButton{
+      .button = cgpui::MouseButton::right,
+      .pressed = false,
+      .click_count = 1,
+      .position = {39.0F, 10.0F},
+  };
+  const cgpui::PointerButton double_click_release = cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .click_count = 2,
+      .position = {39.0F, 10.0F},
+  };
+  const cgpui::PointerButton outside_release = cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .click_count = 1,
+      .position = {60.0F, 10.0F},
+  };
+  if (cgpui::rich_text_link_activation_at_point(
+          runs,
+          measurement,
+          bounds,
+          press)
+          .has_value() ||
+      cgpui::rich_text_link_activation_at_point(
+          runs,
+          measurement,
+          bounds,
+          right_release)
+          .has_value() ||
+      cgpui::rich_text_link_activation_at_point(
+          runs,
+          measurement,
+          bounds,
+          double_click_release)
+          .has_value() ||
+      cgpui::rich_text_link_activation_at_point(
+          runs,
+          measurement,
+          bounds,
+          outside_release)
+          .has_value()) {
+    return 81;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -366,6 +467,10 @@ int main() {
     return result;
   }
   if (const int result = test_syntax_tokens_build_rich_text_spans();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_link_activation_uses_primary_single_release_hits();
       result != 0) {
     return result;
   }

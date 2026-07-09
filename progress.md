@@ -17555,3 +17555,37 @@
   `pre_phase_d_entry_gate_test/default`.
 - Final focused WSL gate reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed the same 7/7 focused tests.
+
+## 2026-07-09 Phase D Step 441 Rich Text Link Activation Metadata
+
+- Started from clean tracked `master` after
+  `08a64c63 feat: add rich text paint metadata`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- The planning-with-files catchup helper path under
+  `$USERPROFILE\.claude\skills\planning-with-files\scripts\session-catchup.py`
+  was missing in this environment, so the helper exited with file-not-found.
+  This was non-blocking because `task_plan.md`, `progress.md`, `findings.md`,
+  and git status were read directly.
+- Added RED coverage to `tests/ui/rich_text_run_test.cpp` requiring
+  `cgpui/ui/text_rich_text_activation.hpp`, `RichTextLinkActivation`, and
+  `rich_text_link_activation_at_point(...)`. The first Windows run failed as
+  expected because the new header did not exist.
+- Implemented the focused `text_rich_text_activation` public leaf and source:
+  `rich_text_pointer_button_can_activate_link(...)` accepts only primary
+  single-button releases, and `rich_text_link_activation_at_point(...)` composes
+  existing rich-text point-hit metadata into scalar activation records with
+  numeric `RichTextLinkId`.
+- Updated `text.hpp`, header cleanliness, architecture structure tests, the
+  roadmap, Markdown/JSON parity ledger, `task_plan.md`, and `findings.md`.
+- Initial focused Windows GREEN verification passed:
+  `xmake test -y -P . rich_text_run_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default` 3/3.
+- Final focused Windows gate passed 9/9:
+  `rich_text_run_test/default`, `render_view_test/default`,
+  `ui_source_structure_test/default`, `ui_header_cleanliness/default`,
+  `core_header_cleanliness/default`, `static_render_runtime_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 9/9 focused tests.

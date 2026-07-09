@@ -203,6 +203,19 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
 - Remaining gap: actual multi-color glyph painting, inline image drawing/
   loading, click activation wiring, syntax parsing, and editor token source
   integration remain later Phase D work.
+- Step 441 adds focused rich-text link activation metadata. The public leaf
+  `include/cgpui/ui/text_rich_text_activation.hpp` and implementation
+  `src/ui/text_rich_text_activation.cpp` expose `RichTextLinkActivation`,
+  `rich_text_pointer_button_can_activate_link(...)`, and
+  `rich_text_link_activation_at_point(...)`, converting primary single-button
+  release point hits into numeric link activation records by composing the
+  existing rich-text point-hit helper. `tests/ui/rich_text_run_test.cpp`
+  verifies activation and press/right-button/multi-click/outside misses, while
+  `tests/architecture/ui_source_structure_test.cpp` keeps the logic out of
+  runtime, renderer, and string link targets.
+- Remaining gap: runtime rich-text element dispatch, actual link command
+  handling, inline image drawing/loading, syntax parsing, and editor token
+  source integration remain later Phase D work.
 
 ## Categories
 

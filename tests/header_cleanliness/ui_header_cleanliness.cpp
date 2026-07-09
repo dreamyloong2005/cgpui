@@ -46,6 +46,7 @@
 #include "cgpui/ui/text_hit_testing.hpp"
 #include "cgpui/ui/text_input_builder.hpp"
 #include "cgpui/ui/text_measurement.hpp"
+#include "cgpui/ui/text_rich_text_activation.hpp"
 #include "cgpui/ui/text_shape.hpp"
 #include "cgpui/ui/text_wrapping.hpp"
 

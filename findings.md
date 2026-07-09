@@ -7760,3 +7760,17 @@
   multi-color glyph painting, inline image drawing/loading, click activation,
   syntax parsing, and editor token source integration remain explicit Phase D
   gaps.
+
+## 2026-07-09 Phase D Step 441 Rich Text Link Activation Metadata
+
+- Link activation can stay as a focused metadata helper over existing
+  point-hit records. `rich_text_link_activation_at_point(...)` should accept a
+  `PointerButton`, require a primary single-button release, require an
+  in-bounds text hit, and return only scalar activation metadata plus the
+  existing numeric `RichTextLinkId`.
+- This boundary deliberately avoids runtime-owned rich-text state, renderer
+  state, broad event dispatch, string link targets, and hidden allocation. It
+  gives a future rich-text element or editor surface a small record to consume.
+- This closes activation-record creation only. Runtime element dispatch, link
+  command handling, inline image drawing/loading, syntax parsing, and editor
+  token source integration remain explicit Phase D gaps.

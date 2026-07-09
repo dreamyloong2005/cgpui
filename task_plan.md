@@ -383,6 +383,14 @@ Windows/Linux core API is stable enough for parity work.
   text draws. Actual multi-color glyph painting, inline image drawing/loading,
   click activation wiring, syntax parsing, and editor token source integration
   remain later Phase D work.
+- Step 441 adds focused rich-text link activation metadata. The new
+  `text_rich_text_activation` leaf exposes `RichTextLinkActivation`,
+  `rich_text_pointer_button_can_activate_link(...)`, and
+  `rich_text_link_activation_at_point(...)`, converting primary single-button
+  release point hits into numeric link activation records without runtime
+  state, renderer state, or string link targets. Runtime rich-text element
+  dispatch, actual link command handling, inline image drawing/loading, syntax
+  parsing, and editor token source integration remain later Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

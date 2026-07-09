@@ -457,7 +457,18 @@
       "tests/ui/render_view_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
-    "rich_text_paint_metadata_remaining_gap": "actual multi-color glyph painting, inline image drawing/loading, click activation wiring, syntax parsing, and editor token source integration remain later Phase D work"
+    "rich_text_paint_metadata_remaining_gap": "actual multi-color glyph painting, inline image drawing/loading, click activation wiring, syntax parsing, and editor token source integration remain later Phase D work",
+    "step_441": "Phase D Step 441 rich text link activation metadata",
+    "rich_text_link_activation_surface": "RichTextLinkActivation, rich_text_pointer_button_can_activate_link(...), and rich_text_link_activation_at_point(...) convert primary single-button release point hits into numeric link activation records by composing existing rich text point-hit metadata without runtime state, renderer state, or string link targets",
+    "rich_text_link_activation_sources": [
+      "include/cgpui/ui/text_rich_text_activation.hpp",
+      "src/ui/text_rich_text_activation.cpp",
+      "include/cgpui/ui/text.hpp",
+      "tests/ui/rich_text_run_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "tests/architecture/ui_source_structure_test.cpp"
+    ],
+    "rich_text_link_activation_remaining_gap": "runtime rich-text element dispatch, actual link command handling, inline image drawing/loading, syntax parsing, and editor token source integration remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",
