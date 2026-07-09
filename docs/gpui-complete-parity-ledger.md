@@ -180,6 +180,18 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
 - Remaining gap: inline image paint integration, image asset loading/
   registration policy inside rich text, click activation wiring, syntax-theme
   integration, and rich-text paint integration remain later Phase D work.
+- Step 439 adds syntax-theme metadata through the focused
+  `text_rich_text_syntax` leaf. `RichTextSyntaxRole`,
+  `RichTextSyntaxToken`, `RichTextSyntaxTheme`,
+  `rich_text_syntax_attributes_for_role(...)`, and
+  `build_rich_text_syntax_spans(...)` convert caller-provided token ranges
+  into deterministic `RichTextSpan` records without maps, reflection, parser
+  ownership, runtime state, or renderer state. `tests/ui/rich_text_run_test.cpp`
+  verifies clipping, filtering, sorting, and composition with
+  `build_rich_text_runs(...)`.
+- Remaining gap: syntax parsing, editor token source integration, rich-text
+  paint integration, click activation wiring, and inline image paint
+  integration remain later Phase D work.
 
 ## Categories
 

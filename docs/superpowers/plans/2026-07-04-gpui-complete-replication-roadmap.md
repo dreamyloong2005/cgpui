@@ -1230,6 +1230,16 @@ behavior that can support GPUI examples and editor-like widgets.
   zero-length insertion anchors, deterministic sorting, logical size, and
   baseline offset. Image loading, rich-text paint integration, click
   activation, and syntax-theme integration remain later steps.
+  Step 439 adds syntax-theme metadata via
+  `include/cgpui/ui/text_rich_text_syntax.hpp` and
+  `src/ui/text_rich_text_syntax.cpp`: `RichTextSyntaxRole`,
+  `RichTextSyntaxToken`, `RichTextSyntaxTheme`,
+  `rich_text_syntax_attributes_for_role(...)`, and
+  `build_rich_text_syntax_spans(...)` convert caller-owned syntax token ranges
+  into deterministic `RichTextSpan` records without maps, parser ownership,
+  runtime state, or renderer state. Syntax parsing, editor token integration,
+  rich-text painting, click activation, and inline image painting remain later
+  steps.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

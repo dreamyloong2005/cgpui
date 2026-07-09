@@ -7729,3 +7729,18 @@
 - This closes inline image metadata only. Rich-text image paint integration,
   image loading/registration policy, click activation wiring, and syntax-theme
   integration remain explicit later Phase D work.
+
+## 2026-07-09 Phase D Step 439 Rich Text Syntax Theme Metadata
+
+- Step 439 keeps syntax highlighting as a caller-owned token-to-span adapter,
+  not a parser, editor integration, or renderer concern. The focused
+  `text_rich_text_syntax` leaf owns the public enum/theme/span builder surface.
+- `RichTextSyntaxRole`, `RichTextSyntaxToken`, `RichTextSyntaxTheme`,
+  `rich_text_syntax_attributes_for_role(...)`, and
+  `build_rich_text_syntax_spans(...)` convert fixed role tokens into
+  `RichTextSpan` records with clipping, empty-style filtering, and deterministic
+  sorting. The design avoids maps, reflection, runtime state, renderer state,
+  and hidden parser ownership.
+- This closes syntax-theme metadata only. Syntax parsing, editor token source
+  integration, rich-text paint integration, click activation wiring, and inline
+  image paint integration remain explicit later Phase D work.

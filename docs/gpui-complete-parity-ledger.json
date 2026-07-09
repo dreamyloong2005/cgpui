@@ -436,7 +436,17 @@
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
-    "rich_text_inline_image_remaining_gap": "inline image paint integration, image asset loading/registration policy inside rich text, click activation wiring, syntax-theme integration, and rich-text paint integration remain later Phase D work"
+    "rich_text_inline_image_remaining_gap": "inline image paint integration, image asset loading/registration policy inside rich text, click activation wiring, syntax-theme integration, and rich-text paint integration remain later Phase D work",
+    "step_439": "Phase D Step 439 rich text syntax theme metadata",
+    "rich_text_syntax_theme_surface": "RichTextSyntaxRole, RichTextSyntaxToken, RichTextSyntaxTheme, rich_text_syntax_attributes_for_role(...), and build_rich_text_syntax_spans(...) convert caller-provided syntax token ranges into deterministic RichTextSpan records without maps, reflection, parser ownership, runtime state, or renderer state",
+    "rich_text_syntax_theme_sources": [
+      "include/cgpui/ui/text_rich_text_syntax.hpp",
+      "src/ui/text_rich_text_syntax.cpp",
+      "include/cgpui/ui/text.hpp",
+      "tests/ui/rich_text_run_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp"
+    ],
+    "rich_text_syntax_theme_remaining_gap": "syntax parsing, editor token source integration, rich-text paint integration, click activation wiring, and inline image paint integration remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

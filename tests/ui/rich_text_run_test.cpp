@@ -1,6 +1,7 @@
 #include "cgpui/ui/text_rich_text.hpp"
 #include "cgpui/ui/text_rich_text_hit_testing.hpp"
 #include "cgpui/ui/text_rich_text_inline_image.hpp"
+#include "cgpui/ui/text_rich_text_syntax.hpp"
 
 #include <optional>
 #include <span>
@@ -282,6 +283,59 @@ int test_inline_images_are_clipped_filtered_and_sorted() {
   return 0;
 }
 
+int test_syntax_tokens_build_rich_text_spans() {
+  const cgpui::Color red = cgpui::rgb(255, 0, 0);
+  const cgpui::Color blue = cgpui::rgb(0, 0, 255);
+  cgpui::RichTextSyntaxTheme theme;
+  theme.keyword.foreground = red;
+  theme.keyword.decorations = cgpui::RichTextDecoration::underline;
+  theme.string_literal.background = blue;
+
+  std::vector<cgpui::RichTextSyntaxToken> tokens{
+      cgpui::RichTextSyntaxToken{
+          .role = cgpui::RichTextSyntaxRole::string_literal,
+          .byte_start = 4,
+          .byte_end = 20,
+      },
+      cgpui::RichTextSyntaxToken{
+          .role = cgpui::RichTextSyntaxRole::keyword,
+          .byte_start = 0,
+          .byte_end = 3,
+      },
+      cgpui::RichTextSyntaxToken{
+          .role = cgpui::RichTextSyntaxRole::comment,
+          .byte_start = 5,
+          .byte_end = 5,
+      },
+      cgpui::RichTextSyntaxToken{
+          .role = cgpui::RichTextSyntaxRole::number,
+          .byte_start = 20,
+          .byte_end = 22,
+      },
+  };
+
+  std::vector<cgpui::RichTextSpan> spans;
+  cgpui::build_rich_text_syntax_spans("let value", tokens, theme, spans);
+  if (spans.size() != 2 || spans[0].byte_start != 0 ||
+      spans[0].byte_end != 3 || spans[1].byte_start != 4 ||
+      spans[1].byte_end != 9) {
+    return 70;
+  }
+
+  const std::vector<cgpui::RichTextRun> runs =
+      cgpui::build_rich_text_runs("let value", spans);
+  if (runs.size() != 3 ||
+      !has_color(runs[0].attributes.foreground, red) ||
+      !cgpui::rich_text_has_decoration(
+          runs[0].attributes.decorations,
+          cgpui::RichTextDecoration::underline) ||
+      !has_color(runs[2].attributes.background, blue)) {
+    return 71;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -308,6 +362,10 @@ int main() {
     return result;
   }
   if (const int result = test_inline_images_are_clipped_filtered_and_sorted();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_syntax_tokens_build_rich_text_spans();
       result != 0) {
     return result;
   }

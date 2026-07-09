@@ -366,6 +366,15 @@ Windows/Linux core API is stable enough for parity work.
   insertion anchors, deterministic sorting, logical size, and baseline offset.
   Image loading, rich-text paint integration, click activation wiring, and
   syntax-theme integration remain later Phase D work.
+- Step 439 adds syntax-theme metadata in the focused
+  `text_rich_text_syntax` leaf. `RichTextSyntaxRole`,
+  `RichTextSyntaxToken`, `RichTextSyntaxTheme`,
+  `rich_text_syntax_attributes_for_role(...)`, and
+  `build_rich_text_syntax_spans(...)` convert caller-provided token ranges into
+  deterministic `RichTextSpan` records without maps, reflection, parser
+  ownership, runtime state, or renderer state. Syntax parsing, editor token
+  integration, rich-text painting, click activation wiring, and inline image
+  painting remain later Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 
