@@ -7514,3 +7514,14 @@
   invalidation with a small enum, cleared redo depth, and revision. This gives
   editor shells an observable signal without exposing the stacks or allocating a
   separate undo manager object.
+
+## 2026-07-09 Phase D Step 423 Edit Transaction Diagnostics
+
+- The edit-history status surface now reports the last transaction separately
+  from redo invalidation. This keeps normal commits, adjacent typing merges,
+  undo, redo, and clean marks observable without forcing callers to infer them
+  from stack-depth deltas.
+- `TextEditHistoryTransactionDiagnostic` only carries enum/policy/depth/revision
+  scalars. It deliberately does not copy `TextHistorySnapshot` text or expose
+  undo/redo vectors, preserving the zero-cost/low-allocation direction for
+  editor command state and diagnostics.

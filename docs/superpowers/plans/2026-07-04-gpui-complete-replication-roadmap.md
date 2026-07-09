@@ -1073,11 +1073,11 @@ behavior that can support GPUI examples and editor-like widgets.
   shared `text_caret_rect(...)` geometry for paint and IME candidate placement,
   runtime route scrolling for `ScrollableListElement`, existing focused text
   copy/cut/paste clipboard coverage, and
-  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Steps 419-422 deepen
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Steps 419-423 deepen
   edit history with grouped typing, IME composition commit grouping,
-  undo-manager status integration, and redo invalidation diagnostics; richer IME
-  platform behavior, rich text, text examples, and final Phase D verification
-  remain open in Steps 423-458.
+  undo-manager status integration, redo invalidation diagnostics, and
+  edit transaction diagnostics; richer IME platform behavior, rich text, text
+  examples, and final Phase D verification remain open in Steps 424-458.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.
@@ -1103,6 +1103,13 @@ behavior that can support GPUI examples and editor-like widgets.
   `TextEditHistoryStatus::last_redo_invalidation`, and
   `TextModel::invalidate_redo_history(...)`, so branch edits report why and how
   much redo history was discarded without exposing or copying the stacks.
+  Step 423 adds last-transaction diagnostics through
+  `TextEditHistoryTransactionKind`,
+  `TextEditHistoryTransactionDiagnostic`,
+  `TextEditHistoryStatus::last_transaction`, and
+  `TextModel::record_edit_history_transaction(...)`, so committed records,
+  adjacent typing merges, undo, redo, and clean marks expose depth deltas and
+  revision without copying edit snapshots.
 - [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
   Wayland text-input v3 surrounding text, delete-surrounding, content hints,
   serial policy, preedit styling, and candidate placement.

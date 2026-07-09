@@ -672,6 +672,9 @@ int test_text_model_reports_edit_history_status_for_undo_manager() {
           cgpui::TextEditHistoryRedoInvalidationReason::none ||
       status.last_redo_invalidation.cleared_redo_depth != 0 ||
       status.last_redo_invalidation.revision != 0 ||
+      status.last_transaction.kind !=
+          cgpui::TextEditHistoryTransactionKind::none ||
+      status.last_transaction.revision != 0 ||
       !model.edit_history_clean()) {
     return 651;
   }
@@ -773,6 +776,84 @@ int test_text_model_reports_redo_invalidation_diagnostics() {
       redo.edit_history_status().last_redo_invalidation.reason !=
           cgpui::TextEditHistoryRedoInvalidationReason::none) {
     return 664;
+  }
+
+  return 0;
+}
+
+int test_text_model_reports_edit_history_transaction_diagnostics() {
+  cgpui::TextModel model;
+  model.insert_text("a");
+  cgpui::TextEditHistoryStatus status = model.edit_history_status();
+  if (status.last_transaction.kind !=
+          cgpui::TextEditHistoryTransactionKind::record_committed ||
+      status.last_transaction.history_policy !=
+          cgpui::TextInsertHistoryPolicy::merge_adjacent_typing ||
+      status.last_transaction.undo_depth_before != 0 ||
+      status.last_transaction.undo_depth_after != 1 ||
+      status.last_transaction.redo_depth_before != 0 ||
+      status.last_transaction.redo_depth_after != 0 ||
+      status.last_transaction.revision != status.revision) {
+    return 665;
+  }
+
+  model.insert_text("b");
+  status = model.edit_history_status();
+  if (status.last_transaction.kind !=
+          cgpui::TextEditHistoryTransactionKind::record_merged ||
+      status.last_transaction.history_policy !=
+          cgpui::TextInsertHistoryPolicy::merge_adjacent_typing ||
+      status.last_transaction.undo_depth_before != 1 ||
+      status.last_transaction.undo_depth_after != 1 ||
+      status.last_transaction.redo_depth_before != 0 ||
+      status.last_transaction.redo_depth_after != 0 ||
+      status.last_transaction.revision != status.revision) {
+    return 666;
+  }
+
+  model.mark_edit_history_clean();
+  status = model.edit_history_status();
+  if (!status.clean ||
+      status.last_transaction.kind !=
+          cgpui::TextEditHistoryTransactionKind::clean_marked ||
+      status.last_transaction.undo_depth_before != 1 ||
+      status.last_transaction.undo_depth_after != 1 ||
+      status.last_transaction.redo_depth_before != 0 ||
+      status.last_transaction.redo_depth_after != 0 ||
+      status.last_transaction.revision != status.revision) {
+    return 667;
+  }
+
+  if (!model.undo()) {
+    return 668;
+  }
+  status = model.edit_history_status();
+  if (status.last_transaction.kind !=
+          cgpui::TextEditHistoryTransactionKind::undo_applied ||
+      status.last_transaction.history_policy !=
+          cgpui::TextInsertHistoryPolicy::merge_adjacent_typing ||
+      status.last_transaction.undo_depth_before != 1 ||
+      status.last_transaction.undo_depth_after != 0 ||
+      status.last_transaction.redo_depth_before != 0 ||
+      status.last_transaction.redo_depth_after != 1 ||
+      status.last_transaction.revision != status.revision) {
+    return 669;
+  }
+
+  if (!model.redo()) {
+    return 670;
+  }
+  status = model.edit_history_status();
+  if (status.last_transaction.kind !=
+          cgpui::TextEditHistoryTransactionKind::redo_applied ||
+      status.last_transaction.history_policy !=
+          cgpui::TextInsertHistoryPolicy::merge_adjacent_typing ||
+      status.last_transaction.undo_depth_before != 0 ||
+      status.last_transaction.undo_depth_after != 1 ||
+      status.last_transaction.redo_depth_before != 1 ||
+      status.last_transaction.redo_depth_after != 0 ||
+      status.last_transaction.revision != status.revision) {
+    return 671;
   }
 
   return 0;
@@ -2221,6 +2302,11 @@ int main() {
   }
   if (const int result =
           test_text_model_reports_redo_invalidation_diagnostics();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_reports_edit_history_transaction_diagnostics();
       result != 0) {
     return result;
   }

@@ -30,6 +30,27 @@ struct TextEditHistoryRedoInvalidation {
   std::uint64_t revision = 0;
 };
 
+enum class TextEditHistoryTransactionKind : std::uint8_t {
+  none,
+  record_committed,
+  record_merged,
+  undo_applied,
+  redo_applied,
+  clean_marked,
+};
+
+struct TextEditHistoryTransactionDiagnostic {
+  TextEditHistoryTransactionKind kind =
+      TextEditHistoryTransactionKind::none;
+  TextInsertHistoryPolicy history_policy =
+      TextInsertHistoryPolicy::separate_edit;
+  std::size_t undo_depth_before = 0;
+  std::size_t undo_depth_after = 0;
+  std::size_t redo_depth_before = 0;
+  std::size_t redo_depth_after = 0;
+  std::uint64_t revision = 0;
+};
+
 struct TextEditHistoryStatus {
   bool can_undo = false;
   bool can_redo = false;
@@ -38,6 +59,7 @@ struct TextEditHistoryStatus {
   std::size_t redo_depth = 0;
   std::uint64_t revision = 0;
   TextEditHistoryRedoInvalidation last_redo_invalidation;
+  TextEditHistoryTransactionDiagnostic last_transaction;
 };
 
 class TextModel {
@@ -128,6 +150,11 @@ class TextModel {
   void push_undo_record(const TextEditHistoryRecord& record);
   void invalidate_redo_history(
       TextEditHistoryRedoInvalidationReason reason);
+  void record_edit_history_transaction(
+      TextEditHistoryTransactionKind kind,
+      TextInsertHistoryPolicy history_policy,
+      std::size_t undo_depth_before,
+      std::size_t redo_depth_before);
   void commit_history_record(
       TextHistorySnapshot before,
       TextInsertHistoryPolicy history_policy =
@@ -182,6 +209,7 @@ class TextModel {
   std::size_t clean_edit_history_undo_depth_ = 0;
   std::uint64_t edit_history_revision_ = 0;
   TextEditHistoryRedoInvalidation last_redo_invalidation_;
+  TextEditHistoryTransactionDiagnostic last_transaction_;
   std::vector<TextEditHistoryRecord> undo_stack_;
   std::vector<TextEditHistoryRecord> redo_stack_;
   static constexpr std::size_t max_edit_history_records = 100;

@@ -272,6 +272,12 @@ Windows/Linux core API is stable enough for parity work.
   `TextEditHistoryStatus::last_redo_invalidation` record branch-edit redo
   invalidations by reason, cleared depth, and revision without copying records,
   exposing vectors, or introducing a manager allocation.
+- Step 423 adds edit transaction diagnostics to the same lightweight status
+  surface. `TextEditHistoryTransactionKind`,
+  `TextEditHistoryTransactionDiagnostic`, and
+  `TextEditHistoryStatus::last_transaction` report committed records, adjacent
+  typing merges, undo, redo, and clean marks with undo/redo depth deltas and the
+  matching revision, without copying snapshots or exposing history stacks.
 
 ## Definition Of Done For This 20-Step Goal
 
