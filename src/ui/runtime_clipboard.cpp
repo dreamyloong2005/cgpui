@@ -92,7 +92,7 @@ bool WindowRuntime::paste_clipboard_text() {
     return false;
   }
 
-  model->insert_text(*text);
+  model->insert_text(*text, TextInsertHistoryPolicy::separate_edit);
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::clipboard,
       .backend = "runtime",

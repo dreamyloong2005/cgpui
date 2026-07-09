@@ -23,6 +23,7 @@ std::string TextModel::selected_text() const {
 }
 
 void TextModel::set_selection(std::size_t anchor, std::size_t head) {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   selection_anchor_ = clamp_offset(anchor);
   selection_head_ = clamp_offset(head);
@@ -30,11 +31,13 @@ void TextModel::set_selection(std::size_t anchor, std::size_t head) {
 }
 
 void TextModel::clear_selection() {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   collapse_selection_to_cursor();
 }
 
 bool TextModel::extend_selection_to(std::size_t offset) {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
@@ -60,6 +63,7 @@ bool TextModel::erase_selection_if_needed() {
 }
 
 bool TextModel::extend_selection_previous() {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
@@ -73,6 +77,7 @@ bool TextModel::extend_selection_previous() {
 }
 
 bool TextModel::extend_selection_next() {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
@@ -86,6 +91,7 @@ bool TextModel::extend_selection_next() {
 }
 
 bool TextModel::extend_selection_previous_word() {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
@@ -103,6 +109,7 @@ bool TextModel::extend_selection_previous_word() {
 }
 
 bool TextModel::extend_selection_next_word() {
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
@@ -128,6 +135,7 @@ bool TextModel::extend_selection_line_end() {
 }
 
 bool TextModel::extend_selection_previous_line() {
+  clear_edit_history_grouping();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
   }
@@ -142,6 +150,7 @@ bool TextModel::extend_selection_previous_line() {
 }
 
 bool TextModel::extend_selection_next_line() {
+  clear_edit_history_grouping();
   if (selection().collapsed) {
     selection_anchor_ = cursor_;
   }

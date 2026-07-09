@@ -1079,6 +1079,11 @@ behavior that can support GPUI examples and editor-like widgets.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.
+  Step 419 starts this band with adjacent typing history coalescing in
+  `TextModel`: `TextInsertHistoryPolicy::merge_adjacent_typing` merges
+  uninterrupted typing into one undo/redo record, `separate_edit` keeps paste
+  and composition commits independent, and navigation, selection, delete,
+  undo/redo, and composition state changes explicitly break the grouping.
 - [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
   Wayland text-input v3 surrounding text, delete-surrounding, content hints,
   serial policy, preedit styling, and candidate placement.

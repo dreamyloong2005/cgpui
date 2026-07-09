@@ -557,6 +557,8 @@ int main() {
   const std::string text_hit_testing_source =
       read_source("src/ui/text_hit_testing.cpp");
   const std::string text_model_source = read_source("src/ui/text_model.cpp");
+  const std::string text_model_history_source =
+      read_source("src/ui/text_model_history.cpp");
   const std::string text_model_navigation_source =
       read_source("src/ui/text_model_navigation.cpp");
   const std::string text_model_selection_source =
@@ -614,6 +616,19 @@ int main() {
       !contains(text_model_selection_source,
                 "TextModel::extend_selection_previous_line(")) {
     return 116;
+  }
+  if (!contains(text_model_header, "enum class TextInsertHistoryPolicy") ||
+      !contains(text_model_header, "edit_history_grouping_open_") ||
+      !contains(text_model_history_source,
+                "TextInsertHistoryPolicy::merge_adjacent_typing") ||
+      !contains(text_model_history_source, "edit_history_grouping_open_") ||
+      !contains(text_model_history_source, "previous.after = std::move") ||
+      !contains(text_model_source, "TextModel::clear_edit_history_grouping(") ||
+      !contains(text_model_source,
+                "TextInsertHistoryPolicy::separate_edit") ||
+      !contains(read_source("src/ui/runtime_clipboard.cpp"),
+                "TextInsertHistoryPolicy::separate_edit")) {
+    return 118;
   }
   if (!contains(scroll_header, "scroll_rect_into_view(Rect rect)") ||
       !contains(scroll_source, "ScrollModel::scroll_rect_into_view(") ||

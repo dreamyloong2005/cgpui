@@ -12,6 +12,11 @@
 
 namespace cgpui {
 
+enum class TextInsertHistoryPolicy : std::uint8_t {
+  merge_adjacent_typing,
+  separate_edit,
+};
+
 class TextModel {
  public:
   TextModel() = default;
@@ -40,6 +45,9 @@ class TextModel {
   void commit_composition();
   void cancel_composition();
   void insert_text(std::string_view text);
+  void insert_text(
+      std::string_view text,
+      TextInsertHistoryPolicy history_policy);
 
   [[nodiscard]] bool move_cursor_previous();
   [[nodiscard]] bool move_cursor_next();
@@ -71,6 +79,8 @@ class TextModel {
   struct TextEditHistoryRecord {
     TextHistorySnapshot before;
     TextHistorySnapshot after;
+    TextInsertHistoryPolicy history_policy =
+        TextInsertHistoryPolicy::separate_edit;
   };
 
   struct DecodedCodepoint {
@@ -80,6 +90,7 @@ class TextModel {
 
   void clear_composition();
   void clear_preferred_line_column();
+  void clear_edit_history_grouping();
   [[nodiscard]] std::size_t preferred_line_column_for_vertical_navigation();
   [[nodiscard]] TextHistorySnapshot history_snapshot() const;
   [[nodiscard]] static bool history_snapshots_equal(
@@ -87,7 +98,10 @@ class TextModel {
       const TextHistorySnapshot& right);
   void restore_history_snapshot(const TextHistorySnapshot& snapshot);
   void push_undo_record(const TextEditHistoryRecord& record);
-  void commit_history_record(TextHistorySnapshot before);
+  void commit_history_record(
+      TextHistorySnapshot before,
+      TextInsertHistoryPolicy history_policy =
+          TextInsertHistoryPolicy::separate_edit);
   [[nodiscard]] std::size_t clamp_offset(std::size_t offset) const;
   void collapse_selection_to_cursor();
   [[nodiscard]] bool move_cursor_to(std::size_t offset);
@@ -131,6 +145,7 @@ class TextModel {
   std::size_t selection_head_ = 0;
   std::optional<std::size_t> preferred_line_column_;
   bool has_composition_ = false;
+  bool edit_history_grouping_open_ = false;
   std::vector<TextEditHistoryRecord> undo_stack_;
   std::vector<TextEditHistoryRecord> redo_stack_;
   static constexpr std::size_t max_edit_history_records = 100;

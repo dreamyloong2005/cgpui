@@ -16589,6 +16589,61 @@
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
 
+## 2026-07-09 Phase D Step 419 Adjacent Typing History
+
+- Started Step 419 from clean `master` after
+  `fa5916f feat: close text selection caret band`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added adjacent typing history coalescing in `TextModel` with
+  `TextInsertHistoryPolicy::merge_adjacent_typing` as the default typing path
+  and `TextInsertHistoryPolicy::separate_edit` for paste/composition-style
+  independent edits.
+- Kept the coalescing decision in `src/ui/text_model_history.cpp`; navigation,
+  selection, delete, undo/redo, and composition state changes now clear the
+  grouping gate before later typing can create a new record.
+- Updated the clipboard paste path to use `separate_edit`, so paste does not
+  merge with adjacent typed characters.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  2/2.
+- After moving the text ledger to Phase D Steps 379-419, updated the Step 418
+  selection/caret closeout audit so it keeps guarding its evidence without
+  pinning the text row to 379-418 or requiring grouped typing to remain
+  incomplete.
+- Focused ledger/adjacent verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  ui_source_structure_test/default phase_d_selection_caret_audit_test/default
+  gpui_parity_ledger_test/default` 5/5.
+- Diff hygiene passed with no whitespace errors:
+  `git diff --check` only reported the expected CRLF conversion warnings.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 19/19.
+- Adjacent WSL verification reused `.build-wsl/master` on D: and
+  `/dev/shm/cgpui` for transient temp, then passed 19/19:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
 ## 2026-07-09 Phase D Step 416 Runtime Triple-Click Line Selection
 
 - Started from clean `master` after

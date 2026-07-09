@@ -7468,3 +7468,18 @@
   `tests/api_parity/phase_d_selection_caret_audit_test.cpp`; remaining Phase D
   text work starts at Step 419 edit history and continues through IME, rich
   text, examples, and final verification.
+
+## 2026-07-09 Phase D Step 419 Adjacent Typing History
+
+- Step 419 starts the edit-history band by coalescing uninterrupted typing into
+  one undo/redo record instead of pushing one snapshot per `insert_text(...)`.
+- `TextInsertHistoryPolicy::merge_adjacent_typing` is the default public insert
+  policy for text-input typing. `TextInsertHistoryPolicy::separate_edit` keeps
+  paste and composition commits independent so later IME grouping can be added
+  explicitly.
+- The grouping gate is owned by `src/ui/text_model_history.cpp`: it only merges
+  when the previous record was typing, grouping is still open, and the new
+  before snapshot exactly equals the previous after snapshot.
+- Navigation, selection, delete, undo/redo, composition updates/cancel, and
+  selection replacement call or imply `clear_edit_history_grouping()`, so
+  grouping does not silently cross user-visible operation boundaries.

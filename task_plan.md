@@ -249,6 +249,12 @@ Windows/Linux core API is stable enough for parity work.
   text copy/cut/paste clipboard coverage remains frozen, and
   `tests/api_parity/phase_d_selection_caret_audit_test.cpp` locks the Step
   411-418 evidence before Phase D moves to Step 419 edit history.
+- Step 419 starts edit-history depth with adjacent typing coalescing.
+  `TextInsertHistoryPolicy::merge_adjacent_typing` merges uninterrupted typing
+  inserts into one undo/redo record, while `separate_edit` keeps paste and
+  composition commits independent. Navigation, selection, delete, undo/redo,
+  and composition state changes explicitly break the grouping so the hot path
+  remains predictable and testable.
 
 ## Definition Of Done For This 20-Step Goal
 

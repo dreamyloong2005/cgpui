@@ -35,6 +35,7 @@ std::string_view TextModel::composition_text() const {
 }
 
 void TextModel::set_composition_text(std::string_view text) {
+  clear_edit_history_grouping();
   composition_text_ = std::string(text);
   has_composition_ = true;
 }
@@ -45,25 +46,37 @@ void TextModel::commit_composition() {
   }
   std::string committed = std::move(composition_text_);
   clear_composition();
-  insert_text(committed);
+  insert_text(committed, TextInsertHistoryPolicy::separate_edit);
 }
 
 void TextModel::cancel_composition() {
+  clear_edit_history_grouping();
   clear_composition();
 }
 
 void TextModel::insert_text(std::string_view text) {
+  insert_text(text, TextInsertHistoryPolicy::merge_adjacent_typing);
+}
+
+void TextModel::insert_text(
+    std::string_view text,
+    TextInsertHistoryPolicy history_policy) {
   const TextHistorySnapshot before = history_snapshot();
+  const bool replacing_selection = !selection().collapsed;
   clear_preferred_line_column();
   (void)erase_selection_if_needed();
   text_.insert(cursor_, text);
   cursor_ += text.size();
   collapse_selection_to_cursor();
-  commit_history_record(before);
+  commit_history_record(
+      before,
+      replacing_selection ? TextInsertHistoryPolicy::separate_edit
+                          : history_policy);
 }
 
 bool TextModel::backspace() {
   const TextHistorySnapshot before = history_snapshot();
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (erase_selection_if_needed()) {
     commit_history_record(before);
@@ -82,6 +95,7 @@ bool TextModel::backspace() {
 
 bool TextModel::delete_forward() {
   const TextHistorySnapshot before = history_snapshot();
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   if (erase_selection_if_needed()) {
     commit_history_record(before);
@@ -101,6 +115,7 @@ bool TextModel::delete_surrounding_text(
     std::size_t before_length,
     std::size_t after_length) {
   const TextHistorySnapshot before = history_snapshot();
+  clear_edit_history_grouping();
   clear_preferred_line_column();
   const std::size_t cursor = clamp_offset(cursor_);
   std::size_t start = before_length > cursor ? 0 : cursor - before_length;
@@ -180,6 +195,10 @@ void TextModel::clear_preferred_line_column() {
   preferred_line_column_.reset();
 }
 
+void TextModel::clear_edit_history_grouping() {
+  edit_history_grouping_open_ = false;
+}
+
 std::size_t TextModel::preferred_line_column_for_vertical_navigation() {
   if (!preferred_line_column_.has_value()) {
     preferred_line_column_ = line_column_for_offset(cursor_);
@@ -197,6 +216,7 @@ void TextModel::collapse_selection_to_cursor() {
 }
 
 bool TextModel::move_cursor_to(std::size_t offset) {
+  clear_edit_history_grouping();
   const std::size_t target = clamp_offset(offset);
   if (target == cursor_) {
     return false;

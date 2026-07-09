@@ -69,6 +69,7 @@ TextSelectionRange TextModel::line_selection_range_at(
 }
 
 bool TextModel::move_cursor_previous() {
+  clear_edit_history_grouping();
   if (cursor_ == 0) {
     return false;
   }
@@ -79,6 +80,7 @@ bool TextModel::move_cursor_previous() {
 }
 
 bool TextModel::move_cursor_next() {
+  clear_edit_history_grouping();
   if (cursor_ >= text_.size()) {
     return false;
   }
@@ -89,6 +91,7 @@ bool TextModel::move_cursor_next() {
 }
 
 bool TextModel::move_cursor_previous_word() {
+  clear_edit_history_grouping();
   if (cursor_ == 0) {
     return false;
   }
@@ -103,6 +106,7 @@ bool TextModel::move_cursor_previous_word() {
 }
 
 bool TextModel::move_cursor_next_word() {
+  clear_edit_history_grouping();
   if (cursor_ >= text_.size()) {
     return false;
   }
@@ -125,6 +129,7 @@ bool TextModel::move_cursor_line_end() {
 }
 
 bool TextModel::move_cursor_previous_line() {
+  clear_edit_history_grouping();
   (void)preferred_line_column_for_vertical_navigation();
   const std::size_t target = previous_line_offset(cursor_);
   if (target == cursor_) {
@@ -136,6 +141,7 @@ bool TextModel::move_cursor_previous_line() {
 }
 
 bool TextModel::move_cursor_next_line() {
+  clear_edit_history_grouping();
   (void)preferred_line_column_for_vertical_navigation();
   const std::size_t target = next_line_offset(cursor_);
   if (target == cursor_) {

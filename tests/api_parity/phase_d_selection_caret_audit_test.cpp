@@ -127,7 +127,7 @@ int main() {
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-418") ||
+  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "TextSelectionDrag") ||
       !contains(text_row, "word_selection_range_at") ||
       !contains(text_row, "line_selection_range_at") ||
@@ -141,7 +141,7 @@ int main() {
       !contains(text_row, "text_caret_rect") ||
       !contains(text_row, "copy_selection_to_clipboard") ||
       !contains(text_row, "phase_d_selection_caret_audit_test") ||
-      !contains(text_row, "grouped typing") ||
+      !contains(text_row, "edit transaction diagnostics") ||
       !contains(text_row, "IME")) {
     return 5;
   }

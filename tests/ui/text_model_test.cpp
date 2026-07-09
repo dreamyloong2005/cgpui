@@ -602,6 +602,65 @@ int test_text_model_undo_redo_restores_edit_history() {
   return 0;
 }
 
+int test_text_model_groups_adjacent_typing_history() {
+  cgpui::TextModel model;
+  model.insert_text("a");
+  model.insert_text("b");
+  model.insert_text("c");
+  if (model.text() != std::string_view{"abc"} || !model.can_undo()) {
+    return 635;
+  }
+  if (!model.undo() || !model.text().empty() || model.cursor() != 0 ||
+      !model.can_redo()) {
+    return 636;
+  }
+  if (!model.redo() || model.text() != std::string_view{"abc"} ||
+      model.cursor() != 3 || model.can_redo()) {
+    return 637;
+  }
+
+  cgpui::TextModel navigation;
+  navigation.insert_text("a");
+  (void)navigation.move_cursor_previous();
+  (void)navigation.move_cursor_next();
+  navigation.insert_text("b");
+  if (!navigation.undo() || navigation.text() != std::string_view{"a"} ||
+      navigation.cursor() != 1) {
+    return 638;
+  }
+  if (!navigation.undo() || !navigation.text().empty()) {
+    return 639;
+  }
+
+  cgpui::TextModel separate;
+  separate.insert_text("a");
+  separate.insert_text("bc", cgpui::TextInsertHistoryPolicy::separate_edit);
+  if (!separate.undo() || separate.text() != std::string_view{"a"} ||
+      separate.cursor() != 1) {
+    return 640;
+  }
+  if (!separate.redo() || separate.text() != std::string_view{"abc"} ||
+      separate.cursor() != 3) {
+    return 641;
+  }
+
+  cgpui::TextModel replacement;
+  replacement.insert_text("abc");
+  replacement.set_selection(1, 2);
+  replacement.insert_text("Z");
+  if (!replacement.undo() ||
+      replacement.text() != std::string_view{"abc"} ||
+      replacement.selection_anchor() != 1 ||
+      replacement.selection_head() != 2) {
+    return 642;
+  }
+  if (!replacement.undo() || !replacement.text().empty()) {
+    return 643;
+  }
+
+  return 0;
+}
+
 int test_text_model_deletes_surrounding_text_on_utf8_boundaries() {
   const std::string text_with_zhong =
       std::string{"ab"} + "\xE4\xB8\xAD" + "cd";
@@ -1986,6 +2045,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_undo_redo_restores_edit_history();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_model_groups_adjacent_typing_history();
       result != 0) {
     return result;
   }
