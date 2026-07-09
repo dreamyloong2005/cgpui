@@ -13,6 +13,7 @@ end
 if is_plat("linux") then
     add_requires("wayland")
     add_requires("libxkbcommon", {configs = {x11 = false, wayland = false, tools = false}})
+    add_requires("fontconfig", {system = true, optional = true})
 end
 
 target("cgpui_core")
@@ -94,6 +95,10 @@ if is_plat("linux") then
         add_files("src/platform/linux/*.cpp")
         add_deps("cgpui_core", "cgpui_platform")
         add_packages("wayland", "libxkbcommon")
+        if has_package("fontconfig") then
+            add_packages("fontconfig")
+            add_defines("CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND")
+        end
         add_includedirs(public_includedirs, {public = true})
 
     target("wayland_compositor_close_test")

@@ -17821,3 +17821,30 @@
 - Expanded focused WSL gate reused the same D: cache and `/dev/shm/cgpui` temp,
   included `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 16/16 focused
   tests.
+
+## 2026-07-09 Phase D Fontconfig Package Wiring
+
+- Started from clean tracked `master` after
+  `82d14963 feat: add guarded harfbuzz shaping backend`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Updated `tests/api_parity/phase_d_font_fallback_audit_test.cpp` first so the
+  font fallback closeout requires system-optional fontconfig package wiring in
+  `xmake.lua`, then observed the expected RED failure before adding the wiring.
+- Added Linux `add_requires("fontconfig", {system = true, optional = true})`
+  and Wayland target `has_package("fontconfig")` wiring so
+  `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND` and `add_packages("fontconfig")`
+  are enabled only when the system package is available.
+- Updated the roadmap, Markdown/JSON parity ledger, `task_plan.md`, and
+  `findings.md` to mark the font discovery/fallback band complete while
+  keeping FreeType metrics extraction and richer per-face coverage as later
+  work.
+- Windows font fallback verification passed:
+  `xmake test -y -P . phase_d_font_fallback_audit_test/default
+  phase_d_text_shaping_audit_test/default gpui_parity_ledger_test/default` 3/3.
+- WSL font fallback verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp, included
+  `-w /mnt/d/Dev/Projects/cgpui`, and passed 4/4:
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`,
+  `gpui_parity_ledger_test/default`, and
+  `wayland_font_discovery_test/default`.

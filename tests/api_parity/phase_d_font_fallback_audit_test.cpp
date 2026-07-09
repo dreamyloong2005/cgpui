@@ -100,12 +100,16 @@ int main() {
       !contains(text_row, "append_script_run_span") ||
       !contains(text_row, "FontDatabase::resolve_chain_for_codepoint") ||
       !contains(text_row, "wayland_fontconfig_discovery.cpp") ||
-      !contains(text_row, "production HarfBuzz shaping")) {
+      !contains(text_row, "system-optional fontconfig package wiring") ||
+      !contains(text_row, "guarded HarfBuzz backend now shapes through hb_shape")) {
     return 3;
   }
 
   if (!contains(roadmap, "Step 394 closes the font discovery/fallback band") ||
+      !contains(roadmap, "- [x] Steps 387-394: Add real font discovery") ||
+      !contains(roadmap, "system-optional fontconfig package wiring") ||
       !contains(task_plan, "Step 394 closes the font discovery/fallback band") ||
+      !contains(task_plan, "system-optional fontconfig package wiring") ||
       !contains(findings, "Step 394 is an audit-only closeout")) {
     return 4;
   }
@@ -136,7 +140,11 @@ int main() {
       !contains(win32_font, "GetSystemFontCollection") ||
       !contains(wayland_fontconfig,
                 "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
-      !contains(wayland_fontconfig, "FcFontList")) {
+      !contains(wayland_fontconfig, "FcFontList") ||
+      !contains(xmake, "add_requires(\"fontconfig\"") ||
+      !contains(xmake, "has_package(\"fontconfig\")") ||
+      !contains(xmake, "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
+      !contains(xmake, "add_packages(\"fontconfig\")")) {
     return 6;
   }
 

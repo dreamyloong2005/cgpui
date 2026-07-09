@@ -445,6 +445,11 @@ Windows/Linux core API is stable enough for parity work.
   shaping audit freeze that source boundary. DirectWrite font-file extraction remains later work,
   along with native ZWJ ligature shaping depth, full Unicode script data,
   bidirectional shaping, and paragraph shaping.
+- Phase D font discovery now has system-optional fontconfig package wiring in
+  `xmake.lua`, enabling `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND` for the
+  Wayland platform target when the system `fontconfig` package is available
+  while preserving deterministic fallback when it is absent. FreeType metrics
+  extraction and richer per-face coverage remain later work.
 
 ## Definition Of Done For This 20-Step Goal
 

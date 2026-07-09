@@ -934,7 +934,7 @@ behavior that can support GPUI examples and editor-like widgets.
   DirectWrite font-file extraction remains later work, along with native ZWJ
   ligature shaping depth, full Unicode script data, bidirectional shaping, and
   paragraph shaping.
-- [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
+- [x] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
   Step 387 starts this band by moving `FontDatabase`, `FontFallbackChain`, and
   deterministic discovery helper bodies out of `text_font.hpp` into
@@ -975,6 +975,12 @@ behavior that can support GPUI examples and editor-like widgets.
   over Steps 387-393, preserving the explicit remaining gaps for
   dependency-backed Linux fontconfig/FreeType enumeration and production
   HarfBuzz shaping before the next Phase D fallback-splitting band starts.
+  Phase D font discovery now has system-optional fontconfig package wiring in
+  `xmake.lua`: when the system `fontconfig` package is available, the Wayland
+  platform target links it and defines `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND`,
+  enabling the existing `FcFontList` native enumeration path; missing
+  fontconfig keeps the deterministic fallback path. FreeType metrics extraction
+  and richer per-face coverage remain later work.
 - [x] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.

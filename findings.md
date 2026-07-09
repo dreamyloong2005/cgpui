@@ -7860,3 +7860,13 @@
 - DirectWrite font-file extraction remains later work, along with native ZWJ
   ligature shaping depth, full Unicode script data, bidirectional shaping, and
   paragraph shaping.
+
+## 2026-07-09 Phase D Fontconfig Package Wiring
+
+- Phase D font discovery now has system-optional fontconfig package wiring in
+  `xmake.lua`. On Linux, the Wayland platform target defines
+  `CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND` and links `fontconfig` only when the
+  system package is available.
+- This enables the existing `FcFontList` native enumeration path without
+  turning missing development headers into a hard build failure.
+- FreeType metrics extraction and richer per-face coverage remain later work.
