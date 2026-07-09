@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
+
+- Step 466 is an audit-only closeout for the production glyph-atlas band. The
+  runtime implementation already lives in focused resource, staging, upload
+  recording, frame, draw-binding, and draw-data modules from Steps 459-465.
+- The closeout should freeze both behavior and ownership evidence: alpha8 page
+  resources, descriptor capacity and preflight, dirty uploads, acquired-buffer
+  recording, three-page reuse, renderer-owned descriptor bindings, contiguous
+  flat quad ranges, and live range/page validation.
+- No text shader, pipeline, vertex-buffer, or draw-call implementation belongs
+  in this slice. Step 467 starts that separate renderer band.
+- Phase E Step 466 glyph atlas integration closeout is frozen by
+  `tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp`. The
+  audit covers Steps 459-465 evidence for alpha8 page resources, descriptor
+  capacity, dirty uploads, acquired command buffer recording, three atlas
+  pages, private `VulkanGlyphAtlasDrawBinding` and
+  `VulkanGlyphAtlasDrawData` ownership, and contiguous page runs.
+  Step 467 text shader pipeline is the next implementation slice.
+
 ## 2026-07-10 Phase E Step 465 Glyph Atlas Draw Data
 
 - Descriptor bindings alone are insufficient for the future text pipeline; the

@@ -357,9 +357,15 @@ consume C: drive space again.
   textured glyph quads retain draw order, while `first_quad_index` and glyph
   counts describe contiguous page runs for the descriptor bindings. Live
   command recording rejects out-of-range bindings or quad/page mismatches.
-- Remaining Phase E glyph-atlas gap: Step 466 closes and audits the completed
-  integration band before the text shader pipeline.
-- Handoff: Phase E Step 466 glyph atlas integration closeout.
+- Phase E Step 466 glyph atlas integration closeout is frozen by
+  `tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp`. The
+  audit covers Steps 459-465 evidence for alpha8 page resources,
+  descriptor capacity, dirty uploads, acquired command buffer recording, three
+  atlas pages, private `VulkanGlyphAtlasDrawBinding` and
+  `VulkanGlyphAtlasDrawData` ownership, and contiguous page runs.
+- Remaining Phase E glyph-atlas gap: Step 467 text shader pipeline starts the
+  real shader, vertex-buffer, pipeline, and textured draw-call work.
+- Handoff: Phase E Step 467 text shader pipeline.
 
 ## Categories
 

@@ -18163,3 +18163,31 @@
   target without another invalid-COFF failure.
 - The required default parallel Windows full rerun then passed 146/146 with
   `xmake test -y -P .`; `LNK1236` did not recur after the serialized relink.
+
+## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
+
+- Started from clean tracked `master` at
+  `89e8ff97 feat: preserve glyph atlas draw data`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 466 is an audit-only closeout that will freeze the focused Steps 459-465
+  glyph-atlas modules and tests, then hand Phase E to Step 467 text shader
+  pipeline work without changing Vulkan runtime behavior.
+- Added `phase_e_glyph_atlas_integration_closeout_test` and observed the
+  expected documentation RED at exit 30 after the test compiled, linked, and
+  found all required module, target, ordering, and behavior evidence.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  to close Steps 459-466 and hand Phase E to Step 467 text shader pipeline.
+- The first post-documentation run still exited 30 because the roadmap did not
+  contain the exact shared closeout title. Added the common
+  `Phase E Step 466 glyph atlas integration closeout` wording without weakening
+  the audit.
+- The next run advanced to exit 32. A cross-document diagnostic found three
+  required phrases split by Markdown wrapping; normalized those phrases while
+  preserving the same prose and strict audit contract.
+- Focused Windows Step 466 verification passed 1/1:
+  `phase_e_glyph_atlas_integration_closeout_test/default`.
+- Windows full debug verification passed 147/147 with
+  `xmake test -y -P .`.
+- WSL Arch Linux full debug verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 144/144 with serialized linking and
+  the new closeout audit included.

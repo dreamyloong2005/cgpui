@@ -1445,9 +1445,15 @@ draw calls for the Windows/Linux renderer.
   identity before the render pass. `vulkan_glyph_atlas_draw_data.cpp` owns this
   planning so descriptor resolution remains focused. Step 466 closes the glyph
   atlas integration band before text shader work.
-- [ ] Step 466: Close the production glyph atlas integration band and freeze
-  resource, upload, binding, draw-data, live-command-buffer, and multi-page
-  evidence.
+- [x] Phase E Step 466 closes the production glyph atlas integration band
+  through `tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp`.
+  This Phase E Step 466 glyph atlas integration closeout audit freezes
+  Steps 459-465 evidence for alpha8 page resources,
+  descriptor capacity, dirty uploads, acquired command buffer recording, three
+  atlas pages, private `VulkanGlyphAtlasDrawBinding` and
+  `VulkanGlyphAtlasDrawData` ownership, and contiguous page runs.
+  Step 467 text shader pipeline follows; this closeout does not claim shader,
+  vertex-buffer, pipeline, or textured draw-call implementation.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured
   glyph draw calls, subpixel positioning policy, and gamma/alpha handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

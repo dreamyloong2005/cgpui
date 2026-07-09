@@ -684,8 +684,30 @@
       "xmake.lua"
     ],
     "phase_e_step_465_remaining_gap": "Step 466 closes and audits the glyph atlas integration band before the text shader pipeline",
+    "phase_e_step_466_surface": "Phase E Step 466 glyph atlas integration closeout is frozen by tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp. The audit covers Steps 459-465 evidence for alpha8 page resources, descriptor capacity, dirty uploads, acquired command buffer recording, three atlas pages, private VulkanGlyphAtlasDrawBinding and VulkanGlyphAtlasDrawData ownership, and contiguous page runs. Step 467 text shader pipeline follows; shader, vertex-buffer, pipeline, and textured draw-call implementation remain open.",
+    "phase_e_step_466_sources": [
+      "tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp",
+      "include/cgpui/renderer/glyph_atlas_production.hpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings_internal.hpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_staging.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_upload_recording.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_draw_data.cpp",
+      "src/renderer/vulkan/vulkan_command_recording.cpp",
+      "tests/renderer/vulkan_glyph_atlas_multi_page_test.cpp",
+      "tests/renderer/vulkan_glyph_atlas_frame_lifecycle_test.cpp",
+      "tests/renderer/vulkan_glyph_atlas_draw_binding_test.cpp",
+      "tests/renderer/vulkan_glyph_atlas_draw_data_test.cpp",
+      "tests/renderer/vulkan_frame_lifetime_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_466_remaining_gap": "Step 467 text shader pipeline starts real shader, vertex-buffer, pipeline, and textured draw-call work",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 466 glyph atlas integration closeout"
+    "phase_e_current_handoff": "Phase E Step 467 text shader pipeline"
   },
   "categories": [
     "application_and_app_context",

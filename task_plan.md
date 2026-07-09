@@ -522,19 +522,27 @@ Windows/Linux core API is stable enough for parity work.
   contiguous page runs, bindings copy those ranges, and command recording
   validates both bounds and quad/page identity. Step 466 is the glyph atlas
   integration closeout before the Step 467 text shader pipeline.
+- Phase E Step 466 glyph atlas integration closeout is frozen by
+  `tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp`. The
+  audit covers Steps 459-465 evidence for alpha8 page resources, descriptor
+  capacity, dirty uploads, acquired command buffer recording, three atlas
+  pages, private `VulkanGlyphAtlasDrawBinding` and
+  `VulkanGlyphAtlasDrawData` ownership, and contiguous page runs. Step 467 text
+  shader pipeline is the next slice.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-465 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-466 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
-  descriptor bindings, and renderer-ready flat quad ranges.
-- In progress: Step 466 glyph atlas integration closeout.
-- Pending bands: Step 466 atlas closeout; Steps 467-474 text
+  descriptor bindings, renderer-ready flat quad ranges, and the integration
+  closeout audit.
+- In progress: Step 467 text shader pipeline.
+- Pending bands: Steps 467-474 text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -568,6 +576,9 @@ Windows/Linux core API is stable enough for parity work.
 | First compiled Step 465 draw-data run exited 40 | Step 465 documentation gate | Expected RED after draw-data behavior compiled; add roadmap, ledger, planning, and Step 466 closeout handoff evidence |
 | Expanded Step 465 focused build hit `LNK1236` for an invalid COFF section in the draw-binding object after the direct draw-data/binding targets had passed | First expanded Windows focused attempt | Treat as stale/corrupt incremental output; force-rebuild `cgpui_renderer_vulkan` before retrying the gate instead of repeating the same link path |
 | `LNK1236` recurred while the Windows full suite linked many targets concurrently, despite the force-rebuilt library passing the 11-target focused gate | First Windows full attempt | Serialize one full link/test pass with `-j 1`, then rerun the default full command after all targets are current to verify normal cadence |
+| `phase_e_glyph_atlas_integration_closeout_test` first exited 30 after compiling and linking | Step 466 RED | Expected documentation RED; synchronize roadmap, Markdown/JSON ledger, planning, and findings with the completed Steps 459-465 evidence and Step 467 handoff |
+| Step 466 closeout still exited 30 after the first documentation sync because the roadmap used `Step 466 closes` instead of the shared closeout title | Step 466 first GREEN attempt | Keep the cross-document audit strict and add the exact `Phase E Step 466 glyph atlas integration closeout` wording to the roadmap |
+| Step 466 closeout advanced to exit 32 after the title fix because Markdown wrapping split shared evidence phrases | Step 466 second GREEN attempt | Keep the audited `Steps 459-465`, `descriptor capacity`, and `Step 467 text shader pipeline` phrases contiguous across all five authority files |
 
 ## Definition Of Done For This 20-Step Goal
 
