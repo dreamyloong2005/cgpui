@@ -345,6 +345,13 @@ Windows/Linux core API is stable enough for parity work.
   caller-owned output/scratch reuse. Inline images, rich-text painting, link
   activation, syntax-theme wiring, and run-aware hit testing remain later Phase
   D work.
+- Step 436 adds byte-offset rich-text interaction metadata:
+  `RichTextRunHit`, `RichTextLinkHit`,
+  `rich_text_run_at_byte_offset(...)`, and
+  `rich_text_link_at_byte_offset(...)` expose half-open run/link hits over the
+  normalized runs without renderer state or string link targets. Point-based
+  hit testing, click activation wiring, inline images, and rich-text painting
+  remain later Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -150,6 +150,15 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   clipping, empty span dropping, and adjacent equal-run coalescing.
 - Remaining gap: inline images, rich-text paint integration, link activation,
   syntax-theme wiring, and run-aware hit testing remain later Phase D work.
+- Step 436 adds byte-offset run/link hit metadata on the same rich-text leaf:
+  `RichTextRunHit`, `RichTextLinkHit`,
+  `rich_text_run_at_byte_offset(...)`, and
+  `rich_text_link_at_byte_offset(...)` return small optional records over
+  half-open `RichTextRun` byte ranges. `tests/ui/rich_text_run_test.cpp`
+  verifies run boundary selection, no-link misses, link id propagation, and
+  end-exclusive behavior.
+- Remaining gap: point-based rich-text hit testing, click activation wiring,
+  inline images, and rich-text paint integration remain later Phase D work.
 
 ## Categories
 

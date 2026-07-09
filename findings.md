@@ -7687,3 +7687,17 @@
 - This closes rich-text run normalization only. Inline images, painting,
   syntax-theme integration, link activation, and run-aware hit testing remain
   explicit later Phase D work.
+
+## 2026-07-09 Phase D Step 436 Rich Text Byte Hit Metadata
+
+- Step 436 should keep rich-text interaction metadata in the focused
+  `text_rich_text` leaf rather than routing through `WindowRuntime` or renderer
+  hit-test state.
+- `RichTextRunHit`, `RichTextLinkHit`,
+  `rich_text_run_at_byte_offset(...)`, and
+  `rich_text_link_at_byte_offset(...)` expose small optional records for
+  half-open byte ranges. Link hits reuse numeric `RichTextLinkId`, avoiding
+  string link targets or hidden allocation in the hit path.
+- This closes byte-offset run/link lookup only. Point-based rich-text hit
+  testing, click activation wiring, inline image spans, and paint integration
+  remain explicit later Phase D work.

@@ -65,6 +65,20 @@ struct RichTextRunBuildScratch {
   std::vector<std::size_t> endpoints;
 };
 
+struct RichTextRunHit {
+  std::size_t run_index = 0;
+  std::size_t byte_start = 0;
+  std::size_t byte_end = 0;
+  RichTextAttributes attributes;
+};
+
+struct RichTextLinkHit {
+  RichTextLinkId link_id;
+  std::size_t run_index = 0;
+  std::size_t byte_start = 0;
+  std::size_t byte_end = 0;
+};
+
 [[nodiscard]] RichTextAttributes merge_rich_text_attributes(
     RichTextAttributes base,
     const RichTextAttributes& overlay);
@@ -83,5 +97,13 @@ void build_rich_text_runs(
 [[nodiscard]] std::vector<RichTextRun> build_rich_text_runs(
     std::string_view text,
     std::span<const RichTextSpan> spans);
+
+[[nodiscard]] std::optional<RichTextRunHit> rich_text_run_at_byte_offset(
+    std::span<const RichTextRun> runs,
+    std::size_t byte_offset);
+
+[[nodiscard]] std::optional<RichTextLinkHit> rich_text_link_at_byte_offset(
+    std::span<const RichTextRun> runs,
+    std::size_t byte_offset);
 
 } // namespace cgpui

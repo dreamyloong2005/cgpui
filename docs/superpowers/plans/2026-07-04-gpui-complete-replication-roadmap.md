@@ -1204,8 +1204,16 @@ behavior that can support GPUI examples and editor-like widgets.
   The caller-owned output/scratch overload keeps allocation visible and
   reusable, while `tests/ui/rich_text_run_test.cpp` freezes plain-text fallback,
   overlapping attribute merge, out-of-range span clipping, empty span dropping,
-  and adjacent equal-run coalescing. Inline images, rich-text painting, link
-  activation, and run-aware hit testing remain later steps in this band.
+  and adjacent equal-run coalescing.
+  Step 436 adds the first link/run interaction surface:
+  `RichTextRunHit`, `RichTextLinkHit`,
+  `rich_text_run_at_byte_offset(...)`, and
+  `rich_text_link_at_byte_offset(...)` expose half-open byte-range hit metadata
+  for normalized runs without renderer state or string link targets.
+  `rich_text_run_test` verifies boundary selection, missing-link misses, link
+  id propagation, and end-exclusive behavior. Inline images, rich-text painting,
+  point-based hit testing, and click activation wiring remain later steps in
+  this band.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

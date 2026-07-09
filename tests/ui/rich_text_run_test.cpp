@@ -140,6 +140,51 @@ int test_adjacent_equal_runs_coalesce() {
   return 0;
 }
 
+int test_run_and_link_hits_use_half_open_byte_ranges() {
+  std::vector<cgpui::RichTextRun> runs{
+      cgpui::RichTextRun{
+          .byte_start = 0,
+          .byte_end = 4,
+      },
+      cgpui::RichTextRun{
+          .byte_start = 4,
+          .byte_end = 8,
+          .attributes = cgpui::RichTextAttributes{
+              .link_id = cgpui::RichTextLinkId{42},
+          },
+      },
+  };
+
+  const std::optional<cgpui::RichTextRunHit> first =
+      cgpui::rich_text_run_at_byte_offset(runs, 0);
+  const std::optional<cgpui::RichTextRunHit> boundary =
+      cgpui::rich_text_run_at_byte_offset(runs, 4);
+  const std::optional<cgpui::RichTextRunHit> end =
+      cgpui::rich_text_run_at_byte_offset(runs, 8);
+  if (!first.has_value() || first->run_index != 0 ||
+      first->byte_start != 0 || first->byte_end != 4 ||
+      !boundary.has_value() || boundary->run_index != 1 ||
+      boundary->byte_start != 4 || boundary->byte_end != 8 ||
+      end.has_value()) {
+    return 40;
+  }
+
+  const std::optional<cgpui::RichTextLinkHit> no_link =
+      cgpui::rich_text_link_at_byte_offset(runs, 2);
+  const std::optional<cgpui::RichTextLinkHit> link =
+      cgpui::rich_text_link_at_byte_offset(runs, 7);
+  const std::optional<cgpui::RichTextLinkHit> link_end =
+      cgpui::rich_text_link_at_byte_offset(runs, 8);
+  if (no_link.has_value() || !link.has_value() ||
+      link->link_id.value != 42 || link->run_index != 1 ||
+      link->byte_start != 4 || link->byte_end != 8 ||
+      link_end.has_value()) {
+    return 41;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -155,6 +200,10 @@ int main() {
     return result;
   }
   if (const int result = test_adjacent_equal_runs_coalesce(); result != 0) {
+    return result;
+  }
+  if (const int result = test_run_and_link_hits_use_half_open_byte_ranges();
+      result != 0) {
     return result;
   }
   return 0;

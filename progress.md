@@ -17147,6 +17147,30 @@
 - Final focused WSL gate reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed the same 6/6 focused tests.
 
+## 2026-07-09 Phase D Step 436 Rich Text Byte Hit Metadata
+
+- Started from clean tracked `master` after
+  `9bb311f4 feat: add rich text run core`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage to `tests/ui/rich_text_run_test.cpp` for run boundary
+  hits, no-link misses, link id propagation, and end-exclusive byte offsets.
+  The first Windows run failed as expected because `RichTextRunHit`,
+  `RichTextLinkHit`, `rich_text_run_at_byte_offset(...)`, and
+  `rich_text_link_at_byte_offset(...)` did not exist.
+- Implemented the byte-offset hit helpers in the focused rich-text leaf and
+  updated `ui_source_structure_test` so the metadata stays out of runtime and
+  renderer files.
+- Focused Windows verification passed:
+  `xmake test -y -P . rich_text_run_test/default
+  ui_source_structure_test/default` 2/2.
+- Final focused Windows gate passed 6/6:
+  `rich_text_run_test/default`, `ui_source_structure_test/default`,
+  `core_header_cleanliness/default`, `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 6/6 focused tests.
+
 ## 2026-07-09 Pre-Phase-D Entry Gate Follow-Up
 
 - Latest user direction is to finish all required pre-Phase-D alignment before

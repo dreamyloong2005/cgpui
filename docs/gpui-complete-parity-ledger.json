@@ -407,7 +407,16 @@
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
-    "rich_text_run_core_remaining_gap": "inline images, rich-text paint integration, link activation, syntax-theme wiring, and run-aware hit testing remain later Phase D work"
+    "rich_text_run_core_remaining_gap": "inline images, rich-text paint integration, link activation, syntax-theme wiring, and run-aware hit testing remain later Phase D work",
+    "step_436": "Phase D Step 436 rich text byte hit metadata",
+    "rich_text_byte_hit_surface": "RichTextRunHit, RichTextLinkHit, rich_text_run_at_byte_offset(...), and rich_text_link_at_byte_offset(...) expose half-open byte-range hit metadata for normalized rich text runs and links without renderer state or string link targets",
+    "rich_text_byte_hit_sources": [
+      "include/cgpui/ui/text_rich_text.hpp",
+      "src/ui/text_rich_text.cpp",
+      "tests/ui/rich_text_run_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp"
+    ],
+    "rich_text_byte_hit_remaining_gap": "point-based rich-text hit testing, click activation wiring, inline images, and rich-text paint integration remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

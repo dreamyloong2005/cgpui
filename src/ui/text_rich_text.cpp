@@ -85,6 +85,12 @@ void append_run(
   runs.push_back(run);
 }
 
+bool run_contains_byte_offset(
+    const RichTextRun& run,
+    std::size_t byte_offset) {
+  return run.byte_start <= byte_offset && byte_offset < run.byte_end;
+}
+
 } // namespace
 
 bool operator==(
@@ -165,6 +171,40 @@ std::vector<RichTextRun> build_rich_text_runs(
   std::vector<RichTextRun> runs;
   build_rich_text_runs(text, spans, runs);
   return runs;
+}
+
+std::optional<RichTextRunHit> rich_text_run_at_byte_offset(
+    std::span<const RichTextRun> runs,
+    std::size_t byte_offset) {
+  for (std::size_t index = 0; index < runs.size(); ++index) {
+    const RichTextRun& run = runs[index];
+    if (run_contains_byte_offset(run, byte_offset)) {
+      return RichTextRunHit{
+          .run_index = index,
+          .byte_start = run.byte_start,
+          .byte_end = run.byte_end,
+          .attributes = run.attributes,
+      };
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<RichTextLinkHit> rich_text_link_at_byte_offset(
+    std::span<const RichTextRun> runs,
+    std::size_t byte_offset) {
+  const std::optional<RichTextRunHit> run_hit =
+      rich_text_run_at_byte_offset(runs, byte_offset);
+  if (!run_hit.has_value() || !run_hit->attributes.link_id.has_value()) {
+    return std::nullopt;
+  }
+
+  return RichTextLinkHit{
+      .link_id = *run_hit->attributes.link_id,
+      .run_index = run_hit->run_index,
+      .byte_start = run_hit->byte_start,
+      .byte_end = run_hit->byte_end,
+  };
 }
 
 } // namespace cgpui

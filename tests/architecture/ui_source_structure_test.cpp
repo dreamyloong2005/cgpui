@@ -207,6 +207,8 @@ int main() {
       !contains(text_rich_text_header, "struct RichTextSpan") ||
       !contains(text_rich_text_header, "struct RichTextRun") ||
       !contains(text_rich_text_header, "struct RichTextRunBuildScratch") ||
+      !contains(text_rich_text_header, "struct RichTextRunHit") ||
+      !contains(text_rich_text_header, "struct RichTextLinkHit") ||
       !contains(text_rich_text_header, "std::optional<Color> foreground") ||
       !contains(text_rich_text_header, "underline = 1") ||
       !contains(text_rich_text_header, "std::optional<RichTextLinkId>") ||
@@ -214,6 +216,9 @@ int main() {
       !contains(text_rich_text_source, "std::span<const RichTextSpan>") ||
       !contains(text_rich_text_source, "std::vector<RichTextRun>& runs") ||
       !contains(text_rich_text_source, "RichTextRunBuildScratch& scratch") ||
+      !contains(text_rich_text_source, "rich_text_run_at_byte_offset(") ||
+      !contains(text_rich_text_source, "rich_text_link_at_byte_offset(") ||
+      !contains(text_rich_text_source, "run_contains_byte_offset(") ||
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
