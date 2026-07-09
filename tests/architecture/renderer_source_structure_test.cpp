@@ -200,6 +200,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
       "src/renderer/vulkan/vulkan_text_draw_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_text_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_text_coverage_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_coverage.cpp",
       "src/renderer/vulkan/vulkan_text_positioning_internal.hpp",
       "src/renderer/vulkan/vulkan_text_positioning.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
@@ -1108,6 +1110,19 @@ int main(int argc, char** argv) {
       !contains(text_positioning, "std::round") ||
       contains(command_recording, "VulkanTextPositioningPolicy")) {
     return 66;
+  }
+
+  const std::string text_coverage_header = read_source(
+      "src/renderer/vulkan/vulkan_text_coverage_internal.hpp");
+  const std::string text_coverage =
+      read_source("src/renderer/vulkan/vulkan_text_coverage.cpp");
+  if (line_count(text_coverage_header) > 50 ||
+      line_count(text_coverage) > 60 ||
+      !contains(text_coverage_header, "struct VulkanTextCoveragePolicy") ||
+      !contains(text_coverage, "vulkan_resolve_text_coverage(") ||
+      !contains(text_coverage, "std::pow") ||
+      contains(command_recording, "VulkanTextCoveragePolicy")) {
+    return 67;
   }
 
   const std::string report_image_uploads =

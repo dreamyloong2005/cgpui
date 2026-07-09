@@ -1496,7 +1496,15 @@ draw calls for the Windows/Linux renderer.
   `preserve_subpixel`; the deterministic snap mode rounds outer device-quad
   edges before vertex expansion, preserves atlas UVs, and is recorded with the
   uploaded vertex-buffer resources. Step 473 defines gamma/alpha handling.
-- [ ] Steps 473-474: Complete the remaining text graphics pipeline,
+- [x] Phase E Step 473 adds focused glyph coverage and alpha policy in
+  `vulkan_text_coverage_internal.hpp` and `vulkan_text_coverage.cpp`.
+  `VulkanTextCoveragePolicy` keeps linear `R8_UNORM` coverage by default,
+  supports deterministic power-transfer reference behavior, and defines
+  `straight_color_coverage_alpha`: RGB remains straight while resolved coverage
+  multiplies output alpha. The fragment shader clamps coverage, applies the
+  explicit transfer, and ships as validated embedded SPIR-V. Step 474 closes
+  text-pipeline integration.
+- [ ] Step 474: Complete the remaining text graphics pipeline integration,
   textured glyph draw calls, subpixel positioning policy, and gamma/alpha
   handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

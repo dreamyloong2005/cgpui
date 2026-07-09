@@ -402,6 +402,12 @@ consume C: drive space again.
   edges before vertex expansion, leaves atlas UVs unchanged, and is recorded in
   `VulkanTextVertexBufferResources`.
 - Handoff: Phase E Step 473 glyph coverage gamma and alpha handling.
+- Phase E Step 473 adds `VulkanTextCoveragePolicy` over linear `R8_UNORM`
+  atlas samples. The default transfer is linear, the reference path supports a
+  deterministic power transfer, and `straight_color_coverage_alpha` preserves
+  straight RGB while resolved coverage multiplies output alpha. The validated
+  embedded fragment shader mirrors that contract.
+- Handoff: Phase E Step 474 text pipeline integration closeout.
 
 ## Categories
 

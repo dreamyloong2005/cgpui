@@ -560,13 +560,18 @@ Windows/Linux core API is stable enough for parity work.
   `preserve_subpixel`, and an explicit device-pixel snap mode that rounds outer
   quad edges before vertex expansion without changing atlas UVs. Step 473 owns
   glyph coverage gamma and alpha handling.
+- Phase E Step 473 adds `VulkanTextCoveragePolicy` over linear `R8_UNORM`
+  atlas coverage. The default transfer is linear, deterministic power transfer
+  is reference-tested, and `straight_color_coverage_alpha` preserves straight
+  RGB while resolved coverage multiplies alpha. Step 474 closes text-pipeline
+  integration.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-472 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-473 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -574,9 +579,10 @@ Windows/Linux core API is stable enough for parity work.
   closeout audit, text-pipeline vertex/fixed-state contract, embedded shader
   module boundaries, swapchain-owned pipeline resources, and fence-safe text
   vertex-buffer uploads, descriptor-bound textured glyph draw recording, and
-  explicit subpixel/pixel-snap positioning policy.
-- In progress: Step 473 glyph coverage gamma and alpha handling.
-- Pending bands: Steps 473-474 remaining text
+  explicit subpixel/pixel-snap positioning policy, and explicit glyph coverage
+  transfer/straight-alpha policy with validated embedded fragment SPIR-V.
+- In progress: Step 474 text pipeline integration closeout.
+- Pending bands: Step 474 remaining text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -630,6 +636,14 @@ Windows/Linux core API is stable enough for parity work.
 | The first compiled Step 472 test assumed `Rect`, `Point`, and `Size` equality operators that do not exist | Step 472 behavior test | Compare scalar geometry fields directly; no production code change was required |
 | The corrected compiled Step 472 positioning test exited 40 while behavior, vertex, draw, and structure tests passed | Step 472 documentation gate | Expected RED after explicit positioning policy compiled; update roadmap, ledger, planning, and findings with the Step 473 gamma/alpha handoff |
 | A combined Step 472 cleanup patch used stale `progress.md` context and was rejected without changing files | Step 472 closeout | Split the test assertion and progress update into explicit file-scoped patches before rerunning the narrow gate |
+| Step 473 exploration requested nonexistent `shaders/vulkan_text.frag.glsl` and `shaders/vulkan_text.vert.glsl` paths | Step 473 ownership discovery | Use the existing focused `src/renderer/vulkan/shaders/text.frag.glsl` and `text.vert.glsl` sources; do not repeat the stale prefixed filenames |
+| `vulkan_text_coverage_test` initially failed to compile because the focused private coverage header did not exist | Step 473 RED | Expected RED; add explicit coverage transfer and straight-alpha policy plus matching fragment-shader behavior |
+| A combined Step 473 implementation patch matched a task-plan row against the architecture test and was rejected without changing files | Step 473 implementation | Split production, structure, and planning updates into explicit file-scoped patches |
+| The first Step 473 `glslc` invocation did not specify a stage for the `.frag.glsl` filename and was rejected | Step 473 shader compilation | Pass `-fshader-stage=frag` explicitly because the double extension is not inferred by this toolchain |
+| The next Step 473 shader compile targeted nonexistent `C:\tmp` and could not create its output | Step 473 shader compilation | Use the writable system temporary directory from `$env:TEMP` for generated SPIR-V artifacts |
+| The first compiled Step 473 test used helper name `near`, which collided with a Windows macro and failed parsing | Step 473 behavior test | Rename the test helper to `approximately_equal`; production coverage behavior was unaffected |
+| The next Step 473 coverage test exited 30 because its shader-source assertion required `pow(clamp(` to be contiguous across formatting | Step 473 shader contract | Check `pow(` and `clamp(` independently so whitespace does not weaken or falsely fail the behavior guard |
+| Step 473 WSL verification could not start because `archlinux` is no longer registered and Unicode-captured `wsl --list --quiet` returned no distributions | Step 473 Linux gate | Record the external machine-state regression, continue Windows verification, and require Linux rerun when a WSL distribution is available |
 
 ## Definition Of Done For This 20-Step Goal
 

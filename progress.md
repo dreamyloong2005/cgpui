@@ -18398,3 +18398,48 @@
 - A combined closeout patch used stale `progress.md` context and was rejected
   without changing files. Split the resource-default assertion and progress
   update into explicit file-scoped patches.
+
+## 2026-07-10 Phase E Step 473 Glyph Coverage Gamma And Alpha
+
+- Started from clean tracked `master` at
+  `d12b4631 feat: define vulkan text positioning policy`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed the current atlas is linear alpha coverage and the text pipeline
+  uses straight-alpha blending. Step 473 will make the coverage transfer and
+  output-alpha contract explicit in a focused private module and fragment
+  shader, with CPU-reference behavior and structure coverage.
+- An exploratory read used stale `shaders/vulkan_text.*.glsl` filenames and
+  failed without changing files. The real focused shader sources are
+  `src/renderer/vulkan/shaders/text.vert.glsl` and `text.frag.glsl`.
+- Added `vulkan_text_coverage_test` and observed the expected RED compile
+  failure because the focused private coverage header did not exist.
+- A combined implementation patch matched a task-plan row against the
+  architecture test and was rejected without changing files. Split the
+  production, structure, and planning edits into explicit patches.
+- Added the focused coverage policy module, shader-side clamp/power transfer,
+  and renderer structure coverage.
+- The first shader compile omitted `-fshader-stage=frag`, which this toolchain
+  requires for a `.frag.glsl` double extension. The next compile targeted a
+  nonexistent `C:\tmp`. Retried with the explicit stage and `$env:TEMP`.
+- Optimized Vulkan 1.0 fragment SPIR-V compiled and passed `spirv-val`; the
+  regenerated embedded payload is 212 words.
+- The first compiled Step 473 test failed because its `near` helper name
+  collided with a Windows macro. Renamed the test-only helper to
+  `approximately_equal`; production code was unchanged.
+- The next coverage test exited 30 because its shader-source assertion assumed
+  `pow(clamp(` was contiguous. Changed the test to require `pow(` and `clamp(`
+  independently so formatting whitespace does not affect the contract.
+- The corrected Step 473 gate passed coverage math, embedded shader modules,
+  pipeline blend state, and renderer structure coverage; the coverage test
+  exited 50 only at its expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  to complete Step 473 and hand Step 474 to text-pipeline integration closeout.
+- Focused Windows Step 473 verification passed 9/9: coverage policy, shader
+  modules, pipeline state/resources, positioning, renderer structure, real
+  frame lifetime, parity ledger, and glyph-atlas closeout.
+- Focused WSL verification could not start because the previously used
+  `archlinux` distribution is no longer registered. `wsl --list --quiet`,
+  captured explicitly as Unicode, returned no distributions. Linux validation
+  remains required when the machine exposes WSL again.
+- Windows full debug verification passed 154/154 with
+  `xmake test -y -P .`.

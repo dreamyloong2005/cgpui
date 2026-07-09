@@ -75,6 +75,16 @@
   `VulkanTextPositioningPolicy` now defaults to `preserve_subpixel`, with the
   optional snap mode rounding outer device edges. Step 473 owns coverage gamma
   and alpha policy.
+- Phase E Step 473 should keep the glyph atlas as linear `alpha8_unorm`
+  coverage, make the coverage transfer explicit before alpha composition, and
+  preserve straight RGB with `source_alpha` blending. This separates coverage
+  gamma from color-space conversion and avoids double-premultiplying text color.
+- `VulkanTextCoveragePolicy` now formalizes that contract. Production uses a
+  linear transfer over clamped `R8_UNORM` samples, the reference helper covers
+  deterministic power transfer, and `straight_color_coverage_alpha` preserves
+  RGB while multiplying only output alpha. The optimized 212-word fragment
+  shader payload passed Vulkan 1.0 `spirv-val`; Step 474 owns integration
+  closeout rather than more shader behavior.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 
