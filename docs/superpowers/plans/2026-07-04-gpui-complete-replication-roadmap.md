@@ -1194,7 +1194,7 @@ behavior that can support GPUI examples and editor-like widgets.
   cursor/style, candidate-placement metadata, Win32 IMM composition/result
   ingestion, and remaining TSF/candidate UI gaps before Phase D moves to rich
   text runs.
-- [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
+- [x] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
   Step 435 starts this band with the focused rich-text run core:
   `include/cgpui/ui/text_rich_text.hpp` and `src/ui/text_rich_text.cpp` define
@@ -1260,6 +1260,16 @@ behavior that can support GPUI examples and editor-like widgets.
   state and string link targets. Runtime element dispatch, actual link command
   handling, inline image drawing/loading, syntax parsing, and editor token
   source integration remain later work.
+  Step 442 closes the rich-text metadata band through
+  `tests/api_parity/phase_d_rich_text_audit_test.cpp`, freezing the evidence
+  for rich-text run normalization, byte and point hit metadata, inline image
+  metadata, syntax-theme metadata, paint metadata transport, link activation
+  metadata, focused source ownership, and the zero-cost boundary that keeps
+  runtime dispatch, renderer drawing, parser ownership, editor token sourcing,
+  and string link targets out of the metadata layer. Runtime rich-text element
+  dispatch, actual link command handling, inline image drawing/loading, syntax
+  parsing/editor token source integration, and actual multi-color glyph
+  painting remain later Phase D work.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

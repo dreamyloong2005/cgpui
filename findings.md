@@ -7774,3 +7774,18 @@
 - This closes activation-record creation only. Runtime element dispatch, link
   command handling, inline image drawing/loading, syntax parsing, and editor
   token source integration remain explicit Phase D gaps.
+
+## 2026-07-09 Phase D Step 442 Rich Text Metadata Band Closeout
+
+- Step 442 is an audit-only closeout for Steps 435-441, not a renderer/runtime
+  feature slice. It should freeze the already-landed public leaves for
+  rich-text runs, byte/point hit metadata, inline image metadata, syntax-theme
+  metadata, paint metadata transport, and link activation metadata.
+- The audit should update the main text ledger row so rich-text metadata is no
+  longer listed as wholly missing, while keeping the remaining gaps explicit:
+  runtime rich-text element dispatch, actual link command handling, inline image
+  drawing/loading, syntax parsing/editor token source integration, and actual
+  multi-color glyph painting.
+- This keeps the next Phase D handoff pointed at text/input public examples
+  rather than hiding unfinished renderer, parser, or editor integration work
+  under the rich-text metadata band.

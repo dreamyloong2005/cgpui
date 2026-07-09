@@ -468,7 +468,21 @@
       "tests/header_cleanliness/ui_header_cleanliness.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
-    "rich_text_link_activation_remaining_gap": "runtime rich-text element dispatch, actual link command handling, inline image drawing/loading, syntax parsing, and editor token source integration remain later Phase D work"
+    "rich_text_link_activation_remaining_gap": "runtime rich-text element dispatch, actual link command handling, inline image drawing/loading, syntax parsing, and editor token source integration remain later Phase D work",
+    "step_442": "Phase D Step 442 rich text metadata band closeout",
+    "rich_text_metadata_closeout_surface": "phase_d_rich_text_audit_test freezes Steps 435-441 evidence for rich text run normalization, byte and point hit metadata, inline image metadata, syntax-theme metadata, paint metadata transport, link activation metadata, focused source ownership, and explicit remaining gaps",
+    "rich_text_metadata_closeout_sources": [
+      "tests/api_parity/phase_d_rich_text_audit_test.cpp",
+      "tests/ui/rich_text_run_test.cpp",
+      "tests/ui/render_view_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "task_plan.md",
+      "findings.md"
+    ],
+    "rich_text_metadata_closeout_remaining_gap": "runtime rich-text element dispatch, actual link command handling, inline image drawing/loading, syntax parsing/editor token source integration, and actual multi-color glyph painting remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

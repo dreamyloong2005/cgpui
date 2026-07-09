@@ -231,6 +231,7 @@ int main() {
       !contains(text_rich_text_header, "struct RichTextSpan") ||
       !contains(text_rich_text_header, "struct RichTextRun") ||
       !contains(text_rich_text_header, "struct RichTextRunBuildScratch") ||
+      !contains(text_rich_text_header, "build_rich_text_runs(") ||
       !contains(text_rich_text_header, "struct RichTextRunHit") ||
       !contains(text_rich_text_header, "struct RichTextLinkHit") ||
       !contains(text_rich_text_header, "std::optional<Color> foreground") ||

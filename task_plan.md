@@ -391,6 +391,14 @@ Windows/Linux core API is stable enough for parity work.
   state, renderer state, or string link targets. Runtime rich-text element
   dispatch, actual link command handling, inline image drawing/loading, syntax
   parsing, and editor token source integration remain later Phase D work.
+- Step 442 closes the rich-text metadata band with
+  `tests/api_parity/phase_d_rich_text_audit_test.cpp`, freezing Steps 435-441
+  evidence for run normalization, byte and point hit metadata, inline image
+  metadata, syntax-theme metadata, paint metadata transport, link activation
+  metadata, and focused source ownership. Runtime rich-text element dispatch,
+  actual link command handling, inline image drawing/loading, syntax
+  parsing/editor token source integration, and actual multi-color glyph
+  painting remain later Phase D work before examples/final verification.
 
 ## Definition Of Done For This 20-Step Goal
 

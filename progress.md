@@ -17589,3 +17589,30 @@
   `pre_phase_d_entry_gate_test/default`.
 - Final focused WSL gate reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed the same 9/9 focused tests.
+
+## 2026-07-09 Phase D Step 442 Rich Text Metadata Band Closeout
+
+- Started from clean tracked `master` after
+  `23897c1e feat: add rich text link activation`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage with
+  `tests/api_parity/phase_d_rich_text_audit_test.cpp` and the
+  `phase_d_rich_text_audit_test` xmake target. The first Windows run failed as
+  expected because the roadmap, ledger, task plan, and findings did not yet
+  contain the Step 442 closeout evidence.
+- Implemented the audit-only closeout by marking Steps 435-442 complete in the
+  roadmap, adding Step 442 evidence to the Markdown/JSON parity ledger,
+  updating `task_plan.md` and `findings.md`, and tightening
+  `ui_source_structure_test` so `build_rich_text_runs(...)` remains part of the
+  rich-text module boundary.
+- Initial focused Windows GREEN verification passed:
+  `xmake test -y -P . phase_d_rich_text_audit_test/default` 1/1.
+- Final focused Windows gate passed 9/9:
+  `phase_d_rich_text_audit_test/default`, `rich_text_run_test/default`,
+  `render_view_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `core_header_cleanliness/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 9/9 focused tests.
