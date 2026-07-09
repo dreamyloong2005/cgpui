@@ -7580,3 +7580,16 @@
 - `tests/api_parity/phase_c_final_ledger_audit_test.cpp` now freezes both
   roadmap sections so the Phase C closeout cannot silently lose the binding
   scope decision or zero-cost principle before future Phase D work continues.
+
+## 2026-07-09 Phase D Step 429 Wayland Preedit Cursor Metadata
+
+- Wayland text-input v3 `preedit_string` sends `cursor_begin` and `cursor_end`
+  alongside the preedit text. Step 429 keeps that protocol metadata instead of
+  discarding it, storing the values in `WaylandTextInput::PendingPreedit` until
+  `done(serial)` emits the IME update.
+- `ImeComposition` now carries `preedit_cursor_begin` and
+  `preedit_cursor_end` as scalar metadata. The runtime still consumes the
+  preedit text normally; this slice does not add styling spans, candidate
+  placement, or a broader Wayland serial policy.
+- The test compositor now has an overload for explicit preedit cursor ranges,
+  and `wayland_keyboard_test` asserts `1..3` for the `"draft"` preedit update.

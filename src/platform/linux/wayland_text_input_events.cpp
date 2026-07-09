@@ -41,10 +41,13 @@ void WaylandTextInput::handle_preedit_string(
     std::int32_t cursor_begin,
     std::int32_t cursor_end) {
   (void)text_input;
-  (void)cursor_begin;
-  (void)cursor_end;
   auto* self = static_cast<WaylandTextInput*>(data);
-  self->pending_preedit_ = text == nullptr ? std::string{} : std::string(text);
+  self->pending_preedit_ =
+      PendingPreedit{
+          .text = text == nullptr ? std::string{} : std::string(text),
+          .cursor_begin = cursor_begin,
+          .cursor_end = cursor_end,
+      };
 }
 
 void WaylandTextInput::handle_commit_string(
@@ -84,9 +87,12 @@ void WaylandTextInput::handle_done(
 
   const KeyboardModifiers modifiers = self->current_modifiers();
   if (self->pending_preedit_.has_value()) {
+    PendingPreedit preedit = std::move(*self->pending_preedit_);
     wayland_window_text_input_preedit(
         *self->active_window_,
-        std::move(*self->pending_preedit_),
+        std::move(preedit.text),
+        preedit.cursor_begin,
+        preedit.cursor_end,
         modifiers,
         serial);
   }

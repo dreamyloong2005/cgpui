@@ -19,6 +19,12 @@ class WaylandTextInput {
   void apply_placement(WaylandWindow& window);
 
  private:
+  struct PendingPreedit {
+    std::string text;
+    std::int32_t cursor_begin = 0;
+    std::int32_t cursor_end = 0;
+  };
+
   struct PendingDeleteSurroundingText {
     std::uint32_t before_length = 0;
     std::uint32_t after_length = 0;
@@ -60,7 +66,7 @@ class WaylandTextInput {
   WaylandWindow* active_window_ = nullptr;
   WindowLookup find_window_;
   ModifiersProvider modifiers_;
-  std::optional<std::string> pending_preedit_;
+  std::optional<PendingPreedit> pending_preedit_;
   std::optional<std::string> pending_commit_;
   std::optional<PendingDeleteSurroundingText> pending_delete_surrounding_;
 };

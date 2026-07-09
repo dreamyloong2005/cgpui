@@ -17073,6 +17073,24 @@
   `phase_d_edit_history_audit_test/default`,
   `phase_d_selection_caret_audit_test/default`, and
   `gpui_parity_ledger_test/default`.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 4/4:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, and
+  `wayland_window_source_test/default`.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  win32_text_input_test/default platform_source_structure_test/default
+  wayland_window_source_test/default phase_d_edit_history_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default`
+  7/7.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 7/7:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, `wayland_window_source_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `gpui_parity_ledger_test/default`.
 
 ## 2026-07-09 Phase D Step 428 Wayland IME Serial Propagation
 
@@ -17138,3 +17156,26 @@
   `phase_c_final_ledger_audit_test/default`,
   `static_render_runtime_test/default`, `ui_source_structure_test/default`,
   and `gpui_parity_ledger_test/default`.
+
+## 2026-07-09 Phase D Step 429 Wayland Preedit Cursor Metadata
+
+- Started from clean tracked `master` after
+  `2d4e9a5e test: guard pre phase d scope`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added `ImeComposition::preedit_cursor_begin` and
+  `ImeComposition::preedit_cursor_end` scalar metadata, preserved Wayland
+  `preedit_string` `cursor_begin` / `cursor_end` in
+  `WaylandTextInput::PendingPreedit`, and threaded the values through
+  `wayland_window_text_input_preedit(...)`,
+  `WaylandWindow::text_input_preedit(...)`, and emitted IME events.
+- Extended `WaylandTestCompositor::request_text_input_preedit(...)` with an
+  explicit cursor-range overload, while keeping the old overload defaulting to
+  the end of the preedit text. `wayland_keyboard_test` now asserts the `"draft"`
+  preedit update carries cursor range `1..3`.
+- Updated `tests/architecture/platform_source_structure_test.cpp` so the
+  focused Wayland text-input events file may not discard `cursor_begin` or
+  `cursor_end`.
+- Focused Windows verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  win32_text_input_test/default platform_source_structure_test/default
+  wayland_window_source_test/default` 4/4.

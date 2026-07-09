@@ -61,6 +61,8 @@ class WaylandWindow final : public PlatformWindow {
   void text_input_left(KeyboardModifiers modifiers);
   void text_input_preedit(
       std::string text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end,
       KeyboardModifiers modifiers,
       std::uint32_t serial);
   void text_input_commit(

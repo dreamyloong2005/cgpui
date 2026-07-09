@@ -28,11 +28,15 @@ void WaylandWindow::text_input_left(KeyboardModifiers modifiers) {
 
 void WaylandWindow::text_input_preedit(
     std::string text,
+    std::int32_t cursor_begin,
+    std::int32_t cursor_end,
     KeyboardModifiers modifiers,
     std::uint32_t serial) {
   ImeComposition event =
       text_input_state_.preedit(std::move(text), modifiers);
   event.serial = serial;
+  event.preedit_cursor_begin = cursor_begin;
+  event.preedit_cursor_end = cursor_end;
   callback_(std::move(event));
 }
 

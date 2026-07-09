@@ -296,6 +296,12 @@ Windows/Linux core API is stable enough for parity work.
   through the focused Wayland window bridge, and `wayland_keyboard_test`
   verifies preedit, delete-surrounding, and commit serials without adding
   hidden allocation or policy state.
+- Step 429 preserves Wayland IME preedit cursor metadata. `ImeComposition`
+  now carries `preedit_cursor_begin` / `preedit_cursor_end`, Wayland
+  `preedit_string` stores those scalars in `PendingPreedit`, the focused
+  window bridge forwards them with the existing serial, and the Wayland
+  keyboard fixture asserts the preedit cursor range without adding styling or
+  candidate-placement policy.
 
 ## Definition Of Done For This 20-Step Goal
 

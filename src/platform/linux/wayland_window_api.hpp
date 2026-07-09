@@ -90,6 +90,8 @@ void wayland_window_text_input_left(
 void wayland_window_text_input_preedit(
     WaylandWindow& window,
     std::string text,
+    std::int32_t cursor_begin,
+    std::int32_t cursor_end,
     KeyboardModifiers modifiers,
     std::uint32_t serial);
 void wayland_window_text_input_commit(

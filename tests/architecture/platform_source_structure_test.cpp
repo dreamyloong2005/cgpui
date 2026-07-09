@@ -737,6 +737,10 @@ int main(int argc, char** argv) {
       !contains(text_input_events, "wayland_window_text_input_preedit") ||
       !contains(text_input_events, "wayland_window_text_input_commit") ||
       contains(text_input_events, "(void)serial") ||
+      contains(text_input_events, "(void)cursor_begin") ||
+      contains(text_input_events, "(void)cursor_end") ||
+      !contains(text_input_events, "preedit.cursor_begin") ||
+      !contains(text_input_events, "preedit.cursor_end") ||
       !contains(text_input_requests, "zwp_text_input_v3_commit") ||
       !contains(text_input_requests, "placement->surrounding_text") ||
       !contains(text_input_requests, "placement->selection_anchor") ||

@@ -1131,6 +1131,11 @@ behavior that can support GPUI examples and editor-like widgets.
   and `tests/platform/wayland_keyboard_test.cpp` verifies preedit,
   delete-surrounding, and commit serials. Richer Wayland policy, preedit
   styling, candidate placement, and Win32 TSF depth remain open in this band.
+  Step 429 preserves Wayland `preedit_string` cursor metadata as scalar
+  `ImeComposition::preedit_cursor_begin` / `preedit_cursor_end` fields,
+  forwarding `cursor_begin` / `cursor_end` through `WaylandTextInput`,
+  `wayland_window_text_input_preedit(...)`, and the Wayland keyboard fixture
+  without adding preedit styling or candidate-placement policy.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility

@@ -86,6 +86,10 @@ class WaylandTestCompositor {
   void request_keyboard_leave();
   void request_text_input_enter();
   void request_text_input_preedit(std::string text);
+  void request_text_input_preedit(
+      std::string text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end);
   void request_text_input_delete_surrounding(
       std::uint32_t before_length,
       std::uint32_t after_length);

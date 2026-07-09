@@ -23,6 +23,8 @@ struct ImeComposition {
   std::string text;
   KeyboardModifiers modifiers;
   std::uint32_t serial = 0;
+  std::int32_t preedit_cursor_begin = 0;
+  std::int32_t preedit_cursor_end = 0;
 };
 
 struct ImeDeleteSurroundingText {

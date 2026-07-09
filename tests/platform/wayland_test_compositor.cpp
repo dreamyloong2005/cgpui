@@ -338,6 +338,12 @@ struct WaylandTestCompositor::State {
     std::uint32_t after_length = 0;
   };
 
+  struct TextInputPreeditRequest {
+    std::string text;
+    std::int32_t cursor_begin = 0;
+    std::int32_t cursor_end = 0;
+  };
+
   explicit State(std::string test_name) {
     runtime_dir = std::filesystem::temp_directory_path() /
         ("cgpui-wayland-" + std::move(test_name) + "-" + std::to_string(::getpid()));
@@ -586,9 +592,22 @@ struct WaylandTestCompositor::State {
   }
 
   void request_text_input_preedit(std::string text) {
+    const auto cursor = static_cast<std::int32_t>(text.size());
+    request_text_input_preedit(std::move(text), cursor, cursor);
+  }
+
+  void request_text_input_preedit(
+      std::string text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end) {
     {
       std::lock_guard lock(text_input_event_mutex);
-      pending_text_input_preedit = std::move(text);
+      pending_text_input_preedit =
+          TextInputPreeditRequest{
+              .text = std::move(text),
+              .cursor_begin = cursor_begin,
+              .cursor_end = cursor_end,
+          };
     }
     text_input_preedit_pending.store(true);
   }
@@ -1170,7 +1189,7 @@ struct WaylandTestCompositor::State {
   std::mutex keyboard_modifiers_mutex;
   KeyboardModifiersRequest keyboard_modifiers;
   std::mutex text_input_event_mutex;
-  std::string pending_text_input_preedit;
+  TextInputPreeditRequest pending_text_input_preedit;
   TextInputDeleteSurroundingRequest pending_text_input_delete_surrounding;
   std::string pending_text_input_commit;
   mutable std::mutex text_input_client_state_mutex;
@@ -2286,17 +2305,17 @@ void WaylandTestCompositor::State::dispatch_pending_text_input_preedit() {
     return;
   }
 
-  std::string text;
+  TextInputPreeditRequest request;
   {
     std::lock_guard lock(text_input_event_mutex);
-    text = pending_text_input_preedit;
+    request = pending_text_input_preedit;
   }
   wl_resource_post_event(
       text_input_resource,
       zwp_text_input_v3_preedit_string,
-      text.c_str(),
-      static_cast<std::int32_t>(text.size()),
-      static_cast<std::int32_t>(text.size()));
+      request.text.c_str(),
+      request.cursor_begin,
+      request.cursor_end);
   wl_resource_post_event(
       text_input_resource,
       zwp_text_input_v3_done,
@@ -2637,6 +2656,16 @@ void WaylandTestCompositor::request_text_input_enter() {
 
 void WaylandTestCompositor::request_text_input_preedit(std::string text) {
   state_->request_text_input_preedit(std::move(text));
+}
+
+void WaylandTestCompositor::request_text_input_preedit(
+    std::string text,
+    std::int32_t cursor_begin,
+    std::int32_t cursor_end) {
+  state_->request_text_input_preedit(
+      std::move(text),
+      cursor_begin,
+      cursor_end);
 }
 
 void WaylandTestCompositor::request_text_input_delete_surrounding(
