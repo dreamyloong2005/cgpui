@@ -7660,3 +7660,16 @@
   preedit and commit events. `wayland_keyboard_test` sends serial 5 preedit,
   serial 4 stale commit, then normal delete/commit events that continue at
   serials 6 and 7, verifying stale commit text never reaches the callback.
+
+## 2026-07-09 Phase D Step 434 IME Platform Band Closeout
+
+- Step 434 is an audit-only closeout for the active-target IME platform band.
+- `tests/api_parity/phase_d_ime_platform_audit_test.cpp` freezes the Step
+  427-433 evidence for surrounding text/content hints, Wayland serial
+  propagation and stale serial policy, preedit cursor/style metadata,
+  candidate-placement metadata, Win32 IMM composition/result string ingestion,
+  and the focused platform source boundaries.
+- The closeout moves the Phase D handoff to Step 435 rich text runs.
+- Remaining gaps stay explicit: production candidate UI policy, deeper Win32
+  TSF integration, and richer platform-specific composition styling are later
+  work rather than hidden by the audit.

@@ -17090,6 +17090,39 @@
   `phase_d_selection_caret_audit_test/default`, and
   `pre_phase_d_entry_gate_test/default`.
 
+## 2026-07-09 Phase D Step 434 IME Platform Band Closeout
+
+- Started from clean tracked `master` after
+  `34a090a5 feat: reject stale wayland ime serials`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added `tests/api_parity/phase_d_ime_platform_audit_test.cpp` and the xmake
+  `phase_d_ime_platform_audit_test` target as an audit-only closeout for
+  Steps 427-433.
+- The initial RED run failed with exit `3` because the roadmap had not yet
+  marked the Steps 427-434 band complete or recorded the Step 434 closeout.
+- The resumed Windows audit run failed with exits `85` and `86` because two
+  behavior-evidence anchors used stale or mismatched test names. Updated the
+  audit to check
+  `test_runtime_applies_focused_text_ime_rect_to_platform_window` and
+  `test_runtime_routes_ime_delete_surrounding_to_focused_text_model`, matching
+  the current focused runtime coverage.
+- Focused Windows verification passed:
+  `xmake test -y -P . phase_d_ime_platform_audit_test/default` 1/1.
+- Final focused Windows gate passed 12/12:
+  `core_header_cleanliness/default`, `platform_source_structure_test/default`,
+  `window_runtime_text_test/default`, `win32_text_input_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_ime_platform_audit_test/default`,
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, and
+  `ui_source_structure_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 12/12 with
+  `wayland_keyboard_test/default` in place of the Win32-only IME behavior
+  target.
+
 ## 2026-07-09 Pre-Phase-D Entry Gate Follow-Up
 
 - Latest user direction is to finish all required pre-Phase-D alignment before

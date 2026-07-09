@@ -387,7 +387,17 @@
       "tests/platform/wayland_test_compositor.cpp",
       "tests/architecture/platform_source_structure_test.cpp"
     ],
-    "wayland_serial_remaining_gap": "broader Wayland IME policy beyond stale serial rejection remains later Phase D work"
+    "wayland_serial_remaining_gap": "broader Wayland IME policy beyond stale serial rejection remains later Phase D work",
+    "step_434": "Phase D Step 434 active-target IME platform band closeout",
+    "ime_platform_closeout_surface": "phase_d_ime_platform_audit_test freezes Steps 427-433 evidence for surrounding text, content hints, serial propagation and stale serial policy, preedit cursor/style metadata, candidate placement metadata, Win32 IMM composition/result ingestion, and focused source boundaries",
+    "ime_platform_closeout_sources": [
+      "tests/api_parity/phase_d_ime_platform_audit_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/platform/wayland_keyboard_test.cpp",
+      "tests/platform/win32_text_input_test.cpp",
+      "tests/ui/window_runtime_text_test.cpp"
+    ],
+    "ime_platform_closeout_remaining_gap": "production candidate UI policy, deeper Win32 TSF integration, and richer platform-specific composition styling remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

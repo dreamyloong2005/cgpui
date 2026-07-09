@@ -1143,7 +1143,7 @@ behavior that can support GPUI examples and editor-like widgets.
   typing, composition commit grouping, undo-manager status, redo invalidation,
   and edit transaction diagnostics evidence before active-target IME platform
   work starts.
-- [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
+- [x] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
   Wayland text-input v3 surrounding text, delete-surrounding, content hints,
   serial policy, preedit styling, and candidate placement.
   Step 427 starts this band by extending `ImeTextInputPlacement` with explicit
@@ -1188,6 +1188,12 @@ behavior that can support GPUI examples and editor-like widgets.
   pending preedit/delete/commit state when stale or inactive, and
   `wayland_keyboard_test` verifies a stale commit is ignored before later
   increasing serials are accepted.
+  Step 434 closes the active-target IME platform band through
+  `tests/api_parity/phase_d_ime_platform_audit_test.cpp`, freezing the
+  surrounding text/content hint, serial propagation/stale policy, preedit
+  cursor/style, candidate-placement metadata, Win32 IMM composition/result
+  ingestion, and remaining TSF/candidate UI gaps before Phase D moves to rich
+  text runs.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility

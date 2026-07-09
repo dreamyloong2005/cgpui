@@ -129,6 +129,15 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   accepted.
 - Remaining gap: broader Wayland IME policy beyond stale serial rejection
   remains later Phase D work.
+- Step 434 closes the active-target IME platform band through
+  `tests/api_parity/phase_d_ime_platform_audit_test.cpp`, freezing the
+  Step 427-433 evidence for surrounding text/content hints, Wayland serial
+  propagation, stale serial policy based on the last accepted `done(serial)`,
+  preedit cursor/style metadata, candidate-placement metadata, Win32 IMM
+  composition/result string ingestion, and the structure tests that keep those
+  boundaries focused.
+- Remaining gap: production candidate UI policy, deeper Win32 TSF integration,
+  and richer platform-specific composition styling remain later Phase D work.
 
 ## Categories
 

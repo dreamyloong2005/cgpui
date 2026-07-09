@@ -334,6 +334,11 @@ Windows/Linux core API is stable enough for parity work.
   policy inside focused text-input files. The test compositor can now send
   request-specific serials so `wayland_keyboard_test` verifies a stale commit
   does not reach the platform callback and later increasing serials still flow.
+- Step 434 closes the active-target IME band with
+  `tests/api_parity/phase_d_ime_platform_audit_test.cpp`, freezing the
+  Step 427-433 evidence and handing the roadmap to Step 435 rich text runs
+  while keeping production candidate UI policy, deeper Win32 TSF integration,
+  and richer platform-specific composition styling as explicit later gaps.
 
 ## Definition Of Done For This 20-Step Goal
 
