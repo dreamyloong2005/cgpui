@@ -278,6 +278,11 @@ Windows/Linux core API is stable enough for parity work.
   `TextEditHistoryStatus::last_transaction` report committed records, adjacent
   typing merges, undo, redo, and clean marks with undo/redo depth deltas and the
   matching revision, without copying snapshots or exposing history stacks.
+- Step 424 closes the edit-history band with
+  `tests/api_parity/phase_d_edit_history_audit_test.cpp`, freezing the grouped
+  typing, IME composition commit grouping, undo-manager status, redo
+  invalidation, and edit transaction diagnostics evidence before Phase D moves
+  to active-target IME platform behavior.
 
 ## Definition Of Done For This 20-Step Goal
 

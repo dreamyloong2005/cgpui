@@ -639,6 +639,7 @@ int main() {
       !contains(text_model_history_source, "TextModel::edit_history_status()") ||
       !contains(text_model_history_source,
                 "TextModel::mark_edit_history_clean()") ||
+      !contains(text_model_history_source, "TextModel::commit_history_record(") ||
       !contains(text_model_history_source,
                 "TextModel::invalidate_redo_history(") ||
       !contains(text_model_history_source,

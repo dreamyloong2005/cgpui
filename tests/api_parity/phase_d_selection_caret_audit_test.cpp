@@ -115,8 +115,8 @@ int main() {
                 "Step 418 closes the selection/caret band through") ||
       !contains(roadmap,
                 "tests/api_parity/phase_d_selection_caret_audit_test.cpp") ||
-      !contains(roadmap, "Steps 419-423 deepen") ||
-      !contains(roadmap, "edit transaction diagnostics")) {
+      !contains(roadmap, "Steps 419-426 close") ||
+      !contains(roadmap, "phase_d_edit_history_audit_test")) {
     return 3;
   }
 
@@ -142,7 +142,7 @@ int main() {
       !contains(text_row, "text_caret_rect") ||
       !contains(text_row, "copy_selection_to_clipboard") ||
       !contains(text_row, "phase_d_selection_caret_audit_test") ||
-      !contains(text_row, "edit transaction diagnostics") ||
+      !contains(text_row, "phase_d_edit_history_audit_test") ||
       !contains(text_row, "IME")) {
     return 5;
   }

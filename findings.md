@@ -7525,3 +7525,13 @@
   scalars. It deliberately does not copy `TextHistorySnapshot` text or expose
   undo/redo vectors, preserving the zero-cost/low-allocation direction for
   editor command state and diagnostics.
+
+## 2026-07-09 Phase D Step 424 Edit-History Band Closeout
+
+- Step 424 is an audit-only closeout for the edit-history band. It freezes the
+  Step 419-423 evidence: adjacent typing grouping, composition commit grouping,
+  undo-manager status, redo invalidation diagnostics, and transaction
+  diagnostics.
+- The closeout keeps the model/history layer as the owner of undo/redo stacks.
+  Active-target IME platform behavior remains the next Phase D band rather than
+  being smuggled into edit-history diagnostics.

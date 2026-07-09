@@ -16970,3 +16970,58 @@
   `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
+## 2026-07-09 Phase D Step 424 Edit-History Band Closeout
+
+- Started from clean tracked `master` after
+  `b510068b feat: add text edit transaction diagnostics`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added audit-only closeout coverage in
+  `tests/api_parity/phase_d_edit_history_audit_test.cpp` and registered the
+  `phase_d_edit_history_audit_test` xmake target.
+- The audit freezes the Step 419-423 evidence for adjacent typing coalescing,
+  IME composition commit grouping, undo-manager status, redo invalidation
+  diagnostics, edit transaction diagnostics, and the focused
+  `src/ui/text_model_history.cpp` ownership boundary.
+- Updated `tests/api_parity/phase_d_selection_caret_audit_test.cpp` so the
+  selection/caret closeout now hands off to the completed edit-history band
+  instead of the earlier Step 419-423 in-progress text.
+- Synchronized `task_plan.md`, `findings.md`,
+  `docs/gpui-complete-parity-ledger.md`, and the Phase D roadmap: Steps 419-426
+  are now marked complete, the text row moves to Phase D Steps 379-424, and
+  deeper active-target IME platform behavior is the next Phase D band.
+- Focused closeout verification passed:
+  `xmake test -y -P . phase_d_edit_history_audit_test/default
+  text_model_test/default window_runtime_text_test/default
+  ui_source_structure_test/default phase_d_selection_caret_audit_test/default
+  gpui_parity_ledger_test/default` 6/6 after loosening the audit's enum-member
+  checks to match the unqualified names in the public header.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  phase_d_selection_caret_audit_test/default
+  phase_d_edit_history_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 20/20.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 20/20:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.

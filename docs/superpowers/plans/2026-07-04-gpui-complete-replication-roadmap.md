@@ -1073,12 +1073,12 @@ behavior that can support GPUI examples and editor-like widgets.
   shared `text_caret_rect(...)` geometry for paint and IME candidate placement,
   runtime route scrolling for `ScrollableListElement`, existing focused text
   copy/cut/paste clipboard coverage, and
-  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Steps 419-423 deepen
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Steps 419-426 close
   edit history with grouped typing, IME composition commit grouping,
   undo-manager status integration, redo invalidation diagnostics, and
   edit transaction diagnostics; richer IME platform behavior, rich text, text
-  examples, and final Phase D verification remain open in Steps 424-458.
-- [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
+  examples, and final Phase D verification remain open in Steps 427-458.
+- [x] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.
   Step 419 starts this band with adjacent typing history coalescing in
@@ -1110,6 +1110,11 @@ behavior that can support GPUI examples and editor-like widgets.
   `TextModel::record_edit_history_transaction(...)`, so committed records,
   adjacent typing merges, undo, redo, and clean marks expose depth deltas and
   revision without copying edit snapshots.
+  Step 424 closes the edit-history band through
+  `tests/api_parity/phase_d_edit_history_audit_test.cpp`, freezing the grouped
+  typing, composition commit grouping, undo-manager status, redo invalidation,
+  and edit transaction diagnostics evidence before active-target IME platform
+  work starts.
 - [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
   Wayland text-input v3 surrounding text, delete-surrounding, content hints,
   serial policy, preedit styling, and candidate placement.
