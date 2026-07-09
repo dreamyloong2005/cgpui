@@ -195,6 +195,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_input_helpers.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_window_ime.cpp",
+      "src/platform/win32/win32_window_ime_placement.cpp",
   };
   for (const char* path : win32_files) {
     if (read_source(path).empty()) {
@@ -872,6 +874,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/win32/win32_font_discovery.cpp");
   const std::string win32_window_ime =
       read_source("src/platform/win32/win32_window_ime.cpp");
+  const std::string win32_window_ime_placement =
+      read_source("src/platform/win32/win32_window_ime_placement.cpp");
   const std::string win32_window_proc_lifecycle =
       read_source("src/platform/win32/win32_window_proc_lifecycle.cpp");
   if (line_count(win32_helpers) > 60 ||
@@ -908,9 +912,8 @@ int main(int argc, char** argv) {
                "DragDropPayload drag_payload_from_ole_data_object(")) {
     return 17;
   }
-  if (!contains(win32_window_ime, "placement.candidate_rect") ||
-      !contains(win32_window_ime, "candidate_rect") ||
-      !contains(win32_window_ime, "ImmSetCandidateWindow") ||
+  if (line_count(win32_window_ime) > 90 ||
+      line_count(win32_window_ime_placement) > 90 ||
       !contains(win32_window_ime, "Win32Window::ime_composition(") ||
       !contains(win32_window_ime, "ImmGetCompositionStringW") ||
       !contains(win32_window_ime, "GCS_COMPSTR") ||
@@ -918,6 +921,13 @@ int main(int argc, char** argv) {
       !contains(win32_window_ime, "ImeCompositionPhase::update") ||
       !contains(win32_window_ime, "ImeCompositionPhase::commit") ||
       !contains(win32_window_ime, "ImeCompositionPhase::cancel") ||
+      contains(win32_window_ime, "ImmSetCandidateWindow") ||
+      !contains(win32_window_ime_placement, "placement.candidate_rect") ||
+      !contains(win32_window_ime_placement, "candidate_rect") ||
+      !contains(win32_window_ime_placement, "ImmSetCandidateWindow") ||
+      !contains(win32_window_ime_placement, "ImmSetCompositionWindow") ||
+      contains(win32_window_ime_placement, "GCS_COMPSTR") ||
+      contains(win32_window_ime_placement, "GCS_RESULTSTR") ||
       !contains(win32_window_proc_lifecycle, "WM_IME_COMPOSITION") ||
       !contains(win32_window_proc_lifecycle,
                 "window->ime_composition(lparam)") ||

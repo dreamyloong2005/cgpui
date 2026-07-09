@@ -55,6 +55,8 @@ int main() {
       read_source("src/platform/linux/wayland_window_text_events.cpp");
   const std::string win32_ime =
       read_source("src/platform/win32/win32_window_ime.cpp");
+  const std::string win32_ime_placement =
+      read_source("src/platform/win32/win32_window_ime_placement.cpp");
   const std::string wayland_keyboard_test =
       read_source("tests/platform/wayland_keyboard_test.cpp");
   const std::string win32_text_test =
@@ -69,6 +71,7 @@ int main() {
       event_text.empty() || event_text_source.empty() ||
       wayland_requests.empty() || wayland_events.empty() ||
       wayland_window_text.empty() || win32_ime.empty() ||
+      win32_ime_placement.empty() ||
       wayland_keyboard_test.empty() || win32_text_test.empty() ||
       runtime_text_test.empty() || structure_test.empty()) {
     return 1;
@@ -164,7 +167,7 @@ int main() {
       wayland_events,
       wayland_window_text,
       wayland_window_text,
-      win32_ime,
+      win32_ime_placement,
       win32_ime,
       win32_ime,
       win32_ime,

@@ -54,6 +54,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_drag_drop.cpp",
       "src/platform/win32/win32_window_events.cpp",
       "src/platform/win32/win32_window_ime.cpp",
+      "src/platform/win32/win32_window_ime_placement.cpp",
       "src/platform/win32/win32_window_proc.cpp",
       "src/platform/win32/win32_window_proc_drag.cpp",
       "src/platform/win32/win32_window_proc_lifecycle.cpp",
@@ -333,6 +334,8 @@ int main() {
       read_source("src/platform/win32/win32_window_events.cpp");
   const std::string win32_window_ime =
       read_source("src/platform/win32/win32_window_ime.cpp");
+  const std::string win32_window_ime_placement =
+      read_source("src/platform/win32/win32_window_ime_placement.cpp");
   const std::string win32_window_proc =
       read_source("src/platform/win32/win32_window_proc.cpp");
   const std::string win32_window_proc_drag =
@@ -357,7 +360,8 @@ int main() {
       win32_ole_drop_target.empty() || win32_window.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
       win32_window_drag_drop.empty() || win32_window_events.empty() ||
-      win32_window_ime.empty() || win32_window_proc.empty() ||
+      win32_window_ime.empty() || win32_window_ime_placement.empty() ||
+      win32_window_proc.empty() ||
       win32_window_proc_drag.empty() ||
       win32_window_proc_lifecycle.empty() ||
       win32_window_proc_pointer.empty() ||
@@ -520,10 +524,18 @@ int main() {
     return 77;
   }
   if (!contains(win32_window_ime, "Win32Window::ime_start_composition()") ||
-      !contains(win32_window_ime, "Win32Window::apply_ime_text_input_placement()") ||
-      !contains(win32_window_ime, "ImmSetCompositionWindow(") ||
-      !contains(win32_window_ime, "ImmSetCandidateWindow(")) {
+      !contains(win32_window_ime, "Win32Window::ime_composition(") ||
+      !contains(win32_window_ime, "Win32Window::ime_end_composition()") ||
+      !contains(win32_window_ime, "ImmGetCompositionStringW(") ||
+      contains(win32_window_ime, "ImmSetCompositionWindow(")) {
     return 78;
+  }
+  if (!contains(win32_window_ime_placement,
+                "Win32Window::apply_ime_text_input_placement()") ||
+      !contains(win32_window_ime_placement, "ImmSetCompositionWindow(") ||
+      !contains(win32_window_ime_placement, "ImmSetCandidateWindow(") ||
+      contains(win32_window_ime_placement, "ImmGetCompositionStringW(")) {
+    return 95;
   }
   if (!contains(win32_window_drag_drop, "Win32Window::ole_drag_entered(") ||
       !contains(win32_window_drag_drop, "Win32Window::ole_drag_dropped(") ||
@@ -537,6 +549,7 @@ int main() {
       line_count(win32_window_size) > 80 ||
       line_count(win32_window_events) > 180 ||
       line_count(win32_window_ime) > 90 ||
+      line_count(win32_window_ime_placement) > 90 ||
       line_count(win32_window_drag_drop) > 170) {
     return 80;
   }

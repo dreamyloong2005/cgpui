@@ -1329,8 +1329,23 @@ behavior that can support GPUI examples and editor-like widgets.
   `api_parity_public_text_wrapper_examples`,
   `api_parity_public_text_input_workflow`, and
   `api_parity_public_rich_text_examples`. renderer glyph coloring and inline image drawing remain later work.
-- [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
+- [x] Steps 451-458: Run full Windows/WSL verification, update text rows in
   the parity ledger, and document which Unicode/IME behaviors are complete.
+  Phase D final closeout lands in
+  `tests/api_parity/phase_d_final_closeout_test.cpp`. Windows full debug suite
+  passed 139/139, and WSL Arch Linux full debug suite passed 136/136 using
+  D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The
+  closeout keeps the completed text/IME/rich-text/example evidence distinct
+  from remaining production gaps: DirectWrite font-file extraction, real color
+  glyph rendering, native ZWJ ligature shaping depth, full Unicode script data,
+  full Unicode bidirectional shaping/reordering, paragraph shaping, cache
+  eviction policy, platform-derived font metrics, Unicode line-break classes,
+  FreeType metrics and richer per-face coverage, platform-specific preedit
+  styling, production candidate UI policy, runtime rich-text element dispatch,
+  actual link command handling, inline image drawing/loading, syntax
+  parsing/editor token source integration, and actual multi-color glyph
+  painting remain later work. Phase E Step 459 Vulkan glyph atlas production
+  follows this closeout.
 
 ## Phase E: Steps 459-538 - Vulkan Renderer Production Path
 

@@ -17875,3 +17875,37 @@
 - Expanded focused WSL gate reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp, included
   `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 18/18 focused tests.
+
+## 2026-07-09 Phase D Final Closeout Fixes
+
+- Started from clean tracked `master` after
+  `00750b9d test: close phase d text examples`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Fixed the stale fallback-splitting audit to expect the guarded HarfBuzz
+  backend now shapes through `hb_shape` rather than the old production
+  HarfBuzz gap wording.
+- Split Win32 IMM placement out of `src/platform/win32/win32_window_ime.cpp`
+  into focused `src/platform/win32/win32_window_ime_placement.cpp`, keeping
+  composition/result string ingestion in the original IME file and candidate /
+  composition rectangle application in the placement file.
+- Updated `win32_window_source_test`, `platform_source_structure_test`, and
+  `phase_d_ime_platform_audit_test` so the new IME placement boundary is
+  guarded without raising structure thresholds.
+- Focused Windows verification passed 6/6:
+  `phase_d_fallback_splitting_audit_test/default`,
+  `win32_window_source_test/default`,
+  `platform_source_structure_test/default`,
+  `phase_d_ime_platform_audit_test/default`,
+  `win32_text_input_test/default`, and
+  `window_runtime_text_test/default`.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp, included
+  `-w /mnt/d/Dev/Projects/cgpui`, and passed 5/5:
+  `phase_d_fallback_splitting_audit_test/default`,
+  `win32_window_source_test/default`,
+  `platform_source_structure_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `window_runtime_text_test/default`.
+- Baseline full verification before adding the final closeout audit passed:
+  Windows `xmake test -y -P .` 138/138 and WSL Arch Linux 135/135 with
+  D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp.

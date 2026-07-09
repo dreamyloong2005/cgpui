@@ -566,7 +566,18 @@
       "task_plan.md",
       "findings.md"
     ],
-    "text_examples_closeout_remaining_gap": "renderer glyph coloring and inline image drawing remain later work"
+    "text_examples_closeout_remaining_gap": "renderer glyph coloring and inline image drawing remain later work",
+    "phase_d_final_closeout_surface": "Phase D final closeout: Steps 451-458 close with tests/api_parity/phase_d_final_closeout_test.cpp; Windows full debug suite passed 139/139; WSL Arch Linux full debug suite passed 136/136 using D-drive WSL build/cache output plus /dev/shm/cgpui transient temp",
+    "phase_d_final_closeout_sources": [
+      "tests/api_parity/phase_d_final_closeout_test.cpp",
+      "xmake.lua",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "task_plan.md",
+      "findings.md"
+    ],
+    "phase_d_final_closeout_remaining_gaps": "DirectWrite font-file extraction; real color glyph rendering; native ZWJ ligature shaping depth; full Unicode script data; full Unicode bidirectional shaping/reordering; paragraph shaping; cache eviction policy; platform-derived font metrics; Unicode line-break classes; FreeType metrics and richer per-face coverage; platform-specific preedit styling; production candidate UI policy; runtime rich-text element dispatch; actual link command handling; inline image drawing/loading; syntax parsing/editor token source integration; actual multi-color glyph painting",
+    "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production"
   },
   "categories": [
     "application_and_app_context",

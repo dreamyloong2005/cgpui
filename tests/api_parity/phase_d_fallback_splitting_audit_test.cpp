@@ -115,7 +115,7 @@ int main() {
       !contains(text_row, "TextShapeRun::script_runs") ||
       !contains(text_row, "full Unicode script data") ||
       !contains(text_row, "bidirectional shaping") ||
-      !contains(text_row, "production HarfBuzz shaping")) {
+      !contains(text_row, "guarded HarfBuzz backend now shapes through hb_shape")) {
     return 5;
   }
 
