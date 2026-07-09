@@ -336,12 +336,19 @@ struct WaylandTestCompositor::State {
   struct TextInputDeleteSurroundingRequest {
     std::uint32_t before_length = 0;
     std::uint32_t after_length = 0;
+    std::optional<std::uint32_t> serial;
   };
 
   struct TextInputPreeditRequest {
     std::string text;
     std::int32_t cursor_begin = 0;
     std::int32_t cursor_end = 0;
+    std::optional<std::uint32_t> serial;
+  };
+
+  struct TextInputCommitRequest {
+    std::string text;
+    std::optional<std::uint32_t> serial;
   };
 
   explicit State(std::string test_name) {
@@ -600,6 +607,18 @@ struct WaylandTestCompositor::State {
       std::string text,
       std::int32_t cursor_begin,
       std::int32_t cursor_end) {
+    request_text_input_preedit_with_serial(
+        std::move(text),
+        cursor_begin,
+        cursor_end,
+        std::nullopt);
+  }
+
+  void request_text_input_preedit_with_serial(
+      std::string text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end,
+      std::optional<std::uint32_t> serial) {
     {
       std::lock_guard lock(text_input_event_mutex);
       pending_text_input_preedit =
@@ -607,6 +626,7 @@ struct WaylandTestCompositor::State {
               .text = std::move(text),
               .cursor_begin = cursor_begin,
               .cursor_end = cursor_end,
+              .serial = serial,
           };
     }
     text_input_preedit_pending.store(true);
@@ -627,9 +647,19 @@ struct WaylandTestCompositor::State {
   }
 
   void request_text_input_commit(std::string text) {
+    request_text_input_commit_with_serial(std::move(text), std::nullopt);
+  }
+
+  void request_text_input_commit_with_serial(
+      std::string text,
+      std::optional<std::uint32_t> serial) {
     {
       std::lock_guard lock(text_input_event_mutex);
-      pending_text_input_commit = std::move(text);
+      pending_text_input_commit =
+          TextInputCommitRequest{
+              .text = std::move(text),
+              .serial = serial,
+          };
     }
     text_input_commit_pending.store(true);
   }
@@ -1010,6 +1040,8 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_text_input_delete_surrounding();
   void dispatch_pending_text_input_commit();
   void dispatch_pending_text_input_leave();
+  std::uint32_t consume_text_input_serial(
+      std::optional<std::uint32_t> serial);
   void dispatch_pending_clipboard_selection();
   void dispatch_pending_clipboard_client_selection_request();
 
@@ -1191,7 +1223,7 @@ struct WaylandTestCompositor::State {
   std::mutex text_input_event_mutex;
   TextInputPreeditRequest pending_text_input_preedit;
   TextInputDeleteSurroundingRequest pending_text_input_delete_surrounding;
-  std::string pending_text_input_commit;
+  TextInputCommitRequest pending_text_input_commit;
   mutable std::mutex text_input_client_state_mutex;
   WaylandTextInputClientState text_input_client_state;
   std::mutex pointer_button_mutex;
@@ -2319,7 +2351,7 @@ void WaylandTestCompositor::State::dispatch_pending_text_input_preedit() {
   wl_resource_post_event(
       text_input_resource,
       zwp_text_input_v3_done,
-      next_text_input_serial++);
+      consume_text_input_serial(request.serial));
   wl_display_flush_clients(display);
   text_input_preedit_sent.store(true);
 }
@@ -2347,7 +2379,7 @@ void WaylandTestCompositor::State::dispatch_pending_text_input_delete_surroundin
   wl_resource_post_event(
       text_input_resource,
       zwp_text_input_v3_done,
-      next_text_input_serial++);
+      consume_text_input_serial(request.serial));
   wl_display_flush_clients(display);
   text_input_delete_surrounding_sent.store(true);
 }
@@ -2362,21 +2394,34 @@ void WaylandTestCompositor::State::dispatch_pending_text_input_commit() {
     return;
   }
 
-  std::string text;
+  TextInputCommitRequest request;
   {
     std::lock_guard lock(text_input_event_mutex);
-    text = pending_text_input_commit;
+    request = pending_text_input_commit;
   }
   wl_resource_post_event(
       text_input_resource,
       zwp_text_input_v3_commit_string,
-      text.c_str());
+      request.text.c_str());
   wl_resource_post_event(
       text_input_resource,
       zwp_text_input_v3_done,
-      next_text_input_serial++);
+      consume_text_input_serial(request.serial));
   wl_display_flush_clients(display);
   text_input_commit_sent.store(true);
+}
+
+std::uint32_t WaylandTestCompositor::State::consume_text_input_serial(
+    std::optional<std::uint32_t> serial) {
+  if (!serial.has_value()) {
+    return next_text_input_serial++;
+  }
+
+  const std::uint32_t value = *serial;
+  if (static_cast<std::int32_t>(value - next_text_input_serial) >= 0) {
+    next_text_input_serial = value + 1;
+  }
+  return value;
 }
 
 void WaylandTestCompositor::State::dispatch_pending_text_input_leave() {
@@ -2668,6 +2713,18 @@ void WaylandTestCompositor::request_text_input_preedit(
       cursor_end);
 }
 
+void WaylandTestCompositor::request_text_input_preedit_with_serial(
+    std::string text,
+    std::int32_t cursor_begin,
+    std::int32_t cursor_end,
+    std::uint32_t serial) {
+  state_->request_text_input_preedit_with_serial(
+      std::move(text),
+      cursor_begin,
+      cursor_end,
+      serial);
+}
+
 void WaylandTestCompositor::request_text_input_delete_surrounding(
     std::uint32_t before_length,
     std::uint32_t after_length) {
@@ -2676,6 +2733,12 @@ void WaylandTestCompositor::request_text_input_delete_surrounding(
 
 void WaylandTestCompositor::request_text_input_commit(std::string text) {
   state_->request_text_input_commit(std::move(text));
+}
+
+void WaylandTestCompositor::request_text_input_commit_with_serial(
+    std::string text,
+    std::uint32_t serial) {
+  state_->request_text_input_commit_with_serial(std::move(text), serial);
 }
 
 void WaylandTestCompositor::request_text_input_leave() {

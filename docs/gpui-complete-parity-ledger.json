@@ -375,7 +375,19 @@
       "tests/platform/win32_text_input_test.cpp",
       "tests/architecture/platform_source_structure_test.cpp"
     ],
-    "win32_ime_remaining_gap": "deeper Win32 TSF integration and richer platform-specific composition styling remain later Phase D work"
+    "win32_ime_remaining_gap": "deeper Win32 TSF integration and richer platform-specific composition styling remain later Phase D work",
+    "step_433": "Phase D Step 433 Wayland text-input stale serial policy",
+    "wayland_serial_policy_surface": "WaylandTextInput tracks the last accepted done(serial), drops non-increasing serials, clears pending preedit/delete/commit events on stale or inactive done, and accepts later increasing serials",
+    "wayland_serial_policy_sources": [
+      "src/platform/linux/wayland_text_input_internal.hpp",
+      "src/platform/linux/wayland_text_input_events.cpp",
+      "src/platform/linux/wayland_text_input_core.cpp",
+      "tests/platform/wayland_keyboard_test.cpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/architecture/platform_source_structure_test.cpp"
+    ],
+    "wayland_serial_remaining_gap": "broader Wayland IME policy beyond stale serial rejection remains later Phase D work"
   },
   "categories": [
     "application_and_app_context",

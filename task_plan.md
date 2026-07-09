@@ -328,6 +328,12 @@ Windows/Linux core API is stable enough for parity work.
   Current host tests cover the stable end-composition cancel message and lock
   the `GCS_*` production path with platform source-structure coverage because
   local IMM simulation does not make synthetic composition strings readable.
+- Step 433 adds Wayland text-input v3 stale serial policy. `WaylandTextInput`
+  tracks the last accepted `done(serial)`, drops non-increasing serials, clears
+  pending preedit/delete/commit events on stale or inactive done, and keeps the
+  policy inside focused text-input files. The test compositor can now send
+  request-specific serials so `wayland_keyboard_test` verifies a stale commit
+  does not reach the platform callback and later increasing serials still flow.
 
 ## Definition Of Done For This 20-Step Goal
 

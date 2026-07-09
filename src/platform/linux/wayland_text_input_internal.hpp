@@ -59,6 +59,9 @@ class WaylandTextInput {
       std::uint32_t serial);
 
   [[nodiscard]] KeyboardModifiers current_modifiers() const;
+  [[nodiscard]] bool text_input_done_serial_is_stale(
+      std::uint32_t serial) const;
+  void reset_pending_events();
 
   wl_display* display_ = nullptr;
   zwp_text_input_manager_v3* manager_ = nullptr;
@@ -69,6 +72,7 @@ class WaylandTextInput {
   std::optional<PendingPreedit> pending_preedit_;
   std::optional<std::string> pending_commit_;
   std::optional<PendingDeleteSurroundingText> pending_delete_surrounding_;
+  std::uint32_t last_done_serial_ = 0;
 };
 
 } // namespace cgpui

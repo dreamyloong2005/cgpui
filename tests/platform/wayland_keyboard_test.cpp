@@ -44,6 +44,7 @@ int main() {
   bool ime_preedit_received = false;
   bool ime_delete_surrounding_received = false;
   bool ime_commit_received = false;
+  bool ime_stale_commit_received = false;
   std::uint32_t ime_preedit_serial = 0;
   std::uint32_t ime_delete_surrounding_serial = 0;
   std::uint32_t ime_commit_serial = 0;
@@ -101,6 +102,10 @@ int main() {
               composition->text == "\xE4\xB8\xAD") {
             ime_commit_received = true;
             ime_commit_serial = composition->serial;
+          }
+          if (composition->phase == cgpui::ImeCompositionPhase::commit &&
+              composition->text == "stale") {
+            ime_stale_commit_received = true;
           }
         }
         if (const auto* delete_surrounding =
@@ -202,7 +207,14 @@ int main() {
   compositor.request_keyboard_key(expected_key, true);
   compositor.request_keyboard_key(expected_key, false);
   compositor.request_text_input_enter();
-  compositor.request_text_input_preedit("draft", 1, 3);
+  compositor.request_text_input_preedit_with_serial("draft", 1, 3, 5);
+  if (!compositor.wait_for_text_input_preedit_sent()) {
+    return 18;
+  }
+  compositor.request_text_input_commit_with_serial("stale", 4);
+  if (!compositor.wait_for_text_input_commit_sent()) {
+    return 36;
+  }
   compositor.request_text_input_delete_surrounding(2, 1);
   compositor.request_text_input_commit("\xE4\xB8\xAD");
   compositor.request_text_input_leave();
@@ -234,9 +246,6 @@ int main() {
   }
   if (!compositor.wait_for_text_input_enter_sent()) {
     return 17;
-  }
-  if (!compositor.wait_for_text_input_preedit_sent()) {
-    return 18;
   }
   if (!compositor.wait_for_text_input_delete_surrounding_sent()) {
     return 25;
@@ -283,7 +292,7 @@ int main() {
   if (!ime_preedit_received) {
     return 23;
   }
-  if (ime_preedit_serial != 1) {
+  if (ime_preedit_serial != 5) {
     return 27;
   }
   if (ime_preedit_cursor_begin != 1) {
@@ -307,14 +316,17 @@ int main() {
   if (!ime_delete_surrounding_received) {
     return 26;
   }
-  if (ime_delete_surrounding_serial != 2) {
+  if (ime_delete_surrounding_serial != 6) {
     return 28;
   }
   if (!ime_commit_received) {
     return 24;
   }
-  if (ime_commit_serial != 3) {
+  if (ime_commit_serial != 7) {
     return 29;
+  }
+  if (ime_stale_commit_received) {
+    return 37;
   }
 
   return 0;

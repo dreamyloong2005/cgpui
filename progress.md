@@ -17335,3 +17335,34 @@
 - Final focused WSL verification reused `.build-wsl/master` on D: and
   `/dev/shm/cgpui` and passed the corresponding 8/8 set with
   `wayland_keyboard_test/default` in place of the Win32-only behavior test.
+
+## 2026-07-09 Phase D Step 433 Wayland Stale Serial Policy
+
+- Started from clean tracked `master` after
+  `c93fd902 feat: ingest win32 ime composition strings`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added `WaylandTextInput::text_input_done_serial_is_stale(...)`,
+  `last_done_serial_`, and `reset_pending_events()` so stale or inactive
+  `done(serial)` clears pending preedit/delete/commit events without emitting
+  them.
+- Extended `WaylandTestCompositor` with request-specific text-input serials,
+  then updated `wayland_keyboard_test` to send serial 5 preedit, serial 4 stale
+  commit, and later serials 6/7 delete/commit events. The test asserts the
+  stale commit does not reach the platform callback.
+- Initial focused WSL verification passed:
+  `wayland_keyboard_test/default` and `platform_source_structure_test/default`
+  2/2 using `.build-wsl/master` on D: and `/dev/shm/cgpui`.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . core_header_cleanliness/default
+  platform_source_structure_test/default window_runtime_text_test/default
+  win32_text_input_test/default gpui_parity_ledger_test/default
+  phase_d_edit_history_audit_test/default phase_d_selection_caret_audit_test/default
+  pre_phase_d_entry_gate_test/default` 8/8.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 8/8:
+  `core_header_cleanliness/default`, `wayland_keyboard_test/default`,
+  `platform_source_structure_test/default`, `window_runtime_text_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.

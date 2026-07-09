@@ -42,9 +42,8 @@ void WaylandTextInput::bind_to_seat(wl_seat* seat) {
 
 void WaylandTextInput::reset_text_input() {
   active_window_ = nullptr;
-  pending_preedit_.reset();
-  pending_commit_.reset();
-  pending_delete_surrounding_.reset();
+  reset_pending_events();
+  last_done_serial_ = 0;
   if (text_input_ != nullptr) {
     zwp_text_input_v3_destroy(text_input_);
     text_input_ = nullptr;
@@ -53,6 +52,12 @@ void WaylandTextInput::reset_text_input() {
 
 bool WaylandTextInput::available() const {
   return text_input_ != nullptr;
+}
+
+void WaylandTextInput::reset_pending_events() {
+  pending_preedit_.reset();
+  pending_commit_.reset();
+  pending_delete_surrounding_.reset();
 }
 
 } // namespace cgpui

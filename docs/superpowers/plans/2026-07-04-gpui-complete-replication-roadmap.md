@@ -1183,6 +1183,11 @@ behavior that can support GPUI examples and editor-like widgets.
   `GCS_RESULTSTR` is converted to `ImeCompositionPhase::commit`, and
   `WM_IME_ENDCOMPOSITION` emits a cancel event. TSF integration and richer
   platform-specific composition styling remain later work.
+  Step 433 adds Wayland text-input v3 stale serial policy: `WaylandTextInput`
+  tracks the last accepted `done(serial)`, drops non-increasing serials, clears
+  pending preedit/delete/commit state when stale or inactive, and
+  `wayland_keyboard_test` verifies a stale commit is ignored before later
+  increasing serials are accepted.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility

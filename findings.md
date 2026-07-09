@@ -7645,3 +7645,18 @@
   data readable through `GCS_COMPSTR`, so behavior coverage stays on the stable
   end-composition cancel message and structure coverage freezes the production
   `GCS_*` parsing boundary.
+
+## 2026-07-09 Phase D Step 433 Wayland Stale Serial Policy
+
+- Wayland text-input v3 `done(serial)` is now policy-bearing rather than only
+  forwarded metadata. `WaylandTextInput` stores the last accepted serial and
+  treats non-increasing serials as stale.
+- Stale or inactive `done(serial)` calls clear pending preedit, delete
+  surrounding, and commit state instead of emitting partially queued IME events
+  later.
+- `reset_text_input()` also clears pending state and resets the serial baseline,
+  keeping serial lifetime tied to the text-input object.
+- The Wayland test compositor can now attach request-specific serials to
+  preedit and commit events. `wayland_keyboard_test` sends serial 5 preedit,
+  serial 4 stale commit, then normal delete/commit events that continue at
+  serials 6 and 7, verifying stale commit text never reaches the callback.

@@ -118,6 +118,17 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   `GCS_*` production parsing boundary.
 - Remaining gap: deeper Win32 TSF integration and richer platform-specific
   composition styling remain later Phase D work.
+- Step 433 adds Wayland text-input v3 stale serial policy. Evidence:
+  `src/platform/linux/wayland_text_input_internal.hpp` stores
+  `last_done_serial_`, `src/platform/linux/wayland_text_input_events.cpp`
+  rejects non-increasing `done(serial)` values and clears pending events,
+  `src/platform/linux/wayland_text_input_core.cpp` resets serial/pending state
+  with the text-input object, and `tests/platform/wayland_keyboard_test.cpp`
+  uses request-specific serials from `tests/platform/wayland_test_compositor.*`
+  to prove a stale commit is ignored while later increasing serials are
+  accepted.
+- Remaining gap: broader Wayland IME policy beyond stale serial rejection
+  remains later Phase D work.
 
 ## Categories
 

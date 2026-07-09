@@ -742,6 +742,12 @@ int main(int argc, char** argv) {
       contains(text_input_events, "(void)cursor_end") ||
       !contains(text_input_events, "preedit.cursor_begin") ||
       !contains(text_input_events, "preedit.cursor_end") ||
+      !contains(text_input_events, "text_input_done_serial_is_stale") ||
+      !contains(text_input_events, "last_done_serial_ = serial") ||
+      !contains(text_input_events, "reset_pending_events()") ||
+      !contains(text_input_internal, "last_done_serial_") ||
+      !contains(text_input_internal, "reset_pending_events()") ||
+      !contains(text_input_core, "last_done_serial_ = 0") ||
       !contains(text_input_requests, "zwp_text_input_v3_commit") ||
       !contains(text_input_requests, "placement->surrounding_text") ||
       !contains(text_input_requests, "placement->selection_anchor") ||

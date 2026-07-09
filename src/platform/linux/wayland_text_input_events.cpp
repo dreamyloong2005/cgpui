@@ -2,6 +2,14 @@
 
 namespace cgpui {
 
+bool WaylandTextInput::text_input_done_serial_is_stale(
+    std::uint32_t serial) const {
+  if (last_done_serial_ == 0) {
+    return false;
+  }
+  return static_cast<std::int32_t>(serial - last_done_serial_) <= 0;
+}
+
 void WaylandTextInput::handle_enter(
     void* data,
     zwp_text_input_v3* text_input,
@@ -29,9 +37,7 @@ void WaylandTextInput::handle_leave(
   if (window == self->active_window_) {
     self->active_window_ = nullptr;
   }
-  self->pending_preedit_.reset();
-  self->pending_commit_.reset();
-  self->pending_delete_surrounding_.reset();
+  self->reset_pending_events();
 }
 
 void WaylandTextInput::handle_preedit_string(
@@ -80,10 +86,14 @@ void WaylandTextInput::handle_done(
   (void)text_input;
   auto* self = static_cast<WaylandTextInput*>(data);
   if (self->active_window_ == nullptr) {
-    self->pending_preedit_.reset();
-    self->pending_commit_.reset();
+    self->reset_pending_events();
     return;
   }
+  if (self->text_input_done_serial_is_stale(serial)) {
+    self->reset_pending_events();
+    return;
+  }
+  self->last_done_serial_ = serial;
 
   const KeyboardModifiers modifiers = self->current_modifiers();
   if (self->pending_preedit_.has_value()) {
@@ -111,9 +121,7 @@ void WaylandTextInput::handle_done(
         modifiers,
         serial);
   }
-  self->pending_preedit_.reset();
-  self->pending_commit_.reset();
-  self->pending_delete_surrounding_.reset();
+  self->reset_pending_events();
 }
 
 KeyboardModifiers WaylandTextInput::current_modifiers() const {

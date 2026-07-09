@@ -90,10 +90,18 @@ class WaylandTestCompositor {
       std::string text,
       std::int32_t cursor_begin,
       std::int32_t cursor_end);
+  void request_text_input_preedit_with_serial(
+      std::string text,
+      std::int32_t cursor_begin,
+      std::int32_t cursor_end,
+      std::uint32_t serial);
   void request_text_input_delete_surrounding(
       std::uint32_t before_length,
       std::uint32_t after_length);
   void request_text_input_commit(std::string text);
+  void request_text_input_commit_with_serial(
+      std::string text,
+      std::uint32_t serial);
   void request_text_input_leave();
   void set_clipboard_selection(
       std::vector<WaylandMimePayload> payloads);
