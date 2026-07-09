@@ -518,7 +518,19 @@
       "task_plan.md",
       "findings.md"
     ],
-    "text_input_workflow_public_example_remaining_gap": "rich-text examples, final examples closeout, and final Phase D verification remain later Phase D work"
+    "text_input_workflow_public_example_remaining_gap": "rich-text examples, final examples closeout, and final Phase D verification remain later Phase D work",
+    "step_446": "Phase D Step 446 rich text public example",
+    "rich_text_public_example_surface": "Step 446 extends the text-input examples band with examples/api_parity/public_rich_text_examples/main.cpp and api_parity_public_rich_text_examples, demonstrating rich-text run, syntax, inline-image, hit, activation, and paint metadata through cgpui/prelude.hpp only",
+    "rich_text_public_example_sources": [
+      "examples/api_parity/public_rich_text_examples/main.cpp",
+      "tests/api_parity/phase_d_rich_text_public_examples_test.cpp",
+      "xmake.lua",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "task_plan.md",
+      "findings.md"
+    ],
+    "rich_text_public_example_remaining_gap": "renderer glyph coloring and inline image drawing remain later work, alongside final examples closeout and final Phase D verification"
   },
   "categories": [
     "application_and_app_context",

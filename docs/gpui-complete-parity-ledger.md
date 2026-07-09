@@ -254,6 +254,14 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   example and keeps it away from private runtime APIs.
 - Remaining gap: rich-text examples, final examples closeout, and final Phase D
   verification remain later Phase D work.
+- Phase D Step 446 rich text public example extends this slice. Step 446 extends the text-input examples band with
+  `examples/api_parity/public_rich_text_examples/main.cpp` and
+  `api_parity_public_rich_text_examples`, demonstrating rich-text run, syntax, inline-image, hit, activation, and paint metadata
+  through `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_rich_text_public_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs.
+- Remaining gap: renderer glyph coloring and inline image drawing remain later work, alongside
+  final examples closeout and final Phase D verification.
 
 ## Categories
 

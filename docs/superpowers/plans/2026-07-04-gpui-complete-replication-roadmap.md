@@ -1301,6 +1301,13 @@ behavior that can support GPUI examples and editor-like widgets.
   `tests/api_parity/phase_d_text_input_workflow_examples_test.cpp` freezes the
   example and keeps it away from private runtime APIs. Rich-text examples, final
   examples closeout, and final Phase D verification remain later steps.
+  Phase D Step 446 rich text public example extends this slice. Step 446 extends the text-input examples band with
+  `examples/api_parity/public_rich_text_examples/main.cpp` and
+  `api_parity_public_rich_text_examples`, demonstrating rich-text run, syntax, inline-image, hit, activation, and paint metadata
+  through `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_rich_text_public_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs. renderer glyph coloring and inline image drawing remain later work,
+  alongside final examples closeout and final Phase D verification.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
   the parity ledger, and document which Unicode/IME behaviors are complete.
 

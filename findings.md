@@ -7832,3 +7832,17 @@
   through public headers.
 - Rich-text examples, final examples closeout, and final Phase D verification
   remain separate later steps.
+
+## 2026-07-09 Phase D Step 446 Rich Text Public Example
+
+- Phase D Step 446 rich text public example should demonstrate the public
+  metadata surface only. It must not imply that the renderer already performs
+  multi-color glyph drawing or inline image drawing.
+- Step 446 extends the text-input examples band with
+  `examples/api_parity/public_rich_text_examples/main.cpp`,
+  `api_parity_public_rich_text_examples`, and
+  `tests/api_parity/phase_d_rich_text_public_examples_test.cpp`,
+  demonstrating rich-text run, syntax, inline-image, hit, activation, and paint metadata
+  through public headers.
+- renderer glyph coloring and inline image drawing remain later work, alongside
+  final examples closeout and final Phase D verification.

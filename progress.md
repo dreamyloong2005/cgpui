@@ -17733,3 +17733,44 @@
 - Final focused WSL gate reused the same D: cache and `/dev/shm/cgpui` temp,
   included `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 12/12 focused
   tests.
+
+## 2026-07-09 Phase D Step 446 Rich Text Public Example
+
+- Started from clean tracked `master` after
+  `a69affdb feat: add text input workflow example`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage with
+  `tests/api_parity/phase_d_rich_text_public_examples_test.cpp` and the
+  `phase_d_rich_text_public_examples_test` xmake target. The first Windows run
+  failed as expected because the rich-text public example and docs/ledger
+  evidence did not exist.
+- Added `examples/api_parity/public_rich_text_examples/main.cpp` and
+  `api_parity_public_rich_text_examples`, demonstrating rich-text run, syntax,
+  inline-image, hit, activation, and paint metadata through
+  `cgpui/prelude.hpp` only.
+- Updated the roadmap, Markdown/JSON parity ledger, `task_plan.md`, and
+  `findings.md` for Phase D Step 446 rich text public example, keeping renderer
+  glyph coloring and inline image drawing as explicit later work.
+- Initial focused Windows GREEN verification passed:
+  `xmake test -y -P . phase_d_rich_text_public_examples_test/default` 1/1.
+- Windows example build/run passed:
+  `xmake build -y -P . api_parity_public_rich_text_examples`, then
+  `xmake run -P . api_parity_public_rich_text_examples`.
+- Final focused Windows gate passed 13/13:
+  `phase_d_rich_text_public_examples_test/default`,
+  `phase_d_text_input_workflow_examples_test/default`,
+  `phase_d_text_wrapper_public_examples_test/default`,
+  `phase_d_text_input_public_examples_test/default`,
+  `phase_d_rich_text_audit_test/default`, `rich_text_run_test/default`,
+  `render_view_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `core_header_cleanliness/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- WSL example build/run reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed:
+  `xmake build -y -j 1 -P . api_parity_public_rich_text_examples`, then
+  `xmake run -P . api_parity_public_rich_text_examples`.
+- Final focused WSL gate reused the same D: cache and `/dev/shm/cgpui` temp,
+  included `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 13/13 focused
+  tests.
