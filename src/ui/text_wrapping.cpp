@@ -16,7 +16,8 @@ bool text_wrap_column_is_hard_break(
   const std::string& text = measurement.shape_run.text;
   return column.byte_start < column.byte_end &&
       column.byte_end <= text.size() &&
-      text[column.byte_start] == '\n';
+      (text[column.byte_start] == '\n' ||
+       text[column.byte_start] == '\r');
 }
 
 void text_wrap_line_assign_bidi_runs(

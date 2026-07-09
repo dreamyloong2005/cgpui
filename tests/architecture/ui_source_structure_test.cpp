@@ -537,6 +537,8 @@ int main() {
                 "build_text_grapheme_columns(") ||
       !contains(text_measurement_grapheme_source,
                 "text_grapheme_column_includes_codepoint(") ||
+      !contains(text_measurement_grapheme_source,
+                "text_measurement_is_crlf_pair(") ||
       !contains(text_measurement_bidi_source, "build_text_bidi_runs(") ||
       !contains(text_measurement_bidi_source,
                 "classify_text_bidi_direction(") ||
@@ -550,6 +552,7 @@ int main() {
       !contains(text_wrapping_source, "text_wrap_line_for_column_range(") ||
       !contains(text_wrapping_source, "text_wrap_line_assign_bidi_runs(") ||
       !contains(text_wrapping_source, "text_wrap_column_is_hard_break(") ||
+      !contains(text_wrapping_source, "text[column.byte_start] == '\\r'") ||
       !contains(text_wrapping_source, "measurement.grapheme_columns")) {
     return 115;
   }

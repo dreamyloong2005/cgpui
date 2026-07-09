@@ -166,9 +166,9 @@ Windows/Linux core API is stable enough for parity work.
   `TextWrapBreakKind`, `TextWrapLine::break_kind`, and
   `text_wrap_column_is_hard_break(...)` let `wrap_text_measurement(...)`
   split `\n` into hard-ended lines, omit newline glyphs from wrapped paint
-  ranges, and keep soft-wrap lines marked separately. Unicode line-break
-  classes, CRLF normalization, bidi layout, and paragraph shaping remain
-  future Phase D work.
+  ranges, and keep soft-wrap lines marked separately. Broader Unicode
+  line-break classes, bidi layout, and paragraph shaping remain future Phase D
+  work.
 - Step 406 adds deterministic bidirectional planning metadata.
   `TextBidiRun`, `TextMeasurement::base_direction`,
   `TextMeasurement::bidi_runs`, `TextWrapLine::bidi_run_start`,
@@ -193,6 +193,12 @@ Windows/Linux core API is stable enough for parity work.
   keeps paragraph layout reuse visible and avoids hidden global text layout
   state; richer paragraph shaping, cache eviction policy, and platform text
   metrics remain future work.
+- Step 409 normalizes CRLF hard-wrap records.
+  `text_measurement_is_crlf_pair(...)` keeps `\r\n` together as one measured
+  grapheme column, while `text_wrap_column_is_hard_break(...)` treats both
+  `\n` and `\r` columns as hard-wrap breaks. Wrapped paint ranges now skip the
+  CRLF glyphs instead of painting `\r` on the previous line. Full Unicode
+  line-break classes and paragraph shaping remain future Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

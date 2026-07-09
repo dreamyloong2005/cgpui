@@ -7316,3 +7316,19 @@
 - This is deterministic reuse infrastructure. It does not add eviction policy,
   incremental paragraph invalidation, multi-paragraph shaping, platform font
   metric extraction, or production HarfBuzz paragraph itemization.
+
+## 2026-07-09 Phase D Step 409 CRLF Hard-Wrap Normalization
+
+- Step 409 normalizes `\r\n` hard-wrap handling at the measured grapheme
+  column boundary rather than adding a separate paragraph pass.
+- `text_measurement_is_crlf_pair(...)` keeps adjacent CR and LF glyphs in one
+  `TextGraphemeColumn`, preserving their byte/glyph span while preventing the
+  CR glyph from becoming visible text on the previous wrapped line.
+- `text_wrap_column_is_hard_break(...)` now treats columns starting with
+  either `\n` or `\r` as hard breaks, so CRLF and lone CR/LF all use the same
+  hard-wrap path.
+- Wrapped glyph paint metadata naturally skips the CRLF glyphs because the
+  hard-wrap line range ends before the break column and the next line starts
+  after it.
+- Full Unicode line-break classes, paragraph shaping, and native shaping
+  itemization remain future Phase D work.

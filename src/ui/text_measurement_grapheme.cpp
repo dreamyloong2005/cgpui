@@ -113,6 +113,21 @@ bool is_text_measurement_zero_width_joiner(std::uint32_t value) {
   return value == 0x200DU;
 }
 
+bool text_measurement_is_crlf_pair(
+    const TextShapeRun& run,
+    std::size_t first_glyph_index,
+    std::size_t second_glyph_index) {
+  if (second_glyph_index >= run.glyphs.size()) {
+    return false;
+  }
+  const DecodedMeasurementCodepoint first =
+      decode_measurement_codepoint(run, first_glyph_index);
+  const DecodedMeasurementCodepoint second =
+      decode_measurement_codepoint(run, second_glyph_index);
+  return first.value == '\r' && second.value == '\n' &&
+      first.byte_end == second.byte_start;
+}
+
 bool text_grapheme_column_includes_codepoint(
     std::uint32_t codepoint,
     bool follows_zero_width_joiner,
@@ -161,6 +176,15 @@ std::vector<TextGraphemeColumn> build_text_grapheme_columns(
     bool follows_zero_width_joiner = false;
     append_text_grapheme_column_glyph(column, run, glyph_index);
     glyph_index += 1;
+    if (text_measurement_is_crlf_pair(
+            run,
+            column.glyph_start,
+            glyph_index)) {
+      append_text_grapheme_column_glyph(column, run, glyph_index);
+      glyph_index += 1;
+      columns.push_back(column);
+      continue;
+    }
 
     while (glyph_index < run.glyphs.size()) {
       const DecodedMeasurementCodepoint current =

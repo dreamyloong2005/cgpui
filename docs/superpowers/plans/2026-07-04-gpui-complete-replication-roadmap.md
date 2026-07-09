@@ -1019,6 +1019,11 @@ behavior that can support GPUI examples and editor-like widgets.
   by text/font/scale/max-width only when callers opt into the cache object and
   leaving richer paragraph shaping, eviction policy, and platform text metrics
   for later work.
+  Step 409 normalizes CRLF hard-wrap records by keeping `\r\n` as one measured
+  grapheme column through `text_measurement_is_crlf_pair(...)`, treating both
+  `\n` and `\r` columns as hard breaks in `text_wrap_column_is_hard_break(...)`,
+  and keeping wrapped glyph paint metadata from painting either CRLF glyph.
+  Full Unicode line-break classes and paragraph shaping remain later work.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

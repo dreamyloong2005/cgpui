@@ -1442,6 +1442,59 @@ int test_text_hard_wrap_records_newline_lines() {
   return 0;
 }
 
+int test_text_hard_wrap_normalizes_crlf_breaks() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "ab\r\nc",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const cgpui::TextWrapLayout layout =
+      cgpui::wrap_text_measurement(measurement, 128.0F);
+
+  if (measurement.grapheme_columns.size() != 4 ||
+      layout.lines.size() != 2 || layout.logical_size.width != 20.0F ||
+      layout.logical_size.height != 40.0F) {
+    return 210;
+  }
+
+  const cgpui::TextGraphemeColumn& crlf =
+      measurement.grapheme_columns[2];
+  if (crlf.byte_start != 2 || crlf.byte_end != 4 ||
+      crlf.glyph_start != 2 || crlf.glyph_end != 4 ||
+      crlf.advance != 20.0F) {
+    return 211;
+  }
+
+  const cgpui::TextWrapLine& first = layout.lines[0];
+  if (first.break_kind != cgpui::TextWrapBreakKind::hard ||
+      first.column_start != 0 || first.column_end != 2 ||
+      first.byte_start != 0 || first.byte_end != 2 ||
+      first.glyph_start != 0 || first.glyph_end != 2 ||
+      first.size.width != 20.0F) {
+    return 212;
+  }
+
+  const cgpui::TextWrapLine& second = layout.lines[1];
+  if (second.break_kind != cgpui::TextWrapBreakKind::none ||
+      second.column_start != 3 || second.column_end != 4 ||
+      second.byte_start != 4 || second.byte_end != 5 ||
+      second.glyph_start != 4 || second.glyph_end != 5 ||
+      second.origin.y != 20.0F || second.size.width != 10.0F) {
+    return 213;
+  }
+
+  const std::vector<cgpui::TextGlyphPaint> glyphs =
+      cgpui::text_glyph_paint_metadata(
+          measurement.shape_run,
+          std::span<const cgpui::TextWrapLine>(
+              layout.lines.data(),
+              layout.lines.size()));
+  if (glyphs.size() != 3 || glyphs[0].key.byte_offset != 0 ||
+      glyphs[1].key.byte_offset != 1 || glyphs[2].key.byte_offset != 4) {
+    return 214;
+  }
+  return 0;
+}
+
 int test_text_measurement_records_bidi_runs() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "ab\xD7\x90\xD7\x91" "c",
@@ -1812,6 +1865,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_hard_wrap_records_newline_lines();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_hard_wrap_normalizes_crlf_breaks();
       result != 0) {
     return result;
   }
