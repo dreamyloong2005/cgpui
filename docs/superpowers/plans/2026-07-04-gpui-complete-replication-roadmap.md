@@ -980,7 +980,7 @@ behavior that can support GPUI examples and editor-like widgets.
   Step 395-401 font-run, missing-glyph, color-glyph, emoji selector, ZWJ, and
   script-run metadata evidence before text measurement and wrapping work
   starts.
-- [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
+- [x] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.
   Step 403 starts text measurement and wrapping by adding
@@ -1024,6 +1024,11 @@ behavior that can support GPUI examples and editor-like widgets.
   `\n` and `\r` columns as hard breaks in `text_wrap_column_is_hard_break(...)`,
   and keeping wrapped glyph paint metadata from painting either CRLF glyph.
   Full Unicode line-break classes and paragraph shaping remain later work.
+  Step 410 closes the text measurement/wrapping band through
+  `tests/api_parity/phase_d_text_measurement_wrapping_audit_test.cpp`,
+  freezing the Step 403-409 grapheme, wrap, hard break, bidi planning, line
+  metrics, paragraph cache, and CRLF hard-wrap evidence before selection and
+  caret behavior starts.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

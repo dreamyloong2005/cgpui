@@ -7332,3 +7332,20 @@
   after it.
 - Full Unicode line-break classes, paragraph shaping, and native shaping
   itemization remain future Phase D work.
+
+## 2026-07-09 Phase D Step 410 Text Measurement/Wrapping Band Audit
+
+- Step 410 is an audit-only closeout for the Step 403-409 text measurement and
+  wrapping band.
+- `tests/api_parity/phase_d_text_measurement_wrapping_audit_test.cpp` freezes
+  the public measurement, wrapping, paragraph-layout, and documentation
+  evidence for grapheme columns, grapheme-aware soft wrap, hard-wrap records,
+  bidi planning, deterministic line metrics, explicit paragraph layout/cache
+  records, and CRLF hard-wrap normalization.
+- The closeout marks roadmap Steps 403-410 complete and leaves the next
+  handoff at Steps 411-418 selection and caret behavior.
+- Remaining text gaps are still explicit rather than hidden by the audit:
+  production HarfBuzz shaping, real color glyph rendering, full Unicode bidi
+  reordering, full Unicode line-break classes, paragraph shaping, cache
+  eviction policy, platform-derived font metrics, and dependency-backed native
+  Linux fontconfig/FreeType enumeration remain future Phase D work.

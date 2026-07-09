@@ -16237,3 +16237,41 @@
   `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
   `text_model_test/default`, `ui_header_cleanliness/default`, and
   `ui_source_structure_test/default` 9/9.
+
+## 2026-07-09 Phase D Step 410 Text Measurement/Wrapping Band Audit
+
+- Started from clean `master` after
+  `c93f772 feat: normalize crlf text wrapping`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED audit coverage in
+  `tests/api_parity/phase_d_text_measurement_wrapping_audit_test.cpp` plus an
+  xmake target requiring the Step 403-410 roadmap closeout, ledger evidence,
+  task plan/findings entries, source-boundary evidence, and text model
+  behavior coverage for graphemes, wrapping, hard breaks, bidi, line metrics,
+  paragraph cache, and CRLF normalization.
+- RED failed as expected:
+  `xmake test -y -P .
+  phase_d_text_measurement_wrapping_audit_test/default` failed 1/1 before the
+  closeout docs were updated.
+- Focused GREEN verification passed:
+  `xmake test -y -P .
+  phase_d_text_measurement_wrapping_audit_test/default` 1/1.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  10/10.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed:
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 10/10.

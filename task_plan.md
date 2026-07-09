@@ -199,6 +199,11 @@ Windows/Linux core API is stable enough for parity work.
   `\n` and `\r` columns as hard-wrap breaks. Wrapped paint ranges now skip the
   CRLF glyphs instead of painting `\r` on the previous line. Full Unicode
   line-break classes and paragraph shaping remain future Phase D work.
+- Step 410 closes the text measurement/wrapping band.
+  `tests/api_parity/phase_d_text_measurement_wrapping_audit_test.cpp` freezes
+  the Step 403-409 grapheme, soft-wrap, hard-wrap, bidi-planning,
+  line-metrics, paragraph-cache, and CRLF hard-wrap evidence before Phase D
+  moves to selection and caret behavior.
 
 ## Definition Of Done For This 20-Step Goal
 
