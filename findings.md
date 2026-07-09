@@ -137,6 +137,12 @@
   only straight alpha. The optimized embedded Vulkan 1.0 SPIR-V is 293 vertex
   words and 155 fragment words. Step 480 should normalize overlapping corner
   radii before both the inner contour and coverage fringe are generated.
+- Phase E Step 480 centralizes radius clipping in
+  `VulkanRoundedRectRadiiResolution`. The resolver clamps negative values and
+  applies a single scale derived from all four adjacent corner sums, preserving
+  relative asymmetry while preventing overlap. Both fill and coverage fringe
+  now use the same resolved radii. Step 481 can derive an inset stroke contour
+  from this stable normalization boundary.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

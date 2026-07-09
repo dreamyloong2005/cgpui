@@ -210,6 +210,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_antialiasing.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_radii_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_radii.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_frame.cpp",
@@ -1159,10 +1161,16 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp");
   const std::string rounded_rect_antialiasing = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_antialiasing.cpp");
+  const std::string rounded_rect_radii_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_radii_internal.hpp");
+  const std::string rounded_rect_radii = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_radii.cpp");
   if (line_count(rounded_rect_geometry_header) > 80 ||
       line_count(rounded_rect_geometry) > 230 ||
       line_count(rounded_rect_antialiasing_header) > 50 ||
       line_count(rounded_rect_antialiasing) > 50 ||
+      line_count(rounded_rect_radii_header) > 40 ||
+      line_count(rounded_rect_radii) > 90 ||
       !contains(rounded_rect_geometry_header,
                 "struct VulkanRoundedRectGeometry") ||
       !contains(rounded_rect_geometry,
@@ -1172,6 +1180,12 @@ int main(int argc, char** argv) {
                 "struct VulkanRoundedRectAntialiasingPolicy") ||
       !contains(rounded_rect_antialiasing,
                 "vulkan_rounded_rect_coverage(") ||
+      !contains(rounded_rect_radii_header,
+                "struct VulkanRoundedRectRadiiResolution") ||
+      !contains(rounded_rect_radii,
+                "vulkan_resolve_rounded_rect_radii(") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_resolve_rounded_rect_radii(") ||
       contains(command_recording, "append_corner_arc(")) {
     return 68;
   }

@@ -11,22 +11,6 @@ std::array<float, 4> vertex_color(Color color) {
   return {color.r, color.g, color.b, color.a};
 }
 
-float bounded_radius(float radius, Size size) {
-  return std::clamp(
-      radius,
-      0.0F,
-      std::min(size.width, size.height) * 0.5F);
-}
-
-BorderRadii bounded_radii(const RoundedRectDraw& draw) {
-  return BorderRadii{
-      .top_left = bounded_radius(draw.radius.top_left, draw.rect.size),
-      .top_right = bounded_radius(draw.radius.top_right, draw.rect.size),
-      .bottom_right = bounded_radius(draw.radius.bottom_right, draw.rect.size),
-      .bottom_left = bounded_radius(draw.radius.bottom_left, draw.rect.size),
-  };
-}
-
 std::size_t perimeter_vertex_count(std::size_t segments) {
   return 4 * (segments + 1);
 }
@@ -144,7 +128,8 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
     if (draw.rect.size.width <= 0.0F || draw.rect.size.height <= 0.0F) {
       continue;
     }
-    const BorderRadii radii = bounded_radii(draw);
+    const BorderRadii radii =
+        vulkan_resolve_rounded_rect_radii(draw.rect.size, draw.radius).radii;
     const std::size_t perimeter_count = perimeter_vertex_count(segments);
     const std::size_t first_vertex = geometry.vertices.size();
     const std::size_t first_index = geometry.indices.size();

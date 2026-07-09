@@ -2,6 +2,7 @@
 
 #include "cgpui/renderer/renderer_commands.hpp"
 #include "vulkan_rounded_rect_antialiasing_internal.hpp"
+#include "vulkan_rounded_rect_radii_internal.hpp"
 
 #include <array>
 #include <cstddef>

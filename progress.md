@@ -18635,3 +18635,34 @@
 - WSL verification remains unavailable because no distribution is registered;
   the shared coverage-fringe geometry and shader path remains in the final
   Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 480 Border Radius Clipping And Normalization
+
+- Started from clean tracked `master` at
+  `1a2134ee feat: antialias vulkan rounded rects`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 480 will clamp negative radii and apply one CSS-style scale so adjacent
+  corner sums fit the rectangle width/height before inner and fringe contours
+  are generated. Step 481 will own border stroke geometry.
+- Added `vulkan_rounded_rect_radii_test` and observed the expected RED compile
+  failure because the focused private radii header did not exist.
+- A combined implementation patch omitted a cross-file marker and was rejected
+  atomically; split the production, structure, and planning changes.
+- Added `VulkanRoundedRectRadiiResolution`, CSS-style adjacent-sum scaling,
+  geometry integration, and renderer structure coverage.
+- The first compiled Step 480 run passed radius behavior, geometry,
+  anti-aliasing regression, renderer structure, and real first-frame
+  submission; the radii test exited 40 only at its documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `VulkanRoundedRectRadiiResolution`, adjacent corner sums, and the Step
+  481 border-stroke handoff.
+- The first post-documentation test remained at exit 40 because the roadmap,
+  Markdown ledger, and `task_plan.md` split the exact `adjacent corner sums`
+  phrase across line breaks; normalized the wrapping.
+- Focused Windows Step 480 verification passed 8/8: radius normalization,
+  anti-aliasing, geometry, buffers, indexed recording, renderer structure,
+  real first-frame submission, and parity ledger.
+- Windows full debug verification passed 161/161 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because no distribution is registered;
+  shared radius normalization remains in the final Phase E Linux gate.

@@ -442,6 +442,11 @@ consume C: drive space again.
   coverage, and validated embedded shaders modulate straight alpha without
   adding MSAA state or descriptors.
 - Handoff: Phase E Step 480 border radius clipping and normalization.
+- Phase E Step 480 adds `VulkanRoundedRectRadiiResolution`. Negative values
+  clamp to zero and one CSS-style normalization scale guarantees
+  adjacent corner sums fit the rectangle width and height. Geometry consumes the
+  resolved radii for both its inner contour and coverage fringe.
+- Handoff: Phase E Step 481 border stroke geometry.
 
 ## Categories
 

@@ -1539,8 +1539,12 @@ draw calls for the Windows/Linux renderer.
   zero-coverage outer rings, the vertex ABI carries coverage, and validated
   embedded shaders interpolate coverage into straight alpha without MSAA or
   descriptors. Step 480 owns border radius clipping and normalization.
-- [ ] Steps 480-482: Complete rounded-rect rendering with border radius
-  clipping, border stroke, and fill variants.
+- [x] Phase E Step 480 adds `VulkanRoundedRectRadiiResolution`. Negative radii
+  clamp to zero and one CSS-style normalization scale guarantees
+  adjacent corner sums fit the rectangle width and height before inner and coverage
+  fringe contours are generated. Step 481 owns border stroke geometry.
+- [ ] Steps 481-482: Complete rounded-rect rendering with border stroke and
+  fill variants.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
   strategy, nested opacity, transform composition, and z/layer ordering in
   actual command recording.
