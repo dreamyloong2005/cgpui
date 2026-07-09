@@ -24,6 +24,15 @@ bool WindowRuntime::apply_text_pointer_selection(
         return false;
       }
 
+      const TextSelectionGranularity granularity =
+          text_selection_granularity_for_click_count(button->click_count);
+      if (granularity == TextSelectionGranularity::word) {
+        const TextSelectionRange selection =
+            input->model()->word_selection_range_at(*offset);
+        input->model()->set_selection(selection.start, selection.end);
+        return false;
+      }
+
       const TextSelectionDrag selection =
           text_selection_drag_from_offsets(*offset, *offset);
       input->model()->set_selection(

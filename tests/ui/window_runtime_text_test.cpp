@@ -350,6 +350,76 @@ int test_runtime_drags_text_input_pointer_selection() {
   return 0;
 }
 
+void dispatch_text_pointer_word_selection_sequence() {
+  auto& callback = text_pointer_selection_fixture->window.callback;
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = true,
+      .click_count = 2,
+      .position = {76.0F, 5.0F}});
+  callback(cgpui::PointerButton{
+      .button = cgpui::MouseButton::left,
+      .pressed = false,
+      .click_count = 2,
+      .position = {76.0F, 5.0F}});
+}
+
+int test_runtime_double_click_selects_text_input_word() {
+  RuntimeFixture fixture;
+  text_pointer_selection_fixture = &fixture;
+  fixture.app.on_run = &dispatch_text_pointer_word_selection_sequence;
+
+  cgpui::TextModel model("alpha beta");
+  auto tree = std::make_unique<cgpui::ElementTree>();
+  const cgpui::ElementId input_id =
+      tree->set_root(cgpui::text_input(model).font_size(20.0F).build());
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_tree(std::move(tree));
+
+  bool down_selected_word = false;
+  bool up_kept_word_selection = false;
+  runtime.set_after_event_callback(
+      [&](const cgpui::WindowRuntimeContext& context,
+          const cgpui::EventDispatchRecord& record) {
+        if (record.event_kind == cgpui::EventKind::pointer_button &&
+            record.sequence == 1) {
+          down_selected_word =
+              context.input.keyboard_focus_element_owner == input_id &&
+              model.selection_anchor() == 6 &&
+              model.selection_head() == 10 &&
+              model.selected_text() == std::string_view{"beta"};
+        } else if (record.event_kind == cgpui::EventKind::pointer_button &&
+                   record.sequence == 2) {
+          up_kept_word_selection =
+              model.selection_anchor() == 6 &&
+              model.selection_head() == 10 &&
+              model.selected_text() == std::string_view{"beta"};
+        }
+      });
+
+  const int result =
+      runtime.run(cgpui::WindowDescriptor{},
+                  cgpui::WindowRuntimeOptions{.request_initial_redraw = true});
+  text_pointer_selection_fixture = nullptr;
+
+  if (result != 0) {
+    return 338;
+  }
+  if (runtime.focused_text_model() != &model) {
+    return 339;
+  }
+  if (!down_selected_word || !up_kept_word_selection) {
+    return 340;
+  }
+  return 0;
+}
+
 int test_runtime_reports_focused_text_model() {
   RuntimeFixture fixture;
 
@@ -1500,6 +1570,9 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_drags_text_input_pointer_selection(); result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_double_click_selects_text_input_word(); result != 0) {
     return result;
   }
   if (const int result = test_runtime_reports_focused_text_model(); result != 0) {

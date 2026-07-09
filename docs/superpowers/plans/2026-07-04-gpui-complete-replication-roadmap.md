@@ -1053,6 +1053,10 @@ behavior that can support GPUI examples and editor-like widgets.
   `text_selection_granularity_for_click_count(...)` map single, double, and
   triple-or-higher clicks to caret, word, and line selection without runtime
   allocation.
+  Step 415 connects double-click runtime word selection: text input pointer
+  down consumes `PointerButton::click_count == 2`, applies
+  `TextModel::word_selection_range_at(...)`, and keeps pointer release from
+  collapsing that word selection back into the ordinary drag path.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.

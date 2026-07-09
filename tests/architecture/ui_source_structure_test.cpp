@@ -2916,11 +2916,15 @@ int main() {
       contains(runtime_text_focus_source, "void WindowRuntime::bind_text_model(")) {
     return 86;
   }
-  if (line_count(runtime_text_pointer_selection_source) > 100 ||
+  if (line_count(runtime_text_pointer_selection_source) > 120 ||
       !contains(runtime_text_pointer_selection_source,
                 "bool WindowRuntime::apply_text_pointer_selection(") ||
       !contains(runtime_text_pointer_selection_source,
                 "WindowRuntime::text_offset_for_point(") ||
+      !contains(runtime_text_pointer_selection_source,
+                "text_selection_granularity_for_click_count(") ||
+      !contains(runtime_text_pointer_selection_source,
+                "word_selection_range_at(") ||
       contains(runtime_text_pointer_selection_source,
                "TextModel* WindowRuntime::focused_text_model(") ||
       contains(runtime_text_pointer_selection_source,

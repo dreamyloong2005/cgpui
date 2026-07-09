@@ -7405,3 +7405,17 @@
   `FontFallbackChain`/coverage helpers from `src/ui/text_font.cpp`; the file is
   therefore explicitly compiled into both `cgpui_platform` for platform font
   discovery and `cgpui_renderer` for shaping/link-order independence.
+
+## 2026-07-09 Phase D Step 415 Runtime Double-Click Word Selection
+
+- Step 415 wires the Step 414 click granularity plumbing into runtime text
+  input selection for double-clicks.
+- `WindowRuntime::apply_text_pointer_selection(...)` still keeps single-click
+  caret placement and drag selection on the existing `TextSelectionDrag` path.
+- For `TextSelectionGranularity::word`, the runtime computes the hit offset,
+  calls `TextModel::word_selection_range_at(...)`, and sets the range directly
+  without storing `text_pointer_selection_drag_`, so the following pointer-up
+  event preserves the selected word instead of collapsing it.
+- Platform-native double-click synthesis remains future work; this slice
+  consumes the explicit `PointerButton::click_count` field when callers or
+  tests provide it.

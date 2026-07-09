@@ -224,6 +224,11 @@ Windows/Linux core API is stable enough for parity work.
   `text_selection_granularity_for_click_count(...)` map single, double, and
   triple-or-higher clicks to caret, word, and line selection without hidden
   allocation.
+- Step 415 connects runtime double-click word selection. Text input pointer
+  down now consumes `PointerButton::click_count == 2`, maps it through
+  `text_selection_granularity_for_click_count(...)`, and applies
+  `TextModel::word_selection_range_at(...)` without starting the ordinary
+  drag-selection path, so pointer release preserves the selected word.
 
 ## Definition Of Done For This 20-Step Goal
 
