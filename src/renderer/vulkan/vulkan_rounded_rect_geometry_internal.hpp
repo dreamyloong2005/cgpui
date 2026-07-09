@@ -2,21 +2,14 @@
 
 #include "cgpui/renderer/renderer_commands.hpp"
 #include "vulkan_rounded_rect_antialiasing_internal.hpp"
-#include "vulkan_rounded_rect_radii_internal.hpp"
+#include "vulkan_rounded_rect_vertex_internal.hpp"
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
 
 namespace cgpui {
-
-struct VulkanRoundedRectVertex {
-  std::array<float, 2> position{};
-  std::array<float, 4> color{};
-  float coverage = 1.0F;
-};
 
 struct VulkanRoundedRectDrawRange {
   std::size_t source_index = 0;

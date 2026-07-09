@@ -143,6 +143,12 @@
   relative asymmetry while preventing overlap. Both fill and coverage fringe
   now use the same resolved radii. Step 481 can derive an inset stroke contour
   from this stable normalization boundary.
+- Phase E Step 481 keeps stroke policy in
+  `VulkanRoundedRectStrokeResolution` and contour sampling in separate private
+  leaves. The border width clamps to half the smaller dimension, an inset stroke
+  contour derives from the Step 480 radii, and duplicated inner rings preserve a
+  hard fill/border color boundary without adding a blended transition band.
+  Step 482 should connect fill variants and close the rounded-rectangle band.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

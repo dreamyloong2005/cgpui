@@ -18666,3 +18666,47 @@
   `xmake test -y -P .`.
 - WSL verification remains unavailable because no distribution is registered;
   shared radius normalization remains in the final Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 481 Rounded Rectangle Border Stroke Geometry
+
+- Started from clean tracked `master` at
+  `43587d58 feat: normalize vulkan rounded rect radii`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 481 will add a uniform renderer-facing border color/width, resolve an
+  inset contour from normalized radii, and emit separate fill, stroke, and
+  outer coverage rings. Step 482 will own rounded rectangle fill variants and
+  the band closeout.
+- Added `vulkan_rounded_rect_stroke_test` and observed the expected RED compile
+  failure because the focused private stroke header did not exist.
+- Split vertex ABI, contour sampling, and stroke resolution into focused
+  private leaves, then routed geometry through inset fill/stroke and outer
+  coverage rings while preserving the compact fill-only path.
+- The first build command passed two positional targets to an xmake frontend
+  that accepts only one; switched to sequential focused target builds.
+- The first implementation compile exposed an accidental transitive include
+  from the old geometry header; made the stroke test include the radii leaf
+  directly instead of thickening the geometry boundary again.
+- The expanded regression gate passed seven existing tests and stopped only at
+  the expected Step 481 documentation gate plus the older geometry structure
+  assertion that still owned arc sampling. Updated that test for the contour
+  leaf and restored one-shot total vertex/index reservation.
+- After the focused structure fix, eight regression tests passed and the stroke
+  test exited 40 only at its expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `VulkanRoundedRectStrokeResolution`, the inset stroke contour, and the
+  Step 482 fill-variant/band-closeout handoff.
+- JSON parsing and `git diff --check` passed. A non-gating line-count command
+  repeated the known PowerShell direct-`foreach` pipe parser error; switched
+  back to assignment before formatting.
+- Focused Windows Step 481 verification passed 9/9: stroke resolution/geometry,
+  radius normalization, anti-aliasing, base geometry, buffers, indexed
+  recording, pipeline/live-frame submission, renderer structure, and parity
+  ledger.
+- The complete Windows debug build succeeded, then the full test suite passed
+  162/162 with `xmake test -y -P .`.
+- WSL remains unavailable for execution: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared stroke geometry remains in the final Phase
+  E Linux gate.
+- A final JSON handoff diagnostic used a stale top-level key after parsing the
+  ledger successfully; verified the live object layout and current Step 482
+  handoff without changing the ledger.

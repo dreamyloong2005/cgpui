@@ -447,6 +447,12 @@ consume C: drive space again.
   adjacent corner sums fit the rectangle width and height. Geometry consumes the
   resolved radii for both its inner contour and coverage fringe.
 - Handoff: Phase E Step 481 border stroke geometry.
+- Phase E Step 481 adds `VulkanRoundedRectStrokeResolution`. A uniform border
+  width clamps to half the smaller rectangle dimension, then normalized outer
+  radii produce an inset stroke contour and fitted inner radii. Stroked geometry
+  emits distinct fill-color and border-color inner rings, a full-coverage border
+  outer ring, and a zero-coverage fringe without enlarging the fill-only path.
+- Handoff: Phase E Step 482 fill variants and rounded-rectangle band closeout.
 
 ## Categories
 

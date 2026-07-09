@@ -1543,8 +1543,14 @@ draw calls for the Windows/Linux renderer.
   clamp to zero and one CSS-style normalization scale guarantees
   adjacent corner sums fit the rectangle width and height before inner and coverage
   fringe contours are generated. Step 481 owns border stroke geometry.
-- [ ] Steps 481-482: Complete rounded-rect rendering with border stroke and
-  fill variants.
+- [x] Phase E Step 481 adds `VulkanRoundedRectStrokeResolution`, clamps a
+  uniform renderer border width to half the smaller rectangle dimension, and
+  derives an inset stroke contour from the normalized outer radii. Stroked
+  geometry keeps separate fill-color and border-color inner rings, a border
+  outer ring, and a zero-coverage fringe while fill-only geometry stays
+  compact. Step 482 owns fill variants and rounded-rectangle band closeout.
+- [ ] Phase E Step 482: Complete rounded-rect rendering with fill variants and
+  close the band.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
   strategy, nested opacity, transform composition, and z/layer ordering in
   actual command recording.

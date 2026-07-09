@@ -1157,6 +1157,12 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp");
   const std::string rounded_rect_geometry =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+  const std::string rounded_rect_vertex_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_vertex_internal.hpp");
+  const std::string rounded_rect_contour_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_contour_internal.hpp");
+  const std::string rounded_rect_contour =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_contour.cpp");
   const std::string rounded_rect_antialiasing_header = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp");
   const std::string rounded_rect_antialiasing = read_source(
@@ -1165,17 +1171,33 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_radii_internal.hpp");
   const std::string rounded_rect_radii = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_radii.cpp");
+  const std::string rounded_rect_stroke_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_stroke_internal.hpp");
+  const std::string rounded_rect_stroke =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_stroke.cpp");
   if (line_count(rounded_rect_geometry_header) > 80 ||
-      line_count(rounded_rect_geometry) > 230 ||
+      line_count(rounded_rect_geometry) > 190 ||
+      line_count(rounded_rect_vertex_header) > 30 ||
+      line_count(rounded_rect_contour_header) > 50 ||
+      line_count(rounded_rect_contour) > 120 ||
       line_count(rounded_rect_antialiasing_header) > 50 ||
       line_count(rounded_rect_antialiasing) > 50 ||
       line_count(rounded_rect_radii_header) > 40 ||
       line_count(rounded_rect_radii) > 90 ||
+      line_count(rounded_rect_stroke_header) > 50 ||
+      line_count(rounded_rect_stroke) > 80 ||
       !contains(rounded_rect_geometry_header,
                 "struct VulkanRoundedRectGeometry") ||
+      !contains(rounded_rect_vertex_header,
+                "struct VulkanRoundedRectVertex") ||
+      !contains(rounded_rect_contour,
+                "append_corner_arc(") ||
+      !contains(rounded_rect_contour,
+                "vulkan_append_rounded_rect_contour(") ||
       !contains(rounded_rect_geometry,
                 "vulkan_build_rounded_rect_geometry(") ||
-      !contains(rounded_rect_geometry, "append_corner_arc(") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_append_rounded_rect_contour(") ||
       !contains(rounded_rect_antialiasing_header,
                 "struct VulkanRoundedRectAntialiasingPolicy") ||
       !contains(rounded_rect_antialiasing,
@@ -1186,6 +1208,15 @@ int main(int argc, char** argv) {
                 "vulkan_resolve_rounded_rect_radii(") ||
       !contains(rounded_rect_geometry,
                 "vulkan_resolve_rounded_rect_radii(") ||
+      !contains(rounded_rect_stroke_header,
+                "struct VulkanRoundedRectStrokeResolution") ||
+      !contains(rounded_rect_stroke,
+                "vulkan_resolve_rounded_rect_stroke(") ||
+      !contains(rounded_rect_stroke,
+                "vulkan_resolve_rounded_rect_radii(") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_resolve_rounded_rect_stroke(") ||
+      contains(rounded_rect_geometry, "append_corner_arc(") ||
       contains(command_recording, "append_corner_arc(")) {
     return 68;
   }

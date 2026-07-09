@@ -112,16 +112,20 @@ int test_rounded_rect_geometry_structure() {
       "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp");
   const std::string source =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+  const std::string contour =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_contour.cpp");
   const std::string command =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
-  if (header.empty() || source.empty() || command.empty()) {
+  if (header.empty() || source.empty() || contour.empty() || command.empty()) {
     return 30;
   }
   if (!contains(header, "struct VulkanRoundedRectGeometry") ||
       !contains(header, "struct VulkanRoundedRectDrawRange") ||
       !contains(source, "vulkan_build_rounded_rect_geometry(") ||
-      !contains(source, "append_corner_arc(") ||
+      !contains(source, "vulkan_append_rounded_rect_contour(") ||
+      !contains(contour, "append_corner_arc(") ||
       !contains(source, "geometry.vertices.reserve(total_vertex_count)") ||
+      contains(source, "append_corner_arc(") ||
       contains(command, "append_corner_arc(")) {
     return 31;
   }

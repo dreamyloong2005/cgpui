@@ -875,8 +875,24 @@
       "xmake.lua"
     ],
     "phase_e_step_480_remaining_gap": "Step 481 owns border stroke geometry",
+    "phase_e_step_481_surface": "Phase E Step 481 adds VulkanRoundedRectStrokeResolution. A uniform border width clamps to half the smaller rectangle dimension, then normalized outer radii produce an inset stroke contour and fitted inner radii. Stroked geometry emits distinct fill-color and border-color inner rings, a full-coverage border outer ring, and a zero-coverage fringe without enlarging the fill-only path. Step 482 owns fill variants and rounded-rectangle band closeout.",
+    "phase_e_step_481_sources": [
+      "include/cgpui/renderer/renderer_commands.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_vertex_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_contour_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_contour.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_stroke_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_stroke.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
+      "tests/renderer/vulkan_rounded_rect_stroke_test.cpp",
+      "tests/renderer/vulkan_rounded_rect_geometry_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_481_remaining_gap": "Step 482 owns fill variants and rounded-rectangle band closeout",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 481 border stroke geometry"
+    "phase_e_current_handoff": "Phase E Step 482 fill variants and rounded-rectangle band closeout"
   },
   "categories": [
     "application_and_app_context",

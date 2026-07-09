@@ -600,13 +600,18 @@ Windows/Linux core API is stable enough for parity work.
   clamp to zero and one CSS-style normalization scale guarantees
   adjacent corner sums fit width/height before the inner and coverage fringe contours
   are generated. Step 481 owns border stroke geometry.
+- Phase E Step 481 adds `VulkanRoundedRectStrokeResolution`. The renderer-facing
+  border width clamps to half the smaller rectangle dimension, normalized outer
+  radii derive an inset stroke contour, and stroked geometry emits separate fill,
+  border, and zero-coverage rings while the fill-only path stays compact. Step 482
+  owns fill variants and rounded-rectangle band closeout.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-480 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-481 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -621,9 +626,10 @@ Windows/Linux core API is stable enough for parity work.
   vertex/index buffer uploads and cleanup ownership, plus the dedicated rounded
   rectangle shader pipeline and swapchain-owned resources, plus validated
   indexed rounded rectangle command recording, plus the coverage-fringe
-  anti-aliasing geometry and shader path, plus CSS-style radius normalization.
-- In progress: Step 481 border stroke geometry.
-- Pending bands: Steps 481-482 rounded rectangles; Steps 483-490 clip, opacity,
+  anti-aliasing geometry and shader path, plus CSS-style radius normalization,
+  plus inset border-stroke contour geometry.
+- In progress: Step 482 fill variants and rounded-rectangle band closeout.
+- Pending bands: Step 482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -701,6 +707,12 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_rounded_rect_radii_test` initially failed to compile because the focused radii header did not exist | Step 480 RED | Expected RED; add CSS-style adjacent-sum normalization and route geometry through the resolved radii |
 | A combined Step 480 patch omitted the `task_plan.md` file marker and was rejected atomically | Step 480 implementation | Keep production, structure, and planning patches file-scoped; no partial files were written |
 | The first post-documentation Step 480 test remained at exit 40 because three Markdown files split the exact `adjacent corner sums` phrase across a line break | Step 480 documentation gate | Keep the shared evidence phrase contiguous without changing the normalization conclusion |
+| `vulkan_rounded_rect_stroke_test` initially failed to compile because the focused private stroke header did not exist | Step 481 RED | Expected RED; add focused contour sampling and stroke-resolution modules before routing geometry through inset stroke contours |
+| This xmake build frontend rejected multiple positional target names and printed its help text | Step 481 first build command | Build and test focused targets one at a time; do not pass a second positional target to this xmake version |
+| The first Step 481 implementation compile could not see `vulkan_resolve_rounded_rect_radii` after the geometry header stopped exporting it transitively | Step 481 first GREEN attempt | Include the focused radii private header directly in the stroke test and preserve the thinner geometry header boundary |
+| The expanded Step 481 regression gate failed the focused geometry structure assertion because it still required `append_corner_arc` in the geometry orchestrator | Step 481 first regression gate | Update the older focused test to require arc sampling in the new contour leaf, forbid it in geometry/recording, and retain one-shot total buffer reservation |
+| A Step 481 line-count diagnostic repeated the known PowerShell empty-pipe parser failure by piping directly from `foreach` | Step 481 final checks | Assign the loop output to a variable before `Format-Table`; the JSON, diff, build, and focused test gates were unaffected |
+| A final Step 481 JSON diagnostic parsed the ledger successfully but tried to print the handoff through a nonexistent `implementation_inventory` key | Step 481 final checks | Inspect the live top-level keys and verify `phase_e_current_handoff` under the existing `phase_d_text_evidence` object instead of repeating the stale path |
 
 ## Definition Of Done For This 20-Step Goal
 
