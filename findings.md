@@ -7298,3 +7298,21 @@
 - This is not platform-derived font metrics. DirectWrite/fontconfig/FreeType
   ascent/descent/leading extraction, paragraph line boxes, and native shaping
   itemization remain future work.
+
+## 2026-07-09 Phase D Step 408 Paragraph Layout Cache
+
+- Step 408 adds an explicit paragraph layout cache over measurement plus
+  wrapping, not a hidden global text-layout cache.
+- `TextParagraphLayout` carries a `TextMeasurement` and the corresponding
+  `TextWrapLayout`; `TextParagraphLayoutResult` mirrors the existing cache-hit
+  result style used by measurement and uniform-list caches.
+- `TextParagraphLayoutCache` keys entries by text, font descriptor, font size,
+  normalized scale, and max width, so changing the wrap width produces a new
+  paragraph layout entry.
+- The implementation lives in `src/ui/text_paragraph_layout.cpp`; the public
+  leaf is `include/cgpui/ui/text_paragraph_layout.hpp`, and
+  `include/cgpui/ui/text_layout.hpp` stays a thin aggregate over the focused
+  leaves.
+- This is deterministic reuse infrastructure. It does not add eviction policy,
+  incremental paragraph invalidation, multi-paragraph shaping, platform font
+  metric extraction, or production HarfBuzz paragraph itemization.

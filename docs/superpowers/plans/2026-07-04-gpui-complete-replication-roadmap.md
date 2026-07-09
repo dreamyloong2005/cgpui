@@ -1012,6 +1012,13 @@ behavior that can support GPUI examples and editor-like widgets.
   values to measurement and wrapped line records without claiming
   platform-derived font metrics, paragraph line boxes, or native shaping
   itemization.
+  Step 408 adds an explicit paragraph layout cache boundary through
+  `TextParagraphLayout`, `TextParagraphLayoutResult`,
+  `TextParagraphLayoutCache`, `layout_text_paragraph(...)`, and
+  `src/ui/text_paragraph_layout.cpp`, caching measurement plus wrapped layout
+  by text/font/scale/max-width only when callers opt into the cache object and
+  leaving richer paragraph shaping, eviction policy, and platform text metrics
+  for later work.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

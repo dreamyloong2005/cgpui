@@ -185,6 +185,14 @@ Windows/Linux core API is stable enough for parity work.
   platform font queries in the hot path. Platform-derived font metrics,
   paragraph line boxes, and native shaping itemization remain future Phase D
   work.
+- Step 408 adds an explicit paragraph layout cache boundary.
+  `TextParagraphLayout`, `TextParagraphLayoutResult`,
+  `TextParagraphLayoutCache`, `layout_text_paragraph(...)`, and
+  `src/ui/text_paragraph_layout.cpp` cache measurement plus wrapped layout by
+  text/font/scale/max-width only when callers opt into the cache object. This
+  keeps paragraph layout reuse visible and avoids hidden global text layout
+  state; richer paragraph shaping, cache eviction policy, and platform text
+  metrics remain future work.
 
 ## Definition Of Done For This 20-Step Goal
 

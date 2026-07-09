@@ -132,6 +132,7 @@ int main() {
       "src/ui/text_measurement_grapheme.cpp",
       "src/ui/text_measurement_bidi.cpp",
       "src/ui/text_line_metrics.cpp",
+      "src/ui/text_paragraph_layout.cpp",
       "src/ui/text_wrapping.cpp",
       "src/ui/text_hit_testing.cpp",
   };
@@ -446,6 +447,8 @@ int main() {
       read_source("include/cgpui/ui/text_glyphs.hpp");
   const std::string text_measurement_header =
       read_source("include/cgpui/ui/text_measurement.hpp");
+  const std::string text_paragraph_layout_header =
+      read_source("include/cgpui/ui/text_paragraph_layout.hpp");
   const std::string text_wrapping_header =
       read_source("include/cgpui/ui/text_wrapping.hpp");
   const std::string text_hit_testing_header =
@@ -473,6 +476,12 @@ int main() {
       !contains(text_measurement_header, "struct TextLineMetrics") ||
       !contains(text_measurement_header, "TextLineMetrics line_metrics") ||
       !contains(text_measurement_header, "text_line_metrics_for_shape_run(") ||
+      !contains(text_paragraph_layout_header, "struct TextParagraphLayout") ||
+      !contains(text_paragraph_layout_header,
+                "struct TextParagraphLayoutResult") ||
+      !contains(text_paragraph_layout_header,
+                "class TextParagraphLayoutCache") ||
+      !contains(text_paragraph_layout_header, "layout_text_paragraph(") ||
       !contains(text_wrapping_header, "struct TextWrapLayout") ||
       !contains(text_wrapping_header, "enum class TextWrapBreakKind") ||
       !contains(text_wrapping_header, "std::size_t column_start") ||
@@ -486,6 +495,8 @@ int main() {
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
       !contains(text_layout_header,
                 "#include \"cgpui/ui/text_measurement.hpp\"") ||
+      !contains(text_layout_header,
+                "#include \"cgpui/ui/text_paragraph_layout.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_wrapping.hpp\"") ||
       !contains(text_layout_header,
                 "#include \"cgpui/ui/text_hit_testing.hpp\"") ||
@@ -512,6 +523,8 @@ int main() {
       read_source("src/ui/text_measurement_bidi.cpp");
   const std::string text_line_metrics_source =
       read_source("src/ui/text_line_metrics.cpp");
+  const std::string text_paragraph_layout_source =
+      read_source("src/ui/text_paragraph_layout.cpp");
   const std::string text_wrapping_source =
       read_source("src/ui/text_wrapping.cpp");
   if (!contains(text_measurement_source,
@@ -529,6 +542,11 @@ int main() {
                 "classify_text_bidi_direction(") ||
       !contains(text_line_metrics_source, "text_line_metrics_for_shape_run(") ||
       !contains(text_line_metrics_source, "text_line_metrics_baseline(") ||
+      !contains(text_paragraph_layout_source, "layout_text_paragraph(") ||
+      !contains(text_paragraph_layout_source,
+                "TextParagraphLayoutCache::layout(") ||
+      !contains(text_paragraph_layout_source,
+                "wrap_text_measurement(measurement, max_width)") ||
       !contains(text_wrapping_source, "text_wrap_line_for_column_range(") ||
       !contains(text_wrapping_source, "text_wrap_line_assign_bidi_runs(") ||
       !contains(text_wrapping_source, "text_wrap_column_is_hard_break(") ||

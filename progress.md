@@ -16158,3 +16158,42 @@
 - Focused GREEN verification passed:
   `xmake test -y -P . text_model_test/default
   ui_source_structure_test/default` 2/2.
+
+## 2026-07-09 Phase D Step 408 Paragraph Layout Cache
+
+- Started from clean `master` after
+  `d48c619 feat: add text line metrics`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextParagraphLayoutCache`, `TextParagraphLayoutResult`, cached measurement
+  plus wrapped layout records, cache counters, and max-width-sensitive cache
+  keys. RED failed as expected on the missing paragraph layout API.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `include/cgpui/ui/text_paragraph_layout.hpp`,
+  `src/ui/text_paragraph_layout.cpp`, `layout_text_paragraph(...)`,
+  `TextParagraphLayoutCache::layout(...)`, and `text_layout.hpp` aggregate
+  inclusion.
+- GREEN implementation adds the focused public leaf and source file, caches by
+  text/font/font-size/normalized-scale/max-width, and keeps paragraph layout
+  reuse opt-in through an explicit cache object rather than hidden global
+  state.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 9/9.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed:
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 9/9.

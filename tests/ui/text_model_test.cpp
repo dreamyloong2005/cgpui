@@ -1533,6 +1533,44 @@ int test_text_measurement_records_line_metrics() {
   return 0;
 }
 
+int test_text_paragraph_layout_cache_reuses_wrapped_layouts() {
+  cgpui::TextParagraphLayoutCache cache;
+  const cgpui::FontDescriptor font{.family = "Inter"};
+  const cgpui::DpiScale scale{.value = 2.0F};
+
+  const cgpui::TextParagraphLayoutResult first =
+      cache.layout("abcd", font, 20.0F, scale, 20.0F);
+  if (first.cache_hit || cache.entry_count() != 1 ||
+      cache.lookup_count() != 1 || cache.miss_count() != 1 ||
+      cache.hit_count() != 0 || first.layout.wrap_layout.lines.size() != 2 ||
+      first.layout.wrap_layout.logical_size.height != 40.0F ||
+      first.layout.wrap_layout.device_size.height != 80.0F ||
+      first.layout.measurement.line_metrics.baseline != 16.0F ||
+      first.layout.wrap_layout.lines[0].metrics.baseline != 16.0F) {
+    return 206;
+  }
+
+  const cgpui::TextParagraphLayoutResult second =
+      cache.layout("abcd", font, 20.0F, scale, 20.0F);
+  if (!second.cache_hit || cache.entry_count() != 1 ||
+      cache.lookup_count() != 2 || cache.miss_count() != 1 ||
+      cache.hit_count() != 1 ||
+      second.layout.wrap_layout.lines.size() != 2) {
+    return 207;
+  }
+
+  const cgpui::TextParagraphLayoutResult wider =
+      cache.layout("abcd", font, 20.0F, scale, 40.0F);
+  if (wider.cache_hit || cache.entry_count() != 2 ||
+      wider.layout.wrap_layout.lines.size() != 1 ||
+      wider.layout.wrap_layout.logical_size.width != 40.0F) {
+    return 208;
+  }
+
+  cache.clear();
+  return cache.entry_count() == 0 ? 0 : 209;
+}
+
 int test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcd",
@@ -1782,6 +1820,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_measurement_records_line_metrics();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_paragraph_layout_cache_reuses_wrapped_layouts();
       result != 0) {
     return result;
   }
