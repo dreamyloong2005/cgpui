@@ -13,6 +13,8 @@ TextWrapLine text_wrap_line_for_range(
   TextWrapLine line{
       .glyph_start = glyph_start,
       .glyph_end = glyph_end,
+      .column_start = glyph_start,
+      .column_end = glyph_end,
       .origin = {.x = 0.0F, .y = y},
       .size = {.width = width, .height = run.line_height},
   };
@@ -27,11 +29,99 @@ TextWrapLine text_wrap_line_for_range(
   return line;
 }
 
+TextWrapLine text_wrap_line_for_column_range(
+    const TextMeasurement& measurement,
+    std::size_t column_start,
+    std::size_t column_end,
+    float y,
+    float width) {
+  const TextShapeRun& run = measurement.shape_run;
+  TextWrapLine line{
+      .column_start = column_start,
+      .column_end = column_end,
+      .origin = {.x = 0.0F, .y = y},
+      .size = {.width = width, .height = run.line_height},
+  };
+  if (column_start < column_end &&
+      column_end <= measurement.grapheme_columns.size()) {
+    const TextGraphemeColumn& first =
+        measurement.grapheme_columns[column_start];
+    const TextGraphemeColumn& last =
+        measurement.grapheme_columns[column_end - 1U];
+    line.byte_start = first.byte_start;
+    line.byte_end = last.byte_end;
+    line.glyph_start = first.glyph_start;
+    line.glyph_end = last.glyph_end;
+  } else {
+    line.byte_start = run.byte_length;
+    line.byte_end = run.byte_length;
+    line.glyph_start = run.glyphs.size();
+    line.glyph_end = run.glyphs.size();
+    line.column_start = measurement.grapheme_columns.size();
+    line.column_end = measurement.grapheme_columns.size();
+  }
+  return line;
+}
+
 TextWrapLayout wrap_text_measurement(
     const TextMeasurement& measurement,
     float max_width) {
   const TextShapeRun& run = measurement.shape_run;
   TextWrapLayout layout{.max_width = max_width};
+
+  if (!measurement.grapheme_columns.empty()) {
+    const auto append_column_line =
+        [&](std::size_t column_start,
+            std::size_t column_end,
+            float y,
+            float width) {
+          layout.lines.push_back(text_wrap_line_for_column_range(
+              measurement,
+              column_start,
+              column_end,
+              y,
+              width));
+          layout.logical_size.width =
+              std::max(layout.logical_size.width, width);
+        };
+
+    if (max_width <= 0.0F || run.total_advance <= max_width) {
+      append_column_line(
+          0,
+          measurement.grapheme_columns.size(),
+          0.0F,
+          run.total_advance);
+      layout.logical_size.height = run.line_height;
+      layout.device_size = to_device_pixels(layout.logical_size, run.scale);
+      return layout;
+    }
+
+    std::size_t line_start = 0;
+    float line_width = 0.0F;
+    float y = 0.0F;
+    for (std::size_t index = 0; index < measurement.grapheme_columns.size();
+         ++index) {
+      const float advance = measurement.grapheme_columns[index].advance;
+      if (index > line_start && line_width + advance > max_width) {
+        append_column_line(line_start, index, y, line_width);
+        y += run.line_height;
+        line_start = index;
+        line_width = 0.0F;
+      }
+      line_width += advance;
+    }
+
+    append_column_line(
+        line_start,
+        measurement.grapheme_columns.size(),
+        y,
+        line_width);
+    layout.logical_size.height = layout.lines.empty()
+        ? 0.0F
+        : layout.lines.back().origin.y + run.line_height;
+    layout.device_size = to_device_pixels(layout.logical_size, run.scale);
+    return layout;
+  }
 
   const auto append_line =
       [&](std::size_t glyph_start,

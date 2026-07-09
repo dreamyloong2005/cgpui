@@ -1365,6 +1365,39 @@ int test_text_soft_wrap_records_split_measured_glyphs_by_width() {
              : 68;
 }
 
+int test_text_soft_wrap_respects_grapheme_columns() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "a\xCC\x81" "b",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const cgpui::TextWrapLayout layout =
+      cgpui::wrap_text_measurement(measurement, 15.0F);
+
+  if (measurement.grapheme_columns.size() != 2 ||
+      layout.lines.size() != 2 ||
+      layout.logical_size.width != 20.0F ||
+      layout.logical_size.height != 40.0F) {
+    return 191;
+  }
+
+  const cgpui::TextWrapLine& first = layout.lines[0];
+  if (first.column_start != 0 || first.column_end != 1 ||
+      first.byte_start != 0 || first.byte_end != 3 ||
+      first.glyph_start != 0 || first.glyph_end != 2 ||
+      first.size.width != 20.0F || first.size.height != 20.0F) {
+    return 192;
+  }
+
+  const cgpui::TextWrapLine& second = layout.lines[1];
+  if (second.column_start != 1 || second.column_end != 2 ||
+      second.byte_start != 3 || second.byte_end != 4 ||
+      second.glyph_start != 2 || second.glyph_end != 3 ||
+      second.size.width != 10.0F || second.size.height != 20.0F) {
+    return 193;
+  }
+  return 0;
+}
+
 int test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcd",
@@ -1598,6 +1631,10 @@ int main() {
   }
   if (const int result =
           test_text_soft_wrap_records_split_measured_glyphs_by_width();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_soft_wrap_respects_grapheme_columns();
       result != 0) {
     return result;
   }

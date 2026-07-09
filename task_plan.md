@@ -155,6 +155,13 @@ Windows/Linux core API is stable enough for parity work.
   covering combining marks, variation selectors, and regional-indicator pairs;
   full bidirectional layout, paragraph shaping, and production HarfBuzz
   itemization remain future work.
+- Step 404 makes soft wrapping consume grapheme column metadata.
+  `TextWrapLine::column_start`, `TextWrapLine::column_end`,
+  `text_wrap_line_for_column_range(...)`, and `wrap_text_measurement(...)`
+  now preserve combining-mark, variation-selector, and regional-indicator
+  columns as atomic wrap units while still exposing glyph/byte ranges for
+  existing paint metadata. Hard wraps, bidi layout, paragraph shaping, and full
+  Unicode line breaking remain future Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

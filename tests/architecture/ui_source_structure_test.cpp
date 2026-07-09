@@ -467,6 +467,8 @@ int main() {
       !contains(text_measurement_header,
                 "std::vector<TextGraphemeColumn> grapheme_columns") ||
       !contains(text_wrapping_header, "struct TextWrapLayout") ||
+      !contains(text_wrapping_header, "std::size_t column_start") ||
+      !contains(text_wrapping_header, "std::size_t column_end") ||
       !contains(text_hit_testing_header, "struct TextHitTestResult") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
@@ -494,12 +496,16 @@ int main() {
       read_source("src/ui/text_measurement.cpp");
   const std::string text_measurement_grapheme_source =
       read_source("src/ui/text_measurement_grapheme.cpp");
+  const std::string text_wrapping_source =
+      read_source("src/ui/text_wrapping.cpp");
   if (!contains(text_measurement_source,
                 "build_text_grapheme_columns(shape_run)") ||
       !contains(text_measurement_grapheme_source,
                 "build_text_grapheme_columns(") ||
       !contains(text_measurement_grapheme_source,
-                "text_grapheme_column_includes_codepoint(")) {
+                "text_grapheme_column_includes_codepoint(") ||
+      !contains(text_wrapping_source, "text_wrap_line_for_column_range(") ||
+      !contains(text_wrapping_source, "measurement.grapheme_columns")) {
     return 115;
   }
   if (line_count(text_font_header) > 120 ||

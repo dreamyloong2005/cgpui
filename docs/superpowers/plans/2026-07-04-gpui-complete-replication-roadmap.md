@@ -988,6 +988,11 @@ behavior that can support GPUI examples and editor-like widgets.
   fallback text records deterministic grapheme columns for combining marks,
   variation selectors, and regional-indicator pairs without claiming full
   bidirectional layout or paragraph shaping in the first slice.
+  Step 404 makes soft wrapping respect those columns through
+  `TextWrapLine::column_start`, `TextWrapLine::column_end`,
+  `text_wrap_line_for_column_range(...)`, and `wrap_text_measurement(...)`,
+  keeping measured grapheme columns atomic while preserving byte/glyph ranges
+  for existing wrapped paint metadata.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

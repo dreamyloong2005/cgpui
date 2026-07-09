@@ -7230,3 +7230,20 @@
   zero-width-joiner continuations, and regional-indicator pairs. It is not full
   Unicode grapheme breaking, bidirectional text layout, paragraph shaping, or
   production HarfBuzz itemization.
+
+## 2026-07-09 Phase D Step 404 Grapheme-Aware Soft Wrap
+
+- Step 404 changes soft wrapping to consume
+  `TextMeasurement::grapheme_columns` instead of splitting directly on each
+  glyph advance when column metadata is available.
+- `TextWrapLine` now records `column_start` and `column_end` alongside the
+  existing byte/glyph ranges, so paint metadata can keep using glyph spans
+  while text layout callers can reason about measured grapheme columns.
+- `text_wrap_line_for_column_range(...)` is the focused helper that maps a
+  column span back to byte and glyph ranges. The older
+  `text_wrap_line_for_range(...)` remains as a compatibility fallback for
+  measurements without column metadata.
+- This preserves combining-mark, variation-selector, and regional-indicator
+  columns as atomic soft-wrap units. It does not implement hard wraps,
+  Unicode line-break classes, bidirectional layout, paragraph shaping, or a
+  production HarfBuzz itemization path.

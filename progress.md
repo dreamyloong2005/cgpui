@@ -15486,6 +15486,41 @@
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 404 Grapheme-Aware Soft Wrap
+
+- Started from clean `master` after
+  `9442d33 feat: add grapheme column measurement`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `wrap_text_measurement(measure_text("a\xCC\x81" "b"), 15.0F)` to keep the
+  combining-mark grapheme column atomic, producing two wrap lines with
+  column/byte/glyph ranges `[0,1)` and `[1,2)`.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `TextWrapLine::column_start`, `TextWrapLine::column_end`,
+  `text_wrap_line_for_column_range(...)`, and direct use of
+  `measurement.grapheme_columns` inside `src/ui/text_wrapping.cpp`.
+- RED failed as expected:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  failed 2/2.
+- GREEN implementation added the column-range helper and made
+  `wrap_text_measurement(...)` iterate `TextMeasurement::grapheme_columns`
+  when present, with the old glyph-range loop retained as a fallback path.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 9/9.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed the same 9 targets 9/9.
+- `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
+  warnings.
+
 ## 2026-07-09 Phase D Step 402 Fallback Metadata Band Audit
 
 - Started from clean `master` after

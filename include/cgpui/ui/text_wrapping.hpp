@@ -14,6 +14,8 @@ struct TextWrapLine {
   std::size_t byte_end = 0;
   std::size_t glyph_start = 0;
   std::size_t glyph_end = 0;
+  std::size_t column_start = 0;
+  std::size_t column_end = 0;
   Point origin;
   Size size;
 };
@@ -29,6 +31,13 @@ struct TextWrapLayout {
     const TextShapeRun& run,
     std::size_t glyph_start,
     std::size_t glyph_end,
+    float y,
+    float width);
+
+[[nodiscard]] TextWrapLine text_wrap_line_for_column_range(
+    const TextMeasurement& measurement,
+    std::size_t column_start,
+    std::size_t column_end,
     float y,
     float width);
 
