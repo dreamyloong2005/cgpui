@@ -347,9 +347,15 @@ consume C: drive space again.
   descriptor-pool sizing and a preflight that rejects an over-capacity plan
   before existing resources change. The Win32 Vulkan smoke submits the same
   three-page workload.
-- Remaining Phase E glyph-atlas gap: Step 464 continues renderer-state atlas
+- Phase E Step 464 adds private `VulkanGlyphAtlasDrawBinding` records that map
+  each text draw and atlas page to the renderer-owned descriptor set.
+  `vulkan_resolve_glyph_atlas_draw_bindings(...)` rejects missing descriptors;
+  command recording validates the resolved bindings against live resources in
+  the live command buffer before the render pass. Public renderer headers remain
+  free of `Vk*` handles.
+- Remaining Phase E glyph-atlas gap: Step 465 continues atlas draw-data
   integration before the text shader pipeline band.
-- Handoff: Phase E Step 464 remaining glyph atlas integration.
+- Handoff: Phase E Step 465 atlas draw-data integration.
 
 ## Categories
 

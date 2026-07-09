@@ -4,9 +4,8 @@ namespace cgpui {
 
 Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
     std::span<const TextDraw> text_draws) {
-  for (const TextDraw& text_draw : text_draws) {
-    vulkan_consume_text_draw(text_draw, glyph_cache_);
-  }
+  const std::vector<VulkanGlyphAtlasDrawPageUsage> draw_page_usages =
+      vulkan_plan_glyph_atlas_draw_page_usages(text_draws, glyph_cache_);
   const std::vector<GlyphAtlasUploadBatch> batches =
       vulkan_plan_glyph_atlas_uploads(
           glyph_cache_.upload_records(),
@@ -26,12 +25,24 @@ Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
       !result) {
     return result;
   }
-  return vulkan_stage_glyph_atlas_uploads(
-      physical_device_,
-      device_,
-      plan,
-      batches,
-      glyph_atlas_uploads_);
+  if (auto result = vulkan_stage_glyph_atlas_uploads(
+          physical_device_,
+          device_,
+          plan,
+          batches,
+          glyph_atlas_uploads_);
+      !result) {
+    return result;
+  }
+  auto bindings = vulkan_resolve_glyph_atlas_draw_bindings(
+      draw_page_usages,
+      glyph_atlas_resources_);
+  if (!bindings) {
+    vulkan_destroy_glyph_atlas_upload_resources(device_, glyph_atlas_uploads_);
+    return std::unexpected(bindings.error());
+  }
+  glyph_atlas_draw_bindings_ = std::move(*bindings);
+  return {};
 }
 
 void VulkanRendererState::commit_glyph_atlas_frame() {

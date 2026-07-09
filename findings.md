@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 464 Glyph Atlas Draw Bindings
+
+- The runtime gap after Step 463 was not resource creation; it was converting
+  text draw page usage into the actual descriptor set owned by renderer state.
+- `VulkanGlyphAtlasDrawBinding` stays private because it carries
+  `VkDescriptorSet`. Public submission records continue to expose only scalar
+  `atlas_page_index` metadata.
+- `vulkan_resolve_glyph_atlas_draw_bindings(...)` makes missing page resources
+  an explicit error, while live command buffer validation detects a stale
+  descriptor identity before the render pass begins.
+- Page-usage planning reuses `vulkan_build_textured_glyph_quads(...)`, so glyph
+  cache allocation and draw binding share one atlas-page decision instead of
+  duplicating placement logic. Step 465 continues atlas draw-data integration.
+
 ## 2026-07-10 Phase E Step 463 Multi-Page Glyph Atlas
 
 - Nine deterministic 128x128 glyphs fill a 256x256 page four-at-a-time, giving

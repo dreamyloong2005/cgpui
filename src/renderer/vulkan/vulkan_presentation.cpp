@@ -61,6 +61,7 @@ Result<void> VulkanRendererState::present_frame(
           color,
           rects,
           glyph_atlas_resources_,
+          glyph_atlas_draw_bindings_,
           glyph_atlas_uploads_);
       !result) {
     return recover_after_failed_record(result.error().message);

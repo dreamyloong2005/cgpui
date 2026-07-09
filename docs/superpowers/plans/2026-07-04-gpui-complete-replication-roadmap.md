@@ -1431,7 +1431,14 @@ draw calls for the Windows/Linux renderer.
   descriptor set, upload batch, staging buffer, and buffer-to-image copies; the
   Win32 Vulkan smoke submits the same three-page workload. Step 464 continues
   the remaining atlas integration band.
-- [ ] Steps 464-466: Bind
+- [x] Phase E Step 464 binds planned text page usage to renderer-owned
+  descriptor sets through private `VulkanGlyphAtlasDrawBinding` records.
+  `vulkan_resolve_glyph_atlas_draw_bindings(...)` rejects missing or stale page
+  descriptors, renderer state owns the resolved bindings, and the live command buffer
+  validates them before entering the render pass. This preserves a focused
+  handle-bearing Vulkan boundary without starting the Step 467 text shader
+  pipeline. Step 465 continues atlas draw-data integration.
+- [ ] Steps 465-466: Bind
   production atlas resources into renderer state, and record dirty upload
   command paths against the live command buffers.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured

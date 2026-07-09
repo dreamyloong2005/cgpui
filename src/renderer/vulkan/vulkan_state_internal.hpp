@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_device_internal.hpp"
+#include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
@@ -95,6 +96,7 @@ class VulkanRendererState final {
   GlyphAtlasProductionResourceState pending_glyph_atlas_plan_state_;
   VulkanGlyphAtlasResources glyph_atlas_resources_;
   VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
+  std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;
   std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;
 };

@@ -511,18 +511,25 @@ Windows/Linux core API is stable enough for parity work.
   destruction. Each page retains an independent descriptor set, upload batch,
   staging buffer, and copy list; the Win32 Vulkan smoke submits the same
   workload. Step 464 continues remaining atlas integration.
+- Phase E Step 464 maps text draw page usage to renderer-owned descriptor sets
+  through private `VulkanGlyphAtlasDrawBinding` records.
+  `vulkan_resolve_glyph_atlas_draw_bindings(...)` rejects missing page
+  resources, renderer state owns the resolved vector, and the live command buffer
+  validates descriptor identity before the render pass. Step 465 continues
+  atlas draw-data integration without pulling shader work forward.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-463 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-464 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
-  multi-frame reuse, including three atlas pages and cross-page uploads.
-- In progress: Step 464 remaining renderer-state atlas integration.
-- Pending bands: Steps 464-466 remaining atlas integration; Steps 467-474 text
+  multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
+  descriptor bindings.
+- In progress: Step 465 atlas draw-data integration.
+- Pending bands: Steps 465-466 remaining atlas integration; Steps 467-474 text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -549,6 +556,9 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_glyph_atlas_multi_page_test` initially failed to compile because the private descriptor capacity contract did not exist | Step 463 RED | Expected RED; add `vulkan_glyph_atlas_descriptor_capacity` and a resource-update preflight before destructive reconciliation |
 | First Step 463 GREEN run exited 40 after successful compile/link | Step 463 documentation gate | Keep the required `cross-page uploads` evidence contiguous in the roadmap instead of splitting the phrase across a Markdown line break |
 | PowerShell rejected a direct `foreach (...) { ... } | Format-Table` line-count diagnostic with an empty-pipe parser error | Step 463 structure check | Assign the loop output to a variable before piping it; focused structure tests already passed and no source change was involved |
+| An exploratory Step 464 read requested nonexistent `include/cgpui/renderer/renderer_command_reports.hpp` | Step 464 boundary discovery | Use the actual `renderer_frame_reports.hpp` and `renderer_submission_reports.hpp` leaves; do not repeat the stale filename |
+| `vulkan_glyph_atlas_draw_binding_test` initially failed to compile because the private draw-binding header did not exist | Step 464 RED | Expected RED; add focused private page-usage planning, descriptor resolution, and live command-buffer validation modules |
+| First compiled Step 464 draw-binding run exited 40 | Step 464 documentation gate | Expected RED after behavior/structure code compiled; add roadmap, ledger, planning, and Step 465 handoff evidence |
 
 ## Definition Of Done For This 20-Step Goal
 

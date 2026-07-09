@@ -18099,3 +18099,30 @@
   Vulkan frame smoke.
 - Final Windows full debug rerun after the explicit test include also passed
   144/144.
+
+## 2026-07-10 Phase E Step 464 Glyph Atlas Draw Bindings
+
+- Started from clean tracked `master` at
+  `25a0e4ba feat: support multi-page glyph atlases`; only the existing
+  untracked `.vscode/` directory remains.
+- Traced the remaining atlas integration gap: renderer submission records carry
+  `atlas_page_index`, but live command recording still receives only atlas
+  resources and upload buffers, not page-to-descriptor draw bindings.
+- An exploratory read used the stale nonexistent
+  `renderer_command_reports.hpp` name; the actual public leaves are
+  `renderer_frame_reports.hpp` and `renderer_submission_reports.hpp`.
+- Added `vulkan_glyph_atlas_draw_binding_test` and observed the expected RED
+  compile failure because the focused private draw-binding header did not exist.
+- Added focused private draw-binding planning/resolution modules, renderer-state
+  ownership, and live command buffer descriptor validation. The first compiled
+  run reached the expected documentation RED at exit 40.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`;
+  Step 465 is the next atlas integration slice.
+- Windows focused Step 464 gate passed 10/10, covering draw bindings,
+  multi-page resources, descriptor/upload/lifecycle behavior, the real frame
+  smoke, production planning, renderer structure, parity ledger, and renderer
+  regression coverage. JSON parsing and `git diff --check` also passed.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the corresponding 8/8 shared
+  Vulkan, structure, and ledger tests.
+- Windows full debug verification passed 145/145.
