@@ -115,6 +115,16 @@
   `prepare_rounded_rect_frame(...)` after the in-flight fence, and a live Win32
   first frame exercised real allocation/upload. Step 477 can build the shader
   pipeline over this stable resource ABI.
+- Phase E Step 477 should use a dedicated swapchain-owned pipeline because the
+  rounded-rectangle vertex ABI and future anti-aliasing inputs differ from text.
+  Reviewable GLSL and embedded validated SPIR-V preserve the Step 468 build-time
+  policy without coupling rounded primitives to glyph descriptors.
+- Phase E Step 477 now owns `VulkanRoundedRectPipelineResources`, transient
+  shader modules, fixed graphics state, and swapchain create/install/destroy
+  integration in focused private files. The reviewable sources compile into
+  embedded rounded rectangle SPIR-V validated for Vulkan 1.0, and the pipeline
+  uses no descriptors. Step 478 can bind the paired buffers and record indexed
+  rounded rectangle draws without changing resource ownership.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

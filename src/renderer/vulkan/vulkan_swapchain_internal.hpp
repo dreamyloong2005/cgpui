@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_platform_internal.hpp"
+#include "vulkan_rounded_rect_pipeline_internal.hpp"
 #include "vulkan_text_pipeline_resources_internal.hpp"
 
 namespace cgpui {
@@ -13,6 +14,7 @@ struct VulkanSwapchainResources {
   std::vector<VkImageView> image_views;
   VkRenderPass render_pass = VK_NULL_HANDLE;
   VulkanTextPipelineResources text_pipeline;
+  VulkanRoundedRectPipelineResources rounded_rect_pipeline;
   std::vector<VkFramebuffer> framebuffers;
   std::vector<VkCommandBuffer> command_buffers;
 };

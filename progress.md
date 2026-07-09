@@ -18534,3 +18534,35 @@
   `xmake test -y -P .`.
 - WSL verification remains unavailable because no distribution is registered;
   the shared buffer path remains in the final Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 477 Rounded Rectangle Shader Pipeline
+
+- Started from clean tracked `master` at
+  `3bf2b547 feat: upload vulkan rounded rect buffers`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 477 will add a dedicated rounded-rectangle vertex ABI, reviewable GLSL,
+  embedded validated SPIR-V, fixed pipeline state, transient shader modules,
+  and swapchain-owned layout/pipeline handles. Step 478 will own indexed draw
+  recording.
+- Added `vulkan_rounded_rect_pipeline_test` and observed the expected RED
+  compile failure because the focused private pipeline header did not exist.
+- Added the dedicated rounded-rectangle pipeline ABI, fixed state, shader
+  lifecycle, swapchain resource ownership, and reviewable vertex/fragment GLSL.
+- Compiled optimized Vulkan 1.0 shaders and validated both with `spirv-val`;
+  the embedded payloads are 260 vertex words and 78 fragment words.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `VulkanRoundedRectPipelineResources`, embedded rounded rectangle SPIR-V,
+  and the Step 478 indexed-draw handoff.
+- The planning session catchup helper could not run directly as a `.py` file
+  under PowerShell; invoking it through `python` recovered the unsynced Step
+  477 context successfully.
+- The first post-documentation pipeline test exited 50 because `task_plan.md`
+  split the exact `embedded rounded rectangle SPIR-V` evidence phrase across a
+  line break; normalized the wrapping without changing the documented result.
+- Focused Windows Step 477 verification passed 6/6: rounded rectangle pipeline,
+  paired buffer regression, renderer structure, real first-frame pipeline
+  creation, parity ledger, and text-pipeline closeout regression.
+- Windows full debug verification passed 158/158 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because `wsl --list --quiet` reports no
+  registered distributions; the final Phase E Linux gate remains open.

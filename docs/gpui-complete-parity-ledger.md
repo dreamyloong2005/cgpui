@@ -423,6 +423,12 @@ consume C: drive space again.
   paired host-visible/coherent vertex and index buffers, retains geometry draw
   ranges, and cleans them up through `VulkanRendererState`.
 - Handoff: Phase E Step 477 rounded rectangle shader pipeline.
+- Phase E Step 477 adds `VulkanRoundedRectPipelineResources` with a dedicated
+  position/color vertex ABI, framebuffer-size push constants, dynamic
+  viewport/scissor state, and straight-alpha blending. Reviewable GLSL is
+  compiled into embedded rounded rectangle SPIR-V, while transient shader
+  modules and swapchain-owned layout/pipeline handles keep lifetime explicit.
+- Handoff: Phase E Step 478 indexed rounded rectangle draw recording.
 
 ## Categories
 

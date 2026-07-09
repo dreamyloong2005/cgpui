@@ -209,6 +209,11 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_frame.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_pipeline_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_pipeline_state.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_shader_binaries.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_shader_modules.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_pipeline_resources.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
@@ -1161,6 +1166,33 @@ int main(int argc, char** argv) {
       !contains(rounded_rect_buffers, "VK_BUFFER_USAGE_INDEX_BUFFER_BIT") ||
       !contains(rounded_rect_frame, "prepare_rounded_rect_frame(")) {
     return 69;
+  }
+
+  const std::string rounded_rect_pipeline_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_pipeline_internal.hpp");
+  const std::string rounded_rect_pipeline_state = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_pipeline_state.cpp");
+  const std::string rounded_rect_shader_binaries = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_shader_binaries.cpp");
+  const std::string rounded_rect_shader_modules = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_shader_modules.cpp");
+  const std::string rounded_rect_pipeline_resources = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_pipeline_resources.cpp");
+  if (line_count(rounded_rect_pipeline_header) > 110 ||
+      line_count(rounded_rect_pipeline_state) > 140 ||
+      line_count(rounded_rect_shader_binaries) > 120 ||
+      line_count(rounded_rect_shader_modules) > 110 ||
+      line_count(rounded_rect_pipeline_resources) > 190 ||
+      !contains(rounded_rect_pipeline_header,
+                "struct VulkanRoundedRectPipelineResources") ||
+      !contains(rounded_rect_pipeline_state,
+                "vulkan_rounded_rect_vertex_binding_description(") ||
+      !contains(rounded_rect_shader_binaries,
+                "vulkan_rounded_rect_vertex_shader_spirv(") ||
+      !contains(rounded_rect_shader_modules, "vkCreateShaderModule") ||
+      !contains(rounded_rect_pipeline_resources,
+                "vkCreateGraphicsPipelines")) {
+    return 70;
   }
 
   const std::string report_image_uploads =

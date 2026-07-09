@@ -1521,7 +1521,13 @@ draw calls for the Windows/Linux renderer.
   Fence-safe frame preparation uploads paired host-visible/coherent vertex and
   index buffers, retains Step 475 draw ranges, and destroys them through
   `VulkanRendererState`. Step 477 owns the rounded rectangle shader pipeline.
-- [ ] Steps 477-482: Complete rounded-rect rendering with a shader pipeline,
+- [x] Phase E Step 477 adds `VulkanRoundedRectPipelineResources` with a
+  dedicated position/color vertex ABI, 8-byte framebuffer push constants,
+  straight-alpha blending, transient shader modules, and swapchain-owned
+  pipeline lifetime. Reviewable GLSL ships as embedded rounded rectangle SPIR-V
+  validated for Vulkan 1.0. Step 478 owns indexed rounded rectangle draw
+  recording.
+- [ ] Steps 478-482: Complete rounded-rect rendering with indexed recording,
   anti-aliasing strategy, border radius clipping, border stroke, and fill
   variants.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
