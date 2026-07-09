@@ -7377,3 +7377,15 @@
   double-click paths can reuse the helper without exposing invalid byte ranges.
 - Runtime double-click/triple-click gesture policy is intentionally not added
   in this slice; this only exposes the model-level range primitive.
+
+## 2026-07-09 Phase D Step 413 Line Selection Range Helpers
+
+- Step 413 adds the line-selection counterpart to the Step 412 word range
+  helper inside `TextModel`.
+- `TextModel::line_selection_range_at(...)` returns the current logical line
+  range without allocating, using existing `line_start_for_offset(...)` and
+  `line_end_for_offset(...)` navigation.
+- The helper trims a trailing `\r` before `\n`, so CRLF lines select the text
+  content while keeping newline bytes out of the returned range.
+- Empty lines return collapsed ranges, while an end-of-buffer offset still
+  selects the final non-empty line when one exists.

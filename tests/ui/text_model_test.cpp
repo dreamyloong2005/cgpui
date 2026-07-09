@@ -352,6 +352,50 @@ int test_text_model_reports_word_selection_range_at_offset() {
   return 0;
 }
 
+int test_text_model_reports_line_selection_range_at_offset() {
+  cgpui::TextModel model("one\r\ntwo\nthree");
+
+  const cgpui::TextSelectionRange first =
+      model.line_selection_range_at(std::string_view{"on"}.size());
+  if (first.start != 0 || first.end != std::string_view{"one"}.size() ||
+      first.collapsed) {
+    return 617;
+  }
+
+  const cgpui::TextSelectionRange first_break =
+      model.line_selection_range_at(std::string_view{"one\r"}.size());
+  if (first_break.start != 0 ||
+      first_break.end != std::string_view{"one"}.size() ||
+      first_break.collapsed) {
+    return 618;
+  }
+
+  const cgpui::TextSelectionRange second =
+      model.line_selection_range_at(std::string_view{"one\r\nt"}.size());
+  if (second.start != std::string_view{"one\r\n"}.size() ||
+      second.end != std::string_view{"one\r\ntwo"}.size() ||
+      second.collapsed) {
+    return 619;
+  }
+
+  cgpui::TextModel empty_line("one\n\nthree");
+  const cgpui::TextSelectionRange empty =
+      empty_line.line_selection_range_at(std::string_view{"one\n"}.size());
+  if (empty.start != std::string_view{"one\n"}.size() ||
+      empty.end != empty.start || !empty.collapsed) {
+    return 620;
+  }
+
+  const cgpui::TextSelectionRange end =
+      empty_line.line_selection_range_at(empty_line.text().size());
+  if (end.start != std::string_view{"one\n\n"}.size() ||
+      end.end != empty_line.text().size() || end.collapsed) {
+    return 621;
+  }
+
+  return 0;
+}
+
 int test_text_model_navigates_multiline_lines() {
   cgpui::TextModel model("abc\ndefg\nhi");
 
@@ -1853,6 +1897,11 @@ int main() {
   }
   if (const int result =
           test_text_model_reports_word_selection_range_at_offset();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_reports_line_selection_range_at_offset();
       result != 0) {
     return result;
   }

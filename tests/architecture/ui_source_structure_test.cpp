@@ -497,6 +497,7 @@ int main() {
       !contains(text_hit_testing_header, "text_selection_drag_from_offsets(") ||
       !contains(text_hit_testing_header, "text_selection_drag_from_points(") ||
       !contains(text_model_header, "word_selection_range_at(") ||
+      !contains(text_model_header, "line_selection_range_at(") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
       !contains(text_layout_header,
@@ -571,7 +572,9 @@ int main() {
       !contains(text_hit_testing_source,
                 "text_selection_drag_from_points(") ||
       !contains(text_model_navigation_source,
-                "TextModel::word_selection_range_at(")) {
+                "TextModel::word_selection_range_at(") ||
+      !contains(text_model_navigation_source,
+                "TextModel::line_selection_range_at(")) {
     return 115;
   }
   if (line_count(text_font_header) > 120 ||

@@ -215,6 +215,10 @@ Windows/Linux core API is stable enough for parity work.
   grapheme and word-boundary navigation path, returns collapsed ranges for
   separators and end offsets, and keeps double-click-ready word range
   computation zero-allocation inside the text model boundary.
+- Step 413 adds line-selection range helpers through
+  `TextModel::line_selection_range_at(...)`. The helper reuses existing line
+  navigation, trims CRLF line endings from selected ranges, and keeps
+  triple-click-ready line range computation inside the text model boundary.
 
 ## Definition Of Done For This 20-Step Goal
 

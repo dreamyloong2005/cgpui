@@ -16130,6 +16130,49 @@
   `ui_source_structure_test/default`, and `window_runtime_text_test/default`
   11/11.
 - Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  render_view_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  11/11.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed:
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`,
+  `ui_source_structure_test/default`, and `window_runtime_text_test/default`
+  11/11.
+
+## 2026-07-09 Phase D Step 413 Line Selection Range Helpers
+
+- Started from clean `master` after
+  `5c09886 feat: add text word selection ranges`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextModel::line_selection_range_at(...)` to select line content, collapse
+  empty lines, select the final line from end offsets, and trim CRLF line
+  endings out of the returned range.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring the public
+  method to live in `include/cgpui/ui/text_model.hpp` and the implementation
+  to live in `src/ui/text_model_navigation.cpp`.
+- RED failed as expected:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` failed on the missing
+  `TextModel::line_selection_range_at(...)` member.
+- GREEN implementation reuses existing line navigation, trims a trailing CR
+  before LF, and returns collapsed ranges for empty lines without allocation.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- Adjacent Windows verification passed:
   `xmake test -y -P . text_model_test/default render_view_test/default
   ui_source_structure_test/default ui_header_cleanliness/default
   phase_d_fallback_splitting_audit_test/default

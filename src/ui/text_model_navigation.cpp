@@ -53,6 +53,21 @@ TextSelectionRange TextModel::word_selection_range_at(
   };
 }
 
+TextSelectionRange TextModel::line_selection_range_at(
+    std::size_t offset) const {
+  const std::size_t target = clamp_offset(offset);
+  const std::size_t start = line_start_for_offset(target);
+  std::size_t end = line_end_for_offset(target);
+  if (end > start && text_[end - 1] == '\r') {
+    end -= 1;
+  }
+  return TextSelectionRange{
+      .start = start,
+      .end = end,
+      .collapsed = start == end,
+  };
+}
+
 bool TextModel::move_cursor_previous() {
   if (cursor_ == 0) {
     return false;

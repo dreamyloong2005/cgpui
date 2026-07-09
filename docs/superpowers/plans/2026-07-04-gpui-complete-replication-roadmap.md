@@ -1043,6 +1043,10 @@ behavior that can support GPUI examples and editor-like widgets.
   word-boundary navigation path to expose zero-allocation double-click-ready
   ranges while separators and end offsets stay collapsed. Runtime
   double/triple-click gesture synthesis remains later in this band.
+  Step 413 adds line-selection range helpers through
+  `TextModel::line_selection_range_at(...)`, reusing existing line navigation
+  while trimming CRLF line endings from selected ranges so triple-click-ready
+  model ranges stay explicit and zero-allocation.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.
