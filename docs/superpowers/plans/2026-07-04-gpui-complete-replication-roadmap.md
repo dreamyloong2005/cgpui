@@ -1415,9 +1415,17 @@ draw calls for the Windows/Linux renderer.
   SHADER_READ_ONLY_OPTIMAL. `VulkanGlyphAtlasUploadResources` stays private,
   frame preparation lives in `vulkan_glyph_atlas_frame.cpp`, and planner/image
   layout state commits only after `vkQueueSubmit` succeeds.
-- Step 462 takes the multi-frame incremental upload and acquired
-  command-buffer lifetime handoff.
-- [ ] Steps 462-466: Bind
+- [x] Phase E Step 462 makes glyph-atlas submission incremental across frames
+  and records only the acquired command buffer. Presentation now follows
+  wait/prepare/acquire/record/reset-fence/submit order instead of rebuilding all
+  swapchain command buffers. `recover_after_failed_record(...)` blocks
+  presentation and rebuilds synchronization when recording fails after acquire.
+  The Win32 Vulkan lifetime smoke preserves frame-outlives-renderer coverage and
+  adds an `ab -> ab -> abc` sequence for initial upload, no-dirty reuse, and
+  shader-readable incremental upload.
+- Step 463 takes multi-page glyph atlas allocation, descriptor capacity, and
+  cross-page upload coverage.
+- [ ] Steps 463-466: Bind
   production atlas resources into renderer state, and record dirty upload
   command paths against the live command buffers.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured

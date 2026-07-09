@@ -31,28 +31,6 @@ Result<void> VulkanRendererState::present_frame(
     return result;
   }
 
-  for (std::uint32_t image_index = 0; image_index < command_buffers_.size();
-       ++image_index) {
-    if (auto result = record_vulkan_frame_command_buffer(
-            command_buffers_[image_index],
-            render_pass_,
-            framebuffers_[image_index],
-            swapchain_extent_,
-            color,
-            rects,
-            glyph_atlas_resources_,
-            glyph_atlas_uploads_);
-        !result) {
-      return result;
-    }
-  }
-
-  if (auto result = require_vk_success(
-          vkResetFences(device_, 1, &in_flight_), "vkResetFences failed");
-      !result) {
-    return result;
-  }
-
   std::uint32_t image_index = 0;
   const VkResult acquire_result = vkAcquireNextImageKHR(
       device_,
@@ -74,6 +52,25 @@ Result<void> VulkanRendererState::present_frame(
         false);
   }
   const bool acquired_suboptimal = acquire_result == VK_SUBOPTIMAL_KHR;
+
+  if (auto result = record_vulkan_frame_command_buffer(
+          command_buffers_[image_index],
+          render_pass_,
+          framebuffers_[image_index],
+          swapchain_extent_,
+          color,
+          rects,
+          glyph_atlas_resources_,
+          glyph_atlas_uploads_);
+      !result) {
+    return recover_after_failed_record(result.error().message);
+  }
+
+  if (auto result = require_vk_success(
+          vkResetFences(device_, 1, &in_flight_), "vkResetFences failed");
+      !result) {
+    return recover_after_failed_record(result.error().message);
+  }
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];
 

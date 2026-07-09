@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <string_view>
 
 namespace {
 
@@ -53,14 +54,37 @@ class HiddenWindow {
   HWND hwnd_ = nullptr;
 };
 
-} // namespace
+cgpui::TextDraw text_draw(std::string_view content) {
+  const cgpui::FontDescriptor font{.family = "Inter"};
+  return cgpui::TextDraw{
+      .bounds =
+          cgpui::Rect{
+              .origin = cgpui::Point{.x = 4.0F, .y = 4.0F},
+              .size = cgpui::Size{.width = 48.0F, .height = 24.0F},
+          },
+      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+      .font = font,
+      .content = std::string(content),
+      .byte_length = content.size(),
+      .font_size = 16.0F,
+      .glyphs = cgpui::text_glyph_paint_metadata(
+          cgpui::shape_text(content, font, 16.0F),
+          cgpui::Point{.x = 4.0F, .y = 4.0F}),
+  };
+}
 
-int main() {
-  HiddenWindow window;
-  if (!window.valid()) {
-    return 4;
+bool present_text_frame(cgpui::Renderer& renderer, std::string_view content) {
+  auto frame = renderer.begin_frame();
+  if (!frame) {
+    return false;
   }
+  (*frame)->clear(
+      cgpui::Color{.r = 0.30F, .g = 0.33F, .b = 0.35F, .a = 1.0F});
+  (*frame)->draw_text(text_draw(content));
+  return static_cast<bool>((*frame)->present());
+}
 
+int test_frame_outlives_renderer(const HiddenWindow& window) {
   std::unique_ptr<cgpui::RenderFrame> frame;
   {
     auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
@@ -79,24 +103,36 @@ int main() {
   }
 
   frame->clear(cgpui::Color{.r = 0.30F, .g = 0.33F, .b = 0.35F, .a = 1.0F});
-  frame->draw_text(cgpui::TextDraw{
-      .bounds =
-          cgpui::Rect{
-              .origin = cgpui::Point{.x = 4.0F, .y = 4.0F},
-              .size = cgpui::Size{.width = 48.0F, .height = 24.0F},
-          },
-      .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
-      .font = cgpui::FontDescriptor{.family = "Inter"},
-      .content = "atlas",
-      .byte_length = 5,
-      .font_size = 16.0F,
-      .glyphs = cgpui::text_glyph_paint_metadata(
-          cgpui::shape_text(
-              "atlas",
-              cgpui::FontDescriptor{.family = "Inter"},
-              16.0F),
-          cgpui::Point{.x = 4.0F, .y = 4.0F}),
-  });
-  const auto presented = frame->present();
-  return presented ? 0 : 3;
+  frame->draw_text(text_draw("atlas"));
+  return frame->present() ? 0 : 3;
+}
+
+int test_incremental_glyph_atlas_frames(const HiddenWindow& window) {
+  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+      .native_surface = window.surface(),
+      .framebuffer_size = cgpui::Size{64.0F, 64.0F},
+      .scale = cgpui::DpiScale{1.0F}});
+  if (!renderer) {
+    return 5;
+  }
+  if (!present_text_frame(**renderer, "ab")) {
+    return 6;
+  }
+  if (!present_text_frame(**renderer, "ab")) {
+    return 7;
+  }
+  return present_text_frame(**renderer, "abc") ? 0 : 8;
+}
+
+} // namespace
+
+int main() {
+  HiddenWindow window;
+  if (!window.valid()) {
+    return 4;
+  }
+  if (const int result = test_frame_outlives_renderer(window); result != 0) {
+    return result;
+  }
+  return test_incremental_glyph_atlas_frames(window);
 }

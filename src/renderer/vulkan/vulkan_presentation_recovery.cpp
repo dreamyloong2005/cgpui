@@ -13,6 +13,18 @@ Result<void> VulkanRendererState::recover_after_failed_submit(
       ErrorCode::renderer_initialization_failed, std::move(message)));
 }
 
+Result<void> VulkanRendererState::recover_after_failed_record(
+    std::string message) {
+  presentation_blocked_ = true;
+  (void)vkDeviceWaitIdle(device_);
+  if (auto result = create_sync_objects(); !result) {
+    return std::unexpected(result.error());
+  }
+  return std::unexpected(vulkan_error(
+      ErrorCode::renderer_initialization_failed,
+      std::move(message)));
+}
+
 Result<void> VulkanRendererState::recover_after_failed_acquire(
     ErrorCode code,
     std::string message,

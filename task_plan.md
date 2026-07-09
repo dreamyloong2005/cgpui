@@ -497,18 +497,26 @@ Windows/Linux core API is stable enough for parity work.
   after the in-flight fence, while planner and image-layout state commit only
   after `vkQueueSubmit` succeeds. Step 462 takes the multi-frame incremental
   upload and acquired command-buffer lifetime handoff.
+- Phase E Step 462 records only the acquired command buffer. Presentation now
+  follows wait/prepare/acquire/record/reset-fence/submit order and routes
+  post-acquire recording failures through `recover_after_failed_record(...)`,
+  which blocks presentation until swapchain recreation. The Win32 Vulkan smoke
+  keeps frame-outlives-renderer coverage and adds `ab -> ab -> abc` frames for
+  initial upload, no-dirty reuse, and incremental upload. Step 463 takes
+  multi-page atlas allocation, descriptor capacity, and cross-page upload.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-461 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-462 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
-  layout transitions, and buffer-to-image command recording.
-- In progress: Step 462 multi-frame incremental upload reuse and acquired
-  command-buffer lifetime.
-- Pending bands: Steps 463-466 remaining atlas integration; Steps 467-474 text
+  layout transitions, buffer-to-image command recording, and acquired-buffer
+  multi-frame reuse.
+- In progress: Step 463 multi-page atlas allocation, descriptor capacity, and
+  cross-page uploads.
+- Pending bands: Steps 464-466 remaining atlas integration; Steps 467-474 text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -530,6 +538,7 @@ Windows/Linux core API is stable enough for parity work.
 | Step 461 first GREEN compile rejected a temporary upload state passed to a non-const cleanup reference | First GREEN attempt | Added one-resource `destroy_staging_upload(...)` and reused it from all failure and batch cleanup paths |
 | Renderer structure audit exited 32 after upload orchestration expanded `vulkan_presentation.cpp` past 150 lines | First structure GREEN attempt | Split frame preparation/commit into focused `vulkan_glyph_atlas_frame.cpp`; presentation returned below its existing limit |
 | Step 460 descriptor audit exited 23 after the ownership split | Regression gate after structure split | Updated the audit to inspect the new frame module owner instead of presentation |
+| `vulkan_glyph_atlas_frame_lifecycle_test` failed on the pre-Step-462 recording order | Step 462 RED | Expected RED; moved acquisition before recording and removed the all-command-buffer recording loop |
 
 ## Definition Of Done For This 20-Step Goal
 

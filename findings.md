@@ -1,5 +1,26 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 462 Multi-Frame Atlas Lifecycle
+
+- Phase E Step 462 records only the acquired command buffer. Re-recording every
+  swapchain command buffer duplicated upload commands and retained unnecessary
+  staging references in command buffers that would not be submitted.
+- The safe order is wait/prepare/acquire/record/reset-fence/submit. The fence is
+  not reset until acquisition and command recording both succeed, so early
+  failures do not leave the renderer waiting forever on an unsignaled fence.
+- A record failure after image acquisition consumes the image-available binary
+  semaphore. `recover_after_failed_record(...)` therefore blocks presentation,
+  waits the device idle, rebuilds synchronization, and requires swapchain
+  recreation before another frame.
+- Fence reset now occurs after acquisition as well, so a reset failure uses the
+  same post-acquire recovery instead of returning with a signaled binary
+  semaphore still attached to the acquired image.
+- The `ab -> ab -> abc` smoke exercises initial atlas upload, a no-dirty frame,
+  and an incremental upload from SHADER_READ_ONLY_OPTIMAL back through
+  TRANSFER_DST_OPTIMAL.
+- Step 463 should force multiple atlas pages and verify descriptor capacity and
+  cross-page upload planning/recording.
+
 ## 2026-07-10 Phase E Step 461 Dirty Glyph Atlas Uploads
 
 - Phase E Step 461 uses private `VulkanGlyphAtlasUploadResources`; the public

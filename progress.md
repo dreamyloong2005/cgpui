@@ -1,5 +1,40 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 462 Multi-Frame Atlas Lifecycle
+
+- Added RED coverage with
+  `tests/renderer/vulkan_glyph_atlas_frame_lifecycle_test.cpp` and the matching
+  xmake target. The first run failed on the old record-all-before-acquire source
+  order as expected.
+- Reordered presentation to wait, prepare atlas resources, acquire one swapchain
+  image, record only `command_buffers_[image_index]`, reset the fence, and submit.
+- Added `recover_after_failed_record(...)` for failures after acquire, blocking
+  presentation and rebuilding synchronization until swapchain recreation.
+- Routed post-acquire fence-reset failure through the same recovery path during
+  final review; a direct return would leave the acquired image/semaphore state
+  unusable for the next frame.
+- Refactored `vulkan_frame_lifetime_test` without removing its original
+  frame-outlives-renderer assertion, then added three live frames:
+  `ab -> ab -> abc` for initial upload, no-dirty reuse, and incremental upload.
+- Focused Windows GREEN passed 5/5:
+  `vulkan_glyph_atlas_frame_lifecycle_test/default`,
+  `vulkan_frame_lifetime_test/default`,
+  `vulkan_glyph_atlas_upload_test/default`,
+  `vulkan_glyph_atlas_descriptor_test/default`, and
+  `renderer_source_structure_test/default`.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 6/6:
+  `vulkan_glyph_atlas_frame_lifecycle_test/default`,
+  `vulkan_glyph_atlas_upload_test/default`,
+  `vulkan_glyph_atlas_descriptor_test/default`,
+  `renderer_source_structure_test/default`,
+  `phase_e_glyph_atlas_production_test/default`, and
+  `gpui_parity_ledger_test/default`.
+- Windows full debug verification passed: `xmake test -y -P .` 143/143.
+- WSL full debug was intentionally skipped for this individual slice under the
+  Phase E cadence; focused WSL passed and full WSL remains scheduled for the
+  glyph-atlas milestone or Phase E closeout.
+
 ## 2026-07-10 Phase E Step 461 Vulkan Glyph Atlas Dirty Uploads
 
 - Added RED coverage with

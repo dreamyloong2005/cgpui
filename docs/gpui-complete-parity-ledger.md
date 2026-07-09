@@ -333,10 +333,16 @@ consume C: drive space again.
   `vulkan_glyph_atlas_upload_recording.cpp` records image barriers,
   `vkCmdCopyBufferToImage`, and the final shader-readable layout. Atlas planner
   and image-layout state commit only after `vkQueueSubmit` succeeds.
-- Remaining Phase E glyph-atlas gap: Step 462 must exercise multi-frame
-  incremental upload reuse and acquired command-buffer lifetime before the
-  remaining atlas integration closeout.
-- Handoff: Phase E Step 462 multi-frame glyph atlas upload lifecycle.
+- Phase E Step 462 records only the acquired command buffer and exercises
+  multi-frame incremental atlas reuse. Presentation order is now
+  wait/prepare/acquire/record/reset-fence/submit; record failure after acquire
+  routes through `recover_after_failed_record(...)` and blocks presentation
+  until swapchain recreation. The Win32 smoke retains frame-outlives-renderer
+  behavior and adds `ab -> ab -> abc` frames covering initial upload, no-dirty
+  reuse, and incremental shader-readable upload.
+- Remaining Phase E glyph-atlas gap: Step 463 must cover multi-page atlas
+  allocation, descriptor capacity, and cross-page uploads.
+- Handoff: Phase E Step 463 multi-page glyph atlas resources.
 
 ## Categories
 

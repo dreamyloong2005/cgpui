@@ -37,6 +37,7 @@ class VulkanRendererState final {
       std::span<const TextDraw> text_draws);
   void commit_glyph_atlas_frame();
   Result<void> recover_after_failed_submit(std::string message);
+  Result<void> recover_after_failed_record(std::string message);
   Result<void> recover_after_failed_acquire(
       ErrorCode code,
       std::string message,
