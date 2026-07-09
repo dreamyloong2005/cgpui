@@ -514,6 +514,9 @@ int main() {
                 "text_selection_granularity_for_click_count(") ||
       !contains(text_model_header, "word_selection_range_at(") ||
       !contains(text_model_header, "line_selection_range_at(") ||
+      !contains(text_model_header, "preferred_line_column_") ||
+      !contains(text_model_header,
+                "preferred_line_column_for_vertical_navigation(") ||
       !contains(event_pointer_header, "std::uint8_t click_count = 1") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
@@ -553,8 +556,13 @@ int main() {
       read_source("src/ui/text_wrapping.cpp");
   const std::string text_hit_testing_source =
       read_source("src/ui/text_hit_testing.cpp");
+  const std::string text_model_source = read_source("src/ui/text_model.cpp");
   const std::string text_model_navigation_source =
       read_source("src/ui/text_model_navigation.cpp");
+  const std::string text_model_selection_source =
+      read_source("src/ui/text_model_selection.cpp");
+  const std::string scroll_header = read_source("include/cgpui/ui/scroll.hpp");
+  const std::string scroll_source = read_source("src/ui/scroll.cpp");
   if (!contains(text_measurement_source,
                 "build_text_grapheme_columns(shape_run)") ||
       !contains(text_measurement_source,
@@ -595,6 +603,24 @@ int main() {
       !contains(text_model_navigation_source,
                 "TextModel::line_selection_range_at(")) {
     return 115;
+  }
+  if (!contains(text_model_navigation_source,
+                "preferred_line_column_for_vertical_navigation(") ||
+      !contains(text_model_navigation_source,
+                "preferred_line_column_.value_or(") ||
+      !contains(text_model_source, "TextModel::clear_preferred_line_column(") ||
+      !contains(text_model_selection_source,
+                "TextModel::extend_selection_next_line(") ||
+      !contains(text_model_selection_source,
+                "TextModel::extend_selection_previous_line(")) {
+    return 116;
+  }
+  if (!contains(scroll_header, "scroll_rect_into_view(Rect rect)") ||
+      !contains(scroll_source, "ScrollModel::scroll_rect_into_view(") ||
+      !contains(scroll_source, "ScrollModel::scroll_by(") ||
+      contains(scroll_header, "std::clamp") ||
+      contains(scroll_header, "rect_right")) {
+    return 117;
   }
   if (line_count(text_font_header) > 120 ||
       contains(text_font_header, "faces_.push_back") ||
@@ -1219,6 +1245,7 @@ int main() {
       "src/ui/element_style_paint.cpp",
       "src/ui/element_button_paint.cpp",
       "src/ui/element_scroll_paint.cpp",
+      "src/ui/element_text_geometry.cpp",
       "src/ui/element_text_paint.cpp",
       "src/ui/text_selection_paint_geometry.cpp",
   };
@@ -1889,6 +1916,8 @@ int main() {
       read_source("src/ui/element_button_paint.cpp");
   const std::string element_scroll_paint_source =
       read_source("src/ui/element_scroll_paint.cpp");
+  const std::string element_text_geometry_source =
+      read_source("src/ui/element_text_geometry.cpp");
   const std::string element_text_paint_source =
       read_source("src/ui/element_text_paint.cpp");
   const std::string text_selection_paint_geometry_header =
@@ -1908,11 +1937,15 @@ int main() {
                 "ScrollableListElement::paint(") ||
       !contains(element_text_paint_source, "LabelElement::paint(") ||
       !contains(element_text_paint_source, "TextElement::paint(") ||
+      !contains(element_text_geometry_source, "TextElement::caret_rect(") ||
+      !contains(element_text_geometry_source,
+                "TextElement::scroll_caret_into_view(") ||
       !contains(element_text_paint_source, "paint_text_selection_ranges(") ||
       !contains(element_text_paint_source, "paint_text_caret_geometry(") ||
       contains(element_text_paint_source, "selection.end - selection.start") ||
       contains(element_text_paint_source,
                "static_cast<float>(model_->cursor())") ||
+      !contains(text_selection_paint_geometry_header, "text_caret_rect(") ||
       !contains(text_selection_paint_geometry_header,
                 "paint_text_selection_ranges(") ||
       !contains(text_selection_paint_geometry_header,
@@ -2337,6 +2370,8 @@ int main() {
                 "WindowRuntime::action_dispatch_view_id(") ||
       !contains(runtime_event_route_dispatch_source,
                 "WindowRuntime::scroll_state_for_route(") ||
+      !contains(runtime_event_route_dispatch_source,
+                "dynamic_cast<ScrollableListElement*>(") ||
       !contains(runtime_event_route_dispatch_source,
                 "EventResult WindowRuntime::dispatch_routed_element_event(") ||
       contains(runtime_event_route_dispatch_source,
@@ -2931,6 +2966,7 @@ int main() {
       !contains(runtime_text_focus_source,
                 "std::optional<ImeCandidateRect> "
                 "WindowRuntime::focused_text_ime_rect()") ||
+      !contains(runtime_text_focus_source, "text_element->caret_rect(scale_)") ||
       contains(runtime_text_focus_source,
                "bool WindowRuntime::apply_text_pointer_selection(") ||
       contains(runtime_text_focus_source, "void WindowRuntime::bind_text_model(")) {

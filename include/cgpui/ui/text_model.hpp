@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -78,6 +79,8 @@ class TextModel {
   };
 
   void clear_composition();
+  void clear_preferred_line_column();
+  [[nodiscard]] std::size_t preferred_line_column_for_vertical_navigation();
   [[nodiscard]] TextHistorySnapshot history_snapshot() const;
   [[nodiscard]] static bool history_snapshots_equal(
       const TextHistorySnapshot& left,
@@ -126,6 +129,7 @@ class TextModel {
   std::size_t cursor_ = 0;
   std::size_t selection_anchor_ = 0;
   std::size_t selection_head_ = 0;
+  std::optional<std::size_t> preferred_line_column_;
   bool has_composition_ = false;
   std::vector<TextEditHistoryRecord> undo_stack_;
   std::vector<TextEditHistoryRecord> redo_stack_;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/element_core.hpp"
+#include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/text.hpp"
 
 #include <string>
@@ -49,6 +50,11 @@ class TextElement : public Element {
   [[nodiscard]] TextShapeRun shape_run() const {
     return shape_text(text(), font(), font_size());
   }
+
+  [[nodiscard]] std::optional<Rect> caret_rect(DpiScale scale) const;
+  [[nodiscard]] bool scroll_caret_into_view(
+      ScrollState& state,
+      DpiScale scale) const;
 
   [[nodiscard]] AccessibilityRole accessibility_role() const override {
     return AccessibilityRole::text;

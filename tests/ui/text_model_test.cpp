@@ -468,6 +468,54 @@ int test_text_model_navigates_multiline_lines() {
   return 0;
 }
 
+int test_text_model_preserves_preferred_column_for_vertical_navigation() {
+  cgpui::TextModel model("abcd\nef\nwxyz");
+  model.set_selection(4, 4);
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_next_line) ||
+      model.cursor() != 7 || !model.selection().collapsed) {
+    return 627;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_next_line) ||
+      model.cursor() != model.text().size() || !model.selection().collapsed) {
+    return 628;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_line) ||
+      model.cursor() != 7 || !model.selection().collapsed) {
+    return 629;
+  }
+  if (!model.apply_edit_action(cgpui::TextEditAction::move_previous_line) ||
+      model.cursor() != 4 || !model.selection().collapsed) {
+    return 630;
+  }
+
+  cgpui::TextModel selection("abcd\nef\nwxyz");
+  selection.set_selection(4, 4);
+  if (!selection.apply_edit_action(cgpui::TextEditAction::extend_next_line) ||
+      selection.selection_anchor() != 4 || selection.selection_head() != 7 ||
+      selection.selected_text() != std::string_view{"\nef"}) {
+    return 631;
+  }
+  if (!selection.apply_edit_action(cgpui::TextEditAction::extend_next_line) ||
+      selection.selection_anchor() != 4 ||
+      selection.selection_head() != selection.text().size() ||
+      selection.selected_text() != std::string_view{"\nef\nwxyz"}) {
+    return 632;
+  }
+
+  cgpui::TextModel reset("abcd\nef\nwxyz");
+  reset.set_selection(4, 4);
+  (void)reset.apply_edit_action(cgpui::TextEditAction::move_next_line);
+  if (!reset.apply_edit_action(cgpui::TextEditAction::move_previous) ||
+      reset.cursor() != 6) {
+    return 633;
+  }
+  if (!reset.apply_edit_action(cgpui::TextEditAction::move_next_line) ||
+      reset.cursor() != 9) {
+    return 634;
+  }
+  return 0;
+}
+
 int test_text_model_undo_redo_restores_edit_history() {
   cgpui::TextModel model;
   if (model.can_undo() || model.can_redo() || model.undo() || model.redo()) {
@@ -1929,6 +1977,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_navigates_multiline_lines();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_preserves_preferred_column_for_vertical_navigation();
       result != 0) {
     return result;
   }

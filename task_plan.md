@@ -240,6 +240,15 @@ Windows/Linux core API is stable enough for parity work.
   and line-metric records as text paint so multiline selections emit per-line
   `TextSelectionPaint` commands and the caret lands on the active line instead
   of first-line byte-offset geometry.
+- Step 418 closes the selection/caret band. `TextModel` now preserves a
+  preferred column across vertical cursor and selection movement until
+  non-vertical edits reset it, `ScrollModel::scroll_rect_into_view(...)` and
+  `TextElement::scroll_caret_into_view(...)` expose explicit scroll-to-caret
+  primitives, `text_caret_rect(...)` is shared by paint and IME placement,
+  runtime scroll routing recognizes `ScrollableListElement`, existing focused
+  text copy/cut/paste clipboard coverage remains frozen, and
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp` locks the Step
+  411-418 evidence before Phase D moves to Step 419 edit history.
 
 ## Definition Of Done For This 20-Step Goal
 

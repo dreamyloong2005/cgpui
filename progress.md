@@ -16535,6 +16535,60 @@
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
 
+## 2026-07-09 Phase D Step 418 Selection/Caret Band Closeout
+
+- Continued from the uncommitted Step 418 workspace on `master`; the only
+  unrelated untracked path remains `.vscode/`.
+- Implemented preferred-column vertical navigation in `TextModel`, explicit
+  `ScrollModel::scroll_rect_into_view(...)`, `TextElement::caret_rect(...)`,
+  and `TextElement::scroll_caret_into_view(...)`, shared caret geometry for
+  paint and IME candidate placement, and runtime scroll routing for
+  `ScrollableListElement`.
+- Focused GREEN verification already passed before the closeout audit:
+  `xmake test -y -P . text_model_test/default scroll_test/default
+  ui_source_structure_test/default` 3/3,
+  `xmake test -y -P . element_test/default window_runtime_text_test/default
+  scroll_test/default ui_source_structure_test/default` 4/4, and
+  `xmake test -y -P . window_runtime_input_test/default
+  ui_source_structure_test/default` 2/2.
+- The first closeout audit run failed because roadmap/finding strings were
+  split or mismatched, and the audit itself expected outdated public/header and
+  behavior-test names. Fixed the audit to check real C++ class-member
+  declarations and the existing behavior test names, then kept the roadmap and
+  findings evidence strings continuous.
+- Closeout audit verification passed:
+  `xmake test -y -P . phase_d_selection_caret_audit_test/default
+  ui_source_structure_test/default` 2/2.
+- Diff hygiene passed with no whitespace errors:
+  `git diff --check` only reported the existing CRLF conversion warnings.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 19/19.
+- Adjacent WSL verification reused `.build-wsl/master` on D: and
+  `/dev/shm/cgpui` for transient temp, then passed 19/19:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
 ## 2026-07-09 Phase D Step 416 Runtime Triple-Click Line Selection
 
 - Started from clean `master` after

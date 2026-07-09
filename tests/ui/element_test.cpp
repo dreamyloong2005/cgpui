@@ -3478,6 +3478,37 @@ int test_text_element_paints_multiline_selection_and_caret_geometry() {
              : 713;
 }
 
+int test_text_element_scrolls_caret_into_view() {
+  cgpui::TextModel model("ab\ncd\nef");
+  model.set_selection(model.text().size(), model.text().size());
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_font(cgpui::FontDescriptor{.family = "Mono"})
+          .with_font_size(20.0F));
+  (void)element.layout(cgpui::LayoutInput{});
+
+  const std::optional<cgpui::Rect> caret =
+      element.caret_rect(cgpui::DpiScale{});
+  if (!caret.has_value() || caret->origin.y != 40.0F ||
+      caret->size.height != 20.0F) {
+    return 714;
+  }
+
+  cgpui::ScrollState state;
+  state.set_viewport_size(cgpui::Size{.width = 20.0F, .height = 20.0F});
+  state.set_content_size(cgpui::Size{.width = 20.0F, .height = 60.0F});
+  if (!element.scroll_caret_into_view(state, cgpui::DpiScale{}) ||
+      state.offset().y != 40.0F) {
+    return 715;
+  }
+
+  if (element.scroll_caret_into_view(state, cgpui::DpiScale{})) {
+    return 716;
+  }
+  return state.offset().x == 0.0F && state.offset().y == 40.0F ? 0 : 717;
+}
+
 int test_empty_text_element_still_paints_caret_metadata() {
   cgpui::TextModel model;
   cgpui::TextElement element(
@@ -5933,6 +5964,10 @@ int main() {
   }
   if (const int result =
           test_text_element_paints_multiline_selection_and_caret_geometry();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_element_scrolls_caret_into_view();
       result != 0) {
     return result;
   }

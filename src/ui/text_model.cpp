@@ -54,6 +54,7 @@ void TextModel::cancel_composition() {
 
 void TextModel::insert_text(std::string_view text) {
   const TextHistorySnapshot before = history_snapshot();
+  clear_preferred_line_column();
   (void)erase_selection_if_needed();
   text_.insert(cursor_, text);
   cursor_ += text.size();
@@ -63,6 +64,7 @@ void TextModel::insert_text(std::string_view text) {
 
 bool TextModel::backspace() {
   const TextHistorySnapshot before = history_snapshot();
+  clear_preferred_line_column();
   if (erase_selection_if_needed()) {
     commit_history_record(before);
     return true;
@@ -80,6 +82,7 @@ bool TextModel::backspace() {
 
 bool TextModel::delete_forward() {
   const TextHistorySnapshot before = history_snapshot();
+  clear_preferred_line_column();
   if (erase_selection_if_needed()) {
     commit_history_record(before);
     return true;
@@ -98,6 +101,7 @@ bool TextModel::delete_surrounding_text(
     std::size_t before_length,
     std::size_t after_length) {
   const TextHistorySnapshot before = history_snapshot();
+  clear_preferred_line_column();
   const std::size_t cursor = clamp_offset(cursor_);
   std::size_t start = before_length > cursor ? 0 : cursor - before_length;
   while (start > 0 && is_utf8_continuation(text_[start])) {
@@ -172,6 +176,17 @@ void TextModel::clear_composition() {
   has_composition_ = false;
 }
 
+void TextModel::clear_preferred_line_column() {
+  preferred_line_column_.reset();
+}
+
+std::size_t TextModel::preferred_line_column_for_vertical_navigation() {
+  if (!preferred_line_column_.has_value()) {
+    preferred_line_column_ = line_column_for_offset(cursor_);
+  }
+  return *preferred_line_column_;
+}
+
 std::size_t TextModel::clamp_offset(std::size_t offset) const {
   return std::min(offset, text_.size());
 }
@@ -186,6 +201,7 @@ bool TextModel::move_cursor_to(std::size_t offset) {
   if (target == cursor_) {
     return false;
   }
+  clear_preferred_line_column();
   cursor_ = target;
   collapse_selection_to_cursor();
   return true;

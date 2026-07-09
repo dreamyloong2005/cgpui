@@ -121,6 +121,20 @@ void paint_text_caret_geometry(
     float font_size,
     DpiScale scale,
     std::size_t byte_offset) {
+  paint_list.fill_text_caret(
+      text_caret_rect(bounds, text, font, font_size, scale, byte_offset),
+      color,
+      byte_offset,
+      font_size);
+}
+
+Rect text_caret_rect(
+    Rect bounds,
+    std::string_view text,
+    const FontDescriptor& font,
+    float font_size,
+    DpiScale scale,
+    std::size_t byte_offset) {
   TextMeasurement measurement;
   const TextWrapLayout wrap_layout = text_selection_wrap_layout(
       text,
@@ -146,14 +160,10 @@ void paint_text_caret_geometry(
   const float height = caret_line == nullptr
       ? font_size
       : caret_line->metrics.line_height;
-  paint_list.fill_text_caret(
-      Rect{
-          .origin = {.x = bounds.origin.x + x, .y = bounds.origin.y + y},
-          .size = {.width = 1.0F, .height = height},
-      },
-      color,
-      byte_offset,
-      font_size);
+  return Rect{
+      .origin = {.x = bounds.origin.x + x, .y = bounds.origin.y + y},
+      .size = {.width = 1.0F, .height = height},
+  };
 }
 
 } // namespace cgpui

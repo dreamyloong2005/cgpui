@@ -621,6 +621,52 @@ int test_runtime_routes_pointer_events_to_hit_element() {
   return 0;
 }
 
+RuntimeFixture* scrollable_list_route_fixture = nullptr;
+
+void dispatch_scrollable_list_scroll_sequence() {
+  auto& callback = scrollable_list_route_fixture->window.callback;
+  callback(cgpui::PointerScrolled{
+      .delta = {0.0F, 12.0F},
+      .position = {5.0F, 5.0F}});
+}
+
+int test_runtime_scrolls_scrollable_list_route() {
+  RuntimeFixture fixture;
+  scrollable_list_route_fixture = &fixture;
+  fixture.app.on_run = &dispatch_scrollable_list_scroll_sequence;
+
+  cgpui::ScrollState state;
+  cgpui::AnyElement element =
+      cgpui::scrollable_list(state)
+          .size(40.0F, 20.0F)
+          .item("alpha", cgpui::div().size(40.0F, 20.0F))
+          .item("beta", cgpui::div().size(40.0F, 20.0F))
+          .item("gamma", cgpui::div().size(40.0F, 20.0F))
+          .build();
+  auto* list = dynamic_cast<cgpui::ScrollableListElement*>(element.get());
+  if (list == nullptr) {
+    return 230;
+  }
+  list->assign_id(cgpui::ElementId{30});
+  (void)list->layout(cgpui::LayoutInput{});
+
+  cgpui::WindowRuntime runtime(
+      fixture.app,
+      fixture.view,
+      [&](const cgpui::RenderSurfaceDescriptor&) {
+        return cgpui::Result<cgpui::Renderer*>{&fixture.renderer};
+      });
+  runtime.set_element_root(list);
+
+  const int result = runtime.run(cgpui::WindowDescriptor{});
+  scrollable_list_route_fixture = nullptr;
+
+  if (result != 0) {
+    return 231;
+  }
+  return state.offset().x == 0.0F && state.offset().y == 12.0F ? 0 : 232;
+}
+
 RuntimeFixture* runtime_drag_drop_fixture = nullptr;
 
 void dispatch_runtime_drag_drop_sequence() {
@@ -2423,6 +2469,10 @@ int main() {
     return result;
   }
   if (const int result = test_runtime_routes_pointer_events_to_hit_element(); result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_scrolls_scrollable_list_route();
+      result != 0) {
     return result;
   }
   if (const int result = test_runtime_routes_drag_drop_events_to_hit_element(); result != 0) {

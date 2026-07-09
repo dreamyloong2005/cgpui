@@ -7446,3 +7446,25 @@
 - This is still deterministic fallback geometry. It does not claim full bidi
   visual selection, paragraph shaping, scroll-to-caret, preferred-column
   navigation, or native text renderer selection quads.
+
+## 2026-07-09 Phase D Step 418 Selection/Caret Band Closeout
+
+- Step 418 closes the selection/caret band with explicit, zero-allocation
+  preferred-column and scroll-to-caret primitives rather than hidden runtime
+  scans, covering the Step 411-418 evidence.
+- `TextModel` stores `preferred_line_column_` only while vertical cursor or
+  selection movement is active, so short-line clamping does not destroy the
+  original target column and non-vertical edits/movement reset the state.
+- `ScrollModel::scroll_rect_into_view(...)` moves the reusable scroll math out
+  of the public header into `src/ui/scroll.cpp`, keeping the public leaf thin.
+- `TextElement::caret_rect(...)` and
+  `TextElement::scroll_caret_into_view(...)` reuse the same measured hard-wrap
+  caret geometry as paint, and runtime IME placement now consumes that shared
+  `text_caret_rect(...)` path instead of byte-offset glyph-width math.
+- Runtime scroll routing now recognizes `ScrollableListElement` as a scroll
+  state owner alongside `ScrollElement`; focused text clipboard copy/cut/paste
+  coverage remains part of the frozen selection/caret evidence.
+- The closeout audit is
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`; remaining Phase D
+  text work starts at Step 419 edit history and continues through IME, rich
+  text, examples, and final verification.

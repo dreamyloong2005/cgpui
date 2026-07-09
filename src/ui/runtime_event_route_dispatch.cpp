@@ -25,6 +25,10 @@ ScrollState* WindowRuntime::scroll_state_for_route(const EventRoute& route) {
     if (scroll != nullptr && scroll->enabled()) {
       return scroll->state();
     }
+    auto* list = dynamic_cast<ScrollableListElement*>(routed_element(element_id));
+    if (list != nullptr && list->enabled()) {
+      return list->state();
+    }
   }
 
   return nullptr;

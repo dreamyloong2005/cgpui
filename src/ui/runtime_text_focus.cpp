@@ -44,25 +44,14 @@ std::optional<ImeCandidateRect> WindowRuntime::focused_text_ime_rect() const {
     return {};
   }
 
-  const std::optional<Rect> bounds = text_element->layout_bounds();
-  if (!bounds.has_value()) {
+  const std::size_t byte_offset = model->cursor();
+  const std::optional<Rect> rect = text_element->caret_rect(scale_);
+  if (!rect.has_value()) {
     return {};
   }
-
-  const std::size_t byte_offset = model->cursor();
   return ImeCandidateRect{
       .element_id = *keyboard_focus_element_owner_,
-      .rect =
-          Rect{
-              .origin =
-                  {
-                      .x = bounds->origin.x +
-                           (static_cast<float>(byte_offset) *
-                            text_element->glyph_width()),
-                      .y = bounds->origin.y,
-                  },
-              .size = {.width = 1.0F, .height = text_element->font_size()},
-          },
+      .rect = *rect,
       .byte_offset = byte_offset,
   };
 }

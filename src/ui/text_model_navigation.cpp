@@ -72,6 +72,7 @@ bool TextModel::move_cursor_previous() {
   if (cursor_ == 0) {
     return false;
   }
+  clear_preferred_line_column();
   cursor_ = previous_grapheme_boundary(cursor_);
   collapse_selection_to_cursor();
   return true;
@@ -81,6 +82,7 @@ bool TextModel::move_cursor_next() {
   if (cursor_ >= text_.size()) {
     return false;
   }
+  clear_preferred_line_column();
   cursor_ = next_grapheme_boundary(cursor_);
   collapse_selection_to_cursor();
   return true;
@@ -90,6 +92,7 @@ bool TextModel::move_cursor_previous_word() {
   if (cursor_ == 0) {
     return false;
   }
+  clear_preferred_line_column();
   const std::size_t previous = previous_word_boundary(cursor_);
   if (previous == cursor_) {
     return false;
@@ -103,6 +106,7 @@ bool TextModel::move_cursor_next_word() {
   if (cursor_ >= text_.size()) {
     return false;
   }
+  clear_preferred_line_column();
   const std::size_t next = next_word_boundary(cursor_);
   if (next == cursor_) {
     return false;
@@ -121,19 +125,25 @@ bool TextModel::move_cursor_line_end() {
 }
 
 bool TextModel::move_cursor_previous_line() {
+  (void)preferred_line_column_for_vertical_navigation();
   const std::size_t target = previous_line_offset(cursor_);
   if (target == cursor_) {
     return false;
   }
-  return move_cursor_to(target);
+  cursor_ = target;
+  collapse_selection_to_cursor();
+  return true;
 }
 
 bool TextModel::move_cursor_next_line() {
+  (void)preferred_line_column_for_vertical_navigation();
   const std::size_t target = next_line_offset(cursor_);
   if (target == cursor_) {
     return false;
   }
-  return move_cursor_to(target);
+  cursor_ = target;
+  collapse_selection_to_cursor();
+  return true;
 }
 
 bool TextModel::is_utf8_continuation(char value) {
@@ -167,7 +177,8 @@ std::size_t TextModel::previous_line_offset(std::size_t offset) const {
   if (current_start == 0) {
     return clamped;
   }
-  const std::size_t column = line_column_for_offset(clamped);
+  const std::size_t column =
+      preferred_line_column_.value_or(line_column_for_offset(clamped));
   const std::size_t previous_line_position = current_start - 1;
   const std::size_t previous_start =
       line_start_for_offset(previous_line_position);
@@ -182,7 +193,8 @@ std::size_t TextModel::next_line_offset(std::size_t offset) const {
   if (current_end >= text_.size()) {
     return clamped;
   }
-  const std::size_t column = line_column_for_offset(clamped);
+  const std::size_t column =
+      preferred_line_column_.value_or(line_column_for_offset(clamped));
   const std::size_t next_start = current_end + 1;
   const std::size_t next_end = line_end_for_offset(next_start);
   return std::min(next_start + column, next_end);

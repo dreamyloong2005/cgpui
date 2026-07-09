@@ -1029,7 +1029,7 @@ behavior that can support GPUI examples and editor-like widgets.
   freezing the Step 403-409 grapheme, wrap, hard break, bidi planning, line
   metrics, paragraph cache, and CRLF hard-wrap evidence before selection and
   caret behavior starts.
-- [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
+- [x] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.
   Step 411 starts this band with explicit text selection drag records:
@@ -1067,6 +1067,15 @@ behavior that can support GPUI examples and editor-like widgets.
   line metrics instead of first-line byte-offset geometry, while
   `tests/ui/element_test.cpp` and `tests/architecture/ui_source_structure_test.cpp`
   guard the behavior and module boundary.
+  Step 418 closes the selection/caret band through preferred-column vertical
+  navigation in `TextModel`, explicit `ScrollModel::scroll_rect_into_view(...)`
+  and `TextElement::scroll_caret_into_view(...)` scroll-to-caret primitives,
+  shared `text_caret_rect(...)` geometry for paint and IME candidate placement,
+  runtime route scrolling for `ScrollableListElement`, existing focused text
+  copy/cut/paste clipboard coverage, and
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Step 419 starts edit history;
+  grouped typing, IME grouped commits, rich text, text examples,
+  and final Phase D verification remain open in Steps 419-458.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.

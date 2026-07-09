@@ -92,6 +92,43 @@ int test_scroll_state_alias_preserves_scroll_model_semantics() {
              : 11;
 }
 
+int test_scroll_model_scrolls_rect_into_view() {
+  cgpui::ScrollModel model;
+  model.set_viewport_size(cgpui::Size{.width = 100.0F, .height = 50.0F});
+  model.set_content_size(cgpui::Size{.width = 300.0F, .height = 200.0F});
+
+  model.scroll_rect_into_view(cgpui::Rect{
+      .origin = {.x = 10.0F, .y = 8.0F},
+      .size = {.width = 20.0F, .height = 15.0F},
+  });
+  if (!same(model.offset().x, 0.0F) || !same(model.offset().y, 0.0F)) {
+    return 31;
+  }
+
+  model.scroll_rect_into_view(cgpui::Rect{
+      .origin = {.x = 80.0F, .y = 45.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  });
+  if (!same(model.offset().x, 20.0F) || !same(model.offset().y, 15.0F)) {
+    return 32;
+  }
+
+  model.scroll_rect_into_view(cgpui::Rect{
+      .origin = {.x = 15.0F, .y = 5.0F},
+      .size = {.width = 10.0F, .height = 5.0F},
+  });
+  if (!same(model.offset().x, 15.0F) || !same(model.offset().y, 5.0F)) {
+    return 33;
+  }
+
+  model.scroll_rect_into_view(cgpui::Rect{
+      .origin = {.x = 260.0F, .y = 180.0F},
+      .size = {.width = 80.0F, .height = 40.0F},
+  });
+  return same(model.offset().x, 200.0F) && same(model.offset().y, 150.0F) ? 0
+                                                                         : 34;
+}
+
 int test_uniform_list_visible_range_uses_stable_item_bounds() {
   const std::vector<cgpui::UniformListItemIdentity> items{
       {
@@ -447,6 +484,10 @@ int main() {
     return result;
   }
   if (const int result = test_scroll_state_alias_preserves_scroll_model_semantics();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_scroll_model_scrolls_rect_into_view();
       result != 0) {
     return result;
   }

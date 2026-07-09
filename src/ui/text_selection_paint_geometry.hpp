@@ -7,6 +7,14 @@
 
 namespace cgpui {
 
+[[nodiscard]] Rect text_caret_rect(
+    Rect bounds,
+    std::string_view text,
+    const FontDescriptor& font,
+    float font_size,
+    DpiScale scale,
+    std::size_t byte_offset);
+
 void paint_text_selection_ranges(
     PaintList& paint_list,
     Rect bounds,

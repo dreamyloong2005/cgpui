@@ -2,8 +2,6 @@
 
 #include "cgpui/core/geometry.hpp"
 
-#include <algorithm>
-
 namespace cgpui {
 
 class ScrollModel {
@@ -28,49 +26,18 @@ class ScrollModel {
     return max_offset().y > 0.0F;
   }
 
-  void set_offset(Point offset) {
-    offset_ = clamp_offset(offset);
-  }
+  void set_offset(Point offset);
+  void scroll_by(Point delta);
+  void scroll_rect_into_view(Rect rect);
 
-  void scroll_by(Point delta) {
-    set_offset(Point{
-        .x = offset_.x + delta.x,
-        .y = offset_.y + delta.y,
-    });
-  }
+  void set_viewport_size(Size size);
 
-  void set_viewport_size(Size size) {
-    viewport_size_ = clamp_non_negative(size);
-    offset_ = clamp_offset(offset_);
-  }
-
-  void set_content_size(Size size) {
-    content_size_ = clamp_non_negative(size);
-    offset_ = clamp_offset(offset_);
-  }
+  void set_content_size(Size size);
 
  private:
-  [[nodiscard]] Point max_offset() const {
-    return Point{
-        .x = std::max(0.0F, content_size_.width - viewport_size_.width),
-        .y = std::max(0.0F, content_size_.height - viewport_size_.height),
-    };
-  }
-
-  [[nodiscard]] Point clamp_offset(Point offset) const {
-    const Point max = max_offset();
-    return Point{
-        .x = std::clamp(offset.x, 0.0F, max.x),
-        .y = std::clamp(offset.y, 0.0F, max.y),
-    };
-  }
-
-  [[nodiscard]] static Size clamp_non_negative(Size size) {
-    return Size{
-        .width = std::max(0.0F, size.width),
-        .height = std::max(0.0F, size.height),
-    };
-  }
+  [[nodiscard]] Point max_offset() const;
+  [[nodiscard]] Point clamp_offset(Point offset) const;
+  [[nodiscard]] static Size clamp_non_negative(Size size);
 
   Point offset_;
   Size viewport_size_;

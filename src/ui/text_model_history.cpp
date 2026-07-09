@@ -57,6 +57,7 @@ void TextModel::restore_history_snapshot(const TextHistorySnapshot& snapshot) {
   cursor_ = std::min(snapshot.cursor, text_.size());
   selection_anchor_ = std::min(snapshot.selection_anchor, text_.size());
   selection_head_ = std::min(snapshot.selection_head, text_.size());
+  clear_preferred_line_column();
   clear_composition();
 }
 
