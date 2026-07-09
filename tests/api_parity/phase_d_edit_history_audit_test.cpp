@@ -101,7 +101,7 @@ int main() {
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-424") ||
+  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "adjacent typing history coalescing") ||
       !contains(text_row, "composition-history grouping") ||
       !contains(text_row, "undo-manager integration points") ||
@@ -109,7 +109,7 @@ int main() {
       !contains(text_row, "edit transaction diagnostics") ||
       !contains(text_row, "Step 424 edit-history band audit") ||
       !contains(text_row, "phase_d_edit_history_audit_test") ||
-      !contains(text_row, "deeper IME behavior")) {
+      !contains(text_row, "Win32 TSF message depth")) {
     return 5;
   }
 

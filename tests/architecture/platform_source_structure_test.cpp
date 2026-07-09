@@ -737,6 +737,9 @@ int main(int argc, char** argv) {
       !contains(text_input_events, "wayland_window_text_input_preedit") ||
       !contains(text_input_events, "wayland_window_text_input_commit") ||
       !contains(text_input_requests, "zwp_text_input_v3_commit") ||
+      !contains(text_input_requests, "placement->surrounding_text") ||
+      !contains(text_input_requests, "placement->selection_anchor") ||
+      !contains(text_input_requests, "placement->content_hint") ||
       !contains(text_input, "create_wayland_text_input") ||
       contains(text_input, "class WaylandTextInput")) {
     return 6;

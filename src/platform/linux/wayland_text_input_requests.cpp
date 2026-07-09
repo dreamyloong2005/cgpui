@@ -7,8 +7,17 @@ void WaylandTextInput::apply_placement(WaylandWindow& window) {
   if (placement.has_value()) {
     const std::int32_t cursor =
         static_cast<std::int32_t>(placement->byte_offset);
-    wayland_window_text_input_surrounding_text(window, {}, cursor, cursor);
-    wayland_window_text_input_content_type(window, 0, 0);
+    const std::int32_t anchor =
+        static_cast<std::int32_t>(placement->selection_anchor);
+    wayland_window_text_input_surrounding_text(
+        window,
+        placement->surrounding_text,
+        cursor,
+        anchor);
+    wayland_window_text_input_content_type(
+        window,
+        placement->content_hint,
+        placement->content_purpose);
   }
   if (text_input_ == nullptr) {
     return;
@@ -18,14 +27,18 @@ void WaylandTextInput::apply_placement(WaylandWindow& window) {
     const auto& rect = placement->rect;
     const std::int32_t cursor =
         static_cast<std::int32_t>(placement->byte_offset);
-    const std::string surrounding_text;
+    const std::int32_t anchor =
+        static_cast<std::int32_t>(placement->selection_anchor);
     zwp_text_input_v3_enable(text_input_);
     zwp_text_input_v3_set_surrounding_text(
         text_input_,
-        surrounding_text.c_str(),
+        placement->surrounding_text.c_str(),
         cursor,
-        cursor);
-    zwp_text_input_v3_set_content_type(text_input_, 0, 0);
+        anchor);
+    zwp_text_input_v3_set_content_type(
+        text_input_,
+        placement->content_hint,
+        placement->content_purpose);
     zwp_text_input_v3_set_cursor_rectangle(
         text_input_,
         static_cast<std::int32_t>(rect.origin.x),

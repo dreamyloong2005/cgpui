@@ -115,11 +115,19 @@ int main() {
           cgpui::Rect{
               .origin = {.x = 18.0F, .y = 28.0F},
               .size = {.width = 1.0F, .height = 16.0F}},
-      .byte_offset = 1});
+      .byte_offset = 1,
+      .surrounding_text = "draft",
+      .selection_anchor = 0,
+      .content_hint = 2,
+      .content_purpose = 3});
   const cgpui::WindowState placed_state = (*window)->state();
   if (placed_state.ime_text_input_support != cgpui::ImeTextInputSupport::available ||
       !placed_state.ime_text_input_placement.has_value() ||
       placed_state.ime_text_input_placement->byte_offset != 1 ||
+      placed_state.ime_text_input_placement->surrounding_text != "draft" ||
+      placed_state.ime_text_input_placement->selection_anchor != 0 ||
+      placed_state.ime_text_input_placement->content_hint != 2 ||
+      placed_state.ime_text_input_placement->content_purpose != 3 ||
       placed_state.ime_text_input_placement->rect.origin.x != 18.0F ||
       placed_state.ime_text_input_placement->rect.origin.y != 28.0F ||
       placed_state.ime_text_input_placement->rect.size.width != 1.0F ||
@@ -139,7 +147,11 @@ int main() {
           cgpui::Rect{
               .origin = {.x = 22.0F, .y = 34.0F},
               .size = {.width = 2.0F, .height = 18.0F}},
-      .byte_offset = 2});
+      .byte_offset = 2,
+      .surrounding_text = "az",
+      .selection_anchor = 1,
+      .content_hint = 512,
+      .content_purpose = 13});
 
   std::atomic_bool run_finished{false};
   int run_result = -1;
@@ -203,11 +215,11 @@ int main() {
   const cgpui::test::WaylandTextInputClientState text_input_state =
       compositor.text_input_client_state();
   if (!text_input_state.enabled ||
-      text_input_state.surrounding_text != std::string{} ||
+      text_input_state.surrounding_text != "az" ||
       text_input_state.cursor != 2 ||
-      text_input_state.anchor != 2 ||
-      text_input_state.content_hint != 0 ||
-      text_input_state.content_purpose != 0 ||
+      text_input_state.anchor != 1 ||
+      text_input_state.content_hint != 512 ||
+      text_input_state.content_purpose != 13 ||
       !text_input_state.cursor_rect.has_value() ||
       text_input_state.cursor_rect->x != 22 ||
       text_input_state.cursor_rect->y != 34 ||

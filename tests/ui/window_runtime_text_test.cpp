@@ -563,7 +563,7 @@ int test_runtime_reports_focused_text_ime_rect() {
   fixture.view.exercise_view_context_ime_rect = true;
 
   cgpui::TextModel model("abcd");
-  model.set_selection(3, 3);
+  model.set_selection(1, 3);
   auto tree = std::make_unique<cgpui::ElementTree>();
   const cgpui::ElementId text_id =
       tree->set_root(std::make_unique<cgpui::TextElement>(
@@ -886,7 +886,7 @@ int test_runtime_applies_focused_text_ime_rect_to_platform_window() {
   fixture.view.request_keyboard_focus_element_on_first_key = true;
 
   cgpui::TextModel model("abcd");
-  model.set_selection(3, 3);
+  model.set_selection(1, 3);
   auto tree = std::make_unique<cgpui::ElementTree>();
   const cgpui::ElementId text_id =
       tree->set_root(std::make_unique<cgpui::TextElement>(
@@ -935,7 +935,11 @@ int test_runtime_applies_focused_text_ime_rect_to_platform_window() {
       *applied_placement;
   if (placement.byte_offset != 3 || placement.rect.origin.x != 30.0F ||
       placement.rect.origin.y != 0.0F || placement.rect.size.width != 1.0F ||
-      placement.rect.size.height != 20.0F) {
+      placement.rect.size.height != 20.0F ||
+      placement.surrounding_text != "abcd" ||
+      placement.selection_anchor != 1 ||
+      placement.content_hint != 0 ||
+      placement.content_purpose != 0) {
     return 320;
   }
 

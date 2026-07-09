@@ -283,6 +283,13 @@ Windows/Linux core API is stable enough for parity work.
   typing, IME composition commit grouping, undo-manager status, redo
   invalidation, and edit transaction diagnostics evidence before Phase D moves
   to active-target IME platform behavior.
+- Step 427 starts active-target IME platform depth by extending
+  `ImeTextInputPlacement` with explicit surrounding text, selection anchor,
+  and content hint/purpose fields. Runtime focused-text placement now copies
+  the focused `TextModel` text and anchor into the platform request, Wayland
+  text-input v3 submits those fields through `set_surrounding_text` and
+  `set_content_type`, and Win32 IMM placement preserves the same state surface
+  while continuing to own candidate/composition rectangle placement.
 
 ## Definition Of Done For This 20-Step Goal
 

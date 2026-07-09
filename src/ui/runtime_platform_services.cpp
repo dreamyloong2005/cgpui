@@ -56,12 +56,15 @@ void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
 
 void WindowRuntime::apply_focused_text_ime_placement() {
   std::optional<ImeTextInputPlacement> placement;
+  const TextModel* model = focused_text_model();
   if (const std::optional<ImeCandidateRect> candidate =
           focused_text_ime_rect();
-      candidate.has_value()) {
+      candidate.has_value() && model != nullptr) {
     placement = ImeTextInputPlacement{
         .rect = candidate->rect,
         .byte_offset = candidate->byte_offset,
+        .surrounding_text = std::string(model->text()),
+        .selection_anchor = model->selection_anchor(),
     };
   }
 

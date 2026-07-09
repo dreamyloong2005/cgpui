@@ -81,10 +81,18 @@ int main() {
           cgpui::Rect{
               .origin = {.x = 24.0F, .y = 36.0F},
               .size = {.width = 2.0F, .height = 18.0F}},
-      .byte_offset = 3});
+      .byte_offset = 3,
+      .surrounding_text = "abcd",
+      .selection_anchor = 1,
+      .content_hint = 2,
+      .content_purpose = 3});
   const cgpui::WindowState placed_state = (*window)->state();
   if (!placed_state.ime_text_input_placement.has_value() ||
       placed_state.ime_text_input_placement->byte_offset != 3 ||
+      placed_state.ime_text_input_placement->surrounding_text != "abcd" ||
+      placed_state.ime_text_input_placement->selection_anchor != 1 ||
+      placed_state.ime_text_input_placement->content_hint != 2 ||
+      placed_state.ime_text_input_placement->content_purpose != 3 ||
       placed_state.ime_text_input_placement->rect.origin.x != 24.0F ||
       placed_state.ime_text_input_placement->rect.origin.y != 36.0F ||
       placed_state.ime_text_input_placement->rect.size.width != 2.0F ||
@@ -95,7 +103,9 @@ int main() {
   SendMessageW(hwnd, WM_IME_STARTCOMPOSITION, 0, 0);
   const cgpui::WindowState ime_started_state = (*window)->state();
   if (!ime_started_state.ime_text_input_placement.has_value() ||
-      ime_started_state.ime_text_input_placement->byte_offset != 3) {
+      ime_started_state.ime_text_input_placement->byte_offset != 3 ||
+      ime_started_state.ime_text_input_placement->surrounding_text != "abcd" ||
+      ime_started_state.ime_text_input_placement->selection_anchor != 1) {
     return 9;
   }
 

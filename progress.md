@@ -17025,3 +17025,51 @@
   `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
+## 2026-07-09 Phase D Step 427 IME Surrounding Text Placement
+
+- Started from clean tracked `master` after
+  `e24692d3 test: close text edit history band`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Extended `ImeTextInputPlacement` with explicit `surrounding_text`,
+  `selection_anchor`, `content_hint`, and `content_purpose` fields. Existing
+  callers keep empty/zero defaults, while runtime focused-text IME placement
+  now copies the focused `TextModel` text and selection anchor at the platform
+  request boundary.
+- Updated Wayland text-input v3 placement in
+  `src/platform/linux/wayland_text_input_requests.cpp` so
+  `set_surrounding_text` receives the actual surrounding text/cursor/anchor and
+  `set_content_type` receives the caller-provided hint/purpose values. Win32
+  IMM placement continues to set composition/candidate rectangles and now
+  preserves the richer placement state in `WindowState`.
+- Added structure coverage in `tests/architecture/platform_source_structure_test.cpp`
+  requiring the Wayland surrounding text, selection anchor, and content hint
+  handling to stay in the focused text-input requests file.
+- The first Windows focused rerun failed only in
+  `window_runtime_text_test/default` with return code 320 because the new
+  placement assertion expected a non-collapsed anchor but the fixture still
+  used `model.set_selection(3, 3)`. Updating that fixture to
+  `model.set_selection(1, 3)` fixed the assertion while preserving the cursor
+  byte offset.
+- Focused Windows verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  win32_text_input_test/default platform_source_structure_test/default
+  wayland_window_source_test/default` 4/4.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 4/4:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, and
+  `wayland_window_source_test/default`.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  win32_text_input_test/default platform_source_structure_test/default
+  wayland_window_source_test/default phase_d_edit_history_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default`
+  7/7.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 7/7:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, `wayland_window_source_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `gpui_parity_ledger_test/default`.

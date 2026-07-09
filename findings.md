@@ -7535,3 +7535,24 @@
 - The closeout keeps the model/history layer as the owner of undo/redo stacks.
   Active-target IME platform behavior remains the next Phase D band rather than
   being smuggled into edit-history diagnostics.
+
+## 2026-07-09 Phase D Step 427 IME Surrounding Text Placement
+
+- `ImeTextInputPlacement` is now the explicit cross-platform carrier for
+  surrounding text, selection anchor, and content hint/purpose metadata. The
+  fields default to empty/zero so existing placement callers keep their old
+  behavior unless they opt into richer IME context.
+- Runtime focused-text placement fills the new fields from the focused
+  `TextModel` only when applying IME placement to the platform window. This
+  keeps the allocation visible at the platform-boundary update point instead
+  of hiding a text copy in layout, paint, or per-frame traversal.
+- Wayland text-input v3 now submits the caller-provided surrounding text,
+  cursor, anchor, content hint, and content purpose through the focused
+  `src/platform/linux/wayland_text_input_requests.cpp` boundary. Win32 IMM
+  keeps candidate/composition rectangle placement but preserves the same public
+  placement state.
+- The first Windows focused rerun failed in `window_runtime_text_test` with
+  return code 320 because the new assertion expected `selection_anchor == 1`
+  while the platform-placement test still used a collapsed `set_selection(3, 3)`.
+  Changing that test fixture to `set_selection(1, 3)` kept the cursor at byte 3
+  and made the anchor assertion meaningful.

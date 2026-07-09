@@ -2,6 +2,7 @@
 
 #include "cgpui/core/geometry.hpp"
 
+#include <cstdint>
 #include <cstddef>
 #include <optional>
 #include <string>
@@ -11,6 +12,10 @@ namespace cgpui {
 struct ImeTextInputPlacement {
   Rect rect;
   std::size_t byte_offset = 0;
+  std::string surrounding_text;
+  std::size_t selection_anchor = 0;
+  std::uint32_t content_hint = 0;
+  std::uint32_t content_purpose = 0;
 };
 
 enum class ImeTextInputSupport {

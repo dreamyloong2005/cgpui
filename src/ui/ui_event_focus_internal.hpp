@@ -48,6 +48,10 @@ inline bool ime_text_input_placement_equal(
     return true;
   }
   return lhs->byte_offset == rhs->byte_offset &&
+         lhs->selection_anchor == rhs->selection_anchor &&
+         lhs->content_hint == rhs->content_hint &&
+         lhs->content_purpose == rhs->content_purpose &&
+         lhs->surrounding_text == rhs->surrounding_text &&
          rect_equal(lhs->rect, rhs->rect);
 }
 

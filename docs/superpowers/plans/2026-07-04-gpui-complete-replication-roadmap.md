@@ -1118,6 +1118,13 @@ behavior that can support GPUI examples and editor-like widgets.
 - [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
   Wayland text-input v3 surrounding text, delete-surrounding, content hints,
   serial policy, preedit styling, and candidate placement.
+  Step 427 starts this band by extending `ImeTextInputPlacement` with explicit
+  surrounding text, selection anchor, and content hint/purpose metadata.
+  Runtime focused-text placement now fills those fields from the focused
+  `TextModel`, Wayland text-input v3 submits them through
+  `set_surrounding_text` / `set_content_type`, and Win32 IMM keeps the same
+  placement state surface while preserving candidate/composition rectangle
+  placement.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
