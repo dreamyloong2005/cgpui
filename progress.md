@@ -18326,3 +18326,41 @@
   `/dev/shm/cgpui` transient temp and passed the corresponding 7/7 shared tests.
 - Windows full debug verification passed 151/151 with
   `xmake test -y -P .`.
+
+## 2026-07-10 Phase E Step 471 Textured Glyph Draw Recording
+
+- Started from clean tracked `master` at
+  `5fc4801c feat: upload vulkan text vertices`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed Step 471 can plan one draw command per contiguous atlas page run,
+  convert `first_quad_index`/`glyph_quad_count` to six-vertex ranges, and keep
+  pipeline/vertex-buffer/viewport/scissor/push-constant binds outside the run
+  loop.
+- Step 471 will add a focused private draw-recording module and planner, thread
+  pipeline and vertex-buffer resources through frame recording, issue real
+  descriptor-bound `vkCmdDraw` calls, and hand Step 472 to subpixel policy.
+- Added `vulkan_text_draw_recording_test` and observed the expected RED compile
+  failure because the focused private draw-recording header did not exist.
+- Added pre-render-pass draw planning and focused Vulkan text recording. The
+  first compiled gate reached the expected documentation exit 40, while the
+  renderer structure test exited 36 because the delegated broad recorder was
+  two blank lines over its unchanged 180-line cap; removed those blank lines.
+- Focused pipeline, vertex-buffer, and structure tests then passed; the draw-
+  recording test remained at only the expected documentation exit 40.
+- Real Win32 Vulkan submission passed
+  `vulkan_frame_lifetime_test/default` and
+  `hello_window/windows_first_frame`, exercising pipeline/vertex/descriptor
+  binds and `vkCmdDraw` over incremental and multi-page text frames.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md` to
+  complete Step 471 and hand Step 472 to explicit subpixel positioning policy.
+- Focused Windows Step 471 verification passed 10/10: draw recording, renderer
+  structure, vertex buffer, pipeline resources, shader modules, glyph binding
+  and data, real frame lifetime, parity ledger, and glyph-atlas closeout.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 10/10, including the live
+  `hello_window/linux_first_frame` descriptor-bound draw submission.
+- Windows full debug verification passed 152/152 with
+  `xmake test -y -P .`.
+- Live WSL Wayland resize verification also passed
+  `hello_window/linux_resize_after_first_frame`, covering updated dynamic
+  viewport/scissor and framebuffer-size push constants after recreation.

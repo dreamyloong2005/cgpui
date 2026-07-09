@@ -1483,7 +1483,14 @@ draw calls for the Windows/Linux renderer.
   safe host-visible/coherent vertex buffer rebuilt by
   `vulkan_upload_text_vertex_buffer` during frame preparation. Page-run order
   remains intact so Step 471 can bind descriptors and record textured draws.
-- [ ] Steps 471-474: Complete the remaining text graphics pipeline,
+- [x] Phase E Step 471 records real descriptor-bound textured glyph draws in
+  focused `vulkan_text_draw_recording_internal.hpp` and
+  `vulkan_text_draw_recording.cpp`. Draw ranges are validated and planned before
+  the render pass; `vulkan_record_text_draws` then binds the text pipeline,
+  full-frame viewport/scissor, uploaded vertex buffer, framebuffer-size push
+  constants, and each page descriptor before one `vkCmdDraw` per contiguous
+  page run. Step 472 makes subpixel positioning policy explicit.
+- [ ] Steps 472-474: Complete the remaining text graphics pipeline,
   textured glyph draw calls, subpixel positioning policy, and gamma/alpha
   handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

@@ -392,6 +392,11 @@ consume C: drive space again.
   visible/coherent vertex buffer only after the in-flight fence completes, and
   existing contiguous page-run indices remain valid.
 - Handoff: Phase E Step 471 descriptor-bound textured glyph draw recording.
+- Phase E Step 471 adds pre-render-pass text draw planning and focused
+  `vulkan_record_text_draws`. The recorder binds pipeline, viewport/scissor,
+  vertex buffer, framebuffer-size push constants, each atlas page descriptor,
+  and one `vkCmdDraw` per contiguous page run; real Win32 text frames submit.
+- Handoff: Phase E Step 472 explicit subpixel positioning policy.
 
 ## Categories
 

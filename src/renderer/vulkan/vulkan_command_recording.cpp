@@ -81,6 +81,8 @@ Result<void> record_vulkan_frame_command_buffer(
     VkRenderPass render_pass,
     VkFramebuffer framebuffer,
     VkExtent2D extent,
+    const VulkanTextPipelineResources& text_pipeline_resources,
+    const VulkanTextVertexBufferResources& text_vertex_buffer,
     Color color,
     std::span<const SolidRect> rects,
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
@@ -118,7 +120,13 @@ Result<void> record_vulkan_frame_command_buffer(
       !result) {
     return result;
   }
-
+  auto text_draw_commands = vulkan_plan_text_draw_commands(
+      glyph_atlas_draw_bindings,
+      text_pipeline_resources,
+      text_vertex_buffer);
+  if (!text_draw_commands) {
+    return std::unexpected(text_draw_commands.error());
+  }
   VkClearValue clear_value{};
   clear_value.color = VkClearColorValue{{color.r, color.g, color.b, color.a}};
   const VkRenderPassBeginInfo render_pass_info{
@@ -156,6 +164,12 @@ Result<void> record_vulkan_frame_command_buffer(
     vkCmdClearAttachments(command_buffer, 1, &attachment, 1, &clear_rect);
   }
 
+  vulkan_record_text_draws(
+      command_buffer,
+      extent,
+      text_pipeline_resources,
+      text_vertex_buffer,
+      *text_draw_commands);
   vkCmdEndRenderPass(command_buffer);
 
   return require_vk_success(

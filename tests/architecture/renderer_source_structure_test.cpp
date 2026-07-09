@@ -198,6 +198,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_pipeline_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_text_pipeline_resources.cpp",
       "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
+      "src/renderer/vulkan/vulkan_text_draw_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_draw_recording.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
@@ -1075,6 +1077,21 @@ int main(int argc, char** argv) {
       !contains(text_vertex_buffer, "vkMapMemory") ||
       contains(command_recording, "vulkan_build_text_vertices(")) {
     return 64;
+  }
+
+  const std::string text_draw_recording_header = read_source(
+      "src/renderer/vulkan/vulkan_text_draw_recording_internal.hpp");
+  const std::string text_draw_recording =
+      read_source("src/renderer/vulkan/vulkan_text_draw_recording.cpp");
+  if (line_count(text_draw_recording_header) > 60 ||
+      line_count(text_draw_recording) > 170 ||
+      !contains(text_draw_recording, "vulkan_plan_text_draw_commands(") ||
+      !contains(text_draw_recording, "vkCmdBindPipeline") ||
+      !contains(text_draw_recording, "vkCmdBindDescriptorSets") ||
+      !contains(text_draw_recording, "vkCmdDraw") ||
+      !contains(command_recording, "vulkan_record_text_draws(") ||
+      contains(command_recording, "vkCmdDraw")) {
+    return 65;
   }
 
   const std::string report_image_uploads =

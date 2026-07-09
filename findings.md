@@ -52,6 +52,18 @@
   offset for Step 471 descriptor-bound `vkCmdDraw` recording.
   `VulkanTextVertexBufferResources` and `vulkan_upload_text_vertex_buffer` now
   implement this fence-safe upload path.
+- Phase E Step 471 should plan one draw command per existing contiguous page
+  run. The planner can validate descriptor handles and convert quad ranges to
+  32-bit vertex ranges before command recording; the focused recorder then owns
+  all text-specific Vulkan binds and draws while the broad frame recorder only
+  calls `vulkan_record_text_draws(...)` inside the render pass.
+- Full-frame viewport/scissor and the 8-byte framebuffer-size push constant are
+  stable per frame, so they should be bound once before iterating page runs.
+  Pipeline and vertex buffer are also frame-global; only descriptor set and
+  `vkCmdDraw` range change per contiguous page run. The focused
+  `vulkan_record_text_draws` path now implements this contract, with all range
+  validation completing before the render pass begins. Step 472 owns explicit
+  subpixel positioning policy.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 
