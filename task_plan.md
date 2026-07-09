@@ -260,6 +260,12 @@ Windows/Linux core API is stable enough for parity work.
   the active composition mutated surrounding text, and commits a single
   `TextInsertHistoryPolicy::composition_commit` record so undo/redo restores the
   pre-composition text state without platform-layer bookkeeping or hidden scans.
+- Step 421 adds lightweight undo-manager integration points. `TextModel` now
+  exposes `TextEditHistoryStatus`, `edit_history_status()`,
+  `edit_history_clean()`, and `mark_edit_history_clean()` so editor shells can
+  mirror undo/redo availability, stack depths, clean state, and history revision
+  without owning the model stacks. Marking clean breaks the current typing merge
+  group, preserving the saved state as an undo-visible boundary.
 
 ## Definition Of Done For This 20-Step Goal
 

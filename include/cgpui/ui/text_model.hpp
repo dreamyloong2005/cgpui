@@ -18,6 +18,15 @@ enum class TextInsertHistoryPolicy : std::uint8_t {
   separate_edit,
 };
 
+struct TextEditHistoryStatus {
+  bool can_undo = false;
+  bool can_redo = false;
+  bool clean = true;
+  std::size_t undo_depth = 0;
+  std::size_t redo_depth = 0;
+  std::uint64_t revision = 0;
+};
+
 class TextModel {
  public:
   TextModel() = default;
@@ -60,6 +69,9 @@ class TextModel {
   [[nodiscard]] bool move_cursor_next_line();
   [[nodiscard]] bool can_undo() const;
   [[nodiscard]] bool can_redo() const;
+  [[nodiscard]] bool edit_history_clean() const;
+  [[nodiscard]] TextEditHistoryStatus edit_history_status() const;
+  void mark_edit_history_clean();
   [[nodiscard]] bool undo();
   [[nodiscard]] bool redo();
   [[nodiscard]] bool backspace();
@@ -151,6 +163,9 @@ class TextModel {
   bool has_composition_ = false;
   bool edit_history_grouping_open_ = false;
   bool composition_history_mutated_ = false;
+  bool clean_edit_history_marker_valid_ = true;
+  std::size_t clean_edit_history_undo_depth_ = 0;
+  std::uint64_t edit_history_revision_ = 0;
   std::vector<TextEditHistoryRecord> undo_stack_;
   std::vector<TextEditHistoryRecord> redo_stack_;
   static constexpr std::size_t max_edit_history_records = 100;

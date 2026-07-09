@@ -7493,3 +7493,14 @@
 - This closes the model-level grouped-commit behavior only. Deeper Win32
   TSF/IMM and Wayland text-input v3 surrounding-text protocol behavior remains
   in the later IME platform band.
+
+## 2026-07-09 Phase D Step 421 Undo Manager Integration Points
+
+- External editor shells need more than `can_undo()` / `can_redo()` booleans:
+  they need stack depth, clean state, and a cheap revision value for command
+  enablement and document-dirty UI. Returning a small
+  `TextEditHistoryStatus` by value keeps this zero-allocation and leaves stack
+  ownership inside `TextModel`.
+- `mark_edit_history_clean()` must close the active adjacent-typing group.
+  Otherwise saving after the first typed character and then continuing to type
+  would merge across the save point and erase the undo-visible clean boundary.

@@ -1,5 +1,6 @@
 #include "cgpui/ui/text.hpp"
 
+#include <cstdint>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -656,6 +657,68 @@ int test_text_model_groups_adjacent_typing_history() {
   }
   if (!replacement.undo() || !replacement.text().empty()) {
     return 643;
+  }
+
+  return 0;
+}
+
+int test_text_model_reports_edit_history_status_for_undo_manager() {
+  cgpui::TextModel model;
+  cgpui::TextEditHistoryStatus status = model.edit_history_status();
+  if (status.can_undo || status.can_redo || !status.clean ||
+      status.undo_depth != 0 || status.redo_depth != 0 ||
+      status.revision != 0 || !model.edit_history_clean()) {
+    return 651;
+  }
+
+  model.insert_text("a");
+  status = model.edit_history_status();
+  if (!status.can_undo || status.can_redo || status.clean ||
+      status.undo_depth != 1 || status.redo_depth != 0 ||
+      status.revision == 0 || model.edit_history_clean()) {
+    return 652;
+  }
+  const std::uint64_t dirty_revision = status.revision;
+  model.mark_edit_history_clean();
+  status = model.edit_history_status();
+  if (!status.can_undo || status.can_redo || !status.clean ||
+      status.undo_depth != 1 || status.redo_depth != 0 ||
+      status.revision <= dirty_revision || !model.edit_history_clean()) {
+    return 653;
+  }
+
+  model.insert_text("b");
+  status = model.edit_history_status();
+  if (!status.can_undo || status.can_redo || status.clean ||
+      status.undo_depth != 2 || status.redo_depth != 0 ||
+      model.text() != std::string_view{"ab"}) {
+    return 654;
+  }
+  if (!model.undo() || model.text() != std::string_view{"a"}) {
+    return 655;
+  }
+  status = model.edit_history_status();
+  if (!status.can_undo || !status.can_redo || !status.clean ||
+      status.undo_depth != 1 || status.redo_depth != 1 ||
+      !model.edit_history_clean()) {
+    return 656;
+  }
+  if (!model.redo() || model.text() != std::string_view{"ab"} ||
+      model.edit_history_status().clean) {
+    return 657;
+  }
+
+  cgpui::TextModel branch;
+  branch.insert_text("a");
+  branch.insert_text("b");
+  branch.mark_edit_history_clean();
+  if (!branch.undo() || branch.text() != std::string_view{} ||
+      branch.edit_history_status().clean) {
+    return 658;
+  }
+  branch.insert_text("c");
+  if (!branch.undo() || branch.edit_history_status().clean) {
+    return 659;
   }
 
   return 0;
@@ -2094,6 +2157,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_groups_adjacent_typing_history();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_reports_edit_history_status_for_undo_manager();
       result != 0) {
     return result;
   }

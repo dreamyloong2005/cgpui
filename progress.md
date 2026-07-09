@@ -16535,6 +16535,65 @@
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
 
+## 2026-07-09 Phase D Step 421 Undo Manager Integration Points
+
+- Started from clean tracked `master` after
+  `5c5bb83 feat: group ime composition edit history`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added lightweight undo-manager status on `TextModel`:
+  `TextEditHistoryStatus`, `edit_history_status()`,
+  `edit_history_clean()`, and `mark_edit_history_clean()` expose command
+  availability, undo/redo depths, clean state, and a revision counter without
+  external stack ownership or hidden allocations.
+- Kept the behavior in `src/ui/text_model_history.cpp`. Clean markers are
+  adjusted when bounded history drops old records, invalidated when a typing
+  merge would rewrite the clean boundary or when a branch discards the saved
+  redo path, and `mark_edit_history_clean()` closes the active typing group so
+  a save point remains undo-visible.
+- Updated `tests/ui/text_model_test.cpp` and
+  `tests/architecture/ui_source_structure_test.cpp` to cover the public status
+  surface, clean-boundary undo/redo behavior, revision advancement, and module
+  ownership. The Step 418 selection/caret audit now accepts the Step 419-421
+  edit-history handoff.
+- Synchronized `task_plan.md`, `findings.md`,
+  `docs/gpui-complete-parity-ledger.md`, and the Phase D roadmap so the text
+  row and remaining handoff move to Phase D Steps 379-421, with redo
+  invalidation diagnostics still open for Step 422+.
+- Focused minimum verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- Focused ledger verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  ui_source_structure_test/default phase_d_selection_caret_audit_test/default
+  gpui_parity_ledger_test/default` 5/5.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 19/19.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 19/19:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
 ## 2026-07-09 Phase D Step 420 IME Composition History Grouping
 
 - Started Step 420 from clean tracked `master` after

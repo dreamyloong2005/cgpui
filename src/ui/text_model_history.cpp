@@ -13,6 +13,32 @@ bool TextModel::can_redo() const {
   return !redo_stack_.empty();
 }
 
+bool TextModel::edit_history_clean() const {
+  return clean_edit_history_marker_valid_ &&
+      undo_stack_.size() == clean_edit_history_undo_depth_;
+}
+
+TextEditHistoryStatus TextModel::edit_history_status() const {
+  return TextEditHistoryStatus{
+      .can_undo = can_undo(),
+      .can_redo = can_redo(),
+      .clean = edit_history_clean(),
+      .undo_depth = undo_stack_.size(),
+      .redo_depth = redo_stack_.size(),
+      .revision = edit_history_revision_,
+  };
+}
+
+void TextModel::mark_edit_history_clean() {
+  const bool was_clean = edit_history_clean();
+  clean_edit_history_marker_valid_ = true;
+  clean_edit_history_undo_depth_ = undo_stack_.size();
+  clear_edit_history_grouping();
+  if (!was_clean) {
+    ++edit_history_revision_;
+  }
+}
+
 bool TextModel::undo() {
   if (undo_stack_.empty()) {
     return false;
@@ -22,6 +48,7 @@ bool TextModel::undo() {
   undo_stack_.pop_back();
   redo_stack_.push_back(record);
   restore_history_snapshot(record.before);
+  ++edit_history_revision_;
   return true;
 }
 
@@ -34,6 +61,7 @@ bool TextModel::redo() {
   redo_stack_.pop_back();
   push_undo_record(record);
   restore_history_snapshot(record.after);
+  ++edit_history_revision_;
   return true;
 }
 
@@ -69,12 +97,20 @@ void TextModel::push_undo_record(const TextEditHistoryRecord& record) {
   undo_stack_.push_back(record);
   if (undo_stack_.size() > max_edit_history_records) {
     undo_stack_.erase(undo_stack_.begin());
+    if (clean_edit_history_marker_valid_) {
+      if (clean_edit_history_undo_depth_ == 0) {
+        clean_edit_history_marker_valid_ = false;
+      } else {
+        --clean_edit_history_undo_depth_;
+      }
+    }
   }
 }
 
 void TextModel::commit_history_record(
     TextHistorySnapshot before,
     TextInsertHistoryPolicy history_policy) {
+  const std::size_t before_undo_depth = undo_stack_.size();
   TextEditHistoryRecord record{
       .before = std::move(before),
       .after = history_snapshot(),
@@ -89,16 +125,26 @@ void TextModel::commit_history_record(
     if (previous.history_policy ==
             TextInsertHistoryPolicy::merge_adjacent_typing &&
         history_snapshots_equal(previous.after, record.before)) {
+      if (clean_edit_history_marker_valid_ &&
+          clean_edit_history_undo_depth_ == undo_stack_.size()) {
+        clean_edit_history_marker_valid_ = false;
+      }
       previous.after = std::move(record.after);
       redo_stack_.clear();
       edit_history_grouping_open_ = true;
+      ++edit_history_revision_;
       return;
     }
+  }
+  if (!redo_stack_.empty() && clean_edit_history_marker_valid_ &&
+      clean_edit_history_undo_depth_ > before_undo_depth) {
+    clean_edit_history_marker_valid_ = false;
   }
   push_undo_record(record);
   redo_stack_.clear();
   edit_history_grouping_open_ =
       history_policy == TextInsertHistoryPolicy::merge_adjacent_typing;
+  ++edit_history_revision_;
 }
 
 } // namespace cgpui
