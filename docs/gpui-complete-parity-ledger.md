@@ -374,6 +374,12 @@ consume C: drive space again.
   Step 468 adds validated embedded shader modules before pipeline-handle
   ownership and draw recording.
 - Handoff: Phase E Step 468 embedded text shader modules.
+- Phase E Step 468 adds reviewable vertex/fragment GLSL and validated
+  embedded SPIR-V. `vulkan_text_vertex_shader_spirv` and its fragment companion
+  feed focused `vulkan_create_text_shader_modules`, destroy, and stage helpers;
+  both optimized binaries pass `spirv-val` on Windows and WSL without a host
+  GLSL-compiler requirement.
+- Handoff: Phase E Step 469 text pipeline layout and graphics pipeline handles.
 
 ## Categories
 

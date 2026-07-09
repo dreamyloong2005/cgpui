@@ -18223,3 +18223,36 @@
   `xmake test -y -P .`.
 - Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed the same 4/4 shared tests.
+
+## 2026-07-10 Phase E Step 468 Embedded Text Shader Modules
+
+- Started from clean tracked `master` at
+  `3173580c feat: define vulkan text pipeline state`; only the existing
+  untracked `.vscode/` directory remains.
+- Added `vulkan_text_shader_module_test` to freeze embedded SPIR-V binaries,
+  shader-module create infos, vertex/fragment stage records, focused source
+  ownership, and the Step 469 handoff.
+- The first Step 468 run failed at compile time as expected because the embedded
+  shader binary and module APIs did not yet exist.
+- Added focused reviewable vertex and fragment GLSL sources. Their compiled
+  SPIR-V will be validated before embedding; the build will not compile GLSL.
+- Compiled optimized vertex and fragment SPIR-V with the Windows Vulkan SDK;
+  both binaries passed `spirv-val` on Windows and WSL. The embedded payloads are
+  289 and 189 words respectively.
+- Added focused shader binary and module-lifecycle sources plus renderer
+  structure coverage. The production build consumes embedded words and does not
+  require a host GLSL compiler.
+- The first compiled Step 468 run passed pipeline-state and renderer-structure
+  tests, then exited 40 only at the expected documentation gate.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md` to
+  complete Step 468 and hand Step 469 to pipeline-layout and graphics-pipeline
+  handle ownership.
+- Focused Windows Step 468 verification passed 4/4: shader modules, pipeline
+  state, renderer structure, and parity ledger.
+- Windows full debug verification passed 149/149 with
+  `xmake test -y -P .`.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 4/4 shared tests.
+- A combined cleanup patch initially used progress-file context while still
+  targeting the shader test and was rejected without changing files. Retried
+  with explicit file boundaries.

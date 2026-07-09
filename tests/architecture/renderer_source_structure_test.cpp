@@ -196,6 +196,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_sync.cpp",
       "src/renderer/vulkan/vulkan_text_pipeline_internal.hpp",
       "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
+      "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
+      "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_swapchain.cpp",
       "src/renderer/vulkan/vulkan_swapchain_create.cpp",
       "src/renderer/vulkan/vulkan_swapchain_query.cpp",
@@ -1014,6 +1016,31 @@ int main(int argc, char** argv) {
       contains(command_recording,
                "vulkan_text_pipeline_input_assembly_state(")) {
     return 61;
+  }
+
+  const std::string text_shader_binaries =
+      read_source("src/renderer/vulkan/vulkan_text_shader_binaries.cpp");
+  const std::string text_shader_modules =
+      read_source("src/renderer/vulkan/vulkan_text_shader_modules.cpp");
+  const std::string text_vertex_shader =
+      read_source("src/renderer/vulkan/shaders/text.vert.glsl");
+  const std::string text_fragment_shader =
+      read_source("src/renderer/vulkan/shaders/text.frag.glsl");
+  if (line_count(text_shader_binaries) > 130 ||
+      line_count(text_shader_modules) > 100 ||
+      line_count(text_vertex_shader) > 60 ||
+      line_count(text_fragment_shader) > 40 ||
+      !contains(text_shader_binaries,
+                "vulkan_text_vertex_shader_spirv(") ||
+      !contains(text_shader_binaries,
+                "vulkan_text_fragment_shader_spirv(") ||
+      !contains(text_shader_modules, "vkCreateShaderModule") ||
+      !contains(text_shader_modules, "vkDestroyShaderModule") ||
+      !contains(text_vertex_shader, "layout(push_constant)") ||
+      !contains(text_fragment_shader,
+                "layout(set = 0, binding = 0)") ||
+      contains(command_recording, "vkCreateShaderModule")) {
+    return 62;
   }
 
   const std::string report_image_uploads =

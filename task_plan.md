@@ -535,20 +535,26 @@ Windows/Linux core API is stable enough for parity work.
   no culling or depth, one sample, dynamic viewport/scissor, and
   straight alpha blending.
   Step 468 adds validated embedded shader modules.
+- Phase E Step 468 adds reviewable vertex/fragment GLSL and validated
+  embedded SPIR-V. `vulkan_text_vertex_shader_spirv` and its fragment companion
+  feed focused `vulkan_create_text_shader_modules`, destroy, and stage helpers.
+  Both optimized binaries pass `spirv-val` on Windows and WSL. Step 469 owns
+  pipeline-layout and graphics-pipeline handle creation.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-467 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-468 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
   descriptor bindings, renderer-ready flat quad ranges, and the integration
-  closeout audit, and the text-pipeline vertex/fixed-state contract.
-- In progress: Step 468 embedded text shader modules.
-- Pending bands: Steps 468-474 remaining text
+  closeout audit, text-pipeline vertex/fixed-state contract, and embedded shader
+  module boundaries.
+- In progress: Step 469 text pipeline layout and graphics pipeline handles.
+- Pending bands: Steps 469-474 remaining text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -588,6 +594,9 @@ Windows/Linux core API is stable enough for parity work.
 | Step 467 exploration requested nonexistent `vulkan_render_pass.cpp` and `vulkan_framebuffers.cpp` files | Step 467 ownership discovery | Use the existing focused `vulkan_swapchain_render_pass.cpp`, `vulkan_swapchain_images.cpp`, and `vulkan_swapchain_lifecycle.cpp` boundaries instead of repeating stale generic filenames |
 | `vulkan_text_pipeline_state_test` initially failed to compile because the private pipeline-state header did not exist | Step 467 RED | Expected RED; add the private vertex ABI and fixed-function pipeline-state helpers in focused files |
 | The first compiled Step 467 state test exited 40 while renderer structure coverage passed | Step 467 documentation gate | Expected RED after behavior and structure compiled; update roadmap, ledger, planning, and findings with the Step 468 shader-module handoff |
+| `vulkan_text_shader_module_test` initially failed to compile because embedded shader binary/module APIs did not exist | Step 468 RED | Expected RED; add reviewable GLSL, validated embedded SPIR-V, and focused shader-module lifecycle helpers |
+| The first compiled Step 468 shader-module test exited 40 while pipeline-state and renderer-structure tests passed | Step 468 documentation gate | Expected RED after embedded binaries and lifecycle helpers compiled; update roadmap, ledger, planning, and findings with the Step 469 pipeline-handle handoff |
+| A Step 468 cleanup patch mixed progress-file context into the shader-test update and failed verification | Step 468 final cleanup | Retry the same narrow changes with explicit file sections; the failed patch changed no files |
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -715,8 +715,20 @@
       "xmake.lua"
     ],
     "phase_e_step_467_remaining_gap": "Step 468 adds validated embedded text shader modules",
+    "phase_e_step_468_surface": "Phase E Step 468 adds reviewable vertex and fragment GLSL plus validated embedded SPIR-V. vulkan_text_vertex_shader_spirv and its fragment companion feed focused vulkan_create_text_shader_modules, destroy, and stage helpers; both optimized binaries pass spirv-val on Windows and WSL without a host GLSL compiler requirement. Step 469 creates text pipeline layout and graphics pipeline handle ownership.",
+    "phase_e_step_468_sources": [
+      "src/renderer/vulkan/shaders/text.vert.glsl",
+      "src/renderer/vulkan/shaders/text.frag.glsl",
+      "src/renderer/vulkan/vulkan_text_pipeline_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
+      "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
+      "tests/renderer/vulkan_text_shader_module_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_468_remaining_gap": "Step 469 creates text pipeline layout and graphics pipeline handle ownership",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 468 embedded text shader modules"
+    "phase_e_current_handoff": "Phase E Step 469 text pipeline layout and graphics pipeline handles"
   },
   "categories": [
     "application_and_app_context",

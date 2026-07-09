@@ -25,6 +25,12 @@
   dynamic viewport/scissor, and straight alpha blending. Step 468 adds
   validated embedded shader modules; graphics pipeline handles and draw calls
   remain later slices.
+- Phase E Step 468 adds reviewable vertex/fragment GLSL and validated
+  embedded SPIR-V. `vulkan_text_vertex_shader_spirv` and the fragment companion
+  feed focused `vulkan_create_text_shader_modules`, destroy, and stage helpers.
+  The optimized 289-word vertex and 189-word fragment binaries pass
+  `spirv-val` on Windows and WSL; Step 469 creates pipeline-layout and graphics-
+  pipeline handles.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

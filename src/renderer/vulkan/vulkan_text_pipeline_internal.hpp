@@ -12,6 +12,31 @@ struct VulkanTextVertex {
   std::array<float, 4> color{};
 };
 
+struct VulkanTextShaderModules {
+  VkShaderModule vertex = VK_NULL_HANDLE;
+  VkShaderModule fragment = VK_NULL_HANDLE;
+
+  [[nodiscard]] bool ready() const {
+    return vertex != VK_NULL_HANDLE && fragment != VK_NULL_HANDLE;
+  }
+};
+
+[[nodiscard]] std::span<const std::uint32_t>
+vulkan_text_vertex_shader_spirv();
+[[nodiscard]] std::span<const std::uint32_t>
+vulkan_text_fragment_shader_spirv();
+[[nodiscard]] VkShaderModuleCreateInfo vulkan_text_shader_module_create_info(
+    std::span<const std::uint32_t> spirv);
+Result<void> vulkan_create_text_shader_modules(
+    VkDevice device,
+    VulkanTextShaderModules& modules);
+void vulkan_destroy_text_shader_modules(
+    VkDevice device,
+    VulkanTextShaderModules& modules);
+[[nodiscard]] std::array<VkPipelineShaderStageCreateInfo, 2>
+vulkan_text_shader_stage_create_infos(
+    const VulkanTextShaderModules& modules);
+
 [[nodiscard]] VkVertexInputBindingDescription
 vulkan_text_vertex_binding_description();
 [[nodiscard]] std::array<VkVertexInputAttributeDescription, 3>

@@ -1461,7 +1461,14 @@ draw calls for the Windows/Linux renderer.
   culling or depth, one-sample rasterization, dynamic viewport/scissor, and
   straight alpha blending without adding handles to public renderer headers or
   broad command recording. Step 468 adds validated embedded shader modules.
-- [ ] Steps 468-474: Complete the text shader pipeline, descriptor layout,
+- [x] Phase E Step 468 adds reviewable vertex/fragment GLSL plus validated
+  embedded SPIR-V in `vulkan_text_shader_binaries.cpp`.
+  `vulkan_text_vertex_shader_spirv` and the fragment companion feed focused
+  `vulkan_create_text_shader_modules` / destroy / stage helpers; optimized
+  binaries pass `spirv-val` on Windows and WSL without making GLSL compilation
+  a host build requirement. Step 469 creates pipeline-layout and graphics-
+  pipeline handle ownership.
+- [ ] Steps 469-474: Complete the text graphics pipeline, descriptor layout,
   textured glyph draw calls, subpixel positioning policy, and gamma/alpha
   handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,
