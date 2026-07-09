@@ -54,6 +54,17 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
 `static_render_runtime_test/default`, `ui_source_structure_test/default`, and
 `gpui_parity_ledger_test/default`.
 
+Verification cadence is also part of the scope guard: every slice keeps
+Windows focused tests, touched ledger/JSON checks, and `git diff --check`;
+WSL focused tests are required for shared public headers,
+templates/constexpr/concepts, `xmake.lua`, shared UI runtime, renderer,
+Vulkan, platform, Wayland, or cross-platform structure changes. WSL full debug
+is batched at Phase closeout, user-requested verification points, or
+intentional renderer/platform milestones instead of after every small step.
+WSL xmake global/package/build/cache output must stay on D-drive project
+paths, with transient temp such as `/dev/shm/cgpui`, so CGPUI work does not
+consume C: drive space again.
+
 ## Required Surface Summary
 
 | upstream_gpui | cgpui_target | status | evidence | next_step |

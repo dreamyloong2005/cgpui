@@ -122,6 +122,30 @@ unbounded dynamic dispatch, or user-deferred platform/engine scope.
   `static_render_runtime_test/default`, `ui_source_structure_test/default`,
   and `gpui_parity_ledger_test/default` must pass before continuing Phase D.
 
+## Verification Cadence and WSL Cost Control
+
+WSL verification is required, but full WSL rebuilds must be batched so coding
+time is not dominated by repeated Linux compile/link work. Future slices use
+this cadence unless the user explicitly asks for stricter verification:
+
+- Every implementation slice runs Windows focused behavior/structure tests,
+  ledger or JSON checks when touched, and `git diff --check`.
+- WSL focused tests run when the slice touches shared public headers,
+  templates/constexpr/concepts, `xmake.lua`, shared UI runtime, renderer,
+  Vulkan, platform, Wayland, or cross-platform file structure.
+- WSL full debug runs at Phase closeout, before declaring a Phase complete,
+  and at intentionally batched renderer/platform milestones. It is not the
+  default after every small step.
+- Windows full debug remains the default post-step full-suite gate because it
+  is much cheaper on this machine and catches most API/structure regressions.
+- WSL build/cache output must stay on D-drive paths such as
+  `.build-wsl/master`; transient temp should use `/dev/shm/cgpui` where
+  practical. Do not put WSL package caches, global xmake state, or temp output
+  on C: for this project.
+- Docs-only, ledger-only, and test-only slices may skip WSL when they do not
+  affect compiled cross-platform code, but the skipped scope must be recorded
+  in the final verification summary.
+
 ## Completion Definition
 
 CGPUI is not "fully replicated" until all of these are true:
@@ -134,8 +158,9 @@ CGPUI is not "fully replicated" until all of these are true:
 - [ ] The examples from `gpui.rs` compile and run through public CGPUI APIs on
   Windows and Linux, and later on macOS after the Mac track opens.
 - [ ] Windows full debug passes after every merge.
-- [ ] WSL Arch Linux full debug passes after every shared, renderer, Wayland,
-  or platform-facing merge.
+- [ ] WSL Arch Linux focused tests pass for every shared, renderer, Wayland,
+  platform, build, or public-header-facing slice, and WSL Arch Linux full
+  debug passes at each Phase closeout or intentional batched milestone.
 - [ ] macOS full debug passes after the Mac track opens.
 - [ ] Architecture/header-cleanliness tests prove new work did not collapse
   back into broad files or fat aggregate headers.
@@ -177,11 +202,14 @@ Every implementation slice below follows the same loop:
 - [ ] Add RED behavior or structure coverage first.
 - [ ] Implement the smallest GREEN slice in the intended module.
 - [ ] Run targeted Windows tests.
-- [ ] Run WSL tests when the slice touches shared UI, renderer, platform,
-  Wayland, build, or headers.
+- [ ] Run WSL focused tests when the slice touches shared UI, renderer,
+  platform, Wayland, build, templates/constexpr/concepts, or public headers.
 - [ ] Run `git diff --check`.
 - [ ] Fast-forward merge to `master`.
-- [ ] Run post-merge Windows full debug and required WSL full debug.
+- [ ] Run post-merge Windows full debug. Run WSL full debug only at Phase
+  closeout, user-requested verification points, or intentional batched
+  renderer/platform milestones; otherwise record the WSL focused gate or the
+  docs-only/test-only reason for skipping WSL.
 - [ ] Update `task_plan.md`, `findings.md`, `progress.md`, and the parity
   ledger before deleting the feature worktree.
 

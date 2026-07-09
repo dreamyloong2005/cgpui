@@ -73,6 +73,16 @@
       "static_render_runtime_test/default",
       "ui_source_structure_test/default",
       "gpui_parity_ledger_test/default"
+    ],
+    "verification_cadence": [
+      "Every implementation slice runs Windows focused behavior or structure tests",
+      "Run touched ledger or JSON checks when documentation or ledger files change",
+      "Run git diff --check before staging or committing",
+      "Run WSL focused tests for shared public headers, templates, constexpr, concepts, xmake.lua, shared UI runtime, renderer, Vulkan, platform, Wayland, or cross-platform structure changes",
+      "Run WSL full debug at Phase closeout, user-requested verification points, or intentional renderer/platform milestones instead of after every small step",
+      "Keep WSL xmake global, package, build, and cache output on D-drive project paths",
+      "Use transient temp such as /dev/shm/cgpui where practical to avoid consuming C: drive space",
+      "Docs-only, ledger-only, and test-only slices may skip WSL when they do not affect compiled cross-platform code, but the skip scope must be recorded"
     ]
   },
   "phase_c_widget_evidence": {
