@@ -38,6 +38,43 @@
     "deferred": 2,
     "non_goal": 1
   },
+  "scope_guard": {
+    "deferred_by_user": [
+      "game-engine-specific integration",
+      "engine runtime embedding",
+      "shared engine renderer/resource/asset/command systems",
+      "game editor/runtime UI depth",
+      "Android, iOS, and X11"
+    ],
+    "active_track_required": [
+      "C++23-native public APIs without Rust FFI",
+      "Vulkan-first production renderer depth",
+      "declarative widgets",
+      "reactive state/subscription depth",
+      "low-allocation runtime structures",
+      "static and dynamic widget support",
+      "editor/AI-IDE-class text and tool UI primitives",
+      "Win32 and Wayland production platform behavior",
+      "later macOS Cocoa + Metal parity"
+    ],
+    "zero_cost_principle": [
+      "Static fast paths come first",
+      "dynamic escape hatches stay explicit",
+      "avoid hidden allocation",
+      "avoid broad type erasure",
+      "avoid avoidable virtual dispatch",
+      "avoid per-frame tree-wide scans",
+      "avoid repeated string lookups",
+      "avoid avoidable std::function/heap churn"
+    ],
+    "entry_gate_tests": [
+      "pre_phase_d_entry_gate_test/default",
+      "phase_c_final_ledger_audit_test/default",
+      "static_render_runtime_test/default",
+      "ui_source_structure_test/default",
+      "gpui_parity_ledger_test/default"
+    ]
+  },
   "phase_c_widget_evidence": {
     "step_344": "Phase C Step 344 checkbox/radio/switch widgets",
     "public_surface": "ToggleBuilder, checkbox(...), radio(...), toggle_switch(...), ToggleControlElement, ToggleControlKind",

@@ -7580,6 +7580,14 @@
 - `tests/api_parity/phase_c_final_ledger_audit_test.cpp` now freezes both
   roadmap sections so the Phase C closeout cannot silently lose the binding
   scope decision or zero-cost principle before future Phase D work continues.
+- The previous guard was correct but implicit: it lived inside the Phase C
+  final ledger audit. A dedicated pre-Phase-D entry gate makes the user
+  requirement visible as its own failing target and records the required
+  focused gates for both Windows and WSL:
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default`.
 
 ## 2026-07-09 Phase D Step 429 Wayland Preedit Cursor Metadata
 

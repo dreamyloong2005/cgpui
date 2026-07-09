@@ -31,6 +31,29 @@ Status meanings:
 | gpui_platform x11 feature | Deferred |
 | gpui macOS backend | Deferred |
 
+## Scope Guard
+
+The active track follows the post-Phase-C user scope decision. Deferred by
+user decision: game-engine-specific integration, engine runtime embedding,
+shared engine renderer/resource/asset/command systems, game editor/runtime UI
+depth, Android, iOS, and X11. Required active-track work remains:
+C++23-native public APIs without Rust FFI, Vulkan-first production renderer
+depth, declarative widgets, reactive state/subscription depth, low-allocation
+runtime structures, static and dynamic widget support, editor/AI-IDE-class
+text and tool UI primitives, Win32 and Wayland production platform behavior,
+and later macOS Cocoa + Metal parity.
+
+Zero-cost abstraction is a hard active-track constraint: Static fast paths come
+first, dynamic escape hatches must stay explicit, compact retained records or
+command buffers should be the hot-path lowering target, and future slices must
+avoid hidden allocation, broad type erasure, avoidable virtual dispatch, avoid
+per-frame tree-wide scans, repeated string lookups, and avoidable
+`std::function`/heap churn. The entry gate is locked by
+`pre_phase_d_entry_gate_test/default`,
+`phase_c_final_ledger_audit_test/default`,
+`static_render_runtime_test/default`, `ui_source_structure_test/default`, and
+`gpui_parity_ledger_test/default`.
+
 ## Required Surface Summary
 
 | upstream_gpui | cgpui_target | status | evidence | next_step |

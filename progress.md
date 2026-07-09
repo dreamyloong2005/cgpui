@@ -17055,6 +17055,38 @@
   `xmake test -y -P . window_runtime_text_test/default
   win32_text_input_test/default platform_source_structure_test/default
   wayland_window_source_test/default` 4/4.
+
+## 2026-07-09 Pre-Phase-D Entry Gate Follow-Up
+
+- Latest user direction is to finish all required pre-Phase-D alignment before
+  continuing Phase D. Current history already contains Phase D commits, so this
+  slice does not rewrite history or add new Phase D behavior; it strengthens
+  the forward gate.
+- Added `tests/api_parity/pre_phase_d_entry_gate_test.cpp` plus the xmake
+  `pre_phase_d_entry_gate_test` target. The test requires the roadmap, ledger,
+  JSON ledger, and task plan to retain the post-Phase-C scope decision,
+  zero-cost abstraction principle, and focused verification gate.
+- Updated the roadmap with a dedicated `Pre-Phase-D Entry Gate`, updated the
+  Markdown/JSON parity ledger with a `scope_guard`, and updated planning notes
+  so future Phase D continuation must rerun
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default` on Windows and WSL.
+- Initial Windows runs of `pre_phase_d_entry_gate_test/default` failed while
+  the test used long exact strings that crossed Markdown line wraps
+  (`exit=10`, then `exit=20`, then `exit=30`). The fix was to keep the same
+  scope/required/zero-cost evidence but anchor on stable non-wrapping phrases.
+- Focused Windows verification passed 5/5:
+  `xmake test -y -P . pre_phase_d_entry_gate_test/default
+  phase_c_final_ledger_audit_test/default static_render_runtime_test/default
+  ui_source_structure_test/default gpui_parity_ledger_test/default`.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 5/5 focused gate:
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default`.
 - Focused WSL verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed 4/4:
   `wayland_keyboard_test/default`, `window_runtime_text_test/default`,

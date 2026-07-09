@@ -94,6 +94,34 @@ dense `StaticElementNode` records, span-backed child lists,
 while `AnyElement` and the polymorphic `ElementTree` remain an explicit
 dynamic escape hatch.
 
+## Pre-Phase-D Entry Gate
+
+Phase D feature work may continue only after the post-Phase-C scope decision,
+zero-cost abstraction principle, and first static fast path are all preserved
+by focused gates on Windows and WSL Arch Linux. This prevents new text, IME,
+renderer, or platform work from drifting back toward hidden allocation,
+unbounded dynamic dispatch, or user-deferred platform/engine scope.
+
+- Scope gate: game-engine-specific integration, engine runtime embedding,
+  shared engine renderer/resource/asset/command systems, game editor/runtime
+  UI depth, Android, iOS, and X11 remain deferred unless the user explicitly
+  reopens them.
+- Active-track gate: C++23-native public APIs without Rust FFI,
+  Vulkan-first production renderer depth, declarative widgets, reactive
+  state/subscription depth, low-allocation runtime structures, static and
+  dynamic widget support, editor/AI-IDE-class text and tool UI primitives,
+  Win32 and Wayland production platform behavior, and later macOS Cocoa +
+  Metal parity remain required.
+- Zero-cost gate: static fast paths, explicit dynamic escape hatches, compact
+  retained records/command buffers, and tests for abstraction boundaries must
+  stay present; hot paths must avoid hidden allocation, broad type erasure,
+  avoidable virtual dispatch, per-frame tree-wide scans, repeated string
+  lookups, and avoidable `std::function`/heap churn.
+- Verification gate: `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default` must pass before continuing Phase D.
+
 ## Completion Definition
 
 CGPUI is not "fully replicated" until all of these are true:

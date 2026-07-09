@@ -32,6 +32,14 @@ Windows/Linux core API is stable enough for parity work.
   spans, `View` can opt into `render_static(...)`, and the runtime records,
   routes, and exposes the installed static tree before falling back to the
   visible polymorphic `AnyElement`/`ElementTree` dynamic escape hatch.
+- Pre-Phase-D entry gate is explicit and test-protected:
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default` must pass on Windows and WSL before
+  future Phase D continuation. This keeps deferred game/engine, Android/iOS,
+  and X11 scope out of the active track and keeps zero-cost/static-fast-path
+  constraints visible.
 - Phase D has started with Step 379 text-shaping backend boundaries:
   `TextShapingBackend`, `TextShapingOptions`, capability reporting, fallback
   reason metadata, and glyph ids now make the HarfBuzz-vs-deterministic
@@ -2902,3 +2910,9 @@ implementation slice.
   Android, iOS, and X11 stay deferred; desktop C++23 GPUI requirements,
   static fast paths, explicit dynamic escape hatches, and low-allocation
   hot-path constraints stay required before future Phase D work continues.
+- Pre-Phase-D entry gate follow-up makes the boundary explicit in the roadmap
+  and ledger: future Phase D continuation must rerun the gate covering
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default`.
