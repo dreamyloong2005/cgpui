@@ -14,6 +14,7 @@ namespace cgpui {
 
 enum class TextInsertHistoryPolicy : std::uint8_t {
   merge_adjacent_typing,
+  composition_commit,
   separate_edit,
 };
 
@@ -89,6 +90,8 @@ class TextModel {
   };
 
   void clear_composition();
+  void begin_composition_history_group();
+  void clear_composition_history_group();
   void clear_preferred_line_column();
   void clear_edit_history_grouping();
   [[nodiscard]] std::size_t preferred_line_column_for_vertical_navigation();
@@ -140,12 +143,14 @@ class TextModel {
 
   std::string text_;
   std::string composition_text_;
+  std::optional<TextHistorySnapshot> composition_history_before_;
   std::size_t cursor_ = 0;
   std::size_t selection_anchor_ = 0;
   std::size_t selection_head_ = 0;
   std::optional<std::size_t> preferred_line_column_;
   bool has_composition_ = false;
   bool edit_history_grouping_open_ = false;
+  bool composition_history_mutated_ = false;
   std::vector<TextEditHistoryRecord> undo_stack_;
   std::vector<TextEditHistoryRecord> redo_stack_;
   static constexpr std::size_t max_edit_history_records = 100;

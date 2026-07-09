@@ -62,6 +62,7 @@ void TextModel::restore_history_snapshot(const TextHistorySnapshot& snapshot) {
   clear_preferred_line_column();
   clear_edit_history_grouping();
   clear_composition();
+  clear_composition_history_group();
 }
 
 void TextModel::push_undo_record(const TextEditHistoryRecord& record) {

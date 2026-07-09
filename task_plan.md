@@ -251,10 +251,15 @@ Windows/Linux core API is stable enough for parity work.
   411-418 evidence before Phase D moves to Step 419 edit history.
 - Step 419 starts edit-history depth with adjacent typing coalescing.
   `TextInsertHistoryPolicy::merge_adjacent_typing` merges uninterrupted typing
-  inserts into one undo/redo record, while `separate_edit` keeps paste and
-  composition commits independent. Navigation, selection, delete, undo/redo,
-  and composition state changes explicitly break the grouping so the hot path
-  remains predictable and testable.
+  inserts into one undo/redo record, while `separate_edit` keeps paste
+  independent of typing. Navigation, selection, delete, undo/redo, and
+  composition state changes explicitly break the grouping so the hot path remains
+  predictable and testable.
+- Step 420 groups IME delete-surrounding mutations with composition commit/cancel
+  history. `TextModel` captures one composition-start snapshot, marks whether
+  the active composition mutated surrounding text, and commits a single
+  `TextInsertHistoryPolicy::composition_commit` record so undo/redo restores the
+  pre-composition text state without platform-layer bookkeeping or hidden scans.
 
 ## Definition Of Done For This 20-Step Goal
 

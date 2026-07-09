@@ -7483,3 +7483,13 @@
 - Navigation, selection, delete, undo/redo, composition updates/cancel, and
   selection replacement call or imply `clear_edit_history_grouping()`, so
   grouping does not silently cross user-visible operation boundaries.
+
+## 2026-07-09 Phase D Step 420 IME Composition History Grouping
+
+- IME delete-surrounding edits belong to the active composition transaction at
+  the model history layer. Capturing the pre-composition snapshot once lets
+  commit and cancel create one undo record without teaching platform event
+  routing about undo grouping.
+- This closes the model-level grouped-commit behavior only. Deeper Win32
+  TSF/IMM and Wayland text-input v3 surrounding-text protocol behavior remains
+  in the later IME platform band.

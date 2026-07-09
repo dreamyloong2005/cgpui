@@ -115,7 +115,8 @@ int main() {
                 "Step 418 closes the selection/caret band through") ||
       !contains(roadmap,
                 "tests/api_parity/phase_d_selection_caret_audit_test.cpp") ||
-      !contains(roadmap, "Step 419 starts edit history")) {
+      !contains(roadmap, "Steps 419-420 deepen") ||
+      !contains(roadmap, "edit history with grouped typing")) {
     return 3;
   }
 

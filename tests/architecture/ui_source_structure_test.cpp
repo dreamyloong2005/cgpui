@@ -619,13 +619,23 @@ int main() {
   }
   if (!contains(text_model_header, "enum class TextInsertHistoryPolicy") ||
       !contains(text_model_header, "edit_history_grouping_open_") ||
+      !contains(text_model_header, "composition_history_before_") ||
+      !contains(text_model_header, "composition_history_mutated_") ||
       !contains(text_model_history_source,
                 "TextInsertHistoryPolicy::merge_adjacent_typing") ||
+      !contains(text_model_header, "composition_commit") ||
       !contains(text_model_history_source, "edit_history_grouping_open_") ||
       !contains(text_model_history_source, "previous.after = std::move") ||
       !contains(text_model_source, "TextModel::clear_edit_history_grouping(") ||
       !contains(text_model_source,
+                "TextModel::begin_composition_history_group(") ||
+      !contains(text_model_source,
+                "TextModel::clear_composition_history_group(") ||
+      !contains(text_model_source,
                 "TextInsertHistoryPolicy::separate_edit") ||
+      !contains(text_model_source,
+                "TextInsertHistoryPolicy::composition_commit") ||
+      !contains(text_model_source, "composition_history_mutated_ = true") ||
       !contains(read_source("src/ui/runtime_clipboard.cpp"),
                 "TextInsertHistoryPolicy::separate_edit")) {
     return 118;

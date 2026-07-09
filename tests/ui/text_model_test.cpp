@@ -727,6 +727,51 @@ int test_text_model_tracks_ime_composition() {
              : 33;
 }
 
+int test_text_model_groups_ime_surrounding_delete_with_commit_history() {
+  cgpui::TextModel model("abcdef");
+  model.set_selection(3, 3);
+  model.set_composition_text("draft");
+  if (!model.delete_surrounding_text(1, 2) ||
+      model.text() != std::string_view{"abf"} || model.cursor() != 2 ||
+      !model.has_composition()) {
+    return 644;
+  }
+  model.set_composition_text("\xE4\xB8\xAD");
+  model.commit_composition();
+  if (model.has_composition() ||
+      model.text() != std::string_view{"ab\xE4\xB8\xAD" "f"} ||
+      model.cursor() != std::string_view{"ab\xE4\xB8\xAD"}.size()) {
+    return 645;
+  }
+  if (!model.undo() || model.text() != std::string_view{"abcdef"} ||
+      model.cursor() != 3 || !model.can_redo()) {
+    return 646;
+  }
+  if (!model.redo() ||
+      model.text() != std::string_view{"ab\xE4\xB8\xAD" "f"} ||
+      model.cursor() != std::string_view{"ab\xE4\xB8\xAD"}.size()) {
+    return 647;
+  }
+
+  cgpui::TextModel cancel("abcdef");
+  cancel.set_selection(3, 3);
+  cancel.set_composition_text("draft");
+  if (!cancel.delete_surrounding_text(1, 2)) {
+    return 648;
+  }
+  cancel.cancel_composition();
+  if (cancel.has_composition() ||
+      cancel.text() != std::string_view{"abf"} || !cancel.can_undo()) {
+    return 649;
+  }
+  if (!cancel.undo() || cancel.text() != std::string_view{"abcdef"} ||
+      cancel.cursor() != 3) {
+    return 650;
+  }
+
+  return 0;
+}
+
 int test_font_database_registers_and_resolves_faces() {
   cgpui::FontDatabase database;
   if (!database.empty() || database.face_count() != 0 ||
@@ -2058,6 +2103,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_tracks_ime_composition();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_groups_ime_surrounding_delete_with_commit_history();
       result != 0) {
     return result;
   }

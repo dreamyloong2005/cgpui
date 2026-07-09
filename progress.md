@@ -16535,6 +16535,58 @@
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
 
+## 2026-07-09 Phase D Step 420 IME Composition History Grouping
+
+- Started Step 420 from clean tracked `master` after
+  `08963e9 feat: coalesce adjacent text typing history`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added a focused composition history group inside `TextModel`: active
+  composition updates capture a pre-composition `TextHistorySnapshot`,
+  `delete_surrounding_text(...)` marks surrounding-text mutation without pushing
+  a standalone undo record, and commit/cancel records one
+  `TextInsertHistoryPolicy::composition_commit` transaction.
+- Kept ownership in the text model/history files rather than moving undo policy
+  into runtime event or platform IME files. Structure coverage now guards the
+  composition snapshot fields, grouping helpers, and composition commit policy in
+  `tests/architecture/ui_source_structure_test.cpp`.
+- Updated the Phase D roadmap, `task_plan.md`, `findings.md`, and Markdown
+  parity ledger to move the text row to Phase D Steps 379-420 while leaving
+  deeper Win32 TSF/IMM and Wayland text-input v3 behavior in the later IME band.
+- Focused verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  ui_source_structure_test/default phase_d_selection_caret_audit_test/default
+  gpui_parity_ledger_test/default` 5/5 after loosening the Step 418 closeout
+  audit to accept the Step 419-420 roadmap handoff.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 19/19.
+- Adjacent WSL verification passed with D-drive `.build-wsl/master` caches and
+  `/dev/shm/cgpui` transient temp:
+  `xmake test -y -j 1 -w /mnt/d/Dev/Projects/cgpui -P . ...` across
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`
+  19/19.
+
 ## 2026-07-09 Phase D Step 418 Selection/Caret Band Closeout
 
 - Continued from the uncommitted Step 418 workspace on `master`; the only

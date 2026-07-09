@@ -1073,17 +1073,24 @@ behavior that can support GPUI examples and editor-like widgets.
   shared `text_caret_rect(...)` geometry for paint and IME candidate placement,
   runtime route scrolling for `ScrollableListElement`, existing focused text
   copy/cut/paste clipboard coverage, and
-  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Step 419 starts edit history;
-  grouped typing, IME grouped commits, rich text, text examples,
-  and final Phase D verification remain open in Steps 419-458.
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp`. Steps 419-420 deepen
+  edit history with grouped typing and IME composition commit grouping; undo
+  manager integration points, redo invalidation diagnostics, richer IME platform
+  behavior, rich text, text examples, and final Phase D verification remain open
+  in Steps 421-458.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.
   Step 419 starts this band with adjacent typing history coalescing in
   `TextModel`: `TextInsertHistoryPolicy::merge_adjacent_typing` merges
   uninterrupted typing into one undo/redo record, `separate_edit` keeps paste
-  and composition commits independent, and navigation, selection, delete,
-  undo/redo, and composition state changes explicitly break the grouping.
+  independent of typing, and navigation, selection, delete, undo/redo, and
+  composition state changes explicitly break the grouping.
+  Step 420 adds a focused IME composition history group in `TextModel`:
+  delete-surrounding mutations made during an active composition share the
+  composition-start snapshot, and commit/cancel records one
+  `TextInsertHistoryPolicy::composition_commit` undo transaction without moving
+  this model-level behavior into platform event files.
 - [ ] Steps 427-434: Complete IME on active targets: Win32 TSF/IMM depth,
   Wayland text-input v3 surrounding text, delete-surrounding, content hints,
   serial policy, preedit styling, and candidate placement.

@@ -36,6 +36,7 @@ std::string_view TextModel::composition_text() const {
 
 void TextModel::set_composition_text(std::string_view text) {
   clear_edit_history_grouping();
+  begin_composition_history_group();
   composition_text_ = std::string(text);
   has_composition_ = true;
 }
@@ -44,14 +45,30 @@ void TextModel::commit_composition() {
   if (!has_composition_) {
     return;
   }
+  const TextHistorySnapshot before = composition_history_before_.has_value()
+      ? *composition_history_before_
+      : history_snapshot();
   std::string committed = std::move(composition_text_);
   clear_composition();
-  insert_text(committed, TextInsertHistoryPolicy::separate_edit);
+  clear_preferred_line_column();
+  (void)erase_selection_if_needed();
+  text_.insert(cursor_, committed);
+  cursor_ += committed.size();
+  collapse_selection_to_cursor();
+  commit_history_record(before, TextInsertHistoryPolicy::composition_commit);
+  clear_composition_history_group();
 }
 
 void TextModel::cancel_composition() {
   clear_edit_history_grouping();
+  if (composition_history_mutated_ &&
+      composition_history_before_.has_value()) {
+    commit_history_record(
+        *composition_history_before_,
+        TextInsertHistoryPolicy::composition_commit);
+  }
   clear_composition();
+  clear_composition_history_group();
 }
 
 void TextModel::insert_text(std::string_view text) {
@@ -132,11 +149,17 @@ bool TextModel::delete_surrounding_text(
   if (start == end) {
     return false;
   }
+  const bool composition_delete =
+      has_composition_ && composition_history_before_.has_value();
   text_.erase(start, end - start);
   cursor_ = start;
   collapse_selection_to_cursor();
-  clear_composition();
-  commit_history_record(before);
+  if (composition_delete) {
+    composition_history_mutated_ = true;
+  } else {
+    clear_composition();
+    commit_history_record(before);
+  }
   return true;
 }
 
@@ -189,6 +212,17 @@ bool TextModel::apply_edit_action(TextEditAction action) {
 void TextModel::clear_composition() {
   composition_text_.clear();
   has_composition_ = false;
+}
+
+void TextModel::begin_composition_history_group() {
+  if (!composition_history_before_.has_value()) {
+    composition_history_before_ = history_snapshot();
+  }
+}
+
+void TextModel::clear_composition_history_group() {
+  composition_history_before_.reset();
+  composition_history_mutated_ = false;
 }
 
 void TextModel::clear_preferred_line_column() {
