@@ -18443,3 +18443,30 @@
   remains required when the machine exposes WSL again.
 - Windows full debug verification passed 154/154 with
   `xmake test -y -P .`.
+
+## 2026-07-10 Phase E Step 474 Text Pipeline Integration Closeout
+
+- Started from clean tracked `master` at
+  `9c04be37 feat: define vulkan text coverage policy`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 474 is an audit-only closeout that will freeze the Steps 467-473 text
+  pipeline modules, tests, and live submission evidence, then hand Phase E to
+  Step 475 rounded rectangle geometry without adding renderer behavior.
+- Added `phase_e_text_pipeline_integration_closeout_test`; it compiled, found
+  all target/module/behavior evidence, and exited 30 only at the expected
+  documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with the shared Step 474 closeout evidence and Step 475 rounded rectangle
+  geometry handoff.
+- The first post-documentation audit exited 36 because the roadmap split the
+  exact `Step 475 rounded rectangle geometry` phrase across a line break.
+- A diagnostic repeated the known PowerShell parser failure for piping directly
+  after `foreach`. Assigned the loop output to `$rows`, confirmed only the
+  roadmap lacked the phrase, and normalized its wrapping.
+- Focused Windows Step 474 verification passed 11/11: the integration closeout
+  audit, seven text-pipeline behavior targets, real frame lifetime, renderer
+  structure, and parity ledger.
+- Windows full debug verification passed 155/155 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because no distribution is registered;
+  the final Phase E Linux gate remains open.

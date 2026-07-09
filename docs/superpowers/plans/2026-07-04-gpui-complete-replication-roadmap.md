@@ -1504,9 +1504,12 @@ draw calls for the Windows/Linux renderer.
   multiplies output alpha. The fragment shader clamps coverage, applies the
   explicit transfer, and ships as validated embedded SPIR-V. Step 474 closes
   text-pipeline integration.
-- [ ] Step 474: Complete the remaining text graphics pipeline integration,
-  textured glyph draw calls, subpixel positioning policy, and gamma/alpha
-  handling.
+- [x] Phase E Step 474 closes text pipeline integration with audit-only
+  `tests/api_parity/phase_e_text_pipeline_integration_closeout_test.cpp`.
+  This Phase E Step 474 text pipeline integration closeout freezes Steps 467-473,
+  including descriptor-bound textured glyph draws, `preserve_subpixel`, and
+  `straight_color_coverage_alpha`, then hands Phase E to
+  Step 475 rounded rectangle geometry without adding renderer behavior.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,
   anti-aliasing strategy, border radius clipping, border stroke, and fill
   variants.

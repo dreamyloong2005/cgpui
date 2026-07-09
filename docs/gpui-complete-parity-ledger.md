@@ -408,6 +408,11 @@ consume C: drive space again.
   straight RGB while resolved coverage multiplies output alpha. The validated
   embedded fragment shader mirrors that contract.
 - Handoff: Phase E Step 474 text pipeline integration closeout.
+- Phase E Step 474 text pipeline integration closeout is audit-only through
+  `tests/api_parity/phase_e_text_pipeline_integration_closeout_test.cpp`. It
+  freezes Steps 467-473, including descriptor-bound textured glyph draws,
+  `preserve_subpixel`, and `straight_color_coverage_alpha`, then hands Phase E
+  to Step 475 rounded rectangle geometry without adding renderer behavior.
 
 ## Categories
 

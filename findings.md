@@ -85,6 +85,16 @@
   RGB while multiplying only output alpha. The optimized 212-word fragment
   shader payload passed Vulkan 1.0 `spirv-val`; Step 474 owns integration
   closeout rather than more shader behavior.
+- Phase E Step 474 should be an audit-only closeout for Steps 467-473. The
+  landed pipeline already owns fixed state, embedded shaders, swapchain
+  resources, fence-safe vertices, descriptor-bound draws, positioning, and
+  coverage/alpha policy; adding another renderer behavior in the closeout would
+  blur the Step 475 rounded rectangle geometry boundary.
+- Phase E Step 474 text pipeline integration closeout is implemented by
+  `tests/api_parity/phase_e_text_pipeline_integration_closeout_test.cpp`. It
+  freezes Steps 467-473, including descriptor-bound textured glyph draws,
+  `preserve_subpixel`, and `straight_color_coverage_alpha`, then hands Phase E
+  to Step 475 rounded rectangle geometry without adding renderer behavior.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

@@ -787,8 +787,13 @@
       "xmake.lua"
     ],
     "phase_e_step_473_remaining_gap": "Step 474 closes text pipeline integration",
+    "phase_e_step_474_surface": "Phase E Step 474 text pipeline integration closeout is audit-only through tests/api_parity/phase_e_text_pipeline_integration_closeout_test.cpp. It freezes Steps 467-473, including descriptor-bound textured glyph draws, preserve_subpixel, and straight_color_coverage_alpha, then hands Phase E to Step 475 rounded rectangle geometry without adding renderer behavior.",
+    "phase_e_step_474_sources": [
+      "tests/api_parity/phase_e_text_pipeline_integration_closeout_test.cpp",
+      "xmake.lua"
+    ],
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 474 text pipeline integration closeout"
+    "phase_e_current_handoff": "Phase E Step 475 rounded rectangle geometry"
   },
   "categories": [
     "application_and_app_context",
