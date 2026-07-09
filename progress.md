@@ -17111,3 +17111,30 @@
   `phase_d_edit_history_audit_test/default`,
   `phase_d_selection_caret_audit_test/default`, and
   `gpui_parity_ledger_test/default`.
+
+## 2026-07-09 Pre-Phase-D Scope And Zero-Cost Guard
+
+- The latest user direction is to finish all required pre-Phase-D alignment
+  before entering Phase D. Current `master` already contains Phase D commits
+  through Step 428, so no committed history was rewritten; the uncommitted
+  Phase D Step 429 preedit-cursor metadata slice was verified, then restored
+  out of the working tree.
+- Step 429 focused WSL verification had passed before restore:
+  `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
+  `platform_source_structure_test/default`, and
+  `wayland_window_source_test/default` 4/4 using `.build-wsl/master` on D: and
+  `/dev/shm/cgpui` for transient temp.
+- Added a Phase C final ledger audit guard requiring the roadmap to keep the
+  post-Phase-C scope decision and zero-cost abstraction principle. This keeps
+  the user-deferred game/engine, Android/iOS, and X11 work out of the active
+  track and keeps static fast paths / low-allocation constraints test-protected
+  before future Phase D work continues.
+- Focused Windows verification passed:
+  `xmake test -y -P . phase_c_final_ledger_audit_test/default
+  static_render_runtime_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` 4/4.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 4/4 focused tests:
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`,
+  and `gpui_parity_ledger_test/default`.

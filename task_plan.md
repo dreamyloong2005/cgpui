@@ -2883,3 +2883,10 @@ implementation slice.
   Linux full debug `113/113`. WSL verification reused `.build-wsl/master` on
   D:, kept `/tmp` empty, left `/root/.xmake` absent, and confirms Phase C is
   closed with Phase D Step 379 text/font shaping as the next global handoff.
+- Pre-Phase-D scope/zero-cost guard: after the user clarified that all
+  required alignment should be finished before entering Phase D, the Phase C
+  final ledger audit now also freezes the roadmap's post-Phase-C scope
+  decision and zero-cost abstraction principle. Game/engine integration,
+  Android, iOS, and X11 stay deferred; desktop C++23 GPUI requirements,
+  static fast paths, explicit dynamic escape hatches, and low-allocation
+  hot-path constraints stay required before future Phase D work continues.

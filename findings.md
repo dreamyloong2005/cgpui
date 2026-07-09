@@ -7567,3 +7567,16 @@
 - This closes serial transport, not the full IME policy story. Richer Wayland
   serial policy, preedit styling, candidate placement, and Win32 TSF depth
   remain explicit Phase D gaps.
+
+## 2026-07-09 Pre-Phase-D Scope And Zero-Cost Guard
+
+- The roadmap already records the post-Phase-C user scope decision: defer
+  game-engine-specific integration, engine runtime embedding, Android, iOS,
+  and X11, while keeping the desktop C++23 GPUI runtime requirements active.
+- The roadmap also records zero-cost abstraction as a hard engineering
+  constraint: static fast paths first, no hidden hot-path allocation, no broad
+  type erasure or avoidable virtual dispatch on hot paths, explicit dynamic
+  escape hatches, and tests for abstraction boundaries.
+- `tests/api_parity/phase_c_final_ledger_audit_test.cpp` now freezes both
+  roadmap sections so the Phase C closeout cannot silently lose the binding
+  scope decision or zero-cost principle before future Phase D work continues.

@@ -98,6 +98,18 @@ int main() {
     return 3;
   }
 
+  if (!contains(roadmap, "## User Scope Decision After Phase C") ||
+      !contains(roadmap, "Deferred: game-engine-specific integration") ||
+      !contains(roadmap, "Android, iOS, and X11") ||
+      !contains(roadmap, "Required for the active track") ||
+      !contains(roadmap, "## Zero-Cost Abstraction Principle") ||
+      !contains(roadmap, "hot runtime paths must not") ||
+      !contains(roadmap, "Static fast paths come first") ||
+      !contains(roadmap, "virtual dispatch") ||
+      !contains(roadmap, "std::function`/heap churn")) {
+    return 4;
+  }
+
   constexpr std::array closeout_tests{
       "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp",
       "tests/api_parity/phase_c_focusable_interactable_audit_test.cpp",
