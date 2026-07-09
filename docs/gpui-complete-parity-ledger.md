@@ -233,6 +233,16 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   example and keeps it away from private runtime APIs.
 - Remaining gap: text wrapper examples, richer official input workflows,
   rich-text examples, and final Phase D verification remain later Phase D work.
+- Phase D Step 444 text wrapper public examples extend this slice. Step 444 extends the text-input examples band with
+  `examples/api_parity/public_text_wrapper_examples/main.cpp` and
+  `api_parity_public_text_wrapper_examples`, demonstrating label and TextElement wrappers,
+  TextModel-backed public text elements, measurement/wrapping/glyph paint metadata,
+  TextMeasurementCache use, layout sizing, and accessibility text through
+  `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_text_wrapper_public_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs.
+- Remaining gap: richer official input workflows, rich-text examples, and final
+  Phase D verification remain later Phase D work.
 
 ## Categories
 

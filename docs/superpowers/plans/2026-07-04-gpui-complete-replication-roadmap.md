@@ -1281,6 +1281,16 @@ behavior that can support GPUI examples and editor-like widgets.
   example and keeps it away from private runtime APIs. Text wrapper examples,
   richer official input workflows, rich-text examples, and final Phase D
   verification remain later steps.
+  Phase D Step 444 text wrapper public examples extend this slice. Step 444 extends the text-input examples band with
+  `examples/api_parity/public_text_wrapper_examples/main.cpp` and
+  `api_parity_public_text_wrapper_examples`, demonstrating label and TextElement wrappers,
+  TextModel-backed public text elements, measurement/wrapping/glyph paint metadata,
+  TextMeasurementCache use, layout sizing, and accessibility text through
+  `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_text_wrapper_public_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs. Richer official input
+  workflows, rich-text examples, and final Phase D verification remain later
+  steps.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
   the parity ledger, and document which Unicode/IME behaviors are complete.
 

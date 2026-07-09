@@ -7803,3 +7803,17 @@
   bindings from public headers.
 - Text wrapper examples, richer official input workflows, rich-text examples,
   and final Phase D verification remain separate later steps.
+
+## 2026-07-09 Phase D Step 444 Text Wrapper Public Examples
+
+- Phase D Step 444 text wrapper public examples should remain an examples/API
+  compatibility slice, not a new text engine feature.
+- Step 444 extends the text-input examples band with
+  `examples/api_parity/public_text_wrapper_examples/main.cpp`,
+  `api_parity_public_text_wrapper_examples`, and
+  `tests/api_parity/phase_d_text_wrapper_public_examples_test.cpp`,
+  demonstrating label and TextElement wrappers, TextModel-backed public text
+  elements, measurement/wrapping/glyph paint metadata, TextMeasurementCache
+  use, layout sizing, and accessibility text through public headers.
+- Richer official input workflows, rich-text examples, and final Phase D
+  verification remain separate later steps.

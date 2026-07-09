@@ -409,6 +409,16 @@ Windows/Linux core API is stable enough for parity work.
   metadata, command palette entries, and key bindings through
   `cgpui/prelude.hpp` only. Text wrapper examples, richer official input
   workflows, rich-text examples, and final Phase D verification remain later.
+- Phase D Step 444 text wrapper public examples extend this examples band.
+  Step 444 extends the text-input examples band with
+  `examples/api_parity/public_text_wrapper_examples/main.cpp`,
+  `api_parity_public_text_wrapper_examples`, and
+  `tests/api_parity/phase_d_text_wrapper_public_examples_test.cpp`,
+  demonstrating label and TextElement wrappers, TextModel-backed public text
+  elements, measurement/wrapping/glyph paint metadata, TextMeasurementCache
+  use, layout sizing, and accessibility text through `cgpui/prelude.hpp` only.
+  Richer official input workflows, rich-text examples, and final Phase D
+  verification remain later.
 
 ## Definition Of Done For This 20-Step Goal
 

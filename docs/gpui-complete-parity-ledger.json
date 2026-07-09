@@ -494,7 +494,19 @@
       "task_plan.md",
       "findings.md"
     ],
-    "text_input_public_examples_remaining_gap": "text wrapper examples, richer official input workflows, rich-text examples, and final Phase D verification remain later Phase D work"
+    "text_input_public_examples_remaining_gap": "text wrapper examples, richer official input workflows, rich-text examples, and final Phase D verification remain later Phase D work",
+    "step_444": "Phase D Step 444 text wrapper public examples",
+    "text_wrapper_public_examples_surface": "Step 444 extends the text-input examples band with examples/api_parity/public_text_wrapper_examples/main.cpp and api_parity_public_text_wrapper_examples, demonstrating label and TextElement wrappers, TextModel-backed public text elements, measurement/wrapping/glyph paint metadata, TextMeasurementCache use, layout sizing, and accessibility text through cgpui/prelude.hpp only",
+    "text_wrapper_public_examples_sources": [
+      "examples/api_parity/public_text_wrapper_examples/main.cpp",
+      "tests/api_parity/phase_d_text_wrapper_public_examples_test.cpp",
+      "xmake.lua",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "task_plan.md",
+      "findings.md"
+    ],
+    "text_wrapper_public_examples_remaining_gap": "richer official input workflows, rich-text examples, and final Phase D verification remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",
