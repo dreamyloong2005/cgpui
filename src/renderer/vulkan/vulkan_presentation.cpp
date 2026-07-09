@@ -27,6 +27,9 @@ Result<void> VulkanRendererState::present_frame(
       !result) {
     return result;
   }
+  if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
+    return result;
+  }
   if (auto result = prepare_glyph_atlas_frame(text_draws); !result) {
     return result;
   }

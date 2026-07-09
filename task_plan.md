@@ -574,13 +574,18 @@ Windows/Linux core API is stable enough for parity work.
   files. It creates contiguous vertex/index buffers and stable draw ranges for
   valid `RoundedRectDraw` records, pre-reserves once, and skips empty
   rectangles. Step 476 owns Vulkan rounded rectangle buffer uploads.
+- Phase E Step 476 adds `VulkanRoundedRectBufferResources` and
+  `vulkan_upload_rounded_rect_buffers`. Fence-safe frame preparation uploads
+  paired host-visible/coherent vertex/index buffers, retains draw ranges, and
+  destroys the resources through `VulkanRendererState`. Step 477 owns the
+  rounded rectangle shader pipeline.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-475 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-476 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -591,9 +596,10 @@ Windows/Linux core API is stable enough for parity work.
   explicit subpixel/pixel-snap positioning policy, and explicit glyph coverage
   transfer/straight-alpha policy with validated embedded fragment SPIR-V, and
   the text-pipeline integration closeout audit, and contiguous rounded-rectangle
-  CPU vertex/index geometry with stable draw ranges.
-- In progress: Step 476 Vulkan rounded rectangle buffer uploads.
-- Pending bands: Steps 476-482 rounded rectangles; Steps 483-490 clip, opacity,
+  CPU vertex/index geometry with stable draw ranges, plus fence-safe paired
+  Vulkan vertex/index buffer uploads and cleanup ownership.
+- In progress: Step 477 rounded rectangle shader pipeline.
+- Pending bands: Steps 477-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -658,6 +664,9 @@ Windows/Linux core API is stable enough for parity work.
 | A Step 474 cross-document diagnostic repeated the known PowerShell `foreach (...) { ... } | Format-Table` parser failure | Step 474 closeout diagnostic | Assign loop output to `$rows` before piping, matching the previously recorded PowerShell workaround |
 | Step 475 exploration requested nonexistent `include/cgpui/ui/geometry.hpp` and `vulkan_solid_rect` source files | Step 475 ownership discovery | Use `include/cgpui/ui/style_values.hpp` for `BorderRadii`; the current solid-rect path lives in `vulkan_command_recording.cpp` and has no focused source module yet |
 | `vulkan_rounded_rect_geometry_test` initially failed to compile because the focused private geometry header did not exist | Step 475 RED | Expected RED; add contiguous rounded-rectangle vertices, indices, and draw ranges in a dedicated Vulkan module |
+| Step 476 exploration requested nonexistent `vulkan_destructor.cpp` | Step 476 lifecycle discovery | Use the actual `vulkan_state.cpp` destructor owner for frame-buffer cleanup integration |
+| `vulkan_rounded_rect_buffer_test` initially failed to compile because the focused private resource header did not exist | Step 476 RED | Expected RED; add paired host-visible vertex/index buffers, frame preparation, and cleanup ownership |
+| The first post-documentation Step 476 buffer test remained at exit 40 because `findings.md` omitted the exact `vulkan_upload_rounded_rect_buffers` spelling | Step 476 documentation gate | Add the implemented upload symbol to findings while preserving the same lifecycle conclusion |
 
 ## Definition Of Done For This 20-Step Goal
 

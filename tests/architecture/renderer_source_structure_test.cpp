@@ -206,6 +206,9 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_positioning.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_frame.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
@@ -1140,6 +1143,24 @@ int main(int argc, char** argv) {
       !contains(rounded_rect_geometry, "append_corner_arc(") ||
       contains(command_recording, "append_corner_arc(")) {
     return 68;
+  }
+
+  const std::string rounded_rect_buffers_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp");
+  const std::string rounded_rect_buffers =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp");
+  const std::string rounded_rect_frame =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_frame.cpp");
+  if (line_count(rounded_rect_buffers_header) > 70 ||
+      line_count(rounded_rect_buffers) > 190 ||
+      line_count(rounded_rect_frame) > 40 ||
+      !contains(rounded_rect_buffers_header,
+                "struct VulkanRoundedRectBufferResources") ||
+      !contains(rounded_rect_buffers,
+                "vulkan_upload_rounded_rect_buffers(") ||
+      !contains(rounded_rect_buffers, "VK_BUFFER_USAGE_INDEX_BUFFER_BIT") ||
+      !contains(rounded_rect_frame, "prepare_rounded_rect_frame(")) {
+    return 69;
   }
 
   const std::string report_image_uploads =

@@ -105,6 +105,16 @@
   stable per-source draw ranges from one pre-reserved allocation. A center plus
   clockwise corner-perimeter fan keeps the first production geometry simple and
   inspectable; GPU resource upload remains Step 476.
+- Phase E Step 476 should mirror the fence-safe text upload lifecycle while
+  keeping paired vertex/index allocation inside a rounded-rectangle-specific
+  resource module. Draw ranges must remain with the resources for Step 477+
+  pipeline and indexed-recording work.
+- `VulkanRoundedRectBufferResources` now owns paired vertex/index buffers and
+  keeps the geometry draw ranges beside them.
+  `vulkan_upload_rounded_rect_buffers` runs through
+  `prepare_rounded_rect_frame(...)` after the in-flight fence, and a live Win32
+  first frame exercised real allocation/upload. Step 477 can build the shader
+  pipeline over this stable resource ABI.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

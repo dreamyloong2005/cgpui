@@ -1516,7 +1516,12 @@ draw calls for the Windows/Linux renderer.
   set of contiguous vertex/index buffers plus stable draw ranges for all valid
   `RoundedRectDraw` records, pre-reserving capacity once and skipping empty
   rectangles. Step 476 owns Vulkan vertex/index buffer uploads.
-- [ ] Steps 476-482: Promote rounded-rect geometry to Vulkan buffers,
+- [x] Phase E Step 476 adds `VulkanRoundedRectBufferResources` and
+  `vulkan_upload_rounded_rect_buffers` in focused resource/frame modules.
+  Fence-safe frame preparation uploads paired host-visible/coherent vertex and
+  index buffers, retains Step 475 draw ranges, and destroys them through
+  `VulkanRendererState`. Step 477 owns the rounded rectangle shader pipeline.
+- [ ] Steps 477-482: Complete rounded-rect rendering with a shader pipeline,
   anti-aliasing strategy, border radius clipping, border stroke, and fill
   variants.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip

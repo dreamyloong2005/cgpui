@@ -4,6 +4,7 @@
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
+#include "vulkan_rounded_rect_buffers_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 #include "vulkan_text_vertex_buffer_internal.hpp"
 
@@ -37,6 +38,8 @@ class VulkanRendererState final {
   Result<void> create_sync_objects();
   Result<void> prepare_glyph_atlas_frame(
       std::span<const TextDraw> text_draws);
+  Result<void> prepare_rounded_rect_frame(
+      std::span<const RoundedRectDraw> rounded_rects);
   void commit_glyph_atlas_frame();
   Result<void> recover_after_failed_submit(std::string message);
   Result<void> recover_after_failed_record(std::string message);
@@ -101,6 +104,7 @@ class VulkanRendererState final {
   std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_;
   std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;
   VulkanTextVertexBufferResources text_vertex_buffer_;
+  VulkanRoundedRectBufferResources rounded_rect_buffers_;
   std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;
 };

@@ -418,6 +418,11 @@ consume C: drive space again.
   all valid `RoundedRectDraw` records, pre-reserves once, and skips empty
   rectangles.
 - Handoff: Phase E Step 476 Vulkan rounded rectangle buffer uploads.
+- Phase E Step 476 adds `VulkanRoundedRectBufferResources` and
+  `vulkan_upload_rounded_rect_buffers`. Fence-safe frame preparation uploads
+  paired host-visible/coherent vertex and index buffers, retains geometry draw
+  ranges, and cleans them up through `VulkanRendererState`.
+- Handoff: Phase E Step 477 rounded rectangle shader pipeline.
 
 ## Categories
 

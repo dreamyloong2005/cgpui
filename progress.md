@@ -18501,3 +18501,36 @@
   `xmake test -y -P .`.
 - WSL verification remains unavailable because no distribution is registered;
   shared Linux geometry validation remains part of the final Phase E gate.
+
+## 2026-07-10 Phase E Step 476 Rounded Rectangle Buffer Uploads
+
+- Started from clean tracked `master` at
+  `20879be6 feat: build vulkan rounded rect geometry`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed the upload can follow the text buffer pattern after the in-flight
+  fence, with paired host-visible/coherent vertex and index resources plus
+  retained draw ranges for later indexed recording.
+- An exploratory lifecycle read requested nonexistent `vulkan_destructor.cpp`;
+  the actual renderer destructor and text-buffer cleanup live in
+  `src/renderer/vulkan/vulkan_state.cpp`.
+- Added `vulkan_rounded_rect_buffer_test` and observed the expected RED compile
+  failure because the focused private resource header did not exist.
+- Added paired rounded-rectangle vertex/index buffer ownership, a shared local
+  host-upload helper, fence-safe frame preparation, renderer-state ownership,
+  destructor cleanup, and structure coverage.
+- The first compiled gate passed geometry and structure coverage plus real
+  `hello_window/windows_first_frame` buffer creation/upload; the buffer test
+  exited 40 only at its expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  to complete Step 476 and hand Step 477 to the rounded rectangle shader
+  pipeline.
+- The first post-documentation buffer test remained at exit 40 because
+  `findings.md` omitted the exact `vulkan_upload_rounded_rect_buffers` spelling.
+  Added the implemented symbol without changing the documented conclusion.
+- Focused Windows Step 476 verification passed 6/6: paired buffer resources,
+  geometry regression, renderer structure, real first-frame upload,
+  parity ledger, and text-pipeline closeout.
+- Windows full debug verification passed 157/157 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because no distribution is registered;
+  the shared buffer path remains in the final Phase E Linux gate.
