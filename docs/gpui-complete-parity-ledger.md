@@ -159,6 +159,16 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   end-exclusive behavior.
 - Remaining gap: point-based rich-text hit testing, click activation wiring,
   inline images, and rich-text paint integration remain later Phase D work.
+- Step 437 adds point-based rich-text hit metadata through the focused
+  `text_rich_text_hit_testing` leaf. `RichTextRunPointHit`,
+  `RichTextLinkPointHit`, `rich_text_run_at_point(...)`, and
+  `rich_text_link_at_point(...)` compose `hit_test_text_position(...)` byte
+  offsets with the Step 436 run/link lookup helpers without runtime state,
+  renderer state, or string link targets. `tests/ui/rich_text_run_test.cpp`
+  verifies point-to-run mapping, link id propagation, and end-exclusive misses
+  past the measured text.
+- Remaining gap: click activation wiring, inline images, syntax-theme
+  integration, and rich-text paint integration remain later Phase D work.
 
 ## Categories
 

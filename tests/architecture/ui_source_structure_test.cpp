@@ -79,6 +79,7 @@ int main() {
       "include/cgpui/ui/text_hit_testing.hpp",
       "include/cgpui/ui/text_layout.hpp",
       "include/cgpui/ui/text_rich_text.hpp",
+      "include/cgpui/ui/text_rich_text_hit_testing.hpp",
       "include/cgpui/ui/text_model.hpp",
       "include/cgpui/ui/text.hpp",
       "include/cgpui/ui/element_ids.hpp",
@@ -147,6 +148,7 @@ int main() {
       "src/ui/text_wrapping.cpp",
       "src/ui/text_hit_testing.cpp",
       "src/ui/text_rich_text.cpp",
+      "src/ui/text_rich_text_hit_testing.cpp",
   };
   for (const char* source : text_implementation_files) {
     if (read_source(source).empty()) {
@@ -170,6 +172,10 @@ int main() {
       read_source("include/cgpui/ui/text_rich_text.hpp");
   const std::string text_rich_text_source =
       read_source("src/ui/text_rich_text.cpp");
+  const std::string text_rich_text_hit_testing_header =
+      read_source("include/cgpui/ui/text_rich_text_hit_testing.hpp");
+  const std::string text_rich_text_hit_testing_source =
+      read_source("src/ui/text_rich_text_hit_testing.cpp");
   const std::string xmake_source = read_source("xmake.lua");
   if (!contains(text_shaping_backend_source,
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
@@ -219,6 +225,20 @@ int main() {
       !contains(text_rich_text_source, "rich_text_run_at_byte_offset(") ||
       !contains(text_rich_text_source, "rich_text_link_at_byte_offset(") ||
       !contains(text_rich_text_source, "run_contains_byte_offset(") ||
+      !contains(text_rich_text_hit_testing_header,
+                "struct RichTextRunPointHit") ||
+      !contains(text_rich_text_hit_testing_header,
+                "struct RichTextLinkPointHit") ||
+      !contains(text_rich_text_hit_testing_header,
+                "rich_text_run_at_point(") ||
+      !contains(text_rich_text_hit_testing_header,
+                "rich_text_link_at_point(") ||
+      !contains(text_rich_text_hit_testing_source,
+                "hit_test_text_position(") ||
+      !contains(text_rich_text_hit_testing_source,
+                "rich_text_run_at_byte_offset(") ||
+      !contains(text_rich_text_hit_testing_source,
+                "rich_text_link_at_byte_offset(") ||
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
@@ -486,6 +506,8 @@ int main() {
       read_source("include/cgpui/ui/text_hit_testing.hpp");
   const std::string text_layout_header =
       read_source("include/cgpui/ui/text_layout.hpp");
+  const std::string text_aggregate_header =
+      read_source("include/cgpui/ui/text.hpp");
   const std::string text_model_header =
       read_source("include/cgpui/ui/text_model.hpp");
   const std::string event_pointer_header =
@@ -548,6 +570,8 @@ int main() {
       !contains(text_layout_header, "#include \"cgpui/ui/text_wrapping.hpp\"") ||
       !contains(text_layout_header,
                 "#include \"cgpui/ui/text_hit_testing.hpp\"") ||
+      !contains(text_aggregate_header,
+                "#include \"cgpui/ui/text_rich_text_hit_testing.hpp\"") ||
       !contains(text_model_header, "class TextModel")) {
     return 23;
   }
@@ -559,7 +583,8 @@ int main() {
       contains(text_glyphs_header, " inline ") ||
       contains(text_measurement_header, " inline ") ||
       contains(text_wrapping_header, " inline ") ||
-      contains(text_hit_testing_header, " inline ")) {
+      contains(text_hit_testing_header, " inline ") ||
+      contains(text_rich_text_hit_testing_header, " inline ")) {
     return 114;
   }
 

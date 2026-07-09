@@ -1,4 +1,5 @@
 #include "cgpui/ui/text_rich_text.hpp"
+#include "cgpui/ui/text_rich_text_hit_testing.hpp"
 
 #include <optional>
 #include <span>
@@ -185,6 +186,50 @@ int test_run_and_link_hits_use_half_open_byte_ranges() {
   return 0;
 }
 
+int test_point_hits_reuse_text_hit_testing_offsets() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "abcd",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const cgpui::Rect bounds{
+      .origin = {.x = 10.0F, .y = 5.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  };
+  std::vector<cgpui::RichTextRun> runs{
+      cgpui::RichTextRun{
+          .byte_start = 0,
+          .byte_end = 2,
+      },
+      cgpui::RichTextRun{
+          .byte_start = 2,
+          .byte_end = 4,
+          .attributes = cgpui::RichTextAttributes{
+              .link_id = cgpui::RichTextLinkId{77},
+          },
+      },
+  };
+
+  const std::optional<cgpui::RichTextRunPointHit> run =
+      cgpui::rich_text_run_at_point(runs, measurement, bounds, {39.0F, 10.0F});
+  if (!run.has_value() || run->text_hit.byte_offset != 3 ||
+      run->run_hit.run_index != 1 || run->run_hit.byte_start != 2 ||
+      run->run_hit.byte_end != 4 || !run->text_hit.inside_bounds) {
+    return 50;
+  }
+
+  const std::optional<cgpui::RichTextLinkPointHit> link =
+      cgpui::rich_text_link_at_point(runs, measurement, bounds, {39.0F, 10.0F});
+  const std::optional<cgpui::RichTextLinkPointHit> past_text =
+      cgpui::rich_text_link_at_point(runs, measurement, bounds, {60.0F, 10.0F});
+  if (!link.has_value() || link->text_hit.byte_offset != 3 ||
+      link->link_hit.link_id.value != 77 || link->link_hit.run_index != 1 ||
+      past_text.has_value()) {
+    return 51;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -203,6 +248,10 @@ int main() {
     return result;
   }
   if (const int result = test_run_and_link_hits_use_half_open_byte_ranges();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_point_hits_reuse_text_hit_testing_offsets();
       result != 0) {
     return result;
   }

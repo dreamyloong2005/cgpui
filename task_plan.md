@@ -352,6 +352,13 @@ Windows/Linux core API is stable enough for parity work.
   normalized runs without renderer state or string link targets. Point-based
   hit testing, click activation wiring, inline images, and rich-text painting
   remain later Phase D work.
+- Step 437 adds point-based rich-text hit metadata in the focused
+  `text_rich_text_hit_testing` leaf. `RichTextRunPointHit`,
+  `RichTextLinkPointHit`, `rich_text_run_at_point(...)`, and
+  `rich_text_link_at_point(...)` reuse `hit_test_text_position(...)` and the
+  byte-range helpers without runtime state, renderer state, or string link
+  targets. Click activation wiring, inline images, syntax-theme integration,
+  and rich-text painting remain later Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

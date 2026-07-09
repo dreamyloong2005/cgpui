@@ -1214,6 +1214,14 @@ behavior that can support GPUI examples and editor-like widgets.
   id propagation, and end-exclusive behavior. Inline images, rich-text painting,
   point-based hit testing, and click activation wiring remain later steps in
   this band.
+  Step 437 closes the point-based hit metadata slice with
+  `include/cgpui/ui/text_rich_text_hit_testing.hpp` and
+  `src/ui/text_rich_text_hit_testing.cpp`: `RichTextRunPointHit`,
+  `RichTextLinkPointHit`, `rich_text_run_at_point(...)`, and
+  `rich_text_link_at_point(...)` compose the existing text hit-test byte offset
+  with normalized run/link metadata. This keeps link detection out of runtime
+  and renderer state and still leaves click activation, inline images,
+  syntax-theme integration, and rich-text paint integration for later steps.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

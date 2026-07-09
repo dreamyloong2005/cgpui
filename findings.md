@@ -7701,3 +7701,17 @@
 - This closes byte-offset run/link lookup only. Point-based rich-text hit
   testing, click activation wiring, inline image spans, and paint integration
   remain explicit later Phase D work.
+
+## 2026-07-09 Phase D Step 437 Rich Text Point Hit Metadata
+
+- Step 437 should live in a separate focused `text_rich_text_hit_testing`
+  public leaf because it composes rich-text run metadata with text geometry
+  hit-testing instead of extending run normalization.
+- `RichTextRunPointHit`, `RichTextLinkPointHit`,
+  `rich_text_run_at_point(...)`, and `rich_text_link_at_point(...)` reuse
+  `hit_test_text_position(...)` to get the byte offset, then call the Step 436
+  byte-range lookup helpers. This keeps allocation and state ownership visible:
+  no runtime state, renderer state, or string link targets are introduced.
+- This closes point-based run/link metadata only. Click activation wiring,
+  inline images, syntax-theme integration, and rich-text paint integration
+  remain explicit later Phase D work.

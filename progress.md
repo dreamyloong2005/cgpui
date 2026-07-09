@@ -17090,6 +17090,36 @@
   `phase_d_selection_caret_audit_test/default`, and
   `pre_phase_d_entry_gate_test/default`.
 
+## 2026-07-09 Phase D Step 437 Rich Text Point Hit Metadata
+
+- Started from clean tracked `master` after
+  `a48f8e18 feat: add rich text byte hits`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Rechecked the pre-Phase-D gate before continuing: Windows and WSL both passed
+  `pre_phase_d_entry_gate_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `static_render_runtime_test/default`, `ui_source_structure_test/default`, and
+  `gpui_parity_ledger_test/default` 5/5. WSL reused `.build-wsl/master` on D:
+  plus `/dev/shm/cgpui` transient temp.
+- Added RED coverage to `tests/ui/rich_text_run_test.cpp` for point-to-run
+  mapping, point-to-link mapping, link id propagation, and past-text
+  end-exclusive misses. The first Windows run failed as expected because
+  `cgpui/ui/text_rich_text_hit_testing.hpp` did not exist.
+- Implemented the focused `text_rich_text_hit_testing` public leaf and source
+  file, added it to the `text.hpp` aggregate, and updated
+  `ui_source_structure_test` so point hit metadata stays out of runtime and
+  renderer files.
+- Focused Windows verification passed:
+  `xmake test -y -P . rich_text_run_test/default
+  ui_source_structure_test/default` 2/2.
+- Final focused Windows gate passed 6/6:
+  `rich_text_run_test/default`, `ui_source_structure_test/default`,
+  `core_header_cleanliness/default`, `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 6/6 focused tests.
+
 ## 2026-07-09 Phase D Step 434 IME Platform Band Closeout
 
 - Started from clean tracked `master` after
