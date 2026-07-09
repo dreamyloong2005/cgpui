@@ -154,6 +154,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
+      "src/renderer/vulkan/vulkan_solid_rect_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_solid_rect_recording.cpp",
       "src/renderer/vulkan/vulkan_device.cpp",
       "src/renderer/vulkan/vulkan_device_memory.cpp",
       "src/renderer/vulkan/vulkan_errors.cpp",
@@ -214,6 +216,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_pipeline_resources.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_draw_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
@@ -497,12 +501,22 @@ int main(int argc, char** argv) {
   const std::string command_recording =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
   if (line_count(command_recording) > 180 ||
-      !contains(command_recording, "make_clear_rect(") ||
       !contains(command_recording, "record_vulkan_frame_command_buffer(") ||
       !contains(command_recording, "vkCmdBeginRenderPass") ||
-      !contains(command_recording, "vkCmdClearAttachments") ||
+      !contains(command_recording, "vulkan_record_solid_rects(") ||
       contains(command_recording, "choose_vulkan_surface_format(")) {
     return 36;
+  }
+  const std::string solid_rect_recording_header = read_source(
+      "src/renderer/vulkan/vulkan_solid_rect_recording_internal.hpp");
+  const std::string solid_rect_recording = read_source(
+      "src/renderer/vulkan/vulkan_solid_rect_recording.cpp");
+  if (line_count(solid_rect_recording_header) > 40 ||
+      line_count(solid_rect_recording) > 140 ||
+      !contains(solid_rect_recording, "make_clear_rect(") ||
+      !contains(solid_rect_recording, "vkCmdClearAttachments") ||
+      contains(command_recording, "vkCmdClearAttachments")) {
+    return 72;
   }
 
   const std::string internal =
@@ -1193,6 +1207,22 @@ int main(int argc, char** argv) {
       !contains(rounded_rect_pipeline_resources,
                 "vkCreateGraphicsPipelines")) {
     return 70;
+  }
+
+  const std::string rounded_rect_draw_recording_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_draw_recording_internal.hpp");
+  const std::string rounded_rect_draw_recording = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp");
+  if (line_count(rounded_rect_draw_recording_header) > 50 ||
+      line_count(rounded_rect_draw_recording) > 150 ||
+      !contains(rounded_rect_draw_recording,
+                "vulkan_validate_rounded_rect_draw_resources(") ||
+      !contains(rounded_rect_draw_recording, "vkCmdBindIndexBuffer") ||
+      !contains(rounded_rect_draw_recording, "vkCmdDrawIndexed") ||
+      !contains(command_recording,
+                "vulkan_record_rounded_rect_draws(") ||
+      contains(command_recording, "vkCmdDrawIndexed")) {
+    return 71;
   }
 
   const std::string report_image_uploads =

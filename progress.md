@@ -18566,3 +18566,36 @@
   `xmake test -y -P .`.
 - WSL verification remains unavailable because `wsl --list --quiet` reports no
   registered distributions; the final Phase E Linux gate remains open.
+
+## 2026-07-10 Phase E Step 478 Indexed Rounded Rectangle Draw Recording
+
+- Started from clean tracked `master` at
+  `61f7a2ce feat: create vulkan rounded rect pipeline`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 478 will validate retained rounded rectangle draw ranges, bind the
+  dedicated pipeline and paired vertex/index buffers, push framebuffer size,
+  and issue indexed draws in a focused recording module. Step 479 will own the
+  anti-aliasing strategy.
+- Added `vulkan_rounded_rect_draw_recording_test` and observed the expected RED
+  compile failure because the focused private recording header did not exist.
+- Added zero-allocation draw-range validation, dedicated indexed command
+  recording, frame-recording integration, and renderer structure coverage.
+- The first compiled run passed real `hello_window/windows_first_frame`; the
+  new draw-recording test reached only its expected documentation exit 40.
+  `renderer_source_structure_test` exited 36 because the general command file
+  exceeded 180 lines, so existing solid-rectangle clear recording was moved to
+  a focused module instead of relaxing the structure limit.
+- The follow-up run passed renderer structure, solid-rectangle rendering, and
+  real first-frame indexed submission; the Step 478 test remained only at its
+  expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `vulkan_record_rounded_rect_draws`, `vkCmdDrawIndexed`, and the Step 479
+  anti-aliasing handoff.
+- Focused Windows Step 478 verification passed 8/8: indexed recording,
+  pipeline, buffers, geometry, solid-rectangle regression, renderer structure,
+  real first-frame submission, and parity ledger.
+- Windows full debug verification passed 159/159 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because no distribution is registered;
+  shared indexed-recording and solid-recording validation remains in the final
+  Phase E Linux gate.

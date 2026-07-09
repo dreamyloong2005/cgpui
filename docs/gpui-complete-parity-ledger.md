@@ -429,6 +429,13 @@ consume C: drive space again.
   compiled into embedded rounded rectangle SPIR-V, while transient shader
   modules and swapchain-owned layout/pipeline handles keep lifetime explicit.
 - Handoff: Phase E Step 478 indexed rounded rectangle draw recording.
+- Phase E Step 478 adds zero-allocation draw-range validation and
+  `vulkan_record_rounded_rect_draws`. The focused recorder binds the rounded
+  rectangle pipeline, vertex/index buffers, viewport, scissor, and framebuffer
+  push constants before issuing `vkCmdDrawIndexed` for each retained range.
+  Existing solid clear recording now lives in its own focused module so the
+  general frame recorder remains below its structure limit.
+- Handoff: Phase E Step 479 rounded rectangle anti-aliasing strategy.
 
 ## Categories
 

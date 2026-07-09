@@ -61,6 +61,8 @@ Result<void> VulkanRendererState::present_frame(
           render_pass_,
           framebuffers_[image_index],
           swapchain_extent_,
+          rounded_rect_pipeline_resources_,
+          rounded_rect_buffers_,
           text_pipeline_resources_,
           text_vertex_buffer_,
           color,

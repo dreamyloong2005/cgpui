@@ -1527,9 +1527,15 @@ draw calls for the Windows/Linux renderer.
   pipeline lifetime. Reviewable GLSL ships as embedded rounded rectangle SPIR-V
   validated for Vulkan 1.0. Step 478 owns indexed rounded rectangle draw
   recording.
-- [ ] Steps 478-482: Complete rounded-rect rendering with indexed recording,
-  anti-aliasing strategy, border radius clipping, border stroke, and fill
-  variants.
+- [x] Phase E Step 478 adds zero-allocation rounded rectangle range validation
+  and `vulkan_record_rounded_rect_draws` in a focused private module. Frame
+  recording binds the dedicated pipeline, vertex/index buffers, viewport,
+  scissor, and framebuffer push constants before issuing `vkCmdDrawIndexed` for
+  each retained draw range. Existing solid clear recording also moves to a
+  focused module so the frame entry remains thin. Step 479 owns the rounded
+  rectangle anti-aliasing strategy.
+- [ ] Steps 479-482: Complete rounded-rect rendering with anti-aliasing
+  strategy, border radius clipping, border stroke, and fill variants.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
   strategy, nested opacity, transform composition, and z/layer ordering in
   actual command recording.

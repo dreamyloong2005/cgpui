@@ -585,13 +585,19 @@ Windows/Linux core API is stable enough for parity work.
   and swapchain-owned pipeline lifetime. Reviewable GLSL ships as
   embedded rounded rectangle SPIR-V validated for Vulkan 1.0. Step 478 owns indexed
   rounded rectangle draw recording.
+- Phase E Step 478 adds zero-allocation draw-range validation and
+  `vulkan_record_rounded_rect_draws`. The focused recorder binds the dedicated
+  pipeline and paired buffers, pushes framebuffer size, and issues
+  `vkCmdDrawIndexed` for each retained range. Solid clear recording moved to a
+  focused module to preserve the frame recorder structure limit. Step 479 owns
+  the rounded rectangle anti-aliasing strategy.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-477 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-478 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -604,9 +610,10 @@ Windows/Linux core API is stable enough for parity work.
   the text-pipeline integration closeout audit, and contiguous rounded-rectangle
   CPU vertex/index geometry with stable draw ranges, fence-safe paired Vulkan
   vertex/index buffer uploads and cleanup ownership, plus the dedicated rounded
-  rectangle shader pipeline and swapchain-owned resources.
-- In progress: Step 478 indexed rounded rectangle draw recording.
-- Pending bands: Steps 478-482 rounded rectangles; Steps 483-490 clip, opacity,
+  rectangle shader pipeline and swapchain-owned resources, plus validated
+  indexed rounded rectangle command recording.
+- In progress: Step 479 rounded rectangle anti-aliasing strategy.
+- Pending bands: Steps 479-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -677,6 +684,8 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_rounded_rect_pipeline_test` initially failed to compile because the focused private pipeline header did not exist | Step 477 RED | Expected RED; add rounded-rectangle ABI, shaders, fixed state, and swapchain-owned pipeline resources |
 | The planning session catchup script was invoked directly as a `.py` file and Windows denied execution | Step 477 resume | Run the same script through the available `python` interpreter; it recovered the unsynced Step 477 context successfully |
 | The first post-documentation Step 477 pipeline test exited 50 because `task_plan.md` split the exact `embedded rounded rectangle SPIR-V` phrase across a line break | Step 477 documentation gate | Keep the required evidence phrase contiguous in `task_plan.md` without changing the pipeline conclusion |
+| `vulkan_rounded_rect_draw_recording_test` initially failed to compile because the focused private recording header did not exist | Step 478 RED | Expected RED; add range validation and indexed Vulkan recording in a dedicated rounded rectangle module |
+| The first compiled Step 478 run failed `renderer_source_structure_test` at exit 36 because `vulkan_command_recording.cpp` exceeded its 180-line limit | Step 478 structure gate | Move existing solid-rectangle clear planning/recording into a focused module so the frame entry stays thin; do not relax the line-count guard |
 
 ## Definition Of Done For This 20-Step Goal
 

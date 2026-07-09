@@ -125,6 +125,12 @@
   embedded rounded rectangle SPIR-V validated for Vulkan 1.0, and the pipeline
   uses no descriptors. Step 478 can bind the paired buffers and record indexed
   rounded rectangle draws without changing resource ownership.
+- Phase E Step 478 validates the retained ranges without allocating a second
+  command vector, then `vulkan_record_rounded_rect_draws` binds the dedicated
+  pipeline, paired vertex/index buffers, and framebuffer push constants before
+  `vkCmdDrawIndexed`. Solid clear recording moved out of the general command
+  entry to preserve its module-size guard. Step 479 should define the rounded
+  rectangle anti-aliasing strategy without weakening this indexed path.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 
