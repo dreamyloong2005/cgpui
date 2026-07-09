@@ -7902,3 +7902,17 @@
   handling, inline image drawing/loading, syntax parsing/editor token source
   integration, and actual multi-color glyph painting.
 - Phase E Step 459 Vulkan glyph atlas production follows this closeout.
+
+## 2026-07-10 Phase E Step 459 Vulkan Glyph Atlas Production
+
+- Phase E Step 459 Vulkan glyph atlas production should start with a focused
+  renderer resource-planning leaf, not by putting Vulkan handle ownership into
+  the public aggregate or shader pipeline work.
+- `include/cgpui/renderer/glyph_atlas_production.hpp` exposes
+  `GlyphAtlasProductionResourceState`, resource records, upload commands, and
+  `GlyphAtlasProductionPlan` without exposing Vk handles.
+- `src/renderer/vulkan/vulkan_glyph_atlas_production.cpp` implements
+  `vulkan_plan_glyph_atlas_production_resources(...)`, converting glyph atlas
+  upload batches into alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness.
+- descriptor set binding remains Step 460, along with private Vulkan
+  renderer-state handle ownership and command-buffer recording.

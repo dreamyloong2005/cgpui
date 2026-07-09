@@ -470,6 +470,13 @@ Windows/Linux core API is stable enough for parity work.
   handling, inline image drawing/loading, syntax parsing/editor token source
   integration, and actual multi-color glyph painting. Phase E Step 459 Vulkan
   glyph atlas production follows this closeout.
+- Phase E Step 459 Vulkan glyph atlas production starts the renderer
+  production path with `include/cgpui/renderer/glyph_atlas_production.hpp` and
+  `src/renderer/vulkan/vulkan_glyph_atlas_production.cpp`.
+  `GlyphAtlasProductionResourceState` and
+  `vulkan_plan_glyph_atlas_production_resources(...)` convert glyph atlas
+  upload batches into alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness. descriptor set binding remains Step 460, alongside private
+  Vulkan renderer-state handle ownership and command-buffer recording.
 
 ## Definition Of Done For This 20-Step Goal
 

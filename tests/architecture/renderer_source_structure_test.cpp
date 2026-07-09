@@ -124,6 +124,7 @@ int main(int argc, char** argv) {
       "include/cgpui/renderer/glyph_uploads.hpp",
       "include/cgpui/renderer/image_uploads.hpp",
       "include/cgpui/renderer/glyph_texture_resources.hpp",
+      "include/cgpui/renderer/glyph_atlas_production.hpp",
       "include/cgpui/renderer/glyph_cache.hpp",
       "include/cgpui/renderer/glyph_atlas.hpp",
       "include/cgpui/renderer/renderer_frame.hpp",
@@ -172,6 +173,7 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_report_text_draws.cpp",
       "src/renderer/vulkan/vulkan_report_text_quads.cpp",
       "src/renderer/vulkan/vulkan_report_texture_resources.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_production.cpp",
       "src/renderer/vulkan/vulkan_report_uploads.cpp",
       "src/renderer/vulkan/vulkan_presentation.cpp",
       "src/renderer/vulkan/vulkan_presentation_recovery.cpp",
@@ -240,6 +242,8 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/renderer/image_uploads.hpp");
   const std::string glyph_texture_resources =
       read_source("include/cgpui/renderer/glyph_texture_resources.hpp");
+  const std::string glyph_atlas_production =
+      read_source("include/cgpui/renderer/glyph_atlas_production.hpp");
   const std::string glyph_cache =
       read_source("include/cgpui/renderer/glyph_cache.hpp");
   const std::string renderer_frame =
@@ -265,6 +269,8 @@ int main(int argc, char** argv) {
       !contains(glyph_atlas, "#include \"cgpui/renderer/image_uploads.hpp\"") ||
       !contains(glyph_atlas,
                 "#include \"cgpui/renderer/glyph_texture_resources.hpp\"") ||
+      !contains(glyph_atlas,
+                "#include \"cgpui/renderer/glyph_atlas_production.hpp\"") ||
       !contains(glyph_atlas, "#include \"cgpui/renderer/glyph_cache.hpp\"") ||
       line_count(glyph_atlas) > 40 ||
       contains(glyph_atlas, "class GlyphCache") ||
@@ -285,6 +291,8 @@ int main(int argc, char** argv) {
       !contains(image_uploads, "struct ImageUploadBatch") ||
       !contains(glyph_texture_resources,
                 "class GlyphAtlasTextureResourceState") ||
+      !contains(glyph_atlas_production,
+                "class GlyphAtlasProductionResourceState") ||
       !contains(glyph_cache, "class GlyphCache") ||
       !contains(renderer_frame, "class Renderer")) {
     return 9;
@@ -293,6 +301,7 @@ int main(int argc, char** argv) {
       line_count(glyph_uploads) > 220 ||
       line_count(image_uploads) > 220 ||
       line_count(glyph_texture_resources) > 220 ||
+      line_count(glyph_atlas_production) > 220 ||
       line_count(glyph_cache) > 220 ||
       line_count(renderer_text_reports) > 220 ||
       line_count(renderer_image_reports) > 220 ||
@@ -872,6 +881,8 @@ int main(int argc, char** argv) {
 
   const std::string report_texture_resources =
       read_source("src/renderer/vulkan/vulkan_report_texture_resources.cpp");
+  const std::string glyph_atlas_production_source =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_production.cpp");
   if (line_count(report_texture_resources) > 150 ||
       !contains(
           report_texture_resources,
@@ -883,6 +894,20 @@ int main(int argc, char** argv) {
       contains(report_texture_resources, "vulkan_plan_image_uploads(") ||
       contains(report_texture_resources, "vulkan_build_textured_glyph_quads(")) {
     return 40;
+  }
+  if (line_count(glyph_atlas_production_source) > 120 ||
+      !contains(
+          glyph_atlas_production_source,
+          "vulkan_plan_glyph_atlas_production_resources(") ||
+      !contains(glyph_atlas_production_source,
+                "GlyphAtlasProductionResourceState") ||
+      !contains(glyph_atlas_production_source,
+                "GlyphAtlasProductionUploadCommand") ||
+      contains(glyph_atlas_production_source,
+               "vulkan_update_glyph_atlas_texture_resources(") ||
+      contains(glyph_atlas_production_source,
+               "vulkan_build_textured_glyph_quads(")) {
+    return 58;
   }
 
   const std::string report_image_uploads =

@@ -296,7 +296,15 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   candidate UI policy, runtime rich-text element dispatch, actual link command
   handling, inline image drawing/loading, syntax parsing/editor token source
   integration, and actual multi-color glyph painting.
-- Handoff: Phase E Step 459 Vulkan glyph atlas production.
+- Phase E Step 459 Vulkan glyph atlas production starts the renderer
+  production path through the focused public leaf
+  `include/cgpui/renderer/glyph_atlas_production.hpp` and the focused Vulkan
+  source `src/renderer/vulkan/vulkan_glyph_atlas_production.cpp`.
+  `GlyphAtlasProductionResourceState` and
+  `vulkan_plan_glyph_atlas_production_resources(...)` convert glyph atlas
+  upload batches into alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness while preserving handle-free public records. descriptor set binding remains Step 460, along with private Vulkan renderer-state handle
+  ownership and command-buffer recording.
+- Handoff: Phase E Step 460 glyph atlas descriptor set binding.
 
 ## Categories
 

@@ -1358,8 +1358,16 @@ draw calls for the Windows/Linux renderer.
 - `tests/renderer/*`
 - `tests/examples/*`
 
-- [ ] Steps 459-466: Create real Vulkan glyph atlas images, memory allocation,
-  image views, samplers, descriptor sets, and dirty upload command paths.
+- [x] Phase E Step 459 Vulkan glyph atlas production starts the renderer
+  production path with focused atlas resource planning rather than shader work.
+  `include/cgpui/renderer/glyph_atlas_production.hpp` and
+  `src/renderer/vulkan/vulkan_glyph_atlas_production.cpp` add
+  `GlyphAtlasProductionResourceState` plus
+  `vulkan_plan_glyph_atlas_production_resources(...)` for alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness. descriptor set binding remains Step 460 so the public leaf stays handle-free and the Vulkan
+  state integration can land in focused private renderer files.
+- [ ] Steps 460-466: Create real Vulkan glyph atlas descriptor sets, bind
+  production atlas resources into renderer state, and record dirty upload
+  command paths against the live command buffers.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured
   glyph draw calls, subpixel positioning policy, and gamma/alpha handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,
