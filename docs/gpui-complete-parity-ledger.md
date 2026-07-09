@@ -243,6 +243,17 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   example and keeps it away from private runtime APIs.
 - Remaining gap: richer official input workflows, rich-text examples, and final
   Phase D verification remain later Phase D work.
+- Phase D Step 445 text input workflow public example extends this slice.
+  Step 445 extends the text-input examples band with
+  `examples/api_parity/public_text_input_workflow/main.cpp` and
+  `api_parity_public_text_input_workflow`, demonstrating undo/redo and redo invalidation,
+  edit-history clean markers, line/word navigation and composition cancellation,
+  selection text, backspace/delete-forward, TextEditAction dispatch, and history
+  diagnostics through `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_text_input_workflow_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs.
+- Remaining gap: rich-text examples, final examples closeout, and final Phase D
+  verification remain later Phase D work.
 
 ## Categories
 

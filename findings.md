@@ -7817,3 +7817,18 @@
   use, layout sizing, and accessibility text through public headers.
 - Richer official input workflows, rich-text examples, and final Phase D
   verification remain separate later steps.
+
+## 2026-07-09 Phase D Step 445 Text Input Workflow Public Example
+
+- Phase D Step 445 text input workflow public example should remain a public
+  workflow example, not a new text model feature or a private history hook.
+- Step 445 extends the text-input examples band with
+  `examples/api_parity/public_text_input_workflow/main.cpp`,
+  `api_parity_public_text_input_workflow`, and
+  `tests/api_parity/phase_d_text_input_workflow_examples_test.cpp`,
+  demonstrating undo/redo and redo invalidation, edit-history clean markers,
+  line/word navigation and composition cancellation, selection text,
+  backspace/delete-forward, TextEditAction dispatch, and history diagnostics
+  through public headers.
+- Rich-text examples, final examples closeout, and final Phase D verification
+  remain separate later steps.

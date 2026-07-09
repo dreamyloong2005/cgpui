@@ -1291,6 +1291,16 @@ behavior that can support GPUI examples and editor-like widgets.
   example and keeps it away from private runtime APIs. Richer official input
   workflows, rich-text examples, and final Phase D verification remain later
   steps.
+  Phase D Step 445 text input workflow public example extends this slice.
+  Step 445 extends the text-input examples band with
+  `examples/api_parity/public_text_input_workflow/main.cpp` and
+  `api_parity_public_text_input_workflow`, demonstrating undo/redo and redo invalidation,
+  edit-history clean markers, line/word navigation and composition cancellation,
+  selection text, backspace/delete-forward, TextEditAction dispatch, and history
+  diagnostics through `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_text_input_workflow_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs. Rich-text examples, final
+  examples closeout, and final Phase D verification remain later steps.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
   the parity ledger, and document which Unicode/IME behaviors are complete.
 
