@@ -224,6 +224,15 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
 - Remaining gap: runtime rich-text element dispatch, actual link command
   handling, inline image drawing/loading, syntax parsing/editor token source
   integration, and actual multi-color glyph painting remain later Phase D work.
+- Phase D Step 443 text input public examples start this slice. Step 443 starts the text-input public examples band with
+  `examples/api_parity/public_text_input_examples/main.cpp` and
+  `api_parity_public_text_input_examples`, demonstrating TextModel public editing,
+  selection ranges, edit-history status, text-input builder use, IME placement and composition metadata, delete-surrounding metadata, command
+  palette entries, and key bindings through `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_text_input_public_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs.
+- Remaining gap: text wrapper examples, richer official input workflows,
+  rich-text examples, and final Phase D verification remain later Phase D work.
 
 ## Categories
 

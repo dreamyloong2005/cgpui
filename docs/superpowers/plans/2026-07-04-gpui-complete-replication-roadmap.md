@@ -1272,6 +1272,15 @@ behavior that can support GPUI examples and editor-like widgets.
   painting remain later Phase D work.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
+  Phase D Step 443 text input public examples start this slice. Step 443 starts the text-input public examples band with
+  `examples/api_parity/public_text_input_examples/main.cpp` and
+  `api_parity_public_text_input_examples`, demonstrating TextModel public editing,
+  selection ranges, edit-history status, text-input builder use, IME placement and composition metadata, delete-surrounding metadata, command
+  palette entries, and key bindings through `cgpui/prelude.hpp` only.
+  `tests/api_parity/phase_d_text_input_public_examples_test.cpp` freezes the
+  example and keeps it away from private runtime APIs. Text wrapper examples,
+  richer official input workflows, rich-text examples, and final Phase D
+  verification remain later steps.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
   the parity ledger, and document which Unicode/IME behaviors are complete.
 

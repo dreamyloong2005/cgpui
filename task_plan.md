@@ -399,6 +399,16 @@ Windows/Linux core API is stable enough for parity work.
   actual link command handling, inline image drawing/loading, syntax
   parsing/editor token source integration, and actual multi-color glyph
   painting remain later Phase D work before examples/final verification.
+- Phase D Step 443 text input public examples start the next examples band.
+  Step 443 starts the text-input public examples band with
+  `examples/api_parity/public_text_input_examples/main.cpp`,
+  `api_parity_public_text_input_examples`, and
+  `tests/api_parity/phase_d_text_input_public_examples_test.cpp`, demonstrating
+  TextModel public editing, selection ranges, edit-history status, text-input
+  builder use, IME placement and composition metadata, delete-surrounding
+  metadata, command palette entries, and key bindings through
+  `cgpui/prelude.hpp` only. Text wrapper examples, richer official input
+  workflows, rich-text examples, and final Phase D verification remain later.
 
 ## Definition Of Done For This 20-Step Goal
 

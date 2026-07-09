@@ -7789,3 +7789,17 @@
 - This keeps the next Phase D handoff pointed at text/input public examples
   rather than hiding unfinished renderer, parser, or editor integration work
   under the rich-text metadata band.
+
+## 2026-07-09 Phase D Step 443 Text Input Public Examples
+
+- Phase D Step 443 text input public examples should stay prelude-only and
+  avoid private runtime hooks. Step 443 starts the text-input public examples band with `examples/api_parity/public_text_input_examples/main.cpp`,
+  `api_parity_public_text_input_examples`, and
+  `tests/api_parity/phase_d_text_input_public_examples_test.cpp`, not a new
+  text engine feature.
+- The example should demonstrate TextModel public editing, selection ranges,
+  edit-history status, text-input builder use, IME placement and composition metadata,
+  delete-surrounding metadata, command palette entries, and key
+  bindings from public headers.
+- Text wrapper examples, richer official input workflows, rich-text examples,
+  and final Phase D verification remain separate later steps.
