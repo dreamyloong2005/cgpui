@@ -437,6 +437,14 @@ Windows/Linux core API is stable enough for parity work.
   demonstrating rich-text run, syntax, inline-image, hit, activation, and paint metadata
   through `cgpui/prelude.hpp` only. renderer glyph coloring and inline image drawing remain later work, alongside
   final examples closeout and final Phase D verification.
+- Phase D guarded HarfBuzz backend closes the old source insertion-point gap.
+  The guarded HarfBuzz backend now shapes through hb_shape in
+  `src/ui/text_shaping_harfbuzz.cpp` when
+  `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` is enabled, using file-backed font faces when available and deterministic fallback on shaping failure.
+  `tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp` and the updated
+  shaping audit freeze that source boundary. DirectWrite font-file extraction remains later work,
+  along with native ZWJ ligature shaping depth, full Unicode script data,
+  bidirectional shaping, and paragraph shaping.
 
 ## Definition Of Done For This 20-Step Goal
 

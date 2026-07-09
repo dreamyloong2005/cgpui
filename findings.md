@@ -7846,3 +7846,17 @@
   through public headers.
 - renderer glyph coloring and inline image drawing remain later work, alongside
   final examples closeout and final Phase D verification.
+
+## 2026-07-09 Phase D Guarded HarfBuzz Backend
+
+- Phase D guarded HarfBuzz backend should be a real guarded implementation, not
+  the old `#error` insertion point. The default build still has no new
+  dependency requirement and preserves deterministic fallback.
+- The guarded HarfBuzz backend now shapes through hb_shape in
+  `src/ui/text_shaping_harfbuzz.cpp` when
+  `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` is enabled, using file-backed font faces when available and deterministic fallback on shaping failure.
+  `tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp` freezes this
+  guarded source boundary.
+- DirectWrite font-file extraction remains later work, along with native ZWJ
+  ligature shaping depth, full Unicode script data, bidirectional shaping, and
+  paragraph shaping.

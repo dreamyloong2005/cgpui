@@ -530,7 +530,18 @@
       "task_plan.md",
       "findings.md"
     ],
-    "rich_text_public_example_remaining_gap": "renderer glyph coloring and inline image drawing remain later work, alongside final examples closeout and final Phase D verification"
+    "rich_text_public_example_remaining_gap": "renderer glyph coloring and inline image drawing remain later work, alongside final examples closeout and final Phase D verification",
+    "guarded_harfbuzz_backend_surface": "Phase D guarded HarfBuzz backend now shapes through hb_shape in src/ui/text_shaping_harfbuzz.cpp when CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND is enabled, using file-backed font faces when available and deterministic fallback on shaping failure",
+    "guarded_harfbuzz_backend_sources": [
+      "src/ui/text_shaping_harfbuzz.cpp",
+      "tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp",
+      "tests/api_parity/phase_d_text_shaping_audit_test.cpp",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "task_plan.md",
+      "findings.md"
+    ],
+    "guarded_harfbuzz_backend_remaining_gap": "DirectWrite font-file extraction remains later work, along with native ZWJ ligature shaping depth, full Unicode script data, bidirectional shaping, and paragraph shaping"
   },
   "categories": [
     "application_and_app_context",

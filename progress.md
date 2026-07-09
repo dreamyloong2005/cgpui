@@ -17774,3 +17774,50 @@
 - Final focused WSL gate reused the same D: cache and `/dev/shm/cgpui` temp,
   included `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 13/13 focused
   tests.
+
+## 2026-07-09 Phase D Guarded HarfBuzz Backend
+
+- Started from clean tracked `master` after
+  `8a4d8bb0 feat: add rich text public example`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage with
+  `tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp` and the
+  `phase_d_harfbuzz_backend_audit_test` xmake target. The first Windows run
+  failed as expected because `src/ui/text_shaping_harfbuzz.cpp` was still a
+  `#error` insertion point and the docs/ledger evidence was absent.
+- Replaced the guarded HarfBuzz insertion point with an implementation that,
+  when `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` is enabled, builds an `hb_buffer`,
+  loads file-backed fallback faces when available, calls `hb_shape`, records
+  glyph ids, advances, offsets, clusters, font-run metadata, and script-run
+  metadata, and falls back deterministically on unavailable/shaping-failed
+  paths. Default builds still do not require HarfBuzz.
+- Updated the roadmap, Markdown/JSON parity ledger, `task_plan.md`, `findings.md`,
+  and `tests/api_parity/phase_d_text_shaping_audit_test.cpp` so the old
+  production-HarfBuzz gap is no longer represented as a dead source boundary.
+  DirectWrite font-file extraction, native ZWJ ligature shaping depth, full
+  Unicode script data, bidirectional shaping, and paragraph shaping remain
+  explicit later work.
+- Focused Windows verification passed:
+  `xmake test -y -P . text_model_test/default
+  phase_d_harfbuzz_backend_audit_test/default
+  phase_d_text_shaping_audit_test/default ui_source_structure_test/default
+  gpui_parity_ledger_test/default` 5/5.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp, included
+  `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 5/5 focused tests.
+- Expanded focused Windows gate passed 16/16 after adding the HarfBuzz audit:
+  `phase_d_harfbuzz_backend_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `phase_d_rich_text_public_examples_test/default`,
+  `phase_d_text_input_workflow_examples_test/default`,
+  `phase_d_text_wrapper_public_examples_test/default`,
+  `phase_d_text_input_public_examples_test/default`,
+  `phase_d_rich_text_audit_test/default`, `rich_text_run_test/default`,
+  `render_view_test/default`, `ui_source_structure_test/default`,
+  `ui_header_cleanliness/default`, `core_header_cleanliness/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Expanded focused WSL gate reused the same D: cache and `/dev/shm/cgpui` temp,
+  included `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 16/16 focused
+  tests.

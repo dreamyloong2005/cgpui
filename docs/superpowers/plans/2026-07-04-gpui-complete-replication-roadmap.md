@@ -901,7 +901,7 @@ behavior that can support GPUI examples and editor-like widgets.
 - `tests/ui/text_*`
 - `tests/platform/*text*`
 
-- [ ] Steps 379-386: Replace fallback-only shaping with HarfBuzz-backed
+- [x] Steps 379-386: Replace fallback-only shaping with HarfBuzz-backed
   shaping on Windows/Linux while preserving deterministic test fallbacks.
   Step 379 starts this band with an explicit text-shaping backend boundary:
   `TextShapingBackend`, `TextShapingOptions`, capability reporting, fallback
@@ -926,6 +926,14 @@ behavior that can support GPUI examples and editor-like widgets.
   Step 386 adds this text-shaping readiness audit to freeze the backend
   boundary, fallback diagnostics, and explicit production-HarfBuzz gap before
   later dependency-backed shaping work.
+  Phase D guarded HarfBuzz backend now shapes through hb_shape in
+  `src/ui/text_shaping_harfbuzz.cpp` when
+  `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` is enabled, using file-backed font faces when available and deterministic fallback on shaping failure.
+  `tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp` freezes the
+  source boundary so the guarded backend is no longer a `#error` insertion point.
+  DirectWrite font-file extraction remains later work, along with native ZWJ
+  ligature shaping depth, full Unicode script data, bidirectional shaping, and
+  paragraph shaping.
 - [ ] Steps 387-394: Add real font discovery and fallback: DirectWrite on
   Windows, fontconfig/FreeType on Linux, and later CoreText on macOS.
   Step 387 starts this band by moving `FontDatabase`, `FontFallbackChain`, and

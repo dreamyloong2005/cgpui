@@ -90,16 +90,19 @@ int main() {
 
   if (!contains(roadmap,
                 "Step 386 adds this text-shaping readiness audit") ||
+      !contains(roadmap, "guarded HarfBuzz backend now shapes through hb_shape") ||
       !contains(roadmap, "Step 401 adds deterministic script-run metadata") ||
       !contains(task_plan, "Step 386 adds a text-shaping readiness audit") ||
+      !contains(task_plan, "Phase D guarded HarfBuzz backend") ||
       !contains(task_plan, "Step 401 adds deterministic script-run metadata") ||
       !contains(findings,
                 "Step 386 is a readiness audit rather than a false "
                 "HarfBuzz completion") ||
+      !contains(findings, "Phase D guarded HarfBuzz backend") ||
       !contains(findings, "Step 401 adds lightweight script-run metadata") ||
-      contains(roadmap,
-               "- [x] Steps 379-386: Replace fallback-only shaping with "
-               "HarfBuzz-backed")) {
+      !contains(roadmap,
+                "- [x] Steps 379-386: Replace fallback-only shaping with "
+                "HarfBuzz-backed")) {
     return 3;
   }
 
@@ -129,7 +132,8 @@ int main() {
       !contains(text_row, "TextShapeRun::script_runs") ||
       !contains(text_row, "classify_text_shaping_script") ||
       !contains(text_row, "append_script_run_span") ||
-      !contains(text_row, "production HarfBuzz shaping") ||
+      !contains(text_row, "guarded HarfBuzz backend now shapes through hb_shape") ||
+      !contains(text_row, "file-backed font faces when available") ||
       !contains(text_row, "native ZWJ ligature shaping") ||
       !contains(text_row, "full Unicode script data") ||
       !contains(text_row, "bidirectional shaping") ||
@@ -160,11 +164,13 @@ int main() {
 
   if (!contains(dispatch_source, "shape_text_with_harfbuzz") ||
       !contains(dispatch_source, "TextShapingBackend::harfbuzz") ||
-      !contains(harfbuzz_source,
-                "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND requires the real "
-                "HarfBuzz shaping implementation") ||
+      !contains(harfbuzz_source, "hb_shape") ||
+      !contains(harfbuzz_source, "hb_buffer_add_utf8") ||
+      !contains(harfbuzz_source, "harfbuzz_file_backed_face_path") ||
       !contains(harfbuzz_source,
                 "TextShapingFallbackReason::backend_unavailable") ||
+      !contains(harfbuzz_source,
+                "TextShapingFallbackReason::shaping_failed") ||
       !contains(fallback_source, ".backend_capabilities")) {
     return 6;
   }
