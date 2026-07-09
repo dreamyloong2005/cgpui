@@ -529,6 +529,7 @@ int main(int argc, char** argv) {
       !contains(window_input_events, "WaylandWindow::pointer_moved(") ||
       !contains(window_drag_events, "WaylandWindow::drag_entered(") ||
       !contains(window_text_events, "WaylandWindow::text_input_commit(") ||
+      !contains(window_text_events, "append_ime_default_preedit_style") ||
       !contains(window_registered, "make_registered_wayland_window(") ||
       !contains(window_bridge, "wayland_window_pointer_moved(")) {
     return 10;

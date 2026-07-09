@@ -143,6 +143,7 @@ int main(int argc, char** argv) {
       "include/cgpui/core/event_text.hpp",
       "include/cgpui/core/event_platform.hpp",
       "include/cgpui/core/events.hpp",
+      "src/core/event_text.cpp",
       "src/renderer/vulkan/vulkan_internal.hpp",
       "src/renderer/vulkan/vulkan_platform_internal.hpp",
       "src/renderer/vulkan/vulkan_state_internal.hpp",
@@ -363,6 +364,8 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/core/event_keyboard.hpp");
   const std::string event_text_header =
       read_source("include/cgpui/core/event_text.hpp");
+  const std::string event_text_source =
+      read_source("src/core/event_text.cpp");
   const std::string event_platform_header =
       read_source("include/cgpui/core/event_platform.hpp");
   if (!contains(events_header, "#include \"cgpui/core/event_window.hpp\"") ||
@@ -382,6 +385,10 @@ int main(int argc, char** argv) {
       !contains(event_drag_drop_header, "struct DragEntered") ||
       !contains(event_keyboard_header, "struct KeyboardKey") ||
       !contains(event_text_header, "struct ImeComposition") ||
+      !contains(event_text_header, "struct ImePreeditStyleSpan") ||
+      !contains(event_text_header, "kImePreeditStyleSpanCapacity") ||
+      !contains(event_text_source, "append_ime_default_preedit_style") ||
+      contains(event_text_header, "std::vector<ImePreeditStyleSpan>") ||
       !contains(event_platform_header, "using PlatformEvent")) {
     return 57;
   }

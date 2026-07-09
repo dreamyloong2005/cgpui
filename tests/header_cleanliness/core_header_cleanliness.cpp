@@ -49,6 +49,17 @@ int main() {
   cgpui::PlatformEvent ime_event = cgpui::ImeComposition{
       .phase = cgpui::ImeCompositionPhase::update,
       .text = "x"};
+  cgpui::ImeComposition styled_ime{
+      .phase = cgpui::ImeCompositionPhase::update,
+      .text = "styled"};
+  (void)cgpui::append_ime_preedit_style(
+      styled_ime,
+      cgpui::ImePreeditStyleSpan{
+          .byte_offset = 0,
+          .byte_length = 6,
+          .kind = cgpui::ImePreeditStyleKind::underline,
+      });
+  (void)cgpui::append_ime_default_preedit_style(styled_ime);
   (void)ime_event;
   cgpui::PlatformEvent ime_delete_event = cgpui::ImeDeleteSurroundingText{
       .before_length = 1,

@@ -37,6 +37,7 @@ void WaylandWindow::text_input_preedit(
   event.serial = serial;
   event.preedit_cursor_begin = cursor_begin;
   event.preedit_cursor_end = cursor_end;
+  (void)append_ime_default_preedit_style(event);
   callback_(std::move(event));
 }
 

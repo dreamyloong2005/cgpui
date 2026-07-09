@@ -17073,6 +17073,46 @@
   `phase_d_edit_history_audit_test/default`,
   `phase_d_selection_caret_audit_test/default`, and
   `gpui_parity_ledger_test/default`.
+
+## 2026-07-09 Phase D Step 430 Preedit Style Metadata
+
+- Started from tracked `master` after
+  `3b608a54 feat: preserve wayland preedit cursor`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added fixed-capacity preedit style metadata to `ImeComposition` through
+  `ImePreeditStyleSpan`, `kImePreeditStyleSpanCapacity`, and helper functions
+  implemented in `src/core/event_text.cpp`, avoiding a per-event style vector.
+- Wayland preedit updates now call `append_ime_default_preedit_style(...)`
+  before dispatching the event, so `wayland_keyboard_test` observes one
+  underline span covering `"draft"` while runtime `TextModel` behavior remains
+  unchanged.
+- Structure/header guards now require the core event helper boundary, reject a
+  preedit-style vector in the event header, and require the Wayland text event
+  path to keep the default styling call.
+- Focused Windows verification passed:
+  `xmake test -y -P . core_header_cleanliness/default
+  platform_source_structure_test/default renderer_source_structure_test/default
+  window_runtime_text_test/default win32_text_input_test/default` 5/5.
+- Focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 5/5:
+  `core_header_cleanliness/default`, `wayland_keyboard_test/default`,
+  `platform_source_structure_test/default`,
+  `renderer_source_structure_test/default`, and
+  `window_runtime_text_test/default`.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . core_header_cleanliness/default
+  platform_source_structure_test/default renderer_source_structure_test/default
+  window_runtime_text_test/default win32_text_input_test/default
+  gpui_parity_ledger_test/default phase_d_edit_history_audit_test/default
+  phase_d_selection_caret_audit_test/default` 8/8.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 8/8:
+  `core_header_cleanliness/default`, `wayland_keyboard_test/default`,
+  `platform_source_structure_test/default`,
+  `renderer_source_structure_test/default`, `window_runtime_text_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_edit_history_audit_test/default`, and
+  `phase_d_selection_caret_audit_test/default`.
 - Focused WSL verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed 4/4:
   `wayland_keyboard_test/default`, `window_runtime_text_test/default`,

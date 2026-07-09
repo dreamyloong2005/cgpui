@@ -302,6 +302,12 @@ Windows/Linux core API is stable enough for parity work.
   window bridge forwards them with the existing serial, and the Wayland
   keyboard fixture asserts the preedit cursor range without adding styling or
   candidate-placement policy.
+- Step 430 adds fixed-capacity IME preedit style metadata. `ImePreeditStyleSpan`,
+  `kImePreeditStyleSpanCapacity`, `append_ime_preedit_style(...)`, and
+  `append_ime_default_preedit_style(...)` live in the core text event leaf and
+  focused `src/core/event_text.cpp`; Wayland preedit updates now attach one
+  default underline span without vector allocation, runtime text behavior stays
+  unchanged, and richer platform-specific styling remains future IME work.
 
 ## Definition Of Done For This 20-Step Goal
 

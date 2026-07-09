@@ -49,6 +49,11 @@ int main() {
   std::uint32_t ime_commit_serial = 0;
   std::int32_t ime_preedit_cursor_begin = 0;
   std::int32_t ime_preedit_cursor_end = 0;
+  std::size_t ime_preedit_style_count = 0;
+  std::uint32_t ime_preedit_style_offset = 0;
+  std::uint32_t ime_preedit_style_length = 0;
+  cgpui::ImePreeditStyleKind ime_preedit_style_kind =
+      cgpui::ImePreeditStyleKind::highlight;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Keyboard Test",
@@ -83,6 +88,14 @@ int main() {
             ime_preedit_serial = composition->serial;
             ime_preedit_cursor_begin = composition->preedit_cursor_begin;
             ime_preedit_cursor_end = composition->preedit_cursor_end;
+            ime_preedit_style_count = composition->preedit_style_count;
+            if (composition->preedit_style_count > 0) {
+              ime_preedit_style_offset =
+                  composition->preedit_styles[0].byte_offset;
+              ime_preedit_style_length =
+                  composition->preedit_styles[0].byte_length;
+              ime_preedit_style_kind = composition->preedit_styles[0].kind;
+            }
           }
           if (composition->phase == cgpui::ImeCompositionPhase::commit &&
               composition->text == "\xE4\xB8\xAD") {
@@ -265,6 +278,18 @@ int main() {
   }
   if (ime_preedit_cursor_end != 3) {
     return 31;
+  }
+  if (ime_preedit_style_count != 1) {
+    return 32;
+  }
+  if (ime_preedit_style_offset != 0) {
+    return 33;
+  }
+  if (ime_preedit_style_length != 5) {
+    return 34;
+  }
+  if (ime_preedit_style_kind != cgpui::ImePreeditStyleKind::underline) {
+    return 35;
   }
   if (!ime_delete_surrounding_received) {
     return 26;

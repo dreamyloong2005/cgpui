@@ -7593,3 +7593,16 @@
   placement, or a broader Wayland serial policy.
 - The test compositor now has an overload for explicit preedit cursor ranges,
   and `wayland_keyboard_test` asserts `1..3` for the `"draft"` preedit update.
+
+## 2026-07-09 Phase D Step 430 Preedit Style Metadata
+
+- Step 430 adds platform-neutral IME preedit styling as fixed-capacity metadata
+  on `ImeComposition`, not as a dynamic allocation-heavy style vector.
+- `ImePreeditStyleSpan`, `kImePreeditStyleSpanCapacity`,
+  `append_ime_preedit_style(...)`, and
+  `append_ime_default_preedit_style(...)` live at the core text event boundary,
+  with non-inline helper bodies in `src/core/event_text.cpp`.
+- Wayland text-input v3 does not provide rich style spans, so the Wayland
+  window preedit path attaches one default underline span covering the preedit
+  text. This preserves the future rendering/candidate-placement input without
+  changing `TextModel` composition behavior.

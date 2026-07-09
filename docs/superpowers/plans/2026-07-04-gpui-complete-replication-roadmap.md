@@ -1136,6 +1136,13 @@ behavior that can support GPUI examples and editor-like widgets.
   forwarding `cursor_begin` / `cursor_end` through `WaylandTextInput`,
   `wayland_window_text_input_preedit(...)`, and the Wayland keyboard fixture
   without adding preedit styling or candidate-placement policy.
+  Step 430 adds fixed-capacity preedit style metadata through
+  `ImePreeditStyleSpan`, `kImePreeditStyleSpanCapacity`,
+  `append_ime_preedit_style(...)`, and
+  `append_ime_default_preedit_style(...)` in the core text event boundary.
+  Wayland preedit updates attach one default underline span without vector
+  allocation or `TextModel` behavior changes; platform-specific styling and
+  candidate-placement policy remain open.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
