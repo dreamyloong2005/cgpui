@@ -200,6 +200,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
+      "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_vertex_buffer.cpp",
       "src/renderer/vulkan/vulkan_swapchain.cpp",
       "src/renderer/vulkan/vulkan_swapchain_create.cpp",
       "src/renderer/vulkan/vulkan_swapchain_query.cpp",
@@ -1058,6 +1060,21 @@ int main(int argc, char** argv) {
       !contains(text_pipeline_resources, "vkDestroyPipeline") ||
       contains(command_recording, "vkCreateGraphicsPipelines")) {
     return 63;
+  }
+
+  const std::string text_vertex_buffer_header = read_source(
+      "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp");
+  const std::string text_vertex_buffer =
+      read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
+  if (line_count(text_vertex_buffer_header) > 60 ||
+      line_count(text_vertex_buffer) > 190 ||
+      !contains(text_vertex_buffer_header,
+                "struct VulkanTextVertexBufferResources") ||
+      !contains(text_vertex_buffer, "vulkan_build_text_vertices(") ||
+      !contains(text_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
+      !contains(text_vertex_buffer, "vkMapMemory") ||
+      contains(command_recording, "vulkan_build_text_vertices(")) {
+    return 64;
   }
 
   const std::string report_image_uploads =

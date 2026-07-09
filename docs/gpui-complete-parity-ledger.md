@@ -386,6 +386,12 @@ consume C: drive space again.
   pipeline with an 8-byte vertex push constant, destroys transient shader
   modules after creation, and follows swapchain create/install/resize/destroy.
 - Handoff: Phase E Step 470 text vertex-buffer upload resources.
+- Phase E Step 470 adds `VulkanTextVertexBufferResources`, deterministic six-
+  vertex expansion per `TexturedGlyphQuad`, and
+  `vulkan_upload_text_vertex_buffer`. Frame preparation rebuilds one host-
+  visible/coherent vertex buffer only after the in-flight fence completes, and
+  existing contiguous page-run indices remain valid.
+- Handoff: Phase E Step 471 descriptor-bound textured glyph draw recording.
 
 ## Categories
 

@@ -10,6 +10,7 @@ VulkanRendererState::~VulkanRendererState() {
     vkDeviceWaitIdle(device_);
     destroy_swapchain();
     destroy_sync_objects();
+    vulkan_destroy_text_vertex_buffer(device_, text_vertex_buffer_);
     vulkan_destroy_glyph_atlas_upload_resources(device_, glyph_atlas_uploads_);
     vulkan_destroy_glyph_atlas_resources(device_, glyph_atlas_resources_);
     if (command_pool_ != VK_NULL_HANDLE) {

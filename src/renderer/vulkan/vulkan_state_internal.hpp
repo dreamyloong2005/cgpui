@@ -5,6 +5,7 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
+#include "vulkan_text_vertex_buffer_internal.hpp"
 
 namespace cgpui {
 
@@ -99,6 +100,7 @@ class VulkanRendererState final {
   VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
   std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_;
   std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;
+  VulkanTextVertexBufferResources text_vertex_buffer_;
   std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;
 };

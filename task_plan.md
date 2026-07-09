@@ -546,21 +546,27 @@ Windows/Linux core API is stable enough for parity work.
   uses an 8-byte vertex push constant, retires transient shader modules, and
   follows swapchain create/install/resize/destroy. Step 470 adds text vertex-
   buffer upload resources.
+- Phase E Step 470 adds `VulkanTextVertexBufferResources`, deterministic six-
+  vertex expansion per `TexturedGlyphQuad`, and
+  `vulkan_upload_text_vertex_buffer`. Frame preparation rebuilds one host-
+  visible/coherent vertex buffer after the in-flight fence, preserving page-run
+  indices for Step 471 descriptor-bound draw recording.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-469 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-470 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
   descriptor bindings, renderer-ready flat quad ranges, and the integration
   closeout audit, text-pipeline vertex/fixed-state contract, embedded shader
-  module boundaries, and swapchain-owned pipeline resources.
-- In progress: Step 470 text vertex-buffer upload resources.
-- Pending bands: Steps 470-474 remaining text
+  module boundaries, swapchain-owned pipeline resources, and fence-safe text
+  vertex-buffer uploads.
+- In progress: Step 471 descriptor-bound textured glyph draw recording.
+- Pending bands: Steps 471-474 remaining text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -605,6 +611,8 @@ Windows/Linux core API is stable enough for parity work.
 | A Step 468 cleanup patch mixed progress-file context into the shader-test update and failed verification | Step 468 final cleanup | Retry the same narrow changes with explicit file sections; the failed patch changed no files |
 | `vulkan_text_pipeline_resources_test` initially failed to compile because the focused private resource header did not exist | Step 469 RED | Expected RED; add swapchain-owned pipeline-layout/graphics-pipeline resources and lifecycle integration in focused files |
 | The first compiled Step 469 resource test exited 40 while structure, state, and shader tests passed | Step 469 documentation gate | Expected RED after resource/lifecycle behavior compiled; update roadmap, ledger, planning, and findings with the Step 470 vertex-buffer handoff |
+| `vulkan_text_vertex_buffer_test` initially failed to compile because the focused private vertex-buffer header did not exist | Step 470 RED | Expected RED; add deterministic quad expansion and fence-safe host-visible vertex-buffer upload in focused files |
+| The first compiled Step 470 vertex-buffer test exited 40 while structure, pipeline-resource, and draw-data tests passed | Step 470 documentation gate | Expected RED after vertex expansion/upload compiled; update roadmap, ledger, planning, and findings with the Step 471 draw-recording handoff |
 
 ## Definition Of Done For This 20-Step Goal
 

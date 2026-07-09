@@ -1476,7 +1476,14 @@ draw calls for the Windows/Linux renderer.
   atlas descriptor-set layout plus an 8-byte vertex push constant, and shader
   modules stay transient during creation. Create/install/resize/destroy follow
   the swapchain lifetime. Step 470 adds text vertex-buffer upload resources.
-- [ ] Steps 470-474: Complete the remaining text graphics pipeline,
+- [x] Phase E Step 470 adds deterministic text-vertex expansion and private
+  upload resources in `vulkan_text_vertex_buffer_internal.hpp` and
+  `vulkan_text_vertex_buffer.cpp`. Each `TexturedGlyphQuad` becomes six
+  triangle-list vertices, and `VulkanTextVertexBufferResources` owns a fence-
+  safe host-visible/coherent vertex buffer rebuilt by
+  `vulkan_upload_text_vertex_buffer` during frame preparation. Page-run order
+  remains intact so Step 471 can bind descriptors and record textured draws.
+- [ ] Steps 471-474: Complete the remaining text graphics pipeline,
   textured glyph draw calls, subpixel positioning policy, and gamma/alpha
   handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

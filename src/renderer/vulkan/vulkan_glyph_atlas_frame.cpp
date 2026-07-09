@@ -43,6 +43,15 @@ Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
   }
   glyph_atlas_draw_quads_ = std::move(draw_data.quads);
   glyph_atlas_draw_bindings_ = std::move(*bindings);
+  if (auto result = vulkan_upload_text_vertex_buffer(
+          physical_device_,
+          device_,
+          glyph_atlas_draw_quads_,
+          text_vertex_buffer_);
+      !result) {
+    vulkan_destroy_glyph_atlas_upload_resources(device_, glyph_atlas_uploads_);
+    return result;
+  }
   return {};
 }
 

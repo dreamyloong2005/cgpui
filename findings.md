@@ -42,6 +42,16 @@
   `VulkanTextPipelineResources` and `vulkan_create_text_pipeline_resources`
   now implement that contract. Step 470 adds text vertex-buffer upload
   resources before command-recorded textured glyph draws.
+- Phase E Step 470 can expand each flat `TexturedGlyphQuad` into six triangle-
+  list `VulkanTextVertex` records without changing page-run ordering. Because
+  `present_frame(...)` waits for the single in-flight fence before frame
+  preparation, a focused host-visible/coherent vertex buffer can be rebuilt
+  there without per-frame overlap or an extra staging resource.
+- The vertex-buffer module should retain only Vulkan buffer/memory handles plus
+  byte and vertex counts. `first_quad_index * 6` remains a zero-allocation draw
+  offset for Step 471 descriptor-bound `vkCmdDraw` recording.
+  `VulkanTextVertexBufferResources` and `vulkan_upload_text_vertex_buffer` now
+  implement this fence-safe upload path.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

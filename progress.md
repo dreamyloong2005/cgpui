@@ -18293,3 +18293,36 @@
   `hello_window/linux_first_frame` and
   `hello_window/linux_resize_after_first_frame`, covering real renderer startup,
   text-pipeline creation, first presentation, and swapchain recreation.
+
+## 2026-07-10 Phase E Step 470 Text Vertex Buffer Uploads
+
+- Started from clean tracked `master` at
+  `7840cc94 feat: own vulkan text pipeline resources`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed each `TexturedGlyphQuad` maps to six triangle-list vertices and the
+  existing page-run `first_quad_index` can map directly to `firstVertex` by
+  multiplying by six in Step 471.
+- Step 470 will add a focused private vertex-buffer module, deterministic quad
+  expansion, host-visible/coherent allocation and upload, renderer-state/frame
+  ownership, behavior/structure tests, and the Step 471 draw-recording handoff.
+- Added `vulkan_text_vertex_buffer_test` and observed the expected RED compile
+  failure because the focused private vertex-buffer header did not exist.
+- Added focused text vertex expansion and vertex-buffer resource modules.
+  Frame preparation now uploads six vertices per quad into host-visible/coherent
+  memory after the in-flight fence, and renderer destruction retires the buffer.
+- The first compiled Step 470 gate passed renderer structure, pipeline-resource,
+  and glyph draw-data tests; the vertex-buffer test exited 40 only at its
+  expected documentation gate.
+- Real Win32 Vulkan validation passed
+  `vulkan_frame_lifetime_test/default`, including incremental text frames and a
+  three-page glyph atlas workload with mapped vertex-buffer uploads.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md` to
+  complete Step 470 and hand Step 471 to descriptor-bound textured glyph draw
+  recording.
+- Focused Windows Step 470 verification passed 8/8: vertex buffers, renderer
+  structure, pipeline resources, glyph draw data, live frame lifetime, parity
+  ledger, glyph-atlas closeout, and shader modules.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the corresponding 7/7 shared tests.
+- Windows full debug verification passed 151/151 with
+  `xmake test -y -P .`.
