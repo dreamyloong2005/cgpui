@@ -971,6 +971,10 @@ behavior that can support GPUI examples and editor-like widgets.
   it is acting as an emoji ZWJ sequence joiner between emoji-capable
   codepoints, keeping deterministic glyph records and per-codepoint color
   plans without claiming native ZWJ ligature shaping.
+  Step 401 adds deterministic script-run metadata through `TextScriptRun` and
+  `TextShapeRun::script_runs`, coalescing contiguous fallback glyphs into
+  lightweight latin/han/emoji/etc. spans for later HarfBuzz itemization without
+  changing run-level shaping script semantics.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.

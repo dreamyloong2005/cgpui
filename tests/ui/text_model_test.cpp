@@ -911,6 +911,39 @@ int test_shape_text_splits_contiguous_font_fallback_runs() {
   return 0;
 }
 
+int test_shape_text_splits_script_runs() {
+  const cgpui::TextShapeRun run = cgpui::shape_text(
+      "A\xE4\xB8\xAD\xF0\x9F\x98\x80",
+      cgpui::FontDescriptor{.family = "Inter"},
+      18.0F);
+  if (run.glyph_count() != 3 || run.script_runs.size() != 3) {
+    return 182;
+  }
+  if (run.script_runs[0].script != cgpui::TextShapingScript::latin ||
+      run.script_runs[0].glyph_start != 0 ||
+      run.script_runs[0].glyph_end != 1 ||
+      run.script_runs[0].byte_start != 0 ||
+      run.script_runs[0].byte_end != 1) {
+    return 183;
+  }
+  if (run.script_runs[1].script != cgpui::TextShapingScript::han ||
+      run.script_runs[1].glyph_start != 1 ||
+      run.script_runs[1].glyph_end != 2 ||
+      run.script_runs[1].byte_start != 1 ||
+      run.script_runs[1].byte_end != 4) {
+    return 184;
+  }
+  if (run.script_runs[2].script != cgpui::TextShapingScript::emoji ||
+      run.script_runs[2].glyph_start != 2 ||
+      run.script_runs[2].glyph_end != 3 ||
+      run.script_runs[2].byte_start != 4 ||
+      run.script_runs[2].byte_end != 8 ||
+      run.script_runs[2].advance != 9.0F) {
+    return 185;
+  }
+  return 0;
+}
+
 int test_shape_text_records_missing_glyph_diagnostics() {
   cgpui::FontDatabase database;
   database.add_face(cgpui::FontFaceDescriptor{
@@ -1481,6 +1514,10 @@ int main() {
   }
   if (const int result =
           test_shape_text_splits_contiguous_font_fallback_runs();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_shape_text_splits_script_runs();
       result != 0) {
     return result;
   }

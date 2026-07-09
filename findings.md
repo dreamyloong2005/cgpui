@@ -7181,3 +7181,19 @@
   codepoint in the sequence still gets its own `TextColorGlyphPlan`. Native
   ZWJ ligature shaping and single-glyph emoji sequence rendering remain future
   HarfBuzz/color-font work.
+
+## 2026-07-09 Phase D Step 401 Script Run Metadata
+
+- Step 401 adds lightweight script-run metadata to deterministic fallback
+  shaping rather than full Unicode itemization.
+- `TextScriptRun` lives in the public `text_shape.hpp` leaf, and
+  `TextShapeRun::script_runs` records contiguous glyph/byte/advance spans by
+  fallback-classified script.
+- `classify_text_shaping_script(...)` and `append_script_run_span(...)` stay in
+  `src/ui/text_shaping_fallback.cpp`, keeping the helper local to the fallback
+  implementation and avoiding a new broad script module before HarfBuzz lands.
+- The classifier deliberately covers only deterministic ranges needed for the
+  current metadata path: latin, han, hiragana, katakana, hangul, hebrew,
+  arabic, devanagari, emoji-plane, and common fallback. Full Unicode script
+  data, bidirectional shaping, HarfBuzz script itemization, and real native
+  script segmentation remain future Phase D work.

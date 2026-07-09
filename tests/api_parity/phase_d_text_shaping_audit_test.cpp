@@ -90,10 +90,13 @@ int main() {
 
   if (!contains(roadmap,
                 "Step 386 adds this text-shaping readiness audit") ||
+      !contains(roadmap, "Step 401 adds deterministic script-run metadata") ||
       !contains(task_plan, "Step 386 adds a text-shaping readiness audit") ||
+      !contains(task_plan, "Step 401 adds deterministic script-run metadata") ||
       !contains(findings,
                 "Step 386 is a readiness audit rather than a false "
                 "HarfBuzz completion") ||
+      !contains(findings, "Step 401 adds lightweight script-run metadata") ||
       contains(roadmap,
                "- [x] Steps 379-386: Replace fallback-only shaping with "
                "HarfBuzz-backed")) {
@@ -122,8 +125,14 @@ int main() {
       !contains(text_row, "emoji_presentation_selector_byte_offset") ||
       !contains(text_row, "emoji ZWJ joiner diagnostic suppression") ||
       !contains(text_row, "U+200D") ||
+      !contains(text_row, "TextScriptRun") ||
+      !contains(text_row, "TextShapeRun::script_runs") ||
+      !contains(text_row, "classify_text_shaping_script") ||
+      !contains(text_row, "append_script_run_span") ||
       !contains(text_row, "production HarfBuzz shaping") ||
       !contains(text_row, "native ZWJ ligature shaping") ||
+      !contains(text_row, "full Unicode script data") ||
+      !contains(text_row, "bidirectional shaping") ||
       !contains(text_row, "native Linux fontconfig/FreeType font enumeration")) {
     return 4;
   }
@@ -140,6 +149,8 @@ int main() {
       !contains(shape_header, "enum class TextColorGlyphFormat") ||
       !contains(shape_header, "struct TextColorGlyphPlan") ||
       !contains(shape_header, "std::vector<TextColorGlyphPlan> color_glyphs") ||
+      !contains(shape_header, "struct TextScriptRun") ||
+      !contains(shape_header, "std::vector<TextScriptRun> script_runs") ||
       !contains(shape_header, "bool has_emoji_presentation_selector") ||
       !contains(shape_header, "emoji_presentation_selector_byte_offset") ||
       !contains(shape_header, "emoji_presentation_selector_byte_length") ||
@@ -167,7 +178,9 @@ int main() {
   if (!contains(fallback_source, "is_emoji_sequence_joiner(") ||
       !contains(fallback_source, "next_utf8_codepoint_after(") ||
       !contains(fallback_source,
-                "is_emoji_sequence_joiner_between_emoji(")) {
+                "is_emoji_sequence_joiner_between_emoji(") ||
+      !contains(fallback_source, "classify_text_shaping_script(") ||
+      !contains(fallback_source, "append_script_run_span(")) {
     return 11;
   }
 
@@ -198,6 +211,12 @@ int main() {
                 "emoji_presentation_selector_byte_offset") ||
       !contains(text_model_test, "zwj_run.missing_glyphs.empty()")) {
     return 9;
+  }
+  if (!contains(text_model_test, "test_shape_text_splits_script_runs") ||
+      !contains(text_model_test, "TextShapingScript::latin") ||
+      !contains(text_model_test, "TextShapingScript::han") ||
+      !contains(text_model_test, "TextShapingScript::emoji")) {
+    return 12;
   }
 
   return 0;

@@ -94,6 +94,10 @@ int main() {
       !contains(text_row, "emoji presentation selector planning") ||
       !contains(text_row, "has_emoji_presentation_selector") ||
       !contains(text_row, "emoji ZWJ joiner diagnostic suppression") ||
+      !contains(text_row, "TextScriptRun") ||
+      !contains(text_row, "TextShapeRun::script_runs") ||
+      !contains(text_row, "classify_text_shaping_script") ||
+      !contains(text_row, "append_script_run_span") ||
       !contains(text_row, "FontDatabase::resolve_chain_for_codepoint") ||
       !contains(text_row, "wayland_fontconfig_discovery.cpp") ||
       !contains(text_row, "production HarfBuzz shaping")) {
@@ -109,6 +113,8 @@ int main() {
   if (!contains(text_font_header, "struct FontUnicodeRange") ||
       !contains(text_font_source, "FontDatabase::resolve_chain_for_codepoint(") ||
       !contains(text_shape_header, "font_fallback_faces") ||
+      !contains(text_shape_header, "struct TextScriptRun") ||
+      !contains(text_shape_header, "std::vector<TextScriptRun> script_runs") ||
       !contains(text_shape_source, "copy_font_fallback_faces(") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
@@ -120,6 +126,8 @@ int main() {
       !contains(fallback_source, "is_emoji_sequence_joiner(") ||
       !contains(fallback_source,
                 "is_emoji_sequence_joiner_between_emoji(") ||
+      !contains(fallback_source, "classify_text_shaping_script(") ||
+      !contains(fallback_source, "append_script_run_span(") ||
       !contains(fallback_source, "decode_utf8_codepoint(")) {
     return 5;
   }
@@ -148,7 +156,8 @@ int main() {
       !contains(text_model_test, "emoji_variation_run.color_glyphs.size()") ||
       !contains(text_model_test,
                 "emoji_presentation_selector_byte_length") ||
-      !contains(text_model_test, "zwj_run.color_glyphs.size()")) {
+      !contains(text_model_test, "zwj_run.color_glyphs.size()") ||
+      !contains(text_model_test, "test_shape_text_splits_script_runs")) {
     return 7;
   }
 

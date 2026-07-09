@@ -138,6 +138,12 @@ Windows/Linux core API is stable enough for parity work.
   joiners. `U+200D` remains a deterministic glyph record, but when it sits
   between emoji-capable codepoints the fallback shaper treats it as sequence
   glue instead of reporting it as a missing glyph.
+- Step 401 adds deterministic script-run metadata. `TextScriptRun` and
+  `TextShapeRun::script_runs` coalesce contiguous fallback glyphs into
+  lightweight latin/han/emoji/etc. spans through
+  `classify_text_shaping_script(...)` and `append_script_run_span(...)`.
+  This is fallback metadata for later HarfBuzz itemization, not full Unicode
+  script data, bidirectional shaping, or native script segmentation.
 
 ## Definition Of Done For This 20-Step Goal
 

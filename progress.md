@@ -15485,6 +15485,40 @@
   `phase_d_font_fallback_audit_test/default`,
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
+
+## 2026-07-09 Phase D Step 401 Script Run Metadata
+
+- Started from clean `master` after
+  `3c32175 fix: suppress emoji zwj missing glyphs`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `shape_text("A中😀", Inter, 18)` to split deterministic fallback glyphs into
+  latin, han, and emoji `TextScriptRun` spans with stable glyph ranges, byte
+  ranges, and advance metadata.
+- Added RED structure coverage in `tests/architecture/ui_source_structure_test.cpp`
+  requiring `TextScriptRun`, `TextShapeRun::script_runs`,
+  `classify_text_shaping_script(...)`, and `append_script_run_span(...)` to
+  live in the focused public/fallback boundaries.
+- GREEN implementation adds `TextScriptRun` beside the other text-shape
+  metadata, fills `TextShapeRun::script_runs` from
+  `src/ui/text_shaping_fallback.cpp`, and keeps the classifier deterministic
+  and local to the fallback shaper rather than claiming full Unicode script
+  itemization or bidirectional shaping.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 7/7.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
 - Adjacent verification passed:
   `xmake test -y -P . text_model_test/default ui_source_structure_test/default
   ui_header_cleanliness/default render_view_test/default

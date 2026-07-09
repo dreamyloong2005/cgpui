@@ -45,6 +45,16 @@ struct TextColorGlyphPlan {
   std::size_t emoji_presentation_selector_byte_length = 0;
 };
 
+struct TextScriptRun {
+  TextShapingScript script = TextShapingScript::common;
+  std::size_t glyph_start = 0;
+  std::size_t glyph_end = 0;
+  std::size_t byte_start = 0;
+  std::size_t byte_end = 0;
+  float advance = 0.0F;
+  float device_advance = 0.0F;
+};
+
 struct TextFontFallbackRun {
   std::size_t font_fallback_face_index = 0;
   std::size_t glyph_start = 0;
@@ -60,6 +70,7 @@ struct TextShapeRun {
   FontDescriptor font;
   std::vector<FontFaceDescriptor> font_fallback_faces;
   std::vector<TextFontFallbackRun> font_runs;
+  std::vector<TextScriptRun> script_runs;
   std::vector<TextMissingGlyphDiagnostic> missing_glyphs;
   std::vector<TextColorGlyphPlan> color_glyphs;
   float font_size = 16.0F;

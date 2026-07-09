@@ -175,6 +175,9 @@ int main() {
       !contains(text_shape_public_header, "struct TextColorGlyphPlan") ||
       !contains(text_shape_public_header,
                 "std::vector<TextColorGlyphPlan> color_glyphs") ||
+      !contains(text_shape_public_header, "struct TextScriptRun") ||
+      !contains(text_shape_public_header,
+                "std::vector<TextScriptRun> script_runs") ||
       !contains(text_shape_public_header,
                 "bool has_emoji_presentation_selector") ||
       !contains(text_shape_public_header,
@@ -184,6 +187,8 @@ int main() {
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
+      !contains(fallback_source, "classify_text_shaping_script(") ||
+      !contains(fallback_source, "append_script_run_span(") ||
       !contains(fallback_source, "font_fallback_faces_have_known_miss(") ||
       !contains(fallback_source, "append_missing_glyph_diagnostic(") ||
       !contains(fallback_source, "codepoint_prefers_color_glyph(") ||

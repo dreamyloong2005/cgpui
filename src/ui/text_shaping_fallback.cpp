@@ -72,6 +72,38 @@ bool codepoint_prefers_color_glyph(char32_t codepoint) {
   return 0x1F000 <= codepoint && codepoint <= 0x1FAFF;
 }
 
+TextShapingScript classify_text_shaping_script(char32_t codepoint) {
+  if (codepoint_prefers_color_glyph(codepoint)) {
+    return TextShapingScript::emoji;
+  }
+  if (('A' <= codepoint && codepoint <= 'Z') ||
+      ('a' <= codepoint && codepoint <= 'z')) {
+    return TextShapingScript::latin;
+  }
+  if (0x4E00 <= codepoint && codepoint <= 0x9FFF) {
+    return TextShapingScript::han;
+  }
+  if (0x3040 <= codepoint && codepoint <= 0x309F) {
+    return TextShapingScript::hiragana;
+  }
+  if (0x30A0 <= codepoint && codepoint <= 0x30FF) {
+    return TextShapingScript::katakana;
+  }
+  if (0xAC00 <= codepoint && codepoint <= 0xD7AF) {
+    return TextShapingScript::hangul;
+  }
+  if (0x0590 <= codepoint && codepoint <= 0x05FF) {
+    return TextShapingScript::hebrew;
+  }
+  if (0x0600 <= codepoint && codepoint <= 0x06FF) {
+    return TextShapingScript::arabic;
+  }
+  if (0x0900 <= codepoint && codepoint <= 0x097F) {
+    return TextShapingScript::devanagari;
+  }
+  return TextShapingScript::common;
+}
+
 bool is_emoji_presentation_selector(char32_t codepoint) {
   return codepoint == 0xFE0F;
 }
@@ -150,6 +182,31 @@ void append_font_fallback_run_span(
   font_run.byte_end = byte_offset + byte_length;
   font_run.advance += advance;
   font_run.device_advance += device_advance;
+}
+
+void append_script_run_span(
+    TextShapeRun& run,
+    TextShapingScript script,
+    std::size_t glyph_index,
+    std::size_t byte_offset,
+    std::size_t byte_length,
+    float advance,
+    float device_advance) {
+  if (run.script_runs.empty() || run.script_runs.back().script != script) {
+    run.script_runs.push_back(TextScriptRun{
+        .script = script,
+        .glyph_start = glyph_index,
+        .glyph_end = glyph_index,
+        .byte_start = byte_offset,
+        .byte_end = byte_offset,
+    });
+  }
+
+  TextScriptRun& script_run = run.script_runs.back();
+  script_run.glyph_end = glyph_index + 1;
+  script_run.byte_end = byte_offset + byte_length;
+  script_run.advance += advance;
+  script_run.device_advance += device_advance;
 }
 
 void append_missing_glyph_diagnostic(
@@ -254,6 +311,7 @@ TextShapeRun shape_text_with_deterministic_fallback(
   const float fallback_advance = request.font_size * 0.5F;
   run.glyphs.reserve(request.text.size());
   run.font_runs.reserve(request.text.size());
+  run.script_runs.reserve(request.text.size());
   run.missing_glyphs.reserve(request.text.size());
   run.color_glyphs.reserve(request.text.size());
   std::size_t byte_offset = 0;
@@ -298,6 +356,14 @@ TextShapeRun shape_text_with_deterministic_fallback(
     append_font_fallback_run_span(
         run,
         font_fallback_face_index,
+        glyph_index,
+        byte_offset,
+        byte_length,
+        fallback_advance,
+        device_advance);
+    append_script_run_span(
+        run,
+        classify_text_shaping_script(codepoint),
         glyph_index,
         byte_offset,
         byte_length,
