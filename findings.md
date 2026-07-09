@@ -7870,3 +7870,15 @@
 - This enables the existing `FcFontList` native enumeration path without
   turning missing development headers into a hard build failure.
 - FreeType metrics extraction and richer per-face coverage remain later work.
+
+## 2026-07-09 Phase D Text Examples Closeout
+
+- Phase D text examples closeout should freeze examples, not add new runtime
+  text behavior.
+- Step 450 closes the text examples band with
+  `tests/api_parity/phase_d_text_examples_closeout_test.cpp`, covering the
+  public-only prelude examples `api_parity_public_text_input_examples`,
+  `api_parity_public_text_wrapper_examples`,
+  `api_parity_public_text_input_workflow`, and
+  `api_parity_public_rich_text_examples`.
+- renderer glyph coloring and inline image drawing remain later work.

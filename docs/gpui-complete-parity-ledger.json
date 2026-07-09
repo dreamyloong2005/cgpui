@@ -552,7 +552,21 @@
       "task_plan.md",
       "findings.md"
     ],
-    "fontconfig_package_wiring_remaining_gap": "FreeType metrics extraction and richer per-face coverage remain later work"
+    "fontconfig_package_wiring_remaining_gap": "FreeType metrics extraction and richer per-face coverage remain later work",
+    "text_examples_closeout_surface": "Phase D text examples closeout: Step 450 closes the text examples band with tests/api_parity/phase_d_text_examples_closeout_test.cpp, freezing public-only prelude examples api_parity_public_text_input_examples, api_parity_public_text_wrapper_examples, api_parity_public_text_input_workflow, and api_parity_public_rich_text_examples",
+    "text_examples_closeout_sources": [
+      "tests/api_parity/phase_d_text_examples_closeout_test.cpp",
+      "examples/api_parity/public_text_input_examples/main.cpp",
+      "examples/api_parity/public_text_wrapper_examples/main.cpp",
+      "examples/api_parity/public_text_input_workflow/main.cpp",
+      "examples/api_parity/public_rich_text_examples/main.cpp",
+      "xmake.lua",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "task_plan.md",
+      "findings.md"
+    ],
+    "text_examples_closeout_remaining_gap": "renderer glyph coloring and inline image drawing remain later work"
   },
   "categories": [
     "application_and_app_context",

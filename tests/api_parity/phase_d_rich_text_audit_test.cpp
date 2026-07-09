@@ -128,7 +128,7 @@ int main() {
       !contains(roadmap,
                 "tests/api_parity/phase_d_rich_text_audit_test.cpp") ||
       !contains(roadmap,
-                "- [ ] Steps 443-450: Add text input parity examples")) {
+                "- [x] Steps 443-450: Add text input parity examples")) {
     return 3;
   }
 

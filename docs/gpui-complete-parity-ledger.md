@@ -276,6 +276,13 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   while preserving deterministic fallback when it is absent.
 - Remaining gap: FreeType metrics extraction and richer per-face coverage
   remain later work.
+- Phase D text examples closeout lands in
+  `tests/api_parity/phase_d_text_examples_closeout_test.cpp`. Step 450 closes the text examples band by freezing the
+  public-only prelude examples: `api_parity_public_text_input_examples`,
+  `api_parity_public_text_wrapper_examples`,
+  `api_parity_public_text_input_workflow`, and
+  `api_parity_public_rich_text_examples`.
+- Remaining gap: renderer glyph coloring and inline image drawing remain later work.
 
 ## Categories
 

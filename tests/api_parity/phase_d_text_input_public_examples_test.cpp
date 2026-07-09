@@ -122,7 +122,7 @@ int main() {
   if (!contains(ledger_json,
                 "\"step_443\": \"Phase D Step 443 text input public examples\"") ||
       !contains(roadmap,
-                "- [ ] Steps 443-450: Add text input parity examples")) {
+                "- [x] Steps 443-450: Add text input parity examples")) {
     return 80;
   }
 

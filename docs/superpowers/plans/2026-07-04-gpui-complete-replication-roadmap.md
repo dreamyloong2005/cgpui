@@ -1284,7 +1284,7 @@ behavior that can support GPUI examples and editor-like widgets.
   dispatch, actual link command handling, inline image drawing/loading, syntax
   parsing/editor token source integration, and actual multi-color glyph
   painting remain later Phase D work.
-- [ ] Steps 443-450: Add text input parity examples and API compatibility
+- [x] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
   Phase D Step 443 text input public examples start this slice. Step 443 starts the text-input public examples band with
   `examples/api_parity/public_text_input_examples/main.cpp` and
@@ -1322,6 +1322,13 @@ behavior that can support GPUI examples and editor-like widgets.
   `tests/api_parity/phase_d_rich_text_public_examples_test.cpp` freezes the
   example and keeps it away from private runtime APIs. renderer glyph coloring and inline image drawing remain later work,
   alongside final examples closeout and final Phase D verification.
+  Phase D text examples closeout lands in
+  `tests/api_parity/phase_d_text_examples_closeout_test.cpp`. Step 450 closes the text examples band by freezing the
+  public-only prelude examples:
+  `api_parity_public_text_input_examples`,
+  `api_parity_public_text_wrapper_examples`,
+  `api_parity_public_text_input_workflow`, and
+  `api_parity_public_rich_text_examples`. renderer glyph coloring and inline image drawing remain later work.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in
   the parity ledger, and document which Unicode/IME behaviors are complete.
 

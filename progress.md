@@ -17848,3 +17848,30 @@
   `phase_d_text_shaping_audit_test/default`,
   `gpui_parity_ledger_test/default`, and
   `wayland_font_discovery_test/default`.
+
+## 2026-07-09 Phase D Text Examples Closeout
+
+- Started from clean tracked `master` after
+  `12604418 build: wire optional fontconfig discovery`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage with
+  `tests/api_parity/phase_d_text_examples_closeout_test.cpp` and the
+  `phase_d_text_examples_closeout_test` xmake target. The first Windows run
+  failed as expected because the closeout docs/ledger evidence was absent.
+- Updated the roadmap, Markdown/JSON parity ledger, `task_plan.md`, and
+  `findings.md` to mark Steps 443-450 complete and freeze the public-only
+  prelude examples:
+  `api_parity_public_text_input_examples`,
+  `api_parity_public_text_wrapper_examples`,
+  `api_parity_public_text_input_workflow`, and
+  `api_parity_public_rich_text_examples`.
+- Updated older rich-text/text-input example guards to expect the completed
+  Steps 443-450 roadmap state.
+- Initial focused Windows GREEN verification passed:
+  `xmake test -y -P . phase_d_text_examples_closeout_test/default` 1/1.
+- Expanded focused Windows gate passed 18/18, including the text examples
+  closeout, font fallback, HarfBuzz, shaping, text model, rich-text, header,
+  source-structure, ledger, IME, and entry-gate tests.
+- Expanded focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp, included
+  `-w /mnt/d/Dev/Projects/cgpui`, and passed the same 18/18 focused tests.
