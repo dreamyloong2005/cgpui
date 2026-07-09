@@ -3,6 +3,23 @@
 #include <algorithm>
 
 namespace cgpui {
+namespace {
+
+bool text_wrap_column_is_hard_break(
+    const TextMeasurement& measurement,
+    std::size_t column_index) {
+  if (column_index >= measurement.grapheme_columns.size()) {
+    return false;
+  }
+  const TextGraphemeColumn& column =
+      measurement.grapheme_columns[column_index];
+  const std::string& text = measurement.shape_run.text;
+  return column.byte_start < column.byte_end &&
+      column.byte_end <= text.size() &&
+      text[column.byte_start] == '\n';
+}
+
+} // namespace
 
 TextWrapLine text_wrap_line_for_range(
     const TextShapeRun& run,
@@ -42,8 +59,23 @@ TextWrapLine text_wrap_line_for_column_range(
       .origin = {.x = 0.0F, .y = y},
       .size = {.width = width, .height = run.line_height},
   };
-  if (column_start < column_end &&
-      column_end <= measurement.grapheme_columns.size()) {
+  if (column_start == column_end &&
+      column_start <= measurement.grapheme_columns.size()) {
+    if (column_start < measurement.grapheme_columns.size()) {
+      const TextGraphemeColumn& column =
+          measurement.grapheme_columns[column_start];
+      line.byte_start = column.byte_start;
+      line.byte_end = column.byte_start;
+      line.glyph_start = column.glyph_start;
+      line.glyph_end = column.glyph_start;
+    } else {
+      line.byte_start = run.byte_length;
+      line.byte_end = run.byte_length;
+      line.glyph_start = run.glyphs.size();
+      line.glyph_end = run.glyphs.size();
+    }
+  } else if (column_start < column_end &&
+             column_end <= measurement.grapheme_columns.size()) {
     const TextGraphemeColumn& first =
         measurement.grapheme_columns[column_start];
     const TextGraphemeColumn& last =
@@ -74,36 +106,46 @@ TextWrapLayout wrap_text_measurement(
         [&](std::size_t column_start,
             std::size_t column_end,
             float y,
-            float width) {
-          layout.lines.push_back(text_wrap_line_for_column_range(
+            float width,
+            TextWrapBreakKind break_kind = TextWrapBreakKind::none) {
+          TextWrapLine line = text_wrap_line_for_column_range(
               measurement,
               column_start,
               column_end,
               y,
-              width));
+              width);
+          line.break_kind = break_kind;
+          layout.lines.push_back(line);
           layout.logical_size.width =
               std::max(layout.logical_size.width, width);
         };
-
-    if (max_width <= 0.0F || run.total_advance <= max_width) {
-      append_column_line(
-          0,
-          measurement.grapheme_columns.size(),
-          0.0F,
-          run.total_advance);
-      layout.logical_size.height = run.line_height;
-      layout.device_size = to_device_pixels(layout.logical_size, run.scale);
-      return layout;
-    }
 
     std::size_t line_start = 0;
     float line_width = 0.0F;
     float y = 0.0F;
     for (std::size_t index = 0; index < measurement.grapheme_columns.size();
          ++index) {
+      if (text_wrap_column_is_hard_break(measurement, index)) {
+        append_column_line(
+            line_start,
+            index,
+            y,
+            line_width,
+            TextWrapBreakKind::hard);
+        y += run.line_height;
+        line_start = index + 1U;
+        line_width = 0.0F;
+        continue;
+      }
       const float advance = measurement.grapheme_columns[index].advance;
-      if (index > line_start && line_width + advance > max_width) {
-        append_column_line(line_start, index, y, line_width);
+      if (max_width > 0.0F && index > line_start &&
+          line_width + advance > max_width) {
+        append_column_line(
+            line_start,
+            index,
+            y,
+            line_width,
+            TextWrapBreakKind::soft);
         y += run.line_height;
         line_start = index;
         line_width = 0.0F;
@@ -127,9 +169,12 @@ TextWrapLayout wrap_text_measurement(
       [&](std::size_t glyph_start,
           std::size_t glyph_end,
           float y,
-          float width) {
-        layout.lines.push_back(
-            text_wrap_line_for_range(run, glyph_start, glyph_end, y, width));
+          float width,
+          TextWrapBreakKind break_kind = TextWrapBreakKind::none) {
+        TextWrapLine line =
+            text_wrap_line_for_range(run, glyph_start, glyph_end, y, width);
+        line.break_kind = break_kind;
+        layout.lines.push_back(line);
         layout.logical_size.width = std::max(layout.logical_size.width, width);
       };
 
@@ -147,7 +192,12 @@ TextWrapLayout wrap_text_measurement(
   for (std::size_t index = 0; index < run.glyphs.size(); ++index) {
     const float advance = run.glyphs[index].advance;
     if (index > line_start && line_width + advance > max_width) {
-      append_line(line_start, index, y, line_width);
+      append_line(
+          line_start,
+          index,
+          y,
+          line_width,
+          TextWrapBreakKind::soft);
       y += run.line_height;
       line_start = index;
       line_width = 0.0F;

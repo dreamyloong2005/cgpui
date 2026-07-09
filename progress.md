@@ -15521,6 +15521,40 @@
 - `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
   warnings.
 
+## 2026-07-09 Phase D Step 405 Hard-Wrap Line Records
+
+- Started from clean `master` after
+  `91c1b69 feat: wrap by grapheme columns`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `wrap_text_measurement(measure_text("ab\nc"), 128.0F)` to split into two
+  lines, mark the first line with `TextWrapBreakKind::hard`, leave the second
+  as `none`, and exclude the newline glyph from wrapped paint metadata.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `TextWrapBreakKind`, `TextWrapLine::break_kind`, and
+  `text_wrap_column_is_hard_break(...)`.
+- RED failed as expected:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  failed 2/2.
+- GREEN implementation made `wrap_text_measurement(...)` split explicit
+  newline columns as hard breaks, mark width-based splits as soft breaks, and
+  preserve the old glyph-loop fallback path.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default ui_source_structure_test/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 9/9.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed the same 9 targets 9/9.
+- `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
+  warnings.
+
 ## 2026-07-09 Phase D Step 402 Fallback Metadata Band Audit
 
 - Started from clean `master` after

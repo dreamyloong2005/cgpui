@@ -7247,3 +7247,18 @@
   columns as atomic soft-wrap units. It does not implement hard wraps,
   Unicode line-break classes, bidirectional layout, paragraph shaping, or a
   production HarfBuzz itemization path.
+
+## 2026-07-09 Phase D Step 405 Hard-Wrap Line Records
+
+- Step 405 adds explicit hard-wrap metadata for newline columns without
+  changing shaping or measurement. Newlines remain shaped glyph records, but
+  wrapped line ranges exclude the newline glyph from paint metadata.
+- `TextWrapBreakKind` distinguishes no break, soft width break, and hard
+  newline break; `TextWrapLine::break_kind` carries that result beside
+  byte/glyph/column ranges.
+- `text_wrap_column_is_hard_break(...)` keeps newline detection local to
+  `src/ui/text_wrapping.cpp`, and `wrap_text_measurement(...)` still uses
+  measured grapheme columns as the primary wrapping unit.
+- This is explicit `\n` handling only. CRLF normalization, Unicode line-break
+  classes, bidirectional paragraph layout, and production shaping itemization
+  remain later Phase D work.

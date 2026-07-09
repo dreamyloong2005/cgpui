@@ -9,6 +9,12 @@
 
 namespace cgpui {
 
+enum class TextWrapBreakKind {
+  none,
+  soft,
+  hard,
+};
+
 struct TextWrapLine {
   std::size_t byte_start = 0;
   std::size_t byte_end = 0;
@@ -16,6 +22,7 @@ struct TextWrapLine {
   std::size_t glyph_end = 0;
   std::size_t column_start = 0;
   std::size_t column_end = 0;
+  TextWrapBreakKind break_kind = TextWrapBreakKind::none;
   Point origin;
   Size size;
 };

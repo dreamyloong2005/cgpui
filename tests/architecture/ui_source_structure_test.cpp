@@ -467,8 +467,10 @@ int main() {
       !contains(text_measurement_header,
                 "std::vector<TextGraphemeColumn> grapheme_columns") ||
       !contains(text_wrapping_header, "struct TextWrapLayout") ||
+      !contains(text_wrapping_header, "enum class TextWrapBreakKind") ||
       !contains(text_wrapping_header, "std::size_t column_start") ||
       !contains(text_wrapping_header, "std::size_t column_end") ||
+      !contains(text_wrapping_header, "TextWrapBreakKind break_kind") ||
       !contains(text_hit_testing_header, "struct TextHitTestResult") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
@@ -505,6 +507,7 @@ int main() {
       !contains(text_measurement_grapheme_source,
                 "text_grapheme_column_includes_codepoint(") ||
       !contains(text_wrapping_source, "text_wrap_line_for_column_range(") ||
+      !contains(text_wrapping_source, "text_wrap_column_is_hard_break(") ||
       !contains(text_wrapping_source, "measurement.grapheme_columns")) {
     return 115;
   }

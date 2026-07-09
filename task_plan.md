@@ -162,6 +162,13 @@ Windows/Linux core API is stable enough for parity work.
   columns as atomic wrap units while still exposing glyph/byte ranges for
   existing paint metadata. Hard wraps, bidi layout, paragraph shaping, and full
   Unicode line breaking remain future Phase D work.
+- Step 405 adds hard-wrap records for explicit newline columns.
+  `TextWrapBreakKind`, `TextWrapLine::break_kind`, and
+  `text_wrap_column_is_hard_break(...)` let `wrap_text_measurement(...)`
+  split `\n` into hard-ended lines, omit newline glyphs from wrapped paint
+  ranges, and keep soft-wrap lines marked separately. Unicode line-break
+  classes, CRLF normalization, bidi layout, and paragraph shaping remain
+  future Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

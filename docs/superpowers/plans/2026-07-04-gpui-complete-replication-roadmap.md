@@ -993,6 +993,10 @@ behavior that can support GPUI examples and editor-like widgets.
   `text_wrap_line_for_column_range(...)`, and `wrap_text_measurement(...)`,
   keeping measured grapheme columns atomic while preserving byte/glyph ranges
   for existing wrapped paint metadata.
+  Step 405 adds hard-wrap line records through `TextWrapBreakKind`,
+  `TextWrapLine::break_kind`, and `text_wrap_column_is_hard_break(...)`, so
+  explicit newline columns split wrapped layout and stay out of glyph paint
+  ranges while soft and hard line endings remain distinguishable.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.
