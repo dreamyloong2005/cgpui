@@ -15486,6 +15486,40 @@
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
 
+## 2026-07-09 Phase D Step 402 Fallback Metadata Band Audit
+
+- Started from clean `master` after
+  `d3c2f54 feat: add script run metadata`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED audit coverage in
+  `tests/api_parity/phase_d_fallback_splitting_audit_test.cpp` plus the
+  `phase_d_fallback_splitting_audit_test` xmake target. RED failed as
+  expected because the roadmap/ledger/task-plan/finding closeout evidence did
+  not yet exist.
+- GREEN documentation closes the Steps 395-402 fallback metadata band in the
+  complete-replication roadmap, moves the text ledger row to Phase D Steps
+  379-402, records Step 402 in `task_plan.md` and `findings.md`, and leaves
+  production HarfBuzz shaping, real color glyph rendering, native ZWJ
+  ligature shaping, full Unicode script data, bidirectional shaping, and
+  dependency-backed Linux fontconfig/FreeType enumeration explicit as future
+  work.
+- Focused GREEN verification passed:
+  `xmake test -y -P . phase_d_fallback_splitting_audit_test/default` 1/1.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default ui_source_structure_test/default
+  text_model_test/default ui_header_cleanliness/default` 8/8.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 8/8.
+
 ## 2026-07-09 Phase D Step 401 Script Run Metadata
 
 - Started from clean `master` after

@@ -144,6 +144,11 @@ Windows/Linux core API is stable enough for parity work.
   `classify_text_shaping_script(...)` and `append_script_run_span(...)`.
   This is fallback metadata for later HarfBuzz itemization, not full Unicode
   script data, bidirectional shaping, or native script segmentation.
+- Step 402 closes the fallback metadata band with an audit-only guard.
+  `tests/api_parity/phase_d_fallback_splitting_audit_test.cpp` freezes the
+  Step 395-401 font-run, missing-glyph, color-glyph, emoji selector, ZWJ, and
+  script-run metadata evidence, then hands Phase D to Step 403 text
+  measurement and wrapping.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -7197,3 +7197,19 @@
   arabic, devanagari, emoji-plane, and common fallback. Full Unicode script
   data, bidirectional shaping, HarfBuzz script itemization, and real native
   script segmentation remain future Phase D work.
+
+## 2026-07-09 Phase D Step 402 Fallback Metadata Band Audit
+
+- Step 402 is an audit-only closeout for the Step 395-401 fallback metadata
+  band; it does not add runtime shaping, rendering, or font discovery behavior.
+- `tests/api_parity/phase_d_fallback_splitting_audit_test.cpp` freezes the
+  public `TextFontFallbackRun`, `TextMissingGlyphDiagnostic`,
+  `TextColorGlyphPlan`, and `TextScriptRun` evidence plus the fallback-source
+  helper ownership for font spans, missing-glyph diagnostics, color glyph
+  planning, emoji presentation selectors, emoji ZWJ suppression, and
+  deterministic script-run spans.
+- The closeout keeps the remaining gaps explicit before Step 403 starts text
+  measurement and wrapping: production HarfBuzz shaping, full Unicode script
+  data, bidirectional text layout, real color glyph rendering, native ZWJ
+  ligature shaping, and dependency-backed native Linux fontconfig/FreeType
+  enumeration remain incomplete.

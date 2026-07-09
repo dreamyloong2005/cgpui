@@ -939,7 +939,7 @@ behavior that can support GPUI examples and editor-like widgets.
   over Steps 387-393, preserving the explicit remaining gaps for
   dependency-backed Linux fontconfig/FreeType enumeration and production
   HarfBuzz shaping before the next Phase D fallback-splitting band starts.
-- [ ] Steps 395-402: Add per-script and per-codepoint fallback splitting,
+- [x] Steps 395-402: Add per-script and per-codepoint fallback splitting,
   font coverage checks, emoji/color glyph planning, and missing-glyph
   diagnostics.
   Step 395 starts this band by adding contiguous fallback font spans through
@@ -975,9 +975,17 @@ behavior that can support GPUI examples and editor-like widgets.
   `TextShapeRun::script_runs`, coalescing contiguous fallback glyphs into
   lightweight latin/han/emoji/etc. spans for later HarfBuzz itemization without
   changing run-level shaping script semantics.
+  Step 402 closes the fallback metadata band through
+  `tests/api_parity/phase_d_fallback_splitting_audit_test.cpp`, freezing the
+  Step 395-401 font-run, missing-glyph, color-glyph, emoji selector, ZWJ, and
+  script-run metadata evidence before text measurement and wrapping work
+  starts.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.
+  Step 403 starts text measurement and wrapping by building on the existing
+  text model grapheme helpers and shaped glyph metadata without claiming full
+  bidirectional layout in the first slice.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.
