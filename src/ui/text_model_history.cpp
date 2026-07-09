@@ -26,6 +26,7 @@ TextEditHistoryStatus TextModel::edit_history_status() const {
       .undo_depth = undo_stack_.size(),
       .redo_depth = redo_stack_.size(),
       .revision = edit_history_revision_,
+      .last_redo_invalidation = last_redo_invalidation_,
   };
 }
 
@@ -107,6 +108,19 @@ void TextModel::push_undo_record(const TextEditHistoryRecord& record) {
   }
 }
 
+void TextModel::invalidate_redo_history(
+    TextEditHistoryRedoInvalidationReason reason) {
+  if (redo_stack_.empty()) {
+    return;
+  }
+  last_redo_invalidation_ = TextEditHistoryRedoInvalidation{
+      .reason = reason,
+      .cleared_redo_depth = redo_stack_.size(),
+      .revision = edit_history_revision_ + 1,
+  };
+  redo_stack_.clear();
+}
+
 void TextModel::commit_history_record(
     TextHistorySnapshot before,
     TextInsertHistoryPolicy history_policy) {
@@ -130,7 +144,8 @@ void TextModel::commit_history_record(
         clean_edit_history_marker_valid_ = false;
       }
       previous.after = std::move(record.after);
-      redo_stack_.clear();
+      invalidate_redo_history(
+          TextEditHistoryRedoInvalidationReason::branch_edit);
       edit_history_grouping_open_ = true;
       ++edit_history_revision_;
       return;
@@ -141,7 +156,8 @@ void TextModel::commit_history_record(
     clean_edit_history_marker_valid_ = false;
   }
   push_undo_record(record);
-  redo_stack_.clear();
+  invalidate_redo_history(
+      TextEditHistoryRedoInvalidationReason::branch_edit);
   edit_history_grouping_open_ =
       history_policy == TextInsertHistoryPolicy::merge_adjacent_typing;
   ++edit_history_revision_;

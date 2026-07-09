@@ -18,6 +18,18 @@ enum class TextInsertHistoryPolicy : std::uint8_t {
   separate_edit,
 };
 
+enum class TextEditHistoryRedoInvalidationReason : std::uint8_t {
+  none,
+  branch_edit,
+};
+
+struct TextEditHistoryRedoInvalidation {
+  TextEditHistoryRedoInvalidationReason reason =
+      TextEditHistoryRedoInvalidationReason::none;
+  std::size_t cleared_redo_depth = 0;
+  std::uint64_t revision = 0;
+};
+
 struct TextEditHistoryStatus {
   bool can_undo = false;
   bool can_redo = false;
@@ -25,6 +37,7 @@ struct TextEditHistoryStatus {
   std::size_t undo_depth = 0;
   std::size_t redo_depth = 0;
   std::uint64_t revision = 0;
+  TextEditHistoryRedoInvalidation last_redo_invalidation;
 };
 
 class TextModel {
@@ -113,6 +126,8 @@ class TextModel {
       const TextHistorySnapshot& right);
   void restore_history_snapshot(const TextHistorySnapshot& snapshot);
   void push_undo_record(const TextEditHistoryRecord& record);
+  void invalidate_redo_history(
+      TextEditHistoryRedoInvalidationReason reason);
   void commit_history_record(
       TextHistorySnapshot before,
       TextInsertHistoryPolicy history_policy =
@@ -166,6 +181,7 @@ class TextModel {
   bool clean_edit_history_marker_valid_ = true;
   std::size_t clean_edit_history_undo_depth_ = 0;
   std::uint64_t edit_history_revision_ = 0;
+  TextEditHistoryRedoInvalidation last_redo_invalidation_;
   std::vector<TextEditHistoryRecord> undo_stack_;
   std::vector<TextEditHistoryRecord> redo_stack_;
   static constexpr std::size_t max_edit_history_records = 100;

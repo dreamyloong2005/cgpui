@@ -667,7 +667,12 @@ int test_text_model_reports_edit_history_status_for_undo_manager() {
   cgpui::TextEditHistoryStatus status = model.edit_history_status();
   if (status.can_undo || status.can_redo || !status.clean ||
       status.undo_depth != 0 || status.redo_depth != 0 ||
-      status.revision != 0 || !model.edit_history_clean()) {
+      status.revision != 0 ||
+      status.last_redo_invalidation.reason !=
+          cgpui::TextEditHistoryRedoInvalidationReason::none ||
+      status.last_redo_invalidation.cleared_redo_depth != 0 ||
+      status.last_redo_invalidation.revision != 0 ||
+      !model.edit_history_clean()) {
     return 651;
   }
 
@@ -719,6 +724,55 @@ int test_text_model_reports_edit_history_status_for_undo_manager() {
   branch.insert_text("c");
   if (!branch.undo() || branch.edit_history_status().clean) {
     return 659;
+  }
+
+  return 0;
+}
+
+int test_text_model_reports_redo_invalidation_diagnostics() {
+  cgpui::TextModel model;
+  model.insert_text("a", cgpui::TextInsertHistoryPolicy::separate_edit);
+  model.insert_text("b", cgpui::TextInsertHistoryPolicy::separate_edit);
+  if (!model.undo() || model.text() != std::string_view{"a"}) {
+    return 660;
+  }
+  cgpui::TextEditHistoryStatus status = model.edit_history_status();
+  if (!status.can_redo || status.redo_depth != 1 ||
+      status.last_redo_invalidation.reason !=
+          cgpui::TextEditHistoryRedoInvalidationReason::none) {
+    return 661;
+  }
+  const std::uint64_t branch_base_revision = status.revision;
+
+  model.insert_text("c", cgpui::TextInsertHistoryPolicy::separate_edit);
+  status = model.edit_history_status();
+  if (model.text() != std::string_view{"ac"} || status.can_redo ||
+      status.redo_depth != 0 || status.revision <= branch_base_revision ||
+      status.last_redo_invalidation.reason !=
+          cgpui::TextEditHistoryRedoInvalidationReason::branch_edit ||
+      status.last_redo_invalidation.cleared_redo_depth != 1 ||
+      status.last_redo_invalidation.revision != status.revision) {
+    return 662;
+  }
+
+  const cgpui::TextEditHistoryRedoInvalidation last_invalidation =
+      status.last_redo_invalidation;
+  model.insert_text("d", cgpui::TextInsertHistoryPolicy::separate_edit);
+  status = model.edit_history_status();
+  if (status.last_redo_invalidation.reason != last_invalidation.reason ||
+      status.last_redo_invalidation.cleared_redo_depth !=
+          last_invalidation.cleared_redo_depth ||
+      status.last_redo_invalidation.revision != last_invalidation.revision) {
+    return 663;
+  }
+
+  cgpui::TextModel redo;
+  redo.insert_text("a", cgpui::TextInsertHistoryPolicy::separate_edit);
+  redo.insert_text("b", cgpui::TextInsertHistoryPolicy::separate_edit);
+  if (!redo.undo() || !redo.redo() ||
+      redo.edit_history_status().last_redo_invalidation.reason !=
+          cgpui::TextEditHistoryRedoInvalidationReason::none) {
+    return 664;
   }
 
   return 0;
@@ -2162,6 +2216,11 @@ int main() {
   }
   if (const int result =
           test_text_model_reports_edit_history_status_for_undo_manager();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_reports_redo_invalidation_diagnostics();
       result != 0) {
     return result;
   }

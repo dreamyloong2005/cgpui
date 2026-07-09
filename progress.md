@@ -16851,3 +16851,61 @@
   `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
+## 2026-07-09 Phase D Step 422 Redo Invalidation Diagnostics
+
+- Started from clean tracked `master` after
+  `180a7ece feat: expose text edit history status`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added zero-allocation redo invalidation diagnostics to `TextModel`:
+  `TextEditHistoryRedoInvalidationReason`,
+  `TextEditHistoryRedoInvalidation`, and
+  `TextEditHistoryStatus::last_redo_invalidation` report the last branch edit
+  that discarded redo history by reason, cleared depth, and revision.
+- Centralized redo invalidation in `TextModel::invalidate_redo_history(...)`
+  inside `src/ui/text_model_history.cpp`. Branch edits after undo now record the
+  diagnostic before clearing `redo_stack_`; normal `redo()` consumption still
+  leaves the invalidation reason as `none`.
+- Updated `tests/ui/text_model_test.cpp` and
+  `tests/architecture/ui_source_structure_test.cpp` to cover branch-edit redo
+  invalidation, no false positive on normal redo, persistent last invalidation
+  metadata, and the focused text history module boundary.
+- Synchronized `task_plan.md`, `findings.md`,
+  `docs/gpui-complete-parity-ledger.md`, the Phase D roadmap, and
+  `tests/api_parity/phase_d_selection_caret_audit_test.cpp` so the text row and
+  handoff move to Phase D Steps 379-422, with edit transaction diagnostics still
+  open for Step 423+.
+- Focused minimum verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- Focused ledger verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  ui_source_structure_test/default phase_d_selection_caret_audit_test/default
+  gpui_parity_ledger_test/default` 5/5.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  phase_d_selection_caret_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 19/19.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 19/19:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.

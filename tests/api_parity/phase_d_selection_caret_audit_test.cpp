@@ -115,8 +115,8 @@ int main() {
                 "Step 418 closes the selection/caret band through") ||
       !contains(roadmap,
                 "tests/api_parity/phase_d_selection_caret_audit_test.cpp") ||
-      !contains(roadmap, "Steps 419-421 deepen") ||
-      !contains(roadmap, "edit history with grouped typing")) {
+      !contains(roadmap, "Steps 419-422 deepen") ||
+      !contains(roadmap, "redo invalidation diagnostics")) {
     return 3;
   }
 

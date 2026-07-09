@@ -266,6 +266,12 @@ Windows/Linux core API is stable enough for parity work.
   mirror undo/redo availability, stack depths, clean state, and history revision
   without owning the model stacks. Marking clean breaks the current typing merge
   group, preserving the saved state as an undo-visible boundary.
+- Step 422 adds redo invalidation diagnostics while preserving `TextModel`
+  stack ownership. `TextEditHistoryRedoInvalidationReason`,
+  `TextEditHistoryRedoInvalidation`, and
+  `TextEditHistoryStatus::last_redo_invalidation` record branch-edit redo
+  invalidations by reason, cleared depth, and revision without copying records,
+  exposing vectors, or introducing a manager allocation.
 
 ## Definition Of Done For This 20-Step Goal
 

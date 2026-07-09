@@ -7504,3 +7504,13 @@
 - `mark_edit_history_clean()` must close the active adjacent-typing group.
   Otherwise saving after the first typed character and then continuing to type
   would merge across the save point and erase the undo-visible clean boundary.
+
+## 2026-07-09 Phase D Step 422 Redo Invalidation Diagnostics
+
+- Redo invalidation is different from redo consumption. A normal `redo()` pops
+  one redo record and should not report data loss, while a branch edit after
+  undo clears the remaining redo stack and needs a diagnostic.
+- `TextEditHistoryStatus::last_redo_invalidation` records the last branch
+  invalidation with a small enum, cleared redo depth, and revision. This gives
+  editor shells an observable signal without exposing the stacks or allocating a
+  separate undo manager object.

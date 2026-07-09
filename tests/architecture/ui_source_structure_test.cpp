@@ -618,19 +618,28 @@ int main() {
     return 116;
   }
   if (!contains(text_model_header, "enum class TextInsertHistoryPolicy") ||
+      !contains(text_model_header,
+                "enum class TextEditHistoryRedoInvalidationReason") ||
+      !contains(text_model_header,
+                "struct TextEditHistoryRedoInvalidation") ||
       !contains(text_model_header, "struct TextEditHistoryStatus") ||
       !contains(text_model_header, "edit_history_status()") ||
       !contains(text_model_header, "mark_edit_history_clean()") ||
       !contains(text_model_header, "edit_history_grouping_open_") ||
       !contains(text_model_header, "clean_edit_history_marker_valid_") ||
       !contains(text_model_header, "edit_history_revision_") ||
+      !contains(text_model_header, "last_redo_invalidation_") ||
       !contains(text_model_header, "composition_history_before_") ||
       !contains(text_model_header, "composition_history_mutated_") ||
       !contains(text_model_history_source, "TextModel::edit_history_status()") ||
       !contains(text_model_history_source,
                 "TextModel::mark_edit_history_clean()") ||
       !contains(text_model_history_source,
+                "TextModel::invalidate_redo_history(") ||
+      !contains(text_model_history_source,
                 "clean_edit_history_undo_depth_") ||
+      !contains(text_model_history_source,
+                "TextEditHistoryRedoInvalidationReason::branch_edit") ||
       !contains(text_model_history_source, "++edit_history_revision_") ||
       !contains(text_model_history_source,
                 "TextInsertHistoryPolicy::merge_adjacent_typing") ||
