@@ -17217,6 +17217,42 @@
   `xmake test -y -P . window_runtime_text_test/default
   win32_text_input_test/default platform_source_structure_test/default
   wayland_window_source_test/default` 4/4.
+
+## 2026-07-09 Phase D Step 432 Win32 IMM Composition Strings
+
+- Started from tracked `master` after
+  `226a52f3 feat: add ime candidate placement metadata`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added `Win32Window::ime_composition(...)` and
+  `Win32Window::ime_end_composition()` behind the existing Win32 window message
+  target boundary. `WM_IME_COMPOSITION` stays a thin lifecycle proc dispatch,
+  while `win32_window_ime.cpp` owns `ImmGetCompositionStringW` parsing for
+  `GCS_COMPSTR` update and `GCS_RESULTSTR` commit events.
+- Added explicit `WM_IME_ENDCOMPOSITION` cancel emission and covered it in
+  `tests/platform/win32_text_input_test.cpp`.
+- The first Windows behavior attempt tried to seed IMM with
+  `ImmSetCompositionStringW`; the generated test exited `14` because the local
+  host accepted the call but did not expose the synthetic data through
+  `GCS_COMPSTR`. The test was narrowed to stable cancel behavior, and
+  `tests/architecture/platform_source_structure_test.cpp` now locks the real
+  `GCS_COMPSTR` / `GCS_RESULTSTR` production parsing boundary.
+- Focused Windows verification passed:
+  `xmake test -y -P . win32_text_input_test/default` 1/1 and
+  `xmake test -y -P . platform_source_structure_test/default` 1/1.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . core_header_cleanliness/default
+  platform_source_structure_test/default window_runtime_text_test/default
+  win32_text_input_test/default gpui_parity_ledger_test/default
+  phase_d_edit_history_audit_test/default phase_d_selection_caret_audit_test/default
+  pre_phase_d_entry_gate_test/default` 8/8.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 8/8:
+  `core_header_cleanliness/default`, `wayland_keyboard_test/default`,
+  `platform_source_structure_test/default`, `window_runtime_text_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
 - Focused WSL verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed 4/4:
   `wayland_keyboard_test/default`, `window_runtime_text_test/default`,
@@ -17285,3 +17321,17 @@
   `xmake test -y -P . window_runtime_text_test/default
   win32_text_input_test/default platform_source_structure_test/default
   wayland_window_source_test/default` 4/4.
+
+## 2026-07-09 Latest Step 432 Handoff
+
+- Current tracked changes implement Phase D Step 432 Win32 IMM composition
+  strings after `226a52f3 feat: add ime candidate placement metadata`.
+- Final focused Windows verification passed 8/8:
+  `core_header_cleanliness/default`, `platform_source_structure_test/default`,
+  `window_runtime_text_test/default`, `win32_text_input_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL verification reused `.build-wsl/master` on D: and
+  `/dev/shm/cgpui` and passed the corresponding 8/8 set with
+  `wayland_keyboard_test/default` in place of the Win32-only behavior test.

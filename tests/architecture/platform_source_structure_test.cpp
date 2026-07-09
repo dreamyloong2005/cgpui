@@ -865,6 +865,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/win32/win32_font_discovery.cpp");
   const std::string win32_window_ime =
       read_source("src/platform/win32/win32_window_ime.cpp");
+  const std::string win32_window_proc_lifecycle =
+      read_source("src/platform/win32/win32_window_proc_lifecycle.cpp");
   if (line_count(win32_helpers) > 60 ||
       contains(win32_helpers, "std::wstring widen(") ||
       contains(win32_helpers, "KeyboardModifiers current_modifiers()") ||
@@ -901,7 +903,18 @@ int main(int argc, char** argv) {
   }
   if (!contains(win32_window_ime, "placement.candidate_rect") ||
       !contains(win32_window_ime, "candidate_rect") ||
-      !contains(win32_window_ime, "ImmSetCandidateWindow")) {
+      !contains(win32_window_ime, "ImmSetCandidateWindow") ||
+      !contains(win32_window_ime, "Win32Window::ime_composition(") ||
+      !contains(win32_window_ime, "ImmGetCompositionStringW") ||
+      !contains(win32_window_ime, "GCS_COMPSTR") ||
+      !contains(win32_window_ime, "GCS_RESULTSTR") ||
+      !contains(win32_window_ime, "ImeCompositionPhase::update") ||
+      !contains(win32_window_ime, "ImeCompositionPhase::commit") ||
+      !contains(win32_window_ime, "ImeCompositionPhase::cancel") ||
+      !contains(win32_window_proc_lifecycle, "WM_IME_COMPOSITION") ||
+      !contains(win32_window_proc_lifecycle,
+                "window->ime_composition(lparam)") ||
+      contains(win32_window_proc_lifecycle, "ImmGetCompositionStringW")) {
     return 43;
   }
   if (!contains(win32_font_discovery, "win32_discover_fonts()") ||

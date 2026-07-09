@@ -23,6 +23,8 @@ class Win32WindowMessageTarget {
   virtual void dpi_changed(WPARAM wparam, LPARAM lparam) = 0;
   virtual void focus_changed(bool focused) = 0;
   virtual void ime_start_composition() = 0;
+  virtual void ime_composition(LPARAM lparam) = 0;
+  virtual void ime_end_composition() = 0;
   virtual void close_requested() = 0;
   virtual void redraw_requested() = 0;
   virtual void pointer_moved(LPARAM lparam) = 0;

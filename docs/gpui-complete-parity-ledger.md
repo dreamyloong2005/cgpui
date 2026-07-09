@@ -107,6 +107,17 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   `tests/platform/win32_text_input_test.cpp`, and
   `tests/architecture/platform_source_structure_test.cpp`.
 - Remaining gap: production candidate UI policy remains later Phase D work.
+- Step 432 adds Win32 IMM composition/result string ingestion. Evidence:
+  `src/platform/win32/win32_window_proc_lifecycle.cpp` keeps
+  `WM_IME_COMPOSITION` as a thin dispatch,
+  `src/platform/win32/win32_window_ime.cpp` reads `GCS_COMPSTR` and
+  `GCS_RESULTSTR` with `ImmGetCompositionStringW`, emits update/commit
+  `ImeComposition` events, and emits cancel on `WM_IME_ENDCOMPOSITION`.
+  `tests/platform/win32_text_input_test.cpp` covers the stable cancel message,
+  while `tests/architecture/platform_source_structure_test.cpp` freezes the
+  `GCS_*` production parsing boundary.
+- Remaining gap: deeper Win32 TSF integration and richer platform-specific
+  composition styling remain later Phase D work.
 
 ## Categories
 

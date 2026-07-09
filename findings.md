@@ -7628,3 +7628,20 @@
   `candidate_rect` for `CANDIDATEFORM`.
 - This is metadata/routing depth only. Production candidate UI policy remains
   a later Phase D gap.
+
+## 2026-07-09 Phase D Step 432 Win32 IMM Composition Strings
+
+- Step 432 keeps Win32 IME message dispatch thin: `WM_IME_COMPOSITION` and
+  `WM_IME_ENDCOMPOSITION` are forwarded from
+  `src/platform/win32/win32_window_proc_lifecycle.cpp` into the focused
+  `src/platform/win32/win32_window_ime.cpp` module.
+- `win32_window_ime.cpp` now reads `GCS_COMPSTR` and `GCS_RESULTSTR` through
+  `ImmGetCompositionStringW`, converts UTF-16 data through the existing
+  `utf8_from_utf16(...)` helper, and emits platform-neutral
+  `ImeCompositionPhase::update` / `commit` events.
+- `WM_IME_ENDCOMPOSITION` emits an explicit cancel event so runtime text models
+  can clear unfinished composition without Win32-specific state.
+- The current Windows host does not make synthetic `ImmSetCompositionStringW`
+  data readable through `GCS_COMPSTR`, so behavior coverage stays on the stable
+  end-composition cancel message and structure coverage freezes the production
+  `GCS_*` parsing boundary.

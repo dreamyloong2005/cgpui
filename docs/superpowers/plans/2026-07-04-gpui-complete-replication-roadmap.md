@@ -1177,6 +1177,12 @@ behavior that can support GPUI examples and editor-like widgets.
   `set_cursor_rectangle`, and Win32 IMM applies it to `CANDIDATEFORM` while
   keeping `rect` for `COMPOSITIONFORM`. Production candidate UI policy remains
   later work.
+  Step 432 adds Win32 IMM composition/result string ingestion: `WM_IME_COMPOSITION`
+  dispatches from the lifecycle message proc into `win32_window_ime.cpp`,
+  `GCS_COMPSTR` is converted to `ImeCompositionPhase::update`,
+  `GCS_RESULTSTR` is converted to `ImeCompositionPhase::commit`, and
+  `WM_IME_ENDCOMPOSITION` emits a cancel event. TSF integration and richer
+  platform-specific composition styling remain later work.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility

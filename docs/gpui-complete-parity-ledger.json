@@ -364,7 +364,18 @@
       "tests/platform/win32_text_input_test.cpp",
       "tests/architecture/platform_source_structure_test.cpp"
     ],
-    "remaining_gap": "production candidate UI policy remains later Phase D work"
+    "remaining_gap": "production candidate UI policy remains later Phase D work",
+    "step_432": "Phase D Step 432 Win32 IMM composition/result string ingestion",
+    "win32_ime_composition_surface": "WM_IME_COMPOSITION dispatches into win32_window_ime.cpp, where GCS_COMPSTR emits ImeCompositionPhase::update, GCS_RESULTSTR emits ImeCompositionPhase::commit, and WM_IME_ENDCOMPOSITION emits cancel",
+    "win32_ime_composition_sources": [
+      "src/platform/win32/win32_window_proc_lifecycle.cpp",
+      "src/platform/win32/win32_window_ime.cpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "tests/platform/win32_text_input_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp"
+    ],
+    "win32_ime_remaining_gap": "deeper Win32 TSF integration and richer platform-specific composition styling remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

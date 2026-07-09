@@ -30,6 +30,7 @@ int main() {
 
   bool key_pressed_with_shift = false;
   bool text_received = false;
+  bool ime_cancel_received = false;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Win32 Text Input Test",
@@ -47,6 +48,13 @@ int main() {
           text_received = text->modifiers.shift &&
               !text->modifiers.control && !text->modifiers.alt &&
               !text->modifiers.super;
+        }
+        if (const auto* composition =
+                std::get_if<cgpui::ImeComposition>(&event);
+            composition != nullptr) {
+          if (composition->phase == cgpui::ImeCompositionPhase::cancel) {
+            ime_cancel_received = true;
+          }
         }
       });
   if (!window) {
@@ -119,6 +127,11 @@ int main() {
       ime_started_state.ime_text_input_placement->candidate_rect->origin.x != 30.0F ||
       ime_started_state.ime_text_input_placement->candidate_rect->origin.y != 42.0F) {
     return 9;
+  }
+
+  SendMessageW(hwnd, WM_IME_ENDCOMPOSITION, 0, 0);
+  if (!ime_cancel_received) {
+    return 12;
   }
 
   (*window)->set_ime_text_input_placement(std::nullopt);

@@ -321,6 +321,13 @@ Windows/Linux core API is stable enough for parity work.
   `ImeCandidateRect`, Wayland text-input v3 prefers it for cursor rectangles,
   and Win32 IMM applies it to candidate windows while preserving `rect` for
   composition windows. Production candidate UI policy remains later work.
+- Step 432 adds Win32 IMM composition/result string ingestion. `WM_IME_COMPOSITION`
+  now stays a thin message-proc dispatch into `win32_window_ime.cpp`, where
+  `GCS_COMPSTR` emits `ImeCompositionPhase::update`, `GCS_RESULTSTR` emits
+  `ImeCompositionPhase::commit`, and `WM_IME_ENDCOMPOSITION` emits cancel.
+  Current host tests cover the stable end-composition cancel message and lock
+  the `GCS_*` production path with platform source-structure coverage because
+  local IMM simulation does not make synthetic composition strings readable.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -39,6 +39,8 @@ class Win32Window final
   void dpi_changed(WPARAM wparam, LPARAM lparam) override;
   void focus_changed(bool focused) override;
   void ime_start_composition() override;
+  void ime_composition(LPARAM lparam) override;
+  void ime_end_composition() override;
   void close_requested() override;
   void redraw_requested() override;
   void wakeup_requested();

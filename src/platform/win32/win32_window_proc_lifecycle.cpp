@@ -52,6 +52,18 @@ bool win32_window_proc_handle_lifecycle(
       }
       result = DefWindowProcW(hwnd, message, wparam, lparam);
       return true;
+    case WM_IME_COMPOSITION:
+      if (window != nullptr) {
+        window->ime_composition(lparam);
+      }
+      result = DefWindowProcW(hwnd, message, wparam, lparam);
+      return true;
+    case WM_IME_ENDCOMPOSITION:
+      if (window != nullptr) {
+        window->ime_end_composition();
+      }
+      result = DefWindowProcW(hwnd, message, wparam, lparam);
+      return true;
     case WM_CLOSE:
       if (window != nullptr) {
         window->close_requested();
