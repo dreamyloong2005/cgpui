@@ -149,6 +149,12 @@ Windows/Linux core API is stable enough for parity work.
   Step 395-401 font-run, missing-glyph, color-glyph, emoji selector, ZWJ, and
   script-run metadata evidence, then hands Phase D to Step 403 text
   measurement and wrapping.
+- Step 403 starts the text measurement/wrapping band with grapheme column
+  metadata. `TextGraphemeColumn` and `TextMeasurement::grapheme_columns`
+  record deterministic byte/glyph/advance spans for measured grapheme columns
+  covering combining marks, variation selectors, and regional-indicator pairs;
+  full bidirectional layout, paragraph shaping, and production HarfBuzz
+  itemization remain future work.
 
 ## Definition Of Done For This 20-Step Goal
 

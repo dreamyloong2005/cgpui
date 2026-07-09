@@ -1,5 +1,7 @@
 #include "cgpui/ui/text_measurement.hpp"
 
+#include "text_measurement_internal.hpp"
+
 #include <string>
 #include <utility>
 
@@ -19,10 +21,13 @@ TextMeasurement measure_text(
       .width = shape_run.device_total_advance,
       .height = shape_run.device_line_height,
   };
+  std::vector<TextGraphemeColumn> grapheme_columns =
+      build_text_grapheme_columns(shape_run);
   return TextMeasurement{
       .shape_run = std::move(shape_run),
       .logical_size = logical_size,
       .device_size = device_size,
+      .grapheme_columns = std::move(grapheme_columns),
   };
 }
 

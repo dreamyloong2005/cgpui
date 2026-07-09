@@ -1220,6 +1220,54 @@ int test_text_measurement_cache_reuses_same_text_tuple() {
              : 59;
 }
 
+int test_text_measurement_records_grapheme_columns() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "a\xCC\x81" "b\xE2\x99\xA5\xEF\xB8\x8F"
+      "\xF0\x9F\x87\xA8\xF0\x9F\x87\xA6",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+
+  if (measurement.shape_run.glyph_count() != 7 ||
+      measurement.grapheme_columns.size() != 4) {
+    return 186;
+  }
+
+  const cgpui::TextGraphemeColumn& combining =
+      measurement.grapheme_columns[0];
+  if (combining.column_start != 0 || combining.column_end != 1 ||
+      combining.byte_start != 0 || combining.byte_end != 3 ||
+      combining.glyph_start != 0 || combining.glyph_end != 2 ||
+      combining.advance != 20.0F) {
+    return 187;
+  }
+
+  const cgpui::TextGraphemeColumn& ascii = measurement.grapheme_columns[1];
+  if (ascii.column_start != 1 || ascii.column_end != 2 ||
+      ascii.byte_start != 3 || ascii.byte_end != 4 ||
+      ascii.glyph_start != 2 || ascii.glyph_end != 3 ||
+      ascii.advance != 10.0F) {
+    return 188;
+  }
+
+  const cgpui::TextGraphemeColumn& variation =
+      measurement.grapheme_columns[2];
+  if (variation.column_start != 2 || variation.column_end != 3 ||
+      variation.byte_start != 4 || variation.byte_end != 10 ||
+      variation.glyph_start != 3 || variation.glyph_end != 5 ||
+      variation.advance != 20.0F) {
+    return 189;
+  }
+
+  const cgpui::TextGraphemeColumn& flag = measurement.grapheme_columns[3];
+  if (flag.column_start != 3 || flag.column_end != 4 ||
+      flag.byte_start != 10 || flag.byte_end != 18 ||
+      flag.glyph_start != 5 || flag.glyph_end != 7 ||
+      flag.advance != 20.0F) {
+    return 190;
+  }
+  return 0;
+}
+
 int test_text_hit_geometry_maps_points_to_offsets_and_selection() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcd",
@@ -1536,6 +1584,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_measurement_cache_reuses_same_text_tuple();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_measurement_records_grapheme_columns();
       result != 0) {
     return result;
   }

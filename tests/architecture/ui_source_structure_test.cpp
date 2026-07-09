@@ -129,6 +129,7 @@ int main() {
       "src/ui/text_shape.cpp",
       "src/ui/text_glyph_raster.cpp",
       "src/ui/text_measurement.cpp",
+      "src/ui/text_measurement_grapheme.cpp",
       "src/ui/text_wrapping.cpp",
       "src/ui/text_hit_testing.cpp",
   };
@@ -462,6 +463,9 @@ int main() {
       !contains(text_shape_header, "struct TextShapeRun") ||
       !contains(text_glyphs_header, "struct RasterizedGlyph") ||
       !contains(text_measurement_header, "class TextMeasurementCache") ||
+      !contains(text_measurement_header, "struct TextGraphemeColumn") ||
+      !contains(text_measurement_header,
+                "std::vector<TextGraphemeColumn> grapheme_columns") ||
       !contains(text_wrapping_header, "struct TextWrapLayout") ||
       !contains(text_hit_testing_header, "struct TextHitTestResult") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
@@ -484,6 +488,19 @@ int main() {
       contains(text_wrapping_header, " inline ") ||
       contains(text_hit_testing_header, " inline ")) {
     return 114;
+  }
+
+  const std::string text_measurement_source =
+      read_source("src/ui/text_measurement.cpp");
+  const std::string text_measurement_grapheme_source =
+      read_source("src/ui/text_measurement_grapheme.cpp");
+  if (!contains(text_measurement_source,
+                "build_text_grapheme_columns(shape_run)") ||
+      !contains(text_measurement_grapheme_source,
+                "build_text_grapheme_columns(") ||
+      !contains(text_measurement_grapheme_source,
+                "text_grapheme_column_includes_codepoint(")) {
+    return 115;
   }
   if (line_count(text_font_header) > 120 ||
       contains(text_font_header, "faces_.push_back") ||

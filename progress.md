@@ -15520,6 +15520,54 @@
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 8/8.
 
+## 2026-07-09 Phase D Step 403 Grapheme Column Measurement
+
+- Started from clean `master` after
+  `65f3270 test: close fallback metadata band`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextMeasurement::grapheme_columns` to group measured fallback glyphs into
+  grapheme columns for combining marks, variation selectors, and
+  regional-indicator pairs. RED failed as expected on missing
+  `TextGraphemeColumn` and `TextMeasurement::grapheme_columns`.
+- Added RED structure coverage in `tests/architecture/ui_source_structure_test.cpp`
+  requiring the public `TextGraphemeColumn` leaf evidence and focused
+  `src/ui/text_measurement_grapheme.cpp` helper ownership through
+  `build_text_grapheme_columns(...)` and
+  `text_grapheme_column_includes_codepoint(...)`.
+- GREEN implementation adds `TextGraphemeColumn`,
+  `TextMeasurement::grapheme_columns`, and deterministic measurement-local
+  grapheme column construction from shaped fallback glyph records. It does not
+  claim full Unicode grapheme breaking, bidirectional layout, paragraph
+  shaping, or production HarfBuzz itemization.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default` 3/3.
+- After the initial GREEN, split grapheme-column construction out of
+  `src/ui/text_measurement.cpp` into focused
+  `src/ui/text_measurement_grapheme.cpp` with
+  `src/ui/text_measurement_internal.hpp`; the post-split focused rerun passed
+  `text_model_test/default`, `render_view_test/default`,
+  `ui_source_structure_test/default`, and `ui_header_cleanliness/default` 4/4.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 9/9 after loosening the Step 402
+  closeout audit to accept later Phase D text-row step numbers while still
+  requiring Step 402 closeout evidence.
+- WSL adjacent verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 9/9.
+
 ## 2026-07-09 Phase D Step 401 Script Run Metadata
 
 - Started from clean `master` after

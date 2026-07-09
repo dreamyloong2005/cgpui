@@ -7213,3 +7213,20 @@
   data, bidirectional text layout, real color glyph rendering, native ZWJ
   ligature shaping, and dependency-backed native Linux fontconfig/FreeType
   enumeration remain incomplete.
+
+## 2026-07-09 Phase D Step 403 Grapheme Column Measurement
+
+- Step 403 adds grapheme column metadata to `TextMeasurement` rather than
+  changing shaping, wrapping, or cursor movement behavior.
+- `TextGraphemeColumn` records column range, byte range, glyph range, logical
+  advance, and device advance. `TextMeasurement::grapheme_columns` is filled
+  during `measure_text(...)` from the shaped fallback glyph records.
+- The implementation stays in `src/ui/text_measurement_grapheme.cpp` through
+  `build_text_grapheme_columns(...)` and
+  `text_grapheme_column_includes_codepoint(...)`, keeping measurement-specific
+  span construction out of broad UI/runtime files.
+- The deterministic segmentation covers the current skeleton cases already
+  expected by the text model: combining marks, variation selectors,
+  zero-width-joiner continuations, and regional-indicator pairs. It is not full
+  Unicode grapheme breaking, bidirectional text layout, paragraph shaping, or
+  production HarfBuzz itemization.

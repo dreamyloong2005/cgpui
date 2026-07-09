@@ -983,9 +983,11 @@ behavior that can support GPUI examples and editor-like widgets.
 - [ ] Steps 403-410: Complete text measurement and wrapping: grapheme columns,
   soft wraps, hard wraps, bidirectional text planning, line boxes, baseline,
   ascent/descent, and paragraph caches.
-  Step 403 starts text measurement and wrapping by building on the existing
-  text model grapheme helpers and shaped glyph metadata without claiming full
-  bidirectional layout in the first slice.
+  Step 403 starts text measurement and wrapping by adding
+  `TextGraphemeColumn` and `TextMeasurement::grapheme_columns`, so measured
+  fallback text records deterministic grapheme columns for combining marks,
+  variation selectors, and regional-indicator pairs without claiming full
+  bidirectional layout or paragraph shaping in the first slice.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

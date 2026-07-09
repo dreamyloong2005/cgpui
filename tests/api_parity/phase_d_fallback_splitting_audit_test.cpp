@@ -102,7 +102,7 @@ int main() {
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-402") ||
+  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "Step 402 fallback metadata band audit") ||
       !contains(text_row, "TextFontFallbackRun") ||
       !contains(text_row, "TextShapeRun::font_runs") ||

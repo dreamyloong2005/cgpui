@@ -20,10 +20,22 @@ struct TextMeasurementKey {
       const TextMeasurementKey&) = default;
 };
 
+struct TextGraphemeColumn {
+  std::size_t column_start = 0;
+  std::size_t column_end = 0;
+  std::size_t byte_start = 0;
+  std::size_t byte_end = 0;
+  std::size_t glyph_start = 0;
+  std::size_t glyph_end = 0;
+  float advance = 0.0F;
+  float device_advance = 0.0F;
+};
+
 struct TextMeasurement {
   TextShapeRun shape_run;
   Size logical_size;
   Size device_size;
+  std::vector<TextGraphemeColumn> grapheme_columns;
 };
 
 struct TextMeasurementResult {
