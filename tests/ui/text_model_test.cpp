@@ -1442,6 +1442,58 @@ int test_text_hard_wrap_records_newline_lines() {
   return 0;
 }
 
+int test_text_measurement_records_bidi_runs() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "ab\xD7\x90\xD7\x91" "c",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+
+  if (measurement.base_direction !=
+          cgpui::TextShapingDirection::left_to_right ||
+      measurement.bidi_runs.size() != 3) {
+    return 198;
+  }
+
+  const cgpui::TextBidiRun& latin_prefix = measurement.bidi_runs[0];
+  if (latin_prefix.direction != cgpui::TextShapingDirection::left_to_right ||
+      latin_prefix.embedding_level != 0 ||
+      latin_prefix.column_start != 0 || latin_prefix.column_end != 2 ||
+      latin_prefix.byte_start != 0 || latin_prefix.byte_end != 2 ||
+      latin_prefix.glyph_start != 0 || latin_prefix.glyph_end != 2 ||
+      latin_prefix.advance != 20.0F) {
+    return 199;
+  }
+
+  const cgpui::TextBidiRun& hebrew = measurement.bidi_runs[1];
+  if (hebrew.direction != cgpui::TextShapingDirection::right_to_left ||
+      hebrew.embedding_level != 1 ||
+      hebrew.column_start != 2 || hebrew.column_end != 4 ||
+      hebrew.byte_start != 2 || hebrew.byte_end != 6 ||
+      hebrew.glyph_start != 2 || hebrew.glyph_end != 4 ||
+      hebrew.advance != 20.0F) {
+    return 200;
+  }
+
+  const cgpui::TextBidiRun& latin_suffix = measurement.bidi_runs[2];
+  if (latin_suffix.direction != cgpui::TextShapingDirection::left_to_right ||
+      latin_suffix.embedding_level != 0 ||
+      latin_suffix.column_start != 4 || latin_suffix.column_end != 5 ||
+      latin_suffix.byte_start != 6 || latin_suffix.byte_end != 7 ||
+      latin_suffix.glyph_start != 4 || latin_suffix.glyph_end != 5 ||
+      latin_suffix.advance != 10.0F) {
+    return 201;
+  }
+
+  const cgpui::TextWrapLayout layout =
+      cgpui::wrap_text_measurement(measurement, 128.0F);
+  if (layout.base_direction != cgpui::TextShapingDirection::left_to_right ||
+      layout.lines.size() != 1 || layout.lines[0].bidi_run_start != 0 ||
+      layout.lines[0].bidi_run_end != 3) {
+    return 202;
+  }
+  return 0;
+}
+
 int test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcd",
@@ -1683,6 +1735,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_hard_wrap_records_newline_lines();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_measurement_records_bidi_runs();
       result != 0) {
     return result;
   }

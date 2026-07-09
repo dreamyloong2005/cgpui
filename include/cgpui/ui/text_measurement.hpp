@@ -3,6 +3,7 @@
 #include "cgpui/ui/text_shape.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -31,11 +32,26 @@ struct TextGraphemeColumn {
   float device_advance = 0.0F;
 };
 
+struct TextBidiRun {
+  TextShapingDirection direction = TextShapingDirection::left_to_right;
+  std::uint8_t embedding_level = 0;
+  std::size_t column_start = 0;
+  std::size_t column_end = 0;
+  std::size_t byte_start = 0;
+  std::size_t byte_end = 0;
+  std::size_t glyph_start = 0;
+  std::size_t glyph_end = 0;
+  float advance = 0.0F;
+  float device_advance = 0.0F;
+};
+
 struct TextMeasurement {
   TextShapeRun shape_run;
   Size logical_size;
   Size device_size;
   std::vector<TextGraphemeColumn> grapheme_columns;
+  TextShapingDirection base_direction = TextShapingDirection::left_to_right;
+  std::vector<TextBidiRun> bidi_runs;
 };
 
 struct TextMeasurementResult {

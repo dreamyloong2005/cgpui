@@ -15670,6 +15670,7 @@
   `phase_d_font_fallback_audit_test/default`,
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
+
 - Adjacent verification passed:
   `xmake test -y -P . text_model_test/default ui_source_structure_test/default
   ui_header_cleanliness/default render_view_test/default
@@ -16075,3 +16076,43 @@
   `phase_d_font_fallback_audit_test/default`,
   `phase_d_text_shaping_audit_test/default`, `text_model_test/default`,
   `ui_header_cleanliness/default`, and `ui_source_structure_test/default` 7/7.
+
+## 2026-07-09 Phase D Step 406 Bidirectional Planning Metadata
+
+- Resumed on `master` with partial Step 406 edits already in the working tree
+  after `372e167 feat: record hard wrap lines`; `git status --short --branch`
+  showed the tracked Step 406 files plus the existing untracked `.vscode/`.
+- The planning catchup report found 72 unsynced messages and confirmed the
+  active `/goal` remains Phase D. Because D: space is low, this slice continues
+  in-place on `master` without a new worktree or rebuild cache.
+- RED coverage had already been added for `TextBidiRun`,
+  `TextMeasurement::base_direction`, `TextMeasurement::bidi_runs`,
+  `TextWrapLine::bidi_run_start`, `TextWrapLine::bidi_run_end`, and
+  `TextWrapLayout::base_direction`, plus structure coverage requiring
+  `src/ui/text_measurement_bidi.cpp`, `build_text_bidi_runs(...)`,
+  `classify_text_bidi_direction(...)`, and
+  `text_wrap_line_assign_bidi_runs(...)`.
+- GREEN implementation adds deterministic bidi planning metadata over measured
+  grapheme columns. The fallback classifier groups Hebrew/Arabic codepoints as
+  RTL, leaves whitespace/newline in the base direction, and treats all other
+  codepoints as LTR. This is not full Unicode bidi reordering or paragraph
+  shaping.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 9/9.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed:
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 9/9.

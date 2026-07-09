@@ -19,6 +19,24 @@ bool text_wrap_column_is_hard_break(
       text[column.byte_start] == '\n';
 }
 
+void text_wrap_line_assign_bidi_runs(
+    TextWrapLine& line,
+    const TextMeasurement& measurement) {
+  line.bidi_run_start = measurement.bidi_runs.size();
+  line.bidi_run_end = measurement.bidi_runs.size();
+  for (std::size_t index = 0; index < measurement.bidi_runs.size(); ++index) {
+    const TextBidiRun& bidi_run = measurement.bidi_runs[index];
+    if (bidi_run.column_end <= line.column_start ||
+        line.column_end <= bidi_run.column_start) {
+      continue;
+    }
+    if (line.bidi_run_start == measurement.bidi_runs.size()) {
+      line.bidi_run_start = index;
+    }
+    line.bidi_run_end = index + 1U;
+  }
+}
+
 } // namespace
 
 TextWrapLine text_wrap_line_for_range(
@@ -92,6 +110,7 @@ TextWrapLine text_wrap_line_for_column_range(
     line.column_start = measurement.grapheme_columns.size();
     line.column_end = measurement.grapheme_columns.size();
   }
+  text_wrap_line_assign_bidi_runs(line, measurement);
   return line;
 }
 
@@ -99,7 +118,10 @@ TextWrapLayout wrap_text_measurement(
     const TextMeasurement& measurement,
     float max_width) {
   const TextShapeRun& run = measurement.shape_run;
-  TextWrapLayout layout{.max_width = max_width};
+  TextWrapLayout layout{
+      .max_width = max_width,
+      .base_direction = measurement.base_direction,
+  };
 
   if (!measurement.grapheme_columns.empty()) {
     const auto append_column_line =

@@ -7262,3 +7262,21 @@
 - This is explicit `\n` handling only. CRLF normalization, Unicode line-break
   classes, bidirectional paragraph layout, and production shaping itemization
   remain later Phase D work.
+
+## 2026-07-09 Phase D Step 406 Bidirectional Planning Metadata
+
+- Step 406 adds deterministic bidi planning metadata over measured grapheme
+  columns rather than full Unicode visual reordering.
+- `TextBidiRun`, `TextMeasurement::base_direction`, and
+  `TextMeasurement::bidi_runs` record contiguous LTR/RTL spans with
+  byte/glyph/column ranges plus logical/device advances.
+- `src/ui/text_measurement_bidi.cpp` owns the fallback planner through
+  `build_text_bidi_runs(...)` and `classify_text_bidi_direction(...)`,
+  keeping bidi span construction out of broad measurement or wrapping files.
+- `TextWrapLine::bidi_run_start`, `TextWrapLine::bidi_run_end`, and
+  `TextWrapLayout::base_direction` carry the measurement bidi plan into wrap
+  records so later paragraph layout can map lines back to directional runs.
+- The classifier is intentionally small and deterministic: Hebrew/Arabic
+  ranges become RTL, whitespace/newline follows the base direction, and all
+  other codepoints stay LTR. Full Unicode bidi data, visual run placement,
+  paragraph shaping, and HarfBuzz itemization remain future Phase D work.

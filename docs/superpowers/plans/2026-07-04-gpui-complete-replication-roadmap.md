@@ -997,6 +997,14 @@ behavior that can support GPUI examples and editor-like widgets.
   `TextWrapLine::break_kind`, and `text_wrap_column_is_hard_break(...)`, so
   explicit newline columns split wrapped layout and stay out of glyph paint
   ranges while soft and hard line endings remain distinguishable.
+  Step 406 adds deterministic bidirectional planning metadata through
+  `TextBidiRun`, `TextMeasurement::base_direction`,
+  `TextMeasurement::bidi_runs`, `TextWrapLine::bidi_run_start`,
+  `TextWrapLine::bidi_run_end`, `TextWrapLayout::base_direction`,
+  `build_text_bidi_runs(...)`, and `classify_text_bidi_direction(...)`,
+  recording LTR/RTL spans over measured grapheme columns without claiming the
+  full Unicode bidi algorithm, visual reordering, paragraph layout, or native
+  HarfBuzz itemization.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

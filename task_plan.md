@@ -169,6 +169,14 @@ Windows/Linux core API is stable enough for parity work.
   ranges, and keep soft-wrap lines marked separately. Unicode line-break
   classes, CRLF normalization, bidi layout, and paragraph shaping remain
   future Phase D work.
+- Step 406 adds deterministic bidirectional planning metadata.
+  `TextBidiRun`, `TextMeasurement::base_direction`,
+  `TextMeasurement::bidi_runs`, `TextWrapLine::bidi_run_start`,
+  `TextWrapLine::bidi_run_end`, and `TextWrapLayout::base_direction` record
+  lightweight direction spans over measured grapheme columns through
+  `build_text_bidi_runs(...)` and `classify_text_bidi_direction(...)`.
+  This is planning metadata for later paragraph layout, not full Unicode bidi
+  reordering, visual run placement, or HarfBuzz itemization.
 
 ## Definition Of Done For This 20-Step Goal
 

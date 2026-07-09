@@ -23,11 +23,16 @@ TextMeasurement measure_text(
   };
   std::vector<TextGraphemeColumn> grapheme_columns =
       build_text_grapheme_columns(shape_run);
+  std::vector<TextBidiRun> bidi_runs =
+      build_text_bidi_runs(shape_run, grapheme_columns);
+  const TextShapingDirection base_direction = shape_run.direction;
   return TextMeasurement{
       .shape_run = std::move(shape_run),
       .logical_size = logical_size,
       .device_size = device_size,
       .grapheme_columns = std::move(grapheme_columns),
+      .base_direction = base_direction,
+      .bidi_runs = std::move(bidi_runs),
   };
 }
 

@@ -22,6 +22,8 @@ struct TextWrapLine {
   std::size_t glyph_end = 0;
   std::size_t column_start = 0;
   std::size_t column_end = 0;
+  std::size_t bidi_run_start = 0;
+  std::size_t bidi_run_end = 0;
   TextWrapBreakKind break_kind = TextWrapBreakKind::none;
   Point origin;
   Size size;
@@ -32,6 +34,7 @@ struct TextWrapLayout {
   Size logical_size;
   Size device_size;
   float max_width = 0.0F;
+  TextShapingDirection base_direction = TextShapingDirection::left_to_right;
 };
 
 [[nodiscard]] TextWrapLine text_wrap_line_for_range(
