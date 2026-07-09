@@ -1490,7 +1490,13 @@ draw calls for the Windows/Linux renderer.
   full-frame viewport/scissor, uploaded vertex buffer, framebuffer-size push
   constants, and each page descriptor before one `vkCmdDraw` per contiguous
   page run. Step 472 makes subpixel positioning policy explicit.
-- [ ] Steps 472-474: Complete the remaining text graphics pipeline,
+- [x] Phase E Step 472 adds explicit private text positioning policy in
+  `vulkan_text_positioning_internal.hpp` and
+  `vulkan_text_positioning.cpp`. `VulkanTextPositioningPolicy` defaults to
+  `preserve_subpixel`; the deterministic snap mode rounds outer device-quad
+  edges before vertex expansion, preserves atlas UVs, and is recorded with the
+  uploaded vertex-buffer resources. Step 473 defines gamma/alpha handling.
+- [ ] Steps 473-474: Complete the remaining text graphics pipeline,
   textured glyph draw calls, subpixel positioning policy, and gamma/alpha
   handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

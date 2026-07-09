@@ -397,6 +397,11 @@ consume C: drive space again.
   vertex buffer, framebuffer-size push constants, each atlas page descriptor,
   and one `vkCmdDraw` per contiguous page run; real Win32 text frames submit.
 - Handoff: Phase E Step 472 explicit subpixel positioning policy.
+- Phase E Step 472 adds `VulkanTextPositioningPolicy`. Production defaults to
+  `preserve_subpixel`; the optional device-pixel snap mode rounds quad outer
+  edges before vertex expansion, leaves atlas UVs unchanged, and is recorded in
+  `VulkanTextVertexBufferResources`.
+- Handoff: Phase E Step 473 glyph coverage gamma and alpha handling.
 
 ## Categories
 

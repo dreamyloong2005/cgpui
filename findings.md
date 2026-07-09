@@ -64,6 +64,17 @@
   `vulkan_record_text_draws` path now implements this contract, with all range
   validation completing before the render pass begins. Step 472 owns explicit
   subpixel positioning policy.
+- Phase E Step 472 should preserve the current fractional device coordinates by
+  default because shaping and DPI conversion already produce positioned device
+  geometry. A separate deterministic pixel-snap policy remains useful for UI
+  text or diagnostics, but it should round the quad's outer edges and derive the
+  snapped size rather than rounding origin and size independently.
+- Positioning policy belongs before vertex expansion and must not alter atlas UV
+  coordinates. Recording the selected policy in vertex-buffer resources keeps
+  the choice inspectable without adding public renderer state or shader branches.
+  `VulkanTextPositioningPolicy` now defaults to `preserve_subpixel`, with the
+  optional snap mode rounding outer device edges. Step 473 owns coverage gamma
+  and alpha policy.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

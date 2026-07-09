@@ -22,11 +22,14 @@ VulkanTextVertex make_text_vertex(
 
 void append_text_quad_vertices(
     std::vector<VulkanTextVertex>& vertices,
-    const TexturedGlyphQuad& quad) {
-  const float left = quad.device_bounds.origin.x;
-  const float top = quad.device_bounds.origin.y;
-  const float right = left + quad.device_bounds.size.width;
-  const float bottom = top + quad.device_bounds.size.height;
+    const TexturedGlyphQuad& quad,
+    VulkanTextPositioningPolicy positioning_policy) {
+  const Rect device_bounds =
+      vulkan_position_text_bounds(quad.device_bounds, positioning_policy);
+  const float left = device_bounds.origin.x;
+  const float top = device_bounds.origin.y;
+  const float right = left + device_bounds.size.width;
+  const float bottom = top + device_bounds.size.height;
   const float atlas_left = quad.atlas_uv_bounds.origin.x;
   const float atlas_top = quad.atlas_uv_bounds.origin.y;
   const float atlas_right = atlas_left + quad.atlas_uv_bounds.size.width;
@@ -54,11 +57,12 @@ void append_text_quad_vertices(
 } // namespace
 
 std::vector<VulkanTextVertex> vulkan_build_text_vertices(
-    std::span<const TexturedGlyphQuad> quads) {
+    std::span<const TexturedGlyphQuad> quads,
+    VulkanTextPositioningPolicy positioning_policy) {
   std::vector<VulkanTextVertex> vertices;
   vertices.reserve(quads.size() * vulkan_text_vertices_per_quad);
   for (const TexturedGlyphQuad& quad : quads) {
-    append_text_quad_vertices(vertices, quad);
+    append_text_quad_vertices(vertices, quad, positioning_policy);
   }
   return vertices;
 }
@@ -77,6 +81,7 @@ Result<void> vulkan_upload_text_vertex_buffer(
     VkPhysicalDevice physical_device,
     VkDevice device,
     std::span<const TexturedGlyphQuad> quads,
+    VulkanTextPositioningPolicy positioning_policy,
     VulkanTextVertexBufferResources& resources) {
   if (physical_device == VK_NULL_HANDLE || device == VK_NULL_HANDLE) {
     return std::unexpected(vulkan_error(
@@ -86,7 +91,8 @@ Result<void> vulkan_upload_text_vertex_buffer(
   vulkan_destroy_text_vertex_buffer(device, resources);
 
   const std::vector<VulkanTextVertex> vertices =
-      vulkan_build_text_vertices(quads);
+      vulkan_build_text_vertices(quads, positioning_policy);
+  resources.positioning_policy = positioning_policy;
   if (vertices.empty()) {
     return {};
   }

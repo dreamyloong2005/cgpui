@@ -556,22 +556,27 @@ Windows/Linux core API is stable enough for parity work.
   framebuffer-size push constants, atlas descriptors, and one `vkCmdDraw` per
   page run now submit on real Win32 text frames. Step 472 makes subpixel
   positioning policy explicit.
+- Phase E Step 472 adds `VulkanTextPositioningPolicy`, default
+  `preserve_subpixel`, and an explicit device-pixel snap mode that rounds outer
+  quad edges before vertex expansion without changing atlas UVs. Step 473 owns
+  glyph coverage gamma and alpha handling.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-471 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-472 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
   descriptor bindings, renderer-ready flat quad ranges, and the integration
   closeout audit, text-pipeline vertex/fixed-state contract, embedded shader
   module boundaries, swapchain-owned pipeline resources, and fence-safe text
-  vertex-buffer uploads, and descriptor-bound textured glyph draw recording.
-- In progress: Step 472 explicit subpixel positioning policy.
-- Pending bands: Steps 472-474 remaining text
+  vertex-buffer uploads, descriptor-bound textured glyph draw recording, and
+  explicit subpixel/pixel-snap positioning policy.
+- In progress: Step 473 glyph coverage gamma and alpha handling.
+- Pending bands: Steps 473-474 remaining text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -621,6 +626,10 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_text_draw_recording_test` initially failed to compile because the focused private draw-recording header did not exist | Step 471 RED | Expected RED; add pre-render-pass draw planning and focused descriptor-bound Vulkan text recording |
 | The first compiled Step 471 gate made `renderer_source_structure_test` exit 36 because broad command recording reached 182 lines against its existing 180-line cap | Step 471 structure gate | Keep the cap unchanged and remove two unnecessary blank lines; all text-specific planning and Vulkan draw calls remain in the focused module |
 | The compiled Step 471 draw-recording test exited 40 after planner, structure, and live Win32 submission passed | Step 471 documentation gate | Expected RED after real draw recording compiled; update roadmap, ledger, planning, and findings with the Step 472 subpixel-policy handoff |
+| `vulkan_text_positioning_test` initially failed to compile because the focused private positioning header did not exist | Step 472 RED | Expected RED; add explicit preserve-subpixel and pixel-snap policies before vertex expansion |
+| The first compiled Step 472 test assumed `Rect`, `Point`, and `Size` equality operators that do not exist | Step 472 behavior test | Compare scalar geometry fields directly; no production code change was required |
+| The corrected compiled Step 472 positioning test exited 40 while behavior, vertex, draw, and structure tests passed | Step 472 documentation gate | Expected RED after explicit positioning policy compiled; update roadmap, ledger, planning, and findings with the Step 473 gamma/alpha handoff |
+| A combined Step 472 cleanup patch used stale `progress.md` context and was rejected without changing files | Step 472 closeout | Split the test assertion and progress update into explicit file-scoped patches before rerunning the narrow gate |
 
 ## Definition Of Done For This 20-Step Goal
 

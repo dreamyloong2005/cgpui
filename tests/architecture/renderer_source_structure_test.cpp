@@ -200,6 +200,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
       "src/renderer/vulkan/vulkan_text_draw_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_text_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_text_positioning_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_positioning.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
@@ -1092,6 +1094,20 @@ int main(int argc, char** argv) {
       !contains(command_recording, "vulkan_record_text_draws(") ||
       contains(command_recording, "vkCmdDraw")) {
     return 65;
+  }
+
+  const std::string text_positioning_header = read_source(
+      "src/renderer/vulkan/vulkan_text_positioning_internal.hpp");
+  const std::string text_positioning =
+      read_source("src/renderer/vulkan/vulkan_text_positioning.cpp");
+  if (line_count(text_positioning_header) > 40 ||
+      line_count(text_positioning) > 60 ||
+      !contains(text_positioning_header,
+                "enum class VulkanTextPositioningPolicy") ||
+      !contains(text_positioning, "preserve_subpixel") ||
+      !contains(text_positioning, "std::round") ||
+      contains(command_recording, "VulkanTextPositioningPolicy")) {
+    return 66;
   }
 
   const std::string report_image_uploads =

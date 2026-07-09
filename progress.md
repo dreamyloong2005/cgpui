@@ -18364,3 +18364,37 @@
 - Live WSL Wayland resize verification also passed
   `hello_window/linux_resize_after_first_frame`, covering updated dynamic
   viewport/scissor and framebuffer-size push constants after recreation.
+
+## 2026-07-10 Phase E Step 472 Text Positioning Policy
+
+- Started from clean tracked `master` at
+  `f18f46ba feat: record vulkan text draws`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed the production default should preserve fractional device positions;
+  an explicit pixel-snap mode will round outer quad edges before vertex
+  expansion and leave atlas UV coordinates unchanged.
+- Step 472 will add a focused private positioning module, thread the policy
+  through vertex upload, record it in buffer resources, add behavior/structure
+  coverage, and hand Step 473 to gamma/alpha handling.
+- Added `vulkan_text_positioning_test` and observed the expected RED compile
+  failure because the focused private positioning header did not exist.
+- The first compiled positioning test then failed because the test assumed
+  `Rect`, `Point`, and `Size` equality operators; changed the assertions to
+  compare scalar fields directly without modifying production behavior.
+- The corrected Step 472 gate passed vertex, draw-recording, and renderer-
+  structure coverage; the positioning test exited 40 only at its expected
+  documentation gate.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md` to
+  complete Step 472 and hand Step 473 to glyph coverage gamma and alpha
+  handling.
+- Focused Windows Step 472 verification passed 8/8: positioning, vertex buffer,
+  draw recording, renderer structure, pipeline resources, live frame lifetime,
+  parity ledger, and shader modules.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 8/8, including the live
+  `hello_window/linux_first_frame` default fractional-position path.
+- Windows full debug verification passed 153/153 with
+  `xmake test -y -P .`.
+- A combined closeout patch used stale `progress.md` context and was rejected
+  without changing files. Split the resource-default assertion and progress
+  update into explicit file-scoped patches.
