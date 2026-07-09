@@ -13,13 +13,15 @@ TextMeasurement measure_text(
     float font_size,
     DpiScale scale) {
   TextShapeRun shape_run = shape_text(text, std::move(font), font_size, scale);
+  const TextLineMetrics line_metrics =
+      text_line_metrics_for_shape_run(shape_run);
   const Size logical_size{
       .width = shape_run.total_advance,
-      .height = shape_run.line_height,
+      .height = line_metrics.line_height,
   };
   const Size device_size{
       .width = shape_run.device_total_advance,
-      .height = shape_run.device_line_height,
+      .height = line_metrics.device_line_height,
   };
   std::vector<TextGraphemeColumn> grapheme_columns =
       build_text_grapheme_columns(shape_run);
@@ -33,6 +35,7 @@ TextMeasurement measure_text(
       .grapheme_columns = std::move(grapheme_columns),
       .base_direction = base_direction,
       .bidi_runs = std::move(bidi_runs),
+      .line_metrics = line_metrics,
   };
 }
 

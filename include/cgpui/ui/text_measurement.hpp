@@ -45,6 +45,19 @@ struct TextBidiRun {
   float device_advance = 0.0F;
 };
 
+struct TextLineMetrics {
+  float ascent = 0.0F;
+  float descent = 0.0F;
+  float leading = 0.0F;
+  float line_height = 0.0F;
+  float baseline = 0.0F;
+  float device_ascent = 0.0F;
+  float device_descent = 0.0F;
+  float device_leading = 0.0F;
+  float device_line_height = 0.0F;
+  float device_baseline = 0.0F;
+};
+
 struct TextMeasurement {
   TextShapeRun shape_run;
   Size logical_size;
@@ -52,6 +65,7 @@ struct TextMeasurement {
   std::vector<TextGraphemeColumn> grapheme_columns;
   TextShapingDirection base_direction = TextShapingDirection::left_to_right;
   std::vector<TextBidiRun> bidi_runs;
+  TextLineMetrics line_metrics;
 };
 
 struct TextMeasurementResult {
@@ -64,6 +78,9 @@ struct TextMeasurementResult {
     FontDescriptor font = {},
     float font_size = 16.0F,
     DpiScale scale = {});
+
+[[nodiscard]] TextLineMetrics text_line_metrics_for_shape_run(
+    const TextShapeRun& run);
 
 class TextMeasurementCache {
  public:

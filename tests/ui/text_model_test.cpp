@@ -1494,6 +1494,45 @@ int test_text_measurement_records_bidi_runs() {
   return 0;
 }
 
+int test_text_measurement_records_line_metrics() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "ab",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F,
+      cgpui::DpiScale{.value = 2.0F});
+
+  const cgpui::TextLineMetrics metrics = measurement.line_metrics;
+  if (metrics.ascent != 16.0F || metrics.descent != 4.0F ||
+      metrics.leading != 0.0F || metrics.line_height != 20.0F ||
+      metrics.baseline != 16.0F || metrics.device_ascent != 32.0F ||
+      metrics.device_descent != 8.0F ||
+      metrics.device_line_height != 40.0F ||
+      metrics.device_baseline != 32.0F) {
+    return 203;
+  }
+
+  const cgpui::TextLineMetrics rebuilt =
+      cgpui::text_line_metrics_for_shape_run(measurement.shape_run);
+  if (rebuilt.baseline != metrics.baseline ||
+      rebuilt.device_baseline != metrics.device_baseline) {
+    return 204;
+  }
+
+  const cgpui::TextWrapLayout layout =
+      cgpui::wrap_text_measurement(measurement, 15.0F);
+  if (layout.lines.size() != 2 ||
+      layout.lines[0].metrics.baseline != 16.0F ||
+      layout.lines[0].metrics.ascent != 16.0F ||
+      layout.lines[0].metrics.descent != 4.0F ||
+      layout.lines[1].origin.y != 20.0F ||
+      layout.lines[1].metrics.device_baseline != 32.0F ||
+      layout.logical_size.height != 40.0F ||
+      layout.device_size.height != 80.0F) {
+    return 205;
+  }
+  return 0;
+}
+
 int test_wrapped_text_glyph_paint_metadata_preserves_glyph_ids() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcd",
@@ -1739,6 +1778,10 @@ int main() {
     return result;
   }
   if (const int result = test_text_measurement_records_bidi_runs();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_text_measurement_records_line_metrics();
       result != 0) {
     return result;
   }

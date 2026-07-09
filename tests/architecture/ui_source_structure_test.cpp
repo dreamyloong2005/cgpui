@@ -131,6 +131,7 @@ int main() {
       "src/ui/text_measurement.cpp",
       "src/ui/text_measurement_grapheme.cpp",
       "src/ui/text_measurement_bidi.cpp",
+      "src/ui/text_line_metrics.cpp",
       "src/ui/text_wrapping.cpp",
       "src/ui/text_hit_testing.cpp",
   };
@@ -469,12 +470,16 @@ int main() {
                 "std::vector<TextGraphemeColumn> grapheme_columns") ||
       !contains(text_measurement_header, "struct TextBidiRun") ||
       !contains(text_measurement_header, "std::vector<TextBidiRun> bidi_runs") ||
+      !contains(text_measurement_header, "struct TextLineMetrics") ||
+      !contains(text_measurement_header, "TextLineMetrics line_metrics") ||
+      !contains(text_measurement_header, "text_line_metrics_for_shape_run(") ||
       !contains(text_wrapping_header, "struct TextWrapLayout") ||
       !contains(text_wrapping_header, "enum class TextWrapBreakKind") ||
       !contains(text_wrapping_header, "std::size_t column_start") ||
       !contains(text_wrapping_header, "std::size_t column_end") ||
       !contains(text_wrapping_header, "std::size_t bidi_run_start") ||
       !contains(text_wrapping_header, "std::size_t bidi_run_end") ||
+      !contains(text_wrapping_header, "TextLineMetrics metrics") ||
       !contains(text_wrapping_header, "TextWrapBreakKind break_kind") ||
       !contains(text_hit_testing_header, "struct TextHitTestResult") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
@@ -505,12 +510,16 @@ int main() {
       read_source("src/ui/text_measurement_grapheme.cpp");
   const std::string text_measurement_bidi_source =
       read_source("src/ui/text_measurement_bidi.cpp");
+  const std::string text_line_metrics_source =
+      read_source("src/ui/text_line_metrics.cpp");
   const std::string text_wrapping_source =
       read_source("src/ui/text_wrapping.cpp");
   if (!contains(text_measurement_source,
                 "build_text_grapheme_columns(shape_run)") ||
       !contains(text_measurement_source,
                 "build_text_bidi_runs(shape_run, grapheme_columns)") ||
+      !contains(text_measurement_source,
+                "text_line_metrics_for_shape_run(shape_run)") ||
       !contains(text_measurement_grapheme_source,
                 "build_text_grapheme_columns(") ||
       !contains(text_measurement_grapheme_source,
@@ -518,6 +527,8 @@ int main() {
       !contains(text_measurement_bidi_source, "build_text_bidi_runs(") ||
       !contains(text_measurement_bidi_source,
                 "classify_text_bidi_direction(") ||
+      !contains(text_line_metrics_source, "text_line_metrics_for_shape_run(") ||
+      !contains(text_line_metrics_source, "text_line_metrics_baseline(") ||
       !contains(text_wrapping_source, "text_wrap_line_for_column_range(") ||
       !contains(text_wrapping_source, "text_wrap_line_assign_bidi_runs(") ||
       !contains(text_wrapping_source, "text_wrap_column_is_hard_break(") ||

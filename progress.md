@@ -15516,6 +15516,15 @@
   phase_d_text_shaping_audit_test/default
   phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
   phase_c_final_ledger_audit_test/default` 9/9.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed:
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`, and
+  `ui_source_structure_test/default` 9/9.
 - WSL adjacent verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` for transient temp and passed the same 9 targets 9/9.
 - `git diff --check` exited 0 with only expected LF-to-CRLF working-copy
@@ -16107,6 +16116,13 @@
   phase_d_text_shaping_audit_test/default
   phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
   phase_c_final_ledger_audit_test/default` 9/9.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default gpui_parity_ledger_test/default
+  phase_c_final_ledger_audit_test/default` 9/9.
 - Adjacent WSL verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` for transient temp and passed:
   `gpui_parity_ledger_test/default`,
@@ -16116,3 +16132,29 @@
   `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
   `text_model_test/default`, `ui_header_cleanliness/default`, and
   `ui_source_structure_test/default` 9/9.
+
+## 2026-07-09 Phase D Step 407 Line Metrics And Line Boxes
+
+- Started from clean `master` after
+  `b942d0a feat: add bidi measurement plan`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Before continuing, D: was down to 0.31GB free after WSL verification. Removed
+  old Phase C WSL build-cache directories under `.build-wsl/phase-c-*` while
+  preserving `.build-wsl/master`, which restored D: to 13.45GB free.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextLineMetrics`, `TextMeasurement::line_metrics`,
+  `text_line_metrics_for_shape_run(...)`, and wrapped lines carrying metrics
+  with deterministic baseline/ascent/descent values. RED failed as expected on
+  missing `TextLineMetrics`, missing measurement metrics, and missing wrapped
+  line metrics.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring the focused
+  `src/ui/text_line_metrics.cpp` boundary plus `text_line_metrics_for_shape_run(...)`
+  and `text_line_metrics_baseline(...)` ownership.
+- GREEN implementation adds `TextLineMetrics`, fills measurement metrics once
+  from `src/ui/text_line_metrics.cpp`, carries metrics into `TextWrapLine`, and
+  avoids repeated metrics reconstruction in the fallback wrap loop by passing
+  a precomputed metrics value through the private range helper.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.

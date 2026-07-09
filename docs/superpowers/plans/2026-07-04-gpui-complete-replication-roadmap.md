@@ -1005,6 +1005,13 @@ behavior that can support GPUI examples and editor-like widgets.
   recording LTR/RTL spans over measured grapheme columns without claiming the
   full Unicode bidi algorithm, visual reordering, paragraph layout, or native
   HarfBuzz itemization.
+  Step 407 adds deterministic line metrics and line-box metadata through
+  `TextLineMetrics`, `TextMeasurement::line_metrics`,
+  `TextWrapLine::metrics`, `text_line_metrics_for_shape_run(...)`, and
+  `src/ui/text_line_metrics.cpp`, exposing baseline/ascent/descent/leading
+  values to measurement and wrapped line records without claiming
+  platform-derived font metrics, paragraph line boxes, or native shaping
+  itemization.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.

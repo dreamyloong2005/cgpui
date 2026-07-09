@@ -177,6 +177,14 @@ Windows/Linux core API is stable enough for parity work.
   `build_text_bidi_runs(...)` and `classify_text_bidi_direction(...)`.
   This is planning metadata for later paragraph layout, not full Unicode bidi
   reordering, visual run placement, or HarfBuzz itemization.
+- Step 407 adds deterministic line metrics and line-box metadata.
+  `TextLineMetrics`, `TextMeasurement::line_metrics`,
+  `TextWrapLine::metrics`, `text_line_metrics_for_shape_run(...)`, and
+  `src/ui/text_line_metrics.cpp` give measurement and wrapping callers
+  explicit baseline/ascent/descent/leading values without hiding allocation or
+  platform font queries in the hot path. Platform-derived font metrics,
+  paragraph line boxes, and native shaping itemization remain future Phase D
+  work.
 
 ## Definition Of Done For This 20-Step Goal
 

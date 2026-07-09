@@ -7280,3 +7280,21 @@
   ranges become RTL, whitespace/newline follows the base direction, and all
   other codepoints stay LTR. Full Unicode bidi data, visual run placement,
   paragraph shaping, and HarfBuzz itemization remain future Phase D work.
+
+## 2026-07-09 Phase D Step 407 Line Metrics And Line Boxes
+
+- Step 407 adds explicit deterministic line metrics rather than deriving line
+  box values ad hoc from `TextShapeRun::line_height` in wrapping code.
+- `TextLineMetrics` records logical and device ascent, descent, leading, line
+  height, and baseline; `TextMeasurement::line_metrics` stores the measured
+  metrics beside grapheme and bidi metadata.
+- `src/ui/text_line_metrics.cpp` owns `text_line_metrics_for_shape_run(...)`
+  and the deterministic fallback baseline helper. The current fallback keeps
+  ascent/baseline at 80 percent of line height, descent at the remainder, and
+  leading at zero.
+- `TextWrapLine::metrics` carries those values into each wrapped line, so line
+  records now expose the line box and baseline inputs that later paragraph
+  layout, hit testing, selection painting, and native text rendering will need.
+- This is not platform-derived font metrics. DirectWrite/fontconfig/FreeType
+  ascent/descent/leading extraction, paragraph line boxes, and native shaping
+  itemization remain future work.

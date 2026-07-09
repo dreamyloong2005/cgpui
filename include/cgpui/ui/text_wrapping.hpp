@@ -24,6 +24,7 @@ struct TextWrapLine {
   std::size_t column_end = 0;
   std::size_t bidi_run_start = 0;
   std::size_t bidi_run_end = 0;
+  TextLineMetrics metrics;
   TextWrapBreakKind break_kind = TextWrapBreakKind::none;
   Point origin;
   Size size;
