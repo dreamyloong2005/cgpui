@@ -529,20 +529,26 @@ Windows/Linux core API is stable enough for parity work.
   pages, private `VulkanGlyphAtlasDrawBinding` and
   `VulkanGlyphAtlasDrawData` ownership, and contiguous page runs. Step 467 text
   shader pipeline is the next slice.
+- Phase E Step 467 defines the private `VulkanTextVertex` ABI and focused
+  fixed-function state helpers in `vulkan_text_pipeline_internal.hpp` and
+  `vulkan_text_pipeline_state.cpp`. The contract covers triangle-list input,
+  no culling or depth, one sample, dynamic viewport/scissor, and
+  straight alpha blending.
+  Step 468 adds validated embedded shader modules.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-466 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-467 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
   descriptor bindings, renderer-ready flat quad ranges, and the integration
-  closeout audit.
-- In progress: Step 467 text shader pipeline.
-- Pending bands: Steps 467-474 text
+  closeout audit, and the text-pipeline vertex/fixed-state contract.
+- In progress: Step 468 embedded text shader modules.
+- Pending bands: Steps 468-474 remaining text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -579,6 +585,9 @@ Windows/Linux core API is stable enough for parity work.
 | `phase_e_glyph_atlas_integration_closeout_test` first exited 30 after compiling and linking | Step 466 RED | Expected documentation RED; synchronize roadmap, Markdown/JSON ledger, planning, and findings with the completed Steps 459-465 evidence and Step 467 handoff |
 | Step 466 closeout still exited 30 after the first documentation sync because the roadmap used `Step 466 closes` instead of the shared closeout title | Step 466 first GREEN attempt | Keep the cross-document audit strict and add the exact `Phase E Step 466 glyph atlas integration closeout` wording to the roadmap |
 | Step 466 closeout advanced to exit 32 after the title fix because Markdown wrapping split shared evidence phrases | Step 466 second GREEN attempt | Keep the audited `Steps 459-465`, `descriptor capacity`, and `Step 467 text shader pipeline` phrases contiguous across all five authority files |
+| Step 467 exploration requested nonexistent `vulkan_render_pass.cpp` and `vulkan_framebuffers.cpp` files | Step 467 ownership discovery | Use the existing focused `vulkan_swapchain_render_pass.cpp`, `vulkan_swapchain_images.cpp`, and `vulkan_swapchain_lifecycle.cpp` boundaries instead of repeating stale generic filenames |
+| `vulkan_text_pipeline_state_test` initially failed to compile because the private pipeline-state header did not exist | Step 467 RED | Expected RED; add the private vertex ABI and fixed-function pipeline-state helpers in focused files |
+| The first compiled Step 467 state test exited 40 while renderer structure coverage passed | Step 467 documentation gate | Expected RED after behavior and structure compiled; update roadmap, ledger, planning, and findings with the Step 468 shader-module handoff |
 
 ## Definition Of Done For This 20-Step Goal
 

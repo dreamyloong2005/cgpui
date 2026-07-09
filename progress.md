@@ -18191,3 +18191,35 @@
 - WSL Arch Linux full debug verification reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed 144/144 with serialized linking and
   the new closeout audit included.
+
+## 2026-07-10 Phase E Step 467 Text Pipeline Ownership
+
+- Started from clean tracked `master` at
+  `bacd44ca test: close glyph atlas integration`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed the Vulkan backend has no existing `VkPipeline`, shader-module, or
+  `vkCmdDraw` implementation. Step 467 must introduce a focused private text
+  pipeline boundary rather than expanding command recording.
+- Render-pass compatibility makes the private swapchain resource aggregate the
+  intended owner for text pipeline handles, with creation after render-pass
+  setup and destruction through swapchain cleanup.
+- Windows has the full Vulkan SDK shader toolchain, while WSL has only
+  `spirv-as` and `spirv-val`. The text shader band will therefore use validated
+  embedded SPIR-V rather than a host GLSL-compiler requirement.
+- Step 467 will first establish the private vertex ABI and fixed-function text
+  pipeline state; shader modules and handle ownership remain subsequent slices.
+- Added `vulkan_text_pipeline_state_test` and observed the expected RED compile
+  failure because `vulkan_text_pipeline_internal.hpp` did not exist.
+- Added the private `VulkanTextVertex` ABI and focused fixed-function pipeline
+  state helpers, plus renderer structure coverage. No pipeline handles, shader
+  modules, or command recording were added in this slice.
+- The first compiled Step 467 run passed renderer structure coverage and exited
+  40 only at the expected documentation gate.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md` to
+  complete Step 467 and hand Step 468 to validated embedded text shader modules.
+- Focused Windows Step 467 verification passed 4/4: text pipeline state,
+  renderer structure, parity ledger, and glyph-atlas closeout regression.
+- Windows full debug verification passed 148/148 with
+  `xmake test -y -P .`.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 4/4 shared tests.

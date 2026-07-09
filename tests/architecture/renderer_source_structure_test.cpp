@@ -194,6 +194,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_state.cpp",
       "src/renderer/vulkan/vulkan_surface_selection.cpp",
       "src/renderer/vulkan/vulkan_sync.cpp",
+      "src/renderer/vulkan/vulkan_text_pipeline_internal.hpp",
+      "src/renderer/vulkan/vulkan_text_pipeline_state.cpp",
       "src/renderer/vulkan/vulkan_swapchain.cpp",
       "src/renderer/vulkan/vulkan_swapchain_create.cpp",
       "src/renderer/vulkan/vulkan_swapchain_query.cpp",
@@ -994,6 +996,24 @@ int main(int argc, char** argv) {
       !contains(glyph_atlas_upload_recording, "vkCmdCopyBufferToImage") ||
       !contains(glyph_atlas_frame, "prepare_glyph_atlas_frame(")) {
     return 60;
+  }
+
+  const std::string text_pipeline_internal =
+      read_source("src/renderer/vulkan/vulkan_text_pipeline_internal.hpp");
+  const std::string text_pipeline_state =
+      read_source("src/renderer/vulkan/vulkan_text_pipeline_state.cpp");
+  if (line_count(text_pipeline_internal) > 70 ||
+      line_count(text_pipeline_state) > 150 ||
+      !contains(text_pipeline_internal, "struct VulkanTextVertex") ||
+      !contains(text_pipeline_state,
+                "vulkan_text_vertex_binding_description(") ||
+      !contains(text_pipeline_state,
+                "vulkan_text_pipeline_blend_attachment_state(") ||
+      !contains(text_pipeline_state, "VK_DYNAMIC_STATE_VIEWPORT") ||
+      !contains(text_pipeline_state, "VK_DYNAMIC_STATE_SCISSOR") ||
+      contains(command_recording,
+               "vulkan_text_pipeline_input_assembly_state(")) {
+    return 61;
   }
 
   const std::string report_image_uploads =

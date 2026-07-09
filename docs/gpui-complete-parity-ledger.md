@@ -366,6 +366,14 @@ consume C: drive space again.
 - Remaining Phase E glyph-atlas gap: Step 467 text shader pipeline starts the
   real shader, vertex-buffer, pipeline, and textured draw-call work.
 - Handoff: Phase E Step 467 text shader pipeline.
+- Phase E Step 467 establishes the private fixed-function text pipeline state.
+  `VulkanTextVertex` carries position, atlas UV, and color attributes;
+  `vulkan_text_pipeline_state.cpp` freezes triangle-list input, no culling or
+  depth, one-sample rasterization, dynamic viewport/scissor, and
+  straight alpha blending.
+  Step 468 adds validated embedded shader modules before pipeline-handle
+  ownership and draw recording.
+- Handoff: Phase E Step 468 embedded text shader modules.
 
 ## Categories
 

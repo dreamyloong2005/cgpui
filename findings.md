@@ -1,5 +1,31 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 467 Text Pipeline Ownership
+
+- The Vulkan backend currently has no graphics pipeline, shader module, or
+  `vkCmdDraw` path; solid rectangles are still emitted with
+  `vkCmdClearAttachments`.
+- A text graphics pipeline is compatible with the swapchain render pass, so its
+  handle-bearing resources should live in the private swapchain resource
+  aggregate and be created after the render pass, not in broad command
+  recording or public renderer headers.
+- The glyph atlas descriptor-set layout remains renderer-owned and can be
+  supplied to the focused text-pipeline creator when it builds the pipeline
+  layout. Shader source/binary availability must be verified on both Windows
+  and WSL before choosing build-time compilation versus checked-in SPIR-V.
+- Windows exposes `glslc`, `glslangValidator`, `spirv-as`, and `spirv-val`
+  through the Vulkan SDK. WSL exposes only `spirv-as` and `spirv-val`, so the
+  production build cannot require GLSL compilation on every host.
+- Step 467 should freeze a private `VulkanTextVertex` ABI plus fixed pipeline
+  state helpers: triangle-list input, no culling/depth, one sample, straight
+  alpha blending, and dynamic viewport/scissor. Step 468 can add validated
+  embedded SPIR-V over that stable contract.
+- Phase E Step 467 now owns `VulkanTextVertex` and the focused fixed state:
+  triangle-list input, no culling or depth, one-sample rasterization,
+  dynamic viewport/scissor, and straight alpha blending. Step 468 adds
+  validated embedded shader modules; graphics pipeline handles and draw calls
+  remain later slices.
+
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 
 - Step 466 is an audit-only closeout for the production glyph-atlas band. The

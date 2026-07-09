@@ -1454,8 +1454,16 @@ draw calls for the Windows/Linux renderer.
   `VulkanGlyphAtlasDrawData` ownership, and contiguous page runs.
   Step 467 text shader pipeline follows; this closeout does not claim shader,
   vertex-buffer, pipeline, or textured draw-call implementation.
-- [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured
-  glyph draw calls, subpixel positioning policy, and gamma/alpha handling.
+- [x] Phase E Step 467 defines the private text-pipeline vertex ABI and fixed
+  state in `vulkan_text_pipeline_internal.hpp` and
+  `vulkan_text_pipeline_state.cpp`. `VulkanTextVertex` exposes position,
+  atlas-UV, and color attributes; the helpers freeze triangle-list input, no
+  culling or depth, one-sample rasterization, dynamic viewport/scissor, and
+  straight alpha blending without adding handles to public renderer headers or
+  broad command recording. Step 468 adds validated embedded shader modules.
+- [ ] Steps 468-474: Complete the text shader pipeline, descriptor layout,
+  textured glyph draw calls, subpixel positioning policy, and gamma/alpha
+  handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,
   anti-aliasing strategy, border radius clipping, border stroke, and fill
   variants.
