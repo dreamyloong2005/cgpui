@@ -1,6 +1,7 @@
 #include "ui_internal.hpp"
 
 #include "text_style_inheritance.hpp"
+#include "text_selection_paint_geometry.hpp"
 
 namespace cgpui {
 
@@ -35,29 +36,17 @@ void TextElement::paint(PaintList& paint_list) const {
       Color{.r = 0.82F, .g = 0.86F, .b = 0.92F, .a = 1.0F});
   paint_list.push_metadata(paint_metadata_for_style(text_style));
   const float font_size_value = text_style.font_size;
-  const float glyph_width_value = glyph_width();
   const TextSelectionRange selection = model_->selection();
   if (!selection.collapsed) {
-    paint_list.fill_text_selection(
-        Rect{
-            .origin =
-                {
-                    .x = bounds->origin.x +
-                         (static_cast<float>(selection.start) *
-                          glyph_width_value),
-                    .y = bounds->origin.y,
-                },
-            .size =
-                {
-                    .width =
-                        static_cast<float>(selection.end - selection.start) *
-                        glyph_width_value,
-                    .height = font_size_value,
-                },
-        },
+    paint_text_selection_ranges(
+        paint_list,
+        *bounds,
         Color{.r = 0.22F, .g = 0.42F, .b = 0.80F, .a = 0.38F},
-        selection,
-        font_size_value);
+        text(),
+        text_style.font,
+        font_size_value,
+        paint_list.scale(),
+        selection);
   }
   if (!text().empty()) {
     paint_list.fill_text(
@@ -67,20 +56,15 @@ void TextElement::paint(PaintList& paint_list) const {
         text_style.font,
         font_size_value);
   }
-  paint_list.fill_text_caret(
-      Rect{
-          .origin =
-              {
-                  .x = bounds->origin.x +
-                       (static_cast<float>(model_->cursor()) *
-                        glyph_width_value),
-                  .y = bounds->origin.y,
-              },
-          .size = {.width = 1.0F, .height = font_size_value},
-      },
+  paint_text_caret_geometry(
+      paint_list,
+      *bounds,
       text_color,
-      model_->cursor(),
-      font_size_value);
+      text(),
+      text_style.font,
+      font_size_value,
+      paint_list.scale(),
+      model_->cursor());
   paint_list.pop_metadata();
 }
 

@@ -3436,6 +3436,48 @@ int test_text_element_paints_caret_and_selection_metadata() {
   return commands[1].text.font.family == "Mono" ? 0 : 290;
 }
 
+int test_text_element_paints_multiline_selection_and_caret_geometry() {
+  cgpui::TextModel model("ab\ncd");
+  model.set_selection(1, 4);
+  cgpui::TextElement element(
+      &model,
+      cgpui::Style{}
+          .with_font(cgpui::FontDescriptor{.family = "Mono"})
+          .with_font_size(20.0F));
+  (void)element.layout(cgpui::LayoutInput{});
+
+  cgpui::PaintList paint_list;
+  element.paint(paint_list);
+  const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
+  if (commands.size() != 4 ||
+      commands[0].kind != cgpui::PaintCommandKind::text_selection ||
+      commands[1].kind != cgpui::PaintCommandKind::text_selection ||
+      commands[2].kind != cgpui::PaintCommandKind::text ||
+      commands[3].kind != cgpui::PaintCommandKind::text_caret) {
+    return 710;
+  }
+
+  const cgpui::TextSelectionPaint& first = commands[0].text_selection;
+  const cgpui::TextSelectionPaint& second = commands[1].text_selection;
+  if (first.range.start != 1 || first.range.end != 2 ||
+      first.rect.origin.x != 10.0F || first.rect.origin.y != 0.0F ||
+      first.rect.size.width != 10.0F || first.rect.size.height != 20.0F) {
+    return 711;
+  }
+  if (second.range.start != 3 || second.range.end != 4 ||
+      second.rect.origin.x != 0.0F || second.rect.origin.y != 20.0F ||
+      second.rect.size.width != 10.0F || second.rect.size.height != 20.0F) {
+    return 712;
+  }
+
+  const cgpui::TextCaretPaint& caret = commands[3].text_caret;
+  return caret.byte_offset == 4 && caret.rect.origin.x == 10.0F &&
+                 caret.rect.origin.y == 20.0F &&
+                 caret.rect.size.height == 20.0F
+             ? 0
+             : 713;
+}
+
 int test_empty_text_element_still_paints_caret_metadata() {
   cgpui::TextModel model;
   cgpui::TextElement element(
@@ -5886,6 +5928,11 @@ int main() {
   }
   if (const int result =
           test_text_element_paints_caret_and_selection_metadata();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_element_paints_multiline_selection_and_caret_geometry();
       result != 0) {
     return result;
   }

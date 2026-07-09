@@ -234,6 +234,12 @@ Windows/Linux core API is stable enough for parity work.
   applies `TextModel::line_selection_range_at(...)`, and keeps pointer release
   from collapsing the selected line back through ordinary caret/drag
   selection.
+- Step 417 adds multiline selection and caret paint geometry. Text element
+  paint now routes selection/caret rectangles through the focused internal
+  `text_selection_paint_geometry` helper, using the same measurement, hard-wrap,
+  and line-metric records as text paint so multiline selections emit per-line
+  `TextSelectionPaint` commands and the caret lands on the active line instead
+  of first-line byte-offset geometry.
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -16585,3 +16585,49 @@
   `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
+## 2026-07-09 Phase D Step 417 Multiline Selection And Caret Paint Geometry
+
+- Started from clean `master` after
+  `9c472a8 feat: add runtime triple click line selection`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added behavior coverage in `tests/ui/element_test.cpp` requiring a multiline
+  `TextElement` selection to emit two per-line `text_selection` commands and a
+  caret on the second line.
+- Added structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring the geometry to
+  live in `src/ui/text_selection_paint_geometry.cpp` / `.hpp` and keeping
+  first-line byte-offset math out of `src/ui/element_text_paint.cpp`.
+- GREEN implementation routes `TextElement::paint(...)` through
+  `paint_text_selection_ranges(...)` and `paint_text_caret_geometry(...)`, which
+  reuse measured hard-wrap line records and line metrics before emitting the
+  existing paint command types.
+- Focused GREEN verification passed:
+  `xmake test -y -P . element_test/default ui_source_structure_test/default`
+  2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  18/18.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed 18/18:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.

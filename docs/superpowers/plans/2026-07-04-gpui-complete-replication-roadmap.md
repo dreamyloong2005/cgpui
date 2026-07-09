@@ -1060,6 +1060,13 @@ behavior that can support GPUI examples and editor-like widgets.
   Step 416 connects triple-click runtime line selection through the same
   granularity path, applying `TextModel::line_selection_range_at(...)` for
   `click_count >= 3` and preserving the selected line on pointer release.
+  Step 417 deepens selection painting by moving text selection/caret geometry
+  into focused internal `src/ui/text_selection_paint_geometry.cpp` /
+  `.hpp` helpers. `TextElement::paint(...)` now emits per-line selection paint
+  commands for multiline ranges and positions the caret from measured hard-wrap
+  line metrics instead of first-line byte-offset geometry, while
+  `tests/ui/element_test.cpp` and `tests/architecture/ui_source_structure_test.cpp`
+  guard the behavior and module boundary.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.

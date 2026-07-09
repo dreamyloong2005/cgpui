@@ -1220,6 +1220,7 @@ int main() {
       "src/ui/element_button_paint.cpp",
       "src/ui/element_scroll_paint.cpp",
       "src/ui/element_text_paint.cpp",
+      "src/ui/text_selection_paint_geometry.cpp",
   };
   for (const char* source : element_style_sources) {
     if (read_source(source).empty()) {
@@ -1890,6 +1891,10 @@ int main() {
       read_source("src/ui/element_scroll_paint.cpp");
   const std::string element_text_paint_source =
       read_source("src/ui/element_text_paint.cpp");
+  const std::string text_selection_paint_geometry_header =
+      read_source("src/ui/text_selection_paint_geometry.hpp");
+  const std::string text_selection_paint_geometry_source =
+      read_source("src/ui/text_selection_paint_geometry.cpp");
   if (line_count(element_paint_source) > 20 ||
       contains(element_paint_source, "StyledElement::paint(") ||
       contains(element_paint_source, "ButtonElement::paint(") ||
@@ -1903,6 +1908,21 @@ int main() {
                 "ScrollableListElement::paint(") ||
       !contains(element_text_paint_source, "LabelElement::paint(") ||
       !contains(element_text_paint_source, "TextElement::paint(") ||
+      !contains(element_text_paint_source, "paint_text_selection_ranges(") ||
+      !contains(element_text_paint_source, "paint_text_caret_geometry(") ||
+      contains(element_text_paint_source, "selection.end - selection.start") ||
+      contains(element_text_paint_source,
+               "static_cast<float>(model_->cursor())") ||
+      !contains(text_selection_paint_geometry_header,
+                "paint_text_selection_ranges(") ||
+      !contains(text_selection_paint_geometry_header,
+                "paint_text_caret_geometry(") ||
+      !contains(text_selection_paint_geometry_source,
+                "text_line_x_for_byte_offset(") ||
+      !contains(text_selection_paint_geometry_source,
+                "wrap_text_measurement(") ||
+      !contains(text_selection_paint_geometry_source,
+                "paint_list.fill_text_selection(") ||
       contains(element_paint_source, "submit_paint_command_to_frame(")) {
     return 58;
   }

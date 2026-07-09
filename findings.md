@@ -7431,3 +7431,18 @@
 - The runtime keeps single-click caret/drag and double-click word selection
   separate, so each granularity remains explicit and testable without hidden
   allocation or platform gesture synthesis.
+
+## 2026-07-09 Phase D Step 417 Multiline Selection And Caret Paint Geometry
+
+- Step 417 moves text selection/caret rectangle calculation out of
+  `TextElement::paint(...)` and into focused internal
+  `src/ui/text_selection_paint_geometry.cpp` / `.hpp` helpers.
+- The helper measures and wraps the same text/font/scale/max-width inputs used
+  by text paint, then maps selection byte ranges onto `TextWrapLine` metrics so
+  multiline selections emit one `TextSelectionPaint` command per painted line.
+- Caret geometry now uses the matching wrapped line and line metrics, so a
+  cursor on a later hard-wrapped line paints at that line's x/y instead of
+  using first-line byte-offset geometry.
+- This is still deterministic fallback geometry. It does not claim full bidi
+  visual selection, paragraph shaping, scroll-to-caret, preferred-column
+  navigation, or native text renderer selection quads.
