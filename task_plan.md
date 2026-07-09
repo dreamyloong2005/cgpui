@@ -375,6 +375,14 @@ Windows/Linux core API is stable enough for parity work.
   ownership, runtime state, or renderer state. Syntax parsing, editor token
   integration, rich-text painting, click activation wiring, and inline image
   painting remain later Phase D work.
+- Step 440 adds rich-text paint metadata integration without changing renderer
+  drawing semantics. `PaintList::fill_rich_text(...)` lives in focused
+  `src/ui/paint_rich_text.cpp`; `TextPaint` and `TextDraw` now preserve
+  `rich_text_runs` plus `rich_text_inline_images`; and
+  `src/ui/render_view_commands.cpp` copies that metadata into render-frame
+  text draws. Actual multi-color glyph painting, inline image drawing/loading,
+  click activation wiring, syntax parsing, and editor token source integration
+  remain later Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

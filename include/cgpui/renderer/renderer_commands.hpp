@@ -41,6 +41,8 @@ struct TextDraw {
   float device_font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
   std::vector<TextWrapLine> lines;
+  std::vector<RichTextRun> rich_text_runs;
+  std::vector<RichTextInlineImageRun> rich_text_inline_images;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
   RendererCompositionStackRecord composition_stack;

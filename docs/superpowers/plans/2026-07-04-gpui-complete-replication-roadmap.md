@@ -1238,8 +1238,18 @@ behavior that can support GPUI examples and editor-like widgets.
   `build_rich_text_syntax_spans(...)` convert caller-owned syntax token ranges
   into deterministic `RichTextSpan` records without maps, parser ownership,
   runtime state, or renderer state. Syntax parsing, editor token integration,
-  rich-text painting, click activation, and inline image painting remain later
-  steps.
+  rich-text paint integration, click activation, and inline image painting
+  remain later steps.
+  Step 440 adds rich-text paint metadata integration without changing renderer
+  drawing semantics: `PaintList::fill_rich_text(...)` lives in focused
+  `src/ui/paint_rich_text.cpp`, `TextPaint` and `TextDraw` now carry
+  `rich_text_runs` plus `rich_text_inline_images`, and
+  `src/ui/render_view_commands.cpp` preserves those records into the render
+  frame. `tests/ui/render_view_test.cpp` verifies metadata retention, while
+  `tests/architecture/ui_source_structure_test.cpp` keeps the rich-text paint
+  entry out of broad paint/runtime files. Actual multi-color glyph painting,
+  inline image drawing/loading, click activation, syntax parsing, and editor
+  token source integration remain later work.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

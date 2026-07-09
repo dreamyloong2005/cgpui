@@ -446,7 +446,18 @@
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
-    "rich_text_syntax_theme_remaining_gap": "syntax parsing, editor token source integration, rich-text paint integration, click activation wiring, and inline image paint integration remain later Phase D work"
+    "rich_text_syntax_theme_remaining_gap": "syntax parsing, editor token source integration, rich-text paint integration, click activation wiring, and inline image paint integration remain later Phase D work",
+    "step_440": "Phase D Step 440 rich text paint metadata integration",
+    "rich_text_paint_metadata_surface": "PaintList::fill_rich_text(...) preserves caller-provided RichTextRun and RichTextInlineImageRun metadata through TextPaint, TextDraw, and render_view command submission without changing actual renderer drawing semantics",
+    "rich_text_paint_metadata_sources": [
+      "include/cgpui/ui/paint.hpp",
+      "include/cgpui/renderer/renderer_commands.hpp",
+      "src/ui/paint_rich_text.cpp",
+      "src/ui/render_view_commands.cpp",
+      "tests/ui/render_view_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp"
+    ],
+    "rich_text_paint_metadata_remaining_gap": "actual multi-color glyph painting, inline image drawing/loading, click activation wiring, syntax parsing, and editor token source integration remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

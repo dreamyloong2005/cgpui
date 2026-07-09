@@ -64,6 +64,8 @@ struct TextPaint {
   float device_font_size = 16.0F;
   std::vector<TextGlyphPaint> glyphs;
   std::vector<TextWrapLine> lines;
+  std::vector<RichTextRun> rich_text_runs;
+  std::vector<RichTextInlineImageRun> rich_text_inline_images;
 };
 
 struct TextSelectionPaint {
@@ -124,6 +126,14 @@ class PaintList {
       Rect bounds,
       Color color,
       std::string_view text,
+      FontDescriptor font = {},
+      float font_size = 16.0F);
+  void fill_rich_text(
+      Rect bounds,
+      Color color,
+      std::string_view text,
+      std::span<const RichTextRun> rich_text_runs,
+      std::span<const RichTextInlineImageRun> inline_images = {},
       FontDescriptor font = {},
       float font_size = 16.0F);
   void fill_text_selection(

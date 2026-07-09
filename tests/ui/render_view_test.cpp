@@ -283,6 +283,46 @@ class WrappedTextView final : public cgpui::View {
   }
 };
 
+class RichTextView final : public cgpui::View {
+ public:
+  void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
+    const std::vector<cgpui::RichTextRun> runs{
+        cgpui::RichTextRun{
+            .byte_start = 0,
+            .byte_end = 4,
+            .attributes = cgpui::RichTextAttributes{
+                .foreground = cgpui::rgb(255, 0, 0),
+            },
+        },
+        cgpui::RichTextRun{
+            .byte_start = 4,
+            .byte_end = 8,
+            .attributes = cgpui::RichTextAttributes{
+                .link_id = cgpui::RichTextLinkId{9},
+            },
+        },
+    };
+    const std::vector<cgpui::RichTextInlineImageRun> inline_images{
+        cgpui::RichTextInlineImageRun{
+            .image_id = cgpui::ImageAssetId{17},
+            .byte_start = 4,
+            .byte_end = 4,
+            .logical_size = {.width = 12.0F, .height = 8.0F},
+            .baseline_offset = -1.0F,
+        },
+    };
+    paint_list.fill_rich_text(
+        cgpui::Rect{.origin = {3.0F, 5.0F},
+                    .size = {.width = 48.0F, .height = 18.0F}},
+        cgpui::Color{.r = 0.7F, .g = 0.8F, .b = 0.9F, .a = 1.0F},
+        "link text",
+        runs,
+        inline_images,
+        cgpui::FontDescriptor{.family = "Rich"},
+        18.0F);
+  }
+};
+
 class RoundedBoxView final : public cgpui::View {
  public:
   void paint(cgpui::PaintList& paint_list, cgpui::Size) override {
@@ -652,6 +692,42 @@ int main() {
       wrapped_frame.last_text.glyphs[4].origin.x != 2.0F ||
       wrapped_frame.last_text.glyphs[4].origin.y != 36.0F) {
     return 31;
+  }
+
+  RecordingFrame rich_text_frame;
+  RecordingRenderer rich_text_renderer(rich_text_frame);
+  RichTextView rich_text_view;
+  const auto rich_text_result = cgpui::render_view(
+      rich_text_renderer,
+      rich_text_view,
+      cgpui::Size{64.0F, 64.0F});
+  if (!rich_text_result) {
+    return 71;
+  }
+  if (rich_text_frame.text_draw_count != 1 ||
+      rich_text_frame.last_text.content != "link text" ||
+      rich_text_frame.last_text.rich_text_runs.size() != 2 ||
+      rich_text_frame.last_text.rich_text_inline_images.size() != 1) {
+    return 72;
+  }
+  if (rich_text_frame.last_text.rich_text_runs[0].byte_start != 0 ||
+      rich_text_frame.last_text.rich_text_runs[0].byte_end != 4 ||
+      !rich_text_frame.last_text.rich_text_runs[0]
+           .attributes.foreground.has_value() ||
+      !rich_text_frame.last_text.rich_text_runs[1]
+           .attributes.link_id.has_value() ||
+      rich_text_frame.last_text.rich_text_runs[1]
+              .attributes.link_id->value != 9) {
+    return 73;
+  }
+  if (rich_text_frame.last_text.rich_text_inline_images[0].image_id.value !=
+          17 ||
+      rich_text_frame.last_text.rich_text_inline_images[0].byte_start != 4 ||
+      rich_text_frame.last_text.rich_text_inline_images[0].logical_size.width !=
+          12.0F ||
+      rich_text_frame.last_text.rich_text_inline_images[0].baseline_offset !=
+          -1.0F) {
+    return 74;
   }
 
   if (const int theme_result =

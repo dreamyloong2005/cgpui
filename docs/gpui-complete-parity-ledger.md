@@ -192,6 +192,17 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
 - Remaining gap: syntax parsing, editor token source integration, rich-text
   paint integration, click activation wiring, and inline image paint
   integration remain later Phase D work.
+- Step 440 adds rich-text paint metadata integration without changing actual
+  drawing semantics. `PaintList::fill_rich_text(...)` lives in focused
+  `src/ui/paint_rich_text.cpp`, `TextPaint` and `TextDraw` carry
+  `rich_text_runs` plus `rich_text_inline_images`, and
+  `src/ui/render_view_commands.cpp` preserves those records into render-frame
+  text draws. `tests/ui/render_view_test.cpp` verifies run/link and inline-image
+  metadata retention, and `tests/architecture/ui_source_structure_test.cpp`
+  keeps the entry out of broad paint/runtime files.
+- Remaining gap: actual multi-color glyph painting, inline image drawing/
+  loading, click activation wiring, syntax parsing, and editor token source
+  integration remain later Phase D work.
 
 ## Categories
 

@@ -1834,6 +1834,7 @@ int main() {
       "src/ui/paint.cpp",
       "src/ui/paint_clip.cpp",
       "src/ui/paint_text.cpp",
+      "src/ui/paint_rich_text.cpp",
       "src/ui/paint_image.cpp",
       "src/ui/element_paint.cpp",
       "src/ui/render_view.cpp",
@@ -1954,6 +1955,8 @@ int main() {
   const std::string paint_source = read_source("src/ui/paint.cpp");
   const std::string paint_clip_source = read_source("src/ui/paint_clip.cpp");
   const std::string paint_text_source = read_source("src/ui/paint_text.cpp");
+  const std::string paint_rich_text_source =
+      read_source("src/ui/paint_rich_text.cpp");
   const std::string paint_image_source = read_source("src/ui/paint_image.cpp");
   const std::string paint_shadow_source =
       read_source("src/ui/paint_shadow.cpp");
@@ -1977,8 +1980,19 @@ int main() {
       !contains(paint_text_source, "PaintList::fill_text_selection(") ||
       !contains(paint_text_source, "PaintList::fill_text_caret(") ||
       contains(paint_text_source, "PaintList::draw_image(") ||
+      contains(paint_text_source, "PaintList::fill_rich_text(") ||
       contains(paint_text_source, "PaintList::fill_rect(")) {
     return 82;
+  }
+  if (line_count(paint_rich_text_source) > 90 ||
+      !contains(paint_rich_text_source, "PaintList::fill_rich_text(") ||
+      !contains(paint_rich_text_source, "RichTextRun") ||
+      !contains(paint_rich_text_source, "RichTextInlineImageRun") ||
+      contains(paint_rich_text_source, "PaintList::fill_text_selection(") ||
+      contains(paint_rich_text_source, "PaintList::draw_image(") ||
+      contains(paint_rich_text_source, "PaintList::fill_rect(") ||
+      contains(paint_rich_text_source, "WindowRuntime::")) {
+    return 149;
   }
   if (line_count(paint_image_source) > 50 ||
       !contains(paint_image_source, "PaintList::draw_image(") ||

@@ -80,6 +80,8 @@ void submit_paint_command_to_frame(
         .device_font_size = text.device_font_size,
         .glyphs = text.glyphs,
         .lines = text.lines,
+        .rich_text_runs = text.rich_text_runs,
+        .rich_text_inline_images = text.rich_text_inline_images,
         .clip_rect = command.clip_rect,
         .clip_stack = command.clip_stack,
         .composition_stack = command.composition_stack,

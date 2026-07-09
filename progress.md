@@ -17526,3 +17526,32 @@
   `phase_d_edit_history_audit_test/default`,
   `phase_d_selection_caret_audit_test/default`, and
   `pre_phase_d_entry_gate_test/default`.
+
+## 2026-07-09 Phase D Step 440 Rich Text Paint Metadata Integration
+
+- Started from clean tracked `master` after
+  `01f09b62 feat: add rich text syntax metadata`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added RED coverage to `tests/ui/render_view_test.cpp` requiring
+  `PaintList::fill_rich_text(...)` and renderer-facing `TextDraw`
+  rich-text metadata. The first Windows run failed as expected because
+  `fill_rich_text`, `rich_text_runs`, and `rich_text_inline_images` did not
+  exist.
+- Implemented rich-text paint metadata transport with `TextPaint` and
+  `TextDraw` carrying `rich_text_runs` plus `rich_text_inline_images`,
+  `src/ui/paint_rich_text.cpp` owning the new paint entry, and
+  `src/ui/render_view_commands.cpp` copying metadata into render-frame text
+  draws. Actual renderer drawing semantics remain unchanged.
+- Updated the roadmap, Markdown/JSON parity ledger, `task_plan.md`, and
+  `findings.md` so the remaining gaps stay explicit.
+- Initial focused Windows GREEN verification passed:
+  `xmake test -y -P . render_view_test/default
+  ui_source_structure_test/default` 2/2.
+- Final focused Windows gate passed 7/7:
+  `rich_text_run_test/default`, `render_view_test/default`,
+  `ui_source_structure_test/default`, `core_header_cleanliness/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 7/7 focused tests.

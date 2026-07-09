@@ -7744,3 +7744,19 @@
 - This closes syntax-theme metadata only. Syntax parsing, editor token source
   integration, rich-text paint integration, click activation wiring, and inline
   image paint integration remain explicit later Phase D work.
+
+## 2026-07-09 Phase D Step 440 Rich Text Paint Metadata Integration
+
+- Rich-text paint integration should start as metadata transport, not renderer
+  behavior. `PaintList::fill_rich_text(...)` can reuse the existing plain text
+  measurement/wrapping/glyph metadata path while preserving caller-provided
+  `RichTextRun` and `RichTextInlineImageRun` records for later renderer and
+  interaction work.
+- The focused ownership boundary is `src/ui/paint_rich_text.cpp` plus the
+  existing paint command and renderer command records. This keeps rich-text
+  metadata out of broad `paint.cpp`, runtime state, Vulkan drawing code, and
+  string link targets.
+- This closes paint-command/render-frame metadata retention only. Actual
+  multi-color glyph painting, inline image drawing/loading, click activation,
+  syntax parsing, and editor token source integration remain explicit Phase D
+  gaps.
