@@ -180,6 +180,7 @@ end
 target("cgpui_renderer")
     set_kind("static")
     add_files("src/renderer/*.cpp")
+    add_files("src/ui/text_font.cpp")
     add_files("src/ui/text_shaping_backend.cpp")
     add_files("src/ui/text_shaping_dispatch.cpp")
     add_files("src/ui/text_shaping_harfbuzz.cpp")

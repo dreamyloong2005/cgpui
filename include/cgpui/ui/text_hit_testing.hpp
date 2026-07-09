@@ -3,6 +3,7 @@
 #include "cgpui/ui/text_measurement.hpp"
 
 #include <cstddef>
+#include <cstdint>
 
 namespace cgpui {
 
@@ -16,6 +17,12 @@ enum class TextSelectionDragDirection {
   collapsed,
   forward,
   backward,
+};
+
+enum class TextSelectionGranularity {
+  caret,
+  word,
+  line,
 };
 
 struct TextSelectionDrag {
@@ -52,5 +59,8 @@ struct TextHitTestResult {
     Rect bounds,
     Point anchor,
     Point head);
+
+[[nodiscard]] TextSelectionGranularity
+text_selection_granularity_for_click_count(std::uint8_t click_count);
 
 } // namespace cgpui

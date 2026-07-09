@@ -7389,3 +7389,19 @@
   content while keeping newline bytes out of the returned range.
 - Empty lines return collapsed ranges, while an end-of-buffer offset still
   selects the final non-empty line when one exists.
+
+## 2026-07-09 Phase D Step 414 Multi-Click Selection Granularity
+
+- Step 414 adds click-count plumbing without changing native platform
+  synthesis policy yet.
+- `PointerButton::click_count` defaults to `1`, so existing constructed and
+  platform-produced pointer button events keep single-click behavior.
+- `TextSelectionGranularity` lives in the focused text hit-testing leaf and
+  maps click counts to caret, word, and line selection through
+  `text_selection_granularity_for_click_count(...)`.
+- The mapping is explicit and zero-allocation: `0` and `1` select caret,
+  `2` selects word, and `3+` selects line.
+- Expanded WSL verification exposed that renderer-owned shaping objects call
+  `FontFallbackChain`/coverage helpers from `src/ui/text_font.cpp`; the file is
+  therefore explicitly compiled into both `cgpui_platform` for platform font
+  discovery and `cgpui_renderer` for shaping/link-order independence.

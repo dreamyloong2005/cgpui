@@ -1447,6 +1447,29 @@ int test_text_selection_drag_records_anchor_head_and_direction() {
              : 217;
 }
 
+int test_text_selection_granularity_maps_click_counts() {
+  if (cgpui::text_selection_granularity_for_click_count(0) !=
+      cgpui::TextSelectionGranularity::caret) {
+    return 622;
+  }
+  if (cgpui::text_selection_granularity_for_click_count(1) !=
+      cgpui::TextSelectionGranularity::caret) {
+    return 623;
+  }
+  if (cgpui::text_selection_granularity_for_click_count(2) !=
+      cgpui::TextSelectionGranularity::word) {
+    return 624;
+  }
+  if (cgpui::text_selection_granularity_for_click_count(3) !=
+      cgpui::TextSelectionGranularity::line) {
+    return 625;
+  }
+  return cgpui::text_selection_granularity_for_click_count(9) ==
+          cgpui::TextSelectionGranularity::line
+      ? 0
+      : 626;
+}
+
 int test_text_soft_wrap_records_split_measured_glyphs_by_width() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcde",
@@ -1995,6 +2018,11 @@ int main() {
   }
   if (const int result =
           test_text_selection_drag_records_anchor_head_and_direction();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_selection_granularity_maps_click_counts();
       result != 0) {
     return result;
   }

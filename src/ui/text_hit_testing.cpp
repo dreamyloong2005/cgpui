@@ -110,4 +110,15 @@ TextSelectionDrag text_selection_drag_from_points(
   return text_selection_drag_from_offsets(anchor_offset, head_offset);
 }
 
+TextSelectionGranularity text_selection_granularity_for_click_count(
+    std::uint8_t click_count) {
+  if (click_count >= 3U) {
+    return TextSelectionGranularity::line;
+  }
+  if (click_count == 2U) {
+    return TextSelectionGranularity::word;
+  }
+  return TextSelectionGranularity::caret;
+}
+
 } // namespace cgpui

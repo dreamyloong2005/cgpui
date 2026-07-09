@@ -23,6 +23,16 @@ bool contains(const std::string& text, const char* value) {
   return text.find(value) != std::string::npos;
 }
 
+std::size_t count_occurrences(const std::string& text, const char* value) {
+  std::size_t count = 0;
+  std::size_t offset = 0;
+  while ((offset = text.find(value, offset)) != std::string::npos) {
+    count += 1;
+    offset += std::string(value).size();
+  }
+  return count;
+}
+
 std::size_t line_count(const std::string& text) {
   std::size_t count = 0;
   for (const char value : text) {
@@ -457,6 +467,8 @@ int main() {
       read_source("include/cgpui/ui/text_layout.hpp");
   const std::string text_model_header =
       read_source("include/cgpui/ui/text_model.hpp");
+  const std::string event_pointer_header =
+      read_source("include/cgpui/core/event_pointer.hpp");
   if (!contains(text_font_header, "class FontDatabase") ||
       !contains(text_font_source, "void FontDatabase::add_face(") ||
       !contains(text_font_source,
@@ -493,11 +505,16 @@ int main() {
       !contains(text_hit_testing_header, "struct TextHitTestResult") ||
       !contains(text_hit_testing_header,
                 "enum class TextSelectionDragDirection") ||
+      !contains(text_hit_testing_header,
+                "enum class TextSelectionGranularity") ||
       !contains(text_hit_testing_header, "struct TextSelectionDrag") ||
       !contains(text_hit_testing_header, "text_selection_drag_from_offsets(") ||
       !contains(text_hit_testing_header, "text_selection_drag_from_points(") ||
+      !contains(text_hit_testing_header,
+                "text_selection_granularity_for_click_count(") ||
       !contains(text_model_header, "word_selection_range_at(") ||
       !contains(text_model_header, "line_selection_range_at(") ||
+      !contains(event_pointer_header, "std::uint8_t click_count = 1") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
       !contains(text_layout_header,
@@ -571,6 +588,8 @@ int main() {
                 "text_selection_drag_from_offsets(") ||
       !contains(text_hit_testing_source,
                 "text_selection_drag_from_points(") ||
+      !contains(text_hit_testing_source,
+                "text_selection_granularity_for_click_count(") ||
       !contains(text_model_navigation_source,
                 "TextModel::word_selection_range_at(") ||
       !contains(text_model_navigation_source,
@@ -581,7 +600,8 @@ int main() {
       contains(text_font_header, "faces_.push_back") ||
       contains(text_font_header, "generic_fallback_families_.push_back") ||
       contains(text_font_header, "std::find(") ||
-      !contains(xmake_source, "add_files(\"src/ui/text_font.cpp\")") ||
+      count_occurrences(xmake_source,
+                        "add_files(\"src/ui/text_font.cpp\")") < 2 ||
       !contains(xmake_source, "remove_files(\"src/ui/text_font.cpp\")")) {
     return 150;
   }

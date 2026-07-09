@@ -2,6 +2,8 @@
 
 #include "cgpui/core/geometry.hpp"
 
+#include <cstdint>
+
 namespace cgpui {
 
 enum class MouseButton {
@@ -28,6 +30,7 @@ struct PointerMoved {
 struct PointerButton {
   MouseButton button;
   bool pressed = false;
+  std::uint8_t click_count = 1;
   Point position;
 };
 

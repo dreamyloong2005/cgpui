@@ -16408,3 +16408,77 @@
 - Focused GREEN verification passed:
   `xmake test -y -P . text_model_test/default
   ui_source_structure_test/default` 2/2.
+
+## 2026-07-09 Phase D Step 414 Multi-Click Selection Granularity
+
+- Started from clean `master` after
+  `83ee464 feat: add text line selection ranges`; `git status --short
+  --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `text_selection_granularity_for_click_count(...)` to map click counts `0/1`
+  to caret, `2` to word, and `3+` to line.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `PointerButton::click_count`, `TextSelectionGranularity`, and the granularity
+  helper to stay in the focused event/text-hit-testing boundaries.
+- RED failed as expected:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` failed on missing granularity symbols.
+- GREEN implementation adds default `PointerButton::click_count = 1`,
+  `TextSelectionGranularity`, and the zero-allocation click-count mapping
+  helper in `src/ui/text_hit_testing.cpp`.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- First expanded adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  18/18.
+- First expanded adjacent WSL verification reused `.build-wsl/master` on D:
+  plus `/dev/shm/cgpui` for transient temp, but failed during linking before
+  tests because `libcgpui_renderer.a(text_shape.cpp.o)` and
+  `libcgpui_renderer.a(text_shaping_fallback.cpp.o)` referenced
+  `FontFallbackChain` and font coverage helpers that only lived in the
+  platform archive.
+- Fixed the build boundary by compiling `src/ui/text_font.cpp` through
+  `cgpui_renderer` as well as `cgpui_platform`, and tightened
+  `ui_source_structure_test/default` to require two explicit `text_font.cpp`
+  build entries while keeping `cgpui_ui`'s wildcard removal.
+- Post-boundary focused verification passed:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` 2/2.
+- Post-boundary expanded WSL verification reused `.build-wsl/master` on D:
+  plus `/dev/shm/cgpui` for transient temp and passed 18/18:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+- Post-boundary expanded Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  18/18.

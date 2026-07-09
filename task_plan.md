@@ -219,6 +219,11 @@ Windows/Linux core API is stable enough for parity work.
   `TextModel::line_selection_range_at(...)`. The helper reuses existing line
   navigation, trims CRLF line endings from selected ranges, and keeps
   triple-click-ready line range computation inside the text model boundary.
+- Step 414 adds multi-click selection granularity plumbing. `PointerButton`
+  now carries a default `click_count`, and `TextSelectionGranularity` plus
+  `text_selection_granularity_for_click_count(...)` map single, double, and
+  triple-or-higher clicks to caret, word, and line selection without hidden
+  allocation.
 
 ## Definition Of Done For This 20-Step Goal
 

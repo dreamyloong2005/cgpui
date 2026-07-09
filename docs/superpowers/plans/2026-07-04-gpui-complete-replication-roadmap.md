@@ -1047,6 +1047,12 @@ behavior that can support GPUI examples and editor-like widgets.
   `TextModel::line_selection_range_at(...)`, reusing existing line navigation
   while trimming CRLF line endings from selected ranges so triple-click-ready
   model ranges stay explicit and zero-allocation.
+  Step 414 adds multi-click selection granularity plumbing:
+  `PointerButton::click_count` defaults to single-click behavior, while
+  `TextSelectionGranularity` and
+  `text_selection_granularity_for_click_count(...)` map single, double, and
+  triple-or-higher clicks to caret, word, and line selection without runtime
+  allocation.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.
