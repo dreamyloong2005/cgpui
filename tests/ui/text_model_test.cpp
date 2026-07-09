@@ -309,6 +309,49 @@ int test_text_model_applies_word_edit_actions() {
   return 0;
 }
 
+int test_text_model_reports_word_selection_range_at_offset() {
+  cgpui::TextModel model("alpha  beta\tgamma");
+  const std::size_t beta_start = std::string_view{"alpha  "}.size();
+  const std::size_t beta_end = std::string_view{"alpha  beta"}.size();
+
+  const cgpui::TextSelectionRange beta =
+      model.word_selection_range_at(beta_start + 1);
+  if (beta.start != beta_start || beta.end != beta_end || beta.collapsed) {
+    return 612;
+  }
+
+  const cgpui::TextSelectionRange gap =
+      model.word_selection_range_at(std::string_view{"alpha "}.size());
+  if (gap.start != std::string_view{"alpha "}.size() ||
+      gap.end != gap.start || !gap.collapsed) {
+    return 613;
+  }
+
+  cgpui::TextModel unicode("wide\xE3\x80\x80gap");
+  const cgpui::TextSelectionRange wide =
+      unicode.word_selection_range_at(std::string_view{"wi"}.size());
+  if (wide.start != 0 || wide.end != std::string_view{"wide"}.size() ||
+      wide.collapsed) {
+    return 614;
+  }
+
+  const cgpui::TextSelectionRange unicode_gap =
+      unicode.word_selection_range_at(std::string_view{"wide"}.size());
+  if (unicode_gap.start != std::string_view{"wide"}.size() ||
+      unicode_gap.end != unicode_gap.start || !unicode_gap.collapsed) {
+    return 615;
+  }
+
+  const cgpui::TextSelectionRange end =
+      unicode.word_selection_range_at(unicode.text().size());
+  if (end.start != unicode.text().size() || end.end != end.start ||
+      !end.collapsed) {
+    return 616;
+  }
+
+  return 0;
+}
+
 int test_text_model_navigates_multiline_lines() {
   cgpui::TextModel model("abc\ndefg\nhi");
 
@@ -1805,6 +1848,11 @@ int main() {
     return result;
   }
   if (const int result = test_text_model_applies_word_edit_actions();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_model_reports_word_selection_range_at_offset();
       result != 0) {
     return result;
   }

@@ -1038,6 +1038,11 @@ behavior that can support GPUI examples and editor-like widgets.
   `text_selection_drag_from_points(...)` live in the focused text hit-testing
   leaf, and runtime pointer selection now reuses the same helper instead of
   open-coding anchor/head selection ranges.
+  Step 412 adds word-selection range helpers through
+  `TextModel::word_selection_range_at(...)`, reusing the existing grapheme and
+  word-boundary navigation path to expose zero-allocation double-click-ready
+  ranges while separators and end offsets stay collapsed. Runtime
+  double/triple-click gesture synthesis remains later in this band.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.

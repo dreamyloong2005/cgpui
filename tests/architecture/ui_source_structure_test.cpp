@@ -496,6 +496,7 @@ int main() {
       !contains(text_hit_testing_header, "struct TextSelectionDrag") ||
       !contains(text_hit_testing_header, "text_selection_drag_from_offsets(") ||
       !contains(text_hit_testing_header, "text_selection_drag_from_points(") ||
+      !contains(text_model_header, "word_selection_range_at(") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
       !contains(text_layout_header,
@@ -534,6 +535,8 @@ int main() {
       read_source("src/ui/text_wrapping.cpp");
   const std::string text_hit_testing_source =
       read_source("src/ui/text_hit_testing.cpp");
+  const std::string text_model_navigation_source =
+      read_source("src/ui/text_model_navigation.cpp");
   if (!contains(text_measurement_source,
                 "build_text_grapheme_columns(shape_run)") ||
       !contains(text_measurement_source,
@@ -566,7 +569,9 @@ int main() {
       !contains(text_hit_testing_source,
                 "text_selection_drag_from_offsets(") ||
       !contains(text_hit_testing_source,
-                "text_selection_drag_from_points(")) {
+                "text_selection_drag_from_points(") ||
+      !contains(text_model_navigation_source,
+                "TextModel::word_selection_range_at(")) {
     return 115;
   }
   if (line_count(text_font_header) > 120 ||

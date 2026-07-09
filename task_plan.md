@@ -210,6 +210,11 @@ Windows/Linux core API is stable enough for parity work.
   `text_selection_drag_from_points(...)` live in the focused text hit-testing
   leaf, and runtime text pointer selection now reuses those records for
   anchor/head model selection updates.
+- Step 412 adds word-selection range helpers through
+  `TextModel::word_selection_range_at(...)`. The helper reuses the existing
+  grapheme and word-boundary navigation path, returns collapsed ranges for
+  separators and end offsets, and keeps double-click-ready word range
+  computation zero-allocation inside the text model boundary.
 
 ## Definition Of Done For This 20-Step Goal
 

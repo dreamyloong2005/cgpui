@@ -23,6 +23,36 @@ std::size_t TextModel::line_end_offset(std::size_t offset) const {
   return line_end_for_offset(offset);
 }
 
+TextSelectionRange TextModel::word_selection_range_at(
+    std::size_t offset) const {
+  std::size_t target = clamp_offset(offset);
+  if (target >= text_.size()) {
+    return TextSelectionRange{
+        .start = target,
+        .end = target,
+        .collapsed = true,
+    };
+  }
+  if (target > 0 && is_utf8_continuation(text_[target])) {
+    target = previous_codepoint_boundary(target);
+  }
+  if (grapheme_at_is_word_separator(target)) {
+    return TextSelectionRange{
+        .start = target,
+        .end = target,
+        .collapsed = true,
+    };
+  }
+
+  const std::size_t start = previous_word_boundary(target);
+  const std::size_t end = next_word_boundary(target);
+  return TextSelectionRange{
+      .start = start,
+      .end = end,
+      .collapsed = start == end,
+  };
+}
+
 bool TextModel::move_cursor_previous() {
   if (cursor_ == 0) {
     return false;

@@ -7364,3 +7364,16 @@
 - `WindowRuntime::apply_text_pointer_selection(...)` now routes pointer down,
   move, and release selection updates through the same helper instead of
   open-coding anchor/head model updates.
+
+## 2026-07-09 Phase D Step 412 Word Selection Range Helpers
+
+- Step 412 keeps word-selection range computation in `TextModel`, where the
+  existing grapheme and word-boundary helpers already live.
+- `TextModel::word_selection_range_at(...)` returns a `TextSelectionRange`
+  without allocating, selecting the word containing the requested byte offset
+  and returning a collapsed range for separators or end offsets.
+- Continuation-byte offsets are normalized back to the owning UTF-8 codepoint
+  boundary before separator/word checks, so future hit-testing and
+  double-click paths can reuse the helper without exposing invalid byte ranges.
+- Runtime double-click/triple-click gesture policy is intentionally not added
+  in this slice; this only exposes the model-level range primitive.

@@ -28,6 +28,8 @@ class TextModel {
   [[nodiscard]] std::size_t line_index_at(std::size_t offset) const;
   [[nodiscard]] std::size_t line_start_offset(std::size_t offset) const;
   [[nodiscard]] std::size_t line_end_offset(std::size_t offset) const;
+  [[nodiscard]] TextSelectionRange word_selection_range_at(
+      std::size_t offset) const;
 
   void set_selection(std::size_t anchor, std::size_t head);
   void clear_selection();
