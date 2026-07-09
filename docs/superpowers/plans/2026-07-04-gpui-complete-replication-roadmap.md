@@ -1222,6 +1222,14 @@ behavior that can support GPUI examples and editor-like widgets.
   with normalized run/link metadata. This keeps link detection out of runtime
   and renderer state and still leaves click activation, inline images,
   syntax-theme integration, and rich-text paint integration for later steps.
+  Step 438 adds focused inline image metadata via
+  `include/cgpui/ui/text_rich_text_inline_image.hpp` and
+  `src/ui/text_rich_text_inline_image.cpp`: `RichTextInlineImageSpan`,
+  `RichTextInlineImageRun`, and `build_rich_text_inline_image_runs(...)`
+  normalize numeric `ImageAssetId` anchors with byte-span clipping,
+  zero-length insertion anchors, deterministic sorting, logical size, and
+  baseline offset. Image loading, rich-text paint integration, click
+  activation, and syntax-theme integration remain later steps.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility
   tests for the official input and text wrapper examples.
 - [ ] Steps 451-458: Run full Windows/WSL verification, update text rows in

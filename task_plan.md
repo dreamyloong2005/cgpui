@@ -359,6 +359,13 @@ Windows/Linux core API is stable enough for parity work.
   byte-range helpers without runtime state, renderer state, or string link
   targets. Click activation wiring, inline images, syntax-theme integration,
   and rich-text painting remain later Phase D work.
+- Step 438 adds inline image metadata in the focused
+  `text_rich_text_inline_image` leaf. `RichTextInlineImageSpan`,
+  `RichTextInlineImageRun`, and `build_rich_text_inline_image_runs(...)`
+  normalize numeric `ImageAssetId` anchors with byte-span clipping, zero-length
+  insertion anchors, deterministic sorting, logical size, and baseline offset.
+  Image loading, rich-text paint integration, click activation wiring, and
+  syntax-theme integration remain later Phase D work.
 
 ## Definition Of Done For This 20-Step Goal
 

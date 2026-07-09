@@ -426,7 +426,17 @@
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
-    "rich_text_point_hit_remaining_gap": "click activation wiring, inline images, syntax-theme integration, and rich-text paint integration remain later Phase D work"
+    "rich_text_point_hit_remaining_gap": "click activation wiring, inline images, syntax-theme integration, and rich-text paint integration remain later Phase D work",
+    "step_438": "Phase D Step 438 rich text inline image metadata",
+    "rich_text_inline_image_surface": "RichTextInlineImageSpan, RichTextInlineImageRun, and build_rich_text_inline_image_runs(...) expose numeric ImageAssetId anchored inline image metadata with byte-span clipping, zero-length anchors, deterministic sorting, and visible caller-owned output storage",
+    "rich_text_inline_image_sources": [
+      "include/cgpui/ui/text_rich_text_inline_image.hpp",
+      "src/ui/text_rich_text_inline_image.cpp",
+      "include/cgpui/ui/text.hpp",
+      "tests/ui/rich_text_run_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp"
+    ],
+    "rich_text_inline_image_remaining_gap": "inline image paint integration, image asset loading/registration policy inside rich text, click activation wiring, syntax-theme integration, and rich-text paint integration remain later Phase D work"
   },
   "categories": [
     "application_and_app_context",

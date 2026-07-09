@@ -80,6 +80,7 @@ int main() {
       "include/cgpui/ui/text_layout.hpp",
       "include/cgpui/ui/text_rich_text.hpp",
       "include/cgpui/ui/text_rich_text_hit_testing.hpp",
+      "include/cgpui/ui/text_rich_text_inline_image.hpp",
       "include/cgpui/ui/text_model.hpp",
       "include/cgpui/ui/text.hpp",
       "include/cgpui/ui/element_ids.hpp",
@@ -149,6 +150,7 @@ int main() {
       "src/ui/text_hit_testing.cpp",
       "src/ui/text_rich_text.cpp",
       "src/ui/text_rich_text_hit_testing.cpp",
+      "src/ui/text_rich_text_inline_image.cpp",
   };
   for (const char* source : text_implementation_files) {
     if (read_source(source).empty()) {
@@ -176,6 +178,10 @@ int main() {
       read_source("include/cgpui/ui/text_rich_text_hit_testing.hpp");
   const std::string text_rich_text_hit_testing_source =
       read_source("src/ui/text_rich_text_hit_testing.cpp");
+  const std::string text_rich_text_inline_image_header =
+      read_source("include/cgpui/ui/text_rich_text_inline_image.hpp");
+  const std::string text_rich_text_inline_image_source =
+      read_source("src/ui/text_rich_text_inline_image.cpp");
   const std::string xmake_source = read_source("xmake.lua");
   if (!contains(text_shaping_backend_source,
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
@@ -239,6 +245,18 @@ int main() {
                 "rich_text_run_at_byte_offset(") ||
       !contains(text_rich_text_hit_testing_source,
                 "rich_text_link_at_byte_offset(") ||
+      !contains(text_rich_text_inline_image_header,
+                "struct RichTextInlineImageSpan") ||
+      !contains(text_rich_text_inline_image_header,
+                "struct RichTextInlineImageRun") ||
+      !contains(text_rich_text_inline_image_header,
+                "build_rich_text_inline_image_runs(") ||
+      !contains(text_rich_text_inline_image_source,
+                "clipped_inline_image_span(") ||
+      !contains(text_rich_text_inline_image_source,
+                "inline_image_span_has_valid_size(") ||
+      !contains(text_rich_text_inline_image_source,
+                "sort_inline_image_runs(") ||
       !contains(fallback_source, "font_fallback_face_index") ||
       !contains(fallback_source, "select_font_fallback_face_index(") ||
       !contains(fallback_source, "append_font_fallback_run_span(") ||
@@ -572,6 +590,8 @@ int main() {
                 "#include \"cgpui/ui/text_hit_testing.hpp\"") ||
       !contains(text_aggregate_header,
                 "#include \"cgpui/ui/text_rich_text_hit_testing.hpp\"") ||
+      !contains(text_aggregate_header,
+                "#include \"cgpui/ui/text_rich_text_inline_image.hpp\"") ||
       !contains(text_model_header, "class TextModel")) {
     return 23;
   }
@@ -584,7 +604,8 @@ int main() {
       contains(text_measurement_header, " inline ") ||
       contains(text_wrapping_header, " inline ") ||
       contains(text_hit_testing_header, " inline ") ||
-      contains(text_rich_text_hit_testing_header, " inline ")) {
+      contains(text_rich_text_hit_testing_header, " inline ") ||
+      contains(text_rich_text_inline_image_header, " inline ")) {
     return 114;
   }
 

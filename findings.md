@@ -7715,3 +7715,17 @@
 - This closes point-based run/link metadata only. Click activation wiring,
   inline images, syntax-theme integration, and rich-text paint integration
   remain explicit later Phase D work.
+
+## 2026-07-09 Phase D Step 438 Rich Text Inline Image Metadata
+
+- Step 438 keeps inline image handling as metadata, not paint or asset loading:
+  it lives in a focused `text_rich_text_inline_image` public leaf and reuses the
+  existing numeric `ImageAssetId` surface instead of string paths or URLs.
+- `RichTextInlineImageSpan`, `RichTextInlineImageRun`, and
+  `build_rich_text_inline_image_runs(...)` normalize caller-provided inline
+  image anchors by filtering invalid ids/sizes/out-of-range spans, clipping
+  byte ranges to the text length, preserving zero-length insertion anchors, and
+  sorting deterministically into caller-owned output storage.
+- This closes inline image metadata only. Rich-text image paint integration,
+  image loading/registration policy, click activation wiring, and syntax-theme
+  integration remain explicit later Phase D work.

@@ -169,6 +169,17 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
   past the measured text.
 - Remaining gap: click activation wiring, inline images, syntax-theme
   integration, and rich-text paint integration remain later Phase D work.
+- Step 438 adds inline image metadata through the focused
+  `text_rich_text_inline_image` leaf. `RichTextInlineImageSpan`,
+  `RichTextInlineImageRun`, and `build_rich_text_inline_image_runs(...)`
+  expose numeric `ImageAssetId` anchors with byte-span clipping, zero-length
+  insertion anchors, deterministic sorting, baseline offset, and caller-owned
+  output storage. `tests/ui/rich_text_run_test.cpp` verifies clipping,
+  filtering, sorting, and baseline metadata without adding image loading or
+  paint behavior.
+- Remaining gap: inline image paint integration, image asset loading/
+  registration policy inside rich text, click activation wiring, syntax-theme
+  integration, and rich-text paint integration remain later Phase D work.
 
 ## Categories
 

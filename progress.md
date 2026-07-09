@@ -17120,6 +17120,31 @@
 - Final focused WSL gate reused `.build-wsl/master` on D: plus
   `/dev/shm/cgpui` transient temp and passed the same 6/6 focused tests.
 
+## 2026-07-09 Phase D Step 438 Rich Text Inline Image Metadata
+
+- Started from clean tracked `master` after
+  `8c1ed41a feat: add rich text point hits`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added RED coverage to `tests/ui/rich_text_run_test.cpp` for inline image
+  byte-span clipping, invalid span/size filtering, zero-length anchors,
+  deterministic sorting, logical size, and baseline offset metadata. The first
+  Windows run failed as expected because
+  `cgpui/ui/text_rich_text_inline_image.hpp` did not exist.
+- Implemented the focused `text_rich_text_inline_image` public leaf and source
+  file, added it to the `text.hpp` aggregate, and updated
+  `ui_source_structure_test` so inline image metadata stays out of runtime,
+  renderer, and paint files.
+- Focused Windows verification passed:
+  `xmake test -y -P . rich_text_run_test/default
+  ui_source_structure_test/default` 2/2.
+- Final focused Windows gate passed 6/6:
+  `rich_text_run_test/default`, `ui_source_structure_test/default`,
+  `core_header_cleanliness/default`, `gpui_parity_ledger_test/default`,
+  `phase_d_ime_platform_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+- Final focused WSL gate reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the same 6/6 focused tests.
+
 ## 2026-07-09 Phase D Step 434 IME Platform Band Closeout
 
 - Started from clean tracked `master` after

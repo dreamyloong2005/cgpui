@@ -1,5 +1,6 @@
 #include "cgpui/ui/text_rich_text.hpp"
 #include "cgpui/ui/text_rich_text_hit_testing.hpp"
+#include "cgpui/ui/text_rich_text_inline_image.hpp"
 
 #include <optional>
 #include <span>
@@ -230,6 +231,57 @@ int test_point_hits_reuse_text_hit_testing_offsets() {
   return 0;
 }
 
+int test_inline_images_are_clipped_filtered_and_sorted() {
+  std::vector<cgpui::RichTextInlineImageSpan> images{
+      cgpui::RichTextInlineImageSpan{
+          .image_id = cgpui::ImageAssetId{2},
+          .byte_start = 3,
+          .byte_end = 12,
+          .logical_size = {.width = 16.0F, .height = 10.0F},
+          .baseline_offset = -2.0F,
+      },
+      cgpui::RichTextInlineImageSpan{
+          .image_id = cgpui::ImageAssetId{1},
+          .byte_start = 1,
+          .byte_end = 1,
+          .logical_size = {.width = 8.0F, .height = 6.0F},
+          .baseline_offset = 1.5F,
+      },
+      cgpui::RichTextInlineImageSpan{
+          .image_id = cgpui::ImageAssetId{3},
+          .byte_start = 5,
+          .byte_end = 6,
+          .logical_size = {.width = 4.0F, .height = 4.0F},
+      },
+      cgpui::RichTextInlineImageSpan{
+          .image_id = cgpui::ImageAssetId{4},
+          .byte_start = 2,
+          .byte_end = 3,
+          .logical_size = {.width = 0.0F, .height = 4.0F},
+      },
+  };
+
+  const std::vector<cgpui::RichTextInlineImageRun> runs =
+      cgpui::build_rich_text_inline_image_runs("abcd", images);
+  if (runs.size() != 2) {
+    return 60;
+  }
+  if (runs[0].image_id.value != 1 || runs[0].byte_start != 1 ||
+      runs[0].byte_end != 1 || runs[0].logical_size.width != 8.0F ||
+      runs[0].logical_size.height != 6.0F ||
+      runs[0].baseline_offset != 1.5F) {
+    return 61;
+  }
+  if (runs[1].image_id.value != 2 || runs[1].byte_start != 3 ||
+      runs[1].byte_end != 4 || runs[1].logical_size.width != 16.0F ||
+      runs[1].logical_size.height != 10.0F ||
+      runs[1].baseline_offset != -2.0F) {
+    return 62;
+  }
+
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -252,6 +304,10 @@ int main() {
     return result;
   }
   if (const int result = test_point_hits_reuse_text_hit_testing_offsets();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_inline_images_are_clipped_filtered_and_sorted();
       result != 0) {
     return result;
   }
