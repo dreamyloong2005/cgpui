@@ -1319,6 +1319,47 @@ int test_text_hit_geometry_maps_points_to_offsets_and_selection() {
                                                                           : 63;
 }
 
+int test_text_selection_drag_records_anchor_head_and_direction() {
+  const cgpui::TextMeasurement measurement = cgpui::measure_text(
+      "abcd",
+      cgpui::FontDescriptor{.family = "Inter"},
+      20.0F);
+  const cgpui::Rect bounds{
+      .origin = {.x = 10.0F, .y = 5.0F},
+      .size = {.width = 40.0F, .height = 20.0F},
+  };
+
+  const cgpui::TextSelectionDrag backward =
+      cgpui::text_selection_drag_from_points(
+          measurement,
+          bounds,
+          {39.0F, 10.0F},
+          {14.0F, 10.0F});
+  if (backward.anchor_offset != 3 || backward.head_offset != 0 ||
+      backward.range.start != 0 || backward.range.end != 3 ||
+      backward.range.collapsed ||
+      backward.direction != cgpui::TextSelectionDragDirection::backward) {
+    return 215;
+  }
+
+  const cgpui::TextSelectionDrag forward =
+      cgpui::text_selection_drag_from_offsets(1, 4);
+  if (forward.anchor_offset != 1 || forward.head_offset != 4 ||
+      forward.range.start != 1 || forward.range.end != 4 ||
+      forward.range.collapsed ||
+      forward.direction != cgpui::TextSelectionDragDirection::forward) {
+    return 216;
+  }
+
+  const cgpui::TextSelectionDrag collapsed =
+      cgpui::text_selection_drag_from_offsets(2, 2);
+  return collapsed.range.collapsed &&
+                 collapsed.direction ==
+                     cgpui::TextSelectionDragDirection::collapsed
+             ? 0
+             : 217;
+}
+
 int test_text_soft_wrap_records_split_measured_glyphs_by_width() {
   const cgpui::TextMeasurement measurement = cgpui::measure_text(
       "abcde",
@@ -1852,6 +1893,11 @@ int main() {
   }
   if (const int result =
           test_text_hit_geometry_maps_points_to_offsets_and_selection();
+      result != 0) {
+    return result;
+  }
+  if (const int result =
+          test_text_selection_drag_records_anchor_head_and_direction();
       result != 0) {
     return result;
   }

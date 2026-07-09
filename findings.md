@@ -7349,3 +7349,18 @@
   reordering, full Unicode line-break classes, paragraph shaping, cache
   eviction policy, platform-derived font metrics, and dependency-backed native
   Linux fontconfig/FreeType enumeration remain future Phase D work.
+
+## 2026-07-09 Phase D Step 411 Text Selection Drag Records
+
+- Step 411 starts the selection/caret band with explicit drag-selection
+  records in the focused `text_hit_testing` leaf.
+- `TextSelectionDragDirection` distinguishes collapsed, forward, and backward
+  drags; `TextSelectionDrag` preserves anchor/head offsets beside the normalized
+  `TextSelectionRange`.
+- `text_selection_drag_from_offsets(...)` and
+  `text_selection_drag_from_points(...)` are zero-allocation helpers that reuse
+  the existing text hit-testing path and keep anchor/head direction visible to
+  future double/triple click and word/line selection work.
+- `WindowRuntime::apply_text_pointer_selection(...)` now routes pointer down,
+  move, and release selection updates through the same helper instead of
+  open-coding anchor/head model updates.

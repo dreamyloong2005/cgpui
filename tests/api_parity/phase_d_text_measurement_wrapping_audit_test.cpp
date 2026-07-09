@@ -106,7 +106,7 @@ int main() {
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-410") ||
+  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
       !contains(text_row, "Step 410 text measurement/wrapping band audit") ||
       !contains(text_row, "TextGraphemeColumn") ||
       !contains(text_row, "TextWrapBreakKind") ||

@@ -3,6 +3,19 @@
 #include <algorithm>
 
 namespace cgpui {
+namespace {
+
+TextSelectionDragDirection text_selection_drag_direction_for_offsets(
+    std::size_t anchor_offset,
+    std::size_t head_offset) {
+  if (anchor_offset == head_offset) {
+    return TextSelectionDragDirection::collapsed;
+  }
+  return anchor_offset < head_offset ? TextSelectionDragDirection::forward
+                                     : TextSelectionDragDirection::backward;
+}
+
+} // namespace
 
 TextHitTestResult hit_test_text_position(
     const TextMeasurement& measurement,
@@ -64,6 +77,37 @@ TextSelectionRange text_selection_range_from_points(
       .end = end,
       .collapsed = start == end,
   };
+}
+
+TextSelectionDrag text_selection_drag_from_offsets(
+    std::size_t anchor_offset,
+    std::size_t head_offset) {
+  const std::size_t start = std::min(anchor_offset, head_offset);
+  const std::size_t end = std::max(anchor_offset, head_offset);
+  return TextSelectionDrag{
+      .anchor_offset = anchor_offset,
+      .head_offset = head_offset,
+      .range =
+          TextSelectionRange{
+              .start = start,
+              .end = end,
+              .collapsed = start == end,
+          },
+      .direction =
+          text_selection_drag_direction_for_offsets(anchor_offset, head_offset),
+  };
+}
+
+TextSelectionDrag text_selection_drag_from_points(
+    const TextMeasurement& measurement,
+    Rect bounds,
+    Point anchor,
+    Point head) {
+  const std::size_t anchor_offset =
+      hit_test_text_position(measurement, bounds, anchor).byte_offset;
+  const std::size_t head_offset =
+      hit_test_text_position(measurement, bounds, head).byte_offset;
+  return text_selection_drag_from_offsets(anchor_offset, head_offset);
 }
 
 } // namespace cgpui

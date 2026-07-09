@@ -16275,3 +16275,49 @@
   `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
   `text_model_test/default`, `ui_header_cleanliness/default`, and
   `ui_source_structure_test/default` 10/10.
+
+## 2026-07-09 Phase D Step 411 Text Selection Drag Records
+
+- Started from clean `master` after
+  `f3890ec test: close text measurement wrapping band`;
+  `git status --short --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/text_model_test.cpp` requiring
+  `TextSelectionDragDirection`, `TextSelectionDrag`,
+  `text_selection_drag_from_offsets(...)`, and
+  `text_selection_drag_from_points(...)` to preserve anchor/head offsets,
+  normalized ranges, and collapsed/forward/backward direction.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring the drag API to
+  live in `include/cgpui/ui/text_hit_testing.hpp` and
+  `src/ui/text_hit_testing.cpp`, with focused helper ownership through
+  `text_selection_drag_direction_for_offsets(...)`.
+- RED failed as expected:
+  `xmake test -y -P . text_model_test/default
+  ui_source_structure_test/default` failed on missing drag selection API.
+- GREEN implementation adds the public drag records/helpers and updates
+  `WindowRuntime::apply_text_pointer_selection(...)` to route pointer down,
+  move, and release model selection updates through
+  `text_selection_drag_from_offsets(...)`.
+- Focused GREEN verification passed:
+  `xmake test -y -P . text_model_test/default
+  window_runtime_text_test/default ui_source_structure_test/default` 3/3.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  render_view_test/default ui_source_structure_test/default
+  ui_header_cleanliness/default phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  11/11.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed:
+  `gpui_parity_ledger_test/default`,
+  `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `text_model_test/default`, `ui_header_cleanliness/default`,
+  `ui_source_structure_test/default`, and `window_runtime_text_test/default`
+  11/11.

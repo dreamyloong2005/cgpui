@@ -204,6 +204,12 @@ Windows/Linux core API is stable enough for parity work.
   the Step 403-409 grapheme, soft-wrap, hard-wrap, bidi-planning,
   line-metrics, paragraph-cache, and CRLF hard-wrap evidence before Phase D
   moves to selection and caret behavior.
+- Step 411 starts the selection/caret band with explicit text selection drag
+  records. `TextSelectionDragDirection`, `TextSelectionDrag`,
+  `text_selection_drag_from_offsets(...)`, and
+  `text_selection_drag_from_points(...)` live in the focused text hit-testing
+  leaf, and runtime text pointer selection now reuses those records for
+  anchor/head model selection updates.
 
 ## Definition Of Done For This 20-Step Goal
 

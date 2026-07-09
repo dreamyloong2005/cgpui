@@ -24,10 +24,14 @@ bool WindowRuntime::apply_text_pointer_selection(
         return false;
       }
 
-      input->model()->set_selection(*offset, *offset);
+      const TextSelectionDrag selection =
+          text_selection_drag_from_offsets(*offset, *offset);
+      input->model()->set_selection(
+          selection.anchor_offset,
+          selection.head_offset);
       text_pointer_selection_drag_ = TextPointerSelectionDrag{
           .element_id = *route.target_element_id,
-          .anchor_offset = *offset,
+          .anchor_offset = selection.anchor_offset,
       };
       return false;
     }
@@ -46,7 +50,11 @@ bool WindowRuntime::apply_text_pointer_selection(
     const std::optional<std::size_t> offset =
         text_offset_for_point(*input, button->position);
     if (offset.has_value()) {
-      input->model()->set_selection(drag.anchor_offset, *offset);
+      const TextSelectionDrag selection =
+          text_selection_drag_from_offsets(drag.anchor_offset, *offset);
+      input->model()->set_selection(
+          selection.anchor_offset,
+          selection.head_offset);
     }
     return true;
   }
@@ -63,7 +71,11 @@ bool WindowRuntime::apply_text_pointer_selection(
     const std::optional<std::size_t> offset =
         text_offset_for_point(*input, moved->position);
     if (offset.has_value()) {
-      input->model()->set_selection(drag.anchor_offset, *offset);
+      const TextSelectionDrag selection =
+          text_selection_drag_from_offsets(drag.anchor_offset, *offset);
+      input->model()->set_selection(
+          selection.anchor_offset,
+          selection.head_offset);
     }
     return true;
   }

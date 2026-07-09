@@ -1032,6 +1032,12 @@ behavior that can support GPUI examples and editor-like widgets.
 - [ ] Steps 411-418: Complete selection and caret behavior: mouse drag,
   double/triple click, word/line selection, scroll-to-caret, preferred column,
   selection painting, and clipboard integration.
+  Step 411 starts this band with explicit text selection drag records:
+  `TextSelectionDragDirection`, `TextSelectionDrag`,
+  `text_selection_drag_from_offsets(...)`, and
+  `text_selection_drag_from_points(...)` live in the focused text hit-testing
+  leaf, and runtime pointer selection now reuses the same helper instead of
+  open-coding anchor/head selection ranges.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.

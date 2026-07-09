@@ -491,6 +491,11 @@ int main() {
       !contains(text_wrapping_header, "TextLineMetrics metrics") ||
       !contains(text_wrapping_header, "TextWrapBreakKind break_kind") ||
       !contains(text_hit_testing_header, "struct TextHitTestResult") ||
+      !contains(text_hit_testing_header,
+                "enum class TextSelectionDragDirection") ||
+      !contains(text_hit_testing_header, "struct TextSelectionDrag") ||
+      !contains(text_hit_testing_header, "text_selection_drag_from_offsets(") ||
+      !contains(text_hit_testing_header, "text_selection_drag_from_points(") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
       !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
       !contains(text_layout_header,
@@ -527,6 +532,8 @@ int main() {
       read_source("src/ui/text_paragraph_layout.cpp");
   const std::string text_wrapping_source =
       read_source("src/ui/text_wrapping.cpp");
+  const std::string text_hit_testing_source =
+      read_source("src/ui/text_hit_testing.cpp");
   if (!contains(text_measurement_source,
                 "build_text_grapheme_columns(shape_run)") ||
       !contains(text_measurement_source,
@@ -553,7 +560,13 @@ int main() {
       !contains(text_wrapping_source, "text_wrap_line_assign_bidi_runs(") ||
       !contains(text_wrapping_source, "text_wrap_column_is_hard_break(") ||
       !contains(text_wrapping_source, "text[column.byte_start] == '\\r'") ||
-      !contains(text_wrapping_source, "measurement.grapheme_columns")) {
+      !contains(text_wrapping_source, "measurement.grapheme_columns") ||
+      !contains(text_hit_testing_source,
+                "text_selection_drag_direction_for_offsets(") ||
+      !contains(text_hit_testing_source,
+                "text_selection_drag_from_offsets(") ||
+      !contains(text_hit_testing_source,
+                "text_selection_drag_from_points(")) {
     return 115;
   }
   if (line_count(text_font_header) > 120 ||
