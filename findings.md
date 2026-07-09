@@ -7419,3 +7419,15 @@
 - Platform-native double-click synthesis remains future work; this slice
   consumes the explicit `PointerButton::click_count` field when callers or
   tests provide it.
+
+## 2026-07-09 Phase D Step 416 Runtime Triple-Click Line Selection
+
+- Step 416 adds the line-selection counterpart to Step 415 inside the same
+  focused runtime pointer-selection boundary.
+- `WindowRuntime::apply_text_pointer_selection(...)` now consumes
+  `TextSelectionGranularity::line` from `click_count >= 3`, calls
+  `TextModel::line_selection_range_at(...)`, and sets the selected line
+  directly without arming `text_pointer_selection_drag_`.
+- The runtime keeps single-click caret/drag and double-click word selection
+  separate, so each granularity remains explicit and testable without hidden
+  allocation or platform gesture synthesis.

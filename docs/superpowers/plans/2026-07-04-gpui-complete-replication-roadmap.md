@@ -1057,6 +1057,9 @@ behavior that can support GPUI examples and editor-like widgets.
   down consumes `PointerButton::click_count == 2`, applies
   `TextModel::word_selection_range_at(...)`, and keeps pointer release from
   collapsing that word selection back into the ordinary drag path.
+  Step 416 connects triple-click runtime line selection through the same
+  granularity path, applying `TextModel::line_selection_range_at(...)` for
+  `click_count >= 3` and preserving the selected line on pointer release.
 - [ ] Steps 419-426: Deepen edit history: grouped typing, IME grouped commits,
   undo manager integration points, redo invalidation, and edit transaction
   diagnostics.

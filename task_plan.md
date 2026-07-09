@@ -229,6 +229,11 @@ Windows/Linux core API is stable enough for parity work.
   `text_selection_granularity_for_click_count(...)`, and applies
   `TextModel::word_selection_range_at(...)` without starting the ordinary
   drag-selection path, so pointer release preserves the selected word.
+- Step 416 connects runtime triple-click line selection. Text input pointer
+  down now consumes `TextSelectionGranularity::line` from `click_count >= 3`,
+  applies `TextModel::line_selection_range_at(...)`, and keeps pointer release
+  from collapsing the selected line back through ordinary caret/drag
+  selection.
 
 ## Definition Of Done For This 20-Step Goal
 

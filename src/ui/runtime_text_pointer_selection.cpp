@@ -32,6 +32,12 @@ bool WindowRuntime::apply_text_pointer_selection(
         input->model()->set_selection(selection.start, selection.end);
         return false;
       }
+      if (granularity == TextSelectionGranularity::line) {
+        const TextSelectionRange selection =
+            input->model()->line_selection_range_at(*offset);
+        input->model()->set_selection(selection.start, selection.end);
+        return false;
+      }
 
       const TextSelectionDrag selection =
           text_selection_drag_from_offsets(*offset, *offset);

@@ -16534,3 +16534,54 @@
   `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
   `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
   `window_runtime_input_test/default`, and `window_runtime_text_test/default`.
+
+## 2026-07-09 Phase D Step 416 Runtime Triple-Click Line Selection
+
+- Started from clean `master` after
+  `873bf19 feat: add runtime double click word selection`; `git status
+  --short --branch` showed only the existing untracked `.vscode/`.
+- Added RED behavior coverage in `tests/ui/window_runtime_text_test.cpp`
+  requiring a text input triple-click (`PointerButton::click_count = 3`) to
+  select the current line on pointer down and keep that line selected on
+  pointer up.
+- Added RED structure coverage in
+  `tests/architecture/ui_source_structure_test.cpp` requiring
+  `src/ui/runtime_text_pointer_selection.cpp` to consume
+  `TextModel::line_selection_range_at(...)` inside the focused runtime pointer
+  selection boundary.
+- RED failed as expected:
+  `xmake test -y -P . window_runtime_text_test/default
+  ui_source_structure_test/default` failed 2/2 before line granularity handling
+  was implemented.
+- GREEN implementation adds the `TextSelectionGranularity::line` branch beside
+  the existing word branch, sets the model line range directly, and leaves
+  single-click caret/drag selection unchanged.
+- Focused GREEN verification passed:
+  `xmake test -y -P . window_runtime_text_test/default
+  ui_source_structure_test/default` 2/2.
+- Adjacent Windows verification passed:
+  `xmake test -y -P . text_model_test/default window_runtime_text_test/default
+  window_runtime_input_test/default window_runtime_focus_test/default
+  test_context_pointer_simulation_test/default builtin_widget_test/default
+  element_test/default static_render_runtime_test/default
+  win32_input_event_test/default render_view_test/default
+  ui_source_structure_test/default ui_header_cleanliness/default
+  phase_d_fallback_splitting_audit_test/default
+  phase_d_text_shaping_audit_test/default
+  phase_d_font_fallback_audit_test/default
+  phase_d_text_measurement_wrapping_audit_test/default
+  gpui_parity_ledger_test/default phase_c_final_ledger_audit_test/default`
+  18/18.
+- Adjacent WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` for transient temp and passed 18/18:
+  `builtin_widget_test/default`, `element_test/default`,
+  `gpui_parity_ledger_test/default`, `phase_c_final_ledger_audit_test/default`,
+  `phase_d_fallback_splitting_audit_test/default`,
+  `phase_d_font_fallback_audit_test/default`,
+  `phase_d_text_measurement_wrapping_audit_test/default`,
+  `phase_d_text_shaping_audit_test/default`, `render_view_test/default`,
+  `static_render_runtime_test/default`,
+  `test_context_pointer_simulation_test/default`, `text_model_test/default`,
+  `ui_header_cleanliness/default`, `ui_source_structure_test/default`,
+  `wayland_pointer_button_test/default`, `window_runtime_focus_test/default`,
+  `window_runtime_input_test/default`, and `window_runtime_text_test/default`.

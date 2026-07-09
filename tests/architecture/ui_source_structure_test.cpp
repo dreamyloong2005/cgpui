@@ -2925,6 +2925,8 @@ int main() {
                 "text_selection_granularity_for_click_count(") ||
       !contains(runtime_text_pointer_selection_source,
                 "word_selection_range_at(") ||
+      !contains(runtime_text_pointer_selection_source,
+                "line_selection_range_at(") ||
       contains(runtime_text_pointer_selection_source,
                "TextModel* WindowRuntime::focused_text_model(") ||
       contains(runtime_text_pointer_selection_source,
