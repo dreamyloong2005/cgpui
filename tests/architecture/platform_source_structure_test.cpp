@@ -746,6 +746,7 @@ int main(int argc, char** argv) {
       !contains(text_input_requests, "placement->surrounding_text") ||
       !contains(text_input_requests, "placement->selection_anchor") ||
       !contains(text_input_requests, "placement->content_hint") ||
+      !contains(text_input_requests, "placement->candidate_rect") ||
       !contains(text_input, "create_wayland_text_input") ||
       contains(text_input, "class WaylandTextInput")) {
     return 6;
@@ -862,6 +863,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/win32/win32_input_helpers.cpp");
   const std::string win32_font_discovery =
       read_source("src/platform/win32/win32_font_discovery.cpp");
+  const std::string win32_window_ime =
+      read_source("src/platform/win32/win32_window_ime.cpp");
   if (line_count(win32_helpers) > 60 ||
       contains(win32_helpers, "std::wstring widen(") ||
       contains(win32_helpers, "KeyboardModifiers current_modifiers()") ||
@@ -895,6 +898,11 @@ int main(int argc, char** argv) {
       contains(win32_input_helpers,
                "DragDropPayload drag_payload_from_ole_data_object(")) {
     return 17;
+  }
+  if (!contains(win32_window_ime, "placement.candidate_rect") ||
+      !contains(win32_window_ime, "candidate_rect") ||
+      !contains(win32_window_ime, "ImmSetCandidateWindow")) {
+    return 43;
   }
   if (!contains(win32_font_discovery, "win32_discover_fonts()") ||
       !contains(

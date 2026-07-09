@@ -936,6 +936,11 @@ int test_runtime_applies_focused_text_ime_rect_to_platform_window() {
   if (placement.byte_offset != 3 || placement.rect.origin.x != 30.0F ||
       placement.rect.origin.y != 0.0F || placement.rect.size.width != 1.0F ||
       placement.rect.size.height != 20.0F ||
+      !placement.candidate_rect.has_value() ||
+      placement.candidate_rect->origin.x != 30.0F ||
+      placement.candidate_rect->origin.y != 0.0F ||
+      placement.candidate_rect->size.width != 1.0F ||
+      placement.candidate_rect->size.height != 20.0F ||
       placement.surrounding_text != "abcd" ||
       placement.selection_anchor != 1 ||
       placement.content_hint != 0 ||

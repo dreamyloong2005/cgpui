@@ -81,6 +81,10 @@ int main() {
           cgpui::Rect{
               .origin = {.x = 24.0F, .y = 36.0F},
               .size = {.width = 2.0F, .height = 18.0F}},
+      .candidate_rect =
+          cgpui::Rect{
+              .origin = {.x = 30.0F, .y = 42.0F},
+              .size = {.width = 5.0F, .height = 20.0F}},
       .byte_offset = 3,
       .surrounding_text = "abcd",
       .selection_anchor = 1,
@@ -96,7 +100,12 @@ int main() {
       placed_state.ime_text_input_placement->rect.origin.x != 24.0F ||
       placed_state.ime_text_input_placement->rect.origin.y != 36.0F ||
       placed_state.ime_text_input_placement->rect.size.width != 2.0F ||
-      placed_state.ime_text_input_placement->rect.size.height != 18.0F) {
+      placed_state.ime_text_input_placement->rect.size.height != 18.0F ||
+      !placed_state.ime_text_input_placement->candidate_rect.has_value() ||
+      placed_state.ime_text_input_placement->candidate_rect->origin.x != 30.0F ||
+      placed_state.ime_text_input_placement->candidate_rect->origin.y != 42.0F ||
+      placed_state.ime_text_input_placement->candidate_rect->size.width != 5.0F ||
+      placed_state.ime_text_input_placement->candidate_rect->size.height != 20.0F) {
     return 8;
   }
 
@@ -105,7 +114,10 @@ int main() {
   if (!ime_started_state.ime_text_input_placement.has_value() ||
       ime_started_state.ime_text_input_placement->byte_offset != 3 ||
       ime_started_state.ime_text_input_placement->surrounding_text != "abcd" ||
-      ime_started_state.ime_text_input_placement->selection_anchor != 1) {
+      ime_started_state.ime_text_input_placement->selection_anchor != 1 ||
+      !ime_started_state.ime_text_input_placement->candidate_rect.has_value() ||
+      ime_started_state.ime_text_input_placement->candidate_rect->origin.x != 30.0F ||
+      ime_started_state.ime_text_input_placement->candidate_rect->origin.y != 42.0F) {
     return 9;
   }
 

@@ -1171,6 +1171,12 @@ behavior that can support GPUI examples and editor-like widgets.
   Wayland preedit updates attach one default underline span without vector
   allocation or `TextModel` behavior changes; platform-specific styling and
   candidate-placement policy remain open.
+  Step 431 makes candidate placement explicit by adding
+  `ImeTextInputPlacement::candidate_rect`. Runtime focused-text placement fills
+  it from `ImeCandidateRect`, Wayland text-input v3 prefers it for
+  `set_cursor_rectangle`, and Win32 IMM applies it to `CANDIDATEFORM` while
+  keeping `rect` for `COMPOSITIONFORM`. Production candidate UI policy remains
+  later work.
 - [ ] Steps 435-442: Add rich text runs: spans, links, inline images, syntax
   color-like attributes, underline/strikethrough, background, and hit testing.
 - [ ] Steps 443-450: Add text input parity examples and API compatibility

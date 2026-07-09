@@ -17056,6 +17056,40 @@
   win32_text_input_test/default platform_source_structure_test/default
   wayland_window_source_test/default` 4/4.
 
+## 2026-07-09 Phase D Step 431 IME Candidate Placement Metadata
+
+- Started from clean tracked `master` after
+  `144f4b7e test: add pre phase d entry gate`; `git status --short --branch`
+  showed only the existing untracked `.vscode/`.
+- Added `ImeTextInputPlacement::candidate_rect` and filled it from runtime
+  focused `ImeCandidateRect` placement while keeping `rect` as the
+  composition/cursor compatibility field.
+- Wayland text-input v3 now prefers `candidate_rect` for
+  `set_cursor_rectangle`; Win32 IMM keeps `COMPOSITIONFORM` on `rect` and uses
+  `candidate_rect` for `CANDIDATEFORM`.
+- Updated `window_runtime_text_test`, `wayland_keyboard_test`,
+  `win32_text_input_test`, and `platform_source_structure_test` to preserve
+  candidate metadata and require the platform split.
+- Focused Windows verification passed:
+  `xmake test -y -P . core_header_cleanliness/default
+  window_runtime_text_test/default win32_text_input_test/default
+  platform_source_structure_test/default` 4/4.
+- Final focused Windows audit/behavior verification passed:
+  `xmake test -y -P . core_header_cleanliness/default
+  platform_source_structure_test/default window_runtime_text_test/default
+  win32_text_input_test/default gpui_parity_ledger_test/default
+  phase_d_edit_history_audit_test/default
+  phase_d_selection_caret_audit_test/default
+  pre_phase_d_entry_gate_test/default` 8/8.
+- Final focused WSL audit/behavior verification reused `.build-wsl/master` on
+  D: plus `/dev/shm/cgpui` transient temp and passed 8/8:
+  `core_header_cleanliness/default`, `wayland_keyboard_test/default`,
+  `platform_source_structure_test/default`, `window_runtime_text_test/default`,
+  `gpui_parity_ledger_test/default`,
+  `phase_d_edit_history_audit_test/default`,
+  `phase_d_selection_caret_audit_test/default`, and
+  `pre_phase_d_entry_gate_test/default`.
+
 ## 2026-07-09 Pre-Phase-D Entry Gate Follow-Up
 
 - Latest user direction is to finish all required pre-Phase-D alignment before

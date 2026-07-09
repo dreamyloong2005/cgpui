@@ -13,16 +13,23 @@ void Win32Window::apply_ime_text_input_placement() {
 
   const ImeTextInputPlacement& placement =
       *state_.ime_text_input_placement;
-  const POINT point{
+  const Rect& candidate_rect = placement.candidate_rect.has_value()
+      ? *placement.candidate_rect
+      : placement.rect;
+  const POINT composition_point{
       .x = static_cast<LONG>(placement.rect.origin.x),
       .y = static_cast<LONG>(placement.rect.origin.y),
   };
-  const auto height = static_cast<LONG>(placement.rect.size.height);
-  const RECT area{
-      .left = point.x,
-      .top = point.y,
-      .right = point.x + static_cast<LONG>(placement.rect.size.width),
-      .bottom = point.y + height,
+  const POINT candidate_point{
+      .x = static_cast<LONG>(candidate_rect.origin.x),
+      .y = static_cast<LONG>(candidate_rect.origin.y),
+  };
+  const auto candidate_height = static_cast<LONG>(candidate_rect.size.height);
+  const RECT candidate_area{
+      .left = candidate_point.x,
+      .top = candidate_point.y,
+      .right = candidate_point.x + static_cast<LONG>(candidate_rect.size.width),
+      .bottom = candidate_point.y + candidate_height,
   };
 
   HIMC context = ImmGetContext(hwnd_);
@@ -32,14 +39,14 @@ void Win32Window::apply_ime_text_input_placement() {
 
   COMPOSITIONFORM composition{};
   composition.dwStyle = CFS_POINT;
-  composition.ptCurrentPos = point;
+  composition.ptCurrentPos = composition_point;
   ImmSetCompositionWindow(context, &composition);
 
   CANDIDATEFORM candidate{};
   candidate.dwIndex = 0;
   candidate.dwStyle = CFS_EXCLUDE;
-  candidate.ptCurrentPos = point;
-  candidate.rcArea = area;
+  candidate.ptCurrentPos = candidate_point;
+  candidate.rcArea = candidate_area;
   ImmSetCandidateWindow(context, &candidate);
 
   ImmReleaseContext(hwnd_, context);

@@ -351,6 +351,21 @@
     ],
     "element_style_widget_status": "phase_c_closed"
   },
+  "phase_d_text_evidence": {
+    "step_431": "Phase D Step 431 IME candidate placement metadata",
+    "candidate_rect_surface": "ImeTextInputPlacement::candidate_rect preserves explicit candidate window geometry separately from composition/cursor rect compatibility",
+    "candidate_rect_sources": [
+      "include/cgpui/core/window.hpp",
+      "src/ui/runtime_platform_services.cpp",
+      "src/platform/linux/wayland_text_input_requests.cpp",
+      "src/platform/win32/win32_window_ime.cpp",
+      "tests/ui/window_runtime_text_test.cpp",
+      "tests/platform/wayland_keyboard_test.cpp",
+      "tests/platform/win32_text_input_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp"
+    ],
+    "remaining_gap": "production candidate UI policy remains later Phase D work"
+  },
   "categories": [
     "application_and_app_context",
     "entities_and_state",

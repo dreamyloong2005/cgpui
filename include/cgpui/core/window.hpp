@@ -11,6 +11,7 @@ namespace cgpui {
 
 struct ImeTextInputPlacement {
   Rect rect;
+  std::optional<Rect> candidate_rect;
   std::size_t byte_offset = 0;
   std::string surrounding_text;
   std::size_t selection_anchor = 0;

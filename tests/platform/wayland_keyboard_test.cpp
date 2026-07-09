@@ -140,6 +140,10 @@ int main() {
           cgpui::Rect{
               .origin = {.x = 18.0F, .y = 28.0F},
               .size = {.width = 1.0F, .height = 16.0F}},
+      .candidate_rect =
+          cgpui::Rect{
+              .origin = {.x = 20.0F, .y = 30.0F},
+              .size = {.width = 3.0F, .height = 17.0F}},
       .byte_offset = 1,
       .surrounding_text = "draft",
       .selection_anchor = 0,
@@ -156,7 +160,12 @@ int main() {
       placed_state.ime_text_input_placement->rect.origin.x != 18.0F ||
       placed_state.ime_text_input_placement->rect.origin.y != 28.0F ||
       placed_state.ime_text_input_placement->rect.size.width != 1.0F ||
-      placed_state.ime_text_input_placement->rect.size.height != 16.0F) {
+      placed_state.ime_text_input_placement->rect.size.height != 16.0F ||
+      !placed_state.ime_text_input_placement->candidate_rect.has_value() ||
+      placed_state.ime_text_input_placement->candidate_rect->origin.x != 20.0F ||
+      placed_state.ime_text_input_placement->candidate_rect->origin.y != 30.0F ||
+      placed_state.ime_text_input_placement->candidate_rect->size.width != 3.0F ||
+      placed_state.ime_text_input_placement->candidate_rect->size.height != 17.0F) {
     return 15;
   }
 
@@ -172,6 +181,10 @@ int main() {
           cgpui::Rect{
               .origin = {.x = 22.0F, .y = 34.0F},
               .size = {.width = 2.0F, .height = 18.0F}},
+      .candidate_rect =
+          cgpui::Rect{
+              .origin = {.x = 42.0F, .y = 54.0F},
+              .size = {.width = 4.0F, .height = 20.0F}},
       .byte_offset = 2,
       .surrounding_text = "az",
       .selection_anchor = 1,
@@ -246,10 +259,10 @@ int main() {
       text_input_state.content_hint != 512 ||
       text_input_state.content_purpose != 13 ||
       !text_input_state.cursor_rect.has_value() ||
-      text_input_state.cursor_rect->x != 22 ||
-      text_input_state.cursor_rect->y != 34 ||
-      text_input_state.cursor_rect->width != 2 ||
-      text_input_state.cursor_rect->height != 18) {
+      text_input_state.cursor_rect->x != 42 ||
+      text_input_state.cursor_rect->y != 54 ||
+      text_input_state.cursor_rect->width != 4 ||
+      text_input_state.cursor_rect->height != 20) {
     return 22;
   }
   if (!pressed || !released) {

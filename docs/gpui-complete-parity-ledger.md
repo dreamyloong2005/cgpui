@@ -91,6 +91,23 @@ per-frame tree-wide scans, repeated string lookups, and avoidable
 | gpui macOS backend | Cocoa + Metal | Deferred | later platform track | Phase H |
 | gpui wasm backend | Non-goal | Non-goal | not requested for CGPUI desktop target | no active phase |
 
+## Phase D Text Evidence Addendum
+
+- Step 431 adds explicit IME candidate placement metadata through
+  `ImeTextInputPlacement::candidate_rect`. Runtime focused-text placement fills
+  it from `ImeCandidateRect`, Wayland text-input v3 prefers it for cursor
+  rectangles, and Win32 IMM applies it to `CANDIDATEFORM` while keeping `rect`
+  for `COMPOSITIONFORM`.
+- Evidence: `include/cgpui/core/window.hpp`,
+  `src/ui/runtime_platform_services.cpp`,
+  `src/platform/linux/wayland_text_input_requests.cpp`,
+  `src/platform/win32/win32_window_ime.cpp`,
+  `tests/ui/window_runtime_text_test.cpp`,
+  `tests/platform/wayland_keyboard_test.cpp`,
+  `tests/platform/win32_text_input_test.cpp`, and
+  `tests/architecture/platform_source_structure_test.cpp`.
+- Remaining gap: production candidate UI policy remains later Phase D work.
+
 ## Categories
 
 ### Application and app context

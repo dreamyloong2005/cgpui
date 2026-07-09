@@ -24,7 +24,9 @@ void WaylandTextInput::apply_placement(WaylandWindow& window) {
   }
 
   if (placement.has_value()) {
-    const auto& rect = placement->rect;
+    const Rect& rect = placement->candidate_rect.has_value()
+        ? *placement->candidate_rect
+        : placement->rect;
     const std::int32_t cursor =
         static_cast<std::int32_t>(placement->byte_offset);
     const std::int32_t anchor =

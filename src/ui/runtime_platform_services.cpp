@@ -62,6 +62,7 @@ void WindowRuntime::apply_focused_text_ime_placement() {
       candidate.has_value() && model != nullptr) {
     placement = ImeTextInputPlacement{
         .rect = candidate->rect,
+        .candidate_rect = candidate->rect,
         .byte_offset = candidate->byte_offset,
         .surrounding_text = std::string(model->text()),
         .selection_anchor = model->selection_anchor(),

@@ -7614,3 +7614,17 @@
   window preedit path attaches one default underline span covering the preedit
   text. This preserves the future rendering/candidate-placement input without
   changing `TextModel` composition behavior.
+
+## 2026-07-09 Phase D Step 431 IME Candidate Placement Metadata
+
+- `ImeTextInputPlacement::rect` was doing double duty for composition/cursor
+  compatibility and candidate-window placement. Step 431 keeps that compatible
+  field but adds `candidate_rect` as an explicit optional candidate geometry.
+- Runtime focused text placement now copies the `ImeCandidateRect` into both
+  `rect` and `candidate_rect`, making the current behavior explicit while
+  preserving the low-allocation boundary at platform placement time.
+- Wayland text-input v3 now prefers `candidate_rect` for
+  `set_cursor_rectangle`; Win32 IMM keeps `COMPOSITIONFORM` on `rect` and uses
+  `candidate_rect` for `CANDIDATEFORM`.
+- This is metadata/routing depth only. Production candidate UI policy remains
+  a later Phase D gap.

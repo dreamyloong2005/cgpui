@@ -316,6 +316,11 @@ Windows/Linux core API is stable enough for parity work.
   focused `src/core/event_text.cpp`; Wayland preedit updates now attach one
   default underline span without vector allocation, runtime text behavior stays
   unchanged, and richer platform-specific styling remains future IME work.
+- Step 431 adds explicit IME candidate placement metadata. `ImeTextInputPlacement`
+  now carries `candidate_rect`, runtime focused text placement fills it from
+  `ImeCandidateRect`, Wayland text-input v3 prefers it for cursor rectangles,
+  and Win32 IMM applies it to candidate windows while preserving `rect` for
+  composition windows. Production candidate UI policy remains later work.
 
 ## Definition Of Done For This 20-Step Goal
 
