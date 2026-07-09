@@ -95,6 +95,16 @@
   freezes Steps 467-473, including descriptor-bound textured glyph draws,
   `preserve_subpixel`, and `straight_color_coverage_alpha`, then hands Phase E
   to Step 475 rounded rectangle geometry without adding renderer behavior.
+- Phase E Step 475 should turn the existing report-only rounded-rectangle
+  tessellation counts into one private contiguous vertex/index geometry buffer.
+  The current runtime merely collects `RoundedRectDraw`; command recording
+  ignores it, while solid rectangles still use `vkCmdClearAttachments`.
+  Tessellation ownership therefore belongs in a new focused Vulkan geometry
+  module, with GPU upload deferred to Step 476.
+- `VulkanRoundedRectGeometry` now emits contiguous vertex/index buffers and
+  stable per-source draw ranges from one pre-reserved allocation. A center plus
+  clockwise corner-perimeter fan keeps the first production geometry simple and
+  inspectable; GPU resource upload remains Step 476.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

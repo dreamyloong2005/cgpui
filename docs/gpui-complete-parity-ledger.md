@@ -413,6 +413,11 @@ consume C: drive space again.
   freezes Steps 467-473, including descriptor-bound textured glyph draws,
   `preserve_subpixel`, and `straight_color_coverage_alpha`, then hands Phase E
   to Step 475 rounded rectangle geometry without adding renderer behavior.
+- Phase E Step 475 adds `VulkanRoundedRectGeometry` in focused private source
+  files. It creates contiguous vertex/index buffers and stable draw ranges for
+  all valid `RoundedRectDraw` records, pre-reserves once, and skips empty
+  rectangles.
+- Handoff: Phase E Step 476 Vulkan rounded rectangle buffer uploads.
 
 ## Categories
 

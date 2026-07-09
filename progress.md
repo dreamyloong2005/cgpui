@@ -18470,3 +18470,34 @@
   `xmake test -y -P .`.
 - WSL verification remains unavailable because no distribution is registered;
   the final Phase E Linux gate remains open.
+
+## 2026-07-10 Phase E Step 475 Rounded Rectangle Geometry
+
+- Started from clean tracked `master` at
+  `9f89ee3a test: close vulkan text pipeline integration`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed rounded rectangles currently produce report-only tessellation
+  counts and are not passed into Vulkan command recording. Step 475 will add a
+  focused contiguous CPU vertex/index geometry module; Step 476 will own GPU
+  buffer upload.
+- Exploratory reads used nonexistent `include/cgpui/ui/geometry.hpp` and
+  `vulkan_solid_rect` source paths. `BorderRadii` lives in
+  `include/cgpui/ui/style_values.hpp`, and the current clear-attachment solid
+  rectangle path is embedded in `vulkan_command_recording.cpp`.
+- Added `vulkan_rounded_rect_geometry_test` and observed the expected RED
+  compile failure because the focused private geometry header did not exist.
+- Added contiguous rounded-rectangle vertices, indices, draw ranges, and
+  renderer structure coverage. The first compiled gate reached only the
+  expected documentation exit 40.
+- Tightened the builder to precompute total vertex/index/draw capacity once and
+  use explicit source indices, avoiding per-primitive vector reallocation.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  to complete Step 475 and hand Step 476 to Vulkan rounded rectangle buffer
+  uploads.
+- Focused Windows Step 475 verification passed 5/5: rounded geometry,
+  renderer structure, text-pipeline closeout regression, parity ledger, and
+  public rounded-rect command routing.
+- Windows full debug verification passed 156/156 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because no distribution is registered;
+  shared Linux geometry validation remains part of the final Phase E gate.

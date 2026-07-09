@@ -204,6 +204,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_coverage.cpp",
       "src/renderer/vulkan/vulkan_text_positioning_internal.hpp",
       "src/renderer/vulkan/vulkan_text_positioning.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
       "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
       "src/renderer/vulkan/vulkan_text_shader_modules.cpp",
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp",
@@ -1123,6 +1125,21 @@ int main(int argc, char** argv) {
       !contains(text_coverage, "std::pow") ||
       contains(command_recording, "VulkanTextCoveragePolicy")) {
     return 67;
+  }
+
+  const std::string rounded_rect_geometry_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp");
+  const std::string rounded_rect_geometry =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+  if (line_count(rounded_rect_geometry_header) > 60 ||
+      line_count(rounded_rect_geometry) > 180 ||
+      !contains(rounded_rect_geometry_header,
+                "struct VulkanRoundedRectGeometry") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_build_rounded_rect_geometry(") ||
+      !contains(rounded_rect_geometry, "append_corner_arc(") ||
+      contains(command_recording, "append_corner_arc(")) {
+    return 68;
   }
 
   const std::string report_image_uploads =

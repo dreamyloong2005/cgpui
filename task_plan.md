@@ -570,13 +570,17 @@ Windows/Linux core API is stable enough for parity work.
   freezes Steps 467-473, including descriptor-bound textured glyph draws,
   `preserve_subpixel`, and `straight_color_coverage_alpha`, then hands Phase E
   to Step 475 rounded rectangle geometry without adding renderer behavior.
+- Phase E Step 475 adds `VulkanRoundedRectGeometry` in focused private source
+  files. It creates contiguous vertex/index buffers and stable draw ranges for
+  valid `RoundedRectDraw` records, pre-reserves once, and skips empty
+  rectangles. Step 476 owns Vulkan rounded rectangle buffer uploads.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-474 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-475 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -586,9 +590,10 @@ Windows/Linux core API is stable enough for parity work.
   vertex-buffer uploads, descriptor-bound textured glyph draw recording, and
   explicit subpixel/pixel-snap positioning policy, and explicit glyph coverage
   transfer/straight-alpha policy with validated embedded fragment SPIR-V, and
-  the text-pipeline integration closeout audit.
-- In progress: Step 475 rounded rectangle geometry.
-- Pending bands: Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
+  the text-pipeline integration closeout audit, and contiguous rounded-rectangle
+  CPU vertex/index geometry with stable draw ranges.
+- In progress: Step 476 Vulkan rounded rectangle buffer uploads.
+- Pending bands: Steps 476-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -651,6 +656,8 @@ Windows/Linux core API is stable enough for parity work.
 | Step 473 WSL verification could not start because `archlinux` is no longer registered and Unicode-captured `wsl --list --quiet` returned no distributions | Step 473 Linux gate | Record the external machine-state regression, continue Windows verification, and require Linux rerun when a WSL distribution is available |
 | The first post-documentation Step 474 audit exited 36 because the roadmap wrapped the exact `Step 475 rounded rectangle geometry` phrase | Step 474 closeout gate | Keep the shared handoff phrase contiguous in the roadmap without weakening the cross-document audit |
 | A Step 474 cross-document diagnostic repeated the known PowerShell `foreach (...) { ... } | Format-Table` parser failure | Step 474 closeout diagnostic | Assign loop output to `$rows` before piping, matching the previously recorded PowerShell workaround |
+| Step 475 exploration requested nonexistent `include/cgpui/ui/geometry.hpp` and `vulkan_solid_rect` source files | Step 475 ownership discovery | Use `include/cgpui/ui/style_values.hpp` for `BorderRadii`; the current solid-rect path lives in `vulkan_command_recording.cpp` and has no focused source module yet |
+| `vulkan_rounded_rect_geometry_test` initially failed to compile because the focused private geometry header did not exist | Step 475 RED | Expected RED; add contiguous rounded-rectangle vertices, indices, and draw ranges in a dedicated Vulkan module |
 
 ## Definition Of Done For This 20-Step Goal
 

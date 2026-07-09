@@ -1510,7 +1510,13 @@ draw calls for the Windows/Linux renderer.
   including descriptor-bound textured glyph draws, `preserve_subpixel`, and
   `straight_color_coverage_alpha`, then hands Phase E to
   Step 475 rounded rectangle geometry without adding renderer behavior.
-- [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,
+- [x] Phase E Step 475 adds focused rounded rectangle geometry in
+  `vulkan_rounded_rect_geometry_internal.hpp` and
+  `vulkan_rounded_rect_geometry.cpp`. `VulkanRoundedRectGeometry` builds one
+  set of contiguous vertex/index buffers plus stable draw ranges for all valid
+  `RoundedRectDraw` records, pre-reserving capacity once and skipping empty
+  rectangles. Step 476 owns Vulkan vertex/index buffer uploads.
+- [ ] Steps 476-482: Promote rounded-rect geometry to Vulkan buffers,
   anti-aliasing strategy, border radius clipping, border stroke, and fill
   variants.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
