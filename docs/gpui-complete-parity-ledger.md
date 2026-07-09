@@ -436,6 +436,12 @@ consume C: drive space again.
   Existing solid clear recording now lives in its own focused module so the
   general frame recorder remains below its structure limit.
 - Handoff: Phase E Step 479 rounded rectangle anti-aliasing strategy.
+- Phase E Step 479 adds `VulkanRoundedRectAntialiasingPolicy` with a default
+  one-device-pixel coverage fringe. Rounded rectangle geometry emits
+  full-coverage inner and zero-coverage outer rings, the vertex ABI carries
+  coverage, and validated embedded shaders modulate straight alpha without
+  adding MSAA state or descriptors.
+- Handoff: Phase E Step 480 border radius clipping and normalization.
 
 ## Categories
 

@@ -48,7 +48,7 @@ vulkan_rounded_rect_shader_stage_create_infos(
 
 [[nodiscard]] VkVertexInputBindingDescription
 vulkan_rounded_rect_vertex_binding_description();
-[[nodiscard]] std::array<VkVertexInputAttributeDescription, 2>
+[[nodiscard]] std::array<VkVertexInputAttributeDescription, 3>
 vulkan_rounded_rect_vertex_attribute_descriptions();
 [[nodiscard]] VkPipelineInputAssemblyStateCreateInfo
 vulkan_rounded_rect_input_assembly_state();

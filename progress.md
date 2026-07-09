@@ -18599,3 +18599,39 @@
 - WSL verification remains unavailable because no distribution is registered;
   shared indexed-recording and solid-recording validation remains in the final
   Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 479 Rounded Rectangle Anti-Aliasing
+
+- Started from clean tracked `master` at
+  `a4cd53be feat: record vulkan rounded rect draws`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 479 will use a one-device-pixel coverage fringe: inner vertices carry
+  full coverage, an expanded outer ring carries zero coverage, and the
+  fragment shader modulates straight alpha. This keeps the swapchain at one
+  sample and avoids new descriptors or multisample resources. Step 480 will
+  own border-radius clipping/normalization.
+- Added `vulkan_rounded_rect_antialiasing_test` and observed the expected RED
+  compile failure because the focused private policy header did not exist.
+- A combined implementation patch used stale renderer structure-test context
+  and was rejected atomically; split the changes into focused patches.
+- Added the coverage-fringe policy, a coverage vertex attribute, and
+  straight-alpha coverage modulation in reviewable GLSL.
+- The first shader-tool orchestration script referenced the unavailable
+  JavaScript `process` global and stopped before executing commands. Retried
+  without that reference.
+- Compiled optimized Vulkan 1.0 shaders and validated both with `spirv-val`;
+  the embedded payloads are 293 vertex words and 155 fragment words.
+- The first compiled Step 479 run passed geometry, buffer, pipeline, structure,
+  and real first-frame coverage-fringe submission; the anti-aliasing test
+  exited 40 only at its expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `VulkanRoundedRectAntialiasingPolicy`, the coverage fringe, and the Step
+  480 border-radius clipping/normalization handoff.
+- Focused Windows Step 479 verification passed 8/8: anti-aliasing policy,
+  geometry, buffers, pipeline, indexed recording, renderer structure, real
+  first-frame coverage submission, and parity ledger.
+- Windows full debug verification passed 160/160 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable because no distribution is registered;
+  the shared coverage-fringe geometry and shader path remains in the final
+  Phase E Linux gate.

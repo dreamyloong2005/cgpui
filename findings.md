@@ -131,6 +131,12 @@
   `vkCmdDrawIndexed`. Solid clear recording moved out of the general command
   entry to preserve its module-size guard. Step 479 should define the rounded
   rectangle anti-aliasing strategy without weakening this indexed path.
+- Phase E Step 479 uses `VulkanRoundedRectAntialiasingPolicy` to keep the
+  coverage fringe explicit. Geometry owns the extra inner/outer rings, the
+  pipeline vertex ABI owns scalar coverage, and the fragment shader multiplies
+  only straight alpha. The optimized embedded Vulkan 1.0 SPIR-V is 293 vertex
+  words and 155 fragment words. Step 480 should normalize overlapping corner
+  radii before both the inner contour and coverage fringe are generated.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

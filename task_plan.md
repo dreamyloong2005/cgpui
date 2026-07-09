@@ -591,13 +591,18 @@ Windows/Linux core API is stable enough for parity work.
   `vkCmdDrawIndexed` for each retained range. Solid clear recording moved to a
   focused module to preserve the frame recorder structure limit. Step 479 owns
   the rounded rectangle anti-aliasing strategy.
+- Phase E Step 479 adds `VulkanRoundedRectAntialiasingPolicy` with a default
+  one-device-pixel coverage fringe. Geometry emits full-coverage inner and
+  zero-coverage outer rings, while the vertex ABI and validated embedded
+  shaders interpolate coverage into straight alpha without MSAA or descriptors.
+  Step 480 owns border radius clipping and normalization.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-478 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-479 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -611,9 +616,10 @@ Windows/Linux core API is stable enough for parity work.
   CPU vertex/index geometry with stable draw ranges, fence-safe paired Vulkan
   vertex/index buffer uploads and cleanup ownership, plus the dedicated rounded
   rectangle shader pipeline and swapchain-owned resources, plus validated
-  indexed rounded rectangle command recording.
-- In progress: Step 479 rounded rectangle anti-aliasing strategy.
-- Pending bands: Steps 479-482 rounded rectangles; Steps 483-490 clip, opacity,
+  indexed rounded rectangle command recording, plus the coverage-fringe
+  anti-aliasing geometry and shader path.
+- In progress: Step 480 border radius clipping and normalization.
+- Pending bands: Steps 480-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -686,6 +692,8 @@ Windows/Linux core API is stable enough for parity work.
 | The first post-documentation Step 477 pipeline test exited 50 because `task_plan.md` split the exact `embedded rounded rectangle SPIR-V` phrase across a line break | Step 477 documentation gate | Keep the required evidence phrase contiguous in `task_plan.md` without changing the pipeline conclusion |
 | `vulkan_rounded_rect_draw_recording_test` initially failed to compile because the focused private recording header did not exist | Step 478 RED | Expected RED; add range validation and indexed Vulkan recording in a dedicated rounded rectangle module |
 | The first compiled Step 478 run failed `renderer_source_structure_test` at exit 36 because `vulkan_command_recording.cpp` exceeded its 180-line limit | Step 478 structure gate | Move existing solid-rectangle clear planning/recording into a focused module so the frame entry stays thin; do not relax the line-count guard |
+| `vulkan_rounded_rect_antialiasing_test` initially failed to compile because the focused policy header did not exist | Step 479 RED | Expected RED; add coverage-fringe policy, inner/outer geometry rings, and shader coverage interpolation |
+| A combined Step 479 implementation patch used stale renderer structure-test context and was rejected without changing files | Step 479 implementation | Split production, geometry, tests, and structure updates into file-scoped patches using the live source context |
 
 ## Definition Of Done For This 20-Step Goal
 

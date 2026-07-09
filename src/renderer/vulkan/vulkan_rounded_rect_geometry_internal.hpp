@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/renderer/renderer_commands.hpp"
+#include "vulkan_rounded_rect_antialiasing_internal.hpp"
 
 #include <array>
 #include <cstddef>
@@ -13,6 +14,7 @@ namespace cgpui {
 struct VulkanRoundedRectVertex {
   std::array<float, 2> position{};
   std::array<float, 4> color{};
+  float coverage = 1.0F;
 };
 
 struct VulkanRoundedRectDrawRange {
@@ -31,6 +33,8 @@ struct VulkanRoundedRectGeometry {
 
 [[nodiscard]] VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
     std::span<const RoundedRectDraw> rounded_rects,
-    std::size_t corner_segment_count = 4);
+    std::size_t corner_segment_count = 4,
+    VulkanRoundedRectAntialiasingPolicy antialiasing =
+        vulkan_default_rounded_rect_antialiasing_policy());
 
 } // namespace cgpui

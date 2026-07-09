@@ -208,6 +208,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_positioning.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_frame.cpp",
@@ -1153,13 +1155,23 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp");
   const std::string rounded_rect_geometry =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
-  if (line_count(rounded_rect_geometry_header) > 60 ||
-      line_count(rounded_rect_geometry) > 180 ||
+  const std::string rounded_rect_antialiasing_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp");
+  const std::string rounded_rect_antialiasing = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing.cpp");
+  if (line_count(rounded_rect_geometry_header) > 80 ||
+      line_count(rounded_rect_geometry) > 230 ||
+      line_count(rounded_rect_antialiasing_header) > 50 ||
+      line_count(rounded_rect_antialiasing) > 50 ||
       !contains(rounded_rect_geometry_header,
                 "struct VulkanRoundedRectGeometry") ||
       !contains(rounded_rect_geometry,
                 "vulkan_build_rounded_rect_geometry(") ||
       !contains(rounded_rect_geometry, "append_corner_arc(") ||
+      !contains(rounded_rect_antialiasing_header,
+                "struct VulkanRoundedRectAntialiasingPolicy") ||
+      !contains(rounded_rect_antialiasing,
+                "vulkan_rounded_rect_coverage(") ||
       contains(command_recording, "append_corner_arc(")) {
     return 68;
   }
@@ -1201,6 +1213,8 @@ int main(int argc, char** argv) {
                 "struct VulkanRoundedRectPipelineResources") ||
       !contains(rounded_rect_pipeline_state,
                 "vulkan_rounded_rect_vertex_binding_description(") ||
+      !contains(rounded_rect_pipeline_state,
+                "offsetof(VulkanRoundedRectVertex, coverage)") ||
       !contains(rounded_rect_shader_binaries,
                 "vulkan_rounded_rect_vertex_shader_spirv(") ||
       !contains(rounded_rect_shader_modules, "vkCreateShaderModule") ||

@@ -1534,8 +1534,13 @@ draw calls for the Windows/Linux renderer.
   each retained draw range. Existing solid clear recording also moves to a
   focused module so the frame entry remains thin. Step 479 owns the rounded
   rectangle anti-aliasing strategy.
-- [ ] Steps 479-482: Complete rounded-rect rendering with anti-aliasing
-  strategy, border radius clipping, border stroke, and fill variants.
+- [x] Phase E Step 479 adds `VulkanRoundedRectAntialiasingPolicy` with a default
+  one-device-pixel coverage fringe. Geometry now emits full-coverage inner and
+  zero-coverage outer rings, the vertex ABI carries coverage, and validated
+  embedded shaders interpolate coverage into straight alpha without MSAA or
+  descriptors. Step 480 owns border radius clipping and normalization.
+- [ ] Steps 480-482: Complete rounded-rect rendering with border radius
+  clipping, border stroke, and fill variants.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
   strategy, nested opacity, transform composition, and z/layer ordering in
   actual command recording.

@@ -51,10 +51,12 @@ int test_rounded_rect_vertex_and_fixed_state() {
       cgpui::vulkan_rounded_rect_vertex_attribute_descriptions();
   if (binding.stride != sizeof(cgpui::VulkanRoundedRectVertex) ||
       binding.inputRate != VK_VERTEX_INPUT_RATE_VERTEX ||
-      attributes.size() != 2 || attributes[0].location != 0 ||
+      attributes.size() != 3 || attributes[0].location != 0 ||
       attributes[0].format != VK_FORMAT_R32G32_SFLOAT ||
       attributes[1].location != 1 ||
-      attributes[1].format != VK_FORMAT_R32G32B32A32_SFLOAT) {
+      attributes[1].format != VK_FORMAT_R32G32B32A32_SFLOAT ||
+      attributes[2].location != 2 ||
+      attributes[2].format != VK_FORMAT_R32_SFLOAT) {
     return 10;
   }
   const VkPipelineInputAssemblyStateCreateInfo input =
@@ -149,7 +151,7 @@ int test_rounded_rect_pipeline_structure() {
       !contains(modules, "vulkan_create_rounded_rect_shader_modules(") ||
       !contains(resources, "vkCreateGraphicsPipelines") ||
       !contains(vertex, "layout(push_constant)") ||
-      !contains(fragment, "out_color = in_color") ||
+      !contains(fragment, "in_color.a * clamp(in_coverage") ||
       !contains(swapchain, "VulkanRoundedRectPipelineResources rounded_rect_pipeline") ||
       !contains(create, "vulkan_create_rounded_rect_pipeline_resources(") ||
       !contains(lifecycle, "vulkan_destroy_rounded_rect_pipeline_resources(")) {

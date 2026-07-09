@@ -50,14 +50,14 @@ int test_rounded_rect_builds_contiguous_geometry() {
   };
   const cgpui::VulkanRoundedRectGeometry geometry =
       cgpui::vulkan_build_rounded_rect_geometry(draws, 4);
-  if (geometry.draws.size() != 1 || geometry.vertices.size() != 21 ||
-      geometry.indices.size() != 60) {
+  if (geometry.draws.size() != 1 || geometry.vertices.size() != 41 ||
+      geometry.indices.size() != 180) {
     return 10;
   }
   const cgpui::VulkanRoundedRectDrawRange& range = geometry.draws[0];
   if (range.source_index != 0 || range.first_vertex != 0 ||
-      range.vertex_count != 21 || range.first_index != 0 ||
-      range.index_count != 60 ||
+      range.vertex_count != 41 || range.first_index != 0 ||
+      range.index_count != 180 ||
       !approximately_equal(geometry.vertices[0].position[0], 30.0F) ||
       !approximately_equal(geometry.vertices[0].position[1], 30.0F) ||
       geometry.vertices[0].color !=
@@ -65,8 +65,10 @@ int test_rounded_rect_builds_contiguous_geometry() {
     return 11;
   }
   if (geometry.indices[0] != 0 || geometry.indices[1] != 1 ||
-      geometry.indices[2] != 2 || geometry.indices[57] != 0 ||
-      geometry.indices[58] != 20 || geometry.indices[59] != 1) {
+      geometry.indices[2] != 2 || geometry.indices[174] != 20 ||
+      geometry.indices[175] != 40 || geometry.indices[176] != 21 ||
+      geometry.indices[177] != 20 || geometry.indices[178] != 21 ||
+      geometry.indices[179] != 1) {
     return 12;
   }
   return 0;

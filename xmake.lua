@@ -975,6 +975,20 @@ if is_plat("windows", "linux") then
             add_syslinks("vulkan")
         end
         add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+    target("vulkan_rounded_rect_antialiasing_test")
+        set_kind("binary")
+        set_rundir(os.projectdir())
+        add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+        add_files("tests/renderer/vulkan_rounded_rect_antialiasing_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_includedirs(public_includedirs, "src/renderer/vulkan")
+        if is_plat("windows") then
+            add_packages("vulkansdk")
+        elseif is_plat("linux") then
+            add_syslinks("vulkan")
+        end
+        add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 end
 
 target("entity_lifecycle_creation_test")
