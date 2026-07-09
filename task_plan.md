@@ -517,19 +517,24 @@ Windows/Linux core API is stable enough for parity work.
   resources, renderer state owns the resolved vector, and the live command buffer
   validates descriptor identity before the render pass. Step 465 continues
   atlas draw-data integration without pulling shader work forward.
+- Phase E Step 465 preserves flat textured glyph quads in private
+  `VulkanGlyphAtlasDrawData`. `first_quad_index` plus glyph counts represent
+  contiguous page runs, bindings copy those ranges, and command recording
+  validates both bounds and quad/page identity. Step 466 is the glyph atlas
+  integration closeout before the Step 467 text shader pipeline.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-464 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-465 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
-  descriptor bindings.
-- In progress: Step 465 atlas draw-data integration.
-- Pending bands: Steps 465-466 remaining atlas integration; Steps 467-474 text
+  descriptor bindings, and renderer-ready flat quad ranges.
+- In progress: Step 466 glyph atlas integration closeout.
+- Pending bands: Step 466 atlas closeout; Steps 467-474 text
   pipeline; Steps 475-482 rounded rectangles; Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
@@ -559,6 +564,10 @@ Windows/Linux core API is stable enough for parity work.
 | An exploratory Step 464 read requested nonexistent `include/cgpui/renderer/renderer_command_reports.hpp` | Step 464 boundary discovery | Use the actual `renderer_frame_reports.hpp` and `renderer_submission_reports.hpp` leaves; do not repeat the stale filename |
 | `vulkan_glyph_atlas_draw_binding_test` initially failed to compile because the private draw-binding header did not exist | Step 464 RED | Expected RED; add focused private page-usage planning, descriptor resolution, and live command-buffer validation modules |
 | First compiled Step 464 draw-binding run exited 40 | Step 464 documentation gate | Expected RED after behavior/structure code compiled; add roadmap, ledger, planning, and Step 465 handoff evidence |
+| `vulkan_glyph_atlas_draw_data_test` initially failed to compile because flat draw-data planning did not exist | Step 465 RED | Expected RED; add `VulkanGlyphAtlasDrawData`, contiguous page-run ranges, and quad-span validation in a focused draw-data source |
+| First compiled Step 465 draw-data run exited 40 | Step 465 documentation gate | Expected RED after draw-data behavior compiled; add roadmap, ledger, planning, and Step 466 closeout handoff evidence |
+| Expanded Step 465 focused build hit `LNK1236` for an invalid COFF section in the draw-binding object after the direct draw-data/binding targets had passed | First expanded Windows focused attempt | Treat as stale/corrupt incremental output; force-rebuild `cgpui_renderer_vulkan` before retrying the gate instead of repeating the same link path |
+| `LNK1236` recurred while the Windows full suite linked many targets concurrently, despite the force-rebuilt library passing the 11-target focused gate | First Windows full attempt | Serialize one full link/test pass with `-j 1`, then rerun the default full command after all targets are current to verify normal cadence |
 
 ## Definition Of Done For This 20-Step Goal
 

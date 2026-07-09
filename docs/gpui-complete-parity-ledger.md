@@ -353,9 +353,13 @@ consume C: drive space again.
   command recording validates the resolved bindings against live resources in
   the live command buffer before the render pass. Public renderer headers remain
   free of `Vk*` handles.
-- Remaining Phase E glyph-atlas gap: Step 465 continues atlas draw-data
-  integration before the text shader pipeline band.
-- Handoff: Phase E Step 465 atlas draw-data integration.
+- Phase E Step 465 adds private `VulkanGlyphAtlasDrawData` ownership. Flat
+  textured glyph quads retain draw order, while `first_quad_index` and glyph
+  counts describe contiguous page runs for the descriptor bindings. Live
+  command recording rejects out-of-range bindings or quad/page mismatches.
+- Remaining Phase E glyph-atlas gap: Step 466 closes and audits the completed
+  integration band before the text shader pipeline.
+- Handoff: Phase E Step 466 glyph atlas integration closeout.
 
 ## Categories
 

@@ -18126,3 +18126,40 @@
   `/dev/shm/cgpui` transient temp and passed the corresponding 8/8 shared
   Vulkan, structure, and ledger tests.
 - Windows full debug verification passed 145/145.
+
+## 2026-07-10 Phase E Step 465 Glyph Atlas Draw Data
+
+- Started from clean tracked `master` at
+  `4b630aa5 feat: resolve glyph atlas draw bindings`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 465 will preserve flat `TexturedGlyphQuad` draw data plus contiguous
+  page-run ranges in a focused draw-data module, leaving descriptor resolution
+  in the Step 464 binding module.
+- Added `vulkan_glyph_atlas_draw_data_test` and observed the expected RED compile
+  failure because `VulkanGlyphAtlasDrawData` and quad-range planning did not
+  exist.
+- Added the focused draw-data source, flat quad ownership, `first_quad_index`
+  ranges for contiguous page runs, renderer-state storage, and live command
+  buffer range/page validation. The first compiled run reached the expected
+  documentation RED at exit 40.
+- Updated roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`;
+  Step 466 is the glyph atlas integration closeout.
+- The first expanded Windows focused build hit linker `LNK1236` for an invalid
+  COFF section in the draw-binding object even though the direct draw-data and
+  binding targets had just passed. The renderer library will be force-rebuilt
+  before retrying to replace the corrupt incremental artifact.
+- Forced `cgpui_renderer_vulkan` rebuild completed successfully and the Windows
+  focused Step 465 gate then passed 11/11, confirming the linker error was a
+  stale/corrupt incremental object rather than a source defect.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed the corresponding 9/9 shared
+  Vulkan, structure, and ledger tests.
+- The first Windows full attempt reproduced `LNK1236` only while many test
+  targets linked concurrently against the shared renderer library. The same
+  library had passed the 11-target focused gate; recovery will serialize one
+  complete link/test pass, then rerun the default full cadence.
+- Serialized Windows full verification passed 146/146 with
+  `xmake test -y -j 1 -P .`, rebuilding and linking every registered test
+  target without another invalid-COFF failure.
+- The required default parallel Windows full rerun then passed 146/146 with
+  `xmake test -y -P .`; `LNK1236` did not recur after the serialized relink.

@@ -96,6 +96,7 @@ class VulkanRendererState final {
   GlyphAtlasProductionResourceState pending_glyph_atlas_plan_state_;
   VulkanGlyphAtlasResources glyph_atlas_resources_;
   VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
+  std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_;
   std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;
   std::vector<RendererCommandBatch> last_command_batches_;
   bool presentation_blocked_ = false;

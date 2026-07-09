@@ -1438,9 +1438,16 @@ draw calls for the Windows/Linux renderer.
   validates them before entering the render pass. This preserves a focused
   handle-bearing Vulkan boundary without starting the Step 467 text shader
   pipeline. Step 465 continues atlas draw-data integration.
-- [ ] Steps 465-466: Bind
-  production atlas resources into renderer state, and record dirty upload
-  command paths against the live command buffers.
+- [x] Phase E Step 465 preserves renderer-ready glyph draw data in private
+  `VulkanGlyphAtlasDrawData`. Flat textured glyph quads are paired with
+  `first_quad_index` ranges for contiguous page runs, descriptor bindings copy
+  those ranges, and live command recording validates range bounds and page
+  identity before the render pass. `vulkan_glyph_atlas_draw_data.cpp` owns this
+  planning so descriptor resolution remains focused. Step 466 closes the glyph
+  atlas integration band before text shader work.
+- [ ] Step 466: Close the production glyph atlas integration band and freeze
+  resource, upload, binding, draw-data, live-command-buffer, and multi-page
+  evidence.
 - [ ] Steps 467-474: Add text shader pipeline, descriptor layout, textured
   glyph draw calls, subpixel positioning policy, and gamma/alpha handling.
 - [ ] Steps 475-482: Promote rounded-rect records to real geometry buffers,

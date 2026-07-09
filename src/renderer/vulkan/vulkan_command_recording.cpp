@@ -84,6 +84,7 @@ Result<void> record_vulkan_frame_command_buffer(
     Color color,
     std::span<const SolidRect> rects,
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
+    std::span<const TexturedGlyphQuad> glyph_atlas_draw_quads,
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
     const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads) {
   if (auto result = require_vk_success(
@@ -112,6 +113,7 @@ Result<void> record_vulkan_frame_command_buffer(
   }
   if (auto result = vulkan_validate_glyph_atlas_draw_bindings(
           glyph_atlas_draw_bindings,
+          glyph_atlas_draw_quads,
           glyph_atlas_resources);
       !result) {
     return result;

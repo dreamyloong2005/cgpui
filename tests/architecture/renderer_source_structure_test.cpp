@@ -180,6 +180,7 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_glyph_atlas_production.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings.cpp",
+      "src/renderer/vulkan/vulkan_glyph_atlas_draw_data.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_descriptors.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_images.cpp",
@@ -907,6 +908,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings_internal.hpp");
   const std::string glyph_atlas_draw_bindings = read_source(
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings.cpp");
+  const std::string glyph_atlas_draw_data =
+      read_source("src/renderer/vulkan/vulkan_glyph_atlas_draw_data.cpp");
   const std::string glyph_atlas_multi_page_test =
       read_source("tests/renderer/vulkan_glyph_atlas_multi_page_test.cpp");
   const std::string glyph_atlas_uploads_internal = read_source(
@@ -953,6 +956,7 @@ int main(int argc, char** argv) {
       line_count(glyph_atlas_resources) > 150 ||
       line_count(glyph_atlas_draw_bindings_internal) > 70 ||
       line_count(glyph_atlas_draw_bindings) > 120 ||
+      line_count(glyph_atlas_draw_data) > 90 ||
       line_count(glyph_atlas_multi_page_test) > 260 ||
       !contains(glyph_atlas_resources_internal,
                 "struct VulkanGlyphAtlasResources") ||
@@ -972,6 +976,8 @@ int main(int argc, char** argv) {
                 "vulkan_resolve_glyph_atlas_draw_bindings(") ||
       !contains(glyph_atlas_draw_bindings,
                 "vulkan_validate_glyph_atlas_draw_bindings(") ||
+      !contains(glyph_atlas_draw_data,
+                "vulkan_plan_glyph_atlas_draw_data(") ||
       !contains(glyph_atlas_multi_page_test,
                 "test_three_page_allocation_and_upload_planning(") ||
       !contains(glyph_atlas_multi_page_test,

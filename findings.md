@@ -1,5 +1,17 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 465 Glyph Atlas Draw Data
+
+- Descriptor bindings alone are insufficient for the future text pipeline; the
+  renderer also needs stable glyph quad ranges that preserve authored order.
+- `VulkanGlyphAtlasDrawData` owns one flat quad vector. `first_quad_index` and
+  glyph counts describe contiguous page runs, so a page sequence such as
+  `2 -> 0 -> 2` remains three runs rather than being incorrectly merged.
+- Quad planning lives in `vulkan_glyph_atlas_draw_data.cpp`; descriptor lookup
+  and stale-handle checks remain in the Step 464 binding module.
+- The live command buffer validates range bounds and every quad's page identity
+  before the render pass. Step 466 can now close the atlas integration band.
+
 ## 2026-07-10 Phase E Step 464 Glyph Atlas Draw Bindings
 
 - The runtime gap after Step 463 was not resource creation; it was converting

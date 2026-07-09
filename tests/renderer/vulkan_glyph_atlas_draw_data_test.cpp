@@ -47,8 +47,6 @@ cgpui::TextDraw three_page_text_draw() {
       .bounds = cgpui::Rect{.size = cgpui::Size{512.0F, 512.0F}},
       .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
       .font = cgpui::FontDescriptor{.family = "Inter"},
-      .content = "bindings",
-      .byte_length = 8,
       .font_size = 128.0F,
       .device_font_size = 128.0F,
   };
@@ -63,8 +61,6 @@ cgpui::TextDraw three_page_text_draw() {
                 .device_font_size = 128.0F,
                 .glyph_index = index,
                 .glyph_id = static_cast<std::uint32_t>(index + 1),
-                .byte_offset = index,
-                .byte_length = 1,
             },
         .advance = 128.0F,
         .device_advance = 128.0F,
@@ -84,77 +80,91 @@ cgpui::VulkanGlyphAtlasResources three_page_resources() {
   return resources;
 }
 
-int test_page_usage_plans_and_resolves_descriptor_bindings() {
+int test_draw_data_preserves_contiguous_page_runs() {
   cgpui::GlyphCache cache;
-  const std::vector<cgpui::TextDraw> draws{three_page_text_draw()};
-  const std::vector<cgpui::VulkanGlyphAtlasDrawPageUsage> usages =
-      cgpui::vulkan_plan_glyph_atlas_draw_page_usages(draws, cache);
-  if (usages.size() != 3 || usages[0].text_draw_index != 0 ||
-      usages[0].page_index != 0 || usages[0].glyph_quad_count != 4 ||
-      usages[1].page_index != 1 || usages[1].glyph_quad_count != 4 ||
-      usages[2].page_index != 2 || usages[2].glyph_quad_count != 1 ||
-      cache.atlas_pages().size() != 3) {
+  const cgpui::TextDraw warmup = three_page_text_draw();
+  (void)cgpui::vulkan_build_textured_glyph_quads(warmup, cache);
+
+  cgpui::TextDraw alternating;
+  alternating.glyphs = {
+      warmup.glyphs[8],
+      warmup.glyphs[0],
+      warmup.glyphs[8],
+  };
+  const std::vector<cgpui::TextDraw> draws{alternating};
+  cgpui::VulkanGlyphAtlasDrawData draw_data =
+      cgpui::vulkan_plan_glyph_atlas_draw_data(draws, cache);
+  if (draw_data.quads.size() != 3 || draw_data.page_usages.size() != 3 ||
+      draw_data.quads[0].page_index != 2 ||
+      draw_data.quads[1].page_index != 0 ||
+      draw_data.quads[2].page_index != 2) {
     return 10;
+  }
+  for (std::size_t index = 0; index < 3; ++index) {
+    if (draw_data.page_usages[index].text_draw_index != 0 ||
+        draw_data.page_usages[index].page_index !=
+            draw_data.quads[index].page_index ||
+        draw_data.page_usages[index].first_quad_index != index ||
+        draw_data.page_usages[index].glyph_quad_count != 1) {
+      return 11;
+    }
   }
 
   const cgpui::VulkanGlyphAtlasResources resources = three_page_resources();
-  const auto bindings =
-      cgpui::vulkan_resolve_glyph_atlas_draw_bindings(usages, resources);
-  if (!bindings || bindings->size() != 3) {
-    return 11;
-  }
-  for (std::size_t page_index = 0; page_index < 3; ++page_index) {
-    if ((*bindings)[page_index].text_draw_index != 0 ||
-        (*bindings)[page_index].page_index != page_index ||
-        (*bindings)[page_index].glyph_quad_count !=
-            usages[page_index].glyph_quad_count ||
-        (*bindings)[page_index].descriptor_set !=
-            resources.pages[page_index].descriptor_set) {
-      return 12;
-    }
+  const auto bindings = cgpui::vulkan_resolve_glyph_atlas_draw_bindings(
+      draw_data.page_usages,
+      resources);
+  if (!bindings || bindings->size() != 3 ||
+      (*bindings)[0].first_quad_index != 0 ||
+      (*bindings)[1].first_quad_index != 1 ||
+      (*bindings)[2].first_quad_index != 2) {
+    return 12;
   }
   return cgpui::vulkan_validate_glyph_atlas_draw_bindings(
              *bindings,
+             draw_data.quads,
              resources)
              ? 0
              : 13;
 }
 
-int test_missing_or_stale_page_binding_is_rejected() {
-  const std::vector<cgpui::VulkanGlyphAtlasDrawPageUsage> usages{
-      cgpui::VulkanGlyphAtlasDrawPageUsage{
-          .text_draw_index = 0,
-          .page_index = 1,
-          .glyph_quad_count = 2,
-      },
-  };
-  cgpui::VulkanGlyphAtlasResources missing_page = three_page_resources();
-  missing_page.pages.erase(missing_page.pages.begin() + 1);
-  if (cgpui::vulkan_resolve_glyph_atlas_draw_bindings(usages, missing_page)) {
+int test_invalid_quad_range_or_page_is_rejected() {
+  cgpui::GlyphCache cache;
+  const std::vector<cgpui::TextDraw> draws{three_page_text_draw()};
+  cgpui::VulkanGlyphAtlasDrawData draw_data =
+      cgpui::vulkan_plan_glyph_atlas_draw_data(draws, cache);
+  const cgpui::VulkanGlyphAtlasResources resources = three_page_resources();
+  auto bindings = cgpui::vulkan_resolve_glyph_atlas_draw_bindings(
+      draw_data.page_usages,
+      resources);
+  if (!bindings) {
     return 20;
   }
 
-  cgpui::VulkanGlyphAtlasResources resources = three_page_resources();
-  const auto bindings =
-      cgpui::vulkan_resolve_glyph_atlas_draw_bindings(usages, resources);
-  if (!bindings) {
+  bindings->back().glyph_quad_count += 1;
+  if (cgpui::vulkan_validate_glyph_atlas_draw_bindings(
+          *bindings,
+          draw_data.quads,
+          resources)) {
     return 21;
   }
-  resources.pages[1].descriptor_set = fake_handle<VkDescriptorSet>(99);
+  bindings->back().glyph_quad_count -= 1;
+  draw_data.quads[bindings->front().first_quad_index].page_index = 1;
   return cgpui::vulkan_validate_glyph_atlas_draw_bindings(
              *bindings,
+             draw_data.quads,
              resources)
              ? 22
              : 0;
 }
 
-int test_draw_binding_module_structure() {
+int test_draw_data_module_structure() {
   const std::string internal = read_source(
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings_internal.hpp");
-  const std::string bindings = read_source(
-      "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings.cpp");
   const std::string draw_data =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_draw_data.cpp");
+  const std::string bindings = read_source(
+      "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings.cpp");
   const std::string frame =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   const std::string state =
@@ -163,32 +173,27 @@ int test_draw_binding_module_structure() {
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp");
   const std::string command_source =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
-  const std::string presentation =
-      read_source("src/renderer/vulkan/vulkan_presentation.cpp");
-  if (internal.empty() || bindings.empty() || draw_data.empty() ||
+  if (internal.empty() || draw_data.empty() || bindings.empty() ||
       frame.empty() || state.empty() || command_header.empty() ||
-      command_source.empty() || presentation.empty()) {
+      command_source.empty()) {
     return 30;
   }
-  if (!contains(internal, "struct VulkanGlyphAtlasDrawPageUsage") ||
-      !contains(internal, "struct VulkanGlyphAtlasDrawBinding") ||
+  if (!contains(internal, "struct VulkanGlyphAtlasDrawData") ||
+      !contains(internal, "first_quad_index") ||
+      !contains(draw_data, "vulkan_plan_glyph_atlas_draw_data(") ||
       !contains(draw_data, "vulkan_build_textured_glyph_quads(") ||
-      !contains(bindings, "vulkan_resolve_glyph_atlas_draw_bindings(") ||
-      !contains(frame, "vulkan_plan_glyph_atlas_draw_data(") ||
-      !contains(frame, "vulkan_resolve_glyph_atlas_draw_bindings(") ||
+      !contains(bindings, "first_quad_index = usage.first_quad_index") ||
+      !contains(frame, "VulkanGlyphAtlasDrawData draw_data") ||
       !contains(state,
-                "std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_") ||
-      !contains(command_header,
-                "std::span<const VulkanGlyphAtlasDrawBinding>") ||
-      !contains(command_source,
-                "vulkan_validate_glyph_atlas_draw_bindings(") ||
-      !contains(presentation, "glyph_atlas_draw_bindings_")) {
+                "std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_") ||
+      !contains(command_header, "std::span<const TexturedGlyphQuad>") ||
+      !contains(command_source, "glyph_atlas_draw_quads")) {
     return 31;
   }
   return 0;
 }
 
-int test_step_464_documentation() {
+int test_step_465_documentation() {
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -198,11 +203,11 @@ int test_step_464_documentation() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const char* required[] = {
-      "Phase E Step 464",
-      "VulkanGlyphAtlasDrawBinding",
-      "vulkan_resolve_glyph_atlas_draw_bindings",
-      "live command buffer",
-      "Step 465",
+      "Phase E Step 465",
+      "VulkanGlyphAtlasDrawData",
+      "first_quad_index",
+      "contiguous page runs",
+      "Step 466",
   };
   for (const char* value : required) {
     if (!contains(roadmap, value) || !contains(ledger_md, value) ||
@@ -217,17 +222,16 @@ int test_step_464_documentation() {
 } // namespace
 
 int main() {
-  if (const int result =
-          test_page_usage_plans_and_resolves_descriptor_bindings();
+  if (const int result = test_draw_data_preserves_contiguous_page_runs();
       result != 0) {
     return result;
   }
-  if (const int result = test_missing_or_stale_page_binding_is_rejected();
+  if (const int result = test_invalid_quad_range_or_page_is_rejected();
       result != 0) {
     return result;
   }
-  if (const int result = test_draw_binding_module_structure(); result != 0) {
+  if (const int result = test_draw_data_module_structure(); result != 0) {
     return result;
   }
-  return test_step_464_documentation();
+  return test_step_465_documentation();
 }
