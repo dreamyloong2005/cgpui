@@ -7,9 +7,17 @@ namespace cgpui {
 
 bool SvgRasterCacheKey::matches(
     const SvgRasterizationRequest& request) const {
+  const SvgViewportScalingPlan viewport =
+      plan_svg_viewport_scaling(SvgViewportScalingRequest{
+          .logical_size = request.logical_size,
+          .viewport_size = request.viewport_size,
+          .scale = request.scale,
+      });
   return asset_id == request.asset_id &&
          logical_size.width == request.logical_size.width &&
          logical_size.height == request.logical_size.height &&
+         viewport.ready() && viewport_size.width == viewport.viewport_size.width &&
+         viewport_size.height == viewport.viewport_size.height &&
          scale == request.scale.value &&
          std::string_view(svg_source) == request.svg_source;
 }
@@ -44,6 +52,7 @@ SvgRasterCacheLookup SvgRasterCache::rasterize(
           SvgRasterCacheKey{
               .asset_id = request.asset_id,
               .logical_size = request.logical_size,
+              .viewport_size = result.plan.viewport.viewport_size,
               .scale = request.scale.value,
               .svg_source = std::string(request.svg_source),
           },

@@ -624,6 +624,8 @@ consume C: drive space again.
   requests return a cache-owned raster result without copying RGBA pixels, and
   failed rasterizations are not cached.
 - Handoff: Step 502 SVG viewport scaling.
+- Phase E Step 502 adds `SvgViewportScalingPlan`: an optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, records effective x/y raster scales, and participates in normalized SVG cache identity.
+- Handoff: Step 503 SVG recolor/tint.
 
 ## Categories
 

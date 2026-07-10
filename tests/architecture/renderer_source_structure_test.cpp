@@ -128,6 +128,8 @@ int main(int argc, char** argv) {
       "include/cgpui/renderer/svg_rasterization.hpp",
       "src/renderer/svg_rasterization.cpp",
       "src/renderer/svg_rasterization_lunasvg.cpp",
+      "include/cgpui/renderer/svg_viewport_scaling.hpp",
+      "src/renderer/svg_viewport_scaling.cpp",
       "include/cgpui/renderer/glyph_texture_resources.hpp",
       "include/cgpui/renderer/glyph_atlas_production.hpp",
       "include/cgpui/renderer/glyph_cache.hpp",
@@ -298,6 +300,8 @@ int main(int argc, char** argv) {
                 "#include \"cgpui/renderer/svg_rasterization.hpp\"") ||
       !contains(renderer_header,
                 "#include \"cgpui/renderer/svg_raster_cache.hpp\"") ||
+      !contains(renderer_header,
+                "#include \"cgpui/renderer/svg_viewport_scaling.hpp\"") ||
       !contains(renderer_header, "#include \"cgpui/renderer/glyph_atlas.hpp\"") ||
       !contains(renderer_header,
                 "#include \"cgpui/renderer/renderer_frame.hpp\"")) {
@@ -307,6 +311,7 @@ int main(int argc, char** argv) {
       contains(renderer_header, "class Renderer") ||
       contains(renderer_header, "struct RendererCommandReport") ||
       contains(renderer_header, "struct SvgRasterizationRequest") ||
+      contains(renderer_header, "struct SvgViewportScalingPlan") ||
       contains(renderer_header, "class SvgRasterCache") ||
       contains(renderer_header, "class GlyphCache")) {
     return 8;
@@ -346,6 +351,10 @@ int main(int argc, char** argv) {
       read_source("src/renderer/svg_rasterization.cpp");
   const std::string svg_rasterization_lunasvg =
       read_source("src/renderer/svg_rasterization_lunasvg.cpp");
+  const std::string svg_viewport_scaling =
+      read_source("include/cgpui/renderer/svg_viewport_scaling.hpp");
+  const std::string svg_viewport_scaling_source =
+      read_source("src/renderer/svg_viewport_scaling.cpp");
   const std::string glyph_texture_resources =
       read_source("include/cgpui/renderer/glyph_texture_resources.hpp");
   const std::string glyph_atlas_production =
@@ -404,6 +413,9 @@ int main(int argc, char** argv) {
       !contains(svg_rasterization_lunasvg,
                 "lunasvg::Document::loadFromData(") ||
       !contains(svg_rasterization_lunasvg, "convertToRGBA()") ||
+      !contains(svg_viewport_scaling, "struct SvgViewportScalingPlan") ||
+      !contains(svg_viewport_scaling_source,
+                "plan_svg_viewport_scaling(") ||
       !contains(glyph_texture_resources,
                 "class GlyphAtlasTextureResourceState") ||
       !contains(glyph_atlas_production,
@@ -420,6 +432,8 @@ int main(int argc, char** argv) {
       line_count(svg_rasterization) > 90 ||
       line_count(svg_rasterization_source) > 120 ||
       line_count(svg_rasterization_lunasvg) > 100 ||
+      line_count(svg_viewport_scaling) > 100 ||
+      line_count(svg_viewport_scaling_source) > 140 ||
       line_count(glyph_texture_resources) > 220 ||
       line_count(glyph_atlas_production) > 220 ||
       line_count(glyph_cache) > 220 ||

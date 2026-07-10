@@ -781,6 +781,15 @@ target("svg_raster_cache_test")
     add_includedirs(public_includedirs)
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("svg_viewport_scaling_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/renderer/svg_viewport_scaling_test.cpp")
+    add_deps("cgpui_core", "cgpui_renderer")
+    add_includedirs(public_includedirs)
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows", "linux") then
     target("vulkan_glyph_atlas_descriptor_test")
         set_kind("binary")

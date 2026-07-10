@@ -1,16 +1,10 @@
 #pragma once
 
-#include "cgpui/renderer/renderer_types.hpp"
+#include "cgpui/renderer/svg_viewport_scaling.hpp"
 
-#include <cstddef>
-#include <cstdint>
 #include <string_view>
 
 namespace cgpui {
-
-inline constexpr std::uint32_t svg_rasterization_max_dimension = 16384;
-inline constexpr std::size_t svg_rasterization_max_bytes =
-    512U * 1024U * 1024U;
 
 enum class SvgRasterizationStrategy {
   rgba8_bitmap,
@@ -21,6 +15,7 @@ enum class SvgRasterizationPlanStatus {
   invalid_asset_id,
   empty_source,
   invalid_logical_size,
+  invalid_viewport_size,
   invalid_scale,
   exceeds_limits,
 };
@@ -30,6 +25,7 @@ struct SvgRasterizationRequest {
   Size logical_size;
   std::string_view svg_source;
   DpiScale scale;
+  Size viewport_size;
 };
 
 struct SvgRasterizationPlan {
@@ -37,6 +33,7 @@ struct SvgRasterizationPlan {
       SvgRasterizationStrategy::rgba8_bitmap;
   SvgRasterizationPlanStatus status =
       SvgRasterizationPlanStatus::invalid_asset_id;
+  SvgViewportScalingPlan viewport;
   ImageAssetDescriptor descriptor;
 
   [[nodiscard]] bool ready() const;

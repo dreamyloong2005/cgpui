@@ -715,15 +715,15 @@ Windows/Linux core API is stable enough for parity work.
   `ImageAsset`. Step 501 SVG raster cache is next.
 - Phase E Step 501 adds `SvgRasterCache`. Its key owns asset id, logical size, scale, and SVG source;
   hits expose a cache-owned raster result without copying
-  pixels, and failed rasterizations are not cached. Step 502 SVG viewport
-  scaling is next.
+  pixels, and failed rasterizations are not cached. Step 502 SVG viewport scaling is next.
+- Phase E Step 502 adds `SvgViewportScalingPlan`. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, and records effective x/y raster scales for the raster planner, backend, and cache. Step 503 SVG recolor/tint is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-501 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-502 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -762,9 +762,10 @@ Windows/Linux core API is stable enough for parity work.
   plus the audit-only image integration closeout, plus the explicit SVG
   rasterization request/plan boundary, plus the production LunaSVG raster
   backend and explicit result status, plus the explicit SVG raster cache and
-  cache-owned result lookup.
-- In progress: Step 502 SVG viewport scaling.
-- Pending bands: Steps 502-506 SVG; Steps
+  cache-owned result lookup, plus optional viewport scaling and effective
+  device-scale metadata.
+- In progress: Step 503 SVG recolor/tint.
+- Pending bands: Steps 503-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -777,6 +778,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 501 cache regression exited 60 after Step 502 docs moved its historical handoff across a task-plan line break | Step 502 focused regression | Keep the exact historical `Step 502 SVG viewport scaling` phrase contiguous while retaining the new Step 503 global handoff |
+| Step 502 image inventory guessed a nonexistent `include/cgpui/ui/widgets/image.hpp` | Step 502 fit-policy search | Use the actual `image_builder.hpp`, `element_image_nodes.hpp`, and focused image layout/paint sources |
 | Step 501 exact phrase audit split cache identity and failed-cache wording across Markdown lines | Step 501 documentation gate | Keep each required phrase contiguous in the roadmap, task plan, and findings before rerunning the five-file audit |
 | `svg_raster_cache_test` exited 20 because the scale-key fixture passed `Size{}` and produced an invalid request | Step 501 first GREEN | Keep logical size at 4x2 and vary only scale before rerunning the behavior gate |
 | A combined Step 501 planning update used a malformed patch hunk and did not apply | Step 501 findings update | Retry with separate valid update sections and exact context; no file content changed on the failed attempt |

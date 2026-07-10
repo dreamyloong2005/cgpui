@@ -11,6 +11,7 @@ namespace cgpui {
 struct SvgRasterCacheKey {
   ImageAssetId asset_id;
   Size logical_size;
+  Size viewport_size;
   float scale = 1.0F;
   std::string svg_source;
 

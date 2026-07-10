@@ -1,5 +1,29 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 502 SVG Viewport Scaling
+
+- `ImageElement::layout(...)` resolves a content size from preferred style or
+  intrinsic asset size, and paint stretches the selected asset/source rect into
+  that content rectangle. There is no existing object-fit/contain/cover policy
+  to reuse or extend in this slice.
+- The useful Step 502 boundary is therefore an explicit raster viewport that
+  can differ from intrinsic SVG logical size. The planner should derive device
+  pixels from viewport size plus DPI, while preserving logical source metadata
+  for cache identity and later Step 504 image upload integration.
+- LunaSVG v3.5.0 exposes `renderToBitmap(width, height)`, with `-1` reserved for
+  intrinsic auto-scaling. Step 502 can keep the mature backend call unchanged
+  while feeding it explicit device dimensions from a focused viewport-scaling
+  plan.
+- The focused module should own viewport fallback/validation, dimension and byte
+  limits, ceil-rounded device extents, and effective x/y raster scales. The
+  raster request can add an optional viewport size at the end of its aggregate
+  fields, preserving existing designated initializers.
+- Phase E Step 502 now adds `SvgViewportScalingPlan`. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, and records effective x/y raster scales. The raster plan, LunaSVG dimensions, and normalized cache key consume the result. Step 503 SVG recolor/tint is next.
+- Final Step 502 Windows verification passes the focused 6/6 gate and complete
+  183/183 suite. The focused viewport leaf is 47 lines, its implementation is
+  85 lines, and the renderer aggregate remains 11 lines. WSL still has no
+  registered distribution.
+
 ## 2026-07-10 Phase E Step 501 SVG Raster Cache
 
 - The roadmap gives Step 501 cache ownership before Step 502 scaling and Step

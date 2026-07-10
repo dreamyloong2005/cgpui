@@ -1211,8 +1211,21 @@
       "xmake.lua"
     ],
     "phase_e_step_501_remaining_gap": "Step 502 SVG viewport scaling",
+    "phase_e_step_502_surface": "Phase E Step 502 adds SvgViewportScalingPlan. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, records effective x/y raster scales, and feeds raster planning, LunaSVG output dimensions, and normalized cache identity. Step 503 SVG recolor/tint is next.",
+    "phase_e_step_502_sources": [
+      "include/cgpui/renderer/svg_viewport_scaling.hpp",
+      "src/renderer/svg_viewport_scaling.cpp",
+      "include/cgpui/renderer/svg_rasterization.hpp",
+      "src/renderer/svg_rasterization.cpp",
+      "src/renderer/svg_raster_cache.cpp",
+      "src/renderer/svg_rasterization_lunasvg.cpp",
+      "tests/renderer/svg_viewport_scaling_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_502_remaining_gap": "Step 503 SVG recolor/tint",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 502 SVG viewport scaling"
+    "phase_e_current_handoff": "Phase E Step 503 SVG recolor/tint"
   },
   "categories": [
     "application_and_app_context",

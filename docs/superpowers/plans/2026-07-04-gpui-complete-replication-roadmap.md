@@ -1685,8 +1685,9 @@ draw calls for the Windows/Linux renderer.
   identical ready lookups return a cache-owned raster result
   without copying its pixel vector, while failed rasterizations are not cached.
   Step 502 SVG viewport scaling is next.
-- [ ] Steps 502-506: Add SVG viewport scaling, recolor/tint, image upload
-  integration, examples, and closeout.
+- [x] Phase E Step 502 adds `SvgViewportScalingPlan` in a focused module. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels under the existing byte/dimension limits, records effective x/y raster scales, and feeds the raster planner, LunaSVG backend dimensions, and normalized cache key. Step 503 SVG recolor/tint is next.
+- [ ] Steps 503-506: Add SVG recolor/tint, image upload integration, examples,
+  and closeout.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
   command reuse, pipeline switches, resource barriers, swapchain recovery, and
   present pacing.

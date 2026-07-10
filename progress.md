@@ -1,5 +1,37 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 502 SVG Viewport Scaling
+
+- Step 501 is committed on `master` at
+  `fe8f78b0 feat: cache svg raster results`; only the pre-existing untracked
+  `.vscode/` directory remains.
+- Existing image layout has no contain/cover fit policy. It resolves a content
+  rectangle and paints the asset into that rectangle, with `source_rect` only
+  providing explicit source cropping.
+- Step 502 should separate intrinsic SVG logical size from the requested raster
+  viewport so later layout/upload integration can rasterize at actual display
+  size and DPI instead of stretching one intrinsic-size bitmap.
+- Confirmed LunaSVG accepts explicit output width/height. The Step 502 module
+  will plan viewport fallback, validation, ceil-rounded device extents, and
+  effective scale; the existing backend will consume those planned dimensions.
+- Added the focused Step 502 test target. Its RED build failed exactly as
+  intended because `svg_viewport_scaling.hpp` did not yet exist.
+- Added the viewport leaf/source, delegated raster planning to it, extended the
+  request and cache key, and froze the module boundary. Five behavior/structure
+  regressions pass, and direct execution exits 70 only at the expected
+  documentation gate.
+- After documentation updates, the Step 502 test and exact phrase audit pass,
+  while the Step 501 cache regression exits 60 because its historical task-plan
+  handoff phrase was split across lines. Keep that exact phrase contiguous.
+- The corrected historical handoff restores the full focused SVG/structure/
+  ledger gate at 6/6. Step 501 and Step 502 documentation audits each pass
+  30/30, ledger JSON parses, module line counts are 47/85/62/66/54/88/11,
+  and `git diff --check` is clean.
+- The complete Windows debug build succeeded and the full suite passed 183/183.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared viewport scaling remains in the final
+  Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 501 SVG Raster Cache
 
 - Step 500 is committed on `master` at
