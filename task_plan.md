@@ -726,13 +726,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 509 adds pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.
 - Phase E Step 510 adds ordered upload barrier waves with batched transfer and shader-read transitions. Unique glyph-atlas or image-texture targets share two barrier calls around their copies, while duplicate image targets start a new wave with shader-read old-layout continuity. Step 511 swapchain recovery is next.
 - Phase E Step 511 adds automatic swapchain recreation from acquire/present result plans. The out-of-date results return a retryable frame error after recreating, suboptimal frames recreate after submission, and presentation remains unblocked after successful recovery. Step 512 present pacing is next.
+- Phase E Step 512 adds a focused Vulkan present pacing policy: MAILBOX with FIFO fallback, saturation-safe swapchain image depth, and one CPU frame in flight via shared fence/acquire waits. Step 513 next-frame scheduling is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-511 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-512 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -781,9 +782,14 @@ Windows/Linux core API is stable enough for parity work.
   command reuse for upload-free frames, plus shared rounded-rectangle pipeline
   batching with authored order preserved across distinct geometry buffers, plus
   ordered duplicate-safe glyph/image upload barrier waves, plus automatic
-  acquire/present swapchain recreation with retryable out-of-date handling.
-- In progress: Step 512 present pacing.
-- Pending bands: Steps 512-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  acquire/present swapchain recreation with retryable out-of-date handling,
+  plus focused Vulkan present pacing with MAILBOX/FIFO selection,
+  saturation-safe image depth, and one CPU frame in flight.
+- In progress: Step 513 next-frame scheduling.
+- Step 513 boundary: preserve invalidation requested while rendering and issue
+  exactly one next-frame platform redraw after the current frame completes.
+  Step 514 owns batching/scheduling integration closeout.
+- Pending bands: Steps 513-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -795,6 +801,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The combined Step 512 image-audit update missed the invalidation test's current empty-source guard and changed no files | Step 512 post-refactor audit repair | Re-read both focused source blocks and patch their exact current contexts separately |
+| Windows full suite failed image texture cache/invalidation audits after fence execution moved out of presentation | Step 512 post-refactor full GREEN | Preserve their ordering checks against `wait_for_present_pacing()` in presentation and separately require `vkWaitForFences` in the focused pacing execution leaf |
+| Renderer structure exited 32 because Step 512 pacing integration moved `vulkan_presentation.cpp` from its 165-line limit to 172 lines | Step 512 focused GREEN | Keep the 165-line orchestration limit and compact only the fence-call formatting; policy ownership remains in the focused pacing leaf |
+| Step 512 focused build cannot include `vulkan_present_pacing_internal.hpp` | Step 512 RED | Expected missing private leaf; implement the focused present-mode, image-depth, and single-frame back-pressure plan and integrate it with swapchain/presentation state |
+| The combined Step 512 planning patch missed the current task-plan context and changed no files | Step 512 planning sync | Split the task-plan edit from the append-only findings/progress updates and patch against the current context |
+| Step 512 discovery requested nonexistent `include/cgpui/platform/window.hpp` | Step 512 scheduler API discovery | Locate `PlatformWindow` through the actual platform aggregate/source references before any scheduler integration change |
+| `session-catchup.py` direct execution was denied by Windows | Step 512 resume recovery | Invoke the script through the configured Python interpreter instead of treating the `.py` file as an executable |
+| Step 512 discovery requested nonexistent `src/platform/window_runtime_scheduling.cpp` and `tests/platform/window_runtime_scheduling_test.cpp` | Step 512 ownership discovery | Locate the real scheduler implementation from the existing `tests/ui/window_runtime_scheduling_test.cpp` references and repository symbols before choosing the pacing boundary |
 | Step 511 focused test remained at documentation exit 40 because the audited lowercase `out-of-date results return` phrase appeared sentence-initial with uppercase `Out` | Step 511 first documentation GREEN | Normalize the shared sentence to `The out-of-date results return...` across all five authority files |
 | Step 511 focused build cannot include `vulkan_swapchain_recovery_policy_internal.hpp` | Step 511 RED | Expected missing private leaf; implement acquire/present result policy and automatic current-descriptor swapchain recreation |
 | Step 510 focused build cannot include `vulkan_upload_barrier_batch_internal.hpp` | Step 510 RED | Expected missing private leaf; implement ordered duplicate-safe barrier waves and route glyph/image upload recording through them |

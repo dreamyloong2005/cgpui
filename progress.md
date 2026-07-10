@@ -19827,3 +19827,45 @@
   Linux gate.
 - The first explicit staging attempt could not create `.git/index.lock` in the
   default sandbox and changed no index state; retry with approved git access.
+## 2026-07-10 Phase E Step 512 Present Pacing Resume
+
+- Resumed the active `/goal` after Step 511 commit `9b176d6e`; tracked work is
+  clean and only the existing untracked `.vscode/` directory remains.
+- Restored the planning files and confirmed Step 512 present pacing is active;
+  Steps 513-538 remain pending.
+- Logged the incorrect guessed scheduling paths and the Windows direct-script
+  launch failure. Next, run session catch-up through Python and trace the real
+  scheduler ownership from `tests/ui/window_runtime_scheduling_test.cpp`.
+- Session catch-up succeeded through Python and reported only the current
+  commentary/tool activity; no unsynced source change needs recovery.
+- Traced the real scheduler to `src/ui/runtime_scheduling.cpp` and the frame
+  completion path to `src/ui/runtime_renderer_frame_results.cpp`. Step 512 will
+  first extract the Vulkan present pacing policy; Step 513 will own redraws
+  requested during rendering.
+- Confirmed Vulkan sources are wildcard-owned by `cgpui_renderer_vulkan`, and
+  the focused Step 512 target can sit after `vulkan_swapchain_recovery_test`.
+  The new pacing leaf will remain private and gain renderer structure guards.
+- Added the Step 512 RED target; its first build failed exactly as intended
+  because `vulkan_present_pacing_internal.hpp` did not yet exist.
+- Implemented the private pacing plan, removed present-mode ownership from the
+  generic surface selector, carried the plan through swapchain resources, and
+  consumed its fence/acquire waits in `present_frame()`.
+- The focused target builds, and direct execution exits 50 only at the expected
+  Step 512 five-document evidence gate. Synced the roadmap, Markdown/JSON
+  ledger, task plan, and findings; Step 513 next-frame scheduling is active.
+- The first three-target GREEN run passed pacing and recovery but renderer
+  structure exited 32 because presentation reached 172 lines. Kept the 165-line
+  limit and compacted only the fence-call formatting.
+- After Windows full build and 193/193 tests passed, moved the fence wait into
+  `vulkan_present_pacing_wait.cpp` so presentation remains a thin orchestrator
+  without relying on compressed control-flow formatting.
+- The next full run exposed two source audits still searching presentation for
+  the physical `vkWaitForFences` call. Updated them to freeze the same ordering
+  through `wait_for_present_pacing()` and verify Vulkan ownership in the new
+  execution leaf.
+- Final Step 512 verification passed: the four repaired pacing/image/structure
+  gates passed 4/4, the complete Windows debug build succeeded, and the full
+  Windows suite passed 193/193.
+- JSON parsing, all six cross-document phrases, focused source line limits, and
+  `git diff --check` pass. WSL verification remains unavailable because
+  `wsl.exe -l -q` returns an empty distribution list.

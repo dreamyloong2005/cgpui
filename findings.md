@@ -9062,3 +9062,37 @@
   upload batches into alpha8 atlas page image readiness, memory allocation and bind readiness, image-view and sampler readiness, and dirty upload command path readiness.
 - descriptor set binding remains Step 460, along with private Vulkan
   renderer-state handle ownership and command-buffer recording.
+## 2026-07-10 Phase E Step 512 Resume
+
+- The guessed `src/platform/window_runtime_scheduling.cpp` and
+  `tests/platform/window_runtime_scheduling_test.cpp` paths do not exist. The
+  existing scheduling coverage is
+  `tests/ui/window_runtime_scheduling_test.cpp`; follow its production symbols
+  before deciding whether Step 512 belongs to swapchain present policy or the
+  window scheduler.
+- `session-catchup.py` cannot be launched directly on this Windows host. It
+  must run through the configured Python interpreter.
+- The production frame path is `WindowRuntime::schedule_redraw()` -> platform
+  `request_redraw()` -> `WindowRuntime::try_draw_frame()` -> `render_view()` ->
+  `VulkanRendererState::present_frame()`.
+- Window scheduling currently coalesces invalidation into one outstanding
+  redraw. Vulkan pacing is implicit: prefer MAILBOX, fall back to FIFO, request
+  `minImageCount + 1` images within the surface maximum, and wait on one global
+  in-flight fence before every frame.
+- Split the combined Steps 512-514 band by ownership: Step 512 freezes a
+  focused Vulkan present-mode/image-count/in-flight pacing policy; Step 513
+  integrates next-frame scheduling for invalidation raised while rendering;
+  Step 514 closes the batching/scheduling band with structure and end-to-end
+  evidence.
+- Keep Step 512 private to `src/renderer/vulkan`: a
+  `VulkanPresentPacingPlan` should centralize MAILBOX/FIFO selection,
+  saturation-safe `minImageCount + 1` depth clamped by `maxImageCount`, one CPU
+  frame in flight, and the fence/acquire wait timeouts. Swapchain creation and
+  `present_frame()` should consume that plan instead of duplicating constants.
+- The current parity documents still explicitly say production frame pacing is
+  incomplete, so Step 512 must update the roadmap and Markdown/JSON ledger but
+  should not claim the full gap closed until Step 514 integration closeout.
+- Phase E Step 512 adds a focused Vulkan present pacing policy: MAILBOX with FIFO fallback, saturation-safe swapchain image depth, and one CPU frame in flight via shared fence/acquire waits. Step 513 next-frame scheduling is next.
+- The pure policy leaf contains no Vulkan operations; the focused
+  `vulkan_present_pacing_wait.cpp` execution leaf owns `vkWaitForFences`, keeping
+  `vulkan_presentation.cpp` below its existing orchestration limit.

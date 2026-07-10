@@ -45,8 +45,6 @@ Result<WaylandSurfaceHandle> require_wayland_surface(
 
 [[nodiscard]] VkSurfaceFormatKHR choose_vulkan_surface_format(
     std::span<const VkSurfaceFormatKHR> formats);
-[[nodiscard]] VkPresentModeKHR choose_vulkan_present_mode(
-    std::span<const VkPresentModeKHR> present_modes);
 [[nodiscard]] VkCompositeAlphaFlagBitsKHR choose_vulkan_composite_alpha(
     VkCompositeAlphaFlagsKHR supported_alpha);
 [[nodiscard]] VkExtent2D choose_vulkan_extent(

@@ -9,6 +9,7 @@
 #include "vulkan_image_texture_resources_internal.hpp"
 #include "vulkan_image_texture_uploads_internal.hpp"
 #include "vulkan_image_vertex_buffer_internal.hpp"
+#include "vulkan_present_pacing_internal.hpp"
 #include "vulkan_rounded_rect_buffers_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 #include "vulkan_text_vertex_buffer_internal.hpp"
@@ -45,6 +46,7 @@ class VulkanRendererState final {
 
   Result<void> create_command_pool();
   Result<void> create_sync_objects();
+  Result<void> wait_for_present_pacing();
   Result<void> prepare_glyph_atlas_frame(
       std::span<const TextDraw> text_draws);
   Result<void> prepare_solid_rect_frame(
@@ -103,6 +105,7 @@ class VulkanRendererState final {
   VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
   VkFormat swapchain_format_ = VK_FORMAT_UNDEFINED;
   VkExtent2D swapchain_extent_{};
+  VulkanPresentPacingPlan present_pacing_{};
   std::vector<VkImage> swapchain_images_;
   std::vector<VkImageView> swapchain_image_views_;
   VkRenderPass render_pass_ = VK_NULL_HANDLE;

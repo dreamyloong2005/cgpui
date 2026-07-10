@@ -23,10 +23,7 @@ Result<void> VulkanRendererState::present_frame(
 
   last_command_batches_ = vulkan_build_renderer_command_batches(
       rects, rounded_rects, text_draws, text_selections, text_carets);
-  if (auto result = require_vk_success(
-          vkWaitForFences(device_, 1, &in_flight_, VK_TRUE, UINT64_MAX),
-          "vkWaitForFences failed");
-      !result) {
+  if (auto result = wait_for_present_pacing(); !result) {
     return result;
   }
   if (auto result = prepare_solid_rect_frame(rects); !result) {
@@ -47,7 +44,7 @@ Result<void> VulkanRendererState::present_frame(
   const VkResult acquire_result = vkAcquireNextImageKHR(
       device_,
       swapchain_,
-      UINT64_MAX,
+      present_pacing_.image_acquire_timeout,
       image_available_,
       VK_NULL_HANDLE,
       &image_index);

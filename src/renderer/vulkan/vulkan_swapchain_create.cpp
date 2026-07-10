@@ -26,6 +26,7 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
   VulkanSwapchainResources resources{
       .format = plan.surface_format.format,
       .extent = plan.extent,
+      .present_pacing = plan.present_pacing,
   };
   if (auto result = require_vk_success(
           vkCreateSwapchainKHR(

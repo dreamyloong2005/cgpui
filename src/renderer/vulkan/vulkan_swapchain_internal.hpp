@@ -2,6 +2,7 @@
 
 #include "vulkan_image_pipeline_resources_internal.hpp"
 #include "vulkan_platform_internal.hpp"
+#include "vulkan_present_pacing_internal.hpp"
 #include "vulkan_rounded_rect_pipeline_internal.hpp"
 #include "vulkan_text_pipeline_resources_internal.hpp"
 
@@ -11,6 +12,7 @@ struct VulkanSwapchainResources {
   VkSwapchainKHR swapchain = VK_NULL_HANDLE;
   VkFormat format = VK_FORMAT_UNDEFINED;
   VkExtent2D extent{};
+  VulkanPresentPacingPlan present_pacing{};
   std::vector<VkImage> images;
   std::vector<VkImageView> image_views;
   VkRenderPass render_pass = VK_NULL_HANDLE;
@@ -29,13 +31,12 @@ struct VulkanSwapchainSurfaceDetails {
 
 struct VulkanSwapchainCreatePlan {
   VkSurfaceFormatKHR surface_format{};
-  VkPresentModeKHR present_mode = VK_PRESENT_MODE_FIFO_KHR;
+  VulkanPresentPacingPlan present_pacing{};
   VkExtent2D extent{};
   VkCompositeAlphaFlagBitsKHR composite_alpha =
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
   VkSurfaceTransformFlagBitsKHR pre_transform =
       VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-  std::uint32_t image_count = 0;
   std::array<std::uint32_t, 2> queue_family_indices{};
   bool separate_queue_families = false;
 };

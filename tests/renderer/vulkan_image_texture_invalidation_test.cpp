@@ -97,20 +97,23 @@ int test_structure_and_documentation() {
       read_source("src/renderer/vulkan/vulkan_image_texture_frame.cpp");
   const std::string presentation =
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  const std::string pacing_wait =
+      read_source("src/renderer/vulkan/vulkan_present_pacing_wait.cpp");
   const std::string lifetime =
       read_source("tests/renderer/vulkan_frame_lifetime_test.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   if (renderer_frame.empty() || header.empty() || invalidation.empty() ||
       renderer.empty() || frame.empty() || presentation.empty() ||
-      lifetime.empty() || structure.empty()) {
+      pacing_wait.empty() || lifetime.empty() || structure.empty()) {
     return 30;
   }
   const std::size_t invalidate =
       frame.find("vulkan_invalidate_image_texture_resources(");
   const std::size_t prepare =
       frame.find("vulkan_prepare_image_texture_cache_frame(");
-  const std::size_t wait = presentation.find("vkWaitForFences");
+  const std::size_t wait =
+      presentation.find("wait_for_present_pacing()");
   const std::size_t prepare_frame =
       presentation.find("prepare_image_texture_frame(");
   if (!contains(renderer_frame, "invalidate_image(ImageAssetId asset_id)") ||
@@ -118,6 +121,7 @@ int test_structure_and_documentation() {
       !contains(invalidation, "vulkan_destroy_image_texture_resource(") ||
       !contains(renderer, "VulkanFrame::invalidate_image(") ||
       !contains(renderer, "image_invalidations_") ||
+      !contains(pacing_wait, "vkWaitForFences") ||
       invalidate == std::string::npos || prepare == std::string::npos ||
       invalidate >= prepare || wait == std::string::npos ||
       prepare_frame == std::string::npos || wait >= prepare_frame ||

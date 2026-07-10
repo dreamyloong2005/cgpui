@@ -633,11 +633,38 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_surface_selection.cpp");
   if (line_count(surface_selection) > 120 ||
       !contains(surface_selection, "choose_vulkan_surface_format(") ||
-      !contains(surface_selection, "choose_vulkan_present_mode(") ||
+      contains(surface_selection, "choose_vulkan_present_mode(") ||
       !contains(surface_selection, "choose_vulkan_composite_alpha(") ||
       !contains(surface_selection, "choose_vulkan_extent(") ||
       contains(surface_selection, "require_vk_success(")) {
     return 35;
+  }
+
+  const std::string present_pacing_header = read_source(
+      "src/renderer/vulkan/vulkan_present_pacing_internal.hpp");
+  const std::string present_pacing =
+      read_source("src/renderer/vulkan/vulkan_present_pacing.cpp");
+  const std::string present_pacing_wait =
+      read_source("src/renderer/vulkan/vulkan_present_pacing_wait.cpp");
+  const std::string present_pacing_test =
+      read_source("tests/renderer/vulkan_present_pacing_test.cpp");
+  if (line_count(present_pacing_header) > 50 ||
+      line_count(present_pacing) > 70 ||
+      line_count(present_pacing_wait) > 40 ||
+      line_count(present_pacing_test) > 220 ||
+      !contains(present_pacing_header, "struct VulkanPresentPacingPlan") ||
+      !contains(present_pacing, "vulkan_plan_present_pacing(") ||
+      !contains(present_pacing, "VK_PRESENT_MODE_MAILBOX_KHR") ||
+      !contains(present_pacing, "VK_PRESENT_MODE_FIFO_KHR") ||
+      !contains(present_pacing_wait,
+                "VulkanRendererState::wait_for_present_pacing()") ||
+      !contains(present_pacing_wait, "vkWaitForFences") ||
+      contains(present_pacing, "vkWaitForFences") ||
+      contains(present_pacing, "vkAcquireNextImageKHR") ||
+      contains(present_pacing, "vkQueuePresentKHR") ||
+      contains(present_pacing_wait, "vkAcquireNextImageKHR") ||
+      contains(present_pacing_wait, "vkQueuePresentKHR")) {
+    return 84;
   }
 
   const std::string command_recording =

@@ -12,14 +12,6 @@ VkSurfaceFormatKHR choose_vulkan_surface_format(
   return preferred != formats.end() ? *preferred : formats.front();
 }
 
-VkPresentModeKHR choose_vulkan_present_mode(
-    std::span<const VkPresentModeKHR> present_modes) {
-  const auto preferred =
-      std::ranges::find(present_modes, VK_PRESENT_MODE_MAILBOX_KHR);
-  return preferred != present_modes.end() ? *preferred
-                                          : VK_PRESENT_MODE_FIFO_KHR;
-}
-
 VkCompositeAlphaFlagBitsKHR choose_vulkan_composite_alpha(
     VkCompositeAlphaFlagsKHR supported_alpha) {
   constexpr std::array preferred_alpha{

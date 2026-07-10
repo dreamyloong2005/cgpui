@@ -7,22 +7,20 @@ VulkanSwapchainCreatePlan build_vulkan_swapchain_create_plan(
     Size framebuffer_size,
     std::uint32_t graphics_queue_family,
     std::uint32_t present_queue_family) {
-  VulkanSwapchainCreatePlan plan{
+  const VulkanPresentPacingPlan present_pacing = vulkan_plan_present_pacing(
+      details.present_modes,
+      details.capabilities.minImageCount,
+      details.capabilities.maxImageCount);
+  return VulkanSwapchainCreatePlan{
       .surface_format = choose_vulkan_surface_format(details.formats),
-      .present_mode = choose_vulkan_present_mode(details.present_modes),
+      .present_pacing = present_pacing,
       .extent = choose_vulkan_extent(details.capabilities, framebuffer_size),
       .composite_alpha =
           choose_vulkan_composite_alpha(details.capabilities.supportedCompositeAlpha),
       .pre_transform = details.capabilities.currentTransform,
-      .image_count = details.capabilities.minImageCount + 1,
       .queue_family_indices = {graphics_queue_family, present_queue_family},
       .separate_queue_families = graphics_queue_family != present_queue_family,
   };
-  if (details.capabilities.maxImageCount != 0 &&
-      plan.image_count > details.capabilities.maxImageCount) {
-    plan.image_count = details.capabilities.maxImageCount;
-  }
-  return plan;
 }
 
 VkSwapchainCreateInfoKHR make_vulkan_swapchain_create_info(
@@ -32,7 +30,7 @@ VkSwapchainCreateInfoKHR make_vulkan_swapchain_create_info(
   return VkSwapchainCreateInfoKHR{
       .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
       .surface = surface,
-      .minImageCount = plan.image_count,
+      .minImageCount = plan.present_pacing.swapchain_image_count,
       .imageFormat = plan.surface_format.format,
       .imageColorSpace = plan.surface_format.colorSpace,
       .imageExtent = plan.extent,
@@ -49,7 +47,7 @@ VkSwapchainCreateInfoKHR make_vulkan_swapchain_create_info(
           : nullptr,
       .preTransform = plan.pre_transform,
       .compositeAlpha = plan.composite_alpha,
-      .presentMode = plan.present_mode,
+      .presentMode = plan.present_pacing.present_mode,
       .clipped = VK_TRUE,
       .oldSwapchain = old_swapchain,
   };

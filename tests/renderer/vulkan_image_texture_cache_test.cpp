@@ -116,15 +116,19 @@ int test_structure_and_documentation() {
       "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp");
   const std::string presentation =
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  const std::string pacing_wait =
+      read_source("src/renderer/vulkan/vulkan_present_pacing_wait.cpp");
   const std::string lifetime =
       read_source("tests/renderer/vulkan_frame_lifetime_test.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   if (header.empty() || cache.empty() || frame.empty() || binding.empty() ||
-      presentation.empty() || lifetime.empty() || structure.empty()) {
+      presentation.empty() || pacing_wait.empty() || lifetime.empty() ||
+      structure.empty()) {
     return 40;
   }
-  const std::size_t wait = presentation.find("vkWaitForFences");
+  const std::size_t wait =
+      presentation.find("wait_for_present_pacing()");
   const std::size_t prepare =
       presentation.find("prepare_image_texture_frame(");
   if (!contains(header, "vulkan_image_texture_cache_max_idle_frames = 120") ||
@@ -133,6 +137,7 @@ int test_structure_and_documentation() {
       !contains(cache, "vulkan_evict_idle_image_texture_resources(") ||
       !contains(frame, "vulkan_prepare_image_texture_cache_frame(") ||
       !contains(binding, "last_used_frame = resources.frame_index") ||
+      !contains(pacing_wait, "vkWaitForFences") ||
       wait == std::string::npos || prepare == std::string::npos ||
       wait >= prepare ||
       !contains(lifetime, "test_image_texture_cache_idle_frame(") ||
