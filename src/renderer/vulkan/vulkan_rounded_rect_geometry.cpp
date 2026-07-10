@@ -1,5 +1,6 @@
 #include "vulkan_rounded_rect_geometry_internal.hpp"
 
+#include "vulkan_clip_scissor_internal.hpp"
 #include "vulkan_rounded_rect_contour_internal.hpp"
 #include "vulkan_rounded_rect_indices_internal.hpp"
 #include "vulkan_rounded_rect_radii_internal.hpp"
@@ -163,6 +164,8 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
         .vertex_count = geometry.vertices.size() - first_vertex,
         .first_index = first_index,
         .index_count = geometry.indices.size() - first_index,
+        .clip_rect = vulkan_resolve_effective_clip_rect(
+            draw.clip_rect, draw.clip_stack),
     });
   }
   return geometry;

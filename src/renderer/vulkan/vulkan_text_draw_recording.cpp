@@ -1,5 +1,7 @@
 #include "vulkan_text_draw_recording_internal.hpp"
 
+#include "vulkan_clip_scissor_internal.hpp"
+
 #include <limits>
 
 namespace cgpui {
@@ -46,6 +48,7 @@ Result<std::vector<VulkanTextDrawCommand>> vulkan_plan_text_draw_commands(
         .descriptor_set = binding.descriptor_set,
         .first_vertex = static_cast<std::uint32_t>(first_vertex),
         .vertex_count = static_cast<std::uint32_t>(vertex_count),
+        .clip_rect = binding.clip_rect,
     });
   }
   return commands;
@@ -73,12 +76,7 @@ void vulkan_record_text_draws(
       .minDepth = 0.0F,
       .maxDepth = 1.0F,
   };
-  const VkRect2D scissor{
-      .offset = VkOffset2D{.x = 0, .y = 0},
-      .extent = extent,
-  };
   vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-  vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
   const VkBuffer buffer = vertex_buffer.buffer;
   constexpr VkDeviceSize buffer_offset = 0;
@@ -98,6 +96,13 @@ void vulkan_record_text_draws(
       &push_constants);
 
   for (const VulkanTextDrawCommand& command : commands) {
+    const VulkanClipScissorResolution clip =
+        vulkan_resolve_clip_stack_scissor(
+            extent, command.clip_rect, RendererClipStackRecord{});
+    if (!clip.visible) {
+      continue;
+    }
+    vkCmdSetScissor(command_buffer, 0, 1, &clip.scissor);
     vkCmdBindDescriptorSets(
         command_buffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,

@@ -151,6 +151,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_swapchain_internal.hpp",
       "src/renderer/vulkan/vulkan_device_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp",
+      "src/renderer/vulkan/vulkan_clip_scissor.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
@@ -521,6 +523,21 @@ int main(int argc, char** argv) {
       !contains(solid_rect_recording, "vkCmdClearAttachments") ||
       contains(command_recording, "vkCmdClearAttachments")) {
     return 72;
+  }
+  const std::string clip_scissor_header = read_source(
+      "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp");
+  const std::string clip_scissor =
+      read_source("src/renderer/vulkan/vulkan_clip_scissor.cpp");
+  if (line_count(clip_scissor_header) > 40 ||
+      line_count(clip_scissor) > 130 ||
+      !contains(clip_scissor_header, "struct VulkanClipScissorResolution") ||
+      !contains(clip_scissor,
+                "vulkan_resolve_effective_clip_rect(") ||
+      !contains(clip_scissor,
+                "vulkan_resolve_clip_stack_scissor(") ||
+      !contains(solid_rect_recording,
+                "vulkan_resolve_clip_stack_scissor(")) {
+    return 73;
   }
 
   const std::string internal =

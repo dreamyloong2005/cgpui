@@ -1556,9 +1556,16 @@ draw calls for the Windows/Linux renderer.
   nonuniform edges retain their fallback. Vulkan stroke-only geometry omits
   invisible fill vertices and indices. Step 483 starts clip-stack command
   recording.
-- [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
-  strategy, nested opacity, transform composition, and z/layer ordering in
-  actual command recording.
+- [x] Phase E Step 483 adds `vulkan_resolve_clip_stack_scissor` in a focused
+  private Vulkan leaf. Retained stack entries, the current clip, and the scalar
+  fallback resolve without allocation to one framebuffer-clamped rectangle;
+  solid clears reuse it, while rounded and text draws preserve the effective
+  clip and install a per-draw dynamic scissor before visible GPU work. Empty
+  clip results skip the draw. Step 484 owns nested opacity command recording.
+- [ ] Steps 484-490: Complete nested opacity, transform composition, and
+  z/layer ordering in actual command recording, then close the clip/composition
+  band. Rectangular clip stacks use Step 483 scissor recording; a future
+  non-rectangular clip primitive would require a stencil or shader-mask path.
 - [ ] Steps 491-498: Build image texture resources, upload staging, sampler
   modes, tint/opacity support, cache lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization

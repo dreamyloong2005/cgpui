@@ -10,6 +10,7 @@ struct VulkanTextDrawCommand {
   VkDescriptorSet descriptor_set = VK_NULL_HANDLE;
   std::uint32_t first_vertex = 0;
   std::uint32_t vertex_count = 0;
+  std::optional<Rect> clip_rect;
 };
 
 [[nodiscard]] Result<std::vector<VulkanTextDrawCommand>>

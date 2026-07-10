@@ -1,5 +1,29 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 483 Clip-Stack Command Recording
+
+- Paint commands already carry an effective nested `clip_rect` plus bounded
+  `RendererClipStackRecord` metadata through render submission. Solid rectangles
+  consume only the scalar clip in their clear rectangle, while rounded and text
+  recorders currently reset one full-frame scissor for every batch.
+- A focused private Vulkan clip-scissor leaf should resolve the retained stack,
+  current clip, scalar fallback, and framebuffer bounds without allocation.
+  Rounded draw ranges and text draw commands can retain only the resulting
+  effective rectangle, avoiding repeated copies of the vector-backed stack.
+- Actual rounded and text command recording must set a dynamic scissor before
+  each visible draw and skip empty clip results. Solid rectangle clear recording
+  should reuse the same resolver so all three production primitive paths agree.
+- Non-rectangular clipping, stencil/shader masks, nested opacity, transforms, and
+  cross-primitive authored ordering remain later work in the Steps 484-490 band.
+- Phase E Step 483 now implements `vulkan_resolve_clip_stack_scissor` and
+  per-draw dynamic scissor recording. The resolver intersects retained stack,
+  current, and scalar clips, clamps/rounds to the framebuffer, and marks empty
+  results invisible without allocating.
+- Rounded geometry ranges and text page-run commands retain only one effective
+  rectangle; their recorders set `vkCmdSetScissor` per visible draw. Solid clear
+  rectangles consume the same resolver. Step 484 owns nested opacity command
+  recording.
+
 ## 2026-07-10 Phase E Step 467 Text Pipeline Ownership
 
 - The Vulkan backend currently has no graphics pipeline, shader module, or

@@ -38,6 +38,7 @@ vulkan_resolve_glyph_atlas_draw_bindings(
         .first_quad_index = usage.first_quad_index,
         .glyph_quad_count = usage.glyph_quad_count,
         .descriptor_set = page->descriptor_set,
+        .clip_rect = usage.clip_rect,
     });
   }
   return bindings;

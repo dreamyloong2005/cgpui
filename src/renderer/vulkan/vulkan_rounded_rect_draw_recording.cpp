@@ -1,5 +1,7 @@
 #include "vulkan_rounded_rect_draw_recording_internal.hpp"
 
+#include "vulkan_clip_scissor_internal.hpp"
+
 #include <limits>
 
 namespace cgpui {
@@ -56,12 +58,7 @@ void vulkan_record_rounded_rect_draws(
       .minDepth = 0.0F,
       .maxDepth = 1.0F,
   };
-  const VkRect2D scissor{
-      .offset = VkOffset2D{.x = 0, .y = 0},
-      .extent = extent,
-  };
   vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-  vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
   const VkBuffer vertex_buffer = buffer_resources.vertex_buffer;
   constexpr VkDeviceSize buffer_offset = 0;
@@ -87,6 +84,13 @@ void vulkan_record_rounded_rect_draws(
       &push_constants);
 
   for (const VulkanRoundedRectDrawRange& draw : buffer_resources.draws) {
+    const VulkanClipScissorResolution clip =
+        vulkan_resolve_clip_stack_scissor(
+            extent, draw.clip_rect, RendererClipStackRecord{});
+    if (!clip.visible) {
+      continue;
+    }
+    vkCmdSetScissor(command_buffer, 0, 1, &clip.scissor);
     vkCmdDrawIndexed(
         command_buffer,
         static_cast<std::uint32_t>(draw.index_count),

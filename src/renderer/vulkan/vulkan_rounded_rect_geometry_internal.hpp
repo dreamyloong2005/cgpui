@@ -17,6 +17,7 @@ struct VulkanRoundedRectDrawRange {
   std::size_t vertex_count = 0;
   std::size_t first_index = 0;
   std::size_t index_count = 0;
+  std::optional<Rect> clip_rect;
 };
 
 struct VulkanRoundedRectGeometry {

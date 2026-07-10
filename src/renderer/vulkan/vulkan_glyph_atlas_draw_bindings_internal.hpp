@@ -13,6 +13,7 @@ struct VulkanGlyphAtlasDrawPageUsage {
   std::size_t page_index = 0;
   std::size_t first_quad_index = 0;
   std::size_t glyph_quad_count = 0;
+  std::optional<Rect> clip_rect;
 };
 
 struct VulkanGlyphAtlasDrawBinding {
@@ -21,6 +22,7 @@ struct VulkanGlyphAtlasDrawBinding {
   std::size_t first_quad_index = 0;
   std::size_t glyph_quad_count = 0;
   VkDescriptorSet descriptor_set = VK_NULL_HANDLE;
+  std::optional<Rect> clip_rect;
 };
 
 struct VulkanGlyphAtlasDrawData {

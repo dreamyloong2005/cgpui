@@ -610,13 +610,18 @@ Windows/Linux core API is stable enough for parity work.
   borders coalesce into one rounded draw, nonuniform edges retain fallback, and
   Vulkan stroke-only geometry skips the invisible fill. Step 483 starts
   clip-stack command recording.
+- Phase E Step 483 adds `vulkan_resolve_clip_stack_scissor`. Retained stack
+  entries, current/scalar clips, and framebuffer bounds resolve without
+  allocation; solid clears share the result, while rounded/text GPU draws use a
+  per-draw dynamic scissor and skip empty clips. Step 484 owns nested opacity
+  command recording.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-482 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-483 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -633,9 +638,10 @@ Windows/Linux core API is stable enough for parity work.
   indexed rounded rectangle command recording, plus the coverage-fringe
   anti-aliasing geometry and shader path, plus CSS-style radius normalization,
   plus inset border-stroke contour geometry, plus rounded paint fill variants,
-  uniform styled-border coalescing, and compact stroke-only geometry.
-- In progress: Step 483 clip-stack command recording.
-- Pending bands: Steps 483-490 clip, opacity,
+  uniform styled-border coalescing, compact stroke-only geometry, and
+  allocation-free clip-stack resolution with per-draw dynamic scissor recording.
+- In progress: Step 484 nested opacity command recording.
+- Pending bands: Steps 484-490 opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -724,6 +730,12 @@ Windows/Linux core API is stable enough for parity work.
 | Two exploratory Step 482 reads combined incompatible PowerShell `Get-Content -Raw` and `-TotalCount` switches | Step 482 boundary discovery | Use `-TotalCount` alone for focused header reads; no source or build state changed |
 | The first expanded Step 482 gate failed `element_test` because uniform-border tests still expected four solid edge commands | Step 482 first regression gate | Update hidden-overflow, button paint-order, and widget snapshot expectations to one fill-plus-stroke rounded command while retaining clip and child-order assertions |
 | The first post-documentation Step 482 test remained at exit 50 because `findings.md` split the exact `stroke-only geometry` phrase across a line break | Step 482 documentation gate | Keep the shared evidence phrase contiguous without changing the fill-variant conclusion |
+| Two Step 483 `rg.exe` searches could not start through the current WinGet link in the Windows sandbox | Step 483 boundary discovery | Use `Get-ChildItem` and `Select-String` for repository search in this session instead of retrying the broken link |
+| `vulkan_clip_stack_recording_test` could not include `vulkan_clip_scissor_internal.hpp` | Step 483 RED | Expected RED; add the focused private clip-scissor resolver and route solid, rounded, and text recording through it |
+| The shorthand `xmake test ... vulkan_clip_stack_recording_test` reported `nothing to test` for the newly registered target | Step 483 first GREEN run | Use the complete `vulkan_clip_stack_recording_test/default` test name for a newly added target in the current xmake cache |
+| `xmake test -l -P .` treated `-l -P` as an invalid option combination | Step 483 test-name diagnosis | Inspect the Lua scope directly and run the complete test name; do not use the unsupported list flag |
+| The first Step 483 documentation gate remained at exit 60 because the Markdown ledger split `per-draw dynamic scissor` across a line break | Step 483 documentation gate | Keep the shared evidence phrase contiguous without changing the scissor conclusion |
+| A Step 483 phrase-audit command repeated the known PowerShell direct-`foreach` pipe parser failure | Step 483 documentation diagnosis | Assign the loop output before piping it to `Format-Table` |
 
 ## Definition Of Done For This 20-Step Goal
 

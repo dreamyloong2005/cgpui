@@ -1,5 +1,7 @@
 #include "vulkan_solid_rect_recording_internal.hpp"
 
+#include "vulkan_clip_scissor_internal.hpp"
+
 namespace cgpui {
 namespace {
 
@@ -12,33 +14,28 @@ namespace {
     return false;
   }
 
-  const float framebuffer_width = static_cast<float>(extent.width);
-  const float framebuffer_height = static_cast<float>(extent.height);
-  float left = std::clamp(solid_rect.rect.origin.x, 0.0F, framebuffer_width);
-  float top = std::clamp(solid_rect.rect.origin.y, 0.0F, framebuffer_height);
+  const VulkanClipScissorResolution clip =
+      vulkan_resolve_clip_stack_scissor(
+          extent, solid_rect.clip_rect, solid_rect.clip_stack);
+  if (!clip.visible) {
+    return false;
+  }
+  const float clip_left = static_cast<float>(clip.scissor.offset.x);
+  const float clip_top = static_cast<float>(clip.scissor.offset.y);
+  const float clip_right =
+      clip_left + static_cast<float>(clip.scissor.extent.width);
+  const float clip_bottom =
+      clip_top + static_cast<float>(clip.scissor.extent.height);
+  float left = std::max(solid_rect.rect.origin.x, clip_left);
+  float top = std::max(solid_rect.rect.origin.y, clip_top);
   float right = std::clamp(
       solid_rect.rect.origin.x + solid_rect.rect.size.width,
-      0.0F,
-      framebuffer_width);
+      clip_left,
+      clip_right);
   float bottom = std::clamp(
       solid_rect.rect.origin.y + solid_rect.rect.size.height,
-      0.0F,
-      framebuffer_height);
-
-  if (solid_rect.clip_rect.has_value()) {
-    const Rect& clip = *solid_rect.clip_rect;
-    const float clip_left =
-        std::clamp(clip.origin.x, 0.0F, framebuffer_width);
-    const float clip_top = std::clamp(clip.origin.y, 0.0F, framebuffer_height);
-    const float clip_right = std::clamp(
-        clip.origin.x + clip.size.width, 0.0F, framebuffer_width);
-    const float clip_bottom = std::clamp(
-        clip.origin.y + clip.size.height, 0.0F, framebuffer_height);
-    left = std::max(left, clip_left);
-    top = std::max(top, clip_top);
-    right = std::min(right, clip_right);
-    bottom = std::min(bottom, clip_bottom);
-  }
+      clip_top,
+      clip_bottom);
 
   if (right <= left || bottom <= top) {
     return false;

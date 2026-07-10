@@ -18753,3 +18753,46 @@
 - WSL verification remains unavailable: `wsl.exe -l -q` returned success with
   an empty distribution list. Shared rounded paint and geometry remain in the
   final Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 483 Clip-Stack Command Recording
+
+- Started from clean tracked `master` at
+  `f606e072 feat: complete vulkan rounded rect variants`; only the existing
+  untracked `.vscode/` directory remains.
+- Traced clip metadata from `PaintList` through frame submission. Solid clears
+  clamp against `clip_rect`, but rounded and text recorders still install only
+  a full-frame `VkRect2D` scissor before all draws.
+- Step 483 will add a focused private clip-scissor resolver, preserve effective
+  per-draw clips without copying vector-backed stack records, apply dynamic
+  scissors to rounded/text draws, and share the resolution with solid clears.
+- Two initial `rg.exe` searches failed to start through the current WinGet link
+  inside the Windows sandbox; switched to `Get-ChildItem` and `Select-String`.
+- Added `vulkan_clip_stack_recording_test` and observed the expected RED compile
+  failure because the focused private clip-scissor header did not exist.
+- Added the focused clip-scissor resolver, preserved effective clips through
+  rounded draw ranges and text atlas page-run bindings, applied per-draw dynamic
+  scissors, skipped empty clipped draws, and routed solid clears through the
+  same framebuffer-clamped resolution.
+- The first shorthand test invocation reported `nothing to test`; the complete
+  `vulkan_clip_stack_recording_test/default` name ran successfully through all
+  behavior/structure assertions and exited 60 only at the expected docs gate.
+- An attempted `xmake test -l -P .` diagnostic used an unsupported option;
+  direct Lua inspection confirmed the target scope and no build state changed.
+- Nine existing rounded/text/atlas/solid/renderer-structure/live-frame/parity
+  regressions passed before documentation updates.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `vulkan_resolve_clip_stack_scissor`, per-draw dynamic scissor behavior,
+  and the Step 484 nested-opacity handoff.
+- The first documentation gate remained at exit 60 because the Markdown ledger
+  split `per-draw dynamic scissor` across a line break; normalized the phrase.
+- A phrase-audit command repeated the known PowerShell direct-`foreach` pipe
+  parser failure; assigned the loop output before formatting on the retry.
+- Focused Windows Step 483 verification passed 10/10: clip-stack recording,
+  rounded/text draw recording, glyph-atlas draw data and bindings, rounded
+  geometry, solid live rendering, renderer structure, real first-frame
+  submission, and parity ledger.
+- The complete Windows debug build succeeded, then the full test suite passed
+  164/164 with `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared clip/scissor recording remains in the
+  final Phase E Linux gate.

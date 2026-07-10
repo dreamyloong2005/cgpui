@@ -460,6 +460,14 @@ consume C: drive space again.
   Vulkan stroke-only geometry emits only the inset border, outer border, and
   coverage fringe rings, skipping invisible fill vertices and indices.
 - Handoff: Phase E Step 483 clip-stack command recording.
+- Phase E Step 483 adds `vulkan_resolve_clip_stack_scissor` as a focused private
+  Vulkan boundary. It intersects retained clip-stack entries, the current clip,
+  and scalar fallback without allocation, clamps the result to the framebuffer,
+  and returns visibility plus an integer `VkRect2D`.
+- Solid clears now reuse the shared resolution. Rounded geometry ranges and
+  text page-run commands retain one effective rectangle, then install a
+  per-draw dynamic scissor and skip empty clip results before issuing GPU work.
+- Handoff: Phase E Step 484 nested opacity command recording.
 
 ## Categories
 

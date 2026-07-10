@@ -1,5 +1,7 @@
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 
+#include "vulkan_clip_scissor_internal.hpp"
+
 #include <utility>
 
 namespace cgpui {
@@ -9,7 +11,8 @@ void append_page_run(
     std::vector<VulkanGlyphAtlasDrawPageUsage>& usages,
     std::size_t text_draw_index,
     std::size_t page_index,
-    std::size_t quad_index) {
+    std::size_t quad_index,
+    std::optional<Rect> clip_rect) {
   if (!usages.empty()) {
     VulkanGlyphAtlasDrawPageUsage& previous = usages.back();
     if (previous.text_draw_index == text_draw_index &&
@@ -24,6 +27,7 @@ void append_page_run(
       .page_index = page_index,
       .first_quad_index = quad_index,
       .glyph_quad_count = 1,
+      .clip_rect = clip_rect,
   });
 }
 
@@ -36,8 +40,11 @@ VulkanGlyphAtlasDrawData vulkan_plan_glyph_atlas_draw_data(
   for (std::size_t text_draw_index = 0;
        text_draw_index < text_draws.size();
        ++text_draw_index) {
+    const TextDraw& text_draw = text_draws[text_draw_index];
+    const std::optional<Rect> clip_rect = vulkan_resolve_effective_clip_rect(
+        text_draw.clip_rect, text_draw.clip_stack);
     std::vector<TexturedGlyphQuad> quads = vulkan_build_textured_glyph_quads(
-        text_draws[text_draw_index],
+        text_draw,
         glyph_cache);
     for (TexturedGlyphQuad& quad : quads) {
       const std::size_t quad_index = draw_data.quads.size();
@@ -45,7 +52,8 @@ VulkanGlyphAtlasDrawData vulkan_plan_glyph_atlas_draw_data(
           draw_data.page_usages,
           text_draw_index,
           quad.page_index,
-          quad_index);
+          quad_index,
+          clip_rect);
       draw_data.quads.push_back(std::move(quad));
     }
   }
