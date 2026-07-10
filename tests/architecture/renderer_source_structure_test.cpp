@@ -158,8 +158,9 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
-      "src/renderer/vulkan/vulkan_solid_rect_recording_internal.hpp",
-      "src/renderer/vulkan/vulkan_solid_rect_recording.cpp",
+      "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp",
+      "src/renderer/vulkan/vulkan_solid_rect_geometry.cpp",
+      "src/renderer/vulkan/vulkan_solid_rect_frame.cpp",
       "src/renderer/vulkan/vulkan_device.cpp",
       "src/renderer/vulkan/vulkan_device_memory.cpp",
       "src/renderer/vulkan/vulkan_errors.cpp",
@@ -511,19 +512,24 @@ int main(int argc, char** argv) {
   if (line_count(command_recording) > 180 ||
       !contains(command_recording, "record_vulkan_frame_command_buffer(") ||
       !contains(command_recording, "vkCmdBeginRenderPass") ||
-      !contains(command_recording, "vulkan_record_solid_rects(") ||
+      !contains(command_recording, "solid_rect_buffers") ||
+      contains(command_recording, "vulkan_record_solid_rects(") ||
+      contains(command_recording, "vkCmdClearAttachments") ||
       contains(command_recording, "choose_vulkan_surface_format(")) {
     return 36;
   }
-  const std::string solid_rect_recording_header = read_source(
-      "src/renderer/vulkan/vulkan_solid_rect_recording_internal.hpp");
-  const std::string solid_rect_recording = read_source(
-      "src/renderer/vulkan/vulkan_solid_rect_recording.cpp");
-  if (line_count(solid_rect_recording_header) > 40 ||
-      line_count(solid_rect_recording) > 140 ||
-      !contains(solid_rect_recording, "make_clear_rect(") ||
-      !contains(solid_rect_recording, "vkCmdClearAttachments") ||
-      contains(command_recording, "vkCmdClearAttachments")) {
+  const std::string solid_rect_geometry_header = read_source(
+      "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");
+  const std::string solid_rect_geometry = read_source(
+      "src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
+  const std::string solid_rect_frame =
+      read_source("src/renderer/vulkan/vulkan_solid_rect_frame.cpp");
+  if (line_count(solid_rect_geometry_header) > 30 ||
+      line_count(solid_rect_geometry) > 110 ||
+      line_count(solid_rect_frame) > 30 ||
+      !contains(solid_rect_geometry, "vulkan_build_solid_rect_geometry(") ||
+      !contains(solid_rect_geometry, "vulkan_resolve_effective_clip_rect(") ||
+      !contains(solid_rect_frame, "prepare_solid_rect_frame(")) {
     return 72;
   }
   const std::string clip_scissor_header = read_source(
@@ -537,8 +543,8 @@ int main(int argc, char** argv) {
                 "vulkan_resolve_effective_clip_rect(") ||
       !contains(clip_scissor,
                 "vulkan_resolve_clip_stack_scissor(") ||
-      !contains(solid_rect_recording,
-                "vulkan_resolve_clip_stack_scissor(")) {
+      !contains(solid_rect_geometry,
+                "vulkan_resolve_effective_clip_rect(")) {
     return 73;
   }
   const std::string composition_opacity_header = read_source(
@@ -551,7 +557,7 @@ int main(int argc, char** argv) {
                 "vulkan_resolve_composed_opacity(") ||
       !contains(composition_opacity_header,
                 "vulkan_apply_composed_opacity(") ||
-      !contains(solid_rect_recording,
+      !contains(solid_rect_geometry,
                 "vulkan_apply_composed_opacity(") ||
       contains(command_recording, "vulkan_apply_composed_opacity(")) {
     return 74;

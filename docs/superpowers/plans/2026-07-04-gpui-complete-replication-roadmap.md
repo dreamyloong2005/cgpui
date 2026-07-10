@@ -1569,11 +1569,17 @@ draw calls for the Windows/Linux renderer.
   into GPU commands without changing authored-color diagnostics. Rounded/text
   pipelines blend; solid clear writes do not blend. Step 485 promotes solid
   rectangles to blend-capable geometry before affine transform work.
-- [ ] Steps 485-490: Complete transform composition and z/layer ordering in
-  actual command recording, including Step 485 solid-rectangle blend promotion,
-  then close the clip/composition band. Rectangular clip stacks use Step 483
-  scissor recording; a future non-rectangular clip primitive would require a
-  stencil or shader-mask path.
+- [x] Phase E Step 485 adds `vulkan_build_solid_rect_geometry`. Each visible
+  solid rectangle becomes four vertices and six indices with effective clip and
+  precomposed opacity, then uploads into a separate fence-safe buffer resource
+  and records through the existing straight-alpha rounded pipeline. The old
+  `vkCmdClearAttachments` draw path is removed. This completes
+  blend-capable solid geometry without a temporary adapted-draw vector.
+  Step 486 owns composed affine transform application.
+- [ ] Steps 486-490: Complete transform composition and z/layer ordering in
+  actual command recording, then close the clip/composition band. Rectangular
+  clip stacks use Step 483 scissor recording; a future non-rectangular clip
+  primitive would require a stencil or shader-mask path.
 - [ ] Steps 491-498: Build image texture resources, upload staging, sampler
   modes, tint/opacity support, cache lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization

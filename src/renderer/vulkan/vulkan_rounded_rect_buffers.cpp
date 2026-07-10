@@ -1,6 +1,7 @@
 #include "vulkan_rounded_rect_buffers_internal.hpp"
 
 #include "vulkan_device_internal.hpp"
+#include "vulkan_solid_rect_geometry_internal.hpp"
 
 #include <cstring>
 
@@ -62,33 +63,17 @@ Result<void> upload_host_buffer(
   return {};
 }
 
-} // namespace
-
-VkBufferCreateInfo vulkan_rounded_rect_buffer_create_info(
-    std::size_t byte_size,
-    VkBufferUsageFlags usage) {
-  return VkBufferCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = byte_size,
-      .usage = usage,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-  };
-}
-
-Result<void> vulkan_upload_rounded_rect_buffers(
+Result<void> upload_geometry(
     VkPhysicalDevice physical_device,
     VkDevice device,
-    std::span<const RoundedRectDraw> rounded_rects,
+    VulkanRoundedRectGeometry geometry,
     VulkanRoundedRectBufferResources& resources) {
   if (physical_device == VK_NULL_HANDLE || device == VK_NULL_HANDLE) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
-        "rounded rectangle upload requires Vulkan devices"));
+        "rectangle upload requires Vulkan devices"));
   }
   vulkan_destroy_rounded_rect_buffers(device, resources);
-
-  VulkanRoundedRectGeometry geometry =
-      vulkan_build_rounded_rect_geometry(rounded_rects);
   if (geometry.vertices.empty()) {
     return {};
   }
@@ -126,6 +111,43 @@ Result<void> vulkan_upload_rounded_rect_buffers(
   resources.index_byte_size = index_byte_size;
   resources.draws = std::move(geometry.draws);
   return {};
+}
+
+} // namespace
+
+VkBufferCreateInfo vulkan_rounded_rect_buffer_create_info(
+    std::size_t byte_size,
+    VkBufferUsageFlags usage) {
+  return VkBufferCreateInfo{
+      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      .size = byte_size,
+      .usage = usage,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+}
+
+Result<void> vulkan_upload_rounded_rect_buffers(
+    VkPhysicalDevice physical_device,
+    VkDevice device,
+    std::span<const RoundedRectDraw> rounded_rects,
+    VulkanRoundedRectBufferResources& resources) {
+  return upload_geometry(
+      physical_device,
+      device,
+      vulkan_build_rounded_rect_geometry(rounded_rects),
+      resources);
+}
+
+Result<void> vulkan_upload_solid_rect_buffers(
+    VkPhysicalDevice physical_device,
+    VkDevice device,
+    std::span<const SolidRect> rects,
+    VulkanRoundedRectBufferResources& resources) {
+  return upload_geometry(
+      physical_device,
+      device,
+      vulkan_build_solid_rect_geometry(rects),
+      resources);
 }
 
 void vulkan_destroy_rounded_rect_buffers(

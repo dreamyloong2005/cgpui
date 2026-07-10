@@ -8,11 +8,11 @@ Result<void> record_vulkan_frame_command_buffer(
     VkFramebuffer framebuffer,
     VkExtent2D extent,
     const VulkanRoundedRectPipelineResources& rounded_rect_pipeline_resources,
+    const VulkanRoundedRectBufferResources& solid_rect_buffers,
     const VulkanRoundedRectBufferResources& rounded_rect_buffers,
     const VulkanTextPipelineResources& text_pipeline_resources,
     const VulkanTextVertexBufferResources& text_vertex_buffer,
     Color color,
-    std::span<const SolidRect> rects,
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
     std::span<const TexturedGlyphQuad> glyph_atlas_draw_quads,
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
@@ -56,6 +56,11 @@ Result<void> record_vulkan_frame_command_buffer(
     return std::unexpected(text_draw_commands.error());
   }
   if (auto result = vulkan_validate_rounded_rect_draw_resources(
+          rounded_rect_pipeline_resources, solid_rect_buffers);
+      !result) {
+    return result;
+  }
+  if (auto result = vulkan_validate_rounded_rect_draw_resources(
           rounded_rect_pipeline_resources, rounded_rect_buffers);
       !result) {
     return result;
@@ -79,7 +84,11 @@ Result<void> record_vulkan_frame_command_buffer(
       &render_pass_info,
       VK_SUBPASS_CONTENTS_INLINE);
 
-  vulkan_record_solid_rects(command_buffer, extent, rects);
+  vulkan_record_rounded_rect_draws(
+      command_buffer,
+      extent,
+      rounded_rect_pipeline_resources,
+      solid_rect_buffers);
   vulkan_record_rounded_rect_draws(
       command_buffer,
       extent,

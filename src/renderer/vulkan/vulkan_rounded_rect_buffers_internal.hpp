@@ -33,6 +33,11 @@ Result<void> vulkan_upload_rounded_rect_buffers(
     VkDevice device,
     std::span<const RoundedRectDraw> rounded_rects,
     VulkanRoundedRectBufferResources& resources);
+Result<void> vulkan_upload_solid_rect_buffers(
+    VkPhysicalDevice physical_device,
+    VkDevice device,
+    std::span<const SolidRect> rects,
+    VulkanRoundedRectBufferResources& resources);
 void vulkan_destroy_rounded_rect_buffers(
     VkDevice device,
     VulkanRoundedRectBufferResources& resources);

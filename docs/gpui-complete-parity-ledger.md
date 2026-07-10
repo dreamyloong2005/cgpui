@@ -477,6 +477,14 @@ consume C: drive space again.
   blend; solid clear writes do not blend. Diagnostic textured glyph quads keep
   authored color plus composition metadata.
 - Handoff: Phase E Step 485 blend-capable solid rectangle geometry.
+- Phase E Step 485 adds `vulkan_build_solid_rect_geometry`. Valid solid draws
+  emit compact four-vertex/six-index quads with Step 483 effective clips and
+  Step 484 alpha already baked into vertex colors.
+- Separate fence-safe solid buffers reuse the rounded pipeline and indexed draw
+  recorder. The frame path no longer calls `vkCmdClearAttachments` for authored
+  rectangles, so blend-capable solid geometry now participates in straight-
+  alpha composition without a temporary adapted-draw vector.
+- Handoff: Phase E Step 486 composed affine transform application.
 
 ## Categories
 

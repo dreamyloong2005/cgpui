@@ -18838,3 +18838,36 @@
 - WSL verification remains unavailable: `wsl.exe -l -q` returned success with
   an empty distribution list. Shared opacity policy remains in the final Phase
   E Linux gate.
+
+## 2026-07-10 Phase E Step 485 Blend-Capable Solid Geometry
+
+- Started from clean tracked `master` at
+  `987d4d8d feat: apply vulkan nested opacity`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 485 will replace per-rect `vkCmdClearAttachments` with compact solid
+  geometry recorded through the existing straight-alpha rounded pipeline.
+- Solid and rounded rectangles will retain separate buffer resources so frame
+  preparation adds no temporary adapted-draw vector or extra public API.
+- Added `vulkan_solid_rect_geometry_test` and observed the expected RED compile
+  failure because the focused solid geometry header did not exist.
+- Added compact solid geometry, shared geometry upload, a focused solid-frame
+  preparation leaf, separate renderer-owned solid buffers, and dual submission
+  through the existing rounded pipeline. Deleted the old solid clear recorder.
+- `vulkan_solid_rect_geometry_test/default` passed behavior and structure
+  assertions and exited 30 only at its expected documentation gate.
+- Ten clip/opacity/solid live-pixel/buffer/pipeline/frame-lifetime/first-frame/
+  renderer-structure/parity regressions passed before documentation updates.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `vulkan_build_solid_rect_geometry`, blend-capable solid geometry, and the
+  Step 486 composed-transform handoff.
+- The first Step 485 documentation gate remained at exit 30 because the roadmap
+  split `blend-capable solid geometry` across a line and findings used a shorter
+  phrase; normalized both audit strings.
+- Focused Windows Step 485 verification passed 11/11: compact solid geometry,
+  clip/opacity audits, live solid pixels, rounded buffers/draws/pipeline, frame
+  lifetime, real first-frame submission, renderer structure, and parity ledger.
+- The complete Windows debug build succeeded, then the full test suite passed
+  166/166 with `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared solid geometry/buffer recording remains in
+  the final Phase E Linux gate.

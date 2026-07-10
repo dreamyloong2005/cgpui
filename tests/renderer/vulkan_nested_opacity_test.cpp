@@ -142,7 +142,7 @@ int test_structure_and_documentation() {
   const std::string opacity_source = read_source(
       "src/renderer/vulkan/vulkan_composition_opacity.cpp");
   const std::string solid_source =
-      read_source("src/renderer/vulkan/vulkan_solid_rect_recording.cpp");
+      read_source("src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
   const std::string rounded_source =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
   const std::string text_source =
@@ -154,7 +154,6 @@ int test_structure_and_documentation() {
   if (!contains(opacity_header, "vulkan_resolve_composed_opacity(") ||
       !contains(opacity_header, "vulkan_apply_composed_opacity(") ||
       !contains(solid_source, "vulkan_apply_composed_opacity(") ||
-      !contains(solid_source, "vkCmdClearAttachments") ||
       !contains(rounded_source, "vulkan_apply_composed_opacity(") ||
       !contains(text_source, "vulkan_apply_composed_opacity(")) {
     return 51;

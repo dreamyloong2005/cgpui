@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 485 Blend-Capable Solid Geometry
+
+- `vkCmdClearAttachments` cannot implement source-alpha blending, so solid
+  rectangles must leave the clear path to complete nested opacity semantics.
+- The existing rounded pipeline already provides the required position/color/
+  coverage ABI, straight-alpha blend state, dynamic scissor, and indexed draw
+  recording. Solid rectangles can reuse it with a compact four-vertex/six-index
+  geometry leaf rather than creating another graphics pipeline.
+- Separate solid and rounded buffer resources avoid a per-frame temporary vector
+  of adapted draw records. The shared upload module can accept either focused
+  geometry result, and command recording can submit the two buffer sets in the
+  current solid-before-rounded order until authored ordering work lands later.
+- Step 485 should delete the obsolete solid clear recorder, retain clip and
+  precomposed opacity through the geometry path, and hand Step 486 to affine
+  transform application.
+- Phase E Step 485 now implements `vulkan_build_solid_rect_geometry`. Each valid
+  solid draw produces four vertices, six indices, one draw range, baked opacity,
+  and one effective clip without adapting into a temporary rounded-draw vector.
+- Separate `solid_rect_buffers_` reuse the existing upload helper, rounded
+  pipeline, dynamic scissor recorder, and fence lifetime. The old authored
+  rectangle clear recorder is deleted, completing blend-capable solid geometry.
+  Step 486 owns composed affine transforms.
+
 ## 2026-07-10 Phase E Step 484 Nested Opacity Command Recording
 
 - `PaintList::push_metadata(...)` already composes parent and child opacity, so

@@ -157,7 +157,7 @@ int test_recording_structure_and_documentation() {
   const std::string clip_source =
       read_source("src/renderer/vulkan/vulkan_clip_scissor.cpp");
   const std::string solid_source =
-      read_source("src/renderer/vulkan/vulkan_solid_rect_recording.cpp");
+      read_source("src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
   const std::string rounded_source = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp");
   const std::string text_source =
@@ -176,7 +176,7 @@ int test_recording_structure_and_documentation() {
       return 51;
     }
   }
-  if (!contains(solid_source, "vulkan_resolve_clip_stack_scissor(") ||
+  if (!contains(solid_source, "vulkan_resolve_effective_clip_rect(") ||
       !contains(rounded_source, "vulkan_resolve_clip_stack_scissor(") ||
       !contains(text_source, "vulkan_resolve_clip_stack_scissor(") ||
       !contains(rounded_source, "vkCmdSetScissor") ||

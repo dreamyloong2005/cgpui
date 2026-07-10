@@ -27,6 +27,9 @@ Result<void> VulkanRendererState::present_frame(
       !result) {
     return result;
   }
+  if (auto result = prepare_solid_rect_frame(rects); !result) {
+    return result;
+  }
   if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
     return result;
   }
@@ -62,11 +65,11 @@ Result<void> VulkanRendererState::present_frame(
           framebuffers_[image_index],
           swapchain_extent_,
           rounded_rect_pipeline_resources_,
+          solid_rect_buffers_,
           rounded_rect_buffers_,
           text_pipeline_resources_,
           text_vertex_buffer_,
           color,
-          rects,
           glyph_atlas_resources_,
           glyph_atlas_draw_quads_,
           glyph_atlas_draw_bindings_,
