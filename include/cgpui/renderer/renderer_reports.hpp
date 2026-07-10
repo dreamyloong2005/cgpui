@@ -5,3 +5,4 @@
 #include "cgpui/renderer/renderer_submission_reports.hpp"
 #include "cgpui/renderer/renderer_geometry_reports.hpp"
 #include "cgpui/renderer/renderer_frame_reports.hpp"
+#include "cgpui/renderer/renderer_frame_diagnostics.hpp"

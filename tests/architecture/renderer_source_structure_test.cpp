@@ -359,6 +359,10 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/renderer/renderer_geometry_reports.hpp");
   const std::string renderer_frame_reports =
       read_source("include/cgpui/renderer/renderer_frame_reports.hpp");
+  const std::string renderer_frame_diagnostics =
+      read_source("include/cgpui/renderer/renderer_frame_diagnostics.hpp");
+  const std::string renderer_frame_diagnostics_source =
+      read_source("src/renderer/renderer_frame_diagnostics.cpp");
   const std::string glyph_atlas =
       read_source("include/cgpui/renderer/glyph_atlas.hpp");
   const std::string glyph_atlas_types =
@@ -409,9 +413,12 @@ int main(int argc, char** argv) {
                 "#include \"cgpui/renderer/renderer_geometry_reports.hpp\"") ||
       !contains(renderer_reports,
                 "#include \"cgpui/renderer/renderer_frame_reports.hpp\"") ||
+      !contains(renderer_reports,
+                "#include \"cgpui/renderer/renderer_frame_diagnostics.hpp\"") ||
       line_count(renderer_reports) > 40 ||
       contains(renderer_reports, "struct RendererCommandReport") ||
-      contains(renderer_reports, "struct RendererFrameReport")) {
+      contains(renderer_reports, "struct RendererFrameReport") ||
+      contains(renderer_reports, "struct RendererFrameDiagnostics")) {
     return 51;
   }
   if (!contains(glyph_atlas,
@@ -437,6 +444,16 @@ int main(int argc, char** argv) {
       !contains(renderer_geometry_reports,
                 "struct RoundedRectTessellationRecord") ||
       !contains(renderer_frame_reports, "struct RendererFrameReport") ||
+      !contains(renderer_frame_diagnostics, "struct RendererFrameWork") ||
+      !contains(renderer_frame_diagnostics,
+                "struct RendererFrameDiagnostics") ||
+      !contains(renderer_frame_diagnostics,
+                "compare_renderer_frame_work(") ||
+      !contains(renderer_frame_diagnostics_source,
+                "RendererFrameDiagnostics::exact_match()") ||
+      !contains(renderer_frame_diagnostics_source,
+                "compare_renderer_frame_work(") ||
+      contains(renderer_frame, "struct RendererFrameDiagnostics") ||
       !contains(glyph_atlas_types, "struct GlyphAtlasEntry") ||
       !contains(glyph_uploads, "struct GlyphAtlasUploadBatch") ||
       !contains(image_uploads, "struct ImageUploadBatch") ||
@@ -490,7 +507,9 @@ int main(int argc, char** argv) {
       line_count(renderer_image_reports) > 220 ||
       line_count(renderer_submission_reports) > 220 ||
       line_count(renderer_geometry_reports) > 220 ||
-      line_count(renderer_frame_reports) > 220) {
+      line_count(renderer_frame_reports) > 220 ||
+      line_count(renderer_frame_diagnostics) > 100 ||
+      line_count(renderer_frame_diagnostics_source) > 100) {
     return 53;
   }
 

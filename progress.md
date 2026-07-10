@@ -19913,3 +19913,62 @@
 - JSON parsing, the five closeout phrases, the 167-line focused audit limit,
   and `git diff --check` pass. WSL remains unavailable because `wsl.exe -l -q`
   returns an empty distribution list.
+
+## 2026-07-10 Phase E Step 515 Renderer Diagnostics Resume
+
+- Resumed the active Phase E goal from clean tracked `master` at Step 514
+  commit `1e8d71e0`; only the existing untracked `.vscode/` directory remains.
+- Planning-with-files session catch-up reported only the prior Step 515
+  exploration and current resume activity. `git diff --stat` is empty, so no
+  unsynced source change needs recovery.
+- Confirmed the roadmap groups Steps 515-522 as renderer diagnostics comparing
+  planned work with submitted GPU work across upload bytes, draw counts,
+  dropped resources, and frame timing. Step 515 remains active.
+- Initial ownership candidates are the focused public renderer report leaves
+  plus the existing Vulkan report implementation files. Continue by tracing
+  their data model and frame-state ownership before adding RED coverage.
+- The first combined planning-file patch failed because its `findings.md`
+  context did not match the actual single-line closeout entry; no file changed.
+  Retried with exact tail anchors.
+- Source tracing confirmed `RendererFrameReport` owns planned CPU work while
+  Vulkan renderer state has no submitted diagnostic snapshot. Step 515 will
+  introduce a focused comparison model and pure implementation first; later
+  steps will populate its individual counters and runtime path.
+- Traced the renderer and runtime interfaces: no renderer diagnostic retrieval
+  API exists, while UI `FrameStatistics` is already the downstream runtime
+  statistics surface. Step 515 will avoid virtual-interface churn and test the
+  independent renderer comparison boundary directly.
+- Chosen Step 515 API shape: focused planned/submitted command and batch work
+  records, with saturation-safe pending/unexpected comparisons and an exact
+  match query. Add a platform-neutral behavior target and renderer structure
+  guards before implementation.
+- Added the Step 515 RED target. Its first build failed exactly as intended
+  because `cgpui/renderer/renderer_frame_diagnostics.hpp` did not yet exist.
+- Implemented the focused public diagnostics leaf and non-template source,
+  included it through the thin renderer reports aggregate, and extended the
+  renderer source-structure gate without changing renderer virtual interfaces.
+- The focused implementation builds, and renderer source structure passes.
+  Direct `xmake run renderer_frame_diagnostics_test` reaches exit 60 only at
+  the expected five-document Step 515 evidence gate.
+- A direct executable launch first guessed the obsolete `.xmake/windows/...`
+  output path and failed to find the binary; xmake's actual output is under
+  `build/windows/x64/debug`. Retried through `xmake run` instead of repeating
+  the guessed path.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  Step 515 comparison model. Step 516 upload-byte accounting is active.
+- The first post-documentation run still exited 60 because `findings.md` split
+  the exact `Step 516 upload-byte accounting` evidence phrase across a line.
+  The other four documents passed the phrase audit; normalized that one entry.
+- Focused Step 515 behavior and renderer structure gates now pass 2/2. The
+  parity JSON parses, all five phrases exist in all five evidence files, the
+  focused header/source/test are 31/40/144 lines, and `git diff --check` passes
+  with only the repository's expected CRLF conversion warnings.
+- Expanded Windows Step 515 verification passed 7/7 across diagnostics,
+  renderer structure, public header cleanliness, parity ledger, the Step 514
+  closeout, render-view reporting, and Vulkan solid/report regressions.
+- The complete Windows debug build succeeded, then the full test suite passed
+  196/196.
+- Final JSON parsing, focused line counts, and `git diff --check` pass. WSL
+  verification remains unavailable because `wsl.exe -l -q` returned success
+  with an empty distribution list; Linux diagnostics coverage remains in the
+  final Phase E gate.

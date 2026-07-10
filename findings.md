@@ -9122,3 +9122,65 @@
   require the existing renderer/UI structure gates, and move the roadmap to
   Step 515 renderer diagnostics without adding another runtime abstraction.
 - Phase E Step 514 closes the batching and frame scheduling integration closeout for Steps 507-513, freezing reusable geometry buffers through next-frame scheduling. Step 515 renderer diagnostics is next.
+
+## 2026-07-10 Phase E Step 515 Renderer Diagnostics Resume
+
+- The roadmap defines one eight-step renderer diagnostics band, Steps 515-522,
+  comparing planned work with submitted GPU work and explicitly naming upload
+  bytes, draw counts, dropped resources, and frame timing.
+- Existing public ownership is already split across
+  `renderer_submission_reports.hpp`, `renderer_frame_reports.hpp`, and focused
+  text/image/geometry report leaves. Step 515 should extend a focused report
+  boundary instead of adding diagnostics bodies to `renderer.hpp`,
+  `renderer_frame.hpp`, or a broad Vulkan renderer entry file.
+- Existing Vulkan report implementation is similarly modular under
+  `vulkan_report_*.cpp`; the next source pass must determine which planned and
+  submitted values already exist and which frame-state snapshot owns the
+  comparison.
+- `RendererFrameReport` is a CPU planning/reporting surface: it derives command,
+  batch, glyph-upload, image-upload, and gap counts before GPU submission. It
+  does not represent queue-submit results.
+- `VulkanRendererState` currently retains resource objects and
+  `last_command_batches_`, but exposes no submitted-frame diagnostic snapshot.
+  A new comparison model should remain independent from the existing planning
+  report so later steps can populate actual submission counters incrementally.
+- Step 515 boundary decision: add a focused public renderer diagnostics leaf
+  with plain planned/submitted work records plus a non-template comparison
+  function in a focused `.cpp`. Do not add live Vulkan state wiring, byte
+  accounting, draw accounting, dropped-resource accounting, timing, or runtime
+  propagation until their assigned Steps 516-521.
+- `RenderFrame` currently owns recording plus `present()`, while `Renderer`
+  owns resize and `begin_frame()` only. Neither interface exposes diagnostics;
+  adding a virtual retrieval method in Step 515 would force every renderer and
+  test double to change before the Vulkan snapshot exists.
+- UI `FrameStatistics` and `RuntimeDiagnostics` already own runtime-facing
+  frame counters, but they are a downstream consumer rather than the renderer
+  comparison model. Their timing fields are still initialized without a real
+  renderer timing source, which belongs to Step 519/521.
+- The new public leaf should be included by thin `renderer_reports.hpp` so
+  `renderer.hpp` remains only an aggregate. The non-template comparison body
+  belongs in `src/renderer/renderer_frame_diagnostics.cpp`.
+- Step 515 baseline data will compare command and batch counts. The result must
+  report pending planned work and unexpected submitted work separately with
+  saturation-safe subtraction, so under-submission and over-submission are both
+  observable without signed-count conversions.
+- Behavior coverage belongs in a platform-neutral
+  `tests/renderer/renderer_frame_diagnostics_test.cpp` target depending on
+  `cgpui_renderer`. Structure coverage will require the new leaf/source,
+  aggregate inclusion, non-inline implementation ownership, and focused line
+  limits in `renderer_source_structure_test`.
+- The existing UI runtime diagnostics path confirms the later Step 521 adapter
+  can add renderer diagnostics to `FrameStatistics`/snapshot propagation after
+  `render_view(...)`; Step 515 does not change that path.
+- The Step 515 implementation is behavior-green before documentation: exact,
+  under-submitted, over-submitted, and empty work comparisons pass, and the
+  architecture gate accepts the focused header/source ownership. The remaining
+  test exit is the intentional five-document gate.
+- Phase E Step 515 adds `RendererFrameWork` and `RendererFrameDiagnostics` to
+  compare planned and submitted renderer work across command and batch counts
+  with saturation-safe pending and unexpected counts.
+  Step 516 upload-byte accounting is next.
+- Step 515 final Windows verification is 196/196 after a complete debug build.
+  WSL still has no installed distribution, so the platform-neutral API is
+  compile-verified only on Windows in this slice and remains covered by the
+  final Phase E Linux gate.

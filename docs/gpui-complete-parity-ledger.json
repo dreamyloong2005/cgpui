@@ -1367,8 +1367,18 @@
       "xmake.lua"
     ],
     "phase_e_step_514_remaining_gap": "Step 515 renderer diagnostics",
+    "phase_e_step_515_surface": "Phase E Step 515 adds RendererFrameWork and RendererFrameDiagnostics to compare planned and submitted renderer work across command and batch counts with saturation-safe pending and unexpected counts. Step 516 upload-byte accounting is next.",
+    "phase_e_step_515_sources": [
+      "include/cgpui/renderer/renderer_frame_diagnostics.hpp",
+      "src/renderer/renderer_frame_diagnostics.cpp",
+      "include/cgpui/renderer/renderer_reports.hpp",
+      "tests/renderer/renderer_frame_diagnostics_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_515_remaining_gap": "Step 516 upload-byte accounting",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 515 renderer diagnostics"
+    "phase_e_current_handoff": "Step 516 upload-byte accounting"
   },
   "categories": [
     "application_and_app_context",

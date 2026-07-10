@@ -1698,7 +1698,8 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 512 adds a focused Vulkan present pacing policy: MAILBOX with FIFO fallback, saturation-safe swapchain image depth, and one CPU frame in flight via shared fence/acquire waits. Step 513 next-frame scheduling is next.
 - [x] Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.
 - [x] Phase E Step 514 closes the batching and frame scheduling integration closeout for Steps 507-513, freezing reusable geometry buffers through next-frame scheduling. Step 515 renderer diagnostics is next.
-- [ ] Steps 515-522: Add renderer diagnostics that compare planned work with
+- [x] Phase E Step 515 adds `RendererFrameWork` and `RendererFrameDiagnostics` to compare planned and submitted renderer work across command and batch counts with saturation-safe pending and unexpected counts. Step 516 upload-byte accounting is next.
+- [ ] Steps 516-522: Continue renderer diagnostics that compare planned work with
   submitted GPU work, including upload bytes, draw counts, dropped resources,
   and frame timing.
 - [ ] Steps 523-530: Add pixel/screenshot tests for text, rounded rects,
