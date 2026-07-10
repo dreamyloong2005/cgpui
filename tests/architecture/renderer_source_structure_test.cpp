@@ -363,6 +363,8 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/renderer/renderer_frame_diagnostics.hpp");
   const std::string renderer_frame_diagnostics_source =
       read_source("src/renderer/renderer_frame_diagnostics.cpp");
+  const std::string renderer_frame_upload_diagnostics_source =
+      read_source("src/renderer/renderer_frame_upload_diagnostics.cpp");
   const std::string glyph_atlas =
       read_source("include/cgpui/renderer/glyph_atlas.hpp");
   const std::string glyph_atlas_types =
@@ -453,6 +455,12 @@ int main(int argc, char** argv) {
                 "RendererFrameDiagnostics::exact_match()") ||
       !contains(renderer_frame_diagnostics_source,
                 "compare_renderer_frame_work(") ||
+      !contains(renderer_frame_diagnostics,
+                "struct RendererUploadByteCounts") ||
+      !contains(renderer_frame_diagnostics,
+                "renderer_upload_byte_counts(") ||
+      !contains(renderer_frame_upload_diagnostics_source,
+                "renderer_upload_byte_counts(") ||
       contains(renderer_frame, "struct RendererFrameDiagnostics") ||
       !contains(glyph_atlas_types, "struct GlyphAtlasEntry") ||
       !contains(glyph_uploads, "struct GlyphAtlasUploadBatch") ||
@@ -509,7 +517,8 @@ int main(int argc, char** argv) {
       line_count(renderer_geometry_reports) > 220 ||
       line_count(renderer_frame_reports) > 220 ||
       line_count(renderer_frame_diagnostics) > 100 ||
-      line_count(renderer_frame_diagnostics_source) > 100) {
+      line_count(renderer_frame_diagnostics_source) > 100 ||
+      line_count(renderer_frame_upload_diagnostics_source) > 100) {
     return 53;
   }
 

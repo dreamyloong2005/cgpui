@@ -19972,3 +19972,39 @@
   verification remains unavailable because `wsl.exe -l -q` returned success
   with an empty distribution list; Linux diagnostics coverage remains in the
   final Phase E gate.
+
+## 2026-07-10 Phase E Step 516 Upload-Byte Accounting
+
+- Started from clean tracked `master` at Step 515 commit `f9c51fe7`; only the
+  existing untracked `.vscode/` directory remains.
+- Traced public glyph/image upload batches and Vulkan staging. Chosen semantics
+  count per-region payload bytes, exclude glyph alignment padding, preserve
+  glyph/image subtotals, and saturate safely on overflow.
+- Step 516 will extend the existing diagnostics leaf plus a focused upload
+  implementation and platform-neutral behavior target. Live Vulkan snapshots
+  remain deferred to Step 520.
+- Added the Step 516 RED target. Its first build failed on the intentionally
+  missing upload batch includes, `RendererUploadByteCounts`, upload-byte work
+  field, comparison deltas, and accumulator function.
+- Extended the focused diagnostics model, added the separate upload-accounting
+  implementation, and froze its ownership in renderer structure coverage.
+- The implementation builds; Step 515 diagnostics and renderer structure pass,
+  while the new target reaches exit 60 only at the expected Step 516
+  five-document evidence gate.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 517
+  draw-count accounting is active.
+- The first post-documentation run remained at exit 60 because `findings.md`
+  split `glyph and image upload payload bytes` across a line. Exact phrase
+  audit found no other missing evidence; normalized that entry.
+- Step 516 upload-byte behavior, the Step 515 comparison regression, and
+  renderer source structure now pass 3/3.
+- Expanded Step 516 verification passed 8/8 across upload diagnostics, the
+  base comparison, renderer structure, public header cleanliness, parity
+  ledger, glyph uploads, image uploads, and Vulkan report/solid regressions.
+- JSON parsing, all five Step 516 phrases, focused 49/48/51/165 line counts,
+  and `git diff --check` pass.
+- The complete Windows debug build succeeded, then the full suite passed
+  197/197.
+- Final source/document review found no broad renderer implementation or Vulkan
+  handles in the public diagnostics leaf. WSL remains unavailable because
+  `wsl.exe -l -q` returned an empty distribution list.

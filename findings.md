@@ -9184,3 +9184,28 @@
   WSL still has no installed distribution, so the platform-neutral API is
   compile-verified only on Windows in this slice and remains covered by the
   final Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 516 Upload-Byte Accounting
+
+- Glyph and image upload batches already carry explicit per-region
+  `byte_size`. Those region sizes represent planned buffer-to-image payload;
+  glyph staging's 4-byte buffer-offset padding is allocation detail and should
+  not be counted as submitted upload content.
+- Step 516 will add `upload_byte_count` to `RendererFrameWork`, matching
+  pending/unexpected byte deltas to `RendererFrameDiagnostics`, and a focused
+  `RendererUploadByteCounts` accumulator split into glyph-atlas, image, and
+  total bytes.
+- The accumulator must use saturation-safe `size_t` addition and expose whether
+  saturation occurred. Counting region metadata permits deterministic overflow
+  tests without allocating impossible payload vectors.
+- Implementation ownership stays in a new focused
+  `src/renderer/renderer_frame_upload_diagnostics.cpp`; the existing comparison
+  source only gains the new delta dimension. Vulkan state integration remains
+  Step 520.
+- Phase E Step 516 adds `RendererUploadByteCounts` for
+  glyph and image upload payload bytes, saturation-safe upload-byte accounting, and
+  pending/unexpected upload-byte comparison.
+  Step 517 draw-count accounting is next.
+- Step 516 final Windows verification is 197/197 after a complete debug build.
+  The public leaf remains backend-neutral; WSL/Linux verification remains in
+  the final Phase E gate because no distribution is installed.

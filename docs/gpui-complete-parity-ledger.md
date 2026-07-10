@@ -642,6 +642,7 @@ consume C: drive space again.
 - Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.
 - Phase E Step 514 closes the batching and frame scheduling integration closeout for Steps 507-513, freezing reusable geometry buffers through next-frame scheduling. Step 515 renderer diagnostics is next.
 - Phase E Step 515 adds `RendererFrameWork` and `RendererFrameDiagnostics` to compare planned and submitted renderer work across command and batch counts with saturation-safe pending and unexpected counts. Step 516 upload-byte accounting is next.
+- Phase E Step 516 adds `RendererUploadByteCounts` for glyph and image upload payload bytes, saturation-safe upload-byte accounting, and pending/unexpected upload-byte comparison. Step 517 draw-count accounting is next.
 
 ## Categories
 

@@ -730,13 +730,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.
 - Phase E Step 514 closes the batching and frame scheduling integration closeout for Steps 507-513, freezing reusable geometry buffers through next-frame scheduling. Step 515 renderer diagnostics is next.
 - Phase E Step 515 adds `RendererFrameWork` and `RendererFrameDiagnostics` to compare planned and submitted renderer work across command and batch counts with saturation-safe pending and unexpected counts. Step 516 upload-byte accounting is next.
+- Phase E Step 516 adds `RendererUploadByteCounts` for glyph and image upload payload bytes, saturation-safe upload-byte accounting, and pending/unexpected upload-byte comparison. Step 517 draw-count accounting is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-515 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-516 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -792,11 +793,12 @@ Windows/Linux core API is stable enough for parity work.
   repeated requests into one platform redraw, plus the audit-only Steps 507-513
   batching and frame scheduling integration closeout, plus focused planned and
   submitted renderer work comparison with saturation-safe pending and
-  unexpected command/batch counts.
-- In progress: Step 516 upload-byte accounting.
-- Step 516 boundary: extend the focused renderer diagnostics model with planned
-  and submitted upload bytes without adding live Vulkan snapshot propagation.
-- Pending bands: Steps 516-522 diagnostics; Steps 523-530 pixel
+  unexpected command/batch counts, plus saturation-safe glyph/image upload
+  payload-byte accounting and planned/submitted byte deltas.
+- In progress: Step 517 draw-count accounting.
+- Step 517 boundary: add primitive-aware planned and submitted draw counts to
+  the focused diagnostics model without recording live Vulkan submissions yet.
+- Pending bands: Steps 517-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full

@@ -13,7 +13,9 @@ namespace {
 
 bool RendererFrameDiagnostics::exact_match() const {
   return pending_batch_count == 0 && unexpected_batch_count == 0 &&
-         pending_command_count == 0 && unexpected_command_count == 0;
+         pending_command_count == 0 && unexpected_command_count == 0 &&
+         pending_upload_byte_count == 0 &&
+         unexpected_upload_byte_count == 0;
 }
 
 RendererFrameDiagnostics compare_renderer_frame_work(
@@ -34,6 +36,12 @@ RendererFrameDiagnostics compare_renderer_frame_work(
       .unexpected_command_count = saturating_difference(
           submitted_work.command_count,
           planned_work.command_count),
+      .pending_upload_byte_count = saturating_difference(
+          planned_work.upload_byte_count,
+          submitted_work.upload_byte_count),
+      .unexpected_upload_byte_count = saturating_difference(
+          submitted_work.upload_byte_count,
+          planned_work.upload_byte_count),
   };
 }
 
