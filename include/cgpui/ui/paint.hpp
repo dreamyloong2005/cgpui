@@ -45,6 +45,9 @@ struct RoundedRect {
   Rect rect;
   Color color;
   BorderRadii radius;
+  bool fill_enabled = true;
+  std::optional<Color> border_color;
+  float border_width = 0.0F;
 };
 
 struct BoxShadowPaint {
@@ -121,6 +124,17 @@ class PaintList {
   void pop_metadata();
   void fill_rect(Rect rect, Color color);
   void fill_rounded_rect(Rect rect, Color color, BorderRadii radius);
+  void fill_stroked_rounded_rect(
+      Rect rect,
+      Color fill_color,
+      BorderRadii radius,
+      Color border_color,
+      float border_width);
+  void stroke_rounded_rect(
+      Rect rect,
+      Color border_color,
+      BorderRadii radius,
+      float border_width);
   void draw_box_shadow(Rect bounds, BoxShadow shadow, BorderRadii radius = {});
   void fill_text(
       Rect bounds,
@@ -155,6 +169,14 @@ class PaintList {
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
  private:
+  void append_rounded_rect(
+      Rect rect,
+      Color fill_color,
+      BorderRadii radius,
+      bool fill_enabled,
+      std::optional<Color> border_color,
+      float border_width);
+
   std::vector<PaintCommand> commands_;
   std::vector<Rect> clip_stack_;
   std::vector<PaintMetadata> metadata_stack_;

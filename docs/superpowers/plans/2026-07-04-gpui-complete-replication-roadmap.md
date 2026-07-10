@@ -1549,8 +1549,13 @@ draw calls for the Windows/Linux renderer.
   geometry keeps separate fill-color and border-color inner rings, a border
   outer ring, and a zero-coverage fringe while fill-only geometry stays
   compact. Step 482 owns fill variants and rounded-rectangle band closeout.
-- [ ] Phase E Step 482: Complete rounded-rect rendering with fill variants and
-  close the band.
+- [x] Phase E Step 482 closes rounded rectangle fill variants across public
+  paint commands, styled boxes, render submission, diagnostics, and Vulkan
+  geometry. Fill-only, fill-plus-stroke, and stroke-only commands share focused
+  paint modules; uniform styled borders collapse to one rounded draw while
+  nonuniform edges retain their fallback. Vulkan stroke-only geometry omits
+  invisible fill vertices and indices. Step 483 starts clip-stack command
+  recording.
 - [ ] Steps 483-490: Implement clip stack, scissor, stencil or shader clip
   strategy, nested opacity, transform composition, and z/layer ordering in
   actual command recording.

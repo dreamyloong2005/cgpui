@@ -58,23 +58,6 @@ void PaintList::fill_rect(Rect rect, Color color) {
                                           : metadata_stack_.back()});
 }
 
-void PaintList::fill_rounded_rect(Rect rect, Color color, BorderRadii radius) {
-  commands_.push_back(PaintCommand{
-      .kind = PaintCommandKind::rounded_rect,
-      .solid_rect = SolidRect{.rect = rect, .color = color},
-      .rounded_rect =
-          RoundedRect{
-              .rect = rect,
-              .color = color,
-              .radius = radius,
-          },
-      .clip_rect = current_clip_rect_for(clip_stack_),
-      .clip_stack = clip_stack_record_for(clip_stack_),
-      .composition_stack = composition_stack_record_for(metadata_stack_),
-      .metadata = metadata_stack_.empty() ? PaintMetadata{}
-                                          : metadata_stack_.back()});
-}
-
 std::span<const PaintCommand> PaintList::commands() const {
   return commands_;
 }

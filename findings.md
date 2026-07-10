@@ -149,6 +149,12 @@
   contour derives from the Step 480 radii, and duplicated inner rings preserve a
   hard fill/border color boundary without adding a blended transition band.
   Step 482 should connect fill variants and close the rounded-rectangle band.
+- Phase E Step 482 closes rounded rectangle fill variants without forcing
+  nonuniform style edges into a uniform renderer contract. `PaintList` owns
+  fill-only, fill-plus-stroke, and stroke-only APIs in a focused source leaf;
+  styled boxes coalesce only positive uniform widths, and Vulkan stroke-only geometry
+  uses three perimeter rings with no center/fill ring. Step 483 can
+  start clip-stack command recording over the completed rounded draw path.
 
 ## 2026-07-10 Phase E Step 466 Glyph Atlas Integration Closeout
 

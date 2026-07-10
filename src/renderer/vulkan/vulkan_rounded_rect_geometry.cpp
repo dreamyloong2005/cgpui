@@ -1,6 +1,7 @@
 #include "vulkan_rounded_rect_geometry_internal.hpp"
 
 #include "vulkan_rounded_rect_contour_internal.hpp"
+#include "vulkan_rounded_rect_indices_internal.hpp"
 #include "vulkan_rounded_rect_radii_internal.hpp"
 #include "vulkan_rounded_rect_stroke_internal.hpp"
 
@@ -25,38 +26,6 @@ BorderRadii expanded_radii(BorderRadii radii, float amount) {
       radii.bottom_left + amount);
 }
 
-void append_fan_indices(
-    std::vector<std::uint32_t>& indices,
-    std::uint32_t center,
-    std::uint32_t first_ring,
-    std::size_t perimeter_count) {
-  for (std::size_t index = 0; index < perimeter_count; ++index) {
-    const auto current = static_cast<std::uint32_t>(index);
-    const auto next = static_cast<std::uint32_t>((index + 1) % perimeter_count);
-    indices.insert(
-        indices.end(), {center, first_ring + current, first_ring + next});
-  }
-}
-
-void append_ring_indices(
-    std::vector<std::uint32_t>& indices,
-    std::uint32_t first_inner,
-    std::uint32_t first_outer,
-    std::size_t perimeter_count) {
-  for (std::size_t index = 0; index < perimeter_count; ++index) {
-    const auto current = static_cast<std::uint32_t>(index);
-    const auto next = static_cast<std::uint32_t>((index + 1) % perimeter_count);
-    indices.insert(
-        indices.end(),
-        {first_inner + current,
-         first_outer + current,
-         first_outer + next,
-         first_inner + current,
-         first_outer + next,
-         first_inner + next});
-  }
-}
-
 } // namespace
 
 VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
@@ -77,8 +46,20 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
     }
     const bool stroked =
         draw.border_color.has_value() && draw.border_width > 0.0F;
-    total_vertex_count += perimeter_count * (stroked ? 4 : 2) + 1;
-    total_index_count += perimeter_count * (stroked ? 15 : 9);
+    if (!draw.fill_enabled && !stroked) {
+      continue;
+    }
+    if (draw.fill_enabled) {
+      total_vertex_count += perimeter_count + 1;
+      total_index_count += perimeter_count * 3;
+    }
+    if (stroked) {
+      total_vertex_count += perimeter_count * 3;
+      total_index_count += perimeter_count * 12;
+    } else {
+      total_vertex_count += perimeter_count;
+      total_index_count += perimeter_count * 6;
+    }
     ++total_draw_count;
   }
   geometry.vertices.reserve(total_vertex_count);
@@ -95,23 +76,41 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
         vulkan_resolve_rounded_rect_radii(draw.rect.size, draw.radius).radii;
     const VulkanRoundedRectStrokeResolution stroke =
         vulkan_resolve_rounded_rect_stroke(draw, radii);
+    if (!draw.fill_enabled && !stroke.enabled) {
+      continue;
+    }
+
     const std::size_t first_vertex = geometry.vertices.size();
     const std::size_t first_index = geometry.indices.size();
-    const Point center{
-        .x = draw.rect.origin.x + draw.rect.size.width * 0.5F,
-        .y = draw.rect.origin.y + draw.rect.size.height * 0.5F,
-    };
-    vulkan_append_rounded_rect_vertex(
-        geometry.vertices, center, draw.color, 1.0F);
+    std::uint32_t center_index = 0;
+    std::uint32_t first_fill = 0;
+    std::uint32_t first_stroke_inner = 0;
+    std::uint32_t first_stroke_outer = 0;
+    std::uint32_t first_fringe = 0;
 
-    if (stroke.enabled) {
+    if (draw.fill_enabled) {
+      center_index = static_cast<std::uint32_t>(geometry.vertices.size());
+      vulkan_append_rounded_rect_vertex(
+          geometry.vertices,
+          Point{
+              .x = draw.rect.origin.x + draw.rect.size.width * 0.5F,
+              .y = draw.rect.origin.y + draw.rect.size.height * 0.5F,
+          },
+          draw.color,
+          1.0F);
+      first_fill = static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
           geometry.vertices,
-          stroke.inner_rect,
-          stroke.inner_radii,
+          stroke.enabled ? stroke.inner_rect : draw.rect,
+          stroke.enabled ? stroke.inner_radii : radii,
           segments,
           draw.color,
           1.0F);
+    }
+
+    if (stroke.enabled) {
+      first_stroke_inner =
+          static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
           geometry.vertices,
           stroke.inner_rect,
@@ -119,8 +118,11 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
           segments,
           stroke.color,
           1.0F);
+      first_stroke_outer =
+          static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
           geometry.vertices, draw.rect, radii, segments, stroke.color, 1.0F);
+      first_fringe = static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
           geometry.vertices,
           expanded_rect(draw.rect, fringe_width),
@@ -129,8 +131,7 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
           stroke.color,
           0.0F);
     } else {
-      vulkan_append_rounded_rect_contour(
-          geometry.vertices, draw.rect, radii, segments, draw.color, 1.0F);
+      first_fringe = static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
           geometry.vertices,
           expanded_rect(draw.rect, fringe_width),
@@ -140,28 +141,20 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
           0.0F);
     }
 
-    const auto center_index = static_cast<std::uint32_t>(first_vertex);
-    const auto first_fill = static_cast<std::uint32_t>(first_vertex + 1);
-    append_fan_indices(
-        geometry.indices, center_index, first_fill, perimeter_count);
+    if (draw.fill_enabled) {
+      vulkan_append_rounded_rect_fan_indices(
+          geometry.indices, center_index, first_fill, perimeter_count);
+    }
     if (stroke.enabled) {
-      const auto first_stroke_inner =
-          static_cast<std::uint32_t>(first_vertex + 1 + perimeter_count);
-      const auto first_stroke_outer = static_cast<std::uint32_t>(
-          first_vertex + 1 + perimeter_count * 2);
-      const auto first_fringe = static_cast<std::uint32_t>(
-          first_vertex + 1 + perimeter_count * 3);
-      append_ring_indices(
+      vulkan_append_rounded_rect_ring_indices(
           geometry.indices,
           first_stroke_inner,
           first_stroke_outer,
           perimeter_count);
-      append_ring_indices(
+      vulkan_append_rounded_rect_ring_indices(
           geometry.indices, first_stroke_outer, first_fringe, perimeter_count);
     } else {
-      const auto first_fringe =
-          static_cast<std::uint32_t>(first_vertex + 1 + perimeter_count);
-      append_ring_indices(
+      vulkan_append_rounded_rect_ring_indices(
           geometry.indices, first_fill, first_fringe, perimeter_count);
     }
     geometry.draws.push_back(VulkanRoundedRectDrawRange{

@@ -1163,6 +1163,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_rounded_rect_contour_internal.hpp");
   const std::string rounded_rect_contour =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_contour.cpp");
+  const std::string rounded_rect_indices_header = read_source(
+      "src/renderer/vulkan/vulkan_rounded_rect_indices_internal.hpp");
+  const std::string rounded_rect_indices =
+      read_source("src/renderer/vulkan/vulkan_rounded_rect_indices.cpp");
   const std::string rounded_rect_antialiasing_header = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp");
   const std::string rounded_rect_antialiasing = read_source(
@@ -1180,6 +1184,8 @@ int main(int argc, char** argv) {
       line_count(rounded_rect_vertex_header) > 30 ||
       line_count(rounded_rect_contour_header) > 50 ||
       line_count(rounded_rect_contour) > 120 ||
+      line_count(rounded_rect_indices_header) > 40 ||
+      line_count(rounded_rect_indices) > 70 ||
       line_count(rounded_rect_antialiasing_header) > 50 ||
       line_count(rounded_rect_antialiasing) > 50 ||
       line_count(rounded_rect_radii_header) > 40 ||
@@ -1194,10 +1200,18 @@ int main(int argc, char** argv) {
                 "append_corner_arc(") ||
       !contains(rounded_rect_contour,
                 "vulkan_append_rounded_rect_contour(") ||
+      !contains(rounded_rect_indices,
+                "vulkan_append_rounded_rect_fan_indices(") ||
+      !contains(rounded_rect_indices,
+                "vulkan_append_rounded_rect_ring_indices(") ||
       !contains(rounded_rect_geometry,
                 "vulkan_build_rounded_rect_geometry(") ||
       !contains(rounded_rect_geometry,
                 "vulkan_append_rounded_rect_contour(") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_append_rounded_rect_fan_indices(") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_append_rounded_rect_ring_indices(") ||
       !contains(rounded_rect_antialiasing_header,
                 "struct VulkanRoundedRectAntialiasingPolicy") ||
       !contains(rounded_rect_antialiasing,
@@ -1216,6 +1230,7 @@ int main(int argc, char** argv) {
                 "vulkan_resolve_rounded_rect_radii(") ||
       !contains(rounded_rect_geometry,
                 "vulkan_resolve_rounded_rect_stroke(") ||
+      contains(rounded_rect_geometry, "indices.insert(") ||
       contains(rounded_rect_geometry, "append_corner_arc(") ||
       contains(command_recording, "append_corner_arc(")) {
     return 68;
@@ -1311,6 +1326,8 @@ int main(int argc, char** argv) {
     return 23;
   }
   if (!contains(report_geometry, "vulkan_tessellate_rounded_rects(") ||
+      !contains(report_geometry,
+                ".fill_enabled = rounded_rect.fill_enabled") ||
       !contains(report_geometry, "vulkan_build_text_selection_geometry(") ||
       !contains(report_geometry, "vulkan_build_text_caret_geometry(") ||
       contains(report_geometry, "vulkan_plan_glyph_atlas_uploads(")) {

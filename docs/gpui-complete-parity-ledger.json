@@ -891,8 +891,31 @@
       "xmake.lua"
     ],
     "phase_e_step_481_remaining_gap": "Step 482 owns fill variants and rounded-rectangle band closeout",
+    "phase_e_step_482_surface": "Phase E Step 482 closes rounded rectangle fill variants. PaintList exposes fill-only, fill-plus-stroke, and stroke-only commands; uniform styled borders become one rounded draw, nonuniform borders retain edge fallback, and render submission plus tessellation diagnostics preserve the fill/stroke fields. Vulkan stroke-only geometry emits only the inset border, outer border, and coverage fringe rings, skipping invisible fill vertices and indices. Step 483 starts clip-stack command recording.",
+    "phase_e_step_482_sources": [
+      "include/cgpui/renderer/renderer_commands.hpp",
+      "include/cgpui/renderer/renderer_geometry_reports.hpp",
+      "include/cgpui/ui/paint.hpp",
+      "src/ui/paint_rounded_rect.cpp",
+      "src/ui/styled_box_paint_internal.hpp",
+      "src/ui/styled_box_paint.cpp",
+      "src/ui/ui_paint_internal.hpp",
+      "src/ui/render_view_commands.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_indices_internal.hpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_indices.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
+      "src/renderer/vulkan/vulkan_report_geometry.cpp",
+      "tests/renderer/vulkan_rounded_rect_fill_variants_test.cpp",
+      "tests/ui/element_test.cpp",
+      "tests/ui/render_view_test.cpp",
+      "tests/ui/paint_snapshot.hpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_482_remaining_gap": "Step 483 starts clip-stack command recording",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 482 fill variants and rounded-rectangle band closeout"
+    "phase_e_current_handoff": "Phase E Step 483 clip-stack command recording"
   },
   "categories": [
     "application_and_app_context",

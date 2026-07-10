@@ -24,6 +24,7 @@ struct RoundedRectDraw {
   Rect rect;
   Color color;
   BorderRadii radius;
+  bool fill_enabled = true;
   std::optional<Color> border_color;
   float border_width = 0.0F;
   std::optional<Rect> clip_rect;

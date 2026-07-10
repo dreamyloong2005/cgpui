@@ -334,13 +334,15 @@ class RoundedBoxView final : public cgpui::View {
         .opacity = 0.75F,
         .transform = cgpui::AffineTransform::translation(6.0F, 8.0F),
     });
-    paint_list.fill_rounded_rect(
+    paint_list.fill_stroked_rounded_rect(
         cgpui::Rect{
             .origin = {.x = 4.0F, .y = 5.0F},
             .size = {.width = 30.0F, .height = 16.0F},
         },
         cgpui::Color{.r = 0.4F, .g = 0.5F, .b = 0.6F, .a = 1.0F},
-        cgpui::BorderRadii::corners(2.0F, 3.0F, 4.0F, 5.0F));
+        cgpui::BorderRadii::corners(2.0F, 3.0F, 4.0F, 5.0F),
+        cgpui::Color{.r = 0.9F, .g = 0.2F, .b = 0.1F, .a = 1.0F},
+        2.0F);
     paint_list.pop_metadata();
     paint_list.pop_clip();
   }
@@ -754,6 +756,8 @@ int main() {
   const cgpui::RoundedRectDraw& rounded = rounded_frame.last_rounded_rect;
   if (rounded.rect.origin.x != 4.0F || rounded.rect.origin.y != 5.0F ||
       rounded.rect.size.width != 30.0F || rounded.radius.top_right != 3.0F ||
+      !rounded.fill_enabled || !rounded.border_color.has_value() ||
+      rounded.border_color->r != 0.9F || rounded.border_width != 2.0F ||
       !rounded.clip_rect.has_value() ||
       rounded.clip_rect->size.width != 48.0F ||
       rounded.metadata.opacity != 0.75F ||
@@ -768,7 +772,7 @@ int main() {
       rounded_frame.rounded_rects,
       rounded_frame.texts);
   const std::string rounded_expected =
-      "0 rounded_rect rect=(4.0,5.0 30.0x16.0) color=0.400,0.500,0.600,1.000 radius=2.0,3.0,4.0,5.0 clip=(1.0,2.0 48.0x32.0) opacity=0.750 transform=[1.0,0.0,0.0,1.0,6.0,8.0]\n";
+      "0 rounded_rect rect=(4.0,5.0 30.0x16.0) color=0.400,0.500,0.600,1.000 radius=2.0,3.0,4.0,5.0 border=0.900,0.200,0.100,1.000 border_width=2.0 clip=(1.0,2.0 48.0x32.0) opacity=0.750 transform=[1.0,0.0,0.0,1.0,6.0,8.0]\n";
   if (rounded_snapshot != rounded_expected) {
     return 14;
   }

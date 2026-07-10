@@ -1839,11 +1839,23 @@ int main() {
 
   const std::string ui_paint_internal_header =
       read_source("src/ui/ui_paint_internal.hpp");
-  if (!contains(ui_paint_internal_header, "compose_paint_metadata(") ||
+  const std::string styled_box_paint_header =
+      read_source("src/ui/styled_box_paint_internal.hpp");
+  const std::string styled_box_paint_source =
+      read_source("src/ui/styled_box_paint.cpp");
+  if (line_count(ui_paint_internal_header) > 100 ||
+      line_count(styled_box_paint_header) > 30 ||
+      line_count(styled_box_paint_source) > 140 ||
+      !contains(ui_paint_internal_header, "compose_paint_metadata(") ||
       !contains(ui_paint_internal_header, "record_clip_stack_statistics(") ||
       !contains(ui_paint_internal_header,
                 "record_composition_stack_statistics(") ||
-      !contains(ui_paint_internal_header, "paint_styled_box_base(") ||
+      !contains(ui_paint_internal_header,
+                "styled_box_paint_internal.hpp") ||
+      !contains(styled_box_paint_header, "paint_styled_box_base(") ||
+      !contains(styled_box_paint_source, "paint_styled_box_base(") ||
+      !contains(styled_box_paint_source, "paint_nonuniform_border(") ||
+      contains(ui_paint_internal_header, "paint_nonuniform_border(") ||
       contains(ui_paint_internal_header, "event_kind_for(") ||
       contains(ui_paint_internal_header,
                "platform_accessibility_update_from(")) {
@@ -1853,9 +1865,11 @@ int main() {
   const std::vector<const char*> source_files{
       "src/ui/paint.cpp",
       "src/ui/paint_clip.cpp",
+      "src/ui/paint_rounded_rect.cpp",
       "src/ui/paint_text.cpp",
       "src/ui/paint_rich_text.cpp",
       "src/ui/paint_image.cpp",
+      "src/ui/styled_box_paint.cpp",
       "src/ui/element_paint.cpp",
       "src/ui/render_view.cpp",
       "src/ui/render_view_commands.cpp",
@@ -1974,6 +1988,8 @@ int main() {
 
   const std::string paint_source = read_source("src/ui/paint.cpp");
   const std::string paint_clip_source = read_source("src/ui/paint_clip.cpp");
+  const std::string paint_rounded_rect_source =
+      read_source("src/ui/paint_rounded_rect.cpp");
   const std::string paint_text_source = read_source("src/ui/paint_text.cpp");
   const std::string paint_rich_text_source =
       read_source("src/ui/paint_rich_text.cpp");
@@ -1982,11 +1998,22 @@ int main() {
       read_source("src/ui/paint_shadow.cpp");
   if (line_count(paint_source) > 90 ||
       !contains(paint_source, "PaintList::fill_rect(") ||
-      !contains(paint_source, "PaintList::fill_rounded_rect(") ||
       !contains(paint_source, "effective_nested_clip_rect(") ||
+      contains(paint_source, "PaintList::fill_rounded_rect(") ||
       contains(paint_source, "PaintList::fill_text(") ||
       contains(paint_source, "PaintList::draw_image(")) {
     return 81;
+  }
+  if (line_count(paint_rounded_rect_source) > 90 ||
+      !contains(paint_rounded_rect_source,
+                "PaintList::fill_rounded_rect(") ||
+      !contains(paint_rounded_rect_source,
+                "PaintList::fill_stroked_rounded_rect(") ||
+      !contains(paint_rounded_rect_source,
+                "PaintList::stroke_rounded_rect(") ||
+      contains(paint_rounded_rect_source, "PaintList::fill_text(") ||
+      contains(paint_rounded_rect_source, "StyledElement::paint(")) {
+    return 150;
   }
   if (line_count(paint_clip_source) > 80 ||
       !contains(paint_clip_source, "Rect intersect_clip_rect(") ||
@@ -2148,6 +2175,10 @@ int main() {
       !contains(render_view_commands_source, "draw_text_caret(") ||
       !contains(render_view_commands_source, "draw_text(") ||
       !contains(render_view_commands_source, "draw_rounded_rect(") ||
+      !contains(render_view_commands_source,
+                ".fill_enabled = rect.fill_enabled") ||
+      !contains(render_view_commands_source,
+                ".border_color = rect.border_color") ||
       contains(render_view_commands_source, "StyledElement::paint(")) {
     return 59;
   }

@@ -453,6 +453,13 @@ consume C: drive space again.
   emits distinct fill-color and border-color inner rings, a full-coverage border
   outer ring, and a zero-coverage fringe without enlarging the fill-only path.
 - Handoff: Phase E Step 482 fill variants and rounded-rectangle band closeout.
+- Phase E Step 482 closes rounded rectangle fill variants. `PaintList` exposes
+  fill-only, fill-plus-stroke, and stroke-only commands; uniform styled borders
+  become one rounded draw, nonuniform borders retain edge fallback, and render
+  submission plus tessellation diagnostics preserve the fill/stroke fields.
+  Vulkan stroke-only geometry emits only the inset border, outer border, and
+  coverage fringe rings, skipping invisible fill vertices and indices.
+- Handoff: Phase E Step 483 clip-stack command recording.
 
 ## Categories
 

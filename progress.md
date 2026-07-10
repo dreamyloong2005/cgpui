@@ -18710,3 +18710,46 @@
 - A final JSON handoff diagnostic used a stale top-level key after parsing the
   ledger successfully; verified the live object layout and current Step 482
   handoff without changing the ledger.
+
+## 2026-07-10 Phase E Step 482 Rounded Rectangle Fill Variants And Closeout
+
+- Started from clean tracked `master` at
+  `08e7261c feat: stroke vulkan rounded rects`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 482 will add fill-only, fill-plus-stroke, and stroke-only paint variants,
+  coalesce uniform styled borders into one rounded rectangle command, preserve
+  nonuniform edge fallback, skip invisible fill geometry, and close the rounded
+  rectangle band before Step 483 clip-stack recording.
+- Added `vulkan_rounded_rect_fill_variants_test`. Two sandboxed build attempts
+  stopped on xmake's global VulkanSDK package lock; after confirming no stale
+  process and allowing global package-cache access, compilation reached the
+  expected RED for the missing paint APIs and `fill_enabled` transport.
+- Two focused header reads also used incompatible PowerShell `-Raw` and
+  `-TotalCount` switches; repeated them with `-TotalCount` only.
+- Added focused rounded-paint and styled-box-paint source modules, transported
+  fill/stroke state through render submission and diagnostics, extracted index
+  assembly, and made Vulkan stroke-only geometry omit fill vertices/indices.
+- The first expanded gate passed renderer/UI structure, render submission,
+  legacy geometry reports, and all rounded rectangle regressions except the
+  expected documentation gate. `element_test` still expected four edge commands
+  for uniform borders; updated its clip, button-order, and snapshot cases for the
+  new single-command path.
+- After updating the intentional uniform-border expectations, 13 behavior,
+  renderer/UI structure, render-submission, diagnostics, and rounded-rectangle
+  regression tests passed; the fill-variants test exited 50 only at its
+  documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with rounded rectangle fill variants, compact stroke-only geometry, the band
+  closeout, and the Step 483 clip-stack handoff.
+- The first post-documentation run remained at exit 50 because `findings.md`
+  split the exact `stroke-only geometry` audit phrase across a line break;
+  normalized the wrapping.
+- Focused Windows Step 482 verification passed 14/14: fill variants, stroke,
+  radius normalization, anti-aliasing, base geometry, buffers, indexed
+  recording, pipeline/live-frame submission, render submission, styled-box
+  behavior, renderer/UI structure, and parity ledger.
+- The complete Windows debug build succeeded, then the full test suite passed
+  163/163 with `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared rounded paint and geometry remain in the
+  final Phase E Linux gate.

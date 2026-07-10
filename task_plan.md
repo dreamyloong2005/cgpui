@@ -605,13 +605,18 @@ Windows/Linux core API is stable enough for parity work.
   radii derive an inset stroke contour, and stroked geometry emits separate fill,
   border, and zero-coverage rings while the fill-only path stays compact. Step 482
   owns fill variants and rounded-rectangle band closeout.
+- Phase E Step 482 closes rounded rectangle fill variants. Public paint records
+  now carry fill-only, fill-plus-stroke, and stroke-only state; uniform styled
+  borders coalesce into one rounded draw, nonuniform edges retain fallback, and
+  Vulkan stroke-only geometry skips the invisible fill. Step 483 starts
+  clip-stack command recording.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-481 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-482 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -627,9 +632,10 @@ Windows/Linux core API is stable enough for parity work.
   rectangle shader pipeline and swapchain-owned resources, plus validated
   indexed rounded rectangle command recording, plus the coverage-fringe
   anti-aliasing geometry and shader path, plus CSS-style radius normalization,
-  plus inset border-stroke contour geometry.
-- In progress: Step 482 fill variants and rounded-rectangle band closeout.
-- Pending bands: Step 482 rounded rectangles; Steps 483-490 clip, opacity,
+  plus inset border-stroke contour geometry, plus rounded paint fill variants,
+  uniform styled-border coalescing, and compact stroke-only geometry.
+- In progress: Step 483 clip-stack command recording.
+- Pending bands: Steps 483-490 clip, opacity,
   transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -713,6 +719,11 @@ Windows/Linux core API is stable enough for parity work.
 | The expanded Step 481 regression gate failed the focused geometry structure assertion because it still required `append_corner_arc` in the geometry orchestrator | Step 481 first regression gate | Update the older focused test to require arc sampling in the new contour leaf, forbid it in geometry/recording, and retain one-shot total buffer reservation |
 | A Step 481 line-count diagnostic repeated the known PowerShell empty-pipe parser failure by piping directly from `foreach` | Step 481 final checks | Assign the loop output to a variable before `Format-Table`; the JSON, diff, build, and focused test gates were unaffected |
 | A final Step 481 JSON diagnostic parsed the ledger successfully but tried to print the handoff through a nonexistent `implementation_inventory` key | Step 481 final checks | Inspect the live top-level keys and verify `phase_e_current_handoff` under the existing `phase_d_text_evidence` object instead of repeating the stale path |
+| Two Step 482 build attempts could not create xmake's global VulkanSDK package lock inside the workspace sandbox | Step 482 RED | Confirm no xmake/compiler process remained, then rerun the build with approved access to the global package cache/lock |
+| `vulkan_rounded_rect_fill_variants_test` failed to compile because rounded fill/stroke PaintList APIs and `fill_enabled` transport did not exist | Step 482 RED | Expected RED; add focused rounded-paint and styled-box-paint modules, renderer transport, and stroke-only geometry |
+| Two exploratory Step 482 reads combined incompatible PowerShell `Get-Content -Raw` and `-TotalCount` switches | Step 482 boundary discovery | Use `-TotalCount` alone for focused header reads; no source or build state changed |
+| The first expanded Step 482 gate failed `element_test` because uniform-border tests still expected four solid edge commands | Step 482 first regression gate | Update hidden-overflow, button paint-order, and widget snapshot expectations to one fill-plus-stroke rounded command while retaining clip and child-order assertions |
+| The first post-documentation Step 482 test remained at exit 50 because `findings.md` split the exact `stroke-only geometry` phrase across a line break | Step 482 documentation gate | Keep the shared evidence phrase contiguous without changing the fill-variant conclusion |
 
 ## Definition Of Done For This 20-Step Goal
 

@@ -2825,7 +2825,7 @@ int test_styled_element_hidden_overflow_attaches_bounds_clip_metadata() {
   element->paint(paint_list);
 
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 6) {
+  if (commands.size() != 2) {
     return 131;
   }
   for (const cgpui::PaintCommand& command : commands) {
@@ -2838,7 +2838,12 @@ int test_styled_element_hidden_overflow_attaches_bounds_clip_metadata() {
     }
   }
 
-  return commands[5].solid_rect.color.b == 0.3F ? 0 : 133;
+  return commands[0].kind == cgpui::PaintCommandKind::rounded_rect &&
+                 commands[0].rounded_rect.border_color.has_value() &&
+                 commands[0].rounded_rect.border_width == 2.0F &&
+                 commands[1].solid_rect.color.b == 0.3F
+             ? 0
+             : 133;
 }
 
 int test_styled_element_hidden_overflow_uses_explicit_clip_rect_metadata() {
@@ -4842,7 +4847,7 @@ int test_button_widget_paints_style_box_before_child() {
   cgpui::PaintList paint_list;
   element->paint(paint_list);
   const std::span<const cgpui::PaintCommand> commands = paint_list.commands();
-  if (commands.size() != 6) {
+  if (commands.size() != 2) {
     return 348;
   }
   if (commands[0].kind != cgpui::PaintCommandKind::rounded_rect) {
@@ -4853,15 +4858,13 @@ int test_button_widget_paints_style_box_before_child() {
   if (rounded.rect.origin.x != 0.0F || rounded.rect.origin.y != 0.0F ||
       rounded.rect.size.width != 14.0F ||
       rounded.rect.size.height != 12.0F || rounded.color.r != background.r ||
-      rounded.radius.top_left != 5.0F) {
+      rounded.radius.top_left != 5.0F ||
+      !rounded.border_color.has_value() ||
+      rounded.border_color->r != border.r || rounded.border_width != 2.0F) {
     return 350;
   }
-  if (commands[1].solid_rect.color.r != border.r ||
-      commands[4].solid_rect.color.b != border.b) {
-    return 351;
-  }
 
-  const cgpui::SolidRect& child_rect = commands[5].solid_rect;
+  const cgpui::SolidRect& child_rect = commands[1].solid_rect;
   return child_rect.color.r == child_color.r &&
                  child_rect.rect.origin.x == 3.0F &&
                  child_rect.rect.origin.y == 3.0F &&
@@ -4905,15 +4908,11 @@ int test_widget_paint_command_stream_matches_snapshot() {
   const std::string snapshot =
       snapshot_paint_commands(paint_list.commands());
   const std::string expected =
-      "0 rounded_rect rect=(0.0,0.0 16.0x16.0) color=0.078,0.118,0.157,1.000 radius=3.0,3.0,3.0,3.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "1 solid_rect rect=(0.0,0.0 16.0x1.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "2 solid_rect rect=(15.0,1.0 1.0x14.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "3 solid_rect rect=(0.0,15.0 16.0x1.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "4 solid_rect rect=(0.0,1.0 1.0x14.0) color=0.196,0.235,0.275,1.000 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "5 text bounds=(2.0,2.0 12.0x12.0) color=0.863,0.902,0.941,1.000 content=\"OK\" font=Snapshot size=12.0 device_size=12.0 glyphs=2 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "6 text_selection rect=(9.0,0.0 27.0x18.0) color=0.220,0.420,0.800,0.380 range=1..4 size=18.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "7 text bounds=(0.0,0.0 45.0x18.0) color=0.039,0.078,0.118,1.000 content=\"input\" font=SnapshotInput size=18.0 device_size=18.0 glyphs=5 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
-      "8 text_caret rect=(36.0,0.0 1.0x18.0) color=0.039,0.078,0.118,1.000 byte=4 size=18.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n";
+      "0 rounded_rect rect=(0.0,0.0 16.0x16.0) color=0.078,0.118,0.157,1.000 radius=3.0,3.0,3.0,3.0 border=0.196,0.235,0.275,1.000 border_width=1.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "1 text bounds=(2.0,2.0 12.0x12.0) color=0.863,0.902,0.941,1.000 content=\"OK\" font=Snapshot size=12.0 device_size=12.0 glyphs=2 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "2 text_selection rect=(9.0,0.0 27.0x18.0) color=0.220,0.420,0.800,0.380 range=1..4 size=18.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "3 text bounds=(0.0,0.0 45.0x18.0) color=0.039,0.078,0.118,1.000 content=\"input\" font=SnapshotInput size=18.0 device_size=18.0 glyphs=5 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n"
+      "4 text_caret rect=(36.0,0.0 1.0x18.0) color=0.039,0.078,0.118,1.000 byte=4 size=18.0 clip=none opacity=1.000 transform=[1.0,0.0,0.0,1.0,0.0,0.0]\n";
 
   return snapshot == expected ? 0 : 372;
 }

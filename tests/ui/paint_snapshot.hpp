@@ -130,6 +130,15 @@ void append_snapshot_text(
             << snapshot_float(command.rounded_rect.radius.top_right) << ","
             << snapshot_float(command.rounded_rect.radius.bottom_right) << ","
             << snapshot_float(command.rounded_rect.radius.bottom_left);
+        if (!command.rounded_rect.fill_enabled) {
+          out << " fill=none";
+        }
+        if (command.rounded_rect.border_color.has_value()) {
+          out << " border="
+              << snapshot_color(*command.rounded_rect.border_color)
+              << " border_width="
+              << snapshot_float(command.rounded_rect.border_width);
+        }
         break;
       case cgpui::PaintCommandKind::box_shadow:
         out << "box_shadow";
@@ -187,6 +196,13 @@ void append_snapshot_text(
         << snapshot_float(rect.radius.top_right) << ","
         << snapshot_float(rect.radius.bottom_right) << ","
         << snapshot_float(rect.radius.bottom_left);
+    if (!rect.fill_enabled) {
+      out << " fill=none";
+    }
+    if (rect.border_color.has_value()) {
+      out << " border=" << snapshot_color(*rect.border_color)
+          << " border_width=" << snapshot_float(rect.border_width);
+    }
     append_snapshot_metadata(out, rect.clip_rect, rect.metadata);
     out << "\n";
   }
