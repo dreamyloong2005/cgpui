@@ -9,6 +9,7 @@ namespace cgpui {
 struct VulkanImageVertex {
   std::array<float, 2> position{};
   std::array<float, 2> image_uv{};
+  std::array<float, 4> color{};
 };
 
 struct VulkanImageShaderModules {
@@ -38,7 +39,7 @@ vulkan_image_shader_stage_create_infos(
 
 [[nodiscard]] VkVertexInputBindingDescription
 vulkan_image_vertex_binding_description();
-[[nodiscard]] std::array<VkVertexInputAttributeDescription, 2>
+[[nodiscard]] std::array<VkVertexInputAttributeDescription, 3>
 vulkan_image_vertex_attribute_descriptions();
 [[nodiscard]] VkPipelineInputAssemblyStateCreateInfo
 vulkan_image_pipeline_input_assembly_state();

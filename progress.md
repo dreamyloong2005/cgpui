@@ -18872,6 +18872,47 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 495 Image Tint And Composition Opacity
+
+- Started from clean tracked `master` at
+  `99e54f52 feat: record vulkan image draws`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed public tint metadata already reaches `ImageDraw`; the missing path
+  is image vertex/shader consumption and single-application composition
+  opacity.
+- Chosen modular boundary is a focused private image-color resolver plus an
+  explicit position/UV/color vertex ABI. Default tint is opaque white, authored
+  tint multiplies sampled RGBA, and precomposed opacity multiplies tint alpha
+  exactly once. Step 496 owns image cache lifetime.
+- Added `vulkan_image_tint_opacity_test` and its xmake target. The RED build
+  failed exactly as intended because the focused
+  `vulkan_image_color_internal.hpp` boundary did not exist.
+- Added the focused image-color resolver, explicit RGBA vertex attribute,
+  vertex/fragment tint transport, sampled-texture multiplication, and renderer
+  structure guards without expanding broad command or presentation files.
+- The Step 495 target builds successfully and direct execution reaches exit
+  `50`, proving behavior and structure before the expected documentation gate.
+- Recompiled optimized image shaders to 289 vertex words and 141 fragment
+  words. Both pass `spirv-val`, and the embedded arrays match the compiled
+  output word-for-word. Temporary shader files were removed.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with
+  multiplicative image tint, composition opacity single application, and the
+  Step 496 image cache lifetime handoff.
+- The first documentation GREEN remained at exit `50` because the Markdown
+  ledger split `single application` across a line break; normalized the exact
+  phrase without changing semantics.
+- The complete Windows debug build succeeds. Focused image/tint/opacity,
+  texture resource/upload/descriptor, live-frame, widget, structure, and parity
+  regressions pass 10/10.
+- The complete Windows debug test suite passes 176/176 with
+  `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` reports zero installed
+  distributions. Linux shader/tint verification remains in the final Phase E
+  gate.
+- Final Step 495 behavior/structure/ledger gates pass 3/3. The five-phrase,
+  five-document audit passes 25/25, ledger JSON parses, new and expanded image
+  modules remain within structure limits, and `git diff --check` passes.
+
 ## 2026-07-10 Phase E Step 494 Image Pipeline And Draw Recording
 
 - Started from clean tracked `master` at

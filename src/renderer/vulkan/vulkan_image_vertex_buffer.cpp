@@ -2,6 +2,7 @@
 
 #include "vulkan_composition_transform_internal.hpp"
 #include "vulkan_device_internal.hpp"
+#include "vulkan_image_color_internal.hpp"
 
 #include <algorithm>
 #include <cstring>
@@ -12,10 +13,12 @@ namespace {
 VulkanImageVertex make_image_vertex(
     Point position,
     float image_u,
-    float image_v) {
+    float image_v,
+    Color color) {
   return VulkanImageVertex{
       .position = {position.x, position.y},
       .image_uv = {image_u, image_v},
+      .color = {color.r, color.g, color.b, color.a},
   };
 }
 
@@ -45,6 +48,7 @@ void append_image_quad_vertices(
   const float right = left + draw.bounds.size.width;
   const float bottom = top + draw.bounds.size.height;
   const auto uv = image_uv_bounds(draw);
+  const Color color = vulkan_resolve_image_tint(draw);
   const Point top_left_point = vulkan_apply_composed_transform(
       Point{.x = left, .y = top}, draw.metadata, draw.composition_stack);
   const Point top_right_point = vulkan_apply_composed_transform(
@@ -54,13 +58,13 @@ void append_image_quad_vertices(
   const Point bottom_left_point = vulkan_apply_composed_transform(
       Point{.x = left, .y = bottom}, draw.metadata, draw.composition_stack);
   const VulkanImageVertex top_left =
-      make_image_vertex(top_left_point, uv[0], uv[1]);
+      make_image_vertex(top_left_point, uv[0], uv[1], color);
   const VulkanImageVertex top_right =
-      make_image_vertex(top_right_point, uv[2], uv[1]);
+      make_image_vertex(top_right_point, uv[2], uv[1], color);
   const VulkanImageVertex bottom_right =
-      make_image_vertex(bottom_right_point, uv[2], uv[3]);
+      make_image_vertex(bottom_right_point, uv[2], uv[3], color);
   const VulkanImageVertex bottom_left =
-      make_image_vertex(bottom_left_point, uv[0], uv[3]);
+      make_image_vertex(bottom_left_point, uv[0], uv[3], color);
   vertices.insert(
       vertices.end(),
       {top_left, top_right, bottom_right, top_left, bottom_right, bottom_left});

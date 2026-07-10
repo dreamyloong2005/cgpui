@@ -142,9 +142,10 @@ int test_pipeline_contract_and_shader_binaries() {
   const auto vertex_spirv = cgpui::vulkan_image_vertex_shader_spirv();
   const auto fragment_spirv = cgpui::vulkan_image_fragment_shader_spirv();
   return binding.stride == sizeof(cgpui::VulkanImageVertex) &&
-                 attributes.size() == 2 &&
+                 attributes.size() == 3 &&
                  attributes[0].format == VK_FORMAT_R32G32_SFLOAT &&
                  attributes[1].format == VK_FORMAT_R32G32_SFLOAT &&
+                 attributes[2].format == VK_FORMAT_R32G32B32A32_SFLOAT &&
                  blend.blendEnable == VK_TRUE && !vertex_spirv.empty() &&
                  !fragment_spirv.empty() &&
                  vertex_spirv.front() == 0x07230203U &&

@@ -679,13 +679,18 @@ Windows/Linux core API is stable enough for parity work.
   descriptor. Textures are recorded only when shader-readable or pending upload;
   undefined-layout descriptor-only resources are skipped. Step 495 owns image
   tint and composition opacity.
+- Phase E Step 495 adds multiplicative image tint through a focused private
+  color resolver and an explicit RGBA vertex attribute. An absent tint resolves
+  to opaque white; composition opacity reuses the precomposed resolver for
+  single application to tint alpha before the fragment shader multiplies the
+  sampled texel. Step 496 image cache lifetime is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-494 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-495 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -717,9 +722,10 @@ Windows/Linux core API is stable enough for parity work.
   persistent nearest/linear samplers, per-texture descriptor set binding, and a
   production image graphics pipeline with transformed source-UV vertices,
   sampling descriptor selection, stable interleaving, and actual Vulkan image
-  draw recording.
-- In progress: Step 495 image tint and composition opacity.
-- Pending bands: Steps 495-498 images; Steps 499-506 SVG; Steps
+  draw recording, plus multiplicative image tint and single-application
+  composition opacity through the explicit RGBA vertex/shader path.
+- In progress: Step 496 image cache lifetime.
+- Pending bands: Steps 496-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -732,6 +738,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The Step 495 documentation gate remained at exit 50 because the Markdown ledger split `single application` across lines | Step 495 first documentation GREEN | Keep the exact audit phrase contiguous; all behavior and structure checks already passed |
+| `vulkan_image_tint_opacity_test` failed to compile because the focused image-color header did not exist | Step 495 RED | Expected RED; add the private tint/opacity resolver, color vertex ABI, and shader multiplication path |
 | The first Step 494 unreadable-texture guard patch attached the command-recording call hunk to the draw-recording file and was rejected atomically | Step 494 final Vulkan layout audit | Split planner, call site, focused test, and structure assertions into exact file patches; no partial changes were applied |
 | Step 494 focused regressions found `vulkan_presentation.cpp` at 153 lines and three documents split `actual Vulkan image draw recording` | Step 494 first documentation GREEN | Compact only the command-buffer argument layout back under 150 lines and keep the exact audit phrase contiguous; behavior tests otherwise passed 16/18 |
 | A Step 494 structure diagnostic repeated the known direct `foreach`-to-pipe PowerShell parser failure | Step 494 exit-61 diagnosis | Assign the loop output to `$rows` before formatting; do not reuse the direct pipeline form again |

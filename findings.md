@@ -1,5 +1,35 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 495 Image Tint And Composition Opacity
+
+- Step 494 commit `99e54f52` leaves tracked `master` clean with only the
+  existing untracked `.vscode/` directory.
+- Public image tint already propagates through `ImageBuilder`, `ImageElement`,
+  paint metadata, and `ImageDraw`; Step 495 should add production GPU
+  consumption rather than broaden the public widget surface.
+- The focused ownership boundary is a private `vulkan_image_color` leaf that
+  resolves an absent tint to opaque white and reuses
+  `vulkan_apply_composed_opacity(...)` so precomposed opacity is applied once to
+  tint alpha.
+- `VulkanImageVertex` should gain an explicit RGBA color attribute. The vertex
+  shader forwards that color and the fragment shader performs multiplicative
+  image tint over the sampled full-RGBA texel. Step 496 retains image cache
+  lifetime ownership.
+- Phase E Step 495 now resolves absent tint to opaque white, applies composition
+  opacity through the existing precomposed helper for single application to
+  tint alpha, and carries the result in every image vertex. The shaders perform
+  multiplicative image tint against the sampled full-RGBA texel.
+- Optimized embedded SPIR-V was regenerated at 289 vertex words and 141
+  fragment words, matches `glslc -O` output word-for-word, and passes
+  `spirv-val`. Step 496 image cache lifetime is next.
+- The complete Windows debug build succeeds, focused regressions pass 10/10,
+  and the full suite passes 176/176. WSL remains unavailable because no
+  distribution is installed, so Linux verification stays required at Phase E
+  closeout.
+- Final Step 495 audits pass: behavior/structure/ledger 3/3, required phrases
+  25/25, valid parity JSON, module line counts 9/14/59/114/104/183 within their
+  limits, and clean diff hygiene.
+
 ## 2026-07-10 Phase E Step 494 Image Pipeline And Draw Recording
 
 - Step 493 commit `c1fe890c` leaves tracked `master` clean with only the existing

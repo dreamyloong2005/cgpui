@@ -580,6 +580,13 @@ consume C: drive space again.
   have a pending upload in the same command buffer; first-frame descriptor-only
   resources are skipped instead of sampling `VK_IMAGE_LAYOUT_UNDEFINED`.
 - Handoff: Step 495 image tint and composition opacity.
+- Phase E Step 495 adds multiplicative image tint with an explicit RGBA image
+  vertex attribute. The vertex shader forwards the tint and the fragment shader
+  multiplies it by the sampled full-RGBA texel; an absent tint is opaque white.
+- Composition opacity reuses `vulkan_apply_composed_opacity(...)` for single application
+  to tint alpha, preserving authored RGB and texture alpha through
+  the existing straight-alpha blend pipeline.
+- Handoff: Step 496 image cache lifetime.
 
 ## Categories
 

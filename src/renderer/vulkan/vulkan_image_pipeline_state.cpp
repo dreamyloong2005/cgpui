@@ -12,7 +12,7 @@ VkVertexInputBindingDescription vulkan_image_vertex_binding_description() {
   };
 }
 
-std::array<VkVertexInputAttributeDescription, 2>
+std::array<VkVertexInputAttributeDescription, 3>
 vulkan_image_vertex_attribute_descriptions() {
   return {
       VkVertexInputAttributeDescription{
@@ -26,6 +26,12 @@ vulkan_image_vertex_attribute_descriptions() {
           .binding = 0,
           .format = VK_FORMAT_R32G32_SFLOAT,
           .offset = offsetof(VulkanImageVertex, image_uv),
+      },
+      VkVertexInputAttributeDescription{
+          .location = 2,
+          .binding = 0,
+          .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+          .offset = offsetof(VulkanImageVertex, color),
       },
   };
 }

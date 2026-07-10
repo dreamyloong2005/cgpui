@@ -1645,8 +1645,13 @@ draw calls for the Windows/Linux renderer.
   `ImageBuilder::sampling(...)` metadata now reaches `ImageDraw`. Draws whose
   texture is neither shader-readable nor pending upload are skipped instead of
   sampling an undefined layout. Step 495 owns image tint and composition opacity.
-- [ ] Steps 495-498: Build image tint/opacity support, cache lifetime, and
-  invalidation.
+- [x] Phase E Step 495 adds multiplicative image tint through an explicit RGBA
+  vertex attribute and sampled-texture multiplication. An absent tint resolves
+  to opaque white, while composition opacity reuses the existing precomposed
+  resolver for single application to tint alpha. Optimized embedded shaders
+  remain validated. Step 496 image cache lifetime is next.
+- [ ] Steps 496-498: Build image cache lifetime, invalidation, and the image
+  integration closeout.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
