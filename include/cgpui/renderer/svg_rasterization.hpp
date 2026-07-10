@@ -42,7 +42,24 @@ struct SvgRasterizationPlan {
   [[nodiscard]] bool ready() const;
 };
 
+enum class SvgRasterizationStatus {
+  ready,
+  invalid_request,
+  invalid_svg,
+  rasterization_failed,
+};
+
+struct SvgRasterizationResult {
+  SvgRasterizationStatus status = SvgRasterizationStatus::invalid_request;
+  SvgRasterizationPlan plan;
+  ImageAsset image;
+
+  [[nodiscard]] bool ready() const;
+};
+
 [[nodiscard]] SvgRasterizationPlan plan_svg_rasterization(
+    const SvgRasterizationRequest& request);
+[[nodiscard]] SvgRasterizationResult rasterize_svg(
     const SvgRasterizationRequest& request);
 
 } // namespace cgpui

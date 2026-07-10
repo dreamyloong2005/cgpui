@@ -1,5 +1,40 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 500 LunaSVG Raster Backend
+
+- Step 499 is committed at `e0b22c04 feat: plan svg rasterization`; tracked
+  `master` is clean with only the existing `.vscode/` directory untracked.
+- The first xrepo install attempt successfully installed PlutoVG, then timed
+  out fetching the GitHub-hosted LunaSVG prebuilt artifact. Before changing
+  backend strategy, inspect the package recipe for a source-build or reachable
+  mirror path.
+- The package recipe has no alternate URL, and the guessed Gitee mirror is not
+  publicly accessible. A checksum-verified codeload tarball in a temporary
+  xmake search directory is the next source-build path.
+- The codeload v3.5.0 tarball matches the xmake recipe SHA-256. Windows tar
+  cannot create the extraction tree under `C:\tmp` in this sandbox, so use a
+  repository-local `.tmp_deps` directory and remove only that created tree
+  after package installation.
+- LunaSVG v3.5.0 was successfully source-built from the checksum-verified local
+  archive. Its API provides length-aware `Document::loadFromData(...)`, sized
+  `renderToBitmap(...)`, and in-place `Bitmap::convertToRGBA()`; third-party
+  types can remain private to one focused backend source.
+- Phase E Step 500 now adds `SvgRasterizationResult` and `rasterize_svg(...)`
+  over LunaSVG v3.5.0. The backend returns
+  plain RGBA pixel output after length-aware parse, sized render, conversion,
+  and stride validation. Step 501 SVG raster cache is next.
+- Focused backend/plan/structure/ledger verification passes 4/4; the public
+  leaf is 65 lines and the LunaSVG backend is 68 lines.
+- On session recovery, the WinGet-linked `rg.exe` again failed to start, so
+  repository searches should continue with PowerShell `Select-String`. The
+  Step 500 tracked diff remains intact and excludes the pre-existing untracked
+  `.vscode/` directory.
+- Step 500 closes with a successful complete Windows debug build and 181/181
+  full-suite result. A fresh final pass also confirms the focused 4/4 gate,
+  30/30 documentation phrases, valid JSON, module line limits, and diff hygiene.
+  WSL still has no registered distribution, so Linux execution remains a hard
+  Phase E closeout gate rather than a Step 500 claim.
+
 ## 2026-07-10 Phase E Step 499 SVG Rasterization Strategy
 
 - Step 498 is committed at

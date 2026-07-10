@@ -1192,8 +1192,18 @@
       "xmake.lua"
     ],
     "phase_e_step_499_remaining_gap": "Step 500 LunaSVG raster backend",
+    "phase_e_step_500_surface": "Phase E Step 500 adds SvgRasterizationResult and rasterize_svg over LunaSVG v3.5.0. The focused backend performs length-aware parsing, renders the planned bitmap dimensions, converts premultiplied storage to plain RGBA pixel output, validates dimensions and stride, and returns an ImageAsset. Step 501 SVG raster cache is next.",
+    "phase_e_step_500_sources": [
+      "include/cgpui/renderer/svg_rasterization.hpp",
+      "src/renderer/svg_rasterization.cpp",
+      "src/renderer/svg_rasterization_lunasvg.cpp",
+      "tests/renderer/svg_lunasvg_rasterization_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_500_remaining_gap": "Step 501 SVG raster cache",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 500 LunaSVG raster backend"
+    "phase_e_current_handoff": "Phase E Step 501 SVG raster cache"
   },
   "categories": [
     "application_and_app_context",

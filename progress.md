@@ -18907,6 +18907,48 @@
   an empty distribution list. SVG planning remains in the final Phase E Linux
   gate.
 
+## 2026-07-10 Phase E Step 500 LunaSVG Raster Backend
+
+- Started from clean tracked `master` at
+  `e0b22c04 feat: plan svg rasterization`; only the existing untracked
+  `.vscode/` directory remains.
+- `xrepo install -y lunasvg` installed PlutoVG successfully but timed out on
+  the GitHub-hosted LunaSVG prebuilt artifact. Inspecting the source-build and
+  mirror paths is next; the selected mature backend remains unchanged.
+- The guessed Gitee mirror path required authentication, so it is not a usable
+  public fallback. Testing the GitHub codeload source endpoint is next.
+- GitHub codeload returned 200 and the downloaded v3.5.0 archive matched the
+  recipe SHA-256 exactly. `tar.exe` could not create its output directory under
+  `C:\tmp`, so extraction will use a dedicated workspace temp directory.
+- Extracted in a repository-local temporary directory, source-built and
+  installed LunaSVG v3.5.0 successfully, confirmed the exact raster API, then
+  safely removed only the agent-created temp tree.
+- Added `svg_lunasvg_rasterization_test`, required LunaSVG in xmake, and wired
+  the renderer package dependency. The RED build failed exactly as intended on
+  the missing Step 500 result/status and `rasterize_svg(...)` API.
+- Added the focused LunaSVG backend with parse, sized render, RGBA conversion,
+  stride validation, and row copies. Backend/structure builds pass and the Step
+  499 regression remains green; the first Step 500 test run still needs its
+  exact exit code classified.
+- Direct execution returned 40, confirming real pixel and invalid-SVG behavior
+  pass and only the expected documentation gate remains.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  production backend evidence and Step 501 cache handoff.
+- Step 500 backend/plan/structure/ledger gates pass 4/4, exact documentation
+  phrases pass 30/30, ledger JSON parses, module line limits pass, and
+  `git diff --check` is clean.
+- Session recovery confirmed the Step 500 implementation and documentation are
+  present in the tracked diff; the following entries record the previous full
+  Windows result and the independent final rechecks performed after recovery.
+- The complete Windows debug build succeeded in the preceding session, and the
+  complete Windows debug test suite passed 181/181 with `xmake test -y -P .`.
+- Final Step 500 rechecks pass focused backend/plan/structure/ledger tests 4/4,
+  exact documentation phrases 30/30, ledger JSON parsing, module line counts
+  65/81/68, and `git diff --check`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared LunaSVG rasterization remains in the final
+  Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 498 Image Integration Closeout
 
 - Started from clean tracked `master` at

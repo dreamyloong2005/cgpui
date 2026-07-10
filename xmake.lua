@@ -4,6 +4,8 @@ set_languages("c++23")
 
 add_rules("mode.debug", "mode.release")
 
+add_requires("lunasvg")
+
 local public_includedirs = "include"
 
 if is_plat("windows") then
@@ -201,6 +203,7 @@ target("cgpui_renderer")
     add_files("src/ui/text_hit_testing.cpp")
     remove_files("src/renderer/renderer_unimplemented.cpp")
     add_deps("cgpui_core")
+    add_packages("lunasvg", {public = true})
     add_includedirs(public_includedirs, {public = true})
 
 target("cgpui_renderer_fallback")
@@ -756,6 +759,15 @@ target("svg_rasterization_plan_test")
     set_rundir(os.projectdir())
     add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
     add_files("tests/renderer/svg_rasterization_plan_test.cpp")
+    add_deps("cgpui_core", "cgpui_renderer")
+    add_includedirs(public_includedirs)
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("svg_lunasvg_rasterization_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/renderer/svg_lunasvg_rasterization_test.cpp")
     add_deps("cgpui_core", "cgpui_renderer")
     add_includedirs(public_includedirs)
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})

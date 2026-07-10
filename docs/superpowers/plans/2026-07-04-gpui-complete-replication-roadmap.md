@@ -1674,8 +1674,14 @@ draw calls for the Windows/Linux renderer.
   `include/cgpui/renderer/svg_rasterization.hpp` leaf. The planner produces an
   explicit RGBA8 output plan with ceil-rounded device pixels and a
   bounded raster byte budget before any backend allocation. Step 500 LunaSVG raster backend is next.
-- [ ] Steps 500-506: Add the LunaSVG raster backend, cache, scaling,
-  recolor/tint, image upload integration, examples, and closeout.
+- [x] Phase E Step 500 adds `SvgRasterizationResult` and `rasterize_svg(...)`
+  over LunaSVG v3.5.0 in a focused backend source. Length-aware parsing and
+  sized bitmap rendering convert premultiplied storage to
+  plain RGBA pixel output before constructing `ImageAsset`, while invalid
+  requests, invalid SVG, and raster failures remain distinct.
+  Step 501 SVG raster cache is next.
+- [ ] Steps 501-506: Add the SVG raster cache, scaling, recolor/tint, image
+  upload integration, examples, and closeout.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
   command reuse, pipeline switches, resource barriers, swapchain recovery, and
   present pacing.

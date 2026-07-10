@@ -709,13 +709,17 @@ Windows/Linux core API is stable enough for parity work.
   a focused renderer leaf. The planner creates an
   explicit RGBA8 output plan with ceil-rounded device dimensions and a
   bounded raster byte budget. Step 500 LunaSVG raster backend is next.
+- Phase E Step 500 adds `SvgRasterizationResult` and `rasterize_svg(...)` over
+  LunaSVG v3.5.0. The focused backend converts the rendered bitmap to
+  plain RGBA pixel output, validates dimensions/stride, and returns an
+  `ImageAsset`. Step 501 SVG raster cache is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-499 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-500 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -752,9 +756,10 @@ Windows/Linux core API is stable enough for parity work.
   120-idle-frame generation cache with fence-safe retention and eviction, plus
   explicit deduplicated image invalidation and same-frame refresh ordering,
   plus the audit-only image integration closeout, plus the explicit SVG
-  rasterization request/plan boundary.
-- In progress: Step 500 LunaSVG raster backend.
-- Pending bands: Steps 500-506 SVG; Steps
+  rasterization request/plan boundary, plus the production LunaSVG raster
+  backend and explicit result status.
+- In progress: Step 501 SVG raster cache.
+- Pending bands: Steps 501-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -767,6 +772,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first broad Step 500 documentation patch did not match the current progress section | Step 500 documentation update | Read the exact Step 500 progress block and apply smaller patches |
+| `svg_lunasvg_rasterization_test` exited 40 after backend/structure builds passed | Step 500 first GREEN | Expected documentation gate; add the six exact backend/result phrases to the five authoritative files |
+| `svg_lunasvg_rasterization_test` could not find the Step 500 result/status API | Step 500 RED | Expected RED; add the result surface and focused LunaSVG parse/render/RGBA backend |
+| `tar.exe` could read the verified archive but could not create `C:\tmp\lunasvg-3.5.0` | Step 500 source extraction | Extract into a dedicated workspace `.tmp_deps` directory, then remove only that agent-created temp tree after installation |
+| The guessed Gitee LunaSVG mirror required authentication and exposed no public v3.5.0 tag | Step 500 dependency install attempt 2 | Test the GitHub codeload source endpoint and, if reachable, use a checksum-verified local search directory for a source build |
+| xrepo installed PlutoVG but timed out downloading the LunaSVG GitHub prebuilt artifact | Step 500 dependency install attempt 1 | Inspect the package recipe/cache and retry a source-build or reachable mirror path instead of changing the backend design |
 | `svg_rasterization_plan_test` failed after the implementation and structure test passed | Step 499 first GREEN | Expected documentation gate; add the six exact Step 499 phrases to the five authoritative files |
 | `xmake build` rejected two positional targets and printed help | Step 499 first GREEN build | Build `svg_rasterization_plan_test` and `renderer_source_structure_test` as separate commands |
 | Step 499 cleanliness scan guessed nonexistent `renderer_header_cleanliness.cpp` | Step 499 structure inventory | List the actual header-cleanliness files and use the existing renderer aggregate coverage |

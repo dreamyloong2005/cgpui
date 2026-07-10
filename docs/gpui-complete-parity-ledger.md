@@ -614,6 +614,11 @@ consume C: drive space again.
   explicit RGBA8 output plan from logical size and DPI scale while enforcing a
   bounded raster byte budget before backend allocation.
 - Handoff: Step 500 LunaSVG raster backend.
+- Phase E Step 500 adds `SvgRasterizationResult` and `rasterize_svg(...)` in
+  `src/renderer/svg_rasterization_lunasvg.cpp` using LunaSVG v3.5.0. The backend
+  parses length-aware markup, renders the Step 499 plan dimensions, converts to
+  plain RGBA pixel output, validates bitmap stride, and returns an `ImageAsset`.
+- Handoff: Step 501 SVG raster cache.
 
 ## Categories
 

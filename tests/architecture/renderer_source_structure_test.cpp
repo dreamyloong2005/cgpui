@@ -125,6 +125,7 @@ int main(int argc, char** argv) {
       "include/cgpui/renderer/image_uploads.hpp",
       "include/cgpui/renderer/svg_rasterization.hpp",
       "src/renderer/svg_rasterization.cpp",
+      "src/renderer/svg_rasterization_lunasvg.cpp",
       "include/cgpui/renderer/glyph_texture_resources.hpp",
       "include/cgpui/renderer/glyph_atlas_production.hpp",
       "include/cgpui/renderer/glyph_cache.hpp",
@@ -334,6 +335,8 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/renderer/svg_rasterization.hpp");
   const std::string svg_rasterization_source =
       read_source("src/renderer/svg_rasterization.cpp");
+  const std::string svg_rasterization_lunasvg =
+      read_source("src/renderer/svg_rasterization_lunasvg.cpp");
   const std::string glyph_texture_resources =
       read_source("include/cgpui/renderer/glyph_texture_resources.hpp");
   const std::string glyph_atlas_production =
@@ -385,7 +388,11 @@ int main(int argc, char** argv) {
       !contains(image_uploads, "struct ImageUploadBatch") ||
       !contains(svg_rasterization, "struct SvgRasterizationRequest") ||
       !contains(svg_rasterization, "struct SvgRasterizationPlan") ||
+      !contains(svg_rasterization, "struct SvgRasterizationResult") ||
       !contains(svg_rasterization_source, "plan_svg_rasterization(") ||
+      !contains(svg_rasterization_lunasvg,
+                "lunasvg::Document::loadFromData(") ||
+      !contains(svg_rasterization_lunasvg, "convertToRGBA()") ||
       !contains(glyph_texture_resources,
                 "class GlyphAtlasTextureResourceState") ||
       !contains(glyph_atlas_production,
@@ -399,6 +406,7 @@ int main(int argc, char** argv) {
       line_count(image_uploads) > 220 ||
       line_count(svg_rasterization) > 90 ||
       line_count(svg_rasterization_source) > 120 ||
+      line_count(svg_rasterization_lunasvg) > 100 ||
       line_count(glyph_texture_resources) > 220 ||
       line_count(glyph_atlas_production) > 220 ||
       line_count(glyph_cache) > 220 ||

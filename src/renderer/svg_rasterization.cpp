@@ -16,6 +16,10 @@ bool SvgRasterizationPlan::ready() const {
   return status == SvgRasterizationPlanStatus::ready;
 }
 
+bool SvgRasterizationResult::ready() const {
+  return status == SvgRasterizationStatus::ready;
+}
+
 SvgRasterizationPlan plan_svg_rasterization(
     const SvgRasterizationRequest& request) {
   SvgRasterizationPlan plan;
