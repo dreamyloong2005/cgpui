@@ -1715,12 +1715,19 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 529 adds real Vulkan opacity pixel coverage for encoding-aware half-red composition over opaque black. Step 530 resize pixel coverage is next.
 - [x] Phase E Step 530 adds persistent-renderer resize pixel coverage across exact 64x64 and 96x48 Win32 client extents, plus an active-display Wayland capture target using the same public API. Step 531 pixel-band closeout is next.
 - [x] Phase E Step 531 closes the pixel-output integration band for Steps 523-530, freezing backend-neutral capture, real Win32 Vulkan text/rounded/image/clip/transform/opacity/resize pixels, corrected top-left shader coordinates, and the active-display Wayland capture target. Step 532 Windows full verification is next.
+- [x] Phase E Step 532 confirms the committed pixel-output closeout on Windows: debug configuration/build succeeds and the complete suite passes 213/213, including all real Vulkan pixel targets. Step 533 WSL full verification is next.
+- [x] Phase E Step 533 confirms the committed pixel-output closeout on WSL Arch Linux: debug configuration/build succeeds and the complete suite passes 203/203, including a real `wayland_frame_pixel_capture_test/default` run on `WAYLAND_DISPLAY=wayland-0`. Step 534 production-path audit is next.
+- [x] Phase E Step 534 audits the production Vulkan path for required glyph, text, rounded-rectangle, clip/composition, image, SVG, batching/scheduling, diagnostics, and pixel-output modules; focused ownership remains intact, presentation/command-recording caps remain 165/180, and GCC 16 image row-length narrowing is resolved explicitly. Step 535 final closeout guard is next.
+- [x] Phase E Step 535 adds `phase_e_final_closeout_test` as the audit-only guard for Steps 459-534, freezing the required production modules, all Phase E integration closeouts, cross-platform verification evidence, structure caps, and the Phase F handoff. Step 536 ledger closeout is next.
+- [x] Phase E Step 536 closes the renderer parity ledger for required Phase E primitives and moves the active handoff to Phase F platform production depth without claiming later optional renderer refinements. Step 537 final Windows/WSL gate is next.
+- [x] Phase E Step 537 passes the final Windows and WSL gates: Windows full debug passes 214/214 and WSL Arch Linux passes 204/204, including active-display Wayland frame pixel capture, with JSON, structure, SPIR-V, line-count, phrase, and diff hygiene audits green. Step 538 Phase E final closeout is next.
+- [x] Phase E final closeout: Steps 531-538 close with `tests/api_parity/phase_e_final_closeout_test.cpp`; Windows full debug suite passes 214/214 and WSL Arch Linux full debug suite passes 204/204, including active-display Wayland pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Windows/Linux Vulkan renderer production path is complete for Phase E primitives, and Phase F Step 539 window lifecycle production depth is next.
 - [x] Steps 518-522: Continue renderer diagnostics that compare planned work with
   submitted GPU work, including upload bytes, draw counts, dropped resources,
   and frame timing.
 - [x] Steps 523-530: Add pixel/screenshot tests for text, rounded rects,
   images, clips, transforms, opacity, and resizing on Windows and Wayland.
-- [ ] Steps 531-538: Run full Windows/WSL verification and mark the Vulkan
+- [x] Steps 531-538: Run full Windows/WSL verification and mark the Vulkan
   renderer production path complete for required primitives.
 
 ## Phase F: Steps 539-618 - Win32 And Wayland Platform Production Depth

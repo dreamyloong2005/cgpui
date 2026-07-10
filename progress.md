@@ -20306,3 +20306,74 @@
 - Focused Step 531 verification passed 12/12. The closeout source is 163 lines;
   JSON parsing, the exact five-document completion phrase, and
   `git diff --check` pass.
+
+## 2026-07-11 Phase E Step 532 Windows Full Verification
+
+- Reconfigured the committed Step 531 baseline for Windows debug, built every
+  target successfully in 3.593 seconds, and passed the complete 213/213 suite
+  in 3.032 seconds.
+- Synchronized the five authoritative documents and advanced the handoff to
+  Step 533 WSL full verification.
+
+## 2026-07-11 Phase E Steps 533-536 Closeout Preparation
+
+- Recovered WSL Arch Linux despite an empty `wsl -l` result; the named
+  distribution runs with GCC 16, xmake 3.0.9, Vulkan, Wayland, and WSLg
+  `WAYLAND_DISPLAY=wayland-0`.
+- Configured against D-drive build/package caches and `/dev/shm/cgpui`, built
+  every Linux target successfully in 1028.801 seconds, and passed the complete
+  203/203 suite in 33.222 seconds.
+- `wayland_frame_pixel_capture_test/default` passed in 0.794 seconds with the
+  live `/run/user/0/wayland-0` socket, proving the active-display capture path
+  rather than the no-display skip.
+- Audited all required Phase E renderer production bands and retained the
+  existing 165-line presentation and 180-line command-recording caps at actual
+  counts 162 and 180.
+- Resolved the GCC 16 image `bufferRowLength` narrowing warning with an explicit
+  `std::uint32_t` conversion inside the focused staging module.
+- Added the audit-only `phase_e_final_closeout_test` and xmake target. The first
+  corrected RED run reached exit 30 only at the expected unchecked closeout
+  documentation gate.
+- The first build command placed `-P` after the target and was rejected; a
+  target name without the `build` task was then interpreted as an invalid task.
+  The supported focused form is `xmake build phase_e_final_closeout_test`.
+- The first guard source check used summary function names and exited 20;
+  matching the real presentation and command-recording entrypoints moved it to
+  the intended documentation gate.
+- Synchronized Steps 533-538 across the roadmap, Markdown/JSON ledger, task
+  plan, findings, and progress before the final host gates.
+
+## 2026-07-11 Phase E Steps 537-538 Final Host Gates
+
+- Reconfigured the final Phase E state for Windows debug, built every target
+  successfully in 7.344 seconds, and passed the complete 214/214 suite in
+  20.563 seconds.
+- Reconfigured the final Phase E state for WSL Arch Linux, built every target
+  successfully in 1681.066 seconds without the GCC 16 image-staging narrowing
+  warning, and passed the complete 204/204 suite in 31.470 seconds.
+- `wayland_frame_pixel_capture_test/default` ran against the live
+  `WAYLAND_DISPLAY=wayland-0` WSLg display and passed in 0.812 seconds, proving
+  the final gate exercised the real Wayland frame capture path.
+- Phase E is complete through Step 538. The renderer production path, final
+  closeout guard, synchronized roadmap/ledgers, and both host gates hand off to
+  Phase F Step 539 window lifecycle production depth.
+
+## 2026-07-11 Phase E Final Audit
+
+- Final JSON parsing, the exact five-document closeout phrase, focused line
+  limits, and `git diff --check` pass. Actual line counts are 162/165 for
+  presentation, 180/180 for command recording, 185/190 for image staging, and
+  139/160 for the final closeout guard.
+- Recompiled all six optimized Vulkan 1.0 image, rounded-rectangle, and text
+  shaders. Every binary passes `spirv-val` and matches its embedded SPIR-V
+  array byte-for-byte at 289/141, 293/155, and 289/212 words respectively.
+- Final focused closeout verification passes 4/4 across the parity ledger,
+  final Phase E guard, pixel-output integration closeout, and renderer source
+  structure tests.
+- Local `rg.exe` execution was denied, so the audit used PowerShell file
+  enumeration. Sandbox access also rejected a new `C:\tmp` directory, so the
+  shader audit used a verified repository-local temporary directory and
+  removed it after validation.
+- The first focused xmake invocation supplied target names and selected no
+  tests. Using the registered `target/default` test names ran the intended
+  four-test suite successfully.

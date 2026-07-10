@@ -138,7 +138,8 @@ VkBufferImageCopy vulkan_image_texture_buffer_image_copy(
       .bufferRowLength =
           upload.stride == upload.width * rgba_bytes_per_pixel
               ? 0U
-              : upload.stride / rgba_bytes_per_pixel,
+              : static_cast<std::uint32_t>(
+                    upload.stride / rgba_bytes_per_pixel),
       .bufferImageHeight = 0,
       .imageSubresource =
           VkImageSubresourceLayers{

@@ -746,13 +746,20 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 529 adds real Vulkan opacity pixel coverage for encoding-aware half-red composition over opaque black. Step 530 resize pixel coverage is next.
 - Phase E Step 530 adds persistent-renderer resize pixel coverage across exact 64x64 and 96x48 Win32 client extents, plus an active-display Wayland capture target using the same public API. Step 531 pixel-band closeout is next.
 - Phase E Step 531 closes the pixel-output integration band for Steps 523-530, freezing backend-neutral capture, real Win32 Vulkan text/rounded/image/clip/transform/opacity/resize pixels, corrected top-left shader coordinates, and the active-display Wayland capture target. Step 532 Windows full verification is next.
+- Phase E Step 532 confirms the committed pixel-output closeout on Windows: debug configuration/build succeeds and the complete suite passes 213/213, including all real Vulkan pixel targets. Step 533 WSL full verification is next.
+- Phase E Step 533 confirms the committed pixel-output closeout on WSL Arch Linux: debug configuration/build succeeds and the complete suite passes 203/203, including a real `wayland_frame_pixel_capture_test/default` run on `WAYLAND_DISPLAY=wayland-0`. Step 534 production-path audit is next.
+- Phase E Step 534 audits the production Vulkan path for required glyph, text, rounded-rectangle, clip/composition, image, SVG, batching/scheduling, diagnostics, and pixel-output modules; focused ownership remains intact, presentation/command-recording caps remain 165/180, and GCC 16 image row-length narrowing is resolved explicitly. Step 535 final closeout guard is next.
+- Phase E Step 535 adds `phase_e_final_closeout_test` as the audit-only guard for Steps 459-534, freezing the required production modules, all Phase E integration closeouts, cross-platform verification evidence, structure caps, and the Phase F handoff. Step 536 ledger closeout is next.
+- Phase E Step 536 closes the renderer parity ledger for required Phase E primitives and moves the active handoff to Phase F platform production depth without claiming later optional renderer refinements. Step 537 final Windows/WSL gate is next.
+- Phase E Step 537 passes the final Windows and WSL gates: Windows full debug passes 214/214 and WSL Arch Linux passes 204/204, including active-display Wayland frame pixel capture, with JSON, structure, SPIR-V, line-count, phrase, and diff hygiene audits green. Step 538 Phase E final closeout is next.
+- Phase E final closeout: Steps 531-538 close with `tests/api_parity/phase_e_final_closeout_test.cpp`; Windows full debug suite passes 214/214 and WSL Arch Linux full debug suite passes 204/204, including active-display Wayland pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Windows/Linux Vulkan renderer production path is complete for Phase E primitives, and Phase F Step 539 window lifecycle production depth is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
-- Status: in_progress
+- Status: complete
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-531 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-538 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -825,10 +832,11 @@ Windows/Linux core API is stable enough for parity work.
   transforms, opacity, and resize through real Win32 Vulkan output, with a
   matching active-display Wayland capture target and corrected top-left Vulkan
   vertex-shader coordinates.
-- In progress: Step 532 Windows full verification.
-- Step 532 boundary: rerun the complete Windows debug build and suite against
-  the committed pixel-output closeout baseline.
-- Pending band: Steps 532-538 full verification and closeout.
+- Completed closeout: WSL full verification, the production-path audit, final
+  closeout guard, ledger synchronization, and final Windows/WSL gates.
+- Final host evidence: Windows full debug passes 214/214; WSL Arch Linux full
+  debug passes 204/204, including active-display Wayland frame pixel capture.
+- Next handoff: Phase F Step 539 window lifecycle production depth.
 - Steps 524-530 Windows gate: focused 13/13, full debug build, full 212/212,
   JSON and 35/35 phrase audits, exact embedded SPIR-V comparison, structure
   limits, and diff hygiene pass. WSL remains unavailable with no distribution.
@@ -842,6 +850,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| `xmake build phase_e_final_closeout_test -P .` placed the project option after the target, and invoking the target name as a task was also rejected | Step 535 focused build | Use the repository-supported `xmake build phase_e_final_closeout_test` form from the project directory |
+| The first final closeout guard run exited at production-path code 20 because it checked summary function names rather than the real entrypoints | Step 535 first RED | Freeze `VulkanRendererState::present_frame(...)` and `record_vulkan_frame_command_buffer(...)`; the corrected guard then reached the intended documentation exit 30 |
 | The first combined embedded-SPIR-V patch assumed identical line wrapping for the rounded array and was rejected atomically | Pixel-band shader synchronization | Re-read the exact array formatting and patch the rounded operand pair with its own local context; no partial changes were applied |
 | Image diagnostics showed vertically flipped quadrants; asymmetric coordinate review found all three Vulkan vertex shaders used OpenGL-style Y mapping with a positive Vulkan viewport | Steps 524-530 pixel diagnosis | Correct text/rounded/image NDC Y mapping, regenerate embedded SPIR-V, and use asymmetric pixel assertions so coordinate inversion cannot pass through overlapping center samples |
 | Initial pixel-band focused run passed 5/7; image and resize returned only aggregate failure codes | Steps 524-530 first GREEN | Add focused failure diagnostics for sampled RGBA values and capture dimensions, then diagnose each mismatch independently |
