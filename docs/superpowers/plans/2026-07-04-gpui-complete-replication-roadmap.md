@@ -1744,6 +1744,7 @@ not protocol/test skeletons.
 
 - [x] Phase F Step 539 adds a public window lifecycle snapshot with compatible defaults and real Win32/Wayland native-created, initial-configure, close-requested, and display-state reporting, including registered Wayland wrapper forwarding. Step 540 activation and focus production behavior is next.
 - [x] Phase F Step 540 makes activation and focus state-before-event observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/`WM_KILLFOCUS` and on Wayland through xdg activated configures plus keyboard enter/leave, with lifecycle snapshots matching callback state. Step 541 resize and scale-change production behavior is next.
+- [x] Phase F Step 541 makes resize and scale state-before-event observable on Win32, and adds production Wayland `wl_output` scale tracking, surface enter/leave handling, buffer-scale updates, logical-to-framebuffer conversion, and real dynamic scale/resize coverage. Step 542 close policy production behavior is next.
 - [ ] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

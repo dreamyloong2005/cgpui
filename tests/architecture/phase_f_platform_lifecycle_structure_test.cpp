@@ -215,7 +215,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 541 resize and scale-change")) {
+          "\"phase_f_step_540_remaining_gap\": \"Step 541 resize and scale-change")) {
     return 13;
   }
   return 0;

@@ -9516,3 +9516,26 @@
 - The existing Wayland test compositor can drive activated true/false configure
   states and keyboard enter/leave without adding new helper APIs.
 - Phase F Step 540 makes activation and focus state-before-event observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/`WM_KILLFOCUS` and on Wayland through xdg activated configures plus keyboard enter/leave, with lifecycle snapshots matching callback state. Step 541 resize and scale-change production behavior is next.
+
+## 2026-07-11 Phase F Step 541 Resize And Scale Audit
+
+- Win32 already updates `WindowState` before emitting `WindowResized` for both
+  `WM_SIZE` and `WM_DPICHANGED`, but the existing DPI test only compares the
+  event value after dispatch. Step 541 needs a callback-time state-order test
+  covering both size and DPI transitions.
+- Wayland xdg configure already acknowledges a real resize and stores the new
+  size before `WindowResized`, but the backend fixes scale at `1.0F` and has no
+  `wl_output` binding, `wl_surface.enter/leave` listener, output-scale update,
+  or `wl_surface_set_buffer_scale` path.
+- Wayland xdg toplevel sizes are logical surface dimensions. Production scale
+  handling must retain logical size separately, derive framebuffer pixels as
+  logical size times the active integer output scale, and emit resize state
+  only after both values are updated.
+- The modular ownership boundary is a private output-scale registry owned by
+  `WaylandApplication`, a focused window surface-scale module owned by
+  `WaylandWindow`, and thin registry/window-creation wiring. The broad
+  application and window entry files should not absorb the new behavior.
+- Multi-output behavior should choose the maximum scale of entered outputs,
+  apply it with `wl_surface_set_buffer_scale`, and react to dynamic
+  `wl_output.scale` changes through an application-to-window notification.
+- Phase F Step 541 makes resize and scale state-before-event observable on Win32, and adds production Wayland `wl_output` scale tracking, surface enter/leave handling, buffer-scale updates, logical-to-framebuffer conversion, and real dynamic scale/resize coverage. Step 542 close policy production behavior is next.

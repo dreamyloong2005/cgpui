@@ -667,6 +667,7 @@ consume C: drive space again.
 - Phase E final closeout: Steps 531-538 close with `tests/api_parity/phase_e_final_closeout_test.cpp`; Windows full debug suite passes 214/214 and WSL Arch Linux full debug suite passes 204/204, including active-display Wayland pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Windows/Linux Vulkan renderer production path is complete for Phase E primitives, and Phase F Step 539 window lifecycle production depth is next.
 - Phase F Step 539 adds a public window lifecycle snapshot with compatible defaults and real Win32/Wayland native-created, initial-configure, close-requested, and display-state reporting, including registered Wayland wrapper forwarding. Step 540 activation and focus production behavior is next.
 - Phase F Step 540 makes activation and focus state-before-event observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/`WM_KILLFOCUS` and on Wayland through xdg activated configures plus keyboard enter/leave, with lifecycle snapshots matching callback state. Step 541 resize and scale-change production behavior is next.
+- Phase F Step 541 makes resize and scale state-before-event observable on Win32, and adds production Wayland `wl_output` scale tracking, surface enter/leave handling, buffer-scale updates, logical-to-framebuffer conversion, and real dynamic scale/resize coverage. Step 542 close policy production behavior is next.
 
 ## Categories
 

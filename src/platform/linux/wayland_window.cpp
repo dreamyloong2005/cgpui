@@ -8,13 +8,14 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
     xdg_wm_base* shell,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
-    bool text_input_available) {
+    bool text_input_available,
+    WaylandOutputScaleLookup output_scale_lookup) {
   auto window = std::unique_ptr<WaylandWindow>(
       new WaylandWindow(display, std::move(callback), WindowState{
           .framebuffer_size = descriptor.size,
           .scale = DpiScale{1.0F},
           .close_requested = false,
-      }));
+      }, std::move(output_scale_lookup)));
   window->set_text_input_available(text_input_available);
 
   auto initialized = window->initialize(compositor, shell, descriptor);
@@ -29,8 +30,13 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
 WaylandWindow::WaylandWindow(
     wl_display* display,
     PlatformEventCallback callback,
-    WindowState state)
-    : display_(display), callback_(std::move(callback)), state_(state) {}
+    WindowState state,
+    WaylandOutputScaleLookup output_scale_lookup)
+    : display_(display),
+      callback_(std::move(callback)),
+      state_(state),
+      logical_size_(state.framebuffer_size),
+      output_scale_lookup_(std::move(output_scale_lookup)) {}
 
 WaylandWindow::~WaylandWindow() {
   if (toplevel_ != nullptr) {
@@ -110,6 +116,13 @@ Result<void> WaylandWindow::initialize(
         ErrorCode::window_creation_failed,
         "wl_compositor_create_surface failed"));
   }
+  static const wl_surface_listener output_listener{
+      .enter = &WaylandWindow::handle_surface_enter,
+      .leave = &WaylandWindow::handle_surface_leave,
+      .preferred_buffer_scale = nullptr,
+      .preferred_buffer_transform = nullptr,
+  };
+  wl_surface_add_listener(surface_, &output_listener, this);
 
   xdg_surface_ = xdg_wm_base_get_xdg_surface(shell, surface_);
   if (xdg_surface_ == nullptr) {

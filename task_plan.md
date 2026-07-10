@@ -865,7 +865,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 540 evidence: real Win32 and Wayland tests observe activated, focused,
   blurred, and deactivated transitions with matching snapshots inside callbacks;
   the shared lifecycle structure guard freezes message/configure ownership.
-- In progress: Step 541 resize and scale-change production behavior.
+- Completed: Phase F Step 541 makes resize and scale state-before-event observable on Win32, and adds production Wayland `wl_output` scale tracking, surface enter/leave handling, buffer-scale updates, logical-to-framebuffer conversion, and real dynamic scale/resize coverage. Step 542 close policy production behavior is next.
+- Step 541 evidence: Win32 callback-time tests match `WindowState` during size
+  and DPI events; the Wayland test compositor publishes a real output global,
+  drives dynamic scale 2 plus xdg resize, and observes matching framebuffer
+  state and `wl_surface_set_buffer_scale(2)`.
+- In progress: Step 542 close policy production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

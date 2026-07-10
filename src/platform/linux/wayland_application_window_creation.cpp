@@ -32,7 +32,10 @@ Result<std::unique_ptr<PlatformWindow>> WaylandApplication::create_window(
       shell_,
       descriptor,
       std::move(callback),
-      wayland_text_input_available(*text_input_));
+      wayland_text_input_available(*text_input_),
+      [this](wl_output* output) {
+        return output_scales_.scale_for(output);
+      });
   if (!window) {
     return std::unexpected(window.error());
   }

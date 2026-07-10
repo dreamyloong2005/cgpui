@@ -12,8 +12,10 @@ void WaylandWindow::record_toplevel_configure_state(
   pending_configure_.pending_toplevel_state =
       parse_xdg_toplevel_states(states);
   if (pending_configure_.pending_size) {
-    state_.framebuffer_size =
-        Size{static_cast<float>(width), static_cast<float>(height)};
+    logical_size_ = Size{
+        static_cast<float>(width),
+        static_cast<float>(height)};
+    update_framebuffer_size();
     if (configured_) {
       resize_pending_surface_configure_ = true;
     }

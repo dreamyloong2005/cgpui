@@ -155,4 +155,12 @@ void wayland_window_focus_changed(WaylandWindow& window, bool focused) {
   window.focus_changed(focused);
 }
 
+void wayland_window_output_scale_changed(
+    WaylandWindow& window,
+    wl_output* output,
+    std::int32_t scale,
+    bool present) {
+  window.output_scale_changed(output, scale, present);
+}
+
 } // namespace cgpui

@@ -28,6 +28,7 @@ struct WaylandRegistryBindings {
   wl_compositor** compositor = nullptr;
   xdg_wm_base** shell = nullptr;
   wl_seat** seat = nullptr;
+  WaylandOutputScaleRegistry* output_scales = nullptr;
   wl_data_device_manager** data_device_manager = nullptr;
   zwp_text_input_manager_v3** text_input_manager = nullptr;
   WaylandDataDevice* data_device = nullptr;

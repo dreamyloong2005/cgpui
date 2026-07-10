@@ -20446,3 +20446,48 @@
 - JSON parsing, both exact five-document completion phrases, focused source
   counts, and `git diff --check` pass. The lifecycle structure guard is 222
   lines under the current 240-line band limit.
+- Step 540 committed on `master` as `fba33c09 feat: synchronize platform
+  activation focus state`; only the pre-existing `.vscode/` directory remains
+  untracked.
+
+## 2026-07-11 Phase F Step 541 Resize And Scale
+
+- Audited the existing Win32 `WM_SIZE`/`WM_DPICHANGED` and Wayland xdg
+  configure paths. Win32 and Wayland resize state ordering exists, but Wayland
+  has no production output-scale path and always reports scale 1.0.
+- Chosen Step 541 slice adds focused private Wayland output registry and
+  surface-scale modules, real compositor scale coverage, and callback-time
+  state ordering tests on both platforms.
+- The Win32 callback-time resize/DPI state test passed immediately against the
+  existing production code. The first Wayland run failed at the expected
+  scale=2 wait because the backend did not bind `wl_output` or update surface
+  buffer scale.
+- The first production WSL compile exposed an incomplete-type instantiation
+  from the output registry's implicit inline default constructor. Declaring
+  and defining that constructor out of line keeps the private `Record` type in
+  the focused `.cpp` boundary.
+- The next compile exposed that the application-to-window output-scale bridge
+  could not call a private method. `output_scale_changed(...)` is now public
+  only on the private `WaylandWindow` type, while protocol callbacks and scale
+  recomputation remain private helpers.
+- The first expanded Windows gate passed the new Step 541 structure guard,
+  Win32 behavior, and ledger checks. Historical lifecycle structure still
+  pinned the global Step 541 handoff, and the platform structure guard caught
+  `wayland_window_internal.hpp` at 125/120 lines. The lifecycle guard now checks
+  its own Step 540 gap field, while scale-owned members move into the private
+  scale include and restore the existing 120-line cap without raising it.
+- Diff review caught that Wayland surface buffer scale is double-buffered.
+  `refresh_output_scale()` now commits the surface immediately after
+  `wl_surface_set_buffer_scale`, and the Step 541 structure guard requires both
+  operations.
+- Output-global removal now travels through the same registry callback with an
+  explicit presence flag. Wayland windows erase removed outputs from their
+  entered set before recomputing scale, preventing stale opaque pointers and
+  address-reuse misclassification after output hotplug.
+- Final Step 541 Windows focused verification passed 5/5 across callback-time
+  Win32 resize/DPI state, the new Step 541 structure guard, the historical
+  lifecycle guard, platform source structure, and parity-ledger synchronization.
+- Final WSL focused verification passed 6/6 using D-drive xmake caches plus
+  `/dev/shm/cgpui`, including real dynamic Wayland output scale, existing xdg
+  compositor resize regression, both Phase F structure guards, platform source
+  structure, and the parity ledger.

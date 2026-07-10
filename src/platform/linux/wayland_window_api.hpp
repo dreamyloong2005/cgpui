@@ -26,6 +26,8 @@ using WaylandWindowCursorCallback =
 using WaylandWindowImePlacementCallback = std::function<void(
     WaylandWindow&,
     std::optional<ImeTextInputPlacement>)>;
+using WaylandOutputScaleLookup =
+    std::function<std::int32_t(wl_output*)>;
 
 Result<WaylandWindowPtr> create_wayland_window(
     wl_display* display,
@@ -33,7 +35,8 @@ Result<WaylandWindowPtr> create_wayland_window(
     xdg_wm_base* shell,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
-    bool text_input_available);
+    bool text_input_available,
+    WaylandOutputScaleLookup output_scale_lookup);
 std::unique_ptr<PlatformWindow> make_registered_wayland_window(
     WaylandWindowPtr window,
     WaylandWindowUnregisterCallback unregister,
@@ -115,5 +118,10 @@ void wayland_window_text_input_content_type(
     std::uint32_t hint,
     std::uint32_t purpose);
 void wayland_window_focus_changed(WaylandWindow& window, bool focused);
+void wayland_window_output_scale_changed(
+    WaylandWindow& window,
+    wl_output* output,
+    std::int32_t scale,
+    bool present);
 
 } // namespace cgpui

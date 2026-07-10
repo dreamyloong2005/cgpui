@@ -32,6 +32,7 @@ class WaylandApplication final : public PlatformApplication {
   wl_compositor* compositor_ = nullptr;
   xdg_wm_base* shell_ = nullptr;
   wl_seat* seat_ = nullptr;
+  WaylandOutputScaleRegistry output_scales_;
   wl_data_device_manager* data_device_manager_ = nullptr;
   zwp_text_input_manager_v3* text_input_manager_ = nullptr;
   wl_pointer* pointer_ = nullptr;

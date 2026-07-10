@@ -75,14 +75,16 @@ Result<WaylandWindowPtr> create_wayland_window(
     xdg_wm_base* shell,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
-    bool text_input_available) {
+    bool text_input_available,
+    WaylandOutputScaleLookup output_scale_lookup) {
   auto window = WaylandWindow::create(
       display,
       compositor,
       shell,
       descriptor,
       std::move(callback),
-      text_input_available);
+      text_input_available,
+      std::move(output_scale_lookup));
   if (!window) {
     return std::unexpected(window.error());
   }

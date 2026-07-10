@@ -17,6 +17,16 @@ void WaylandApplication::configure_text_input_lookup() {
       [this] { return wayland_keyboard_modifiers(keyboard_state_); });
 }
 
+void WaylandApplication::configure_output_scale_registry() {
+  output_scales_.set_change_callback(
+      [this](wl_output* output, std::int32_t scale, bool present) {
+        for (WaylandWindow* window : windows_) {
+          wayland_window_output_scale_changed(
+              *window, output, scale, present);
+        }
+      });
+}
+
 void WaylandApplication::handle_global(
     void* data,
     wl_registry* registry,
@@ -33,6 +43,7 @@ void WaylandApplication::handle_global(
           .compositor = &app->compositor_,
           .shell = &app->shell_,
           .seat = &app->seat_,
+          .output_scales = &app->output_scales_,
           .data_device_manager = &app->data_device_manager_,
           .text_input_manager = &app->text_input_manager_,
           .data_device = app->data_device_.get(),
@@ -44,9 +55,9 @@ void WaylandApplication::handle_global_remove(
     void* data,
     wl_registry* registry,
     std::uint32_t name) {
-  (void)data;
   (void)registry;
-  (void)name;
+  auto* app = static_cast<WaylandApplication*>(data);
+  app->output_scales_.remove(name);
 }
 
 void WaylandApplication::handle_shell_ping(

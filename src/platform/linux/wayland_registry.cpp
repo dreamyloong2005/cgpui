@@ -33,6 +33,10 @@ void wayland_bind_registry_global(
         std::min<std::uint32_t>(version, 5)));
     return;
   }
+  if (interface_name == wl_output_interface.name) {
+    bindings.output_scales->bind(registry, name, version);
+    return;
+  }
   if (interface_name == wl_data_device_manager_interface.name) {
     *bindings.data_device_manager =
         static_cast<wl_data_device_manager*>(wl_registry_bind(

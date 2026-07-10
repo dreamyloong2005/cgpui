@@ -2,6 +2,7 @@
 
 void configure_data_device_lookup();
 void configure_text_input_lookup();
+void configure_output_scale_registry();
 
 static void handle_global(
     void* data,

@@ -243,8 +243,6 @@ void noop_surface_region(wl_client*, wl_resource*, wl_resource*) {}
 
 void noop_surface_transform(wl_client*, wl_resource*, std::int32_t) {}
 
-void noop_surface_scale(wl_client*, wl_resource*, std::int32_t) {}
-
 void noop_surface_offset(wl_client*, wl_resource*, std::int32_t, std::int32_t) {}
 
 void noop_surface_release(wl_client*, wl_resource*, std::uint32_t) {}
@@ -372,6 +370,9 @@ struct WaylandTestCompositor::State {
     if (seat_global != nullptr) {
       wl_global_destroy(seat_global);
     }
+    if (output_global != nullptr) {
+      wl_global_destroy(output_global);
+    }
     if (data_device_manager_global != nullptr) {
       wl_global_destroy(data_device_manager_global);
     }
@@ -417,6 +418,12 @@ struct WaylandTestCompositor::State {
         5,
         this,
         &State::bind_seat);
+    output_global = wl_global_create(
+        display,
+        &wl_output_interface,
+        2,
+        this,
+        &State::bind_output);
     data_device_manager_global = wl_global_create(
         display,
         &wl_data_device_manager_interface,
@@ -430,7 +437,8 @@ struct WaylandTestCompositor::State {
         this,
         &State::bind_text_input_manager);
     if (compositor_global == nullptr || shell_global == nullptr ||
-        seat_global == nullptr || data_device_manager_global == nullptr ||
+        seat_global == nullptr || output_global == nullptr ||
+        data_device_manager_global == nullptr ||
         text_input_manager_global == nullptr) {
       return false;
     }
@@ -487,6 +495,12 @@ struct WaylandTestCompositor::State {
     resize_configure_maximized.store(maximized);
     resize_configure_fullscreen.store(fullscreen);
     resize_configure_pending.store(true);
+  }
+
+  void request_output_scale(std::int32_t scale) {
+    output_scale.store(std::max(scale, 1));
+    output_scale_sent.store(false);
+    output_scale_pending.store(true);
   }
 
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const {
@@ -775,6 +789,49 @@ struct WaylandTestCompositor::State {
     }
   }
 
+  static void bind_output(
+      wl_client* client,
+      void* data,
+      std::uint32_t version,
+      std::uint32_t id) {
+    auto* compositor = static_cast<State*>(data);
+    auto* resource = wl_resource_create(
+        client,
+        &wl_output_interface,
+        std::min<std::uint32_t>(version, 2),
+        id);
+    compositor->output_resource = resource;
+    wl_resource_set_implementation(
+        resource,
+        &output_implementation,
+        compositor,
+        [](wl_resource* destroyed) {
+          auto* state =
+              static_cast<State*>(wl_resource_get_user_data(destroyed));
+          if (state != nullptr && state->output_resource == destroyed) {
+            state->output_resource = nullptr;
+          }
+        });
+    wl_output_send_geometry(
+        resource,
+        0,
+        0,
+        600,
+        340,
+        WL_OUTPUT_SUBPIXEL_UNKNOWN,
+        "CGPUI",
+        "Test Output",
+        WL_OUTPUT_TRANSFORM_NORMAL);
+    wl_output_send_mode(
+        resource,
+        WL_OUTPUT_MODE_CURRENT | WL_OUTPUT_MODE_PREFERRED,
+        1920,
+        1080,
+        60000);
+    wl_output_send_scale(resource, compositor->output_scale.load());
+    wl_output_send_done(resource);
+  }
+
   static void bind_data_device_manager(
       wl_client* client,
       void* data,
@@ -1025,6 +1082,7 @@ struct WaylandTestCompositor::State {
 
   void dispatch_pending_close();
   void dispatch_pending_resize_configure();
+  void dispatch_pending_output_scale();
   void dispatch_pending_pointer_move();
   void dispatch_pending_pointer_button();
   void dispatch_pending_pointer_scroll();
@@ -1051,6 +1109,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_clipboard_client_selection_request();
       dispatch_pending_close();
       dispatch_pending_resize_configure();
+      dispatch_pending_output_scale();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
@@ -1075,6 +1134,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_clipboard_client_selection_request();
       dispatch_pending_close();
       dispatch_pending_resize_configure();
+      dispatch_pending_output_scale();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
@@ -1097,6 +1157,7 @@ struct WaylandTestCompositor::State {
   static const struct wl_compositor_interface compositor_implementation;
   static const struct wl_surface_interface surface_implementation;
   static const struct wl_seat_interface seat_implementation;
+  static const struct wl_output_interface output_implementation;
   static const struct wl_pointer_interface pointer_implementation;
   static const struct wl_keyboard_interface keyboard_implementation;
   static const struct wl_data_device_manager_interface
@@ -1139,16 +1200,22 @@ struct WaylandTestCompositor::State {
   static const XdgWmBaseImplementation shell_implementation;
   static const XdgSurfaceImplementation xdg_surface_implementation;
   static const XdgToplevelImplementation toplevel_implementation;
+  static void surface_set_buffer_scale(
+      wl_client* client,
+      wl_resource* resource,
+      std::int32_t scale);
 
   wl_display* display = nullptr;
   wl_global* compositor_global = nullptr;
   wl_global* shell_global = nullptr;
   wl_global* seat_global = nullptr;
+  wl_global* output_global = nullptr;
   wl_global* data_device_manager_global = nullptr;
   wl_global* text_input_manager_global = nullptr;
   wl_resource* seat_resource = nullptr;
   wl_resource* pointer_resource = nullptr;
   wl_resource* keyboard_resource = nullptr;
+  wl_resource* output_resource = nullptr;
   wl_resource* data_device_resource = nullptr;
   wl_resource* text_input_resource = nullptr;
   wl_resource* clipboard_offer_resource = nullptr;
@@ -1168,6 +1235,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool resize_configure_activated{false};
   std::atomic_bool resize_configure_maximized{false};
   std::atomic_bool resize_configure_fullscreen{false};
+  std::atomic_bool output_scale_pending{false};
+  std::atomic_bool output_scale_sent{false};
   std::atomic_bool pointer_move_pending{false};
   std::atomic_bool pointer_move_sent{false};
   std::atomic_bool pointer_button_pending{false};
@@ -1212,6 +1281,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool clipboard_client_selection_payload_received{false};
   std::atomic_int resize_width{0};
   std::atomic_int resize_height{0};
+  std::atomic_int output_scale{1};
+  std::atomic_int surface_buffer_scale{1};
   std::atomic_int pointer_x{0};
   std::atomic_int pointer_y{0};
   std::atomic_int drag_x{0};
@@ -1279,6 +1350,7 @@ struct WaylandTestCompositor::State::SurfaceState {
   wl_resource* toplevel = nullptr;
   std::uint32_t initial_configure_serial = 0;
   bool initial_configure_sent = false;
+  bool output_enter_sent = false;
 };
 
 void WaylandTestCompositor::State::create_surface(
@@ -1383,12 +1455,30 @@ void WaylandTestCompositor::State::surface_commit(
   }
 
   state->initial_configure_sent = true;
+  if (!state->output_enter_sent &&
+      state->compositor->output_resource != nullptr) {
+    state->output_enter_sent = true;
+    wl_surface_send_enter(
+        state->surface,
+        state->compositor->output_resource);
+  }
   state->initial_configure_serial = state->compositor->next_configure_serial++;
   wl_resource_post_event(
       state->xdg_surface,
       xdg_surface_configure,
       state->initial_configure_serial);
   wl_display_flush_clients(state->compositor->display);
+}
+
+void WaylandTestCompositor::State::surface_set_buffer_scale(
+    wl_client*,
+    wl_resource* resource,
+    std::int32_t scale) {
+  auto* state = static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+  if (state == nullptr) {
+    return;
+  }
+  state->compositor->surface_buffer_scale.store(scale);
 }
 
 WaylandTestCompositor::State::SurfaceState* WaylandTestCompositor::State::find_surface(
@@ -1816,6 +1906,20 @@ void WaylandTestCompositor::State::dispatch_pending_resize_configure() {
   }
 
   resize_configure_pending.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_output_scale() {
+  if (!output_scale_pending.exchange(false)) {
+    return;
+  }
+  if (output_resource == nullptr) {
+    output_scale_pending.store(true);
+    return;
+  }
+  wl_output_send_scale(output_resource, output_scale.load());
+  wl_output_send_done(output_resource);
+  wl_display_flush_clients(display);
+  output_scale_sent.store(true);
 }
 
 void WaylandTestCompositor::State::dispatch_pending_pointer_move() {
@@ -2464,10 +2568,14 @@ const struct wl_surface_interface WaylandTestCompositor::State::surface_implemen
     .set_input_region = noop_surface_region,
     .commit = &WaylandTestCompositor::State::surface_commit,
     .set_buffer_transform = noop_surface_transform,
-    .set_buffer_scale = noop_surface_scale,
+    .set_buffer_scale = &WaylandTestCompositor::State::surface_set_buffer_scale,
     .damage_buffer = noop_surface_damage,
     .offset = noop_surface_offset,
     .get_release = noop_surface_release,
+};
+
+const struct wl_output_interface WaylandTestCompositor::State::output_implementation{
+    .release = destroy_resource,
 };
 
 const struct wl_seat_interface WaylandTestCompositor::State::seat_implementation{
@@ -2636,6 +2744,10 @@ void WaylandTestCompositor::request_resize_configure_state(
       fullscreen);
 }
 
+void WaylandTestCompositor::request_output_scale(std::int32_t scale) {
+  state_->request_output_scale(scale);
+}
+
 void WaylandTestCompositor::request_pointer_move(std::int32_t x, std::int32_t y) {
   state_->request_pointer_move(x, y);
 }
@@ -2770,6 +2882,14 @@ bool WaylandTestCompositor::wait_for_resize_configure_acked() const {
 WaylandConfigureState WaylandTestCompositor::last_resize_configure_state()
     const {
   return state_->last_resize_configure_state();
+}
+
+bool WaylandTestCompositor::wait_for_output_scale_sent() const {
+  return state_->wait_for_flag(state_->output_scale_sent);
+}
+
+std::int32_t WaylandTestCompositor::last_surface_buffer_scale() const {
+  return state_->surface_buffer_scale.load();
 }
 
 bool WaylandTestCompositor::wait_for_pointer_move_sent() const {

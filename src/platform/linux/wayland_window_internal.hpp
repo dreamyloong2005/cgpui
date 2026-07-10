@@ -12,8 +12,8 @@ class WaylandWindow final : public PlatformWindow {
       wl_compositor* compositor,
       xdg_wm_base* shell,
       const WindowDescriptor& descriptor,
-      PlatformEventCallback callback,
-      bool text_input_available);
+      PlatformEventCallback callback, bool text_input_available,
+      WaylandOutputScaleLookup output_scale_lookup);
 
   ~WaylandWindow() override;
 
@@ -82,18 +82,20 @@ class WaylandWindow final : public PlatformWindow {
   void text_input_content_type(std::uint32_t hint, std::uint32_t purpose);
   void set_text_input_available(bool available);
   void focus_changed(bool focused);
+  void output_scale_changed(wl_output* output, std::int32_t scale, bool present);
 
  private:
   WaylandWindow(
       wl_display* display,
       PlatformEventCallback callback,
-      WindowState state);
+      WindowState state, WaylandOutputScaleLookup output_scale_lookup);
 
   Result<void> initialize(
       wl_compositor* compositor,
       xdg_wm_base* shell,
       const WindowDescriptor& descriptor);
 #include "wayland_window_configure_internal.hpp"
+#include "wayland_window_scale_internal.hpp"
   void sync_text_input_state();
 
   wl_display* display_ = nullptr;

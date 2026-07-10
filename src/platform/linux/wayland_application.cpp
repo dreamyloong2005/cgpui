@@ -19,6 +19,7 @@ WaylandApplication::WaylandApplication()
   }
   configure_data_device_lookup();
   configure_text_input_lookup();
+  configure_output_scale_registry();
 
   registry_ = wl_display_get_registry(display_);
   if (registry_ == nullptr) {
@@ -69,6 +70,7 @@ WaylandApplication::~WaylandApplication() {
   if (seat_ != nullptr) {
     wl_seat_destroy(seat_);
   }
+  output_scales_.reset();
   if (data_device_manager_ != nullptr) {
     wl_data_device_manager_destroy(data_device_manager_);
   }
