@@ -1556,8 +1556,25 @@
       "xmake.lua"
     ],
     "phase_e_step_530_remaining_gap": "Step 531 pixel-band closeout",
+    "phase_e_step_531_surface": "Phase E Step 531 closes the pixel-output integration band for Steps 523-530, freezing backend-neutral capture, real Win32 Vulkan text/rounded/image/clip/transform/opacity/resize pixels, corrected top-left shader coordinates, and the active-display Wayland capture target. Step 532 Windows full verification is next.",
+    "phase_e_step_531_sources": [
+      "tests/api_parity/phase_e_pixel_output_integration_closeout_test.cpp",
+      "tests/renderer/renderer_frame_pixels_test.cpp",
+      "tests/renderer/vulkan_frame_pixel_capture_test.cpp",
+      "tests/renderer/vulkan_text_pixel_test.cpp",
+      "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
+      "tests/renderer/vulkan_image_pixel_test.cpp",
+      "tests/renderer/vulkan_clip_pixel_test.cpp",
+      "tests/renderer/vulkan_transform_pixel_test.cpp",
+      "tests/renderer/vulkan_opacity_pixel_test.cpp",
+      "tests/renderer/vulkan_resize_pixel_test.cpp",
+      "tests/renderer/wayland_frame_pixel_capture_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_531_remaining_gap": "Step 532 Windows full verification",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 531 pixel-band closeout"
+    "phase_e_current_handoff": "Step 532 Windows full verification"
   },
   "categories": [
     "application_and_app_context",

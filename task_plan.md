@@ -745,13 +745,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 528 adds real Vulkan transform pixel coverage for translated output and untouched original/distant coordinates. Step 529 opacity pixel coverage is next.
 - Phase E Step 529 adds real Vulkan opacity pixel coverage for encoding-aware half-red composition over opaque black. Step 530 resize pixel coverage is next.
 - Phase E Step 530 adds persistent-renderer resize pixel coverage across exact 64x64 and 96x48 Win32 client extents, plus an active-display Wayland capture target using the same public API. Step 531 pixel-band closeout is next.
+- Phase E Step 531 closes the pixel-output integration band for Steps 523-530, freezing backend-neutral capture, real Win32 Vulkan text/rounded/image/clip/transform/opacity/resize pixels, corrected top-left shader coordinates, and the active-display Wayland capture target. Step 532 Windows full verification is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-530 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-531 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -824,10 +825,10 @@ Windows/Linux core API is stable enough for parity work.
   transforms, opacity, and resize through real Win32 Vulkan output, with a
   matching active-display Wayland capture target and corrected top-left Vulkan
   vertex-shader coordinates.
-- In progress: Step 531 pixel-band closeout.
-- Step 531 boundary: freeze Steps 523-530 capture and primitive-output evidence
-  in one audit-only closeout before full Phase E verification.
-- Pending band: Steps 531-538 full verification and closeout.
+- In progress: Step 532 Windows full verification.
+- Step 532 boundary: rerun the complete Windows debug build and suite against
+  the committed pixel-output closeout baseline.
+- Pending band: Steps 532-538 full verification and closeout.
 - Steps 524-530 Windows gate: focused 13/13, full debug build, full 212/212,
   JSON and 35/35 phrase audits, exact embedded SPIR-V comparison, structure
   limits, and diff hygiene pass. WSL remains unavailable with no distribution.

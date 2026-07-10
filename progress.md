@@ -20294,3 +20294,15 @@
 - `wsl.exe -l -q` remains empty. The Wayland target is registered under the
   Linux platform block, but actual Linux/Wayland execution remains mandatory at
   Phase E closeout and is not satisfied by the unavailable host.
+
+## 2026-07-11 Phase E Step 531 Pixel Output Integration Closeout
+
+- Added the audit-only pixel-output closeout target. It freezes the Step 523
+  capture foundation, all seven Win32 pixel scenarios, corrected top-left
+  shader coordinates, renderer structure coverage, and the active-display
+  Wayland capture target without adding runtime behavior.
+- Synchronized the five authoritative documents and advanced the handoff to
+  Step 532 Windows full verification.
+- Focused Step 531 verification passed 12/12. The closeout source is 163 lines;
+  JSON parsing, the exact five-document completion phrase, and
+  `git diff --check` pass.
