@@ -1,5 +1,7 @@
 #include "vulkan_internal.hpp"
 
+#include "vulkan_swapchain_recovery_policy_internal.hpp"
+
 namespace cgpui {
 
 Result<void> VulkanRendererState::present_frame(
@@ -49,19 +51,27 @@ Result<void> VulkanRendererState::present_frame(
       image_available_,
       VK_NULL_HANDLE,
       &image_index);
-  if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
-    return recover_after_failed_acquire(
-        ErrorCode::renderer_initialization_failed,
-        "vkAcquireNextImageKHR reported an out-of-date swapchain",
-        true);
+  const VulkanSwapchainRecoveryPlan acquire_plan =
+      vulkan_plan_swapchain_recovery(
+          VulkanSwapchainOperation::acquire, acquire_result);
+  if (acquire_plan.recovery_timing ==
+      VulkanSwapchainRecoveryTiming::before_frame) {
+    if (auto result = recover_swapchain_after_surface_status(); !result) {
+      return result;
+    }
+    return std::unexpected(vulkan_error(
+        ErrorCode::frame_acquisition_failed,
+        "swapchain was recreated before frame acquisition; retry the frame"));
   }
-  if (acquire_result != VK_SUCCESS && acquire_result != VK_SUBOPTIMAL_KHR) {
+  if (!acquire_plan.operation_succeeded) {
     return recover_after_failed_acquire(
         ErrorCode::frame_acquisition_failed,
         "vkAcquireNextImageKHR failed",
         false);
   }
-  const bool acquired_suboptimal = acquire_result == VK_SUBOPTIMAL_KHR;
+  const bool recreate_after_frame =
+      acquire_plan.recovery_timing ==
+      VulkanSwapchainRecoveryTiming::after_frame;
 
   if (image_index >= command_buffers_.size() ||
       image_index >= command_reuse_states_.size()) {
@@ -129,23 +139,24 @@ Result<void> VulkanRendererState::present_frame(
   };
   const VkResult present_result =
       vkQueuePresentKHR(present_queue_, &present_info);
-  if (present_result == VK_ERROR_OUT_OF_DATE_KHR ||
-      present_result == VK_SUBOPTIMAL_KHR) {
-    presentation_blocked_ = true;
-    return std::unexpected(vulkan_error(
-        ErrorCode::renderer_initialization_failed,
-        "vkQueuePresentKHR reported an out-of-date swapchain"));
+  const VulkanSwapchainRecoveryPlan present_plan =
+      vulkan_plan_swapchain_recovery(
+          VulkanSwapchainOperation::present, present_result);
+  if (!present_plan.operation_succeeded &&
+      present_plan.recovery_timing == VulkanSwapchainRecoveryTiming::none) {
+    return recover_after_failed_present("vkQueuePresentKHR failed");
   }
-  if (auto result =
-          require_vk_success(present_result, "vkQueuePresentKHR failed");
-      !result) {
-    return recover_after_failed_present(result.error().message);
+  if (recreate_after_frame ||
+      present_plan.recovery_timing ==
+          VulkanSwapchainRecoveryTiming::after_frame) {
+    if (auto result = recover_swapchain_after_surface_status(); !result) {
+      return result;
+    }
   }
-  if (acquired_suboptimal) {
-    presentation_blocked_ = true;
+  if (present_plan.retry_frame) {
     return std::unexpected(vulkan_error(
-        ErrorCode::renderer_initialization_failed,
-        "vkAcquireNextImageKHR reported a suboptimal swapchain"));
+        ErrorCode::frame_acquisition_failed,
+        "swapchain was recreated after presentation; retry the frame"));
   }
 
   return {};

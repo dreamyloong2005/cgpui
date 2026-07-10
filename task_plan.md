@@ -725,13 +725,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.
 - Phase E Step 509 adds pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.
 - Phase E Step 510 adds ordered upload barrier waves with batched transfer and shader-read transitions. Unique glyph-atlas or image-texture targets share two barrier calls around their copies, while duplicate image targets start a new wave with shader-read old-layout continuity. Step 511 swapchain recovery is next.
+- Phase E Step 511 adds automatic swapchain recreation from acquire/present result plans. The out-of-date results return a retryable frame error after recreating, suboptimal frames recreate after submission, and presentation remains unblocked after successful recovery. Step 512 present pacing is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-510 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-511 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -779,9 +780,10 @@ Windows/Linux core API is stable enough for parity work.
   retained capacity for frame geometry, plus exact per-swapchain-image recorded
   command reuse for upload-free frames, plus shared rounded-rectangle pipeline
   batching with authored order preserved across distinct geometry buffers, plus
-  ordered duplicate-safe glyph/image upload barrier waves.
-- In progress: Step 511 swapchain recovery.
-- Pending bands: Steps 511-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  ordered duplicate-safe glyph/image upload barrier waves, plus automatic
+  acquire/present swapchain recreation with retryable out-of-date handling.
+- In progress: Step 512 present pacing.
+- Pending bands: Steps 512-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -793,6 +795,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 511 focused test remained at documentation exit 40 because the audited lowercase `out-of-date results return` phrase appeared sentence-initial with uppercase `Out` | Step 511 first documentation GREEN | Normalize the shared sentence to `The out-of-date results return...` across all five authority files |
+| Step 511 focused build cannot include `vulkan_swapchain_recovery_policy_internal.hpp` | Step 511 RED | Expected missing private leaf; implement acquire/present result policy and automatic current-descriptor swapchain recreation |
 | Step 510 focused build cannot include `vulkan_upload_barrier_batch_internal.hpp` | Step 510 RED | Expected missing private leaf; implement ordered duplicate-safe barrier waves and route glyph/image upload recording through them |
 | Step 510 discovery requested nonexistent `*_upload_recording_internal.hpp` and `*_uploads.cpp` files | Step 510 ownership discovery | Use the existing `*_uploads_internal.hpp`, focused `*_staging.cpp`, and `*_upload_recording.cpp` split instead of generic filenames |
 | Direct Step 509 executable lookup searched `.build`, but this project writes Windows targets under `build/windows/x64/debug` | Step 509 documentation-gate diagnosis | Use `xmake show -t <target>` to resolve the configured target file before direct exit-code checks |

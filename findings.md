@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 511 Swapchain Recovery
+
+- `present_frame(...)` currently sets `presentation_blocked_` for out-of-date or
+  suboptimal acquire/present results and relies on a later external resize to
+  recreate the swapchain. If no platform resize follows, presentation remains
+  permanently blocked even though the current framebuffer descriptor is usable
+  for an immediate recreation attempt.
+- Step 511 should separate `VkResult` policy from Vulkan state mutation. A
+  focused policy can distinguish continue, recreate-before-frame,
+  recreate-after-frame, and fatal result handling; a focused renderer-state
+  method can reuse the existing `resize(current_size, current_scale)` resource
+  replacement path.
+- Out-of-date acquire/present should recreate automatically and return a
+  retryable frame error when the current frame was not displayed. Suboptimal
+  acquire/present can finish the submitted frame, recreate afterward, and
+  return success. Non-surface acquire/present failures retain existing recovery
+  behavior. Step 512 retains present pacing ownership.
+- Phase E Step 511 adds automatic swapchain recreation from acquire/present result plans. The out-of-date results return a retryable frame error after recreating, suboptimal frames recreate after submission, and presentation remains unblocked after successful recovery. Step 512 present pacing is next.
+
 ## 2026-07-10 Phase E Step 510 Resource-Barrier Batching
 
 - Glyph-atlas and image-texture upload recording duplicate the same layout,

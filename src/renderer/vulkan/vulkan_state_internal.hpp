@@ -64,6 +64,7 @@ class VulkanRendererState final {
       std::string message,
       bool block_presentation);
   Result<void> recover_after_failed_present(std::string message);
+  Result<void> recover_swapchain_after_surface_status();
 
   Result<void> create_swapchain();
   Result<VulkanSwapchainResources> create_swapchain_resources(

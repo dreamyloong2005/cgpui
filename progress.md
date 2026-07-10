@@ -1,5 +1,39 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 511 Swapchain Recovery
+
+- Step 510 is committed on `master` at
+  `12e64481 perf: batch vulkan upload barriers`; only the pre-existing untracked
+  `.vscode/` directory remains.
+- Out-of-date/suboptimal acquire or present currently blocks presentation until
+  an external resize arrives. Step 511 will add a focused result-policy module
+  and automatic recreation through the current descriptor's existing resize
+  path.
+- Out-of-date frames will recreate then return a retryable error when no frame
+  was displayed; suboptimal frames will finish, recreate, and return success.
+  Step 512 retains present pacing ownership.
+- Added `vulkan_swapchain_recovery_test` before implementation. RED is exact:
+  compilation fails only because the focused private recovery-policy header
+  does not exist yet.
+- Added the focused acquire/present result policy and a ten-line renderer-state
+  recovery leaf that blocks, calls `resize` with the current descriptor, and is
+  unblocked by successful swapchain installation. Presentation consumes the
+  policy without owning recreation internals.
+- Recovery behavior, resize, surface, and renderer structure compile and pass;
+  the focused test exits 40 only at the expected documentation gate. Policy
+  header/source are 30/33 lines, recovery is 10, presentation remains 165/165,
+  and the focused test is 161/230.
+- Synchronized Phase E Step 511 automatic swapchain recreation from acquire/present result plans. Out-of-date results return a retryable frame error after recreating, suboptimal frames recreate after submission, and presentation remains unblocked after successful recovery. Step 512 present pacing is next.
+- The first documentation GREEN attempt remained at exit 40 because the shared
+  lowercase phrase began a sentence as uppercase `Out-of-date`; normalized it
+  to `The out-of-date results return...` across all authority files.
+- Step 511 expanded regressions pass 10/10 across result policy, resize,
+  surface, command reuse, glyph/image lifecycle, Win32 live Vulkan, frame
+  lifetime, renderer structure, and parity.
+- The complete Windows debug suite passes 192/192. Ledger JSON parsing and
+  `git diff --check` pass; `wsl.exe -l -q` remains empty, so Linux verification
+  stays deferred to the final Phase E gate.
+
 ## 2026-07-10 Phase E Step 510 Resource-Barrier Batching
 
 - Step 509 is committed on `master` at

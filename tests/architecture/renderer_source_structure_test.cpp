@@ -255,6 +255,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_report_uploads.cpp",
       "src/renderer/vulkan/vulkan_presentation.cpp",
       "src/renderer/vulkan/vulkan_presentation_recovery.cpp",
+      "src/renderer/vulkan/vulkan_swapchain_recovery_policy_internal.hpp",
+      "src/renderer/vulkan/vulkan_swapchain_recovery_policy.cpp",
+      "src/renderer/vulkan/vulkan_swapchain_recovery.cpp",
+      "tests/renderer/vulkan_swapchain_recovery_test.cpp",
       "src/renderer/vulkan/vulkan_resize.cpp",
       "src/renderer/vulkan/vulkan_state.cpp",
       "src/renderer/vulkan/vulkan_surface_selection.cpp",
@@ -850,12 +854,40 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
   const std::string presentation_recovery =
       read_source("src/renderer/vulkan/vulkan_presentation_recovery.cpp");
+  const std::string swapchain_recovery_policy_header = read_source(
+      "src/renderer/vulkan/vulkan_swapchain_recovery_policy_internal.hpp");
+  const std::string swapchain_recovery_policy = read_source(
+      "src/renderer/vulkan/vulkan_swapchain_recovery_policy.cpp");
+  const std::string swapchain_recovery = read_source(
+      "src/renderer/vulkan/vulkan_swapchain_recovery.cpp");
+  const std::string swapchain_recovery_test = read_source(
+      "tests/renderer/vulkan_swapchain_recovery_test.cpp");
   if (presentation_recovery.empty()) {
     return 47;
+  }
+  if (line_count(swapchain_recovery_policy_header) > 60 ||
+      line_count(swapchain_recovery_policy) > 70 ||
+      line_count(swapchain_recovery) > 40 ||
+      line_count(swapchain_recovery_test) > 230 ||
+      !contains(swapchain_recovery_policy_header,
+                "struct VulkanSwapchainRecoveryPlan") ||
+      !contains(swapchain_recovery_policy,
+                "vulkan_plan_swapchain_recovery(") ||
+      !contains(swapchain_recovery,
+                "recover_swapchain_after_surface_status(") ||
+      !contains(swapchain_recovery,
+                "resize(descriptor_.framebuffer_size") ||
+      contains(swapchain_recovery_policy, "vkAcquireNextImageKHR") ||
+      contains(swapchain_recovery_policy, "vkQueuePresentKHR") ||
+      contains(swapchain_recovery, "vkCreateSwapchainKHR")) {
+    return 49;
   }
   if (line_count(presentation) > 165 ||
       !contains(presentation, "VulkanRendererState::present_frame(") ||
       !contains(presentation, "command_reuse_states_[image_index]") ||
+      !contains(presentation, "vulkan_plan_swapchain_recovery(") ||
+      !contains(presentation,
+                "recover_swapchain_after_surface_status()") ||
       !contains(presentation, "vkAcquireNextImageKHR") ||
       !contains(presentation, "vkQueueSubmit") ||
       !contains(presentation, "vkQueuePresentKHR") ||
