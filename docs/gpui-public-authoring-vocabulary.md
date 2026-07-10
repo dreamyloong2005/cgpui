@@ -278,6 +278,14 @@ tests, while keeping SVG decoding, PNG/JPEG loading, renderer upload,
 GPU texture lifetime, private runtime headers, and direct `WindowRuntime` use
 out of scope for this freeze.
 
+Phase E Step 505 SVG public example adds `SvgRasterizationRequest`,
+`SvgRasterCache`, `SvgImageUploadResult`, and `upload_svg_image(...)` to the
+public rendering workflow demonstrated by
+`examples/api_parity/public_svg_raster_upload/main.cpp`. The example turns a
+registered SVG source into a viewport-aware cached raster upload and image draw
+using only `cgpui/prelude.hpp`, without exposing Vulkan staging or runtime
+internals.
+
 Phase C Step 367 widget family structure tests add an explicit
 `WidgetFamilyBoundary` table to
 `tests/architecture/widget_source_structure_test.cpp`. Every widget family

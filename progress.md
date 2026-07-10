@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 505 SVG Public Example
+
+- Step 504 is committed on `master` at
+  `27708e67 feat: upload cached svg rasters`; only the pre-existing untracked
+  `.vscode/` directory remains.
+- Chose a prelude-only, platform-neutral executable example that connects
+  `ImageAssetRegistry`, viewport/current-color raster planning, cache-backed
+  frame upload, and image draw through public APIs.
+- Added the Step 505 source/xmake/documentation audit test target before adding
+  the example implementation.
+- RED confirmed: the audit builds and exits 1 because
+  `examples/api_parity/public_svg_raster_upload/main.cpp` does not yet exist.
+- Added the prelude-only example and its focused xmake target. The executable
+  validates cache miss/hit, repeated frame upload, viewport raster dimensions,
+  and descriptor-backed image draw without creating a platform window.
+- Added the four SVG raster/upload names to the public authoring vocabulary and
+  synchronized Phase E Step 505, `public_svg_raster_upload`, registered SVG source, viewport-aware raster request, cached upload and image draw, and the Step 506 SVG integration closeout handoff across authoritative documents.
+- The example executable, Step 505 audit, Step 504 upload integration,
+  renderer structure, and parity ledger focused gates all exit 0.
+- The complete Windows debug suite passes 186/186, including the visible
+  solid-rectangle pixel test. JSON parsing and `git diff --check` remain clean.
+- `wsl.exe -l -q` is still empty, so no WSL verification can run.
+
 ## 2026-07-10 Phase E Step 504 SVG Image Upload Integration
 
 - Step 503 is committed on `master` at

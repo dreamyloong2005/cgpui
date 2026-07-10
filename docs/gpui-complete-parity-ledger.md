@@ -630,6 +630,8 @@ consume C: drive space again.
 - Handoff: Step 504 SVG image upload integration.
 - Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset for the current frame, while failed rasterization skips upload.
 - Handoff: Step 505 SVG public example.
+- Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw through public APIs.
+- Handoff: Step 506 SVG integration closeout.
 
 ## Categories
 

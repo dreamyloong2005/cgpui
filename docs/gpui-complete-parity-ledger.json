@@ -1249,8 +1249,16 @@
       "xmake.lua"
     ],
     "phase_e_step_504_remaining_gap": "Step 505 SVG public example",
+    "phase_e_step_505_surface": "Phase E Step 505 adds the prelude-only public_svg_raster_upload executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw through public APIs. Step 506 SVG integration closeout is next.",
+    "phase_e_step_505_sources": [
+      "examples/api_parity/public_svg_raster_upload/main.cpp",
+      "tests/api_parity/phase_e_svg_public_example_test.cpp",
+      "docs/gpui-public-authoring-vocabulary.md",
+      "xmake.lua"
+    ],
+    "phase_e_step_505_remaining_gap": "Step 506 SVG integration closeout",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 505 SVG public example"
+    "phase_e_current_handoff": "Step 506 SVG integration closeout"
   },
   "categories": [
     "application_and_app_context",

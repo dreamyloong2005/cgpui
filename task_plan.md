@@ -719,13 +719,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 502 adds `SvgViewportScalingPlan`. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, and records effective x/y raster scales for the raster planner, backend, and cache. Step 503 SVG recolor/tint is next.
 - Phase E Step 503 adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8 cache identity. The LunaSVG currentColor recolor is raster-time, while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
 - Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset, while failed rasterization skips upload. Step 505 SVG public example is next.
+- Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw. Step 506 SVG integration closeout is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-504 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-505 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -767,9 +768,10 @@ Windows/Linux core API is stable enough for parity work.
   cache-owned result lookup, plus optional viewport scaling and effective
   device-scale metadata, plus validated SVG current-color planning,
   LunaSVG root recolor, normalized recolor cache identity, and backend-neutral
-  cache-to-`RenderFrame` SVG upload integration.
-- In progress: Step 505 SVG public example.
-- Pending bands: Steps 505-506 SVG; Steps
+  cache-to-`RenderFrame` SVG upload integration, plus the prelude-only public
+  registered-source/raster-cache/upload/draw example.
+- In progress: Step 506 SVG integration closeout.
+- Pending bands: Step 506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,

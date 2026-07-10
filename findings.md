@@ -1,5 +1,18 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 505 SVG Public Example
+
+- The example can remain platform-neutral and executable by using a small
+  public `RenderFrame` implementation that records uploads/draws. This proves
+  the complete public workflow without reaching into Vulkan or private runtime
+  APIs.
+- `ImageAssetRegistry::register_svg(...)` already provides the asset id,
+  logical size, and owned SVG source needed to construct the public
+  `SvgRasterizationRequest`.
+- The example should exercise both cache miss and cache hit, then draw with the
+  returned raster descriptor so the upload/draw relationship is explicit.
+- Phase E Step 505 now adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw. Step 506 SVG integration closeout is next.
+
 ## 2026-07-10 Phase E Step 504 SVG Image Upload Integration
 
 - `RenderFrame::upload_image(...)` is the backend-neutral upload boundary. The
