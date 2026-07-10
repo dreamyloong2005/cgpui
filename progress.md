@@ -1,5 +1,41 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 508 Recorded Command Reuse
+
+- Step 507 is committed on `master` at
+  `7123a50d perf: reuse vulkan frame geometry buffers`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- Existing command buffers are allocated per swapchain image but always reset,
+  begun with `VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT`, and re-recorded.
+  Reusing only the handle is not recorded-command reuse.
+- Step 508 will keep one exact semantic signature per swapchain image. A frame
+  may skip reset/record only when there are no pending glyph/image uploads and
+  framebuffer, extent, clear color, pipelines, geometry buffers, compact draw
+  commands, clips, descriptor sets, and authored order all match.
+- Added `vulkan_frame_command_reuse_test` before implementation. RED is exact:
+  compilation fails only because the focused private reuse header does not
+  exist yet.
+- The first combined implementation patch was rejected at the swapchain
+  lifecycle hunk and changed no files. Split the leaf, command recording, and
+  state/lifecycle edits into separate patches.
+- The pure reuse behavior and runtime source assertions pass through the
+  expected documentation exit 60. Renderer structure initially exited 32 only
+  because presentation forwarding grew from 145 to 154 lines; adjusted its
+  narrow limit to 165 while forbidding signature comparison/copy ownership.
+- Synchronized the exact per-swapchain-image recorded command reuse result and
+  Step 509 pipeline-switch batching handoff across the roadmap, ledgers, task
+  plan, and findings.
+- Step 508 focused and expanded regressions pass 14/14 across reuse planning,
+  staging-upload recording, draw ordering, acquired command-buffer lifecycle,
+  resize/surface behavior, renderer structure, parity, and live multi-frame
+  Vulkan presentation.
+- The complete Windows debug suite passes 189/189. Ledger JSON parsing and
+  `git diff --check` pass; `wsl.exe -l -q` still returns an empty distribution
+  list, so Linux verification remains deferred to the final Phase E gate.
+- Final ownership review keeps exact signature comparison/copy in the focused
+  reuse module. The private header/source are 102/189 lines against 130/230
+  limits, command recording is 177/180, and presentation forwarding is 154/165.
+
 ## 2026-07-10 Phase E Step 507 Frame Geometry Buffers
 
 - Step 506 is committed on `master` at

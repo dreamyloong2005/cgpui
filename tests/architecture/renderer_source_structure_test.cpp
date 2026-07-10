@@ -163,12 +163,15 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_swapchain_internal.hpp",
       "src/renderer/vulkan/vulkan_device_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_command_reuse.cpp",
       "src/renderer/vulkan/vulkan_frame_draw_order_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_draw_order.cpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording.cpp",
       "src/renderer/vulkan/vulkan_frame_geometry_buffer_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp",
+      "tests/renderer/vulkan_frame_command_reuse_test.cpp",
       "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp",
       "src/renderer/vulkan/vulkan_clip_scissor.cpp",
       "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp",
@@ -629,8 +632,31 @@ int main(int argc, char** argv) {
 
   const std::string command_recording =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
+  const std::string frame_command_reuse_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp");
+  const std::string frame_command_reuse = read_source(
+      "src/renderer/vulkan/vulkan_frame_command_reuse.cpp");
+  const std::string frame_command_reuse_test = read_source(
+      "tests/renderer/vulkan_frame_command_reuse_test.cpp");
+  if (line_count(frame_command_reuse_header) > 130 ||
+      line_count(frame_command_reuse) > 230 ||
+      line_count(frame_command_reuse_test) > 340 ||
+      !contains(frame_command_reuse_header,
+                "struct VulkanFrameCommandReuseState") ||
+      !contains(frame_command_reuse,
+                "vulkan_plan_frame_command_reuse(") ||
+      !contains(frame_command_reuse,
+                "vulkan_commit_frame_command_recording(") ||
+      contains(frame_command_reuse, "vkResetCommandBuffer") ||
+      contains(frame_command_reuse, "vkQueueSubmit")) {
+    return 36;
+  }
   if (line_count(command_recording) > 180 ||
       !contains(command_recording, "record_vulkan_frame_command_buffer(") ||
+      !contains(command_recording, "vulkan_plan_frame_command_reuse(") ||
+      !contains(command_recording, "vulkan_commit_frame_command_recording(") ||
+      contains(command_recording,
+               "VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT") ||
       !contains(command_recording, "vkCmdBeginRenderPass") ||
       !contains(command_recording, "solid_rect_buffers") ||
       !contains(command_recording, "vulkan_record_frame_draws(") ||
@@ -639,7 +665,7 @@ int main(int argc, char** argv) {
       contains(command_recording, "vulkan_record_solid_rects(") ||
       contains(command_recording, "vkCmdClearAttachments") ||
       contains(command_recording, "choose_vulkan_surface_format(")) {
-    return 36;
+    return 37;
   }
   const std::string solid_rect_geometry_header = read_source(
       "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");
@@ -799,8 +825,9 @@ int main(int argc, char** argv) {
   if (presentation_recovery.empty()) {
     return 47;
   }
-  if (line_count(presentation) > 150 ||
+  if (line_count(presentation) > 165 ||
       !contains(presentation, "VulkanRendererState::present_frame(") ||
+      !contains(presentation, "command_reuse_states_[image_index]") ||
       !contains(presentation, "vkAcquireNextImageKHR") ||
       !contains(presentation, "vkQueueSubmit") ||
       !contains(presentation, "vkQueuePresentKHR") ||
@@ -810,6 +837,8 @@ int main(int argc, char** argv) {
                "Result<void> VulkanRendererState::recover_after_failed_acquire(") ||
       contains(presentation,
                "Result<void> VulkanRendererState::recover_after_failed_present(") ||
+      contains(presentation, "same_signature(") ||
+      contains(presentation, "copy_signature(") ||
       contains(presentation, "VulkanRendererState::create(") ||
       contains(presentation, "vkCreateSwapchainKHR")) {
     return 32;

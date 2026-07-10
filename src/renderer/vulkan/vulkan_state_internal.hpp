@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_device_internal.hpp"
+#include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
@@ -110,6 +111,7 @@ class VulkanRendererState final {
   std::vector<VkFramebuffer> framebuffers_;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   std::vector<VkCommandBuffer> command_buffers_;
+  std::vector<VulkanFrameCommandReuseState> command_reuse_states_;
   VkSemaphore image_available_ = VK_NULL_HANDLE;
   VkSemaphore render_finished_ = VK_NULL_HANDLE;
   VkFence in_flight_ = VK_NULL_HANDLE;

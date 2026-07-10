@@ -722,13 +722,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw. Step 506 SVG integration closeout is next.
 - Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
 - Phase E Step 507 adds `VulkanFrameGeometryBufferResources` and reusable host-visible vertex/index buffers for text, image, solid, and rounded geometry. Empty frames keep retained capacity, matching-capacity uploads remap the existing allocation, and growth replaces buffers geometrically after the single in-flight fence. Step 508 command reuse is next.
+- Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-507 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-508 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -773,9 +774,10 @@ Windows/Linux core API is stable enough for parity work.
   cache-to-`RenderFrame` SVG upload integration, plus the prelude-only public
   registered-source/raster-cache/upload/draw example, plus the audit-only SVG
   integration closeout, plus reusable host-visible vertex/index buffers with
-  retained capacity for frame geometry.
-- In progress: Step 508 command reuse.
-- Pending bands: Steps 508-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  retained capacity for frame geometry, plus exact per-swapchain-image recorded
+  command reuse for upload-free frames.
+- In progress: Step 509 pipeline-switch batching.
+- Pending bands: Steps 509-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -787,6 +789,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Renderer structure exited 32 because Step 508 forwarding moved `vulkan_presentation.cpp` from 145 to 154 lines | Step 508 structure GREEN | Raise the narrow orchestration limit to 165 and require state forwarding while forbidding signature comparison/copy ownership in presentation |
+| The combined Step 508 implementation patch failed at the swapchain lifecycle hunk and changed no files | Step 508 implementation | Split the private leaf, command-recording integration, and state/lifecycle integration into separate current-context patches |
+| Step 508 focused build cannot include `vulkan_frame_command_reuse_internal.hpp` | Step 508 RED | Expected missing private leaf; implement exact per-swapchain command signatures and integrate them before command-buffer reset |
 | `xmake build` rejected a list of multiple target names | Step 507 focused regression build | Use `xmake test -P . <name>/default ...`, which supports the repository's multi-target verification pattern |
 | Step 507 focused test exits 61 after implementation | Step 507 first GREEN | Pure planning behavior passes; add the new frame-geometry leaf to renderer structure inventory and update legacy ownership assertions/fixtures |
 | Step 507 focused build cannot include `vulkan_frame_geometry_buffer_internal.hpp` | Step 507 RED | Expected missing private leaf; implement the reusable frame-geometry buffer module and route primitive owners through it |

@@ -3,12 +3,13 @@
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
+#include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_draw_recording_internal.hpp"
 #include "vulkan_image_texture_uploads_internal.hpp"
 
 namespace cgpui {
 
-Result<void> record_vulkan_frame_command_buffer(
+Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     VkCommandBuffer command_buffer,
     VkRenderPass render_pass,
     VkFramebuffer framebuffer,
@@ -28,6 +29,7 @@ Result<void> record_vulkan_frame_command_buffer(
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
     const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads,
     const VulkanImageTextureResources& image_texture_resources,
-    const VulkanImageTextureUploadResources& image_texture_uploads);
+    const VulkanImageTextureUploadResources& image_texture_uploads,
+    VulkanFrameCommandReuseState& command_reuse_state);
 
 } // namespace cgpui

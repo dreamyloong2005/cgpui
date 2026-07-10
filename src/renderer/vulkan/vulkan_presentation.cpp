@@ -63,6 +63,12 @@ Result<void> VulkanRendererState::present_frame(
   }
   const bool acquired_suboptimal = acquire_result == VK_SUBOPTIMAL_KHR;
 
+  if (image_index >= command_buffers_.size() ||
+      image_index >= command_reuse_states_.size()) {
+    return recover_after_failed_record(
+        "acquired swapchain image has no command recording state");
+  }
+
   if (auto result = record_vulkan_frame_command_buffer(
           command_buffers_[image_index],
           render_pass_,
@@ -78,7 +84,8 @@ Result<void> VulkanRendererState::present_frame(
           glyph_atlas_resources_,
           glyph_atlas_draw_quads_, glyph_atlas_draw_bindings_,
           glyph_atlas_uploads_,
-          image_texture_resources_, image_texture_uploads_);
+          image_texture_resources_, image_texture_uploads_,
+          command_reuse_states_[image_index]);
       !result) {
     return recover_after_failed_record(result.error().message);
   }

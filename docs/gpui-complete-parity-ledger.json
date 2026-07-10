@@ -1272,8 +1272,19 @@
       "xmake.lua"
     ],
     "phase_e_step_507_remaining_gap": "Step 508 command reuse",
+    "phase_e_step_508_surface": "Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.",
+    "phase_e_step_508_sources": [
+      "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_command_reuse.cpp",
+      "src/renderer/vulkan/vulkan_command_recording.cpp",
+      "src/renderer/vulkan/vulkan_presentation.cpp",
+      "tests/renderer/vulkan_frame_command_reuse_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_508_remaining_gap": "Step 509 pipeline-switch batching",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 508 command reuse"
+    "phase_e_current_handoff": "Step 509 pipeline-switch batching"
   },
   "categories": [
     "application_and_app_context",

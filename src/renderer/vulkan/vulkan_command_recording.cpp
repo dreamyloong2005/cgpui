@@ -2,7 +2,7 @@
 
 namespace cgpui {
 
-Result<void> record_vulkan_frame_command_buffer(
+Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     VkCommandBuffer command_buffer,
     VkRenderPass render_pass,
     VkFramebuffer framebuffer,
@@ -22,44 +22,14 @@ Result<void> record_vulkan_frame_command_buffer(
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
     const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads,
     const VulkanImageTextureResources& image_texture_resources,
-    const VulkanImageTextureUploadResources& image_texture_uploads) {
-  if (auto result = require_vk_success(
-          vkResetCommandBuffer(command_buffer, 0),
-          "vkResetCommandBuffer failed");
-      !result) {
-    return result;
-  }
-
-  const VkCommandBufferBeginInfo begin_info{
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-      .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-  };
-  if (auto result = require_vk_success(
-          vkBeginCommandBuffer(command_buffer, &begin_info),
-          "vkBeginCommandBuffer failed");
-      !result) {
-    return result;
-  }
-  if (auto result = vulkan_record_glyph_atlas_uploads(
-          command_buffer,
-          glyph_atlas_resources,
-          glyph_atlas_uploads);
-      !result) {
-    return result;
-  }
-  if (auto result = vulkan_record_image_texture_uploads(
-          command_buffer,
-          image_texture_resources,
-          image_texture_uploads);
-      !result) {
-    return result;
-  }
+    const VulkanImageTextureUploadResources& image_texture_uploads,
+    VulkanFrameCommandReuseState& command_reuse_state) {
   if (auto result = vulkan_validate_glyph_atlas_draw_bindings(
           glyph_atlas_draw_bindings,
           glyph_atlas_draw_quads,
           glyph_atlas_resources);
       !result) {
-    return result;
+    return std::unexpected(result.error());
   }
   auto text_draw_commands = vulkan_plan_text_draw_commands(
       glyph_atlas_draw_bindings,
@@ -80,12 +50,81 @@ Result<void> record_vulkan_frame_command_buffer(
   if (auto result = vulkan_validate_rounded_rect_draw_resources(
           rounded_rect_pipeline_resources, solid_rect_buffers);
       !result) {
-    return result;
+    return std::unexpected(result.error());
   }
   if (auto result = vulkan_validate_rounded_rect_draw_resources(
           rounded_rect_pipeline_resources, rounded_rect_buffers);
       !result) {
-    return result;
+    return std::unexpected(result.error());
+  }
+
+  const bool has_pending_uploads = !glyph_atlas_uploads.uploads.empty() ||
+                                   !image_texture_uploads.uploads.empty();
+  const VulkanFrameCommandSignatureView signature{
+      .render_pass = render_pass,
+      .framebuffer = framebuffer,
+      .extent = extent,
+      .clear_color = color,
+      .rounded_rect_pipeline_layout = rounded_rect_pipeline_resources.layout,
+      .rounded_rect_pipeline = rounded_rect_pipeline_resources.pipeline,
+      .text_pipeline_layout = text_pipeline_resources.layout,
+      .text_pipeline = text_pipeline_resources.pipeline,
+      .image_pipeline_layout = image_pipeline_resources.layout,
+      .image_pipeline = image_pipeline_resources.pipeline,
+      .solid_vertex_buffer = solid_rect_buffers.vertices.buffer,
+      .solid_index_buffer = solid_rect_buffers.indices.buffer,
+      .rounded_vertex_buffer = rounded_rect_buffers.vertices.buffer,
+      .rounded_index_buffer = rounded_rect_buffers.indices.buffer,
+      .text_vertex_buffer = text_vertex_buffer.vertices.buffer,
+      .image_vertex_buffer = image_vertex_buffer.vertices.buffer,
+      .solid_draws = solid_rect_buffers.draws,
+      .rounded_draws = rounded_rect_buffers.draws,
+      .text_commands = *text_draw_commands,
+      .image_commands = *image_draw_commands,
+      .draw_order = draw_order,
+  };
+  const VulkanFrameCommandReusePlan reuse_plan =
+      vulkan_plan_frame_command_reuse(
+          command_reuse_state, signature, has_pending_uploads);
+  if (reuse_plan.action == VulkanFrameCommandReuseAction::reuse) {
+    vulkan_commit_frame_command_reuse(command_reuse_state);
+    return VulkanFrameCommandRecordingResult{
+        .action = reuse_plan.action,
+        .reason = reuse_plan.reason,
+    };
+  }
+  vulkan_invalidate_frame_command_reuse(command_reuse_state);
+
+  if (auto result = require_vk_success(
+          vkResetCommandBuffer(command_buffer, 0),
+          "vkResetCommandBuffer failed");
+      !result) {
+    return std::unexpected(result.error());
+  }
+
+  const VkCommandBufferBeginInfo begin_info{
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+      .flags = 0,
+  };
+  if (auto result = require_vk_success(
+          vkBeginCommandBuffer(command_buffer, &begin_info),
+          "vkBeginCommandBuffer failed");
+      !result) {
+    return std::unexpected(result.error());
+  }
+  if (auto result = vulkan_record_glyph_atlas_uploads(
+          command_buffer,
+          glyph_atlas_resources,
+          glyph_atlas_uploads);
+      !result) {
+    return std::unexpected(result.error());
+  }
+  if (auto result = vulkan_record_image_texture_uploads(
+          command_buffer,
+          image_texture_resources,
+          image_texture_uploads);
+      !result) {
+    return std::unexpected(result.error());
   }
   VkClearValue clear_value{};
   clear_value.color = VkClearColorValue{{color.r, color.g, color.b, color.a}};
@@ -121,9 +160,18 @@ Result<void> record_vulkan_frame_command_buffer(
       draw_order);
   vkCmdEndRenderPass(command_buffer);
 
-  return require_vk_success(
-      vkEndCommandBuffer(command_buffer),
-      "vkEndCommandBuffer failed");
+  if (auto result = require_vk_success(
+          vkEndCommandBuffer(command_buffer),
+          "vkEndCommandBuffer failed");
+      !result) {
+    return std::unexpected(result.error());
+  }
+  vulkan_commit_frame_command_recording(
+      command_reuse_state, signature, has_pending_uploads);
+  return VulkanFrameCommandRecordingResult{
+      .action = VulkanFrameCommandReuseAction::record,
+      .reason = reuse_plan.reason,
+  };
 }
 
 } // namespace cgpui

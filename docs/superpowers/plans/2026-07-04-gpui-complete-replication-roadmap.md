@@ -1691,9 +1691,9 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw through public APIs. Step 506 SVG integration closeout is next.
 - [x] Phase E Step 506 closes the SVG integration band. Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
 - [x] Phase E Step 507 adds `VulkanFrameGeometryBufferResources` and reusable host-visible vertex/index buffers for text, image, solid, and rounded geometry. Empty frames keep retained capacity, matching-capacity uploads remap the existing allocation, and growth replaces buffers geometrically after the single in-flight fence. Step 508 command reuse is next.
-- [ ] Steps 508-514: Add the remaining batching and frame scheduling depth:
-  command reuse, pipeline switches, resource barriers, swapchain recovery, and
-  present pacing.
+- [x] Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.
+- [ ] Steps 509-514: Add the remaining batching and frame scheduling depth:
+  pipeline switches, resource barriers, swapchain recovery, and present pacing.
 - [ ] Steps 515-522: Add renderer diagnostics that compare planned work with
   submitted GPU work, including upload bytes, draw counts, dropped resources,
   and frame timing.

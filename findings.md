@@ -1,5 +1,24 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 508 Recorded Command Reuse
+
+- Vulkan already retains one command-buffer handle per swapchain image, but
+  `record_vulkan_frame_command_buffer(...)` resets and records it every frame
+  with `VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT`. Step 508 must implement
+  recorded-command reuse, not relabel handle reuse.
+- Reuse is unsafe for command buffers that contain glyph-atlas or image staging
+  uploads because the staging resources are destroyed/rebuilt on later frames.
+  Any non-empty upload set must force recording and leave the slot ineligible.
+- For upload-free frames, exact compact signatures can cover render pass,
+  framebuffer, extent, clear color, pipeline/layout handles, geometry-buffer
+  handles, solid/rounded ranges, planned text/image descriptor commands, clip
+  state, and authored draw order. Vertex/index bytes may change behind retained
+  handles after the in-flight fence without changing recorded commands.
+- Command reuse state belongs per swapchain image and must be cleared on
+  swapchain install/destroy and record failure. Step 509 retains pipeline-switch
+  batching ownership.
+- Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.
+
 ## 2026-07-10 Phase E Step 507 Frame Geometry Buffers
 
 - Steps 507-514 are specified as one band covering vertex/index buffers,
