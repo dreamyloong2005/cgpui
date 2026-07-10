@@ -1,5 +1,45 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 507 Frame Geometry Buffers
+
+- Step 506 is committed on `master` at
+  `3b84876f test: close svg integration band`; only the pre-existing untracked
+  `.vscode/` directory remains.
+- The roadmap defines Steps 507-514 as a batching/frame-scheduling band rather
+  than naming each slice. Following its listed order, Step 507 starts with a
+  focused vertex/index-buffer ownership audit and implementation boundary.
+- Existing per-primitive Vulkan sources are already split by text, image,
+  rounded-rect, and solid geometry. Discovery now needs to identify the shared
+  frame-level gap without moving those focused owners into a broad file.
+- Confirmed the gap: all four primitive geometry upload paths destroy and
+  recreate host-visible buffers each frame. Step 507 will introduce a private
+  reusable frame-geometry buffer leaf and route text, image, solid, and rounded
+  vertex/index uploads through it; Step 508 retains command reuse ownership.
+- Added `vulkan_frame_geometry_buffer_test` before implementation. RED is exact:
+  compilation fails only because
+  `vulkan_frame_geometry_buffer_internal.hpp` does not exist yet.
+- Added the reusable allocation planner/uploader and routed text, image, solid,
+  and rounded geometry through it. The focused target now builds and reaches
+  exit 61 only because renderer structure inventory has not yet been updated.
+- A multi-name `xmake build` verification attempt was rejected because build
+  accepts one target. Continue with the established multi-target `xmake test`
+  form instead.
+- Updated renderer structure inventory and legacy fixtures for the shared
+  `vertices`/`indices` allocation shape. Nine focused structure, primitive,
+  ordering, clip, and live frame regressions pass 9/9.
+- The Step 507 focused test now reaches only the expected documentation exit
+  70. Synchronized reusable frame geometry and the Step 508 command reuse
+  handoff across the roadmap, ledgers, task plan, and findings.
+- Step 507 behavior, renderer structure, primitive recording, stable ordering,
+  clip, live frame, and parity focused verification passes 11/11. Ledger JSON
+  parsing and `git diff --check` pass.
+- The complete Windows debug suite passes 188/188. `wsl.exe -l -q` remains
+  empty, so Linux verification stays deferred to the final Phase E gate.
+- Final ownership review moved the now-shared `VkBufferCreateInfo` helper into
+  `vulkan_frame_geometry_buffer` and removed three dead primitive wrappers.
+  Focused 11/11 and the complete Windows 188/188 suite still pass; the new
+  private header/source are 58/194 lines against 80/210 structure limits.
+
 ## 2026-07-10 Phase E Step 506 SVG Integration Closeout
 
 - Step 505 is committed on `master` at

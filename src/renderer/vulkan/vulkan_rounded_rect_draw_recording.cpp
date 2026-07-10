@@ -56,13 +56,13 @@ void vulkan_bind_rounded_rect_draw_state(
   };
   vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
-  const VkBuffer vertex_buffer = buffer_resources.vertex_buffer;
+  const VkBuffer vertex_buffer = buffer_resources.vertices.buffer;
   constexpr VkDeviceSize buffer_offset = 0;
   vkCmdBindVertexBuffers(
       command_buffer, 0, 1, &vertex_buffer, &buffer_offset);
   vkCmdBindIndexBuffer(
       command_buffer,
-      buffer_resources.index_buffer,
+      buffer_resources.indices.buffer,
       0,
       VK_INDEX_TYPE_UINT32);
   const VulkanRoundedRectPushConstants push_constants{

@@ -52,10 +52,21 @@ cgpui::VulkanRoundedRectPipelineResources pipeline_resources() {
 
 cgpui::VulkanRoundedRectBufferResources buffer_resources() {
   cgpui::VulkanRoundedRectBufferResources resources{
-      .vertex_buffer = fake_handle<VkBuffer>(3),
-      .vertex_memory = fake_handle<VkDeviceMemory>(4),
-      .index_buffer = fake_handle<VkBuffer>(5),
-      .index_memory = fake_handle<VkDeviceMemory>(6),
+      .vertices =
+          cgpui::VulkanFrameGeometryBufferResources{
+              .buffer = fake_handle<VkBuffer>(3),
+              .memory = fake_handle<VkDeviceMemory>(4),
+              .byte_capacity =
+                  10 * sizeof(cgpui::VulkanRoundedRectVertex),
+              .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+          },
+      .indices =
+          cgpui::VulkanFrameGeometryBufferResources{
+              .buffer = fake_handle<VkBuffer>(5),
+              .memory = fake_handle<VkDeviceMemory>(6),
+              .byte_capacity = 24 * sizeof(std::uint32_t),
+              .usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+          },
       .vertex_count = 10,
       .index_count = 24,
       .vertex_byte_size =

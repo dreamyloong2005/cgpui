@@ -74,8 +74,14 @@ cgpui::VulkanImagePipelineResources pipeline_resources() {
 cgpui::VulkanImageVertexBufferResources vertex_buffer(
     std::size_t vertex_count) {
   return cgpui::VulkanImageVertexBufferResources{
-      .buffer = fake_handle<VkBuffer>(12),
-      .memory = fake_handle<VkDeviceMemory>(13),
+      .vertices =
+          cgpui::VulkanFrameGeometryBufferResources{
+              .buffer = fake_handle<VkBuffer>(12),
+              .memory = fake_handle<VkDeviceMemory>(13),
+              .byte_capacity =
+                  vertex_count * sizeof(cgpui::VulkanImageVertex),
+              .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+          },
       .vertex_count = vertex_count,
       .byte_size = vertex_count * sizeof(cgpui::VulkanImageVertex),
   };

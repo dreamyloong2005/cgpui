@@ -167,6 +167,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_frame_draw_order.cpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_frame_geometry_buffer_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp",
       "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp",
       "src/renderer/vulkan/vulkan_clip_scissor.cpp",
       "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp",
@@ -1305,16 +1307,35 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp");
   const std::string text_vertex_buffer =
       read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
+  const std::string frame_geometry_buffer_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_geometry_buffer_internal.hpp");
+  const std::string frame_geometry_buffer = read_source(
+      "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp");
+  if (line_count(frame_geometry_buffer_header) > 80 ||
+      line_count(frame_geometry_buffer) > 210 ||
+      !contains(frame_geometry_buffer_header,
+                "struct VulkanFrameGeometryBufferResources") ||
+      !contains(frame_geometry_buffer,
+                "vulkan_plan_frame_geometry_buffer(") ||
+      !contains(frame_geometry_buffer,
+                "vulkan_upload_frame_geometry_buffer(") ||
+      !contains(frame_geometry_buffer, "vkMapMemory") ||
+      !contains(frame_geometry_buffer, "vkCreateBuffer")) {
+    return 64;
+  }
   if (line_count(text_vertex_buffer_header) > 60 ||
       line_count(text_vertex_buffer) > 190 ||
       !contains(text_vertex_buffer_header,
                 "struct VulkanTextVertexBufferResources") ||
+      !contains(text_vertex_buffer_header,
+                "VulkanFrameGeometryBufferResources vertices") ||
       !contains(text_vertex_buffer, "vulkan_build_text_vertices(") ||
       !contains(text_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
-      !contains(text_vertex_buffer, "vkMapMemory") ||
+      !contains(text_vertex_buffer,
+                "vulkan_upload_frame_geometry_buffer(") ||
       !contains(text_vertex_buffer, "vulkan_apply_composed_transform(") ||
       contains(command_recording, "vulkan_build_text_vertices(")) {
-    return 64;
+    return 65;
   }
 
   const std::string text_draw_recording_header = read_source(
@@ -1455,8 +1476,14 @@ int main(int argc, char** argv) {
       line_count(rounded_rect_frame) > 40 ||
       !contains(rounded_rect_buffers_header,
                 "struct VulkanRoundedRectBufferResources") ||
+      !contains(rounded_rect_buffers_header,
+                "VulkanFrameGeometryBufferResources vertices") ||
+      !contains(rounded_rect_buffers_header,
+                "VulkanFrameGeometryBufferResources indices") ||
       !contains(rounded_rect_buffers,
                 "vulkan_upload_rounded_rect_buffers(") ||
+      !contains(rounded_rect_buffers,
+                "vulkan_upload_frame_geometry_buffer(") ||
       !contains(rounded_rect_buffers, "VK_BUFFER_USAGE_INDEX_BUFFER_BIT") ||
       !contains(rounded_rect_frame, "prepare_rounded_rect_frame(")) {
     return 69;
@@ -1685,6 +1712,8 @@ int main(int argc, char** argv) {
                 "vulkan_apply_composed_transform") ||
       !contains(image_vertex_buffer, "vulkan_resolve_image_tint(") ||
       !contains(image_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
+      !contains(image_vertex_buffer,
+                "vulkan_upload_frame_geometry_buffer(") ||
       !contains(image_draw_recording,
                 "vulkan_plan_image_draw_commands") ||
       !contains(image_draw_recording,

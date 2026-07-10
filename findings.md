@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 507 Frame Geometry Buffers
+
+- Steps 507-514 are specified as one band covering vertex/index buffers,
+  command reuse, pipeline switches, resource barriers, swapchain recovery, and
+  present pacing. Step 507 should therefore close the first listed buffer gap
+  through a focused renderer module and matching structure coverage.
+- The current renderer already has primitive-specific geometry and recording
+  leaves. The Step 507 boundary must compose those owners rather than moving
+  their implementation into `vulkan_command_recording.cpp`,
+  `vulkan_renderer.cpp`, or `vulkan_state.cpp`.
+- Text and image vertex uploads and rounded/solid vertex-index uploads currently
+  destroy and recreate their host-visible Vulkan buffers every frame. The
+  renderer already waits for its single in-flight fence before these uploads,
+  so retaining allocations and remapping them is safe on the current schedule.
+- Step 507 will add a focused private `vulkan_frame_geometry_buffer` policy and
+  implementation. Primitive-specific resources keep their draw/count metadata,
+  while the shared leaf owns capacity planning, reuse, growth replacement,
+  host-coherent mapping, and destruction for vertex/index allocations.
+- Empty geometry should clear active byte/count metadata without discarding an
+  existing allocation; a later non-empty frame can reuse that capacity. Actual
+  command-buffer reuse remains Step 508.
+- Phase E Step 507 adds `VulkanFrameGeometryBufferResources` and reusable host-visible vertex/index buffers for text, image, solid, and rounded geometry. Empty frames keep retained capacity, matching-capacity uploads remap the existing allocation, and growth replaces buffers geometrically after the single in-flight fence. Step 508 command reuse is next.
+
 ## 2026-07-10 Phase E Step 506 SVG Integration Closeout
 
 - Step 506 is audit-only. Steps 499-505 already own the full behavior chain,

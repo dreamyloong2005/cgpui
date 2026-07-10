@@ -45,8 +45,14 @@ Handle fake_handle(std::uintptr_t value) {
 cgpui::VulkanTextVertexBufferResources vertex_buffer(
     std::size_t vertex_count) {
   return cgpui::VulkanTextVertexBufferResources{
-      .buffer = fake_handle<VkBuffer>(1),
-      .memory = fake_handle<VkDeviceMemory>(2),
+      .vertices =
+          cgpui::VulkanFrameGeometryBufferResources{
+              .buffer = fake_handle<VkBuffer>(1),
+              .memory = fake_handle<VkDeviceMemory>(2),
+              .byte_capacity =
+                  vertex_count * sizeof(cgpui::VulkanTextVertex),
+              .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+          },
       .vertex_count = vertex_count,
       .byte_size = vertex_count * sizeof(cgpui::VulkanTextVertex),
   };

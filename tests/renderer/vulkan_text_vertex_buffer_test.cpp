@@ -86,8 +86,12 @@ int test_vertex_buffer_contract() {
   if (resources.ready()) {
     return 20;
   }
-  resources.buffer = fake_handle<VkBuffer>(1);
-  resources.memory = fake_handle<VkDeviceMemory>(2);
+  resources.vertices = cgpui::VulkanFrameGeometryBufferResources{
+      .buffer = fake_handle<VkBuffer>(1),
+      .memory = fake_handle<VkDeviceMemory>(2),
+      .byte_capacity = 6 * sizeof(cgpui::VulkanTextVertex),
+      .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+  };
   resources.vertex_count = 6;
   resources.byte_size = 6 * sizeof(cgpui::VulkanTextVertex);
   if (!resources.ready()) {
@@ -95,7 +99,8 @@ int test_vertex_buffer_contract() {
   }
 
   const VkBufferCreateInfo create_info =
-      cgpui::vulkan_text_vertex_buffer_create_info(resources.byte_size);
+      cgpui::vulkan_frame_geometry_buffer_create_info(
+          resources.byte_size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
   if (create_info.sType != VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO ||
       create_info.size != resources.byte_size ||
       create_info.usage != VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ||
@@ -110,17 +115,21 @@ int test_vertex_buffer_structure() {
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp");
   const std::string source =
       read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
+  const std::string shared = read_source(
+      "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp");
   const std::string frame =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   const std::string state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
-  if (header.empty() || source.empty() || frame.empty() || state.empty()) {
+  if (header.empty() || source.empty() || shared.empty() || frame.empty() ||
+      state.empty()) {
     return 30;
   }
   if (!contains(header, "struct VulkanTextVertexBufferResources") ||
       !contains(source, "vulkan_build_text_vertices(") ||
       !contains(source, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
-      !contains(source, "vkMapMemory") ||
+      !contains(source, "vulkan_upload_frame_geometry_buffer(") ||
+      !contains(shared, "vkMapMemory") ||
       !contains(frame, "vulkan_upload_text_vertex_buffer(") ||
       !contains(state, "VulkanTextVertexBufferResources text_vertex_buffer_")) {
     return 31;

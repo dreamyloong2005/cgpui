@@ -104,7 +104,7 @@ void vulkan_bind_image_draw_state(
   };
   vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
-  const VkBuffer buffer = vertex_buffer.buffer;
+  const VkBuffer buffer = vertex_buffer.vertices.buffer;
   constexpr VkDeviceSize buffer_offset = 0;
   vkCmdBindVertexBuffers(command_buffer, 0, 1, &buffer, &buffer_offset);
   const VulkanImagePushConstants push_constants{

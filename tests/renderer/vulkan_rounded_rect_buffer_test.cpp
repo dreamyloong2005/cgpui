@@ -47,10 +47,18 @@ int test_rounded_rect_buffer_resource_contract() {
   if (resources.ready()) {
     return 10;
   }
-  resources.vertex_buffer = fake_handle<VkBuffer>(1);
-  resources.vertex_memory = fake_handle<VkDeviceMemory>(2);
-  resources.index_buffer = fake_handle<VkBuffer>(3);
-  resources.index_memory = fake_handle<VkDeviceMemory>(4);
+  resources.vertices = cgpui::VulkanFrameGeometryBufferResources{
+      .buffer = fake_handle<VkBuffer>(1),
+      .memory = fake_handle<VkDeviceMemory>(2),
+      .byte_capacity = 5 * sizeof(cgpui::VulkanRoundedRectVertex),
+      .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+  };
+  resources.indices = cgpui::VulkanFrameGeometryBufferResources{
+      .buffer = fake_handle<VkBuffer>(3),
+      .memory = fake_handle<VkDeviceMemory>(4),
+      .byte_capacity = 12 * sizeof(std::uint32_t),
+      .usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+  };
   resources.vertex_count = 5;
   resources.index_count = 12;
   resources.vertex_byte_size =
@@ -64,10 +72,12 @@ int test_rounded_rect_buffer_resource_contract() {
 }
 
 int test_rounded_rect_buffer_create_infos() {
-  const VkBufferCreateInfo vertex = cgpui::vulkan_rounded_rect_buffer_create_info(
-      256, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-  const VkBufferCreateInfo index = cgpui::vulkan_rounded_rect_buffer_create_info(
-      128, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+  const VkBufferCreateInfo vertex =
+      cgpui::vulkan_frame_geometry_buffer_create_info(
+          256, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+  const VkBufferCreateInfo index =
+      cgpui::vulkan_frame_geometry_buffer_create_info(
+          128, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
   if (vertex.sType != VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO ||
       vertex.size != 256 ||
       vertex.usage != VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ||
@@ -83,20 +93,23 @@ int test_rounded_rect_buffer_structure() {
       "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp");
   const std::string source =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp");
+  const std::string shared = read_source(
+      "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp");
   const std::string frame =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_frame.cpp");
   const std::string state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
   const std::string destructor =
       read_source("src/renderer/vulkan/vulkan_state.cpp");
-  if (header.empty() || source.empty() || frame.empty() || state.empty() ||
-      destructor.empty()) {
+  if (header.empty() || source.empty() || shared.empty() || frame.empty() ||
+      state.empty() || destructor.empty()) {
     return 30;
   }
   if (!contains(header, "struct VulkanRoundedRectBufferResources") ||
       !contains(source, "vulkan_upload_rounded_rect_buffers(") ||
       !contains(source, "VK_BUFFER_USAGE_INDEX_BUFFER_BIT") ||
-      !contains(source, "vkMapMemory") ||
+      !contains(source, "vulkan_upload_frame_geometry_buffer(") ||
+      !contains(shared, "vkMapMemory") ||
       !contains(frame, "prepare_rounded_rect_frame(") ||
       !contains(state, "VulkanRoundedRectBufferResources rounded_rect_buffers_") ||
       !contains(destructor, "vulkan_destroy_rounded_rect_buffers(")) {

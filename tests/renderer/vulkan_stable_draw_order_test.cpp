@@ -158,8 +158,13 @@ int test_text_draw_planning_retains_source_index() {
       .pipeline = fake_handle<VkPipeline>(3),
   };
   const cgpui::VulkanTextVertexBufferResources vertices{
-      .buffer = fake_handle<VkBuffer>(4),
-      .memory = fake_handle<VkDeviceMemory>(5),
+      .vertices =
+          cgpui::VulkanFrameGeometryBufferResources{
+              .buffer = fake_handle<VkBuffer>(4),
+              .memory = fake_handle<VkDeviceMemory>(5),
+              .byte_capacity = 6 * sizeof(cgpui::VulkanTextVertex),
+              .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+          },
       .vertex_count = 6,
       .byte_size = 6 * sizeof(cgpui::VulkanTextVertex),
   };

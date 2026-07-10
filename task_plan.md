@@ -721,13 +721,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset, while failed rasterization skips upload. Step 505 SVG public example is next.
 - Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw. Step 506 SVG integration closeout is next.
 - Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
+- Phase E Step 507 adds `VulkanFrameGeometryBufferResources` and reusable host-visible vertex/index buffers for text, image, solid, and rounded geometry. Empty frames keep retained capacity, matching-capacity uploads remap the existing allocation, and growth replaces buffers geometrically after the single in-flight fence. Step 508 command reuse is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-506 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-507 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -771,9 +772,10 @@ Windows/Linux core API is stable enough for parity work.
   LunaSVG root recolor, normalized recolor cache identity, and backend-neutral
   cache-to-`RenderFrame` SVG upload integration, plus the prelude-only public
   registered-source/raster-cache/upload/draw example, plus the audit-only SVG
-  integration closeout.
-- In progress: Step 507 batching and frame scheduling.
-- Pending bands: Steps 507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  integration closeout, plus reusable host-visible vertex/index buffers with
+  retained capacity for frame geometry.
+- In progress: Step 508 command reuse.
+- Pending bands: Steps 508-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -785,6 +787,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| `xmake build` rejected a list of multiple target names | Step 507 focused regression build | Use `xmake test -P . <name>/default ...`, which supports the repository's multi-target verification pattern |
+| Step 507 focused test exits 61 after implementation | Step 507 first GREEN | Pure planning behavior passes; add the new frame-geometry leaf to renderer structure inventory and update legacy ownership assertions/fixtures |
+| Step 507 focused build cannot include `vulkan_frame_geometry_buffer_internal.hpp` | Step 507 RED | Expected missing private leaf; implement the reusable frame-geometry buffer module and route primitive owners through it |
 | Step 506 closeout exited 80 because four historical SVG behavior function names were guessed instead of read | Step 506 first GREEN | Read the actual focused test declarations and update only the audit needles while preserving all seven evidence checks |
 | A multi-hunk Step 504 structure patch still failed at the line-count hunk after reading the current file | Step 504 structure sync | Apply the ownership/include checks first, then insert the two line limits with a single-line replacement hunk |
 | `svg_image_upload.cpp` failed because direct `renderer_frame.hpp` inclusion lacks report-type declarations supplied by the aggregate | Step 504 first GREEN build | Keep the new leaf lightweight with a `RenderFrame` forward declaration and include the aggregate only in the `.cpp` that needs the complete class |
