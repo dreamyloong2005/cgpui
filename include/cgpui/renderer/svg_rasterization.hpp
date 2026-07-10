@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/renderer/svg_raster_colorization.hpp"
 #include "cgpui/renderer/svg_viewport_scaling.hpp"
 
 #include <string_view>
@@ -17,6 +18,7 @@ enum class SvgRasterizationPlanStatus {
   invalid_logical_size,
   invalid_viewport_size,
   invalid_scale,
+  invalid_color,
   exceeds_limits,
 };
 
@@ -26,6 +28,7 @@ struct SvgRasterizationRequest {
   std::string_view svg_source;
   DpiScale scale;
   Size viewport_size;
+  std::optional<Color> current_color;
 };
 
 struct SvgRasterizationPlan {
@@ -34,6 +37,7 @@ struct SvgRasterizationPlan {
   SvgRasterizationPlanStatus status =
       SvgRasterizationPlanStatus::invalid_asset_id;
   SvgViewportScalingPlan viewport;
+  SvgRasterColorizationPlan colorization;
   ImageAssetDescriptor descriptor;
 
   [[nodiscard]] bool ready() const;

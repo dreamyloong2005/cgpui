@@ -13,6 +13,7 @@ struct SvgRasterCacheKey {
   Size logical_size;
   Size viewport_size;
   float scale = 1.0F;
+  SvgRasterColorizationPlan colorization;
   std::string svg_source;
 
   [[nodiscard]] bool matches(

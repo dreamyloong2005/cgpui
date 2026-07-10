@@ -1224,8 +1224,23 @@
       "xmake.lua"
     ],
     "phase_e_step_502_remaining_gap": "Step 503 SVG recolor/tint",
+    "phase_e_step_503_surface": "Phase E Step 503 adds SvgRasterColorizationPlan with a validated RGBA current color normalized to RGBA8 for raster planning and cache identity. The LunaSVG currentColor recolor sets the document-root CSS color, while existing image color stays draw-time multiplicative tint. Step 504 SVG image upload integration is next.",
+    "phase_e_step_503_sources": [
+      "include/cgpui/renderer/svg_raster_colorization.hpp",
+      "src/renderer/svg_raster_colorization_internal.hpp",
+      "src/renderer/svg_raster_colorization.cpp",
+      "include/cgpui/renderer/svg_rasterization.hpp",
+      "src/renderer/svg_rasterization.cpp",
+      "src/renderer/svg_rasterization_lunasvg.cpp",
+      "include/cgpui/renderer/svg_raster_cache.hpp",
+      "src/renderer/svg_raster_cache.cpp",
+      "tests/renderer/svg_recolor_tint_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_503_remaining_gap": "Step 504 SVG image upload integration",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 503 SVG recolor/tint"
+    "phase_e_current_handoff": "Step 504 SVG image upload integration"
   },
   "categories": [
     "application_and_app_context",

@@ -1,5 +1,38 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 503 SVG Recolor/Tint
+
+- RED confirmed: `xmake build -y -P . svg_recolor_tint_test` fails only
+  because the focused public `svg_raster_colorization.hpp` leaf does not yet
+  exist.
+- Step 502 is committed on `master` at
+  `65bc81db feat: scale svg rasters to viewports`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- Existing image tint is already a draw-time Vulkan vertex/fragment multiply
+  with composition opacity applied once. Step 503 should not bake that tint into
+  SVG cache entries.
+- Raster-time recolor will instead target SVG `currentColor` through LunaSVG's
+  document element `setAttribute(...)` API. The current color participates in
+  raster planning/cache identity; multiplicative tint remains draw-time.
+- Added the focused public colorization plan, private CSS conversion helper,
+  LunaSVG root-color application, normalized RGBA8 cache identity, aggregate
+  include, and renderer structure guards.
+- All four behavior groups pass; direct execution reaches only the expected
+  documentation exit 60. `renderer_source_structure_test` builds and exits 0.
+- `xmake test -P . svg_recolor_tint_test` returned `nothing to test`; the
+  registered test name is `svg_recolor_tint_test/default`.
+- Synchronized Phase E Step 503, `SvgRasterColorizationPlan`, LunaSVG currentColor recolor, validated RGBA current color, draw-time multiplicative tint, and the Step 504 SVG image upload integration handoff across the roadmap, ledgers, and working notes.
+- The five SVG regressions, renderer structure test, and parity ledger test all
+  exit 0. Ledger JSON parses and `git diff --check` is clean.
+- The complete Windows debug suite passed 183/184. Only the visible
+  `vulkan_solid_rect_test` failed with exit 5 and RGB(73,108,132); all Step 503
+  tests passed.
+- Built and ran the same solid-rect test from a clean detached Step 502
+  `65bc81db` worktree outside the sandbox. It reproduced the identical exit 5
+  and RGB value, proving the desktop-pixel failure predates this slice. The
+  temporary `C:\\tmp\\cgpui-step503-baseline` worktree was removed.
+- `wsl.exe -l -q` remains empty, so no WSL gate can run on this machine yet.
+
 ## 2026-07-10 Phase E Step 502 SVG Viewport Scaling
 
 - Step 501 is committed on `master` at

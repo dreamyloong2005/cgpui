@@ -40,6 +40,12 @@ SvgRasterizationPlan plan_svg_rasterization(
     plan.status = SvgRasterizationPlanStatus::empty_source;
     return plan;
   }
+  plan.colorization = plan_svg_raster_colorization(
+      SvgRasterColorizationRequest{.current_color = request.current_color});
+  if (!plan.colorization.ready()) {
+    plan.status = SvgRasterizationPlanStatus::invalid_color;
+    return plan;
+  }
   plan.viewport = plan_svg_viewport_scaling(SvgViewportScalingRequest{
       .logical_size = request.logical_size,
       .viewport_size = request.viewport_size,

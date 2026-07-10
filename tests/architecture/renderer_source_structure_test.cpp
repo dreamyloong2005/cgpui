@@ -125,6 +125,9 @@ int main(int argc, char** argv) {
       "include/cgpui/renderer/image_uploads.hpp",
       "include/cgpui/renderer/svg_raster_cache.hpp",
       "src/renderer/svg_raster_cache.cpp",
+      "include/cgpui/renderer/svg_raster_colorization.hpp",
+      "src/renderer/svg_raster_colorization_internal.hpp",
+      "src/renderer/svg_raster_colorization.cpp",
       "include/cgpui/renderer/svg_rasterization.hpp",
       "src/renderer/svg_rasterization.cpp",
       "src/renderer/svg_rasterization_lunasvg.cpp",
@@ -301,6 +304,8 @@ int main(int argc, char** argv) {
       !contains(renderer_header,
                 "#include \"cgpui/renderer/svg_raster_cache.hpp\"") ||
       !contains(renderer_header,
+                "#include \"cgpui/renderer/svg_raster_colorization.hpp\"") ||
+      !contains(renderer_header,
                 "#include \"cgpui/renderer/svg_viewport_scaling.hpp\"") ||
       !contains(renderer_header, "#include \"cgpui/renderer/glyph_atlas.hpp\"") ||
       !contains(renderer_header,
@@ -311,6 +316,7 @@ int main(int argc, char** argv) {
       contains(renderer_header, "class Renderer") ||
       contains(renderer_header, "struct RendererCommandReport") ||
       contains(renderer_header, "struct SvgRasterizationRequest") ||
+      contains(renderer_header, "struct SvgRasterColorizationPlan") ||
       contains(renderer_header, "struct SvgViewportScalingPlan") ||
       contains(renderer_header, "class SvgRasterCache") ||
       contains(renderer_header, "class GlyphCache")) {
@@ -345,6 +351,12 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/renderer/svg_raster_cache.hpp");
   const std::string svg_raster_cache_source =
       read_source("src/renderer/svg_raster_cache.cpp");
+  const std::string svg_raster_colorization =
+      read_source("include/cgpui/renderer/svg_raster_colorization.hpp");
+  const std::string svg_raster_colorization_internal =
+      read_source("src/renderer/svg_raster_colorization_internal.hpp");
+  const std::string svg_raster_colorization_source =
+      read_source("src/renderer/svg_raster_colorization.cpp");
   const std::string svg_rasterization =
       read_source("include/cgpui/renderer/svg_rasterization.hpp");
   const std::string svg_rasterization_source =
@@ -406,6 +418,12 @@ int main(int argc, char** argv) {
       !contains(image_uploads, "struct ImageUploadBatch") ||
       !contains(svg_raster_cache, "class SvgRasterCache") ||
       !contains(svg_raster_cache_source, "SvgRasterCache::rasterize(") ||
+      !contains(svg_raster_colorization,
+                "struct SvgRasterColorizationPlan") ||
+      !contains(svg_raster_colorization_internal,
+                "svg_current_color_css(") ||
+      !contains(svg_raster_colorization_source,
+                "plan_svg_raster_colorization(") ||
       !contains(svg_rasterization, "struct SvgRasterizationRequest") ||
       !contains(svg_rasterization, "struct SvgRasterizationPlan") ||
       !contains(svg_rasterization, "struct SvgRasterizationResult") ||
@@ -429,6 +447,9 @@ int main(int argc, char** argv) {
       line_count(image_uploads) > 220 ||
       line_count(svg_raster_cache) > 100 ||
       line_count(svg_raster_cache_source) > 140 ||
+      line_count(svg_raster_colorization) > 100 ||
+      line_count(svg_raster_colorization_internal) > 40 ||
+      line_count(svg_raster_colorization_source) > 100 ||
       line_count(svg_rasterization) > 90 ||
       line_count(svg_rasterization_source) > 120 ||
       line_count(svg_rasterization_lunasvg) > 100 ||

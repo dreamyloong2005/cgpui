@@ -1,5 +1,7 @@
 #include "cgpui/renderer/svg_rasterization.hpp"
 
+#include "svg_raster_colorization_internal.hpp"
+
 #include <lunasvg.h>
 
 #include <cstring>
@@ -20,6 +22,10 @@ SvgRasterizationResult rasterize_svg(
   if (!document) {
     result.status = SvgRasterizationStatus::invalid_svg;
     return result;
+  }
+  if (result.plan.colorization.recolors_current_color) {
+    document->documentElement().setAttribute(
+        "color", detail::svg_current_color_css(result.plan.colorization));
   }
 
   const ImageAssetDescriptor& descriptor = result.plan.descriptor;

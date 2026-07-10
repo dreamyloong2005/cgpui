@@ -1,5 +1,25 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 503 SVG Recolor/Tint
+
+- The existing Vulkan image path already resolves optional `ImageDraw::tint`,
+  applies composition opacity once, transports tint through vertex color, and
+  multiplies the sampled texture in `image.frag.glsl`. That path should remain
+  the dynamic tint owner.
+- LunaSVG exposes `Document::documentElement()` and
+  `Element::setAttribute(name, value)`. Raster-time SVG recolor can therefore
+  set the root CSS `color` for authored `currentColor` without rewriting source
+  markup or duplicating a parser.
+- Step 503 should add explicit current-color planning/validation and include the
+  normalized current color in raster cache identity. It should also freeze that
+  multiplicative image tint remains draw-time and does not create tinted raster
+  cache variants.
+- Phase E Step 503 now adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8. The LunaSVG currentColor recolor sets document-root CSS `color`, while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
+- The complete Windows run passed 183/184. The only failure was the visible
+  `vulkan_solid_rect_test` desktop sample returning RGB(73,108,132). A clean
+  detached worktree at the Step 502 commit `65bc81db` reproduced the exact same
+  exit 5 and RGB value outside the sandbox, so this failure predates Step 503.
+
 ## 2026-07-10 Phase E Step 502 SVG Viewport Scaling
 
 - `ImageElement::layout(...)` resolves a content size from preferred style or

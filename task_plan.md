@@ -717,13 +717,14 @@ Windows/Linux core API is stable enough for parity work.
   hits expose a cache-owned raster result without copying
   pixels, and failed rasterizations are not cached. Step 502 SVG viewport scaling is next.
 - Phase E Step 502 adds `SvgViewportScalingPlan`. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, and records effective x/y raster scales for the raster planner, backend, and cache. Step 503 SVG recolor/tint is next.
+- Phase E Step 503 adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8 cache identity. The LunaSVG currentColor recolor is raster-time, while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-502 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-503 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -763,9 +764,10 @@ Windows/Linux core API is stable enough for parity work.
   rasterization request/plan boundary, plus the production LunaSVG raster
   backend and explicit result status, plus the explicit SVG raster cache and
   cache-owned result lookup, plus optional viewport scaling and effective
-  device-scale metadata.
-- In progress: Step 503 SVG recolor/tint.
-- Pending bands: Steps 503-506 SVG; Steps
+  device-scale metadata, plus validated SVG current-color planning,
+  LunaSVG root recolor, and normalized recolor cache identity.
+- In progress: Step 504 SVG image upload integration.
+- Pending bands: Steps 504-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -778,6 +780,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Windows full debug passed 183/184, with only visible `vulkan_solid_rect_test` returning RGB(73,108,132) instead of its clear-color threshold | Step 503 full Windows gate | A clean detached `65bc81db` Step 502 baseline worktree reproduced the identical exit 5 and RGB value outside the sandbox, proving the desktop-pixel failure predates Step 503; retain the evidence and revisit with the pixel-test band |
+| A combined Step 503 documentation patch contained a malformed JSON anchor and did not apply | Step 503 documentation sync | Split the Markdown and JSON updates, then use the exact Step 502 JSON tail as the second anchor |
+| `xmake test -P . svg_recolor_tint_test` returned `nothing to test` | Step 503 focused GREEN | Use the registered test name `svg_recolor_tint_test/default`; direct `xmake run` exposes the precise executable exit code |
+| `svg_recolor_tint_test` exited 60 after all behavior and structure checks passed | Step 503 first GREEN | Expected documentation gate; add the six exact Step 503 phrases to the five authoritative files |
 | Step 501 cache regression exited 60 after Step 502 docs moved its historical handoff across a task-plan line break | Step 502 focused regression | Keep the exact historical `Step 502 SVG viewport scaling` phrase contiguous while retaining the new Step 503 global handoff |
 | Step 502 image inventory guessed a nonexistent `include/cgpui/ui/widgets/image.hpp` | Step 502 fit-policy search | Use the actual `image_builder.hpp`, `element_image_nodes.hpp`, and focused image layout/paint sources |
 | Step 501 exact phrase audit split cache identity and failed-cache wording across Markdown lines | Step 501 documentation gate | Keep each required phrase contiguous in the roadmap, task plan, and findings before rerunning the five-file audit |

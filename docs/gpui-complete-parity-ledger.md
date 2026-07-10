@@ -626,6 +626,8 @@ consume C: drive space again.
 - Handoff: Step 502 SVG viewport scaling.
 - Phase E Step 502 adds `SvgViewportScalingPlan`: an optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, records effective x/y raster scales, and participates in normalized SVG cache identity.
 - Handoff: Step 503 SVG recolor/tint.
+- Phase E Step 503 adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8 for raster planning and cache identity. The LunaSVG currentColor recolor sets the document-root CSS color, while existing image color stays draw-time multiplicative tint.
+- Handoff: Step 504 SVG image upload integration.
 
 ## Categories
 
