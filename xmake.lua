@@ -173,6 +173,15 @@ if is_plat("linux") then
         add_syslinks("vulkan")
         add_includedirs(public_includedirs)
         add_tests("default")
+
+    target("wayland_frame_pixel_capture_test")
+        set_kind("binary")
+        add_files("tests/renderer/wayland_frame_pixel_capture_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_packages("wayland")
+        add_syslinks("vulkan")
+        add_includedirs(public_includedirs)
+        add_tests("default")
 end
 
 if is_plat("macosx") then
@@ -2237,6 +2246,25 @@ if is_plat("windows") then
         add_includedirs(public_includedirs, "tests/renderer")
         add_syslinks("user32")
         add_tests("default")
+
+    for _, pixel_case in ipairs({
+        "text",
+        "rounded_rect",
+        "image",
+        "clip",
+        "transform",
+        "opacity",
+        "resize"
+    }) do
+        target("vulkan_" .. pixel_case .. "_pixel_test")
+            set_kind("binary")
+            add_files("tests/renderer/vulkan_" .. pixel_case .. "_pixel_test.cpp")
+            add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+            add_packages("vulkansdk")
+            add_includedirs(public_includedirs, "tests/renderer")
+            add_syslinks("user32")
+            add_tests("default")
+    end
 
     target("vulkan_solid_rect_test")
         set_kind("binary")

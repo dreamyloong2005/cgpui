@@ -9399,3 +9399,37 @@
   reuse the live capture fixture while Linux/Wayland receives its active-host
   counterpart in this band.
 - Phase E Step 523 adds `RendererFramePixels` and explicit per-frame capture with optional Vulkan swapchain transfer-source readback, present-layout restoration, and normalized RGBA8 output. Step 524 text pixel coverage is next.
+
+## 2026-07-11 Phase E Steps 524-530 Pixel Output Coverage
+
+- Deterministic fallback glyph rasterization produces a solid coverage rectangle
+  with one-pixel padding, so text output can assert both foreground pixels and
+  untouched clear pixels without native font variability.
+- Rounded rectangles, nearest-sampled 2x2 images, explicit clip rectangles,
+  translation metadata, precomposed opacity, and post-resize clear frames each
+  provide stable sample coordinates over the shared capture fixture.
+- The current Wayland Vulkan smoke target requires a real `WAYLAND_DISPLAY` and
+  explicitly skips otherwise. The pixel band should add an equivalent Wayland
+  capture target using the same public API; the final Linux gate must run it
+  when a distribution/display is available rather than treating a skip as proof.
+- Seven focused pixel files are preferable to one broad scenario file. They can
+  share window/capture helpers while keeping each Step 524-530 output contract
+  independently named and diagnosable.
+- `Renderer::last_frame_pixels()` exposes renderer-owned state. Multi-frame
+  tests that need to compare captures must copy the first snapshot before the
+  next successful capture replaces that state.
+- The live image quadrants proved the renderer-wide Vulkan Y mapping was
+  inverted: each vertex shader emitted OpenGL-style `1 - normalized.y * 2`
+  while draw recording installed a positive-height Vulkan viewport. Correct
+  top-left coordinates require `normalized.y * 2 - 1` for all three pipelines.
+- The shared Windows helper crossed its existing structure cap once resize and
+  message-pump behavior landed. Window lifecycle/resize belongs in
+  `vulkan_pixel_test_window.hpp`; capture and pixel comparison remain in the
+  thinner `vulkan_pixel_test_support.hpp` compatibility helper.
+- Phase E Step 524 adds real Vulkan text pixel coverage for deterministic fallback glyph foreground and clear-background output in authored top-left coordinates. Step 525 rounded rectangle pixel coverage is next.
+- Phase E Step 525 adds real Vulkan rounded rectangle pixel coverage for filled centers and anti-aliased rounded corners. Step 526 image pixel coverage is next.
+- Phase E Step 526 adds real Vulkan nearest-image pixel coverage for top-left RGBA quadrant orientation and corrects all text, rounded, and image vertex shaders to positive-viewport Vulkan top-left Y mapping with validated embedded SPIR-V. Step 527 clip pixel coverage is next.
+- Phase E Step 527 adds real Vulkan clip pixel coverage for inside, horizontal-outside, and vertical-outside samples. Step 528 transform pixel coverage is next.
+- Phase E Step 528 adds real Vulkan transform pixel coverage for translated output and untouched original/distant coordinates. Step 529 opacity pixel coverage is next.
+- Phase E Step 529 adds real Vulkan opacity pixel coverage for encoding-aware half-red composition over opaque black. Step 530 resize pixel coverage is next.
+- Phase E Step 530 adds persistent-renderer resize pixel coverage across exact 64x64 and 96x48 Win32 client extents, plus an active-display Wayland capture target using the same public API. Step 531 pixel-band closeout is next.

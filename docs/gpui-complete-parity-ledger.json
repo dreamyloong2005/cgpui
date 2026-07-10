@@ -1488,8 +1488,76 @@
       "xmake.lua"
     ],
     "phase_e_step_523_remaining_gap": "Step 524 text pixel coverage",
+    "phase_e_step_524_surface": "Phase E Step 524 adds real Vulkan text pixel coverage for deterministic fallback glyph foreground and clear-background output in authored top-left coordinates. Step 525 rounded rectangle pixel coverage is next.",
+    "phase_e_step_524_sources": [
+      "tests/renderer/vulkan_text_pixel_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
+      "tests/renderer/vulkan_pixel_test_window.hpp",
+      "src/renderer/vulkan/shaders/text.vert.glsl",
+      "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_524_remaining_gap": "Step 525 rounded rectangle pixel coverage",
+    "phase_e_step_525_surface": "Phase E Step 525 adds real Vulkan rounded rectangle pixel coverage for filled centers and anti-aliased rounded corners. Step 526 image pixel coverage is next.",
+    "phase_e_step_525_sources": [
+      "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
+      "src/renderer/vulkan/shaders/rounded_rect.vert.glsl",
+      "src/renderer/vulkan/vulkan_rounded_rect_shader_binaries.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_525_remaining_gap": "Step 526 image pixel coverage",
+    "phase_e_step_526_surface": "Phase E Step 526 adds real Vulkan nearest-image pixel coverage for top-left RGBA quadrant orientation and corrects all text, rounded, and image vertex shaders to positive-viewport Vulkan top-left Y mapping with validated embedded SPIR-V. Step 527 clip pixel coverage is next.",
+    "phase_e_step_526_sources": [
+      "tests/renderer/vulkan_image_pixel_test.cpp",
+      "src/renderer/vulkan/shaders/image.vert.glsl",
+      "src/renderer/vulkan/shaders/text.vert.glsl",
+      "src/renderer/vulkan/shaders/rounded_rect.vert.glsl",
+      "src/renderer/vulkan/vulkan_image_shader_binaries.cpp",
+      "src/renderer/vulkan/vulkan_text_shader_binaries.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_shader_binaries.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_526_remaining_gap": "Step 527 clip pixel coverage",
+    "phase_e_step_527_surface": "Phase E Step 527 adds real Vulkan clip pixel coverage for inside, horizontal-outside, and vertical-outside samples. Step 528 transform pixel coverage is next.",
+    "phase_e_step_527_sources": [
+      "tests/renderer/vulkan_clip_pixel_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_527_remaining_gap": "Step 528 transform pixel coverage",
+    "phase_e_step_528_surface": "Phase E Step 528 adds real Vulkan transform pixel coverage for translated output and untouched original/distant coordinates. Step 529 opacity pixel coverage is next.",
+    "phase_e_step_528_sources": [
+      "tests/renderer/vulkan_transform_pixel_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_528_remaining_gap": "Step 529 opacity pixel coverage",
+    "phase_e_step_529_surface": "Phase E Step 529 adds real Vulkan opacity pixel coverage for encoding-aware half-red composition over opaque black. Step 530 resize pixel coverage is next.",
+    "phase_e_step_529_sources": [
+      "tests/renderer/vulkan_opacity_pixel_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_529_remaining_gap": "Step 530 resize pixel coverage",
+    "phase_e_step_530_surface": "Phase E Step 530 adds persistent-renderer resize pixel coverage across exact 64x64 and 96x48 Win32 client extents, plus an active-display Wayland capture target using the same public API. Step 531 pixel-band closeout is next.",
+    "phase_e_step_530_sources": [
+      "tests/renderer/vulkan_resize_pixel_test.cpp",
+      "tests/renderer/wayland_frame_pixel_capture_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
+      "tests/renderer/vulkan_pixel_test_window.hpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_530_remaining_gap": "Step 531 pixel-band closeout",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 524 text pixel coverage"
+    "phase_e_current_handoff": "Step 531 pixel-band closeout"
   },
   "categories": [
     "application_and_app_context",

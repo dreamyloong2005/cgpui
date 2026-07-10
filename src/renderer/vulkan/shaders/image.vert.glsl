@@ -18,7 +18,7 @@ void main() {
   vec2 normalized = in_position / framebuffer_size;
   gl_Position = vec4(
       normalized.x * 2.0 - 1.0,
-      1.0 - normalized.y * 2.0,
+      normalized.y * 2.0 - 1.0,
       0.0,
       1.0);
   out_image_uv = in_image_uv;

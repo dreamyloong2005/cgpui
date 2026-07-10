@@ -1,8 +1,10 @@
+#include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -174,7 +176,16 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_frame_pixel_capture_readback.cpp",
       "tests/renderer/renderer_frame_pixels_test.cpp",
       "tests/renderer/vulkan_frame_pixel_capture_test.cpp",
+      "tests/renderer/vulkan_pixel_test_window.hpp",
       "tests/renderer/vulkan_pixel_test_support.hpp",
+      "tests/renderer/vulkan_text_pixel_test.cpp",
+      "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
+      "tests/renderer/vulkan_image_pixel_test.cpp",
+      "tests/renderer/vulkan_clip_pixel_test.cpp",
+      "tests/renderer/vulkan_transform_pixel_test.cpp",
+      "tests/renderer/vulkan_opacity_pixel_test.cpp",
+      "tests/renderer/vulkan_resize_pixel_test.cpp",
+      "tests/renderer/wayland_frame_pixel_capture_test.cpp",
       "src/renderer/renderer_frame_diagnostic_snapshot.cpp",
       "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_diagnostic_resources.cpp",
@@ -867,6 +878,8 @@ int main(int argc, char** argv) {
       "tests/renderer/renderer_frame_pixels_test.cpp");
   const std::string pixel_capture_live_test = read_source(
       "tests/renderer/vulkan_frame_pixel_capture_test.cpp");
+  const std::string pixel_capture_window = read_source(
+      "tests/renderer/vulkan_pixel_test_window.hpp");
   const std::string pixel_capture_support = read_source(
       "tests/renderer/vulkan_pixel_test_support.hpp");
   if (line_count(frame_pixels_header) > 50 ||
@@ -878,7 +891,8 @@ int main(int argc, char** argv) {
       line_count(pixel_capture_readback) > 100 ||
       line_count(pixel_capture_public_test) > 180 ||
       line_count(pixel_capture_live_test) > 100 ||
-      line_count(pixel_capture_support) > 130 ||
+      line_count(pixel_capture_window) > 110 ||
+      line_count(pixel_capture_support) > 90 ||
       !contains(frame_pixels_header, "struct RendererFramePixels") ||
       !contains(frame_pixels_source, "RendererFramePixels::pixel_rgba8(") ||
       !contains(frame_pixels_source, "RenderFrame::request_pixel_capture()") ||
@@ -911,8 +925,83 @@ int main(int argc, char** argv) {
       !contains(pixel_capture_public_test,
                 "test_pixel_snapshot_access") ||
       !contains(pixel_capture_live_test, "request_pixel_capture()") ||
+      !contains(pixel_capture_window, "class VulkanPixelTestWindow") ||
+      !contains(pixel_capture_window, "resize_client(") ||
+      !contains(pixel_capture_support,
+                "#include \"vulkan_pixel_test_window.hpp\"") ||
+      !contains(pixel_capture_support, "capture_pixels(") ||
       !contains(pixel_capture_support, "pixel_near(")) {
     return 86;
+  }
+  struct PixelOutputSourceLimit {
+    const char* path;
+    std::size_t max_lines;
+    const char* evidence;
+  };
+  const std::array pixel_output_sources{
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_text_pixel_test.cpp", 60, "draw_text("},
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
+          35,
+          "draw_rounded_rect("},
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_image_pixel_test.cpp", 80, "draw_image("},
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_clip_pixel_test.cpp", 35, ".clip_rect"},
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_transform_pixel_test.cpp",
+          40,
+          "AffineTransform::translation("},
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_opacity_pixel_test.cpp",
+          40,
+          "encoded_channel("},
+      PixelOutputSourceLimit{
+          "tests/renderer/vulkan_resize_pixel_test.cpp", 90, "resize_client("},
+      PixelOutputSourceLimit{
+          "tests/renderer/wayland_frame_pixel_capture_test.cpp",
+          70,
+          "create_platform_application("},
+  };
+  for (const PixelOutputSourceLimit& source_limit : pixel_output_sources) {
+    const std::string source = read_source(source_limit.path);
+    if (source.empty() || line_count(source) > source_limit.max_lines ||
+        !contains(source, source_limit.evidence) ||
+        (!contains(source, "capture_pixels(") &&
+         !contains(source, "request_pixel_capture()"))) {
+      return 87;
+    }
+  }
+  const std::string pixel_output_xmake = read_source("xmake.lua");
+  const std::string pixel_image_vertex_shader =
+      read_source("src/renderer/vulkan/shaders/image.vert.glsl");
+  const std::string pixel_text_vertex_shader =
+      read_source("src/renderer/vulkan/shaders/text.vert.glsl");
+  const std::string pixel_rounded_vertex_shader =
+      read_source("src/renderer/vulkan/shaders/rounded_rect.vert.glsl");
+  const std::size_t wayland_pixel_target =
+      pixel_output_xmake.find("target(\"wayland_frame_pixel_capture_test\")");
+  const std::size_t macos_platform_block =
+      pixel_output_xmake.find("if is_plat(\"macosx\") then");
+  if (wayland_pixel_target == std::string::npos ||
+      macos_platform_block == std::string::npos ||
+      wayland_pixel_target > macos_platform_block ||
+      !contains(pixel_output_xmake, "for _, pixel_case in ipairs({") ||
+      !contains(pixel_output_xmake,
+                "target(\"vulkan_\" .. pixel_case .. \"_pixel_test\")") ||
+      !contains(pixel_output_xmake, "\"text\",") ||
+      !contains(pixel_output_xmake, "\"rounded_rect\",") ||
+      !contains(pixel_output_xmake, "\"image\",") ||
+      !contains(pixel_output_xmake, "\"clip\",") ||
+      !contains(pixel_output_xmake, "\"transform\",") ||
+      !contains(pixel_output_xmake, "\"opacity\",") ||
+      !contains(pixel_output_xmake, "\"resize\"") ||
+      !contains(pixel_image_vertex_shader, "normalized.y * 2.0 - 1.0") ||
+      !contains(pixel_text_vertex_shader, "normalized.y * 2.0 - 1.0") ||
+      !contains(pixel_rounded_vertex_shader,
+                "normalized.y * 2.0 - 1.0")) {
+    return 88;
   }
   const std::string solid_rect_geometry_header = read_source(
       "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");

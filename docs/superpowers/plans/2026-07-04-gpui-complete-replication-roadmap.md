@@ -1707,10 +1707,17 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
 - [x] Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.
 - [x] Phase E Step 523 adds `RendererFramePixels` and explicit per-frame capture with optional Vulkan swapchain transfer-source readback, present-layout restoration, and normalized RGBA8 output. Step 524 text pixel coverage is next.
+- [x] Phase E Step 524 adds real Vulkan text pixel coverage for deterministic fallback glyph foreground and clear-background output in authored top-left coordinates. Step 525 rounded rectangle pixel coverage is next.
+- [x] Phase E Step 525 adds real Vulkan rounded rectangle pixel coverage for filled centers and anti-aliased rounded corners. Step 526 image pixel coverage is next.
+- [x] Phase E Step 526 adds real Vulkan nearest-image pixel coverage for top-left RGBA quadrant orientation and corrects all text, rounded, and image vertex shaders to positive-viewport Vulkan top-left Y mapping with validated embedded SPIR-V. Step 527 clip pixel coverage is next.
+- [x] Phase E Step 527 adds real Vulkan clip pixel coverage for inside, horizontal-outside, and vertical-outside samples. Step 528 transform pixel coverage is next.
+- [x] Phase E Step 528 adds real Vulkan transform pixel coverage for translated output and untouched original/distant coordinates. Step 529 opacity pixel coverage is next.
+- [x] Phase E Step 529 adds real Vulkan opacity pixel coverage for encoding-aware half-red composition over opaque black. Step 530 resize pixel coverage is next.
+- [x] Phase E Step 530 adds persistent-renderer resize pixel coverage across exact 64x64 and 96x48 Win32 client extents, plus an active-display Wayland capture target using the same public API. Step 531 pixel-band closeout is next.
 - [x] Steps 518-522: Continue renderer diagnostics that compare planned work with
   submitted GPU work, including upload bytes, draw counts, dropped resources,
   and frame timing.
-- [ ] Steps 523-530: Add pixel/screenshot tests for text, rounded rects,
+- [x] Steps 523-530: Add pixel/screenshot tests for text, rounded rects,
   images, clips, transforms, opacity, and resizing on Windows and Wayland.
 - [ ] Steps 531-538: Run full Windows/WSL verification and mark the Vulkan
   renderer production path complete for required primitives.

@@ -20254,3 +20254,43 @@
 - `wsl.exe -l -q` still returns an empty distribution list, so Step 523 records
   the unavailable Linux host while retaining the mandatory final Phase E Linux
   gate.
+
+## 2026-07-11 Phase E Steps 524-530 Pixel Output Coverage
+
+- Started from clean tracked `master` at Step 523 commit `ee7660d0`; only the
+  existing untracked `.vscode/` directory remains.
+- Chosen band implementation uses seven focused Windows pixel targets over the
+  shared capture fixture, plus a Wayland capture target that runs when
+  `WAYLAND_DISPLAY` is available.
+- Static review corrected the Wayland target ownership from the Windows-only
+  xmake block to the existing Linux/Wayland block and changed the resize test
+  to copy the first renderer-owned pixel snapshot before the second capture.
+- The first seven-target Windows run passed clip, opacity, rounded rectangle,
+  text, and transform output; image and resize failed and now emit sampled
+  RGBA/dimension diagnostics for the next focused rerun.
+- Direct diagnostics showed image quadrants vertically flipped and the
+  decorated Win32 fixture constrained client width to 120. Corrected all three
+  vertex-shader Y mappings, strengthened asymmetric coordinate samples, and
+  switched the fixture to an exact-size popup window before SPIR-V regeneration.
+- Recompiled optimized Vulkan 1.0 image/text/rounded vertex shaders to the same
+  289/289/293-word sizes; all three pass `spirv-val`, and the embedded changes
+  are limited to the corrected Y-subtraction operand order.
+- Split exact-size Win32 window lifecycle and resize handling into the focused
+  `vulkan_pixel_test_window.hpp` helper, restoring the shared capture/pixel
+  helper below its existing structure cap before adding the full band guard.
+- Extended renderer structure coverage with inventory, focused line limits,
+  per-scenario ownership markers, Windows-loop/Linux-target xmake placement,
+  and the corrected Vulkan top-left shader formula.
+- Synchronized roadmap, Markdown/JSON ledger, task plan, and findings with the
+  seven exact Step 524-530 completion sentences and advanced the active handoff
+  to Step 531 pixel-band closeout.
+- Final focused Windows verification passed 13/13 across the capture foundation,
+  seven pixel scenarios, three shader/pipeline regressions, renderer structure,
+  and parity-ledger coverage. JSON parsing, the 35/35 cross-document phrase
+  audit, focused line limits, exact embedded SPIR-V comparison, and
+  `git diff --check` also pass.
+- The complete Windows debug build succeeded in 4.484 seconds, then the full
+  suite passed 212/212 in 3.000 seconds.
+- `wsl.exe -l -q` remains empty. The Wayland target is registered under the
+  Linux platform block, but actual Linux/Wayland execution remains mandatory at
+  Phase E closeout and is not satisfied by the unavailable host.

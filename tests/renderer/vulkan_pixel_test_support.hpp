@@ -1,79 +1,55 @@
 #pragma once
 
 #include "cgpui/renderer/renderer.hpp"
+#include "vulkan_pixel_test_window.hpp"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
-#include <memory>
+#include <optional>
+#include <utility>
 
 namespace cgpui_test {
 
-class VulkanPixelTestWindow {
- public:
-  VulkanPixelTestWindow(const wchar_t* class_name, const wchar_t* title)
-      : instance_(GetModuleHandleW(nullptr)) {
-    WNDCLASSEXW window_class{};
-    window_class.cbSize = sizeof(WNDCLASSEXW);
-    window_class.lpfnWndProc = DefWindowProcW;
-    window_class.hInstance = instance_;
-    window_class.lpszClassName = class_name;
-    RegisterClassExW(&window_class);
-
-    RECT window_rect{0, 0, 64, 64};
-    AdjustWindowRectEx(&window_rect, WS_OVERLAPPEDWINDOW, FALSE, 0);
-    hwnd_ = CreateWindowExW(
-        0,
-        class_name,
-        title,
-        WS_OVERLAPPEDWINDOW,
-        64,
-        64,
-        window_rect.right - window_rect.left,
-        window_rect.bottom - window_rect.top,
-        nullptr,
-        nullptr,
-        instance_,
-        nullptr);
-    if (hwnd_ != nullptr) {
-      ShowWindow(hwnd_, SW_SHOWNA);
-      UpdateWindow(hwnd_);
-    }
+template <typename Paint>
+std::optional<cgpui::RendererFramePixels> capture_pixels(
+    VulkanPixelTestWindow& window,
+    cgpui::Color clear,
+    Paint&& paint) {
+  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+      .native_surface = window.surface(),
+      .framebuffer_size = window.framebuffer_size(),
+      .scale = cgpui::DpiScale{1.0F},
+  });
+  if (!renderer) {
+    return std::nullopt;
   }
-
-  ~VulkanPixelTestWindow() {
-    if (hwnd_ != nullptr) {
-      DestroyWindow(hwnd_);
-    }
+  auto frame = (*renderer)->begin_frame();
+  if (!frame || !(*frame)->request_pixel_capture()) {
+    return std::nullopt;
   }
-
-  VulkanPixelTestWindow(const VulkanPixelTestWindow&) = delete;
-  VulkanPixelTestWindow& operator=(const VulkanPixelTestWindow&) = delete;
-
-  [[nodiscard]] bool valid() const {
-    return instance_ != nullptr && hwnd_ != nullptr;
+  (*frame)->clear(clear);
+  std::forward<Paint>(paint)(**frame);
+  if (!(*frame)->present()) {
+    return std::nullopt;
   }
+  const cgpui::RendererFramePixels* pixels = (*renderer)->last_frame_pixels();
+  return pixels != nullptr ? std::optional{*pixels} : std::nullopt;
+}
 
-  [[nodiscard]] cgpui::Win32SurfaceHandle surface() const {
-    return {.hinstance = instance_, .hwnd = hwnd_};
-  }
-
-  [[nodiscard]] cgpui::Size framebuffer_size() const {
-    RECT client_rect{};
-    GetClientRect(hwnd_, &client_rect);
-    return {
-        .width = static_cast<float>(client_rect.right - client_rect.left),
-        .height = static_cast<float>(client_rect.bottom - client_rect.top),
-    };
-  }
-
- private:
-  HINSTANCE instance_ = nullptr;
-  HWND hwnd_ = nullptr;
-};
+inline std::uint8_t encoded_channel(
+    float linear,
+    cgpui::RendererFramePixelEncoding encoding) {
+  const float encoded =
+      encoding == cgpui::RendererFramePixelEncoding::srgb
+          ? (linear <= 0.0031308F
+                 ? linear * 12.92F
+                 : 1.055F * std::pow(linear, 1.0F / 2.4F) - 0.055F)
+          : linear;
+  return static_cast<std::uint8_t>(
+      std::clamp(encoded, 0.0F, 1.0F) * 255.0F + 0.5F);
+}
 
 inline bool pixel_near(
     const cgpui::RendererFramePixels& pixels,
