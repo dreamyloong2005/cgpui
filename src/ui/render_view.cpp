@@ -66,6 +66,9 @@ Result<void> render_view(
   auto result = (*frame)->present();
   if (result && statistics != nullptr) {
     statistics->present_count += 1;
+    apply_runtime_renderer_frame_diagnostics(
+        *statistics,
+        renderer.last_frame_diagnostic_snapshot());
   }
   return result;
 }

@@ -647,6 +647,7 @@ consume C: drive space again.
 - Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
 - Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
 - Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
+- Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
 
 ## Categories
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/runtime_renderer_diagnostics.hpp"
 #include "cgpui/ui/runtime_events.hpp"
 
 #include <cstddef>
@@ -43,6 +44,7 @@ struct FrameStatistics {
   double render_time_ms = 0.0;
   double layout_time_ms = 0.0;
   double paint_time_ms = 0.0;
+  std::optional<RendererFrameStatistics> renderer_frame;
 };
 
 enum class RenderTreeKind {
@@ -73,6 +75,8 @@ struct RuntimeDiagnosticsSnapshot {
   int frame_index = 0;
   std::optional<RenderRecord> last_render_record;
   std::optional<FrameStatistics> last_frame_statistics;
+  std::optional<RendererFrameDiagnosticSnapshot>
+      last_renderer_frame_diagnostics;
   std::vector<PlatformDiagnosticEvent> platform_diagnostics;
   std::size_t task_count = 0;
   std::size_t active_task_count = 0;

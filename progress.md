@@ -20156,3 +20156,41 @@
   aggregate; the public declaration remains body-free.
 - The default-renderer behavior check and renderer structure check pass after
   the extraction.
+
+## 2026-07-10 Phase E Step 521 Runtime Renderer Diagnostics
+
+- Started from clean tracked `master` at Step 520 commit `0d434a26`; only the
+  existing untracked `.vscode/` directory remains.
+- Chose a fixed-size `RendererFrameStatistics` summary for `FrameStatistics`
+  plus one complete snapshot retained by `WindowRuntime`, avoiding repeated
+  dropped-resource vector copies across render-record/statistics storage.
+- Added the Step 521 RED target. Its first build failed on the intentionally
+  missing public summary, `FrameStatistics::renderer_frame`, and runtime full
+  snapshot fields.
+- Implemented the public summary leaf, focused private mapping source/header,
+  two-line diagnostic state fragment, successful-present mapping in
+  `render_view`, and root/additional-window snapshot propagation.
+- The first behavior run exited 50 because the test expected static `Renderer::`
+  spelling for an instance call. Correcting the source contract moved the test
+  to the intended five-document exit 60.
+- The first UI structure build found duplicate local source variable names.
+  Diagnostics-specific names restored compilation.
+- Extending shared runtime test support pushed it to 1806 lines and failed the
+  1800-line structure gate. A local minimal `DiagnosticRenderer` keeps the
+  shared support unchanged and the focused test under 260 lines.
+- The local renderer and statistics reference briefly shared a name; renaming
+  the statistics reference restored the focused build.
+- Runtime renderer diagnostic behavior and UI source structure pass before
+  documentation, with the behavior target reaching exit 60 only at the expected
+  evidence gate.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 522
+  renderer diagnostics closeout is active.
+- Step 521 runtime renderer diagnostic behavior, UI source structure, renderer
+  diagnostics regressions, public header cleanliness, and parity ledger pass.
+- JSON parsing, all five Step 521 phrases, focused
+  21/18/2/39/77/154/260/242 line counts, and `git diff --check` pass.
+- The complete Windows debug build succeeded in 20.062 seconds, then the full
+  suite passed 202/202 in 3.312 seconds.
+- `wsl.exe -l -q` still returns an empty distribution list, so Step 521 records
+  the unavailable Linux host while retaining the mandatory final Phase E Linux
+  gate.

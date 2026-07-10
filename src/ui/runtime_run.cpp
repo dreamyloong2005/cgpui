@@ -31,6 +31,7 @@ int WindowRuntime::run(
   last_event_result_ = EventResult::unhandled();
   last_render_record_.reset();
   last_frame_statistics_.reset();
+  last_renderer_frame_diagnostics_.reset();
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
   current_event_route_.reset();

@@ -9316,3 +9316,22 @@
   `renderer_frame.hpp`. The existing `renderer.hpp` compatibility aggregate is
   required when compiling that implementation because the leaf still relies on
   report and geometry declarations supplied earlier by the aggregate.
+
+## 2026-07-10 Phase E Step 521 Runtime Renderer Diagnostics
+
+- Storing the complete renderer snapshot directly in `FrameStatistics` would
+  copy the dropped-resource vector into both the render record and the runtime's
+  last-frame statistics on every frame. `RendererFrameStatistics` therefore
+  keeps only fixed-size work, upload, draw, drop-count, and timing summaries.
+- `WindowRuntime` retains one complete `RendererFrameDiagnosticSnapshot` after
+  a successful frame so `RuntimeDiagnosticsSnapshot` still preserves dropped
+  resource identity and reason metadata on demand.
+- `render_view(...)` applies renderer statistics only after `present()`
+  succeeds. The total renderer CPU nanoseconds populate `frame_time_ms`; the
+  existing render/layout/paint timing fields remain zero until their own CPU
+  instrumentation exists.
+- The UI path consumes only `Renderer::last_frame_diagnostic_snapshot()` and
+  has structure guards against `dynamic_cast` and Vulkan renderer type names.
+- The runtime diagnostic state lives in a two-line private class fragment, so
+  `window_runtime_internal.hpp` remains at its 260-line limit.
+- Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.

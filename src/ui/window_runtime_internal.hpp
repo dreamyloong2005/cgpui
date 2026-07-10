@@ -181,7 +181,7 @@ CursorShape cursor_shape_ = CursorShape::default_arrow;
 CursorShape applied_cursor_shape_ = CursorShape::default_arrow;
 EventResult last_event_result_{};
 std::optional<RenderRecord> last_render_record_;
-std::optional<FrameStatistics> last_frame_statistics_;
+#include "runtime_renderer_diagnostic_state_internal.hpp"
 std::optional<EventDispatchRecord> last_event_dispatch_;
 std::optional<ActionDispatchResult> last_action_dispatch_;
 std::optional<EventRoute> current_event_route_;

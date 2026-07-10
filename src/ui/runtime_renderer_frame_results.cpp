@@ -65,6 +65,8 @@ Result<void> WindowRuntime::try_draw_frame() {
     abort_frame_scheduling();
     return std::unexpected(result.error());
   }
+  last_renderer_frame_diagnostics_ =
+      runtime_renderer_frame_diagnostic_snapshot(*renderer_);
 
   frame_index_ += 1;
   frame_statistics.frame_index = frame_index_;
@@ -131,6 +133,8 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   if (!result) {
     return std::unexpected(result.error());
   }
+  last_renderer_frame_diagnostics_ =
+      runtime_renderer_frame_diagnostic_snapshot(*record.renderer);
 
   clear_invalidation();
   redraw_scheduled_ = false;

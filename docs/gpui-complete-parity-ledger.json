@@ -1434,8 +1434,26 @@
       "xmake.lua"
     ],
     "phase_e_step_520_remaining_gap": "Step 521 runtime diagnostic propagation",
+    "phase_e_step_521_surface": "Phase E Step 521 adds RendererFrameStatistics to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into FrameStatistics after successful renderer presentation, while RuntimeDiagnosticsSnapshot preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.",
+    "phase_e_step_521_sources": [
+      "include/cgpui/ui/runtime_renderer_diagnostics.hpp",
+      "include/cgpui/ui/runtime_diagnostics.hpp",
+      "include/cgpui/ui/runtime.hpp",
+      "src/ui/runtime_renderer_diagnostics_internal.hpp",
+      "src/ui/runtime_renderer_diagnostic_state_internal.hpp",
+      "src/ui/runtime_renderer_diagnostics.cpp",
+      "src/ui/render_view.cpp",
+      "src/ui/runtime_renderer_frame_results.cpp",
+      "src/ui/runtime_diagnostic_snapshot.cpp",
+      "src/ui/runtime_run.cpp",
+      "src/ui/window_runtime_internal.hpp",
+      "tests/ui/runtime_renderer_diagnostics_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_521_remaining_gap": "Step 522 renderer diagnostics closeout",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 521 runtime diagnostic propagation"
+    "phase_e_current_handoff": "Step 522 renderer diagnostics closeout"
   },
   "categories": [
     "application_and_app_context",

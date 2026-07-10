@@ -735,13 +735,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
 - Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
 - Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
+- Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-520 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-521 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -804,12 +805,13 @@ Windows/Linux core API is stable enough for parity work.
   missing submitted resources with command/resource identity preserved, plus
   explicit saturation-safe CPU frame-stage nanoseconds and frame-budget
   comparison without hidden clock reads, plus live Vulkan state-owned snapshots
-  for planned/submitted work, upload bytes, draws, drops, and stage timing.
-- In progress: Step 521 runtime diagnostic propagation.
-- Step 521 boundary: map the renderer snapshot into `FrameStatistics` and the
-  runtime diagnostics snapshot after successful present without backend
-  downcasts or exposing Vulkan internals to UI code.
-- Pending bands: Steps 521-522 diagnostics; Steps 523-530 pixel
+  for planned/submitted work, upload bytes, draws, drops, and stage timing,
+  plus fixed-size runtime renderer summaries and one retained full diagnostic
+  snapshot after successful presentation without backend downcasts.
+- In progress: Step 522 renderer diagnostics closeout.
+- Step 522 boundary: freeze the Steps 515-521 diagnostics evidence in a focused
+  audit-only closeout and hand Phase E to Step 523 pixel/screenshot testing.
+- Pending bands: Step 522 diagnostics closeout; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -821,6 +823,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A diagnostics-header inspection command referenced nonexistent split upload/draw header names | Step 521 ownership research | Use the actual combined `renderer_frame_diagnostics.hpp` leaf plus the dropped-resource and timing leaves |
+| The focused Step 521 executable exited 50 because its source check expected static `Renderer::` spelling instead of the instance call | Step 521 first behavior GREEN | Check `renderer.last_frame_diagnostic_snapshot()` and preserve exit 60 for the five-document gate |
+| The first Step 521 UI structure build reused existing `render_view_source` and `ui_internal_header` local names | Step 521 structure GREEN | Rename the new locals to diagnostics-specific names |
+| Adding diagnostics state to shared runtime test support pushed it to 1806 lines and failed structure exit 112 | Step 521 fixture structure GREEN | Keep shared support unchanged and define a minimal `DiagnosticRenderer` inside the focused test |
+| The focused test's local diagnostic renderer and renderer-statistics reference used the same name | Step 521 focused rebuild | Rename the statistics reference to `renderer_statistics` |
 | `xmake build` treated additional target names as invalid arguments because this xmake version accepts one target per invocation | Step 520 final structure audit | Build each focused target in a separate invocation |
 | The new out-of-line renderer diagnostic default and its test initially included the non-self-contained `renderer_frame.hpp` leaf directly and failed on report/geometry types | Step 520 public implementation structure audit | Include the existing `renderer.hpp` compatibility aggregate from the focused implementation and test while keeping the public method declaration body-free |
 | Windows full suite passed 200/201 but `vulkan_glyph_atlas_frame_lifecycle_test` still required raw fence reset and queue submit calls in `vulkan_presentation.cpp` | Step 520 full GREEN | Update the Step 462 structure contract to require `submit_frame(command_buffer)` in presentation and fence-reset-before-submit inside the focused `vulkan_frame_submission.cpp` module |

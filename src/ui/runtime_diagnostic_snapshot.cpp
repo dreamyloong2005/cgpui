@@ -37,6 +37,7 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .frame_index = frame_index_,
       .last_render_record = last_render_record_,
       .last_frame_statistics = last_frame_statistics_,
+      .last_renderer_frame_diagnostics = last_renderer_frame_diagnostics_,
       .platform_diagnostics = platform_diagnostics_,
       .task_count = task_counts.task_count,
       .active_task_count = task_counts.active_task_count,

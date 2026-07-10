@@ -119,6 +119,7 @@ int main() {
       "include/cgpui/ui/runtime_actions.hpp",
       "include/cgpui/ui/key_binding.hpp",
       "include/cgpui/ui/runtime_events.hpp",
+      "include/cgpui/ui/runtime_renderer_diagnostics.hpp",
       "include/cgpui/ui/runtime_diagnostics.hpp",
       "include/cgpui/ui/runtime_input_state.hpp",
       "include/cgpui/ui/runtime_context.hpp",
@@ -327,6 +328,7 @@ int main() {
       "tests/ui/window_runtime_actions_test.cpp",
       "tests/ui/window_runtime_text_test.cpp",
       "tests/ui/window_runtime_rendering_test.cpp",
+      "tests/ui/runtime_renderer_diagnostics_test.cpp",
       "tests/ui/static_render_runtime_test.cpp",
       "tests/ui/window_runtime_scheduling_test.cpp",
       "tests/ui/window_runtime_multiwindow_test.cpp",
@@ -357,6 +359,8 @@ int main() {
       line_count(read_source("tests/ui/window_runtime_text_test.cpp")) > 1800 ||
       line_count(read_source("tests/ui/window_runtime_rendering_test.cpp")) >
           1200 ||
+      line_count(read_source("tests/ui/runtime_renderer_diagnostics_test.cpp")) >
+          260 ||
       line_count(read_source("tests/ui/static_render_runtime_test.cpp")) >
           420 ||
       line_count(read_source("tests/ui/window_runtime_scheduling_test.cpp")) >
@@ -810,6 +814,8 @@ int main() {
                 "#include \"cgpui/ui/runtime_app_context.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_actions.hpp\"") ||
       !contains(runtime_header, "#include \"cgpui/ui/runtime_events.hpp\"") ||
+      !contains(runtime_header,
+                "#include \"cgpui/ui/runtime_renderer_diagnostics.hpp\"") ||
       !contains(runtime_header,
                 "#include \"cgpui/ui/runtime_diagnostics.hpp\"") ||
       !contains(runtime_header,
@@ -1915,6 +1921,9 @@ int main() {
       "src/ui/runtime_window_results.cpp",
       "src/ui/runtime_renderer_results.cpp",
       "src/ui/runtime_renderer_resize_results.cpp",
+      "src/ui/runtime_renderer_diagnostics_internal.hpp",
+      "src/ui/runtime_renderer_diagnostic_state_internal.hpp",
+      "src/ui/runtime_renderer_diagnostics.cpp",
       "src/ui/runtime_renderer_frame_results.cpp",
       "src/ui/runtime_frame_scheduling.cpp",
       "src/ui/window.cpp",
@@ -2335,6 +2344,45 @@ int main() {
     return 141;
   }
 
+  const std::string runtime_renderer_diagnostics_header = read_source(
+      "include/cgpui/ui/runtime_renderer_diagnostics.hpp");
+  const std::string runtime_renderer_diagnostics_internal = read_source(
+      "src/ui/runtime_renderer_diagnostics_internal.hpp");
+  const std::string runtime_renderer_diagnostic_state = read_source(
+      "src/ui/runtime_renderer_diagnostic_state_internal.hpp");
+  const std::string runtime_renderer_diagnostics_source =
+      read_source("src/ui/runtime_renderer_diagnostics.cpp");
+  const std::string diagnostic_render_view_source =
+      read_source("src/ui/render_view.cpp");
+  const std::string diagnostic_ui_internal_header =
+      read_source("src/ui/ui_internal.hpp");
+  if (line_count(runtime_renderer_diagnostics_header) > 60 ||
+      line_count(runtime_renderer_diagnostics_internal) > 60 ||
+      line_count(runtime_renderer_diagnostic_state) > 20 ||
+      line_count(runtime_renderer_diagnostics_source) > 80 ||
+      !contains(runtime_renderer_diagnostics_header,
+                "struct RendererFrameStatistics") ||
+      !contains(runtime_renderer_diagnostics_internal,
+                "apply_runtime_renderer_frame_diagnostics(") ||
+      !contains(runtime_renderer_diagnostic_state,
+                "last_renderer_frame_diagnostics_") ||
+      !contains(runtime_renderer_diagnostics_source,
+                "renderer.last_frame_diagnostic_snapshot()") ||
+      !contains(runtime_renderer_diagnostics_source,
+                "snapshot->timings.total_nanoseconds") ||
+      !contains(diagnostic_ui_internal_header,
+                "#include \"runtime_renderer_diagnostics_internal.hpp\"") ||
+      !contains(window_runtime_internal_header,
+                "#include \"runtime_renderer_diagnostic_state_internal.hpp\"") ||
+      !contains(diagnostic_render_view_source,
+                "apply_runtime_renderer_frame_diagnostics(") ||
+      contains(runtime_renderer_diagnostics_source, "dynamic_cast") ||
+      contains(runtime_renderer_diagnostics_source, "VulkanRenderer") ||
+      contains(diagnostic_render_view_source, "dynamic_cast") ||
+      contains(diagnostic_render_view_source, "VulkanRenderer")) {
+    return 164;
+  }
+
   const std::string runtime_renderer_frame_results_source =
       read_source("src/ui/runtime_renderer_frame_results.cpp");
   const std::string runtime_frame_scheduling_header =
@@ -2347,6 +2395,8 @@ int main() {
       !contains(runtime_renderer_frame_results_source,
                 "WindowRuntime::try_draw_frame_for_record(") ||
       !contains(runtime_renderer_frame_results_source, "render_view(") ||
+      !contains(runtime_renderer_frame_results_source,
+                "runtime_renderer_frame_diagnostic_snapshot(") ||
       !contains(runtime_renderer_frame_results_source, "frame_index_ += 1") ||
       !contains(runtime_renderer_frame_results_source,
                 "begin_frame_scheduling()") ||
@@ -3432,6 +3482,8 @@ int main() {
       !contains(runtime_diagnostic_snapshot_source,
                 "WindowRuntime::RuntimeTaskDiagnostics "
                 "WindowRuntime::task_diagnostics(") ||
+      !contains(runtime_diagnostic_snapshot_source,
+                "last_renderer_frame_diagnostics_") ||
       contains(runtime_diagnostic_snapshot_source,
                "WindowRuntime::subscriptions_for_view(") ||
       contains(runtime_diagnostic_snapshot_source,
