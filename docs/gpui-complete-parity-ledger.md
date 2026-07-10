@@ -519,6 +519,16 @@ consume C: drive space again.
 - `vulkan_layer_ordering_test` locks negative layers, explicit z-index override,
   equal-order stable siblings, UI submission, and Vulkan cursor output.
 - Handoff: Phase E Step 490 clip/composition integration closeout.
+- Phase E Step 490 clip/composition integration closeout is audit-only in
+  `tests/api_parity/phase_e_clip_composition_integration_closeout_test.cpp`.
+  It freezes Steps 475-489 across contiguous rounded geometry, paired resources,
+  indexed drawing, coverage/radius/stroke/fill policies, allocation-free
+  dynamic scissor, single-application composed opacity, blend-capable solid
+  geometry, affine transforms, push-time framebuffer AABB capture, stable
+  authored interleaving, and explicit z/layer command ordering.
+- Rectangular clip stacks remain covered by per-draw Vulkan scissor resolution.
+  A future non-rectangular clip still requires a stencil or shader-mask path.
+- Handoff: Phase E Step 491 image texture resources.
 
 ## Categories
 

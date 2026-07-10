@@ -1,5 +1,49 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 490 Clip/Composition Integration Closeout
+
+- Step 489 commit `c4ef7e92` leaves tracked `master` clean with only the existing
+  untracked `.vscode/` directory.
+- The roadmap defines Step 490 as closing the clip/composition band before image
+  production begins at Step 491. No new renderer behavior is implied.
+- The correct Step 490 boundary is an audit-only closeout test over Steps
+  475-489: rounded geometry/resources/recording/antialias/radii/borders/fill,
+  clip stacks, composed opacity, solid geometry, transforms, transformed clips,
+  stable draw interleaving, and explicit z/layer ordering.
+- The closeout should follow the existing Phase E audit pattern: source/test
+  evidence, xmake target registration, synchronized roadmap/ledger/planning
+  phrases, and an explicit Step 491 image-texture handoff.
+- All fifteen focused band targets already exist in the platform-gated Vulkan
+  section. The Step 490 closeout target itself should remain a portable
+  source-audit binary beside the Step 466/474 closeouts.
+- Representative behavior evidence spans contiguous rounded geometry, paired
+  buffers, fixed pipeline state, validated indexed draws, coverage fringes,
+  normalized radii, inset strokes, fill variants, nested scissor resolution,
+  composed opacity, blended solid geometry, affine vertex transforms,
+  push-time clip AABBs, authored interleaving, and UI z/layer order reaching
+  the Vulkan cursor.
+- The focused closeout audit will require the exact phrases `Steps 475-489`,
+  `non-rectangular clip`, and `Step 491 image texture resources` across all five
+  authoritative planning/ledger documents.
+- The Step 490 audit builds successfully and direct execution exits `40`, the
+  first required-document phrase. Target, module, behavior, and roadmap-status
+  code paths therefore compile before documentation synchronization.
+- Phase E Step 490 clip/composition integration closeout now freezes Steps
+  475-489 in
+  `tests/api_parity/phase_e_clip_composition_integration_closeout_test.cpp`:
+  contiguous rounded geometry, allocation-free dynamic scissor,
+  single-application composed opacity, blend-capable solid geometry, push-time
+  framebuffer AABB capture, stable authored interleaving, and explicit z/layer
+  command ordering. A future non-rectangular clip remains a stencil or
+  shader-mask boundary. Step 491 image texture resources is next.
+- The corrected closeout audit is GREEN, all twelve required phrases are present
+  in all five authoritative documents, and `git diff --check` passes.
+- The full Steps 475-490 focused band passes 19/19. The complete Windows debug
+  build succeeds and the full suite is GREEN at 171/171.
+- WSL remains unavailable because `wsl.exe -l -q` returns an empty distribution
+  list. The portable closeout audit is registered for Linux, but the final Phase
+  E WSL gate remains required.
+
 ## 2026-07-10 Phase E Step 489 Explicit Z/Layer Command Ordering
 
 - `Element::z_order()` already gives explicit nonzero `z_index` precedence over

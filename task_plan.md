@@ -645,13 +645,21 @@ Windows/Linux core API is stable enough for parity work.
   preserve stable UI paint order, and the compact Vulkan cursor preserves the
   mixed solid, rounded, and text sequence without a renderer-side z sort.
   Step 490 owns the clip/composition integration closeout.
+- Phase E Step 490 clip/composition integration closeout is audit-only in
+  `tests/api_parity/phase_e_clip_composition_integration_closeout_test.cpp`.
+  It freezes Steps 475-489 across contiguous rounded geometry, resource and draw
+  recording, fill/coverage/radius/stroke policies, allocation-free dynamic scissor,
+  single-application composed opacity, blend-capable solid geometry,
+  transforms, push-time framebuffer AABB capture, stable authored interleaving,
+  and explicit z/layer command ordering. A future non-rectangular clip remains a
+  stencil or shader-mask boundary. Step 491 image texture resources is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-489 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-490 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -675,10 +683,10 @@ Windows/Linux core API is stable enough for parity work.
   and single-application composed affine transforms across production vertices,
   plus push-time transformed clip AABBs with scoped framebuffer semantics, and
   stable authored interleaving in actual Vulkan recording, plus explicit z/layer
-  command ordering with stable UI paint order preserved end to end.
-- In progress: Step 490 clip/composition integration closeout.
-- Pending bands: Step 490 clip/composition integration closeout; Steps 491-498
-  images; Steps 499-506 SVG; Steps
+  command ordering with stable UI paint order preserved end to end, and the
+  Steps 475-489 clip/composition integration closeout audit.
+- In progress: Step 491 image texture resources.
+- Pending bands: Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -691,6 +699,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 490 documentation sync split `Steps 475-489` in the roadmap and `allocation-free dynamic scissor` in the task plan across Markdown line breaks | Step 490 first GREEN attempt | Normalize the two exact audit phrases without changing closeout semantics |
 | The Step 489 phrase audit repeated the known PowerShell `foreach (...) { ... } | Format-Table` empty-pipe parser error | Step 489 final audit | Assign the loop output to `$rows` before piping, as already documented during Step 463; do not repeat the direct pipe form |
 | `xmake build -y vulkan_layer_ordering_test -P .` treated `-P` after the target as an invalid argument | Step 489 first RED build invocation | Put project options before the target: `xmake build -y -P . vulkan_layer_ordering_test`; the failed command did not compile or modify outputs |
 | A Step 489 search used the stale path `docs/2026-07-04-gpui-complete-replication-roadmap.md` | Phase E Step 489 resume | Use the authoritative `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md` path from the active goal; do not repeat the stale path |

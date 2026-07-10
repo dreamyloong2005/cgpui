@@ -1602,9 +1602,18 @@ draw calls for the Windows/Linux renderer.
   remains authored-order, and `VulkanFrameDrawOrderCursor` preserves the mixed
   solid, rounded, and text sequence without a second renderer-side sort.
   Step 490 owns the clip/composition integration closeout.
-- [ ] Phase E Step 490: Close the clip/composition band. Rectangular clip
-  stacks use Step 483 scissor recording; a future non-rectangular clip primitive
-  would require a stencil or shader-mask path.
+- [x] Phase E Step 490 closes the clip/composition integration band with
+  audit-only
+  `tests/api_parity/phase_e_clip_composition_integration_closeout_test.cpp`.
+  This Phase E Step 490 clip/composition integration closeout freezes
+  Steps 475-489: contiguous rounded geometry and resources, indexed recording,
+  coverage/radius/stroke/fill policies, allocation-free dynamic scissor,
+  single-application composed opacity, blend-capable solid geometry, affine
+  transforms, push-time framebuffer AABB capture, stable authored interleaving,
+  and explicit z/layer command ordering. Rectangular clips remain scissor-based;
+  a future non-rectangular clip requires a stencil or shader-mask path. Phase E
+  now hands off to Step 491 image texture resources without adding renderer
+  behavior in the closeout.
 - [ ] Steps 491-498: Build image texture resources, upload staging, sampler
   modes, tint/opacity support, cache lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization

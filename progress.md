@@ -18872,6 +18872,42 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 490 Clip/Composition Integration Closeout
+
+- Started from clean tracked `master` at
+  `c4ef7e92 test: lock vulkan layer ordering`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 490 will be an audit-only closeout for the Steps 475-489 rounded geometry,
+  clip, composition, transform, and ordering band, then hand Phase E to Step 491
+  image texture resources.
+- Reusing the existing Phase E closeout-test pattern rather than changing
+  production renderer behavior.
+- Enumerated all fifteen focused Steps 475-489 targets and their behavior
+  symbols. The closeout will be a portable source-audit target outside the
+  platform-gated Vulkan test block, matching prior Phase E closeouts.
+- Added `phase_e_clip_composition_integration_closeout_test` with target,
+  module, behavior, roadmap-status, and cross-document evidence gates. Its first
+  run should be RED only for intentionally missing Step 490 documentation.
+- The focused audit built successfully. Xmake reported the expected RED failure,
+  and direct execution confirmed `EXIT_CODE=40`, exactly at the first missing
+  cross-document phrase.
+- Updated the roadmap, Markdown/JSON parity ledger, task plan, and findings with
+  the Steps 475-489 closeout evidence, non-rectangular clip boundary, audit test
+  path, and Step 491 image texture resources handoff.
+- The first GREEN attempt remained at the documentation gate because two exact
+  phrases were split across Markdown line breaks. Normalized `Steps 475-489` in
+  the roadmap and `allocation-free dynamic scissor` in the task plan.
+- `phase_e_clip_composition_integration_closeout_test/default` now passes. The
+  complete twelve-phrase/five-document audit and `git diff --check` also pass.
+- The full Steps 475-490 focused regression set passed 19/19.
+- The complete Windows debug build succeeded, then the full test suite passed
+  171/171 with `xmake test -y -P .`.
+- JSON parsing, twelve-phrase cross-document audit, source file-size check, and
+  `git diff --check` pass. The tracked worktree contains only the Step 490 slice.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Linux verification remains in the final Phase E
+  gate.
+
 ## 2026-07-10 Phase E Step 489 Explicit Z/Layer Command Ordering
 
 - Resumed the active `/goal` after Step 488 commit `0b78d867`; tracked `master`
