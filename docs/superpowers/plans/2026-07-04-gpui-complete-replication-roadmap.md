@@ -1705,7 +1705,8 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
 - [x] Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
 - [x] Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
-- [ ] Steps 518-522: Continue renderer diagnostics that compare planned work with
+- [x] Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.
+- [x] Steps 518-522: Continue renderer diagnostics that compare planned work with
   submitted GPU work, including upload bytes, draw counts, dropped resources,
   and frame timing.
 - [ ] Steps 523-530: Add pixel/screenshot tests for text, rounded rects,

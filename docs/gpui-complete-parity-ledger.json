@@ -1452,8 +1452,23 @@
       "xmake.lua"
     ],
     "phase_e_step_521_remaining_gap": "Step 522 renderer diagnostics closeout",
+    "phase_e_step_522_surface": "Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.",
+    "phase_e_step_522_sources": [
+      "tests/api_parity/phase_e_renderer_diagnostics_integration_closeout_test.cpp",
+      "tests/renderer/renderer_frame_diagnostics_test.cpp",
+      "tests/renderer/renderer_upload_byte_diagnostics_test.cpp",
+      "tests/renderer/renderer_draw_count_diagnostics_test.cpp",
+      "tests/renderer/renderer_dropped_resource_diagnostics_test.cpp",
+      "tests/renderer/renderer_frame_timing_diagnostics_test.cpp",
+      "tests/renderer/vulkan_frame_diagnostic_snapshot_test.cpp",
+      "tests/ui/runtime_renderer_diagnostics_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_522_remaining_gap": "Step 523 pixel/screenshot testing",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 522 renderer diagnostics closeout"
+    "phase_e_current_handoff": "Step 523 pixel/screenshot testing"
   },
   "categories": [
     "application_and_app_context",

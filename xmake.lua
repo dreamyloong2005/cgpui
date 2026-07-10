@@ -874,6 +874,13 @@ target("renderer_frame_timing_diagnostics_test")
     add_includedirs(public_includedirs)
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_e_renderer_diagnostics_integration_closeout_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/api_parity/phase_e_renderer_diagnostics_integration_closeout_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows", "linux") then
     target("vulkan_frame_geometry_buffer_test")
         set_kind("binary")

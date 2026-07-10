@@ -736,13 +736,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
 - Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
 - Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
+- Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-521 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-522 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -807,12 +808,14 @@ Windows/Linux core API is stable enough for parity work.
   comparison without hidden clock reads, plus live Vulkan state-owned snapshots
   for planned/submitted work, upload bytes, draws, drops, and stage timing,
   plus fixed-size runtime renderer summaries and one retained full diagnostic
-  snapshot after successful presentation without backend downcasts.
-- In progress: Step 522 renderer diagnostics closeout.
-- Step 522 boundary: freeze the Steps 515-521 diagnostics evidence in a focused
-  audit-only closeout and hand Phase E to Step 523 pixel/screenshot testing.
-- Pending bands: Step 522 diagnostics closeout; Steps 523-530 pixel
-  tests; Steps 531-538 full verification and closeout.
+  snapshot after successful presentation without backend downcasts, plus the
+  audit-only Steps 515-521 renderer diagnostics integration closeout from work
+  through runtime propagation.
+- In progress: Step 523 pixel/screenshot testing.
+- Step 523 boundary: establish the production pixel/screenshot harness and the
+  first deterministic rendered-output case without hiding backend differences.
+- Pending bands: Steps 523-530 pixel tests; Steps 531-538 full verification and
+  closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
   debug after the slice, `git diff --check`, docs/ledger/planning updates, and
@@ -823,6 +826,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 522 pattern discovery guessed nonexistent `phase_e_renderer_solid_audit_test.cpp` and `phase_e_resource_retirement_audit_test.cpp` files | Step 522 ownership research | Use the repository's actual `phase_e_*_integration_closeout_test.cpp` pattern, especially the Step 514 batching/scheduling closeout |
 | A diagnostics-header inspection command referenced nonexistent split upload/draw header names | Step 521 ownership research | Use the actual combined `renderer_frame_diagnostics.hpp` leaf plus the dropped-resource and timing leaves |
 | The focused Step 521 executable exited 50 because its source check expected static `Renderer::` spelling instead of the instance call | Step 521 first behavior GREEN | Check `renderer.last_frame_diagnostic_snapshot()` and preserve exit 60 for the five-document gate |
 | The first Step 521 UI structure build reused existing `render_view_source` and `ui_internal_header` local names | Step 521 structure GREEN | Rename the new locals to diagnostics-specific names |

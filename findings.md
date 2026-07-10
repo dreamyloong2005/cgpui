@@ -9335,3 +9335,17 @@
 - The runtime diagnostic state lives in a two-line private class fragment, so
   `window_runtime_internal.hpp` remains at its 260-line limit.
 - Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
+
+## 2026-07-10 Phase E Step 522 Renderer Diagnostics Closeout
+
+- Step 522 is an audit-only integration closeout over Steps 515-521. It should
+  add no runtime implementation and should follow the existing
+  `phase_e_*_integration_closeout_test.cpp` ownership pattern.
+- The focused closeout target should freeze planned/submitted work comparison,
+  upload byte accounting, primitive draw accounting, dropped-resource identity
+  and reason metadata, frame-stage timing, live renderer snapshots, and runtime
+  propagation after successful presentation without Vulkan downcasts.
+- The closeout must also lock the seven focused behavior targets plus renderer
+  and UI structure coverage before handing Phase E to Step 523 pixel/screenshot
+  testing.
+- Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.

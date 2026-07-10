@@ -20194,3 +20194,30 @@
 - `wsl.exe -l -q` still returns an empty distribution list, so Step 521 records
   the unavailable Linux host while retaining the mandatory final Phase E Linux
   gate.
+
+## 2026-07-10 Phase E Step 522 Renderer Diagnostics Closeout
+
+- Started from clean tracked `master` at Step 521 commit `47fce829`; only the
+  existing untracked `.vscode/` directory remains.
+- Confirmed Step 522 is an audit-only integration closeout over Steps 515-521.
+  The focused target will freeze the seven diagnostics modules and behavior
+  tests, renderer/UI structure gates, and five-document evidence before the
+  Step 523 pixel/screenshot handoff.
+- Initial pattern discovery guessed two nonexistent Phase E audit filenames.
+  Repository inspection established the actual
+  `phase_e_*_integration_closeout_test.cpp` pattern used by earlier Phase E
+  bands.
+- Added the Step 522 closeout target and focused audit source. The target built
+  successfully, then its direct RED execution returned exit 70 only at the
+  expected five-document evidence gate.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 523
+  pixel/screenshot testing is active.
+- Focused closeout verification passed 10/10 across all Steps 515-521 behavior
+  targets plus renderer and UI structure gates.
+- JSON parsing, all five Step 522 phrases, the 165-line focused audit limit,
+  and `git diff --check` pass.
+- The complete Windows debug build succeeded in 2.735 seconds, then the full
+  suite passed 203/203 in 3.031 seconds.
+- `wsl.exe -l -q` still returns an empty distribution list, so Step 522 records
+  the unavailable Linux host while retaining the mandatory final Phase E Linux
+  gate.
