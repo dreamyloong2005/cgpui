@@ -9261,3 +9261,24 @@
 - Step 518 final Windows verification is 199/199 after a complete debug build.
   WSL/Linux verification remains in the final Phase E gate because no
   distribution is installed.
+
+## 2026-07-10 Phase E Step 519 Frame-Timing Diagnostics
+
+- The production Vulkan CPU path exposes six stable timing boundaries: pacing
+  wait, resource preparation, image acquisition, command recording, queue
+  submission, and presentation.
+- The public diagnostics helper should accept already-measured nanoseconds and
+  never query a clock. This keeps timing deterministic in tests and leaves
+  backend instrumentation ownership to Step 520.
+- Fixed-width `std::uint64_t` nanoseconds plus saturation-safe stage/total
+  accumulation avoid duration-type conversions and signed overflow in the
+  diagnostics surface.
+- Frame-budget comparison needs independent remaining and over-budget deltas;
+  equality is within budget with both deltas zero.
+- Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
+- Focused Step 519 validation confirms all six stage counters contribute to
+  the total, zero additions are no-ops, overflow saturates both the stage and
+  total, and budget equality remains within budget.
+- Step 519 final Windows verification is 200/200 after a complete debug build.
+  WSL/Linux verification remains in the final Phase E gate because no
+  distribution is installed.

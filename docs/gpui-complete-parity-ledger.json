@@ -1407,8 +1407,18 @@
       "xmake.lua"
     ],
     "phase_e_step_518_remaining_gap": "Step 519 frame-timing diagnostics",
+    "phase_e_step_519_surface": "Phase E Step 519 adds RendererFrameTimingDiagnostics for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.",
+    "phase_e_step_519_sources": [
+      "include/cgpui/renderer/renderer_frame_timing_diagnostics.hpp",
+      "src/renderer/renderer_frame_timing_diagnostics.cpp",
+      "include/cgpui/renderer/renderer_reports.hpp",
+      "tests/renderer/renderer_frame_timing_diagnostics_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_519_remaining_gap": "Step 520 live Vulkan diagnostic snapshots",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 519 frame-timing diagnostics"
+    "phase_e_current_handoff": "Step 520 live Vulkan diagnostic snapshots"
   },
   "categories": [
     "application_and_app_context",

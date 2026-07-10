@@ -20079,3 +20079,28 @@
 - Final review found the tracked worktree limited to the Step 518 slice. WSL
   remains unavailable because `wsl.exe -l -q` returned an empty distribution
   list.
+
+## 2026-07-10 Phase E Step 519 Frame-Timing Diagnostics
+
+- Started from clean tracked `master` at Step 518 commit `3d55112f`; only the
+  existing untracked `.vscode/` directory remains.
+- Traced the Vulkan CPU frame path into pacing wait, resource preparation,
+  image acquisition, command recording, queue submission, and presentation.
+  Step 519 models these as caller-supplied nanoseconds; clock reads remain in
+  the Step 520 backend integration.
+- Added the Step 519 RED target. Its first build failed on the intentionally
+  missing `renderer_frame_timing_diagnostics.hpp` public leaf.
+- Implemented the focused timing leaf/source, thin renderer-report aggregate
+  include, and renderer structure guards. Behavior builds and reaches exit 60
+  only at the expected five-document evidence gate.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 520
+  live Vulkan diagnostic snapshots are active.
+- Step 519 timing behavior, Steps 515-518 diagnostics regressions, renderer
+  source structure, public header cleanliness, and parity ledger pass 8/8.
+- JSON parsing, all five Step 519 phrases, focused 45/74/169 line counts, and
+  `git diff --check` pass.
+- The complete Windows debug build succeeded, then the full suite passed
+  200/200.
+- Final review found the tracked worktree limited to the Step 519 slice. WSL
+  remains unavailable because `wsl.exe -l -q` returned an empty distribution
+  list.

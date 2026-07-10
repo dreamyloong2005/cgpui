@@ -645,6 +645,7 @@ consume C: drive space again.
 - Phase E Step 516 adds `RendererUploadByteCounts` for glyph and image upload payload bytes, saturation-safe upload-byte accounting, and pending/unexpected upload-byte comparison. Step 517 draw-count accounting is next.
 - Phase E Step 517 adds `RendererDrawCounts` for primitive-aware GPU draw counts, saturation-safe draw-count accounting, and pending/unexpected draw comparison. Step 518 dropped-resource accounting is next.
 - Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
+- Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
 
 ## Categories
 
