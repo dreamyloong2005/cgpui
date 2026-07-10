@@ -1,5 +1,58 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 489 Explicit Z/Layer Command Ordering
+
+- `Element::z_order()` already gives explicit nonzero `z_index` precedence over
+  `layer`.
+- `ElementTree` and direct `StyledElement` child traversal already sort paint
+  children by ascending z-order and stable sibling index, while hit testing and
+  event dispatch consume the reverse visual order.
+- Step 488 preserves the authored `PaintList` interleaving through
+  `VulkanFrameDrawOrderCursor`, so Step 489 must not add a second renderer-side
+  sort that could flatten or reorder nested traversal semantics.
+- The focused Step 489 slice should prove the existing UI z/layer order survives
+  mixed solid, rounded, and text submission into the Vulkan frame cursor,
+  including negative layers, explicit z-index override, and equal-order stable
+  siblings.
+- The authoritative roadmap defines Steps 489-490 as completing z/layer order
+  in actual command recording and then closing the clip/composition band; it
+  does not require renderer-owned z metadata or a second sorting stage.
+- `RenderView` iterates `paint_list.commands()` directly,
+  `submit_paint_command_to_frame(...)` forwards each primitive immediately, and
+  `VulkanFrame::append_draw` is therefore the correct end-to-end observation
+  boundary for the focused ordering gate.
+- `ElementTree::paint_subtree(...)` uses `std::stable_sort` on `z_order()`, and
+  `paint_ordered_children(...)` uses the original sibling index as its equal-z
+  tie-break. These are the two production ordering paths the gate must freeze.
+- A focused test can use small test-only `Element` subclasses to author solid,
+  rounded, and text commands with negative layer, explicit z-index override,
+  and equal-order siblings. It should pass the resulting PaintList through the
+  real `submit_paint_command_to_frame(...)`, capture the real `RenderFrame`
+  virtual calls, and feed their compact primitive order into the real Vulkan
+  cursor with matching resource spans.
+- The production Vulkan frame indexes each primitive before pushing it into its
+  per-type vector (`.command_index = draws.size()`), so the recording test frame
+  mirrors that exact compact-index rule before exercising the real cursor.
+- The new Step 489 gate compiles and its behavior/source-boundary checks pass;
+  direct execution exits `40`, exactly at the intentionally missing
+  cross-document evidence gate. No production renderer change is required.
+- Phase E Step 489 now freezes explicit z/layer command ordering across the
+  existing UI ownership boundary and Vulkan recording path. The focused gate
+  proves stable UI paint order for negative layers, explicit z-index override,
+  and equal-order mixed primitive siblings. Step 490 owns clip/composition
+  integration closeout.
+- The Step 489 focused gate is GREEN after documentation sync. The parity JSON
+  parses, `git diff --check` is clean, and the tracked diff contains only the
+  focused test/build entry plus roadmap, ledger, and planning updates.
+- The complete Windows debug build passes and the full suite is GREEN at
+  170/170, including the new end-to-end layer ordering gate.
+- WSL remains unavailable because `wsl.exe -l -q` returns an empty distribution
+  list. Linux compilation of the shared test/build entry remains part of the
+  final Phase E gate.
+- The corrected cross-document phrase audit passes for all five authoritative
+  files. No `clang-format` executable is installed on this host; the new test
+  was manually checked against adjacent C++ test style.
+
 ## 2026-07-10 Phase E Step 488 Stable Renderer Command Ordering
 
 - UI submission already calls `RenderFrame` in authored order, but

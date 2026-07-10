@@ -639,13 +639,19 @@ Windows/Linux core API is stable enough for parity work.
   authored interleaving across solid, rounded, and text draws, skips absent
   geometry, expands text page runs in place, and avoids redundant state binds.
   Step 489 owns explicit z/layer command ordering.
+- Phase E Step 489 freezes explicit z/layer command ordering from UI traversal
+  through actual Vulkan command recording. `Element::z_order()` retains explicit
+  nonzero z-index precedence over layer, both production child traversal paths
+  preserve stable UI paint order, and the compact Vulkan cursor preserves the
+  mixed solid, rounded, and text sequence without a renderer-side z sort.
+  Step 490 owns the clip/composition integration closeout.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-488 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-489 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -668,10 +674,11 @@ Windows/Linux core API is stable enough for parity work.
   blend-capable solid geometry replacing authored rectangle clear commands,
   and single-application composed affine transforms across production vertices,
   plus push-time transformed clip AABBs with scoped framebuffer semantics, and
-  stable authored interleaving in actual Vulkan recording.
-- In progress: Step 489 explicit z/layer command ordering.
-- Pending bands: Steps 489-490 z/layer ordering and composition closeout;
-  Steps 491-498 images; Steps 499-506 SVG; Steps
+  stable authored interleaving in actual Vulkan recording, plus explicit z/layer
+  command ordering with stable UI paint order preserved end to end.
+- In progress: Step 490 clip/composition integration closeout.
+- Pending bands: Step 490 clip/composition integration closeout; Steps 491-498
+  images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -684,6 +691,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The Step 489 phrase audit repeated the known PowerShell `foreach (...) { ... } | Format-Table` empty-pipe parser error | Step 489 final audit | Assign the loop output to `$rows` before piping, as already documented during Step 463; do not repeat the direct pipe form |
+| `xmake build -y vulkan_layer_ordering_test -P .` treated `-P` after the target as an invalid argument | Step 489 first RED build invocation | Put project options before the target: `xmake build -y -P . vulkan_layer_ordering_test`; the failed command did not compile or modify outputs |
+| A Step 489 search used the stale path `docs/2026-07-04-gpui-complete-replication-roadmap.md` | Phase E Step 489 resume | Use the authoritative `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md` path from the active goal; do not repeat the stale path |
+| The first Step 489 planning-file patch assumed the wrong `findings.md` title | Phase E Step 489 resume | Read exact file anchors and apply a narrower patch; the failed attempt changed no files |
 | WinGet-linked `rg.exe` failed to start because Windows reported no associated application | Initial Phase E repository and memory searches | Use `git ls-files`, `Get-ChildItem`, and `Select-String` for this run; do not repeat the failing `rg.exe` invocation |
 | `vulkan_glyph_atlas_descriptor_test` initially failed to compile because the private resource header did not exist | Step 460 RED | Expected RED; added the private descriptor/image/resource module set |
 | Step 460 focused run compiled and the real text-frame smoke passed, but the new audit exited 22 | First GREEN attempt | Moved descriptor allocation/update out of the image module into `vulkan_glyph_atlas_descriptors.cpp`, restoring the intended ownership boundary |

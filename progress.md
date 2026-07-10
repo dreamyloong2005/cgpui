@@ -18872,6 +18872,54 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 489 Explicit Z/Layer Command Ordering
+
+- Resumed the active `/goal` after Step 488 commit `0b78d867`; tracked `master`
+  is clean and only the existing untracked `.vscode/` directory remains.
+- Planning session catch-up reported only the already committed Step 488 work,
+  so no unsynced source edits need recovery.
+- Existing element tests confirm ascending stable paint order, explicit
+  `z_index` precedence over `layer`, and reverse hit/event traversal.
+- Step 488 already preserves authored PaintList interleaving through actual
+  Vulkan recording. Step 489 will add a focused end-to-end UI-to-Vulkan order
+  gate without introducing a renderer-side sort.
+- Confirmed the authoritative roadmap only requires z/layer order to reach
+  actual command recording. The production call chain already forwards
+  `PaintList` commands in order, so the next action is a focused RED integration
+  test spanning UI traversal, command submission, and the Vulkan order cursor.
+- Chosen test boundary: test-only mixed-primitive elements -> production
+  `ElementTree::paint` -> production `submit_paint_command_to_frame` -> a
+  recording `RenderFrame` -> production `VulkanFrameDrawOrderCursor`.
+- Added the focused `vulkan_layer_ordering_test` target. Its behavior and source
+  assertions should compile against existing production code, while its
+  cross-document Step 489 evidence intentionally remains RED until the behavior
+  gate is proven.
+- The first build command placed `-P .` after the target and Xmake rejected the
+  argument before compiling. Retrying with project options before the target.
+- `vulkan_layer_ordering_test` then built successfully. Xmake reported the
+  expected RED failure, and direct execution confirmed `EXIT_CODE=40`, proving
+  all behavior and structure checks passed before the documentation gate.
+- Updated the roadmap, Markdown/JSON parity ledger, task plan, and findings with
+  the explicit z/layer command ordering integration result, stable UI paint
+  order ownership, and the Step 490 clip/composition closeout handoff.
+- `vulkan_layer_ordering_test/default` now passes. JSON parsing and
+  `git diff --check` also pass; the only unrelated worktree entry remains the
+  pre-existing untracked `.vscode/` directory.
+- Seven focused UI, submission, Vulkan order, structure, and parity regressions
+  passed 7/7.
+- The complete Windows debug build succeeded, then the full test suite passed
+  170/170 with `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list.
+- The first final phrase audit repeated the known PowerShell direct-pipe parser
+  failure. Retrying with the loop result assigned before `Format-Table`.
+- The corrected phrase audit passed all required Step 489/490 strings across
+  roadmap, Markdown/JSON ledger, task plan, and findings. JSON parsing and
+  `git diff --check` remain clean.
+- After the final test-style adjustment, the focused target rebuilt and
+  `vulkan_layer_ordering_test/default` plus `gpui_parity_ledger_test/default`
+  passed 2/2. Step 489 is ready for intentional staging and commit.
+
 ## 2026-07-10 Phase E Step 488 Stable Renderer Command Ordering
 
 - Started from clean tracked `master` at

@@ -508,6 +508,17 @@ consume C: drive space again.
   runs expand at their source position, and pipeline/buffer state rebinds only
   when the resolved resource kind changes.
 - Handoff: Phase E Step 489 explicit z/layer command ordering.
+- Phase E Step 489 freezes explicit z/layer command ordering end to end.
+  `Element::z_order()` retains explicit nonzero z-index precedence over layer,
+  while tree and direct-child traversal preserve stable UI paint order for equal
+  values.
+- PaintList commands pass through `submit_paint_command_to_frame(...)` in that
+  authored order. `VulkanFrame` records compact per-type indices and
+  `VulkanFrameDrawOrderCursor` resolves the mixed solid, rounded, and text
+  sequence without a renderer-side z sort.
+- `vulkan_layer_ordering_test` locks negative layers, explicit z-index override,
+  equal-order stable siblings, UI submission, and Vulkan cursor output.
+- Handoff: Phase E Step 490 clip/composition integration closeout.
 
 ## Categories
 

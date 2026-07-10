@@ -1595,10 +1595,16 @@ draw calls for the Windows/Linux renderer.
   with no generated geometry, expands multi-page text commands in place, and
   rebinds pipeline/buffer state only when the resolved resource kind changes.
   Step 489 owns explicit z/layer command ordering.
-- [ ] Steps 489-490: Complete z/layer ordering in
-  actual command recording, then close the clip/composition band. Rectangular
-  clip stacks use Step 483 scissor recording; a future non-rectangular clip
-  primitive would require a stencil or shader-mask path.
+- [x] Phase E Step 489 freezes explicit z/layer command ordering from UI
+  traversal through actual Vulkan command recording. `Element::z_order()` keeps
+  explicit nonzero z-index precedence over layer, tree and direct-child paint
+  traversal retain stable UI paint order for equal values, PaintList submission
+  remains authored-order, and `VulkanFrameDrawOrderCursor` preserves the mixed
+  solid, rounded, and text sequence without a second renderer-side sort.
+  Step 490 owns the clip/composition integration closeout.
+- [ ] Phase E Step 490: Close the clip/composition band. Rectangular clip
+  stacks use Step 483 scissor recording; a future non-rectangular clip primitive
+  would require a stencil or shader-mask path.
 - [ ] Steps 491-498: Build image texture resources, upload staging, sampler
   modes, tint/opacity support, cache lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
