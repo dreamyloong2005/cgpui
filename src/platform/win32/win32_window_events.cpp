@@ -13,10 +13,12 @@ void Win32Window::pointer_moved(LPARAM lparam) {
 void Win32Window::pointer_button(
     MouseButton button,
     bool pressed,
+    std::uint8_t click_count,
     LPARAM lparam) {
   callback_(PointerButton{
       .button = button,
       .pressed = pressed,
+      .click_count = click_count,
       .position = Point{
           static_cast<float>(GET_X_LPARAM(lparam)),
           static_cast<float>(GET_Y_LPARAM(lparam))}});

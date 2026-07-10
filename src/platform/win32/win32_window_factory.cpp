@@ -10,7 +10,7 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
   constexpr const wchar_t* class_name = L"CGPUIWindow";
   WNDCLASSEXW window_class{};
   window_class.cbSize = sizeof(WNDCLASSEXW);
-  window_class.style = CS_HREDRAW | CS_VREDRAW;
+  window_class.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
   window_class.lpfnWndProc = win32_window_proc;
   window_class.hInstance = instance;
   window_class.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));

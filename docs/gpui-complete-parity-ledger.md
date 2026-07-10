@@ -673,6 +673,7 @@ consume C: drive space again.
 - Phase F Step 544 adds capability-aware top-level positioning with initial/query/request support and WindowMoved delivery on Win32, while Wayland explicitly reports absolute positioning unsupported. Step 545 transparent and decorated window production behavior is next.
 - Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.
 - Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.
+- Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.
 
 ## Categories
 

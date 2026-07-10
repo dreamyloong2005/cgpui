@@ -49,6 +49,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_application.cpp",
       "src/platform/win32/win32_native.cpp",
       "src/platform/win32/win32_ole_drop_target.cpp",
+      "src/platform/win32/win32_pointer_button_internal.hpp",
+      "src/platform/win32/win32_pointer_button.cpp",
       "src/platform/win32/win32_window.cpp",
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/win32/win32_window_close.cpp",
@@ -352,6 +354,8 @@ int main() {
       read_source("src/platform/win32/win32_window_proc_lifecycle.cpp");
   const std::string win32_window_proc_pointer =
       read_source("src/platform/win32/win32_window_proc_pointer.cpp");
+  const std::string win32_pointer_button =
+      read_source("src/platform/win32/win32_pointer_button.cpp");
   const std::string win32_window_proc_keyboard =
       read_source("src/platform/win32/win32_window_proc_keyboard.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
@@ -600,7 +604,9 @@ int main() {
       !contains(win32_window_proc_lifecycle, "WM_PAINT") ||
       !contains(win32_window_proc_lifecycle, "WM_NCDESTROY") ||
       !contains(win32_window_proc_pointer, "WM_MOUSEWHEEL") ||
-      !contains(win32_window_proc_pointer, "WM_LBUTTONDOWN") ||
+      !contains(win32_pointer_button, "WM_LBUTTONDOWN") ||
+      !contains(win32_pointer_button, "WM_XBUTTONDOWN") ||
+      !contains(win32_pointer_button, "WM_LBUTTONDBLCLK") ||
       !contains(win32_window_proc_keyboard, "WM_KEYDOWN") ||
       !contains(win32_window_proc_keyboard, "WM_CHAR")) {
     return 93;

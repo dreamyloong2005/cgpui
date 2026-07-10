@@ -9638,3 +9638,14 @@
   table, but lacked the client request wrapper and parent toplevel plumbing.
   The request belongs before the child's initial `wl_surface_commit`.
 - Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.
+
+## 2026-07-11 Phase F Step 547 Win32 Pointer Button Audit
+
+- The old Win32 pointer procedure only handled left/right/middle down and up,
+  did not register the class for double-click messages, and discarded the
+  public `PointerButton::click_count` added for text selection behavior.
+- `WM_XBUTTON*` requires returning `TRUE` after handling and derives the
+  back/forward identity from the high word of `wParam`; that message decoding
+  belongs in a focused Win32 pointer-button module rather than expanding the
+  window procedure.
+- Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.

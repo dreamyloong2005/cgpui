@@ -20727,3 +20727,31 @@
 - Final JSON parsing, exact Step 546 phrase counts across all five authority
   documents, focused line caps, and `git diff --check` pass; the only
   unrelated worktree entry remains the pre-existing untracked `.vscode/`.
+
+## 2026-07-11 Phase F Step 547 Win32 Pointer Buttons
+
+- Added `MouseButton::back` and `MouseButton::forward`, enabled `CS_DBLCLKS`,
+  and moved Win32 button-message decoding into the focused
+  `win32_pointer_button.cpp` module.
+- The production callback now preserves native single/double click counts and
+  maps XBUTTON1/XBUTTON2 to back/forward while returning the Win32-required
+  handled result for `WM_XBUTTON*` messages.
+- Added real Win32 behavior coverage and a dedicated structure/documentation
+  guard, and registered the focused source boundary in both platform source
+  inventories.
+- The first resumed structure run was blocked by a transient xmake
+  `cannot create filelock for package(ninja)` error. No active xmake, ninja,
+  compiler, or linker process remained; the detailed rerun acquired the lock
+  and passed.
+- Synchronized the exact Step 547 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; Step 548 Win32 wheel and
+  high-precision scroll production behavior is the active handoff.
+- Final Windows focused verification passes 6/6 across real pointer-button
+  behavior, the existing Win32 input regression, the dedicated Step 547 guard,
+  both Win32/platform source inventories, and core header cleanliness.
+- Final WSL focused verification passes 5/5 across the Wayland pointer-button
+  regression, the cross-platform Step 547 guard, both Wayland/platform source
+  inventories, and core header cleanliness.
+- Ledger JSON parsing, the exact Step 547 phrase appearing once in each of the
+  five authority documents, focused line caps, public enum-consumer review,
+  and `git diff --check` pass. `.vscode/` remains unrelated and untracked.

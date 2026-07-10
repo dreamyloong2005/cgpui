@@ -1805,7 +1805,22 @@
       "xmake.lua"
     ],
     "phase_f_step_546_remaining_gap": "Step 547 Win32 pointer input production behavior",
-    "phase_f_current_handoff": "Step 547 Win32 pointer input production behavior"
+    "phase_f_step_547_surface": "Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.",
+    "phase_f_step_547_sources": [
+      "include/cgpui/core/event_pointer.hpp",
+      "src/platform/win32/win32_pointer_button_internal.hpp",
+      "src/platform/win32/win32_pointer_button.cpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_proc_pointer.cpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_factory.cpp",
+      "tests/platform/win32_pointer_button_test.cpp",
+      "tests/architecture/phase_f_win32_pointer_button_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_547_remaining_gap": "Step 548 Win32 wheel and high-precision scroll production behavior",
+    "phase_f_current_handoff": "Step 548 Win32 wheel and high-precision scroll production behavior"
   },
   "categories": [
     "application_and_app_context",

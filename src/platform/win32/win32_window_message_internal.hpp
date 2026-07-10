@@ -35,6 +35,7 @@ class Win32WindowMessageTarget {
   virtual void pointer_button(
       MouseButton button,
       bool pressed,
+      std::uint8_t click_count,
       LPARAM lparam) = 0;
   virtual void pointer_scrolled(WPARAM wparam, LPARAM lparam) = 0;
   virtual void key_event(WPARAM wparam, KeyAction action) = 0;

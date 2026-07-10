@@ -58,6 +58,7 @@ class Win32Window final
   void pointer_button(
       MouseButton button,
       bool pressed,
+      std::uint8_t click_count,
       LPARAM lparam) override;
   void pointer_scrolled(WPARAM wparam, LPARAM lparam) override;
   void key_event(WPARAM wparam, KeyAction action) override;

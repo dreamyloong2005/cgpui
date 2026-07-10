@@ -895,7 +895,11 @@ Windows/Linux core API is stable enough for parity work.
   ownership until the root native window is active; real Win32 tests observe
   `GW_OWNER`, and the Wayland test compositor observes non-null
   `xdg_toplevel.set_parent` before the child's first surface commit.
-- In progress: Step 547 Win32 pointer input production behavior.
+- Completed: Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.
+- Step 547 evidence: the Win32 window class opts into `CS_DBLCLKS`; the focused
+  decoder maps left/right/middle single and double-click messages plus XBUTTON1
+  and XBUTTON2, while production callbacks preserve the native click count.
+- In progress: Step 548 Win32 wheel and high-precision scroll production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -934,6 +938,8 @@ Windows/Linux core API is stable enough for parity work.
 | The first Step 546 structure-test launch hit a transient xmake `cannot create filelock for package(ninja)` error after the WSL build | Step 546 structure RED | Confirm no Windows or WSL xmake/ninja process remains, then rerun after the stale package lock releases |
 | The expanded Step 546 Windows gate exposed three historical structure assumptions: creation evidence still lived in `win32_application.cpp`, Step 545 bound the global handoff, and Wayland display protocol exceeded 55 lines after Step 545 min/max requests | Step 546 lifecycle-band regression | Point position evidence at the factory, freeze Step 545's own remaining-gap field, and move min/max requests into focused `wayland_protocol_xdg_toplevel_size.cpp` |
 | The first public compatibility gate failed `public_result_conventions_test` because its direct pre-run calls expected immediate native child errors | Step 546 Result compatibility | Test pending publication before root activation separately, then invoke `try_open_window` during the active event loop to preserve synchronous platform/renderer error propagation |
+| The first Step 547 source-inventory patch assumed the platform Win32 list matched the dedicated Win32 list and was rejected atomically | Step 547 structure wiring | Patch the dedicated list near `win32_ole_drop_target.cpp` and the platform list near `win32_input_helpers.cpp` independently |
+| The first resumed Step 547 structure run hit `cannot create filelock for package(ninja)` | Step 547 structure RED | Confirm no `xmake`/`ninja` process remains, then use a detailed focused rerun; xmake reacquired the lock and passed |
 
 ## Errors Encountered During Phase E Resume
 

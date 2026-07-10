@@ -10,6 +10,8 @@ enum class MouseButton {
   left,
   right,
   middle,
+  back,
+  forward,
   other,
 };
 

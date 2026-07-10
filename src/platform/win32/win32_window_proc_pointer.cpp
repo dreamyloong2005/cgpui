@@ -1,4 +1,5 @@
 #include "win32_internal.hpp"
+#include "win32_pointer_button_internal.hpp"
 
 namespace cgpui {
 
@@ -15,36 +16,6 @@ bool win32_window_proc_handle_pointer(
       }
       result = 0;
       return true;
-    case WM_LBUTTONDOWN:
-    case WM_LBUTTONUP:
-      if (window != nullptr) {
-        window->pointer_button(
-            MouseButton::left,
-            message == WM_LBUTTONDOWN,
-            lparam);
-      }
-      result = 0;
-      return true;
-    case WM_RBUTTONDOWN:
-    case WM_RBUTTONUP:
-      if (window != nullptr) {
-        window->pointer_button(
-            MouseButton::right,
-            message == WM_RBUTTONDOWN,
-            lparam);
-      }
-      result = 0;
-      return true;
-    case WM_MBUTTONDOWN:
-    case WM_MBUTTONUP:
-      if (window != nullptr) {
-        window->pointer_button(
-            MouseButton::middle,
-            message == WM_MBUTTONDOWN,
-            lparam);
-      }
-      result = 0;
-      return true;
     case WM_MOUSEWHEEL:
       if (window != nullptr) {
         window->pointer_scrolled(wparam, lparam);
@@ -52,8 +23,21 @@ bool win32_window_proc_handle_pointer(
       result = 0;
       return true;
     default:
-      return false;
+      break;
   }
+  const auto button = decode_win32_pointer_button(message, wparam);
+  if (!button.has_value()) {
+    return false;
+  }
+  if (window != nullptr) {
+    window->pointer_button(
+        button->button,
+        button->pressed,
+        button->click_count,
+        lparam);
+  }
+  result = button->result;
+  return true;
 }
 
 } // namespace cgpui
