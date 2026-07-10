@@ -176,10 +176,10 @@ int test_structure_and_documentation() {
       !contains(resources, "vulkan_find_image_texture_resource(") ||
       !contains(frame, "prepare_image_texture_frame(") ||
       !contains(renderer, "image_draws_") ||
-      !contains(renderer, "image_uploads_)") ||
+      !contains(renderer, "image_uploads_,") ||
       !contains(
           presentation,
-          "prepare_image_texture_frame(image_draws, image_uploads)") ||
+          "image_draws, image_uploads, image_invalidations") ||
       !contains(state, "VulkanImageTextureResources image_texture_resources_") ||
       !contains(state_source, "vulkan_destroy_image_texture_resources(") ||
       !contains(lifetime, "test_image_texture_resource_frame(") ||

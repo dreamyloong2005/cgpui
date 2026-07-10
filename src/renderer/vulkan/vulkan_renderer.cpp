@@ -31,6 +31,7 @@ class VulkanFrame final : public RenderFrame {
     append_draw(image_draws_, image, RendererPrimitiveKind::image);
   }
   void upload_image(const ImageAsset& image) override;
+  void invalidate_image(ImageAssetId asset_id) override;
   Result<void> present() override;
 
  private:
@@ -55,6 +56,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<TextCaretDraw> text_carets_;
   std::vector<ImageDraw> image_draws_;
   std::vector<ImageUploadBatch> image_uploads_;
+  std::vector<ImageAssetId> image_invalidations_;
   std::vector<VulkanFrameDrawOrderEntry> draw_order_;
 };
 
@@ -95,6 +97,15 @@ void VulkanFrame::upload_image(const ImageAsset& image) {
   }
 }
 
+void VulkanFrame::invalidate_image(ImageAssetId asset_id) {
+  if (asset_id.value == 0 ||
+      std::ranges::find(image_invalidations_, asset_id) !=
+          image_invalidations_.end()) {
+    return;
+  }
+  image_invalidations_.push_back(asset_id);
+}
+
 Result<void> VulkanFrame::present() {
   return state_->present_frame(
       clear_color_,
@@ -105,7 +116,8 @@ Result<void> VulkanFrame::present() {
       text_selections_,
       text_carets_,
       image_draws_,
-      image_uploads_);
+      image_uploads_,
+      image_invalidations_);
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(

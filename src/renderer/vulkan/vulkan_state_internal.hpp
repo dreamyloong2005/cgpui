@@ -31,7 +31,8 @@ class VulkanRendererState final {
       std::span<const TextSelectionDraw> text_selections,
       std::span<const TextCaretDraw> text_carets,
       std::span<const ImageDraw> image_draws,
-      std::span<const ImageUploadBatch> image_uploads);
+      std::span<const ImageUploadBatch> image_uploads,
+      std::span<const ImageAssetId> image_invalidations);
 
  private:
   explicit VulkanRendererState(RenderSurfaceDescriptor descriptor);
@@ -51,7 +52,8 @@ class VulkanRendererState final {
       std::span<const RoundedRectDraw> rounded_rects);
   Result<void> prepare_image_texture_frame(
       std::span<const ImageDraw> image_draws,
-      std::span<const ImageUploadBatch> image_uploads);
+      std::span<const ImageUploadBatch> image_uploads,
+      std::span<const ImageAssetId> image_invalidations);
   void commit_image_texture_frame();
   void commit_glyph_atlas_frame();
   Result<void> recover_after_failed_submit(std::string message);

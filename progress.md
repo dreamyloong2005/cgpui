@@ -18872,6 +18872,46 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 497 Image Invalidation
+
+- Started from clean tracked `master` at
+  `4fa1981f feat: manage vulkan image cache lifetime`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed same-allocation uploads already refresh pixels and allocation
+  changes recreate resources; explicit unregister/forced-refresh invalidation
+  is the missing behavior.
+- Chosen boundary is a compatible `RenderFrame::invalidate_image(...)` command,
+  frame-owned deduplicated ids, and a focused Vulkan invalidation leaf applied
+  after the fence but before cache touch/ensure. Step 498 owns closeout only.
+- Added `vulkan_image_texture_invalidation_test` and its xmake target. The RED
+  build failed exactly as intended because the focused invalidation header did
+  not exist.
+- The first live/structure regression run passed the real invalidation frame but
+  renderer structure exited `72` on the old two-argument image-frame forwarding
+  phrase. Updated the prior audit to require the new invalidation span.
+- Added the compatible public frame method, frame-owned deduplicated ids,
+  focused idempotent Vulkan resource destruction, state/presentation transport,
+  and pre-cache invalidation ordering.
+- `vulkan_presentation.cpp` remains below its 150-line structure limit at 147
+  lines after compacting only the existing command-batch call.
+- Live invalidation coverage passes upload/draw, invalidated draw-only, and
+  invalidated same-frame upload/draw refresh paths. Live frame and renderer
+  structure regressions pass 2/2.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with
+  `RenderFrame::invalidate_image`, deduplicated image invalidations, fence-safe
+  resource destruction, and the Step 498 image integration closeout handoff.
+- Final focused Windows verification passed 12/12 across invalidation, cache,
+  uploads, draw recording, tint, live frame lifetime, public header cleanliness,
+  renderer structure, and parity ledger coverage.
+- The complete Windows debug build succeeded, then the full test suite passed
+  178/178 with `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Image invalidation remains in the final Phase E
+  Linux gate.
+- Final Step 497 audit passed focused behavior/structure/ledger 3/3, exact
+  documentation phrases 25/25, ledger JSON parsing, source line-count limits,
+  and `git diff --check`.
+
 ## 2026-07-10 Phase E Step 496 Image Cache Lifetime
 
 - Started from clean tracked `master` at

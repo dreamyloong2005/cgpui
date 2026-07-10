@@ -1,6 +1,7 @@
 #include "vulkan_internal.hpp"
 
 #include "vulkan_image_texture_cache_internal.hpp"
+#include "vulkan_image_texture_invalidation_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -50,7 +51,8 @@ Result<void> validate_image_texture_frame_requests(
 
 Result<void> VulkanRendererState::prepare_image_texture_frame(
     std::span<const ImageDraw> image_draws,
-    std::span<const ImageUploadBatch> image_uploads) {
+    std::span<const ImageUploadBatch> image_uploads,
+    std::span<const ImageAssetId> image_invalidations) {
   if (auto result =
           validate_image_texture_frame_requests(image_draws, image_uploads);
       !result) {
@@ -59,6 +61,8 @@ Result<void> VulkanRendererState::prepare_image_texture_frame(
 
   vulkan_destroy_image_texture_upload_resources(
       device_, image_texture_uploads_);
+  (void)vulkan_invalidate_image_texture_resources(
+      device_, image_invalidations, image_texture_resources_);
   (void)vulkan_prepare_image_texture_cache_frame(
       device_, image_draws, image_uploads, image_texture_resources_);
   if (auto result = vulkan_update_image_texture_resources(

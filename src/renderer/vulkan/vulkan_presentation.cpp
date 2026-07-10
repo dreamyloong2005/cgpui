@@ -11,7 +11,8 @@ Result<void> VulkanRendererState::present_frame(
     std::span<const TextSelectionDraw> text_selections,
     std::span<const TextCaretDraw> text_carets,
     std::span<const ImageDraw> image_draws,
-    std::span<const ImageUploadBatch> image_uploads) {
+    std::span<const ImageUploadBatch> image_uploads,
+    std::span<const ImageAssetId> image_invalidations) {
   if (presentation_blocked_) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
@@ -19,11 +20,7 @@ Result<void> VulkanRendererState::present_frame(
   }
 
   last_command_batches_ = vulkan_build_renderer_command_batches(
-      rects,
-      rounded_rects,
-      text_draws,
-      text_selections,
-      text_carets);
+      rects, rounded_rects, text_draws, text_selections, text_carets);
   if (auto result = require_vk_success(
           vkWaitForFences(device_, 1, &in_flight_, VK_TRUE, UINT64_MAX),
           "vkWaitForFences failed");
@@ -36,7 +33,8 @@ Result<void> VulkanRendererState::present_frame(
   if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
     return result;
   }
-  if (auto result = prepare_image_texture_frame(image_draws, image_uploads);
+  if (auto result = prepare_image_texture_frame(
+          image_draws, image_uploads, image_invalidations);
       !result) {
     return result;
   }

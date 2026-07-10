@@ -689,13 +689,19 @@ Windows/Linux core API is stable enough for parity work.
   fence-safe eviction, the default policy retains 120 idle frames, generation
   wrap rebases live resources, and a live upload-idle-draw sequence proves
   reuse without re-upload. Step 497 image invalidation is next.
+- Phase E Step 497 adds `RenderFrame::invalidate_image(...)`, frame-owned
+  deduplicated image invalidations, and a focused private destruction path.
+  Invalidations run after the fence and staging cleanup for fence-safe resource destruction,
+  then cache touch/ensure lets same-frame uploads rebuild while draw-only
+  invalidations remain safely unreadable. Step 498 image integration closeout
+  is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-496 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-497 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -729,9 +735,10 @@ Windows/Linux core API is stable enough for parity work.
   sampling descriptor selection, stable interleaving, and actual Vulkan image
   draw recording, plus multiplicative image tint and single-application
   composition opacity through the explicit RGBA vertex/shader path, plus a
-  120-idle-frame generation cache with fence-safe retention and eviction.
-- In progress: Step 497 image invalidation.
-- Pending bands: Steps 497-498 images; Steps 499-506 SVG; Steps
+  120-idle-frame generation cache with fence-safe retention and eviction, plus
+  explicit deduplicated image invalidation and same-frame refresh ordering.
+- In progress: Step 498 image integration closeout.
+- Pending bands: Step 498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -744,6 +751,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Renderer structure exited 72 because the Step 491 forwarding audit still required the two-argument image-frame call | Step 497 live/structure regression | Update the old audit to require `image_invalidations` while retaining the original image resource ownership checks |
+| `vulkan_image_texture_invalidation_test` failed to compile because the focused invalidation header did not exist | Step 497 RED | Expected RED; add the frame invalidation API, deduplicated transport, focused destruction module, and live refresh coverage |
 | A Step 496 line-count diagnostic repeated the known direct `foreach`-to-pipe PowerShell parser error | Step 496 pre-implementation audit | Assign the loop output to `$rows` before formatting; the corrected read-only audit passed |
 | `vulkan_image_texture_cache_test` failed to compile because the focused cache header did not exist | Step 496 RED | Expected RED; add frame-generation cache state, idle eviction, frame orchestration, and live reuse coverage |
 | The Step 495 documentation gate remained at exit 50 because the Markdown ledger split `single application` across lines | Step 495 first documentation GREEN | Keep the exact audit phrase contiguous; all behavior and structure checks already passed |

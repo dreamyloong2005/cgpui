@@ -1153,8 +1153,24 @@
       "xmake.lua"
     ],
     "phase_e_step_496_remaining_gap": "Step 497 image invalidation",
+    "phase_e_step_497_surface": "Phase E Step 497 adds RenderFrame::invalidate_image with frame-owned deduplicated image invalidations and focused Vulkan fence-safe resource destruction. Invalidation runs before cache touch and resource ensure, so same-frame uploads rebuild and refresh cleanly while invalidated draw-only textures remain undefined and are skipped. Step 498 image integration closeout is next.",
+    "phase_e_step_497_sources": [
+      "include/cgpui/renderer/renderer_frame.hpp",
+      "src/renderer/vulkan/vulkan_renderer.cpp",
+      "src/renderer/vulkan/vulkan_state_internal.hpp",
+      "src/renderer/vulkan/vulkan_presentation.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_invalidation_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_invalidation.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_frame.cpp",
+      "tests/renderer/vulkan_image_texture_invalidation_test.cpp",
+      "tests/renderer/vulkan_frame_lifetime_test.cpp",
+      "tests/renderer/vulkan_image_texture_resources_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_497_remaining_gap": "Step 498 image integration closeout",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 497 image invalidation"
+    "phase_e_current_handoff": "Phase E Step 498 image integration closeout"
   },
   "categories": [
     "application_and_app_context",

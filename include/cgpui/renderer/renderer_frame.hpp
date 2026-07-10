@@ -21,6 +21,7 @@ class RenderFrame {
   }
   virtual void draw_text_caret(const TextCaretDraw& caret) { (void)caret; }
   virtual void upload_image(const ImageAsset& image) { (void)image; }
+  virtual void invalidate_image(ImageAssetId asset_id) { (void)asset_id; }
   virtual void draw_image(const ImageDraw& image) { (void)image; }
   virtual Result<void> present() = 0;
 };

@@ -593,6 +593,13 @@ consume C: drive space again.
 - Generation wrap rebases live resources. A real upload -> idle -> draw frame
   sequence proves the shader-readable texture survives without re-upload.
 - Handoff: Step 497 image invalidation.
+- Phase E Step 497 adds `RenderFrame::invalidate_image(...)` with frame-owned
+  deduplicated image invalidations. Vulkan applies them after the in-flight
+  fence and staging cleanup for fence-safe resource destruction.
+- Invalidation precedes cache touch and resource ensure. Same-frame uploads
+  recreate and refresh the texture; invalidated draw-only textures remain
+  undefined and are skipped by the existing shader-readiness guard.
+- Handoff: Step 498 image integration closeout.
 
 ## Categories
 

@@ -1,5 +1,33 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 497 Image Invalidation
+
+- Step 496 commit `4fa1981f` leaves tracked `master` clean with only the
+  existing untracked `.vscode/` directory.
+- Existing uploads already refresh same-allocation texture pixels and replace
+  allocation-mismatched resources. The remaining invalidation gap is an
+  explicit frame command for resource unregister/forced refresh.
+- The public ownership boundary is the focused `RenderFrame` leaf with a
+  backward-compatible default `invalidate_image(ImageAssetId)` method. Vulkan
+  frames should deduplicate ids in frame-owned storage.
+- The private ownership boundary should be a focused image-texture invalidation
+  module. It must run after the in-flight fence and staging cleanup, but before
+  cache touch/eviction and draw/upload resource ensure, so same-frame uploads
+  rebuild cleanly and invalidated draw-only resources stay safely unreadable.
+- Step 498 remains the image integration closeout audit.
+- Phase E Step 497 now adds `RenderFrame::invalidate_image(...)` and VulkanFrame
+  stores deduplicated image invalidations. The focused invalidation module
+  performs fence-safe resource destruction before cache touch and ensure.
+- Pure invalidation is idempotent for duplicate/missing ids. Live coverage passes
+  upload/draw, invalidate/draw-only, and invalidate/upload/draw refresh frames.
+  Step 498 image integration closeout is next.
+- Focused Windows regression coverage passed 12/12, the complete Windows debug
+  suite passed 178/178, and WSL remains unavailable because no distribution is
+  installed on the current host.
+- Final closeout checks passed Step 497 behavior/structure/ledger 3/3, exact
+  documentation phrases 25/25, JSON parsing, module line limits, and diff
+  hygiene.
+
 ## 2026-07-10 Phase E Step 496 Image Cache Lifetime
 
 - Step 495 commit `6472f778` leaves tracked `master` clean with only the

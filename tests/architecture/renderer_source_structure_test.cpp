@@ -167,6 +167,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_frame.cpp",
       "src/renderer/vulkan/vulkan_image_texture_cache_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_cache.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_invalidation_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_invalidation.cpp",
       "src/renderer/vulkan/vulkan_image_texture_descriptors_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_samplers.cpp",
       "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp",
@@ -1444,6 +1446,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_cache_internal.hpp");
   const std::string image_texture_cache = read_source(
       "src/renderer/vulkan/vulkan_image_texture_cache.cpp");
+  const std::string image_texture_invalidation_header = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_invalidation_internal.hpp");
+  const std::string image_texture_invalidation = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_invalidation.cpp");
   const std::string image_texture_upload_header = read_source(
       "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp");
   const std::string image_texture_staging = read_source(
@@ -1460,6 +1466,8 @@ int main(int argc, char** argv) {
       line_count(image_texture_frame) > 110 ||
       line_count(image_texture_cache_header) > 60 ||
       line_count(image_texture_cache) > 110 ||
+      line_count(image_texture_invalidation_header) > 40 ||
+      line_count(image_texture_invalidation) > 80 ||
       !contains(image_texture_header, "struct VulkanImageTextureResource") ||
       !contains(image_texture_header, "struct VulkanImageTextureResources") ||
       !contains(image_texture_images, "vkCreateImage") ||
@@ -1473,10 +1481,12 @@ int main(int argc, char** argv) {
                 "vulkan_image_texture_cache_max_idle_frames") ||
       !contains(image_texture_cache,
                 "vulkan_evict_idle_image_texture_resources(") ||
+      !contains(image_texture_invalidation,
+                "vulkan_destroy_image_texture_resource(") ||
       !contains(image_texture_state,
                 "VulkanImageTextureResources image_texture_resources_") ||
       !contains(image_texture_presentation,
-                "prepare_image_texture_frame(image_draws, image_uploads)")) {
+                "image_draws, image_uploads, image_invalidations")) {
     return 72;
   }
   if (line_count(image_texture_upload_header) > 100 ||

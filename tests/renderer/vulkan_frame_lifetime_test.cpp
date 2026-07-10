@@ -260,6 +260,69 @@ int test_image_texture_upload_frame(const HiddenWindow& window) {
   return test_image_texture_cache_idle_frame(window);
 }
 
+int test_image_texture_invalidation_frame(const HiddenWindow& window) {
+  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+      .native_surface = window.surface(),
+      .framebuffer_size = cgpui::Size{64.0F, 64.0F},
+      .scale = cgpui::DpiScale{1.0F}});
+  if (!renderer) {
+    return 21;
+  }
+  cgpui::ImageAsset image{
+      .id = cgpui::ImageAssetId{43},
+      .logical_size = {.width = 2.0F, .height = 2.0F},
+      .bitmap =
+          cgpui::DecodedImageBitmap{
+              .width = 2,
+              .height = 2,
+              .stride = 8,
+              .format = cgpui::ImageFormat::rgba8_unorm,
+              .pixels = std::vector<std::uint8_t>(16, 255),
+          },
+  };
+  const cgpui::ImageAssetDescriptor descriptor =
+      cgpui::describe_image_asset(image);
+  {
+    auto frame = (*renderer)->begin_frame();
+    if (!frame) {
+      return 22;
+    }
+    (*frame)->upload_image(image);
+    (*frame)->draw_image(cgpui::ImageDraw{
+        .bounds = {.size = {.width = 16.0F, .height = 16.0F}},
+        .asset = descriptor,
+    });
+    if (!(*frame)->present()) {
+      return 23;
+    }
+  }
+  {
+    auto frame = (*renderer)->begin_frame();
+    if (!frame) {
+      return 24;
+    }
+    (*frame)->invalidate_image(image.id);
+    (*frame)->draw_image(cgpui::ImageDraw{
+        .bounds = {.size = {.width = 16.0F, .height = 16.0F}},
+        .asset = descriptor,
+    });
+    if (!(*frame)->present()) {
+      return 25;
+    }
+  }
+  auto frame = (*renderer)->begin_frame();
+  if (!frame) {
+    return 26;
+  }
+  (*frame)->invalidate_image(image.id);
+  (*frame)->upload_image(image);
+  (*frame)->draw_image(cgpui::ImageDraw{
+      .bounds = {.size = {.width = 16.0F, .height = 16.0F}},
+      .asset = descriptor,
+  });
+  return (*frame)->present() ? 0 : 27;
+}
+
 int test_multi_page_glyph_atlas_frame(const HiddenWindow& window) {
   auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
@@ -290,6 +353,10 @@ int main() {
     return result;
   }
   if (const int result = test_image_texture_upload_frame(window); result != 0) {
+    return result;
+  }
+  if (const int result = test_image_texture_invalidation_frame(window);
+      result != 0) {
     return result;
   }
   return test_multi_page_glyph_atlas_frame(window);

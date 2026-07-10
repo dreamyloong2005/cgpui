@@ -1656,8 +1656,12 @@ draw calls for the Windows/Linux renderer.
   and generation wrap rebases live resources. A real upload -> idle -> draw
   frame sequence reuses the shader-readable texture without re-upload.
   Step 497 image invalidation is next.
-- [ ] Steps 497-498: Build image invalidation and the image integration
-  closeout.
+- [x] Phase E Step 497 adds `RenderFrame::invalidate_image(...)`, frame-owned
+  deduplicated image invalidations, and focused Vulkan fence-safe resource destruction.
+  Invalidations run before cache touch/resource ensure, so a same-frame upload
+  rebuilds cleanly while an invalidated draw-only texture remains unreadable and
+  is skipped. Step 498 image integration closeout is next.
+- [ ] Step 498: Close the image integration band with a focused audit.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
