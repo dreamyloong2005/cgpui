@@ -529,6 +529,22 @@ consume C: drive space again.
 - Rectangular clip stacks remain covered by per-draw Vulkan scissor resolution.
   A future non-rectangular clip still requires a stencil or shader-mask path.
 - Handoff: Phase E Step 491 image texture resources.
+- Phase E Step 491 adds focused private `VulkanImageTextureResources` ownership.
+  Descriptor-keyed resources create and retain `VkImage`, device-local memory,
+  and `VkImageView` handles for `VK_FORMAT_R8G8B8A8_UNORM`, providing
+  device-local RGBA image/view ownership without sampler or descriptor state.
+- Request preflight rejects invalid descriptors and conflicting allocation
+  identities for one asset id. Reused dimensions/format preserve the image while
+  refreshing stride/byte-size metadata; absent images remain cached for the later
+  lifetime policy.
+- `VulkanRendererState` reconciles image resources after the frame fence and
+  destroys them during device teardown. Resources remain in
+  `VK_IMAGE_LAYOUT_UNDEFINED` because pixel transport, staging buffers, copy
+  commands, and layout transitions belong to Step 492.
+- `vulkan_frame_lifetime_test` submits a valid image descriptor through a live
+  Vulkan frame and presents successfully, exercising real image/memory/view
+  allocation without claiming upload or sampling.
+- Handoff: Phase E Step 492 image upload staging.
 
 ## Categories
 

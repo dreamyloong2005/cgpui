@@ -1,5 +1,87 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 491 Image Texture Resources
+
+- Step 490 commit `0cbb4915` leaves tracked `master` clean with only the existing
+  untracked `.vscode/` directory.
+- The public/UI path already carries `ImageDraw` bounds, asset descriptor,
+  optional source rectangle/tint, clip stack, composition stack, and paint
+  metadata. Existing CPU-side `ImageUploadBatch` planning does not own Vulkan
+  images or device memory.
+- `VulkanFrame` already collects `image_draws_` and records image entries in its
+  compact authored order, but the current presentation path does not yet prepare
+  or record image GPU resources.
+- Step 491 should establish focused private Vulkan texture resource ownership
+  (`VkImage`, memory, view, descriptor-facing metadata, dimensions/format, and
+  destruction/reconciliation boundaries) without pulling Step 492 upload
+  staging or later sampler-mode behavior into the same slice.
+- The real public owners are `renderer_types.hpp` for `ImageAsset` and
+  `ImageAssetDescriptor`, `image_uploads.hpp` for CPU upload batches, and
+  `vulkan_report_image_uploads.cpp` for the existing report/planning adapter.
+- `ImageAssetDescriptor` deliberately carries dimensions/stride/format/byte size
+  but not pixel bytes. Step 491 resource reconciliation can therefore key by
+  descriptor identity and allocate device-local RGBA image/view ownership while
+  leaving actual bytes and layout transitions to Step 492.
+- Existing glyph atlas code demonstrates the intended module split: resource
+  structs and image creation/destruction live in focused private leaves, frame
+  orchestration owns reconciliation, and staging is a separate sibling module.
+- The current widget/paint path loses bitmap bytes intentionally: `ImageElement`
+  paints an `ImageAssetDescriptor`, and `ImageDraw` carries no pixel owner.
+  Step 491 must either connect an existing asset registry to Vulkan resource
+  requests or introduce a narrow immutable asset-reference transport that Step
+  492 can consume; descriptor-only allocation cannot complete real uploads.
+- `ImageAssetRegistry` does retain raster `ImageAsset` values, but no runtime or
+  renderer consumer currently observes the registry. It cannot be treated as an
+  implicit global upload source.
+- Conservative Step 491 scope: allocate/reconcile persistent device-local
+  `VK_FORMAT_R8G8B8A8_UNORM` image, memory, and view resources keyed by valid
+  descriptors; preserve `VK_IMAGE_LAYOUT_UNDEFINED` and no sampler/descriptor
+  ownership. Step 492 must explicitly connect pixel bytes, staging, copy, and
+  layout transitions.
+- To preserve modular boundaries, use one private resource header plus focused
+  image creation/destruction, reconciliation, and renderer-frame integration
+  sources. Add renderer source-structure gates immediately.
+- `cgpui_renderer_vulkan` already compiles focused `.cpp` leaves by wildcard;
+  only the focused test target and explicit architecture file inventory need
+  xmake/structure updates.
+- The Step 491 RED build fails exactly at the missing focused private resource
+  header, before any production implementation exists.
+- Step 491 now has separate resource contract, image creation/destruction,
+  request reconciliation, and frame integration leaves. Resources remain
+  device-local, sampler-free, descriptor-free, and in undefined layout for the
+  Step 492 staging handoff.
+- The focused target compiles, and direct execution exits `40` exactly at the
+  missing documentation gate. Resource behavior, state lifecycle, and source
+  boundary assertions pass.
+- Reused allocations refresh their descriptor metadata even when dimensions and
+  format are unchanged, so Step 492 receives current stride/byte-size metadata
+  without forcing a VkImage recreation.
+- Phase E Step 491 now implements `VulkanImageTextureResources` with persistent
+  device-local RGBA image/view ownership, descriptor request preflight, frame
+  reconciliation, and device teardown. Resources deliberately keep undefined
+  layout and no sampler/descriptor/upload bytes. Step 492 owns image upload
+  staging and explicit pixel transport.
+- Focused resource, renderer architecture, frame lifetime, and stable-order gates
+  pass 4/4. All four new implementation leaves stay below their structure limits.
+- A live frame should still exercise the real Vulkan allocation path by
+  submitting a valid image descriptor and presenting successfully; this proves
+  resource creation without claiming pixel upload or image draw recording.
+- Added that live image resource frame to `vulkan_frame_lifetime_test` and froze
+  it in the focused Step 491 structure gate.
+- The live Vulkan frame lifetime test passes with the descriptor-only image
+  command, proving actual image/memory/view allocation and teardown before Step
+  492 upload work.
+- Final focused Step 491 verification passes 4/4 across resource behavior,
+  renderer structure, parity ledger, and live Vulkan allocation.
+- The complete Windows debug build succeeds and the full suite is GREEN at
+  172/172.
+- The final Step 491 audit passes across all five authoritative documents; the
+  parity ledger JSON parses, the four new module line counts remain
+  53/134/119/11, and `git diff --check` is clean.
+- WSL verification remains unavailable because `wsl.exe -l -q` returns an empty
+  distribution list. The shared Vulkan image texture work remains in the final
+  Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 490 Clip/Composition Integration Closeout
 
 - Step 489 commit `c4ef7e92` leaves tracked `master` clean with only the existing

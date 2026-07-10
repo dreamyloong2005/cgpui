@@ -81,7 +81,8 @@ Result<void> VulkanFrame::present() {
       rounded_rects_,
       text_draws_,
       text_selections_,
-      text_carets_);
+      text_carets_,
+      image_draws_);
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(

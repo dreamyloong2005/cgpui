@@ -653,13 +653,21 @@ Windows/Linux core API is stable enough for parity work.
   transforms, push-time framebuffer AABB capture, stable authored interleaving,
   and explicit z/layer command ordering. A future non-rectangular clip remains a
   stencil or shader-mask boundary. Step 491 image texture resources is next.
+- Phase E Step 491 adds focused private `VulkanImageTextureResources` ownership.
+  Valid descriptor-keyed requests create persistent `VK_FORMAT_R8G8B8A8_UNORM`
+  images, device-local memory, and views, providing device-local RGBA image/view ownership
+  without sampler or descriptor state. Request preflight rejects invalid or
+  conflicting allocation identities without a temporary vector; reused
+  allocations refresh upload metadata. Resources remain in undefined layout.
+  A live frame exercises allocation/teardown without claiming upload. Step 492
+  owns image upload staging, pixel transport, copies, and transitions.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-490 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-491 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -684,9 +692,10 @@ Windows/Linux core API is stable enough for parity work.
   plus push-time transformed clip AABBs with scoped framebuffer semantics, and
   stable authored interleaving in actual Vulkan recording, plus explicit z/layer
   command ordering with stable UI paint order preserved end to end, and the
-  Steps 475-489 clip/composition integration closeout audit.
-- In progress: Step 491 image texture resources.
-- Pending bands: Steps 491-498 images; Steps 499-506 SVG; Steps
+  Steps 475-489 clip/composition integration closeout audit, and descriptor-keyed
+  Vulkan image texture resource ownership.
+- In progress: Step 492 image upload staging.
+- Pending bands: Steps 492-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -699,6 +708,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Separate positional target names also returned `nothing to test` with this Xmake test runner | Step 491 second focused rerun attempt | Inspect `xmake test --help` and prior verified commands, then use the full `target/default` test names; the corrected aggregate passed 4/4 |
+| Passing four bare target names to one `xmake test -y -P . ...` invocation returned `nothing to test` | Step 491 final focused rerun | Use the registered `target/default` test names rather than bare build-target names; the no-op command changed no files |
+| The first final Step 491 phrase audit guessed the longer phrase `Step 492 image upload staging`, which the roadmap does not require verbatim | Step 491 final audit | Read the focused test's four authoritative phrases and rerun the audit against those exact values; the failed read-only audit changed no files |
+| The first Step 491 live-resource test patch contained an empty JSON hunk and `apply_patch` rejected the whole patch | Step 491 live Vulkan allocation coverage | Split the edit into exact code/document and JSON source-list patches; the failed attempt changed no files |
+| Step 491 transport discovery requested nonexistent `include/cgpui/ui/image.hpp` and `vulkan_glyph_atlas_images_internal.hpp` | Step 491 image transport discovery | Use `element_image_nodes.hpp` for the image widget and the declarations already owned by `vulkan_glyph_atlas_resources_internal.hpp`; do not repeat guessed aggregate/private headers |
+| Step 491 discovery requested nonexistent `include/cgpui/renderer/image_assets.hpp`, `src/renderer/image_uploads.cpp`, and `src/renderer/vulkan/vulkan_resource_cleanup.cpp` | Step 491 ownership discovery | Locate `ImageAsset`/`vulkan_plan_image_uploads`/`VulkanRendererState::~VulkanRendererState` by symbol search and use their actual focused files; do not repeat guessed paths |
 | The first Step 490 documentation sync split `Steps 475-489` in the roadmap and `allocation-free dynamic scissor` in the task plan across Markdown line breaks | Step 490 first GREEN attempt | Normalize the two exact audit phrases without changing closeout semantics |
 | The Step 489 phrase audit repeated the known PowerShell `foreach (...) { ... } | Format-Table` empty-pipe parser error | Step 489 final audit | Assign the loop output to `$rows` before piping, as already documented during Step 463; do not repeat the direct pipe form |
 | `xmake build -y vulkan_layer_ordering_test -P .` treated `-P` after the target as an invalid argument | Step 489 first RED build invocation | Put project options before the target: `xmake build -y -P . vulkan_layer_ordering_test`; the failed command did not compile or modify outputs |

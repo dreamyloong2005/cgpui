@@ -18872,6 +18872,64 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 491 Image Texture Resources
+
+- Started from clean tracked `master` at
+  `0cbb4915 test: close vulkan composition band`; only the existing untracked
+  `.vscode/` directory remains.
+- Existing UI/public image command and CPU upload-plan surfaces are already in
+  place, while Vulkan only collects image draws without GPU texture resources.
+- Step 491 will add focused private image texture ownership and reconciliation;
+  Step 492 will retain upload staging responsibility.
+- Initial discovery used three nonexistent guessed filenames for image assets,
+  upload planning, and Vulkan cleanup. Switching to symbol-based lookup for the
+  real focused owners.
+- Located the actual public image owners and confirmed descriptors omit pixel
+  bytes. Step 491 can allocate/reconcile image/view/device-memory resources from
+  descriptors, with Step 492 consuming upload batches and transitions later.
+- Confirmed the current image command path drops bitmap bytes before renderer
+  submission. Searching for an existing image asset registry before choosing a
+  new transport surface.
+- Found `ImageAssetRegistry`, but it is not connected to runtime rendering.
+  Chosen Step 491 scope is descriptor-keyed device-local image/memory/view
+  ownership only; Step 492 remains responsible for explicit byte transport and
+  upload transitions.
+- Added the Step 491 `vulkan_image_texture_resources_test` RED target covering
+  RGBA resource create-info, descriptor request preflight, private module/state
+  ownership, architecture gates, and Step 492 handoff documentation.
+- The focused RED build failed exactly as intended because
+  `vulkan_image_texture_resources_internal.hpp` does not exist yet.
+- Added focused image texture resource, creation, reconciliation, and frame
+  integration modules; connected `image_draws_` to presentation/state lifetime;
+  and updated renderer architecture inventory/line-count gates.
+- The focused target built successfully. Xmake reported the expected RED
+  failure, and direct execution confirmed `EXIT_CODE=40`, so implementation and
+  structure checks pass before documentation synchronization.
+- `renderer_source_structure_test/default` passes. Reused image allocations now
+  refresh descriptor upload metadata without recreating the GPU image.
+- Updated the roadmap, Markdown/JSON parity ledger, task plan, and findings with
+  `VulkanImageTextureResources`, device-local RGBA image/view ownership, and the
+  Step 492 image upload staging handoff.
+- Focused Step 491 verification passed 4/4 across resource behavior,
+  architecture, frame lifetime, and stable ordering. New source line counts are
+  53/134/119/11 against limits 90/180/160/30.
+- Added a live Vulkan image descriptor frame to exercise actual image, memory,
+  and view allocation/teardown without upload or sampling. The first combined
+  patch was rejected for an empty JSON hunk and changed no files; source-list
+  metadata is updated separately.
+- `vulkan_frame_lifetime_test/default` passes with the new live image resource
+  frame.
+- Final focused Step 491 verification passed 4/4 across resource behavior,
+  architecture, parity ledger, and live allocation.
+- The complete Windows debug build succeeded, then the full test suite passed
+  172/172 with `xmake test -y -P .`.
+- The final Step 491 phrase audit passed across the roadmap, Markdown/JSON
+  ledger, task plan, and findings. The JSON ledger parses, new module line
+  counts remain 53/134/119/11, and `git diff --check` passes.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared image texture resources remain scheduled
+  for the final Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 490 Clip/Composition Integration Closeout
 
 - Started from clean tracked `master` at

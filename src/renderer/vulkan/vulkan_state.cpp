@@ -13,6 +13,7 @@ VulkanRendererState::~VulkanRendererState() {
     vulkan_destroy_rounded_rect_buffers(device_, solid_rect_buffers_);
     vulkan_destroy_rounded_rect_buffers(device_, rounded_rect_buffers_);
     vulkan_destroy_text_vertex_buffer(device_, text_vertex_buffer_);
+    vulkan_destroy_image_texture_resources(device_, image_texture_resources_);
     vulkan_destroy_glyph_atlas_upload_resources(device_, glyph_atlas_uploads_);
     vulkan_destroy_glyph_atlas_resources(device_, glyph_atlas_resources_);
     if (command_pool_ != VK_NULL_HANDLE) {

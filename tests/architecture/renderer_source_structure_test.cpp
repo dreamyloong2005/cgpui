@@ -161,6 +161,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_composition_opacity.cpp",
       "src/renderer/vulkan/vulkan_composition_transform_internal.hpp",
       "src/renderer/vulkan/vulkan_composition_transform.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_resources_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_images.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_resources.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_frame.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
@@ -1403,6 +1407,36 @@ int main(int argc, char** argv) {
       contains(report_image_uploads, "vulkan_plan_glyph_atlas_uploads(") ||
       contains(report_image_uploads, "vulkan_build_textured_glyph_quads(")) {
     return 41;
+  }
+
+  const std::string image_texture_header = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_resources_internal.hpp");
+  const std::string image_texture_images = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_images.cpp");
+  const std::string image_texture_resources = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_resources.cpp");
+  const std::string image_texture_frame = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_frame.cpp");
+  const std::string image_texture_state =
+      read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
+  const std::string image_texture_presentation =
+      read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  if (line_count(image_texture_header) > 90 ||
+      line_count(image_texture_images) > 180 ||
+      line_count(image_texture_resources) > 160 ||
+      line_count(image_texture_frame) > 30 ||
+      !contains(image_texture_header, "struct VulkanImageTextureResource") ||
+      !contains(image_texture_header, "struct VulkanImageTextureResources") ||
+      !contains(image_texture_images, "vkCreateImage") ||
+      !contains(image_texture_images, "vkCreateImageView") ||
+      !contains(image_texture_resources,
+                "vulkan_update_image_texture_resources(") ||
+      !contains(image_texture_frame, "prepare_image_texture_frame(") ||
+      !contains(image_texture_state,
+                "VulkanImageTextureResources image_texture_resources_") ||
+      !contains(image_texture_presentation,
+                "prepare_image_texture_frame(image_draws)")) {
+    return 72;
   }
 
   const std::string report_text_quads =

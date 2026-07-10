@@ -9,7 +9,8 @@ Result<void> VulkanRendererState::present_frame(
     std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws,
     std::span<const TextSelectionDraw> text_selections,
-    std::span<const TextCaretDraw> text_carets) {
+    std::span<const TextCaretDraw> text_carets,
+    std::span<const ImageDraw> image_draws) {
   if (presentation_blocked_) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
@@ -32,6 +33,9 @@ Result<void> VulkanRendererState::present_frame(
     return result;
   }
   if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
+    return result;
+  }
+  if (auto result = prepare_image_texture_frame(image_draws); !result) {
     return result;
   }
   if (auto result = prepare_glyph_atlas_frame(text_draws); !result) {

@@ -163,6 +163,36 @@ int test_incremental_glyph_atlas_frames(const HiddenWindow& window) {
   return present_text_frame(**renderer, "abc") ? 0 : 8;
 }
 
+int test_image_texture_resource_frame(const HiddenWindow& window) {
+  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+      .native_surface = window.surface(),
+      .framebuffer_size = cgpui::Size{64.0F, 64.0F},
+      .scale = cgpui::DpiScale{1.0F}});
+  if (!renderer) {
+    return 11;
+  }
+  auto frame = (*renderer)->begin_frame();
+  if (!frame) {
+    return 12;
+  }
+  (*frame)->clear(
+      cgpui::Color{.r = 0.30F, .g = 0.33F, .b = 0.35F, .a = 1.0F});
+  (*frame)->draw_image(cgpui::ImageDraw{
+      .bounds = {.size = {.width = 16.0F, .height = 16.0F}},
+      .asset =
+          cgpui::ImageAssetDescriptor{
+              .id = cgpui::ImageAssetId{41},
+              .logical_size = {.width = 2.0F, .height = 2.0F},
+              .pixel_width = 2,
+              .pixel_height = 2,
+              .stride = 8,
+              .format = cgpui::ImageFormat::rgba8_unorm,
+              .byte_size = 16,
+          },
+  });
+  return (*frame)->present() ? 0 : 13;
+}
+
 int test_multi_page_glyph_atlas_frame(const HiddenWindow& window) {
   auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
@@ -185,6 +215,10 @@ int main() {
     return result;
   }
   if (const int result = test_incremental_glyph_atlas_frames(window);
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_image_texture_resource_frame(window);
       result != 0) {
     return result;
   }

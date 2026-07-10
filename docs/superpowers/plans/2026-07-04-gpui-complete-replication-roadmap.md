@@ -1614,7 +1614,17 @@ draw calls for the Windows/Linux renderer.
   a future non-rectangular clip requires a stencil or shader-mask path. Phase E
   now hands off to Step 491 image texture resources without adding renderer
   behavior in the closeout.
-- [ ] Steps 491-498: Build image texture resources, upload staging, sampler
+- [x] Phase E Step 491 adds `VulkanImageTextureResources` in focused private
+  resource, image creation/destruction, reconciliation, and frame-integration
+  leaves. Valid image descriptors create persistent device-local RGBA image/view ownership
+  with `VK_FORMAT_R8G8B8A8_UNORM`, device memory, and undefined initial layout;
+  repeated asset ids reuse allocation identity while conflicting dimensions or
+  formats fail preflight without a temporary request vector. Samplers,
+  descriptors, pixel bytes, copies, and layout transitions remain intentionally
+  absent. A live frame test exercises image/memory/view allocation and teardown
+  without claiming upload. Step 492 owns image upload staging and explicit pixel
+  transport.
+- [ ] Steps 492-498: Build image upload staging, sampler
   modes, tint/opacity support, cache lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
