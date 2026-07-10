@@ -12,6 +12,9 @@ Result<void> record_vulkan_frame_command_buffer(
     const VulkanRoundedRectBufferResources& rounded_rect_buffers,
     const VulkanTextPipelineResources& text_pipeline_resources,
     const VulkanTextVertexBufferResources& text_vertex_buffer,
+    const VulkanImagePipelineResources& image_pipeline_resources,
+    const VulkanImageVertexBufferResources& image_vertex_buffer,
+    std::span<const ImageDraw> image_draws,
     Color color,
     std::span<const VulkanFrameDrawOrderEntry> draw_order,
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
@@ -65,6 +68,15 @@ Result<void> record_vulkan_frame_command_buffer(
   if (!text_draw_commands) {
     return std::unexpected(text_draw_commands.error());
   }
+  auto image_draw_commands = vulkan_plan_image_draw_commands(
+      image_draws,
+      image_texture_resources,
+      image_pipeline_resources,
+      image_vertex_buffer,
+      &image_texture_uploads);
+  if (!image_draw_commands) {
+    return std::unexpected(image_draw_commands.error());
+  }
   if (auto result = vulkan_validate_rounded_rect_draw_resources(
           rounded_rect_pipeline_resources, solid_rect_buffers);
       !result) {
@@ -103,6 +115,9 @@ Result<void> record_vulkan_frame_command_buffer(
       text_pipeline_resources,
       text_vertex_buffer,
       *text_draw_commands,
+      image_pipeline_resources,
+      image_vertex_buffer,
+      *image_draw_commands,
       draw_order);
   vkCmdEndRenderPass(command_buffer);
 

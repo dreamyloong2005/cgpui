@@ -7,6 +7,7 @@
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_image_texture_resources_internal.hpp"
 #include "vulkan_image_texture_uploads_internal.hpp"
+#include "vulkan_image_vertex_buffer_internal.hpp"
 #include "vulkan_rounded_rect_buffers_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 #include "vulkan_text_vertex_buffer_internal.hpp"
@@ -101,6 +102,7 @@ class VulkanRendererState final {
   std::vector<VkImage> swapchain_images_;
   std::vector<VkImageView> swapchain_image_views_;
   VkRenderPass render_pass_ = VK_NULL_HANDLE;
+  VulkanImagePipelineResources image_pipeline_resources_;
   VulkanTextPipelineResources text_pipeline_resources_;
   VulkanRoundedRectPipelineResources rounded_rect_pipeline_resources_;
   std::vector<VkFramebuffer> framebuffers_;
@@ -116,6 +118,7 @@ class VulkanRendererState final {
   VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
   VulkanImageTextureResources image_texture_resources_;
   VulkanImageTextureUploadResources image_texture_uploads_;
+  VulkanImageVertexBufferResources image_vertex_buffer_;
   std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_;
   std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;
   VulkanTextVertexBufferResources text_vertex_buffer_;

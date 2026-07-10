@@ -75,8 +75,13 @@ Result<void> VulkanRendererState::prepare_image_texture_frame(
       return result;
     }
   }
-  return vulkan_stage_image_texture_uploads(
-      physical_device_, device_, image_uploads, image_texture_uploads_);
+  if (auto result = vulkan_stage_image_texture_uploads(
+          physical_device_, device_, image_uploads, image_texture_uploads_);
+      !result) {
+    return result;
+  }
+  return vulkan_upload_image_vertex_buffer(
+      physical_device_, device_, image_draws, image_vertex_buffer_);
 }
 
 void VulkanRendererState::commit_image_texture_frame() {

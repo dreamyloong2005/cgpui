@@ -10,13 +10,15 @@ ImageElement::ImageElement(
     StyleState style_state,
     std::optional<Rect> source_rect,
     std::optional<Color> tint,
-    std::string alt)
+    std::string alt,
+    ImageSamplingMode sampling)
     : kind_(kind),
       source_(std::move(source)),
       style_state_(std::move(style_state)),
       source_rect_(source_rect),
       tint_(tint),
-      alt_(std::move(alt)) {}
+      alt_(std::move(alt)),
+      sampling_(sampling) {}
 
 ImageElementKind ImageElement::kind() const {
   return kind_;
@@ -40,6 +42,10 @@ const std::optional<Rect>& ImageElement::source_rect() const {
 
 const std::optional<Color>& ImageElement::tint() const {
   return tint_;
+}
+
+ImageSamplingMode ImageElement::sampling() const {
+  return sampling_;
 }
 
 std::string_view ImageElement::alt() const {

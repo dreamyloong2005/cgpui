@@ -73,13 +73,12 @@ Result<void> VulkanRendererState::present_frame(
           rounded_rect_pipeline_resources_,
           solid_rect_buffers_,
           rounded_rect_buffers_,
-          text_pipeline_resources_,
-          text_vertex_buffer_,
+          text_pipeline_resources_, text_vertex_buffer_,
+          image_pipeline_resources_, image_vertex_buffer_, image_draws,
           color,
           draw_order,
           glyph_atlas_resources_,
-          glyph_atlas_draw_quads_,
-          glyph_atlas_draw_bindings_,
+          glyph_atlas_draw_quads_, glyph_atlas_draw_bindings_,
           glyph_atlas_uploads_,
           image_texture_resources_, image_texture_uploads_);
       !result) {

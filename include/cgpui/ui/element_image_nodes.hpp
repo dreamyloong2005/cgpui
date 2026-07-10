@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/renderer/image_sampling.hpp"
 #include "cgpui/ui/element_core.hpp"
 #include "cgpui/ui/image_source.hpp"
 
@@ -23,7 +24,8 @@ class ImageElement : public Element {
       StyleState style_state,
       std::optional<Rect> source_rect = std::nullopt,
       std::optional<Color> tint = std::nullopt,
-      std::string alt = {});
+      std::string alt = {},
+      ImageSamplingMode sampling = ImageSamplingMode::linear);
 
   [[nodiscard]] ImageElementKind kind() const;
   [[nodiscard]] const ImageSource& source() const;
@@ -31,6 +33,7 @@ class ImageElement : public Element {
   [[nodiscard]] const StyleState& style_state() const;
   [[nodiscard]] const std::optional<Rect>& source_rect() const;
   [[nodiscard]] const std::optional<Color>& tint() const;
+  [[nodiscard]] ImageSamplingMode sampling() const;
   [[nodiscard]] std::string_view alt() const;
   [[nodiscard]] AccessibilityRole accessibility_role() const override;
   [[nodiscard]] std::string accessibility_name() const override;
@@ -49,6 +52,7 @@ class ImageElement : public Element {
   std::optional<Rect> source_rect_;
   std::optional<Color> tint_;
   std::string alt_;
+  ImageSamplingMode sampling_ = ImageSamplingMode::linear;
 };
 
 } // namespace cgpui

@@ -59,6 +59,15 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
     destroy_swapchain_resources(resources);
     return std::unexpected(result.error());
   }
+  if (auto result = vulkan_create_image_pipeline_resources(
+          device_,
+          resources.render_pass,
+          image_texture_resources_.descriptor_set_layout,
+          resources.image_pipeline);
+      !result) {
+    destroy_swapchain_resources(resources);
+    return std::unexpected(result.error());
+  }
   if (auto result = vulkan_create_rounded_rect_pipeline_resources(
           device_,
           resources.render_pass,

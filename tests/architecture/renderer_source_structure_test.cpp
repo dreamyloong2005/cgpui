@@ -169,6 +169,18 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_samplers.cpp",
       "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp",
+      "src/renderer/vulkan/shaders/image.vert.glsl",
+      "src/renderer/vulkan/shaders/image.frag.glsl",
+      "src/renderer/vulkan/vulkan_image_pipeline_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_pipeline_resources_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_pipeline_state.cpp",
+      "src/renderer/vulkan/vulkan_image_pipeline_resources.cpp",
+      "src/renderer/vulkan/vulkan_image_shader_binaries.cpp",
+      "src/renderer/vulkan/vulkan_image_shader_modules.cpp",
+      "src/renderer/vulkan/vulkan_image_vertex_buffer_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_vertex_buffer.cpp",
+      "src/renderer/vulkan/vulkan_image_draw_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_draw_recording.cpp",
       "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_staging.cpp",
       "src/renderer/vulkan/vulkan_image_texture_upload_recording.cpp",
@@ -1498,6 +1510,84 @@ int main(int argc, char** argv) {
       !contains(image_texture_resource_binding,
                 "vulkan_bind_image_texture_resource_descriptors(")) {
     return 74;
+  }
+  const std::string image_vertex_shader =
+      read_source("src/renderer/vulkan/shaders/image.vert.glsl");
+  const std::string image_fragment_shader =
+      read_source("src/renderer/vulkan/shaders/image.frag.glsl");
+  const std::string image_pipeline_header = read_source(
+      "src/renderer/vulkan/vulkan_image_pipeline_internal.hpp");
+  const std::string image_pipeline_resources_header = read_source(
+      "src/renderer/vulkan/vulkan_image_pipeline_resources_internal.hpp");
+  const std::string image_pipeline_state = read_source(
+      "src/renderer/vulkan/vulkan_image_pipeline_state.cpp");
+  const std::string image_pipeline_resources = read_source(
+      "src/renderer/vulkan/vulkan_image_pipeline_resources.cpp");
+  const std::string image_shader_binaries = read_source(
+      "src/renderer/vulkan/vulkan_image_shader_binaries.cpp");
+  const std::string image_shader_modules = read_source(
+      "src/renderer/vulkan/vulkan_image_shader_modules.cpp");
+  const std::string image_vertex_buffer_header = read_source(
+      "src/renderer/vulkan/vulkan_image_vertex_buffer_internal.hpp");
+  const std::string image_vertex_buffer = read_source(
+      "src/renderer/vulkan/vulkan_image_vertex_buffer.cpp");
+  const std::string image_draw_recording_header = read_source(
+      "src/renderer/vulkan/vulkan_image_draw_recording_internal.hpp");
+  const std::string image_draw_recording = read_source(
+      "src/renderer/vulkan/vulkan_image_draw_recording.cpp");
+  const std::string image_frame_order =
+      read_source("src/renderer/vulkan/vulkan_frame_draw_order.cpp");
+  const std::string image_frame_recording =
+      read_source("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
+  const std::string image_command_recording =
+      read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
+  const std::string image_swapchain_create =
+      read_source("src/renderer/vulkan/vulkan_swapchain_create.cpp");
+  const std::string image_swapchain_lifecycle =
+      read_source("src/renderer/vulkan/vulkan_swapchain_lifecycle.cpp");
+  if (line_count(image_pipeline_header) > 100 ||
+      line_count(image_pipeline_resources_header) > 80 ||
+      line_count(image_pipeline_state) > 140 ||
+      line_count(image_pipeline_resources) > 190 ||
+      line_count(image_shader_binaries) > 140 ||
+      line_count(image_shader_modules) > 120 ||
+      line_count(image_vertex_buffer_header) > 80 ||
+      line_count(image_vertex_buffer) > 210 ||
+      line_count(image_draw_recording_header) > 100 ||
+      line_count(image_draw_recording) > 180 ||
+      !contains(image_vertex_shader, "ImagePushConstants") ||
+      !contains(image_fragment_shader, "texture(image_texture") ||
+      !contains(image_pipeline_header, "struct VulkanImageVertex") ||
+      !contains(image_pipeline_resources,
+                "vkCreateGraphicsPipelines") ||
+      !contains(image_shader_binaries,
+                "vulkan_image_fragment_shader_spirv") ||
+      !contains(image_shader_modules, "vkCreateShaderModule") ||
+      !contains(image_vertex_buffer,
+                "vulkan_apply_composed_transform") ||
+      !contains(image_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
+      !contains(image_draw_recording,
+                "vulkan_plan_image_draw_commands") ||
+      !contains(image_draw_recording,
+                "image_texture_shader_readable_for_frame") ||
+      !contains(image_draw_recording, "vkCmdBindDescriptorSets") ||
+      !contains(image_draw_recording, "vkCmdDraw") ||
+      !contains(image_frame_order,
+                "VulkanFrameDrawResourceKind::image") ||
+      !contains(image_frame_recording, "vulkan_record_image_draw(") ||
+      !contains(image_command_recording,
+                "vulkan_plan_image_draw_commands(") ||
+      !contains(image_swapchain_create,
+                "vulkan_create_image_pipeline_resources(") ||
+      !contains(image_swapchain_lifecycle,
+                "vulkan_destroy_image_pipeline_resources(") ||
+      !contains(image_texture_frame,
+                "vulkan_upload_image_vertex_buffer(") ||
+      !contains(image_texture_state,
+                "VulkanImagePipelineResources image_pipeline_resources_") ||
+      !contains(image_texture_state,
+                "VulkanImageVertexBufferResources image_vertex_buffer_")) {
+    return 75;
   }
 
   const std::string report_text_quads =

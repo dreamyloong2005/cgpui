@@ -1638,8 +1638,15 @@ draw calls for the Windows/Linux renderer.
   combined-image-sampler layout and a fixed pool for 256 textures, allocate two
   descriptor sets after image/view creation, and free those sets before resource
   teardown. Step 494 owns the image graphics pipeline and draw recording.
-- [ ] Steps 494-498: Build image pipeline recording, tint/opacity support, cache
-  lifetime, and invalidation.
+- [x] Phase E Step 494 adds the dedicated image graphics pipeline, optimized
+  embedded RGBA shaders, frame-owned transformed position/normalized source-UV
+  vertices, sampling descriptor selection, stable authored image interleaving,
+  and actual Vulkan image draw recording with clip-stack scissors. Public
+  `ImageBuilder::sampling(...)` metadata now reaches `ImageDraw`. Draws whose
+  texture is neither shader-readable nor pending upload are skipped instead of
+  sampling an undefined layout. Step 495 owns image tint and composition opacity.
+- [ ] Steps 495-498: Build image tint/opacity support, cache lifetime, and
+  invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,

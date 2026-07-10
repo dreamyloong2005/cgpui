@@ -18872,6 +18872,60 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 494 Image Pipeline And Draw Recording
+
+- Started from clean tracked `master` at
+  `c1fe890c feat: add vulkan image sampler descriptors`; only the existing
+  untracked `.vscode/` directory remains.
+- Scoped Step 494 to focused image graphics pipeline resources, descriptor-mode
+  selection, and actual Vulkan draw recording. Step 495 retains tint/opacity.
+- Began source-boundary discovery against the existing text/rounded pipeline,
+  stable draw-order cursor, image texture frame preparation, and UI image
+  builder path before writing the RED gate.
+- Confirmed the integration owners: swapchain pipeline lifecycle, command
+  planning, stable frame draw-order resolution, and focused image element/render
+  command modules. The current order cursor has no image resource kind yet.
+- Located the public sampling propagation chain: `image_builder.hpp` ->
+  `ImageElement` -> `ImagePaint`/`PaintList::draw_image` -> `ImageDraw`.
+- Fixed the GPU contract direction: a focused image vertex/UV pipeline with a
+  dedicated full-RGBA fragment shader, not the glyph-coverage text fragment.
+- Confirmed the local Vulkan SDK shader compiler is available and selected the
+  Step 494 RED surface: vertices/UVs, descriptor-mode draw planning, stable
+  order integration, and actual Vulkan command recording.
+- Added `vulkan_image_draw_recording_test` plus its xmake target. The RED build
+  failed exactly as intended because the focused image draw-recording private
+  header does not exist yet.
+- Added focused image GLSL, embedded optimized SPIR-V, pipeline resources,
+  host-visible frame vertex uploads, descriptor-selected draw planning, actual
+  Vulkan image recording, swapchain lifecycle ownership, and stable-order image
+  resolution.
+- The focused target now builds successfully and exits `61` only at its expected
+  architecture-source gate; all behavior checks before that gate pass.
+- Added renderer architecture inventory and line-count guards for the image
+  GLSL, pipeline, shader, vertex-buffer, and draw-recording leaves. The focused
+  test then reached exit `70`, proving behavior and structure before docs.
+- The complete Windows build succeeds after image pipeline integration.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  production image graphics pipeline and Step 495 tint/opacity handoff.
+- Final focused verification passed 18/18 across image pipeline recording,
+  texture descriptors/resources/uploads, stable/layer order, solid/text draw
+  recording, live frame lifetime, UI builder/render transport, architecture,
+  parity, and header cleanliness.
+- The final phrase audit passed 25/25, embedded SPIR-V matched compiled output
+  and passed `spirv-val`, JSON parsing passed, and all focused modules remain
+  within their architecture limits.
+- The complete Windows debug test suite passed 175/175.
+- WSL remains unavailable: `wsl.exe -l -q` returned success with an empty
+  distribution list. Linux verification remains queued for Phase E closeout.
+- Added a final layout-readiness guard: image draw planning skips resources that
+  are neither shader-readable nor pending upload, preventing undefined-layout
+  sampling while preserving descriptor-only resource lifetime frames. Focused
+  image/upload/structure/live coverage passes 4/4.
+- Re-ran the complete Windows debug suite after the final layout-readiness
+  guard; all 175/175 tests pass. The final 25/25 phrase audit, ledger JSON
+  parse, image-module and presentation line-count audit, and
+  `git diff --check` also pass.
+
 ## 2026-07-10 Phase E Step 493 Image Sampler Modes And Descriptors
 
 - Started from clean tracked `master` at

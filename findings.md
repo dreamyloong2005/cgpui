@@ -1,5 +1,75 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 494 Image Pipeline And Draw Recording
+
+- Step 493 commit `c1fe890c` leaves tracked `master` clean with only the existing
+  untracked `.vscode/` directory.
+- The authoritative roadmap groups Steps 494-498 as image pipeline recording,
+  tint/opacity, cache lifetime, and invalidation. Step 494 should close the
+  first production boundary only: dedicated image graphics pipeline resources,
+  sampling-descriptor selection, and actual Vulkan draw recording.
+- The implementation should reuse the proven text/rounded pipeline ownership
+  shape while keeping image shaders, vertex contract, pipeline resources, and
+  recording in focused private modules. Tint/opacity remains Step 495.
+- UI image builder sampling propagation must be located by symbol/file inventory
+  and wired through the existing `ImageDraw::sampling` field without broadening
+  runtime or renderer aggregate files.
+- Existing production ownership is explicit: swapchain lifecycle owns text and
+  rounded pipeline resources, `vulkan_command_recording.cpp` plans draw commands,
+  and `VulkanFrameDrawOrderCursor` preserves authored interleaving. Step 494 must
+  extend those focused boundaries with an image resource kind rather than sort
+  or record image draws separately.
+- The UI image path lives in `include/cgpui/ui/element_image_nodes.hpp`,
+  `src/ui/element_image_nodes.cpp`, `src/ui/element_image_paint.cpp`, and
+  `src/ui/render_view_commands.cpp`; there is no `src/ui/image_builder.cpp`.
+- The public builder leaf is `include/cgpui/ui/image_builder.hpp`. Sampling must
+  flow through `ImageElement`, `ImagePaint` in `include/cgpui/ui/paint.hpp`,
+  `PaintList::draw_image` in `src/ui/paint_image.cpp`, and finally
+  `submit_paint_command_to_frame(...)`.
+- `ImageBuilder` implementation lives in `src/ui/widgets/image_builder.cpp`.
+  The focused public change is an rvalue-qualified `sampling(...)` setter plus a
+  stored mode on `ImageElement`; `PaintList::draw_image` should accept the mode
+  with a linear default for direct callers.
+- Image vertices can mirror the text position/UV contract, but the fragment
+  shader must sample full RGBA. Reusing the text fragment shader would treat the
+  texture red channel as glyph coverage and is therefore incorrect.
+- Vulkan SDK `glslc.exe` and `glslangValidator.exe` are available under
+  `D:/VulkanSDK/1.4.341.1/Bin`. Step 494 can compile readable image GLSL and
+  embed validated SPIR-V using the existing renderer pattern.
+- The focused RED gate should require a new image draw-recording private leaf
+  and cover quad vertices/UVs, sampling descriptor selection, draw ranges,
+  stable frame-order integration, and source-structure ownership.
+- The Step 494 RED build fails exactly at the missing focused
+  `vulkan_image_draw_recording_internal.hpp` boundary before any production
+  image pipeline or recording implementation exists.
+- Optimized GLSL compilation produced validated embedded SPIR-V contracts with
+  260 vertex words and 119 fragment words. The readable GLSL remains beside the
+  focused shader binary/module sources.
+- The first Step 494 implementation build succeeds. Direct execution reaches
+  exit `61`, proving public sampling propagation, source-rect UVs, pipeline
+  state, embedded shader magic, descriptor-mode draw planning, and stable image
+  order all pass before the expected architecture-source gate.
+- Phase E Step 494 now provides an image graphics pipeline, sampling descriptor
+  selection, stable authored image interleaving, and actual Vulkan image draw recording.
+  Full-RGBA shaders, transformed normalized source-UV vertices, and
+  clip-stack scissors remain in focused renderer modules. Step 495 owns image
+  tint and composition opacity.
+- Embedded image SPIR-V matches the optimized `glslc` output word-for-word and
+  passes `spirv-val`. Renderer/UI focused regressions pass 18/18, the five
+  required phrases pass across five authoritative documents (25/25), and the
+  complete Windows debug suite passes 175/175.
+- WSL verification remains unavailable because `wsl.exe -l -q` returns success
+  with an empty distribution list. Linux image pipeline verification remains in
+  the required final Phase E gate.
+- Final Vulkan layout review found that descriptor-only first-frame resources
+  would otherwise be sampled from `VK_IMAGE_LAYOUT_UNDEFINED`. The planner now
+  records only shader-readable textures or textures with a pending upload and
+  safely skips unready draws; focused layout/lifetime coverage passes 4/4.
+- After that layout-readiness guard, the complete Windows debug suite remains
+  green at 175/175. The final cross-document phrase audit is 25/25, the parity
+  JSON parses, all focused image modules and `vulkan_presentation.cpp` remain
+  within their structure limits, and `git diff --check` passes.
+
 ## 2026-07-10 Phase E Step 493 Image Sampler Modes And Descriptors
 
 - Step 492 commit `9aa9dea1` leaves tracked `master` clean with only the existing

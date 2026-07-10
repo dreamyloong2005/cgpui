@@ -672,13 +672,20 @@ Windows/Linux core API is stable enough for parity work.
   both modes on each cached texture. One layout/pool supports 256 textures and
   512 combined-image-sampler sets. Step 494 owns image pipeline creation and draw
   recording.
+- Phase E Step 494 adds the dedicated image graphics pipeline, full-RGBA embedded
+  shaders, frame-owned transformed quad vertices, normalized source UVs,
+  sampling descriptor selection, stable image order, and actual Vulkan image draw recording.
+  Public builder sampling now reaches the selected texture
+  descriptor. Textures are recorded only when shader-readable or pending upload;
+  undefined-layout descriptor-only resources are skipped. Step 495 owns image
+  tint and composition opacity.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-493 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-494 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -707,9 +714,12 @@ Windows/Linux core API is stable enough for parity work.
   Vulkan image texture resource ownership, plus explicit bitmap transport,
   host-visible RGBA staging, buffer-to-image copy recording, layout transitions,
   and submit-time image layout commit, plus explicit image sampling metadata,
-  persistent nearest/linear samplers, and per-texture descriptor set binding.
-- In progress: Step 494 image graphics pipeline and draw recording.
-- Pending bands: Steps 494-498 images; Steps 499-506 SVG; Steps
+  persistent nearest/linear samplers, per-texture descriptor set binding, and a
+  production image graphics pipeline with transformed source-UV vertices,
+  sampling descriptor selection, stable interleaving, and actual Vulkan image
+  draw recording.
+- In progress: Step 495 image tint and composition opacity.
+- Pending bands: Steps 495-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -722,6 +732,15 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 494 unreadable-texture guard patch attached the command-recording call hunk to the draw-recording file and was rejected atomically | Step 494 final Vulkan layout audit | Split planner, call site, focused test, and structure assertions into exact file patches; no partial changes were applied |
+| Step 494 focused regressions found `vulkan_presentation.cpp` at 153 lines and three documents split `actual Vulkan image draw recording` | Step 494 first documentation GREEN | Compact only the command-buffer argument layout back under 150 lines and keep the exact audit phrase contiguous; behavior tests otherwise passed 16/18 |
+| A Step 494 structure diagnostic repeated the known direct `foreach`-to-pipe PowerShell parser failure | Step 494 exit-61 diagnosis | Assign the loop output to `$rows` before formatting; do not reuse the direct pipeline form again |
+| The first Step 494 GREEN compile hit a Windows `near` identifier conflict and an incomplete `PaintList` type in the focused test | Step 494 first implementation build | Rename the helper to `approximately_equal` and include the focused public `paint.hpp` leaf; production image modules had compiled successfully |
+| The first Step 494 lifecycle integration patch used an outdated `vulkan_state.cpp` destructor anchor and was rejected atomically | Step 494 swapchain/frame ownership wiring | Re-read the exact destructor and split state, swapchain, and frame edits into precise patches; no partial changes were applied |
+| `glslc` could not open external `C:/tmp/cgpui-image-*.spv` outputs through either Windows or forward-slash spelling, even after PowerShell created the directory | Step 494 shader compilation | Treat this as the sandbox/compiler path-visibility boundary; use a verified repo-local `.shader-tmp` directory and remove it after embedding SPIR-V |
+| `vulkan_image_draw_recording_test` failed to compile because the focused image draw-recording header did not exist | Step 494 RED | Expected RED; add the dedicated image pipeline, vertex buffer, draw planning, and recording modules |
+| Step 494 UI discovery requested nonexistent `include/cgpui/ui/paint_commands.hpp` | Step 494 sampling propagation discovery | Use the located `include/cgpui/ui/paint.hpp` and `src/ui/paint_image.cpp` owners; the failed read-only lookup changed no files |
+| Step 494 discovery requested nonexistent `src/renderer/vulkan/vulkan_presentation_recording.cpp` | Step 494 command-recording discovery | Use the located `vulkan_command_recording.cpp` and `vulkan_frame_draw_recording.cpp` owners; the failed read-only lookup changed no files |
 | The first Step 493 line-count audit piped directly from a `foreach` block and PowerShell reported an empty pipe element | Step 493 final audit | Collect rows into an array before `Format-Table`; the corrected audit passed and the failed read-only command changed no files |
 | `vulkan_image_texture_descriptor_test` failed to compile because the private descriptor header did not exist | Step 493 RED | Expected RED; add the public sampling leaf plus focused sampler/descriptor resource modules |
 | Step 493 discovery requested nonexistent `src/ui/image_builder.cpp` | Step 493 UI propagation discovery | Locate image builder implementation by file inventory before Step 494; Step 493 does not require UI builder changes |

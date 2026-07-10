@@ -6,6 +6,7 @@
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
+#include "vulkan_image_draw_recording_internal.hpp"
 #include "vulkan_image_texture_descriptors_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 #include "vulkan_state_internal.hpp"

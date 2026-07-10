@@ -568,6 +568,18 @@ consume C: drive space again.
   resource teardown frees the sets before destroying the view/image/memory, then
   state teardown destroys samplers, pool, and layout.
 - Handoff: Phase E Step 494 image graphics pipeline and draw recording.
+- Phase E Step 494 adds a swapchain-owned image graphics pipeline with dedicated
+  full-RGBA shaders, frame-owned transformed quad vertices, normalized pixel
+  source rectangles, sampling descriptor selection, and stable authored image
+  interleaving through the existing frame draw-order cursor.
+- `ImageBuilder::sampling(...)` now propagates through `ImageElement`,
+  `ImagePaint`, and `ImageDraw`; command recording performs actual Vulkan image draw recording
+  with descriptor binding, clip-stack scissor resolution, and
+  `vkCmdDraw`.
+- The draw planner records only textures that are already shader-readable or
+  have a pending upload in the same command buffer; first-frame descriptor-only
+  resources are skipped instead of sampling `VK_IMAGE_LAYOUT_UNDEFINED`.
+- Handoff: Step 495 image tint and composition opacity.
 
 ## Categories
 

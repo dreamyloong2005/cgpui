@@ -15,6 +15,9 @@ void vulkan_record_frame_draws(
     const VulkanTextPipelineResources& text_pipeline_resources,
     const VulkanTextVertexBufferResources& text_vertex_buffer,
     std::span<const VulkanTextDrawCommand> text_commands,
+    const VulkanImagePipelineResources& image_pipeline_resources,
+    const VulkanImageVertexBufferResources& image_vertex_buffer,
+    std::span<const VulkanImageDrawCommand> image_commands,
     std::span<const VulkanFrameDrawOrderEntry> draw_order);
 
 } // namespace cgpui

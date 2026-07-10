@@ -20,6 +20,7 @@ class ImageBuilder {
   [[nodiscard]] ImageBuilder size(float side) &&;
   [[nodiscard]] ImageBuilder source_rect(Rect rect) &&;
   [[nodiscard]] ImageBuilder tint(Color color) &&;
+  [[nodiscard]] ImageBuilder sampling(ImageSamplingMode mode) &&;
   [[nodiscard]] ImageBuilder alt(std::string_view text) &&;
   [[nodiscard]] ImageBuilder enabled(bool value) &&;
   [[nodiscard]] ImageBuilder disabled() &&;
@@ -33,6 +34,7 @@ class ImageBuilder {
   StyleState style_state_;
   std::optional<Rect> source_rect_;
   std::optional<Color> tint_;
+  ImageSamplingMode sampling_ = ImageSamplingMode::linear;
   std::string alt_;
   std::optional<ElementKey> key_;
   bool enabled_ = true;

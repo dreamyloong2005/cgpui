@@ -17,7 +17,8 @@ void ImageElement::paint(PaintList& paint_list) const {
   }
 
   paint_styled_box_base(paint_list, bounds, base_style);
-  paint_list.draw_image(content_rect(), asset(), source_rect_, tint_);
+  paint_list.draw_image(
+      content_rect(), asset(), source_rect_, tint_, sampling_);
 
   if (uses_hidden_overflow_clip) {
     paint_list.pop_clip();

@@ -35,6 +35,11 @@ ImageBuilder ImageBuilder::tint(Color color) && {
   return std::move(*this);
 }
 
+ImageBuilder ImageBuilder::sampling(ImageSamplingMode mode) && {
+  sampling_ = mode;
+  return std::move(*this);
+}
+
 ImageBuilder ImageBuilder::alt(std::string_view text) && {
   alt_ = std::string(text);
   return std::move(*this);
@@ -67,7 +72,8 @@ AnyElement ImageBuilder::build() && {
       style_state_,
       source_rect_,
       tint_,
-      std::move(alt_));
+      std::move(alt_),
+      sampling_);
   element->set_enabled(enabled_);
   element->set_key(key_);
   element->set_flex_grow(element->style_state().base.flex_grow);
