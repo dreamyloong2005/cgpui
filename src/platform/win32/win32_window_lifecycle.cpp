@@ -3,7 +3,10 @@
 namespace cgpui {
 namespace {
 
-PlatformWindowDisplayState display_state_for(HWND hwnd) {
+PlatformWindowDisplayState display_state_for(HWND hwnd, bool fullscreen) {
+  if (fullscreen) {
+    return PlatformWindowDisplayState::fullscreen;
+  }
   if (IsIconic(hwnd) != FALSE) {
     return PlatformWindowDisplayState::minimized;
   }
@@ -26,7 +29,8 @@ PlatformWindowLifecycleState Win32Window::lifecycle_state() const {
       .active = created && active_,
       .focused = created && focused_,
       .close_requested = state_.close_requested,
-      .display_state = created ? display_state_for(hwnd_)
+      .display_state = created
+          ? display_state_for(hwnd_, display_command_state_.fullscreen)
                                : PlatformWindowDisplayState::normal,
   };
 }

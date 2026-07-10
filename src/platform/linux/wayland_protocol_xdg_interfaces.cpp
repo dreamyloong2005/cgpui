@@ -3,10 +3,28 @@
 const wl_interface xdg_positioner_interface{
     "xdg_positioner", 1, 0, nullptr, 0, nullptr};
 
+const wl_interface* xdg_toplevel_set_parent_types[]{&xdg_toplevel_interface};
+const wl_interface* xdg_toplevel_show_window_menu_types[]{
+    &wl_seat_interface, nullptr, nullptr, nullptr};
+const wl_interface* xdg_toplevel_move_types[]{&wl_seat_interface, nullptr};
+const wl_interface* xdg_toplevel_resize_types[]{
+    &wl_seat_interface, nullptr, nullptr};
+const wl_interface* xdg_toplevel_set_fullscreen_types[]{&wl_output_interface};
 const wl_message xdg_toplevel_requests[]{
     {"destroy", "", nullptr},
-    {"set_parent", "?o", nullptr},
+    {"set_parent", "?o", xdg_toplevel_set_parent_types},
     {"set_title", "s", nullptr},
+    {"set_app_id", "s", nullptr},
+    {"show_window_menu", "ouii", xdg_toplevel_show_window_menu_types},
+    {"move", "ou", xdg_toplevel_move_types},
+    {"resize", "ouu", xdg_toplevel_resize_types},
+    {"set_max_size", "ii", nullptr},
+    {"set_min_size", "ii", nullptr},
+    {"set_maximized", "", nullptr},
+    {"unset_maximized", "", nullptr},
+    {"set_fullscreen", "?o", xdg_toplevel_set_fullscreen_types},
+    {"unset_fullscreen", "", nullptr},
+    {"set_minimized", "", nullptr},
 };
 const wl_message xdg_toplevel_events[]{
     {"configure", "iia", nullptr},
@@ -15,7 +33,7 @@ const wl_message xdg_toplevel_events[]{
 const wl_interface xdg_toplevel_interface{
     "xdg_toplevel",
     1,
-    3,
+    14,
     xdg_toplevel_requests,
     2,
     xdg_toplevel_events,

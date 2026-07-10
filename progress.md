@@ -20534,3 +20534,44 @@
 - The first explicit staging wrapper did not execute because its JavaScript
   `yield_time_ms` property was unquoted; the corrected wrapper uses quoted tool
   property names and the same Step 542-only path list.
+- Step 542 committed on `master` as `1fc35c01 feat: add platform window close
+  policy`; only the pre-existing `.vscode/` directory remains untracked.
+- The first Step 543 progress append used a CRLF-sensitive context and was
+  rejected without changing files; retrying with a smaller tail context worked.
+
+## 2026-07-11 Phase F Step 543 Fullscreen Minimize Maximize
+
+- Started the production-path audit from the committed Step 542 baseline.
+- Chosen slice adds a compatible public display-state request, focused Win32
+  and Wayland display modules, reversible real Win32 fullscreen, the missing
+  xdg-toplevel request opcodes, compositor request observation, real backend
+  tests, and a dedicated structure/documentation guard.
+- The Win32 RED build failed at the expected missing
+  `PlatformWindow::request_display_state(...)` API. The compatible default and
+  focused Win32 display module then passed the real behavior test 1/1 across
+  minimize, maximize, restore, borderless monitor fullscreen, exact style/rect
+  restoration, and callback-time lifecycle state.
+- Wayland display behavior passed 1/1 with real client requests and
+  compositor-confirmed maximize/fullscreen/normal snapshots. The first combined
+  structure patch had an empty hunk while removing a blank line and was
+  rejected without changes; the retry splits the line-cap edit from the guard.
+- The first structure run reached the expected Step 543 documentation gate in
+  the dedicated guard. Existing platform structure caught the xdg display
+  wrappers in the generic toplevel file, so they move to a focused protocol
+  display module while preserving the historical 60-line cap. The Win32 source
+  aggregate also adds the Step 542 close module it had not yet enumerated.
+- Synchronized the roadmap, Markdown/JSON ledger, task plan, and findings and
+  advanced the active handoff to Step 544 window positioning.
+- Final expanded Windows verification passed 13/13 across all five Win32
+  lifecycle behaviors, four Phase F structure guards, public lifecycle parity,
+  platform/Win32 source structure, and the parity ledger. The corresponding
+  WSL gate passed 14/14, including all five Wayland lifecycle behaviors, the
+  existing compositor resize regression, source structure, and ledger checks.
+- WSL does not install the `wayland-protocols` XML, so an independent
+  `wayland-scanner` comparison was unavailable. The hand-written request tables
+  now include standard object type metadata for parent, seat-driven menu/move/
+  resize, and fullscreen output arguments instead of relying on null types.
+- Metadata hardening passed Windows structure 2/2 and WSL display/resize/
+  structure regression 4/4. Final JSON parsing, exact five-document phrase,
+  focused line caps, the preserved 120-line Wayland window-internal cap, and
+  `git diff --check` pass.

@@ -875,7 +875,12 @@ Windows/Linux core API is stable enough for parity work.
   coalesce a duplicate, then accept a second source-aware request; runtime
   coverage proves its existing callback can cancel once and accept later
   without changing callback signatures.
-- In progress: Step 543 fullscreen and minimize/maximize production behavior.
+- Completed: Phase F Step 543 adds real Win32 minimize/maximize/restore and reversible borderless fullscreen, plus Wayland xdg-toplevel display requests with compositor-confirmed lifecycle state. Step 544 window positioning production behavior is next.
+- Step 543 evidence: Win32 tests exercise real minimize/maximize/restore and a
+  reversible monitor-sized borderless fullscreen with callback-time lifecycle
+  state; Wayland tests observe all five xdg display requests and only accept
+  maximize/fullscreen/normal state after matching configure acknowledgements.
+- In progress: Step 544 window positioning production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

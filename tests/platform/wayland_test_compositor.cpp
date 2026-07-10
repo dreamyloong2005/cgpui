@@ -43,10 +43,28 @@ extern const wl_interface zwp_text_input_v3_interface;
 const wl_interface xdg_positioner_interface{
     "xdg_positioner", 1, 0, nullptr, 0, nullptr};
 
+const wl_interface* xdg_toplevel_set_parent_types[]{&xdg_toplevel_interface};
+const wl_interface* xdg_toplevel_show_window_menu_types[]{
+    &wl_seat_interface, nullptr, nullptr, nullptr};
+const wl_interface* xdg_toplevel_move_types[]{&wl_seat_interface, nullptr};
+const wl_interface* xdg_toplevel_resize_types[]{
+    &wl_seat_interface, nullptr, nullptr};
+const wl_interface* xdg_toplevel_set_fullscreen_types[]{&wl_output_interface};
 const wl_message xdg_toplevel_requests[]{
     {"destroy", "", nullptr},
-    {"set_parent", "?o", nullptr},
+    {"set_parent", "?o", xdg_toplevel_set_parent_types},
     {"set_title", "s", nullptr},
+    {"set_app_id", "s", nullptr},
+    {"show_window_menu", "ouii", xdg_toplevel_show_window_menu_types},
+    {"move", "ou", xdg_toplevel_move_types},
+    {"resize", "ouu", xdg_toplevel_resize_types},
+    {"set_max_size", "ii", nullptr},
+    {"set_min_size", "ii", nullptr},
+    {"set_maximized", "", nullptr},
+    {"unset_maximized", "", nullptr},
+    {"set_fullscreen", "?o", xdg_toplevel_set_fullscreen_types},
+    {"unset_fullscreen", "", nullptr},
+    {"set_minimized", "", nullptr},
 };
 const wl_message xdg_toplevel_events[]{
     {"configure", "iia", nullptr},
@@ -55,7 +73,7 @@ const wl_message xdg_toplevel_events[]{
 const wl_interface xdg_toplevel_interface{
     "xdg_toplevel",
     1,
-    3,
+    14,
     xdg_toplevel_requests,
     2,
     xdg_toplevel_events,
@@ -307,6 +325,20 @@ struct WaylandTestCompositor::State {
     void (*destroy)(wl_client*, wl_resource*);
     void (*set_parent)(wl_client*, wl_resource*, wl_resource*);
     void (*set_title)(wl_client*, wl_resource*, const char*);
+    void (*set_app_id)(wl_client*, wl_resource*, const char*);
+    void (*show_window_menu)(
+        wl_client*, wl_resource*, wl_resource*, std::uint32_t,
+        std::int32_t, std::int32_t);
+    void (*move)(wl_client*, wl_resource*, wl_resource*, std::uint32_t);
+    void (*resize)(
+        wl_client*, wl_resource*, wl_resource*, std::uint32_t, std::uint32_t);
+    void (*set_max_size)(wl_client*, wl_resource*, std::int32_t, std::int32_t);
+    void (*set_min_size)(wl_client*, wl_resource*, std::int32_t, std::int32_t);
+    void (*set_maximized)(wl_client*, wl_resource*);
+    void (*unset_maximized)(wl_client*, wl_resource*);
+    void (*set_fullscreen)(wl_client*, wl_resource*, wl_resource*);
+    void (*unset_fullscreen)(wl_client*, wl_resource*);
+    void (*set_minimized)(wl_client*, wl_resource*);
   };
 
   struct PointerButtonRequest {
@@ -1229,6 +1261,11 @@ struct WaylandTestCompositor::State {
   std::atomic_bool close_pending{false};
   std::atomic_bool close_sent{false};
   std::atomic_bool initial_configure_acked{false};
+  std::atomic_bool minimize_requested{false};
+  std::atomic_bool maximize_requested{false};
+  std::atomic_bool unmaximize_requested{false};
+  std::atomic_bool fullscreen_requested{false};
+  std::atomic_bool unfullscreen_requested{false};
   std::atomic_bool resize_configure_pending{false};
   std::atomic_bool resize_configure_sent{false};
   std::atomic_bool resize_configure_acked{false};
@@ -2697,6 +2734,54 @@ const WaylandTestCompositor::State::XdgToplevelImplementation
         .destroy = destroy_resource,
         .set_parent = [](wl_client*, wl_resource*, wl_resource*) {},
         .set_title = [](wl_client*, wl_resource*, const char*) {},
+        .set_app_id = [](wl_client*, wl_resource*, const char*) {},
+        .show_window_menu = [](
+            wl_client*, wl_resource*, wl_resource*, std::uint32_t,
+            std::int32_t, std::int32_t) {},
+        .move = [](wl_client*, wl_resource*, wl_resource*, std::uint32_t) {},
+        .resize = [](
+            wl_client*, wl_resource*, wl_resource*, std::uint32_t,
+            std::uint32_t) {},
+        .set_max_size = [](
+            wl_client*, wl_resource*, std::int32_t, std::int32_t) {},
+        .set_min_size = [](
+            wl_client*, wl_resource*, std::int32_t, std::int32_t) {},
+        .set_maximized = [](wl_client*, wl_resource* resource) {
+          auto* surface =
+              static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+          if (surface != nullptr) {
+            surface->compositor->maximize_requested.store(true);
+          }
+        },
+        .unset_maximized = [](wl_client*, wl_resource* resource) {
+          auto* surface =
+              static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+          if (surface != nullptr) {
+            surface->compositor->unmaximize_requested.store(true);
+          }
+        },
+        .set_fullscreen = [](
+            wl_client*, wl_resource* resource, wl_resource*) {
+          auto* surface =
+              static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+          if (surface != nullptr) {
+            surface->compositor->fullscreen_requested.store(true);
+          }
+        },
+        .unset_fullscreen = [](wl_client*, wl_resource* resource) {
+          auto* surface =
+              static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+          if (surface != nullptr) {
+            surface->compositor->unfullscreen_requested.store(true);
+          }
+        },
+        .set_minimized = [](wl_client*, wl_resource* resource) {
+          auto* surface =
+              static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+          if (surface != nullptr) {
+            surface->compositor->minimize_requested.store(true);
+          }
+        },
 };
 
 WaylandTestCompositor::WaylandTestCompositor(std::string name)
@@ -2869,6 +2954,26 @@ void WaylandTestCompositor::request_clipboard_client_selection(
 
 bool WaylandTestCompositor::wait_for_close_sent() const {
   return state_->wait_for_flag(state_->close_sent);
+}
+
+bool WaylandTestCompositor::wait_for_minimize_requested() const {
+  return state_->wait_for_flag(state_->minimize_requested);
+}
+
+bool WaylandTestCompositor::wait_for_maximize_requested() const {
+  return state_->wait_for_flag(state_->maximize_requested);
+}
+
+bool WaylandTestCompositor::wait_for_unmaximize_requested() const {
+  return state_->wait_for_flag(state_->unmaximize_requested);
+}
+
+bool WaylandTestCompositor::wait_for_fullscreen_requested() const {
+  return state_->wait_for_flag(state_->fullscreen_requested);
+}
+
+bool WaylandTestCompositor::wait_for_unfullscreen_requested() const {
+  return state_->wait_for_flag(state_->unfullscreen_requested);
 }
 
 bool WaylandTestCompositor::wait_for_resize_configure_sent() const {

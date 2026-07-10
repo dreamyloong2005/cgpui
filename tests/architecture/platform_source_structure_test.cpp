@@ -123,6 +123,7 @@ int main(int argc, char** argv) {
       "src/platform/linux/wayland_protocol_xdg_interfaces.cpp",
       "src/platform/linux/wayland_protocol_xdg_surface.cpp",
       "src/platform/linux/wayland_protocol_xdg_toplevel.cpp",
+      "src/platform/linux/wayland_protocol_xdg_toplevel_display.cpp",
       "src/platform/linux/wayland_protocol_xdg_wm_base.cpp",
       "src/platform/linux/wayland_protocol_text_input_interfaces.cpp",
       "src/platform/linux/wayland_protocol_text_input_manager.cpp",
@@ -133,10 +134,12 @@ int main(int argc, char** argv) {
       "src/platform/linux/wayland_registered_window_internal.hpp",
       "src/platform/linux/wayland_window_configure_internal.hpp",
       "src/platform/linux/wayland_window_close_internal.hpp",
+      "src/platform/linux/wayland_window_display_internal.hpp",
       "src/platform/linux/wayland_window_scale_internal.hpp",
       "src/platform/linux/wayland_window.cpp",
       "src/platform/linux/wayland_window_close.cpp",
       "src/platform/linux/wayland_window_configure.cpp",
+      "src/platform/linux/wayland_window_display.cpp",
       "src/platform/linux/wayland_window_scale.cpp",
       "src/platform/linux/wayland_window_events.cpp",
       "src/platform/linux/wayland_window_input_events.cpp",
@@ -204,6 +207,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_window_ime.cpp",
       "src/platform/win32/win32_window_ime_placement.cpp",
       "src/platform/win32/win32_window_close.cpp",
+      "src/platform/win32/win32_window_display_internal.hpp",
+      "src/platform/win32/win32_window_display.cpp",
   };
   for (const char* path : win32_files) {
     if (read_source(path).empty()) {

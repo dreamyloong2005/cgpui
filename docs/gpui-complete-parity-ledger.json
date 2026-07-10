@@ -1715,7 +1715,28 @@
       "xmake.lua"
     ],
     "phase_f_step_542_remaining_gap": "Step 543 fullscreen and minimize/maximize production behavior",
-    "phase_f_current_handoff": "Step 543 fullscreen and minimize/maximize production behavior"
+    "phase_f_step_543_surface": "Phase F Step 543 adds real Win32 minimize/maximize/restore and reversible borderless fullscreen, plus Wayland xdg-toplevel display requests with compositor-confirmed lifecycle state. Step 544 window positioning production behavior is next.",
+    "phase_f_step_543_sources": [
+      "include/cgpui/platform/platform_window.hpp",
+      "src/platform/platform_window_lifecycle.cpp",
+      "src/platform/win32/win32_window_display_internal.hpp",
+      "src/platform/win32/win32_window_display.cpp",
+      "src/platform/win32/win32_window_lifecycle.cpp",
+      "src/platform/win32/win32_window_chrome.cpp",
+      "src/platform/linux/wayland_protocol_internal.hpp",
+      "src/platform/linux/wayland_protocol_xdg_interfaces.cpp",
+      "src/platform/linux/wayland_protocol_xdg_toplevel_display.cpp",
+      "src/platform/linux/wayland_window_display_internal.hpp",
+      "src/platform/linux/wayland_window_display.cpp",
+      "src/platform/linux/wayland_window_registered.cpp",
+      "tests/platform/win32_window_display_state_test.cpp",
+      "tests/platform/wayland_window_display_state_test.cpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/architecture/phase_f_window_display_state_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_543_remaining_gap": "Step 544 window positioning production behavior",
+    "phase_f_current_handoff": "Step 544 window positioning production behavior"
   },
   "categories": [
     "application_and_app_context",

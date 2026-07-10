@@ -8,4 +8,10 @@ PlatformWindowLifecycleState PlatformWindow::lifecycle_state() const {
   };
 }
 
+bool PlatformWindow::request_display_state(
+    PlatformWindowDisplayState display_state) {
+  (void)display_state;
+  return false;
+}
+
 } // namespace cgpui

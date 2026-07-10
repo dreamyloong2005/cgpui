@@ -17,6 +17,12 @@ PlatformWindowChromeState Win32Window::apply_window_chrome(
   };
 
   if (hwnd_ != nullptr) {
+    if (display_command_state_.fullscreen) {
+      display_command_state_.windowed_style = chrome_state_.style;
+      display_command_state_.windowed_extended_style =
+          chrome_state_.extended_style;
+      return chrome_state_.platform;
+    }
     SetWindowLongPtrW(hwnd_, GWL_STYLE, static_cast<LONG_PTR>(chrome_state_.style));
     SetWindowLongPtrW(
         hwnd_,

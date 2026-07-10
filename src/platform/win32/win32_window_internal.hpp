@@ -1,6 +1,7 @@
 #pragma once
 
 #include "win32_internal.hpp"
+#include "win32_window_display_internal.hpp"
 #include "../platform_window_close_internal.hpp"
 
 #include <memory>
@@ -25,6 +26,7 @@ class Win32Window final
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
+  bool request_display_state(PlatformWindowDisplayState display_state) override;
   [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
   bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
   void request_redraw() override;
@@ -89,6 +91,7 @@ class Win32Window final
   HCURSOR current_cursor_ = nullptr;
   PlatformEventCallback callback_;
   WindowState state_;
+  Win32WindowDisplayCommandState display_command_state_;
   PlatformWindowCloseController close_controller_;
   Win32WindowChromeState chrome_state_;
   bool active_ = false;

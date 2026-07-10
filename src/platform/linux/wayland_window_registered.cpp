@@ -30,6 +30,11 @@ PlatformWindowLifecycleState RegisteredWaylandWindow::lifecycle_state() const {
   return window_->lifecycle_state();
 }
 
+bool RegisteredWaylandWindow::request_display_state(
+    PlatformWindowDisplayState display_state) {
+  return window_->request_display_state(display_state);
+}
+
 PlatformWindowCloseState RegisteredWaylandWindow::close_request_state() const {
   return window_->close_request_state();
 }

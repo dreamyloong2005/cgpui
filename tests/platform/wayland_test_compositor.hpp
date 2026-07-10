@@ -109,6 +109,11 @@ class WaylandTestCompositor {
   void request_clipboard_client_selection(std::string_view mime_type);
 
   [[nodiscard]] bool wait_for_close_sent() const;
+  [[nodiscard]] bool wait_for_minimize_requested() const;
+  [[nodiscard]] bool wait_for_maximize_requested() const;
+  [[nodiscard]] bool wait_for_unmaximize_requested() const;
+  [[nodiscard]] bool wait_for_fullscreen_requested() const;
+  [[nodiscard]] bool wait_for_unfullscreen_requested() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_acked() const;
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const;

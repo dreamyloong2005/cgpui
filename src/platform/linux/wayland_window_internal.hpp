@@ -15,12 +15,12 @@ class WaylandWindow final : public PlatformWindow {
       const WindowDescriptor& descriptor, PlatformEventCallback callback,
       bool text_input_available,
       WaylandOutputScaleLookup output_scale_lookup);
-
   ~WaylandWindow() override;
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] wl_surface* surface() const;
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
+#include "wayland_window_display_internal.hpp"
   [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
   bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
 

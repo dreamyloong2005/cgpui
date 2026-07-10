@@ -9562,3 +9562,27 @@
   path exists and is non-empty, including the new
   `src/ui/runtime_context_window_close.cpp`; the remaining diagnosis is the
   WSL test process source-root/copy view, not a missing repository file.
+
+## 2026-07-11 Phase F Step 543 Display State Audit
+
+- `PlatformWindowLifecycleState` already exposes normal, minimized, maximized,
+  and fullscreen snapshots, but `PlatformWindow` has no command API for any of
+  those transitions.
+- Win32 currently derives minimized/maximized state from `IsIconic` and
+  `IsZoomed`; Wayland parses maximized/fullscreen xdg configure states. Both are
+  read-only observation paths today.
+- The modular Step 543 boundary should add a compatible public display-state
+  command leaf/default plus focused Win32 and Wayland command implementations.
+  Existing window entry files should only forward or own compact state.
+- Win32 fullscreen must not alias maximize. The production path needs to save
+  windowed style/extended-style/placement, apply a monitor-sized borderless
+  frame, expose fullscreen before the resulting resize callback, and restore
+  the saved frame before a later normal/minimized/maximized request.
+- The existing hand-written xdg-toplevel interface stops at opcode 2
+  (`set_title`). Standard display requests require the complete request table
+  through opcode 13 plus focused wrappers for set/unset maximized,
+  set/unset fullscreen, and set minimized.
+- Wayland has no minimized configure state. Tests should verify that minimize
+  reaches the compositor, while maximized/fullscreen/normal lifecycle state is
+  only asserted after matching compositor configures are acknowledged.
+- Phase F Step 543 adds real Win32 minimize/maximize/restore and reversible borderless fullscreen, plus Wayland xdg-toplevel display requests with compositor-confirmed lifecycle state. Step 544 window positioning production behavior is next.

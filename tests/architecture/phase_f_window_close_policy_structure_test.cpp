@@ -177,7 +177,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 543 fullscreen and minimize/maximize")) {
+          "\"phase_f_step_542_remaining_gap\": \"Step 543 fullscreen and minimize/maximize")) {
     return 12;
   }
   return 0;

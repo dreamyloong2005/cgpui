@@ -86,6 +86,11 @@ int xdg_toplevel_add_listener(
     void* data);
 void xdg_toplevel_destroy(xdg_toplevel* toplevel);
 void xdg_toplevel_set_title(xdg_toplevel* toplevel, const char* title);
+void xdg_toplevel_set_maximized(xdg_toplevel* toplevel);
+void xdg_toplevel_unset_maximized(xdg_toplevel* toplevel);
+void xdg_toplevel_set_fullscreen(xdg_toplevel* toplevel, wl_output* output);
+void xdg_toplevel_unset_fullscreen(xdg_toplevel* toplevel);
+void xdg_toplevel_set_minimized(xdg_toplevel* toplevel);
 void zwp_text_input_manager_v3_destroy(zwp_text_input_manager_v3* manager);
 zwp_text_input_v3* zwp_text_input_manager_v3_get_text_input(
     zwp_text_input_manager_v3* manager,

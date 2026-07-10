@@ -21,6 +21,7 @@ class PlatformWindow {
   [[nodiscard]] virtual NativeSurfaceHandle native_surface() const = 0;
   [[nodiscard]] virtual WindowState state() const = 0;
   [[nodiscard]] virtual PlatformWindowLifecycleState lifecycle_state() const;
+  virtual bool request_display_state(PlatformWindowDisplayState display_state);
   [[nodiscard]] virtual PlatformWindowCloseState close_request_state() const;
   virtual bool resolve_close_request(PlatformWindowCloseResolution resolution);
   virtual void request_redraw() = 0;
