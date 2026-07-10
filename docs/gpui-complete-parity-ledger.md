@@ -619,6 +619,11 @@ consume C: drive space again.
   parses length-aware markup, renders the Step 499 plan dimensions, converts to
   plain RGBA pixel output, validates bitmap stride, and returns an `ImageAsset`.
 - Handoff: Step 501 SVG raster cache.
+- Phase E Step 501 adds `SvgRasterCache` with explicit hit/miss statistics and
+  cache identity over asset id, logical size, scale, and SVG source. Identical
+  requests return a cache-owned raster result without copying RGBA pixels, and
+  failed rasterizations are not cached.
+- Handoff: Step 502 SVG viewport scaling.
 
 ## Categories
 

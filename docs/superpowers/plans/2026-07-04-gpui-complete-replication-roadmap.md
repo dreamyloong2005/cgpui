@@ -1680,8 +1680,13 @@ draw calls for the Windows/Linux renderer.
   plain RGBA pixel output before constructing `ImageAsset`, while invalid
   requests, invalid SVG, and raster failures remain distinct.
   Step 501 SVG raster cache is next.
-- [ ] Steps 501-506: Add the SVG raster cache, scaling, recolor/tint, image
-  upload integration, examples, and closeout.
+- [x] Phase E Step 501 adds `SvgRasterCache` in a focused public leaf and
+  implementation file. Cache identity preserves asset id, logical size, scale, and SVG source;
+  identical ready lookups return a cache-owned raster result
+  without copying its pixel vector, while failed rasterizations are not cached.
+  Step 502 SVG viewport scaling is next.
+- [ ] Steps 502-506: Add SVG viewport scaling, recolor/tint, image upload
+  integration, examples, and closeout.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
   command reuse, pipeline switches, resource barriers, swapchain recovery, and
   present pacing.

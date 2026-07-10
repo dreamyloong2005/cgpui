@@ -1,5 +1,39 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 501 SVG Raster Cache
+
+- Step 500 is committed on `master` at
+  `422667da feat: rasterize svg assets with lunasvg`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- Step 501 starts from the explicit raster request/result boundary and should
+  add a focused cache module rather than growing the raster planner or LunaSVG
+  backend into mixed ownership.
+- Reviewed the existing glyph, text-measurement, and uniform-list caches. The
+  Step 501 API will preserve their explicit counters and clear operation while
+  avoiding large bitmap copies on cache hits through a cache-owned result view.
+- Added the focused Step 501 behavior target. Its RED build failed exactly as
+  intended because `cgpui/renderer/svg_raster_cache.hpp` did not yet exist.
+- Added the cache leaf/source, aggregate include, and structure guards. The
+  first behavior run exited 20 because the scale-only test accidentally passed
+  an empty size; correct the fixture before classifying the documentation gate.
+- Corrected the scale-only fixture. Cache behavior and renderer structure are
+  green, and direct execution now exits 60 only at the expected documentation
+  gate.
+- The first documentation audit split two required cache phrases across lines;
+  normalize those phrases without changing the Step 501 semantics.
+- The complete Windows debug build succeeded and the full suite passed 182/182.
+  Before finalizing, extend the cache test to prove result pointers remain
+  stable across insertion of another cached raster.
+- The stable-pointer extension passes. Final focused cache/backend/structure/
+  ledger verification passes 4/4, exact documentation phrases pass 30/30,
+  ledger JSON parses, module line counts are 53/79/10, and `git diff --check`
+  is clean.
+- The complete Windows debug suite still passes 182/182 after the final test
+  extension.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared SVG cache behavior remains in the final
+  Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 462 Multi-Frame Atlas Lifecycle
 
 - Added RED coverage with

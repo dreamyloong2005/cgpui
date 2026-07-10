@@ -123,6 +123,8 @@ int main(int argc, char** argv) {
       "include/cgpui/renderer/glyph_atlas_types.hpp",
       "include/cgpui/renderer/glyph_uploads.hpp",
       "include/cgpui/renderer/image_uploads.hpp",
+      "include/cgpui/renderer/svg_raster_cache.hpp",
+      "src/renderer/svg_raster_cache.cpp",
       "include/cgpui/renderer/svg_rasterization.hpp",
       "src/renderer/svg_rasterization.cpp",
       "src/renderer/svg_rasterization_lunasvg.cpp",
@@ -294,6 +296,8 @@ int main(int argc, char** argv) {
                 "#include \"cgpui/renderer/renderer_reports.hpp\"") ||
       !contains(renderer_header,
                 "#include \"cgpui/renderer/svg_rasterization.hpp\"") ||
+      !contains(renderer_header,
+                "#include \"cgpui/renderer/svg_raster_cache.hpp\"") ||
       !contains(renderer_header, "#include \"cgpui/renderer/glyph_atlas.hpp\"") ||
       !contains(renderer_header,
                 "#include \"cgpui/renderer/renderer_frame.hpp\"")) {
@@ -303,6 +307,7 @@ int main(int argc, char** argv) {
       contains(renderer_header, "class Renderer") ||
       contains(renderer_header, "struct RendererCommandReport") ||
       contains(renderer_header, "struct SvgRasterizationRequest") ||
+      contains(renderer_header, "class SvgRasterCache") ||
       contains(renderer_header, "class GlyphCache")) {
     return 8;
   }
@@ -331,6 +336,10 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/renderer/glyph_uploads.hpp");
   const std::string image_uploads =
       read_source("include/cgpui/renderer/image_uploads.hpp");
+  const std::string svg_raster_cache =
+      read_source("include/cgpui/renderer/svg_raster_cache.hpp");
+  const std::string svg_raster_cache_source =
+      read_source("src/renderer/svg_raster_cache.cpp");
   const std::string svg_rasterization =
       read_source("include/cgpui/renderer/svg_rasterization.hpp");
   const std::string svg_rasterization_source =
@@ -386,6 +395,8 @@ int main(int argc, char** argv) {
       !contains(glyph_atlas_types, "struct GlyphAtlasEntry") ||
       !contains(glyph_uploads, "struct GlyphAtlasUploadBatch") ||
       !contains(image_uploads, "struct ImageUploadBatch") ||
+      !contains(svg_raster_cache, "class SvgRasterCache") ||
+      !contains(svg_raster_cache_source, "SvgRasterCache::rasterize(") ||
       !contains(svg_rasterization, "struct SvgRasterizationRequest") ||
       !contains(svg_rasterization, "struct SvgRasterizationPlan") ||
       !contains(svg_rasterization, "struct SvgRasterizationResult") ||
@@ -404,6 +415,8 @@ int main(int argc, char** argv) {
   if (line_count(glyph_atlas_types) > 220 ||
       line_count(glyph_uploads) > 220 ||
       line_count(image_uploads) > 220 ||
+      line_count(svg_raster_cache) > 100 ||
+      line_count(svg_raster_cache_source) > 140 ||
       line_count(svg_rasterization) > 90 ||
       line_count(svg_rasterization_source) > 120 ||
       line_count(svg_rasterization_lunasvg) > 100 ||

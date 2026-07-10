@@ -713,13 +713,17 @@ Windows/Linux core API is stable enough for parity work.
   LunaSVG v3.5.0. The focused backend converts the rendered bitmap to
   plain RGBA pixel output, validates dimensions/stride, and returns an
   `ImageAsset`. Step 501 SVG raster cache is next.
+- Phase E Step 501 adds `SvgRasterCache`. Its key owns asset id, logical size, scale, and SVG source;
+  hits expose a cache-owned raster result without copying
+  pixels, and failed rasterizations are not cached. Step 502 SVG viewport
+  scaling is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-500 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-501 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -757,9 +761,10 @@ Windows/Linux core API is stable enough for parity work.
   explicit deduplicated image invalidation and same-frame refresh ordering,
   plus the audit-only image integration closeout, plus the explicit SVG
   rasterization request/plan boundary, plus the production LunaSVG raster
-  backend and explicit result status.
-- In progress: Step 501 SVG raster cache.
-- Pending bands: Steps 501-506 SVG; Steps
+  backend and explicit result status, plus the explicit SVG raster cache and
+  cache-owned result lookup.
+- In progress: Step 502 SVG viewport scaling.
+- Pending bands: Steps 502-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -772,6 +777,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 501 exact phrase audit split cache identity and failed-cache wording across Markdown lines | Step 501 documentation gate | Keep each required phrase contiguous in the roadmap, task plan, and findings before rerunning the five-file audit |
+| `svg_raster_cache_test` exited 20 because the scale-key fixture passed `Size{}` and produced an invalid request | Step 501 first GREEN | Keep logical size at 4x2 and vary only scale before rerunning the behavior gate |
+| A combined Step 501 planning update used a malformed patch hunk and did not apply | Step 501 findings update | Retry with separate valid update sections and exact context; no file content changed on the failed attempt |
+| Inspection guessed a nonexistent `src/renderer/glyph_cache.cpp` | Step 501 cache pattern inventory | Use the actual inline `include/cgpui/renderer/glyph_cache.hpp` implementation and the focused UI cache `.cpp` files as references |
+| The first Step 501 planning-log patch assumed the wrong progress title and did not apply | Step 501 start | Read the exact file headers and retry with matching context; no file content changed on the failed attempt |
 | The first broad Step 500 documentation patch did not match the current progress section | Step 500 documentation update | Read the exact Step 500 progress block and apply smaller patches |
 | `svg_lunasvg_rasterization_test` exited 40 after backend/structure builds passed | Step 500 first GREEN | Expected documentation gate; add the six exact backend/result phrases to the five authoritative files |
 | `svg_lunasvg_rasterization_test` could not find the Step 500 result/status API | Step 500 RED | Expected RED; add the result surface and focused LunaSVG parse/render/RGBA backend |

@@ -1,5 +1,30 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 501 SVG Raster Cache
+
+- The roadmap gives Step 501 cache ownership before Step 502 scaling and Step
+  503 recolor/tint. Cache identity therefore needs to preserve the current
+  request inputs without pre-claiming later scaling or tint policy.
+- `svg_rasterization.hpp` is already the focused request/plan/result leaf, and
+  the LunaSVG implementation is isolated. The cache should begin in its own
+  public leaf and focused `.cpp`, with structure coverage, instead of placing
+  container state or lookup bodies into the existing rasterization module.
+- Existing explicit caches use caller-owned objects, sequential entry storage,
+  hit/miss/lookup counters, and `clear()`. Step 501 should follow that surface,
+  but return a pointer to the cache-owned raster result so cache hits do not
+  copy the potentially large RGBA pixel vector.
+- The cache key should own SVG source bytes together with asset id, logical
+  size, and scale. Only ready rasterizations should be stored; invalid requests,
+  invalid SVG, and backend failures should remain misses and should not poison
+  later lookups.
+- Phase E Step 501 now adds `SvgRasterCache` with cache identity over asset id, logical size, scale, and SVG source.
+  Repeated requests return a cache-owned raster result without pixel copies,
+  while failed rasterizations are not cached. Step 502 SVG viewport scaling is next.
+- Cache entries use `std::deque` so result pointers remain stable when another
+  raster is inserted; `clear()` remains the explicit invalidation boundary.
+  Final Windows verification passes the focused 4/4 gate and the complete
+  182/182 suite. WSL remains unavailable because no distribution is registered.
+
 ## 2026-07-10 Phase E Step 500 LunaSVG Raster Backend
 
 - Step 499 is committed at `e0b22c04 feat: plan svg rasterization`; tracked
