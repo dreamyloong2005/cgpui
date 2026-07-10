@@ -18872,6 +18872,38 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 492 Image Upload Staging
+
+- Started from clean tracked `master` at
+  `9e903644 feat: add vulkan image texture resources`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed `ImageUploadBatch` already owns copied RGBA bytes, but `ImageDraw`
+  remains descriptor-only. Chosen direction is an explicit frame upload
+  operation with frame-owned batches, followed by focused Vulkan staging,
+  copy/barrier recording, and submit-time layout commit.
+- Added `vulkan_image_texture_upload_test` and its xmake target. The RED build
+  failed exactly as intended because
+  `vulkan_image_texture_uploads_internal.hpp` does not exist yet.
+- Added focused upload contract, staging, recording, frame integration, public
+  `RenderFrame::upload_image(...)`, and a live upload frame. The focused target
+  builds and direct execution exits `50` only at the documentation gate.
+- Renderer structure, Step 491 resource regression, and the live Vulkan upload
+  frame pass 3/3 after keeping presentation at its 150-line limit and updating
+  the prior forwarding assertion.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with
+  `RenderFrame::upload_image`, host-visible RGBA staging, buffer-to-image copy,
+  submit-time layout commit, and the Step 493 handoff.
+- Final focused verification passed 5/5 and the cross-document phrase audit
+  passed 25/25. The parity JSON and `git diff --check` are clean.
+- The complete Windows debug build succeeded, then the full suite passed 173/173
+  with `xmake test -y -P .`.
+- New upload module line counts are 42/168/121, the image frame leaf is 79, and
+  `vulkan_presentation.cpp` remains at its existing 150-line limit.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared image upload work remains in the final
+  Phase E Linux gate.
+- Sampler and descriptor behavior remains Step 493.
+
 ## 2026-07-10 Phase E Step 491 Image Texture Resources
 
 - Started from clean tracked `master` at

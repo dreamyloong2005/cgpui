@@ -52,6 +52,11 @@ void vulkan_destroy_image_texture_resource(
 void vulkan_destroy_image_texture_resources(
     VkDevice device,
     VulkanImageTextureResources& resources);
+Result<void> vulkan_ensure_image_texture_resource(
+    VkPhysicalDevice physical_device,
+    VkDevice device,
+    const ImageAssetDescriptor& descriptor,
+    VulkanImageTextureResources& resources);
 Result<void> vulkan_update_image_texture_resources(
     VkPhysicalDevice physical_device,
     VkDevice device,

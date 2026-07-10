@@ -545,6 +545,18 @@ consume C: drive space again.
   Vulkan frame and presents successfully, exercising real image/memory/view
   allocation without claiming upload or sampling.
 - Handoff: Phase E Step 492 image upload staging.
+- Phase E Step 492 adds explicit bitmap transport through
+  `RenderFrame::upload_image`. `VulkanFrame` converts caller-owned assets into
+  frame-owned upload batches, replacing duplicate uploads for one asset id.
+- Focused image upload modules validate RGBA descriptors, stride, and byte
+  ranges; allocate host-visible RGBA staging buffers; map and copy pixel bytes;
+  and record buffer-to-image copy commands with transfer-destination and
+  shader-readable layout barriers before the render pass.
+- Image texture layout state commits only after successful queue submission,
+  and the prior frame's staging buffers retire after the in-flight fence. A live
+  Vulkan frame exercises actual staging allocation, upload recording, and
+  teardown without claiming image sampling or draw recording.
+- Handoff: Phase E Step 493 image sampler modes and descriptor binding.
 
 ## Categories
 

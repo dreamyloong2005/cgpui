@@ -102,32 +102,54 @@ Result<void> vulkan_update_image_texture_resources(
   }
 
   for (const ImageDraw& draw : image_draws) {
-    VulkanImageTextureResource* texture =
-        vulkan_find_image_texture_resource(resources, draw.asset.id);
-    if (texture != nullptr &&
-        vulkan_image_texture_resource_matches(*texture, draw.asset)) {
-      texture->descriptor = draw.asset;
-      continue;
+    if (auto result = vulkan_ensure_image_texture_resource(
+            physical_device,
+            device,
+            draw.asset,
+            resources);
+        !result) {
+      return result;
     }
-    if (texture != nullptr) {
-      const auto found = std::ranges::find_if(
-          resources.textures,
-          [texture](const VulkanImageTextureResource& candidate) {
-            return &candidate == texture;
-          });
-      vulkan_destroy_image_texture_resource(device, *texture);
-      resources.textures.erase(found);
-    }
-
-    auto created = vulkan_create_image_texture_resource(
-        physical_device,
-        device,
-        draw.asset);
-    if (!created) {
-      return std::unexpected(created.error());
-    }
-    resources.textures.push_back(*created);
   }
+  return {};
+}
+
+Result<void> vulkan_ensure_image_texture_resource(
+    VkPhysicalDevice physical_device,
+    VkDevice device,
+    const ImageAssetDescriptor& descriptor,
+    VulkanImageTextureResources& resources) {
+  if (!vulkan_image_texture_descriptor_valid(descriptor) ||
+      physical_device == VK_NULL_HANDLE || device == VK_NULL_HANDLE) {
+    return std::unexpected(vulkan_error(
+        ErrorCode::renderer_initialization_failed,
+        "image texture resource requires a valid descriptor and device"));
+  }
+  VulkanImageTextureResource* texture =
+      vulkan_find_image_texture_resource(resources, descriptor.id);
+  if (texture != nullptr &&
+      vulkan_image_texture_resource_matches(*texture, descriptor)) {
+    texture->descriptor = descriptor;
+    return {};
+  }
+  if (texture != nullptr) {
+    const auto found = std::ranges::find_if(
+        resources.textures,
+        [texture](const VulkanImageTextureResource& candidate) {
+          return &candidate == texture;
+        });
+    vulkan_destroy_image_texture_resource(device, *texture);
+    resources.textures.erase(found);
+  }
+
+  auto created = vulkan_create_image_texture_resource(
+      physical_device,
+      device,
+      descriptor);
+  if (!created) {
+    return std::unexpected(created.error());
+  }
+  resources.textures.push_back(*created);
   return {};
 }
 

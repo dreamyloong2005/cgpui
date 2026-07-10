@@ -10,7 +10,8 @@ Result<void> VulkanRendererState::present_frame(
     std::span<const TextDraw> text_draws,
     std::span<const TextSelectionDraw> text_selections,
     std::span<const TextCaretDraw> text_carets,
-    std::span<const ImageDraw> image_draws) {
+    std::span<const ImageDraw> image_draws,
+    std::span<const ImageUploadBatch> image_uploads) {
   if (presentation_blocked_) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
@@ -35,13 +36,13 @@ Result<void> VulkanRendererState::present_frame(
   if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
     return result;
   }
-  if (auto result = prepare_image_texture_frame(image_draws); !result) {
+  if (auto result = prepare_image_texture_frame(image_draws, image_uploads);
+      !result) {
     return result;
   }
   if (auto result = prepare_glyph_atlas_frame(text_draws); !result) {
     return result;
   }
-
   std::uint32_t image_index = 0;
   const VkResult acquire_result = vkAcquireNextImageKHR(
       device_,
@@ -79,7 +80,8 @@ Result<void> VulkanRendererState::present_frame(
           glyph_atlas_resources_,
           glyph_atlas_draw_quads_,
           glyph_atlas_draw_bindings_,
-          glyph_atlas_uploads_);
+          glyph_atlas_uploads_,
+          image_texture_resources_, image_texture_uploads_);
       !result) {
     return recover_after_failed_record(result.error().message);
   }
@@ -110,6 +112,7 @@ Result<void> VulkanRendererState::present_frame(
       !result) {
     return recover_after_failed_submit(result.error().message);
   }
+  commit_image_texture_frame();
   commit_glyph_atlas_frame();
 
   const VkPresentInfoKHR present_info{

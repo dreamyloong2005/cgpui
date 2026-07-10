@@ -6,6 +6,7 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_image_texture_resources_internal.hpp"
+#include "vulkan_image_texture_uploads_internal.hpp"
 #include "vulkan_rounded_rect_buffers_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 #include "vulkan_text_vertex_buffer_internal.hpp"
@@ -28,7 +29,8 @@ class VulkanRendererState final {
       std::span<const TextDraw> text_draws,
       std::span<const TextSelectionDraw> text_selections,
       std::span<const TextCaretDraw> text_carets,
-      std::span<const ImageDraw> image_draws);
+      std::span<const ImageDraw> image_draws,
+      std::span<const ImageUploadBatch> image_uploads);
 
  private:
   explicit VulkanRendererState(RenderSurfaceDescriptor descriptor);
@@ -47,7 +49,9 @@ class VulkanRendererState final {
   Result<void> prepare_rounded_rect_frame(
       std::span<const RoundedRectDraw> rounded_rects);
   Result<void> prepare_image_texture_frame(
-      std::span<const ImageDraw> image_draws);
+      std::span<const ImageDraw> image_draws,
+      std::span<const ImageUploadBatch> image_uploads);
+  void commit_image_texture_frame();
   void commit_glyph_atlas_frame();
   Result<void> recover_after_failed_submit(std::string message);
   Result<void> recover_after_failed_record(std::string message);
@@ -111,6 +115,7 @@ class VulkanRendererState final {
   VulkanGlyphAtlasResources glyph_atlas_resources_;
   VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
   VulkanImageTextureResources image_texture_resources_;
+  VulkanImageTextureUploadResources image_texture_uploads_;
   std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_;
   std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;
   VulkanTextVertexBufferResources text_vertex_buffer_;

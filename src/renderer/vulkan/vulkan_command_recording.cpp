@@ -17,7 +17,9 @@ Result<void> record_vulkan_frame_command_buffer(
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
     std::span<const TexturedGlyphQuad> glyph_atlas_draw_quads,
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
-    const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads) {
+    const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads,
+    const VulkanImageTextureResources& image_texture_resources,
+    const VulkanImageTextureUploadResources& image_texture_uploads) {
   if (auto result = require_vk_success(
           vkResetCommandBuffer(command_buffer, 0),
           "vkResetCommandBuffer failed");
@@ -39,6 +41,13 @@ Result<void> record_vulkan_frame_command_buffer(
           command_buffer,
           glyph_atlas_resources,
           glyph_atlas_uploads);
+      !result) {
+    return result;
+  }
+  if (auto result = vulkan_record_image_texture_uploads(
+          command_buffer,
+          image_texture_resources,
+          image_texture_uploads);
       !result) {
     return result;
   }

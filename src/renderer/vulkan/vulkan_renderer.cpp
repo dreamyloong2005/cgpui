@@ -1,5 +1,7 @@
 #include "vulkan_internal.hpp"
 
+#include <algorithm>
+
 namespace cgpui {
 namespace {
 
@@ -28,6 +30,7 @@ class VulkanFrame final : public RenderFrame {
   void draw_image(const ImageDraw& image) override {
     append_draw(image_draws_, image, RendererPrimitiveKind::image);
   }
+  void upload_image(const ImageAsset& image) override;
   Result<void> present() override;
 
  private:
@@ -51,6 +54,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<TextSelectionDraw> text_selections_;
   std::vector<TextCaretDraw> text_carets_;
   std::vector<ImageDraw> image_draws_;
+  std::vector<ImageUploadBatch> image_uploads_;
   std::vector<VulkanFrameDrawOrderEntry> draw_order_;
 };
 
@@ -73,6 +77,24 @@ class VulkanRenderer final : public Renderer {
 
 } // namespace
 
+void VulkanFrame::upload_image(const ImageAsset& image) {
+  const std::span<const ImageAsset> assets(&image, 1);
+  std::vector<ImageUploadBatch> batches = vulkan_plan_image_uploads(assets);
+  if (batches.empty()) {
+    return;
+  }
+  const auto existing = std::ranges::find_if(
+      image_uploads_,
+      [&](const ImageUploadBatch& candidate) {
+        return candidate.image.id == batches.front().image.id;
+      });
+  if (existing == image_uploads_.end()) {
+    image_uploads_.push_back(std::move(batches.front()));
+  } else {
+    *existing = std::move(batches.front());
+  }
+}
+
 Result<void> VulkanFrame::present() {
   return state_->present_frame(
       clear_color_,
@@ -82,7 +104,8 @@ Result<void> VulkanFrame::present() {
       text_draws_,
       text_selections_,
       text_carets_,
-      image_draws_);
+      image_draws_,
+      image_uploads_);
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(

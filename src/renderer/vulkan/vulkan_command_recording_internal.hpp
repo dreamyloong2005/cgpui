@@ -4,6 +4,7 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_frame_draw_recording_internal.hpp"
+#include "vulkan_image_texture_uploads_internal.hpp"
 
 namespace cgpui {
 
@@ -22,6 +23,8 @@ Result<void> record_vulkan_frame_command_buffer(
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
     std::span<const TexturedGlyphQuad> glyph_atlas_draw_quads,
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
-    const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads);
+    const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads,
+    const VulkanImageTextureResources& image_texture_resources,
+    const VulkanImageTextureUploadResources& image_texture_uploads);
 
 } // namespace cgpui

@@ -1,5 +1,42 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 492 Image Upload Staging
+
+- Step 491 commit `9e903644` leaves tracked `master` clean with only the existing
+  untracked `.vscode/` directory.
+- `ImageUploadBatch` already owns copied RGBA bytes and region metadata, while
+  `ImageDraw` intentionally stays descriptor-only. Step 492 should preserve that
+  lightweight draw command and add an explicit frame upload operation rather
+  than embedding a pixel-owning container in every draw.
+- The focused Vulkan path can collect frame-owned upload batches before
+  `present()`, reconcile the Step 491 image resource by descriptor, allocate a
+  host-visible staging buffer, record buffer-to-image copy plus undefined/readable
+  layout transitions, and commit layout state only after successful submit.
+- `ImageAssetRegistry::raster_assets()` exposes the retained bitmap owners
+  explicitly, so callers can select assets for `RenderFrame::upload_image(...)`
+  without a renderer-global registry or descriptor-to-bytes lookup.
+- The Step 492 RED build fails exactly at the missing focused private upload
+  header, before production staging or command recording exists.
+- The focused upload target now compiles. Direct execution exits `50`, exactly
+  at the intentionally missing documentation gate, after explicit frame
+  transport, RGBA validation, copy metadata, layout barriers, and source-boundary
+  checks pass.
+- Phase E Step 492 now routes `RenderFrame::upload_image` into frame-owned
+  batches, host-visible RGBA staging, buffer-to-image copy recording, layout
+  barriers, and submit-time readable-layout commit. The live upload frame and
+  structure/resource regressions pass. Step 493 owns sampler modes and descriptor
+  binding.
+- Final focused Step 492 verification passes 5/5, all 25 required phrases are
+  present across the five authoritative documents, and the parity JSON parses.
+- The complete Windows debug build succeeds and the full suite is GREEN at
+  173/173. New upload modules remain at 42/168/121 lines, the expanded frame leaf
+  is 79 lines, and presentation remains exactly at its 150-line structure limit.
+- WSL verification remains unavailable because `wsl.exe -l -q` returns an empty
+  distribution list. Shared image upload and public frame API coverage remain in
+  the final Phase E Linux gate.
+- Samplers, descriptor sets, textured image pipeline/draw recording, tint, and
+  cache eviction remain later Steps 493-497.
+
 ## 2026-07-10 Phase E Step 491 Image Texture Resources
 
 - Step 490 commit `0cbb4915` leaves tracked `master` clean with only the existing

@@ -1624,8 +1624,16 @@ draw calls for the Windows/Linux renderer.
   absent. A live frame test exercises image/memory/view allocation and teardown
   without claiming upload. Step 492 owns image upload staging and explicit pixel
   transport.
-- [ ] Steps 492-498: Build image upload staging, sampler
-  modes, tint/opacity support, cache lifetime, and invalidation.
+- [x] Phase E Step 492 adds explicit bitmap transport through
+  `RenderFrame::upload_image`, frame-owned upload batches, host-visible RGBA staging
+  buffers, and buffer-to-image copy recording before the render pass.
+  Each upload validates descriptor/stride/byte ranges, transitions its texture
+  from the current layout to transfer-destination and shader-readable layouts,
+  and commits the readable layout only after successful queue submission. A
+  live frame exercises real staging allocation, mapping, copy, barriers, and
+  teardown. Step 493 owns image sampler modes and descriptor binding.
+- [ ] Steps 493-498: Build image sampler modes, tint/opacity support, cache
+  lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,

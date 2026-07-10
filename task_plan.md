@@ -661,13 +661,19 @@ Windows/Linux core API is stable enough for parity work.
   allocations refresh upload metadata. Resources remain in undefined layout.
   A live frame exercises allocation/teardown without claiming upload. Step 492
   owns image upload staging, pixel transport, copies, and transitions.
+- Phase E Step 492 adds explicit bitmap transport through
+  `RenderFrame::upload_image`, frame-owned batches, host-visible RGBA staging,
+  and buffer-to-image copy recording before the render pass. Validated uploads
+  transition from their current layout to transfer-destination and
+  shader-readable layouts, then commit readable layout state only after queue
+  submission succeeds. Step 493 owns image sampler modes and descriptor binding.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-491 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-492 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -693,9 +699,11 @@ Windows/Linux core API is stable enough for parity work.
   stable authored interleaving in actual Vulkan recording, plus explicit z/layer
   command ordering with stable UI paint order preserved end to end, and the
   Steps 475-489 clip/composition integration closeout audit, and descriptor-keyed
-  Vulkan image texture resource ownership.
-- In progress: Step 492 image upload staging.
-- Pending bands: Steps 492-498 images; Steps 499-506 SVG; Steps
+  Vulkan image texture resource ownership, plus explicit bitmap transport,
+  host-visible RGBA staging, buffer-to-image copy recording, layout transitions,
+  and submit-time image layout commit.
+- In progress: Step 493 image sampler modes and descriptor binding.
+- Pending bands: Steps 493-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -708,6 +716,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Passing three target names to one `xmake build -y -P . ...` invocation failed because the build task accepts one target | Step 492 post-format focused rebuild | Rebuild the upload and lifetime targets in separate invocations; the parser failure changed no outputs |
+| The first Step 492 documentation sync split `host-visible RGBA staging` across a roadmap line break | Step 492 first GREEN attempt | Keep the exact audit phrase contiguous in the roadmap; the other behavior, structure, ledger, and live-frame gates already passed |
+| Step 492 focused regressions initially failed renderer structure at exit 32 and Step 491 resource structure at exit 31 | Step 492 pre-documentation regression gate | Keep presentation at its existing 150-line limit and update the Step 491 forwarding assertion for the new final `image_uploads_` argument; live upload already passed |
+| The first combined Step 492 lifetime/structure patch missed an exact structure-test anchor and was rejected atomically | Step 492 live upload and architecture coverage | Split lifetime, file inventory, and structure assertions into exact patches; the failed patch changed no files |
+| Step 492 recovery discovery requested nonexistent `src/renderer/vulkan/vulkan_recovery.cpp` | Step 492 submit failure ownership | Use the located `vulkan_presentation_recovery.cpp` owner; do not repeat the guessed path |
+| `vulkan_image_texture_upload_test` failed to compile because the private upload header did not exist | Step 492 RED | Expected RED; add the focused upload contract, staging, recording, and frame integration modules |
+| Step 492 follow-up discovery requested nonexistent `include/cgpui/ui/paint_types.hpp` and `src/renderer/vulkan/vulkan_submission.cpp` | Step 492 transport/submit discovery | Locate `ImagePaint` and submit/recovery owners by symbol inventory; use `vulkan_presentation.cpp` as the current queue-submit owner |
+| Step 492 discovery requested nonexistent `include/cgpui/ui/paint_commands.hpp` and guessed image registry test filenames | Step 492 ownership discovery | Locate paint command and image tests by symbol/file inventory before reading exact files; do not repeat guessed paths |
 | Separate positional target names also returned `nothing to test` with this Xmake test runner | Step 491 second focused rerun attempt | Inspect `xmake test --help` and prior verified commands, then use the full `target/default` test names; the corrected aggregate passed 4/4 |
 | Passing four bare target names to one `xmake test -y -P . ...` invocation returned `nothing to test` | Step 491 final focused rerun | Use the registered `target/default` test names rather than bare build-target names; the no-op command changed no files |
 | The first final Step 491 phrase audit guessed the longer phrase `Step 492 image upload staging`, which the roadmap does not require verbatim | Step 491 final audit | Read the focused test's four authoritative phrases and rerun the audit against those exact values; the failed read-only audit changed no files |

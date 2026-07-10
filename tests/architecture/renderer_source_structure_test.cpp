@@ -165,6 +165,9 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_images.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resources.cpp",
       "src/renderer/vulkan/vulkan_image_texture_frame.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_staging.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_upload_recording.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
@@ -1417,6 +1420,12 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_resources.cpp");
   const std::string image_texture_frame = read_source(
       "src/renderer/vulkan/vulkan_image_texture_frame.cpp");
+  const std::string image_texture_upload_header = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp");
+  const std::string image_texture_staging = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_staging.cpp");
+  const std::string image_texture_upload_recording = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_upload_recording.cpp");
   const std::string image_texture_state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
   const std::string image_texture_presentation =
@@ -1424,7 +1433,7 @@ int main(int argc, char** argv) {
   if (line_count(image_texture_header) > 90 ||
       line_count(image_texture_images) > 180 ||
       line_count(image_texture_resources) > 160 ||
-      line_count(image_texture_frame) > 30 ||
+      line_count(image_texture_frame) > 110 ||
       !contains(image_texture_header, "struct VulkanImageTextureResource") ||
       !contains(image_texture_header, "struct VulkanImageTextureResources") ||
       !contains(image_texture_images, "vkCreateImage") ||
@@ -1435,8 +1444,28 @@ int main(int argc, char** argv) {
       !contains(image_texture_state,
                 "VulkanImageTextureResources image_texture_resources_") ||
       !contains(image_texture_presentation,
-                "prepare_image_texture_frame(image_draws)")) {
+                "prepare_image_texture_frame(image_draws, image_uploads)")) {
     return 72;
+  }
+  if (line_count(image_texture_upload_header) > 100 ||
+      line_count(image_texture_staging) > 190 ||
+      line_count(image_texture_upload_recording) > 150 ||
+      !contains(image_texture_upload_header,
+                "struct VulkanImageTextureStagingUpload") ||
+      !contains(image_texture_upload_header,
+                "struct VulkanImageTextureUploadResources") ||
+      !contains(image_texture_staging, "VK_BUFFER_USAGE_TRANSFER_SRC_BIT") ||
+      !contains(image_texture_staging,
+                "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT") ||
+      !contains(image_texture_staging, "vkMapMemory") ||
+      !contains(image_texture_upload_recording,
+                "vkCmdCopyBufferToImage") ||
+      !contains(image_texture_upload_recording,
+                "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL") ||
+      !contains(image_texture_frame, "vulkan_stage_image_texture_uploads(") ||
+      !contains(image_texture_state,
+                "VulkanImageTextureUploadResources image_texture_uploads_")) {
+    return 73;
   }
 
   const std::string report_text_quads =

@@ -20,6 +20,7 @@ class RenderFrame {
     (void)selection;
   }
   virtual void draw_text_caret(const TextCaretDraw& caret) { (void)caret; }
+  virtual void upload_image(const ImageAsset& image) { (void)image; }
   virtual void draw_image(const ImageDraw& image) { (void)image; }
   virtual Result<void> present() = 0;
 };
