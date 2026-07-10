@@ -12,6 +12,7 @@ struct VulkanSwapchainResources {
   VkSwapchainKHR swapchain = VK_NULL_HANDLE;
   VkFormat format = VK_FORMAT_UNDEFINED;
   VkExtent2D extent{};
+  VkImageUsageFlags image_usage = 0;
   VulkanPresentPacingPlan present_pacing{};
   std::vector<VkImage> images;
   std::vector<VkImageView> image_views;
@@ -33,6 +34,7 @@ struct VulkanSwapchainCreatePlan {
   VkSurfaceFormatKHR surface_format{};
   VulkanPresentPacingPlan present_pacing{};
   VkExtent2D extent{};
+  VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
   VkCompositeAlphaFlagBitsKHR composite_alpha =
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
   VkSurfaceTransformFlagBitsKHR pre_transform =

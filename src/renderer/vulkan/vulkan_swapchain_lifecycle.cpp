@@ -41,6 +41,7 @@ void VulkanRendererState::destroy_swapchain_resources(
   }
   resources.format = VK_FORMAT_UNDEFINED;
   resources.extent = VkExtent2D{};
+  resources.image_usage = 0;
   resources.present_pacing = {};
 }
 
@@ -49,6 +50,7 @@ void VulkanRendererState::destroy_swapchain() {
       .swapchain = swapchain_,
       .format = swapchain_format_,
       .extent = swapchain_extent_,
+      .image_usage = swapchain_image_usage_,
       .present_pacing = present_pacing_,
       .images = std::move(swapchain_images_),
       .image_views = std::move(swapchain_image_views_),
@@ -63,6 +65,7 @@ void VulkanRendererState::destroy_swapchain() {
   swapchain_ = VK_NULL_HANDLE;
   swapchain_format_ = VK_FORMAT_UNDEFINED;
   swapchain_extent_ = VkExtent2D{};
+  swapchain_image_usage_ = 0;
   present_pacing_ = {};
   render_pass_ = VK_NULL_HANDLE;
   image_pipeline_resources_ = {};
@@ -76,6 +79,7 @@ void VulkanRendererState::install_swapchain(
   swapchain_ = resources.swapchain;
   swapchain_format_ = resources.format;
   swapchain_extent_ = resources.extent;
+  swapchain_image_usage_ = resources.image_usage;
   present_pacing_ = resources.present_pacing;
   swapchain_images_ = std::move(resources.images);
   swapchain_image_views_ = std::move(resources.image_views);
@@ -94,6 +98,7 @@ void VulkanRendererState::install_swapchain(
   resources.rounded_rect_pipeline = {};
   resources.format = VK_FORMAT_UNDEFINED;
   resources.extent = VkExtent2D{};
+  resources.image_usage = 0;
   resources.present_pacing = {};
 }
 

@@ -137,7 +137,13 @@ void copy_signature(
 VulkanFrameCommandReusePlan vulkan_plan_frame_command_reuse(
     const VulkanFrameCommandReuseState& state,
     const VulkanFrameCommandSignatureView& signature,
-    bool has_pending_uploads) {
+    bool has_pending_uploads,
+    bool frame_pixel_capture) {
+  if (frame_pixel_capture) {
+    return VulkanFrameCommandReusePlan{
+        .reason = VulkanFrameCommandReuseReason::frame_pixel_capture,
+    };
+  }
   if (has_pending_uploads) {
     return VulkanFrameCommandReusePlan{
         .reason = VulkanFrameCommandReuseReason::pending_uploads,
@@ -160,9 +166,10 @@ VulkanFrameCommandReusePlan vulkan_plan_frame_command_reuse(
 void vulkan_commit_frame_command_recording(
     VulkanFrameCommandReuseState& state,
     const VulkanFrameCommandSignatureView& signature,
-    bool has_pending_uploads) {
+    bool has_pending_uploads,
+    bool frame_pixel_capture) {
   state.recording_count += 1;
-  if (has_pending_uploads) {
+  if (has_pending_uploads || frame_pixel_capture) {
     state.valid = false;
     return;
   }

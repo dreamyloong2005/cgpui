@@ -11,10 +11,16 @@ VulkanSwapchainCreatePlan build_vulkan_swapchain_create_plan(
       details.present_modes,
       details.capabilities.minImageCount,
       details.capabilities.maxImageCount);
+  VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  if ((details.capabilities.supportedUsageFlags &
+       VK_IMAGE_USAGE_TRANSFER_SRC_BIT) != 0) {
+    image_usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+  }
   return VulkanSwapchainCreatePlan{
       .surface_format = choose_vulkan_surface_format(details.formats),
       .present_pacing = present_pacing,
       .extent = choose_vulkan_extent(details.capabilities, framebuffer_size),
+      .image_usage = image_usage,
       .composite_alpha =
           choose_vulkan_composite_alpha(details.capabilities.supportedCompositeAlpha),
       .pre_transform = details.capabilities.currentTransform,
@@ -35,7 +41,7 @@ VkSwapchainCreateInfoKHR make_vulkan_swapchain_create_info(
       .imageColorSpace = plan.surface_format.colorSpace,
       .imageExtent = plan.extent,
       .imageArrayLayers = 1,
-      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+      .imageUsage = plan.image_usage,
       .imageSharingMode = plan.separate_queue_families
           ? VK_SHARING_MODE_CONCURRENT
           : VK_SHARING_MODE_EXCLUSIVE,

@@ -737,13 +737,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
 - Phase E Step 521 adds `RendererFrameStatistics` to propagate fixed-size renderer work, upload, draw, dropped-resource, and timing summaries into `FrameStatistics` after successful renderer presentation, while `RuntimeDiagnosticsSnapshot` preserves the full renderer snapshot without Vulkan downcasts. Step 522 renderer diagnostics closeout is next.
 - Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.
+- Phase E Step 523 adds `RendererFramePixels` and explicit per-frame capture with optional Vulkan swapchain transfer-source readback, present-layout restoration, and normalized RGBA8 output. Step 524 text pixel coverage is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-522 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-523 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -810,11 +811,12 @@ Windows/Linux core API is stable enough for parity work.
   plus fixed-size runtime renderer summaries and one retained full diagnostic
   snapshot after successful presentation without backend downcasts, plus the
   audit-only Steps 515-521 renderer diagnostics integration closeout from work
-  through runtime propagation.
-- In progress: Step 523 pixel/screenshot testing.
-- Step 523 boundary: establish the production pixel/screenshot harness and the
-  first deterministic rendered-output case without hiding backend differences.
-- Pending bands: Steps 523-530 pixel tests; Steps 531-538 full verification and
+  through runtime propagation, plus backend-neutral explicit per-frame pixel
+  capture and optional Vulkan swapchain readback with normalized RGBA8 output.
+- In progress: Step 524 text pixel coverage.
+- Step 524 boundary: render deterministic fallback glyph coverage through the
+  production text pipeline and assert captured foreground/background pixels.
+- Pending bands: Steps 524-530 pixel tests; Steps 531-538 full verification and
   closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -826,6 +828,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 523 capture integration moved `vulkan_presentation.cpp` to 175/165 lines and `vulkan_command_recording.cpp` to 185/180 lines | Step 523 structure GREEN | Keep capture behavior in focused leaves and compact only orchestration call formatting, restoring 162/165 and 180/180 without raising limits |
 | Step 522 pattern discovery guessed nonexistent `phase_e_renderer_solid_audit_test.cpp` and `phase_e_resource_retirement_audit_test.cpp` files | Step 522 ownership research | Use the repository's actual `phase_e_*_integration_closeout_test.cpp` pattern, especially the Step 514 batching/scheduling closeout |
 | A diagnostics-header inspection command referenced nonexistent split upload/draw header names | Step 521 ownership research | Use the actual combined `renderer_frame_diagnostics.hpp` leaf plus the dropped-resource and timing leaves |
 | The focused Step 521 executable exited 50 because its source check expected static `Renderer::` spelling instead of the instance call | Step 521 first behavior GREEN | Check `renderer.last_frame_diagnostic_snapshot()` and preserve exit 60 for the five-document gate |

@@ -4,6 +4,7 @@
 #include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_diagnostic_snapshot_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
+#include "vulkan_frame_pixel_capture_internal.hpp"
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
@@ -27,6 +28,8 @@ class VulkanRendererState final {
   Result<void> resize(Size framebuffer_size, DpiScale scale);
   [[nodiscard]] const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
+  Result<void> request_pixel_capture() const;
+  [[nodiscard]] const RendererFramePixels* last_frame_pixels() const;
   Result<void> present_frame(
       Color color,
       std::span<const VulkanFrameDrawOrderEntry> draw_order,
@@ -37,7 +40,8 @@ class VulkanRendererState final {
       std::span<const TextCaretDraw> text_carets,
       std::span<const ImageDraw> image_draws,
       std::span<const ImageUploadBatch> image_uploads,
-      std::span<const ImageAssetId> image_invalidations);
+      std::span<const ImageAssetId> image_invalidations,
+      bool capture_requested);
 
  private:
   explicit VulkanRendererState(RenderSurfaceDescriptor descriptor);
@@ -51,6 +55,11 @@ class VulkanRendererState final {
   Result<void> create_sync_objects();
   Result<void> wait_for_present_pacing();
   Result<void> submit_frame(VkCommandBuffer command_buffer);
+  Result<VulkanFramePixelCaptureCommand> prepare_frame_pixel_capture(
+      bool capture_requested,
+      VkImage image);
+  Result<void> complete_frame_pixel_capture(
+      const VulkanFramePixelCaptureCommand& capture);
   Result<void> prepare_glyph_atlas_frame(
       std::span<const TextDraw> text_draws);
   Result<void> prepare_solid_rect_frame(
@@ -109,6 +118,7 @@ class VulkanRendererState final {
   VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
   VkFormat swapchain_format_ = VK_FORMAT_UNDEFINED;
   VkExtent2D swapchain_extent_{};
+  VkImageUsageFlags swapchain_image_usage_ = 0;
   VulkanPresentPacingPlan present_pacing_{};
   std::vector<VkImage> swapchain_images_;
   std::vector<VkImageView> swapchain_image_views_;
@@ -139,6 +149,7 @@ class VulkanRendererState final {
   std::vector<RendererCommandBatch> last_command_batches_;
   RendererUploadByteCounts pending_frame_upload_bytes_;
   RendererFrameDiagnosticSnapshot last_frame_diagnostic_snapshot_;
+  VulkanFramePixelCaptureResources frame_pixel_capture_;
   bool has_frame_diagnostic_snapshot_ = false;
   bool presentation_blocked_ = false;
 };

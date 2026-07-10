@@ -20221,3 +20221,36 @@
 - `wsl.exe -l -q` still returns an empty distribution list, so Step 522 records
   the unavailable Linux host while retaining the mandatory final Phase E Linux
   gate.
+
+## 2026-07-10 Phase E Step 523 Vulkan Frame Capture Foundation
+
+- Started from clean tracked `master` at Step 522 commit `806f7f69`; only the
+  existing untracked `.vscode/` directory remains.
+- Repository search found no framebuffer readback, screenshot, golden-image, or
+  pixel-comparison support. Step 523 therefore owns the production renderer
+  capture foundation rather than only adding a test wrapper.
+- Mapped Steps 524-530 to text, rounded rectangle, image, clip, transform,
+  opacity, and resize output cases over the shared capture path.
+- Added the Step 523 public and live Vulkan RED targets plus reusable Win32
+  pixel-test support. The first public-target build failed on the intentionally
+  missing `RendererFramePixels`, frame request, and renderer snapshot API.
+- Implemented the public snapshot/default methods plus focused Vulkan capture
+  resources, recording, readback, state orchestration, swapchain usage, and
+  capture-aware command reuse. The real Win32 red-clear capture passes.
+- Initial integration exceeded the existing presentation and command-recording
+  line limits at 175/165 and 185/180. Compact orchestration formatting restored
+  those files to 162/165 and 180/180 without raising either limit.
+- Renderer source structure passes with focused ownership guards. The public
+  target reaches exit 60 only at the expected five-document evidence gate.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 524
+  text pixel coverage is active.
+- Expanded Step 523 verification passed 8/8 across snapshot behavior, real
+  capture, command reuse, pacing/recovery, structure, public headers, and the
+  parity ledger.
+- JSON parsing, all five Step 523 phrases, focused line counts, and
+  `git diff --check` pass.
+- The complete Windows debug build succeeded in 42.0 seconds, then the full
+  suite passed 205/205 in 2.812 seconds.
+- `wsl.exe -l -q` still returns an empty distribution list, so Step 523 records
+  the unavailable Linux host while retaining the mandatory final Phase E Linux
+  gate.

@@ -3,6 +3,7 @@
 #include "cgpui/core/error.hpp"
 #include "cgpui/renderer/glyph_atlas.hpp"
 #include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
+#include "cgpui/renderer/renderer_frame_pixels.hpp"
 
 #include <memory>
 #include <span>
@@ -24,6 +25,7 @@ class RenderFrame {
   virtual void upload_image(const ImageAsset& image) { (void)image; }
   virtual void invalidate_image(ImageAssetId asset_id) { (void)asset_id; }
   virtual void draw_image(const ImageDraw& image) { (void)image; }
+  virtual Result<void> request_pixel_capture();
   virtual Result<void> present() = 0;
 };
 
@@ -35,6 +37,7 @@ class Renderer {
   virtual Result<std::unique_ptr<RenderFrame>> begin_frame() = 0;
   [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
+  [[nodiscard]] virtual const RendererFramePixels* last_frame_pixels() const;
 };
 
 Result<std::unique_ptr<Renderer>> create_renderer(

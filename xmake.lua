@@ -881,6 +881,15 @@ target("phase_e_renderer_diagnostics_integration_closeout_test")
     add_files("tests/api_parity/phase_e_renderer_diagnostics_integration_closeout_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("renderer_frame_pixels_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/renderer/renderer_frame_pixels_test.cpp")
+    add_deps("cgpui_core", "cgpui_renderer")
+    add_includedirs(public_includedirs)
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows", "linux") then
     target("vulkan_frame_geometry_buffer_test")
         set_kind("binary")
@@ -2217,6 +2226,15 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
         add_packages("vulkansdk")
         add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
+
+    target("vulkan_frame_pixel_capture_test")
+        set_kind("binary")
+        add_files("tests/renderer/vulkan_frame_pixel_capture_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_packages("vulkansdk")
+        add_includedirs(public_includedirs, "tests/renderer")
         add_syslinks("user32")
         add_tests("default")
 

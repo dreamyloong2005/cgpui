@@ -139,6 +139,7 @@ int main(int argc, char** argv) {
       "include/cgpui/renderer/glyph_atlas_production.hpp",
       "include/cgpui/renderer/glyph_cache.hpp",
       "include/cgpui/renderer/glyph_atlas.hpp",
+      "include/cgpui/renderer/renderer_frame_pixels.hpp",
       "include/cgpui/renderer/renderer_frame.hpp",
       "include/cgpui/renderer/renderer.hpp",
       "include/cgpui/platform/platform_accessibility.hpp",
@@ -165,6 +166,15 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_command_reuse.cpp",
+      "src/renderer/renderer_frame_pixels.cpp",
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_pixel_capture.cpp",
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_resources.cpp",
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_recording.cpp",
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_readback.cpp",
+      "tests/renderer/renderer_frame_pixels_test.cpp",
+      "tests/renderer/vulkan_frame_pixel_capture_test.cpp",
+      "tests/renderer/vulkan_pixel_test_support.hpp",
       "src/renderer/renderer_frame_diagnostic_snapshot.cpp",
       "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_diagnostic_resources.cpp",
@@ -830,6 +840,79 @@ int main(int argc, char** argv) {
       !contains(diagnostic_presentation,
                 "last_frame_diagnostic_snapshot_")) {
     return 85;
+  }
+  const std::string frame_pixels_header = read_source(
+      "include/cgpui/renderer/renderer_frame_pixels.hpp");
+  const std::string frame_pixels_source = read_source(
+      "src/renderer/renderer_frame_pixels.cpp");
+  const std::string pixel_capture_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_internal.hpp");
+  const std::string pixel_capture_state = read_source(
+      "src/renderer/vulkan/vulkan_frame_pixel_capture.cpp");
+  const std::string pixel_capture_resources = read_source(
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_resources.cpp");
+  const std::string pixel_capture_recording = read_source(
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_recording.cpp");
+  const std::string pixel_capture_readback = read_source(
+      "src/renderer/vulkan/vulkan_frame_pixel_capture_readback.cpp");
+  const std::string pixel_capture_reuse = read_source(
+      "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp");
+  const std::string pixel_capture_create_info = read_source(
+      "src/renderer/vulkan/vulkan_swapchain_create_info.cpp");
+  const std::string pixel_capture_command_recording = read_source(
+      "src/renderer/vulkan/vulkan_command_recording.cpp");
+  const std::string pixel_capture_presentation = read_source(
+      "src/renderer/vulkan/vulkan_presentation.cpp");
+  const std::string pixel_capture_public_test = read_source(
+      "tests/renderer/renderer_frame_pixels_test.cpp");
+  const std::string pixel_capture_live_test = read_source(
+      "tests/renderer/vulkan_frame_pixel_capture_test.cpp");
+  const std::string pixel_capture_support = read_source(
+      "tests/renderer/vulkan_pixel_test_support.hpp");
+  if (line_count(frame_pixels_header) > 50 ||
+      line_count(frame_pixels_source) > 80 ||
+      line_count(pixel_capture_header) > 80 ||
+      line_count(pixel_capture_state) > 80 ||
+      line_count(pixel_capture_resources) > 170 ||
+      line_count(pixel_capture_recording) > 100 ||
+      line_count(pixel_capture_readback) > 100 ||
+      line_count(pixel_capture_public_test) > 180 ||
+      line_count(pixel_capture_live_test) > 100 ||
+      line_count(pixel_capture_support) > 130 ||
+      !contains(frame_pixels_header, "struct RendererFramePixels") ||
+      !contains(frame_pixels_source, "RendererFramePixels::pixel_rgba8(") ||
+      !contains(frame_pixels_source, "RenderFrame::request_pixel_capture()") ||
+      !contains(frame_pixels_source, "Renderer::last_frame_pixels() const") ||
+      !contains(pixel_capture_header,
+                "struct VulkanFramePixelCaptureResources") ||
+      !contains(pixel_capture_state,
+                "VulkanRendererState::prepare_frame_pixel_capture(") ||
+      !contains(pixel_capture_resources,
+                "VK_BUFFER_USAGE_TRANSFER_DST_BIT") ||
+      !contains(pixel_capture_recording, "vkCmdCopyImageToBuffer") ||
+      !contains(pixel_capture_recording,
+                "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL") ||
+      !contains(pixel_capture_recording,
+                "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") ||
+      !contains(pixel_capture_readback, "vkWaitForFences") ||
+      !contains(pixel_capture_readback, "vkMapMemory") ||
+      !contains(pixel_capture_readback, "std::swap(") ||
+      !contains(pixel_capture_reuse, "frame_pixel_capture") ||
+      !contains(pixel_capture_create_info,
+                "VK_IMAGE_USAGE_TRANSFER_SRC_BIT") ||
+      !contains(pixel_capture_command_recording,
+                "vulkan_record_frame_pixel_capture(") ||
+      contains(pixel_capture_command_recording, "vkCmdCopyImageToBuffer") ||
+      !contains(pixel_capture_presentation,
+                "prepare_frame_pixel_capture(") ||
+      !contains(pixel_capture_presentation,
+                "complete_frame_pixel_capture(") ||
+      contains(pixel_capture_presentation, "vkMapMemory") ||
+      !contains(pixel_capture_public_test,
+                "test_pixel_snapshot_access") ||
+      !contains(pixel_capture_live_test, "request_pixel_capture()") ||
+      !contains(pixel_capture_support, "pixel_near(")) {
+    return 86;
   }
   const std::string solid_rect_geometry_header = read_source(
       "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");

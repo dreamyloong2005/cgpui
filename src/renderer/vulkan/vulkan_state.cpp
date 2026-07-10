@@ -14,6 +14,7 @@ VulkanRendererState::~VulkanRendererState() {
     vulkan_destroy_rounded_rect_buffers(device_, rounded_rect_buffers_);
     vulkan_destroy_image_vertex_buffer(device_, image_vertex_buffer_);
     vulkan_destroy_text_vertex_buffer(device_, text_vertex_buffer_);
+    vulkan_destroy_frame_pixel_capture(device_, frame_pixel_capture_);
     vulkan_destroy_image_texture_upload_resources(
         device_, image_texture_uploads_);
     vulkan_destroy_image_texture_resources(device_, image_texture_resources_);

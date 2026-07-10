@@ -23,6 +23,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads,
     const VulkanImageTextureResources& image_texture_resources,
     const VulkanImageTextureUploadResources& image_texture_uploads,
+    const VulkanFramePixelCaptureCommand& pixel_capture,
     VulkanFrameCommandReuseState& command_reuse_state) {
   if (auto result = vulkan_validate_glyph_atlas_draw_bindings(
           glyph_atlas_draw_bindings,
@@ -85,7 +86,8 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
   };
   const VulkanFrameCommandReusePlan reuse_plan =
       vulkan_plan_frame_command_reuse(
-          command_reuse_state, signature, has_pending_uploads);
+          command_reuse_state, signature, has_pending_uploads,
+          pixel_capture.enabled());
   if (reuse_plan.action == VulkanFrameCommandReuseAction::reuse) {
     vulkan_commit_frame_command_reuse(command_reuse_state);
     return VulkanFrameCommandRecordingResult{
@@ -159,7 +161,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
       *image_draw_commands,
       draw_order);
   vkCmdEndRenderPass(command_buffer);
-
+  vulkan_record_frame_pixel_capture(command_buffer, pixel_capture);
   if (auto result = require_vk_success(
           vkEndCommandBuffer(command_buffer),
           "vkEndCommandBuffer failed");
@@ -167,7 +169,8 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     return std::unexpected(result.error());
   }
   vulkan_commit_frame_command_recording(
-      command_reuse_state, signature, has_pending_uploads);
+      command_reuse_state, signature, has_pending_uploads,
+      pixel_capture.enabled());
   return VulkanFrameCommandRecordingResult{
       .action = VulkanFrameCommandReuseAction::record,
       .reason = reuse_plan.reason,

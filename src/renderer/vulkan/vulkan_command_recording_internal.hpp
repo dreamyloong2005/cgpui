@@ -5,6 +5,7 @@
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_draw_recording_internal.hpp"
+#include "vulkan_frame_pixel_capture_internal.hpp"
 #include "vulkan_image_texture_uploads_internal.hpp"
 
 namespace cgpui {
@@ -30,6 +31,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     const VulkanGlyphAtlasUploadResources& glyph_atlas_uploads,
     const VulkanImageTextureResources& image_texture_resources,
     const VulkanImageTextureUploadResources& image_texture_uploads,
+    const VulkanFramePixelCaptureCommand& pixel_capture,
     VulkanFrameCommandReuseState& command_reuse_state);
 
 } // namespace cgpui

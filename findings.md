@@ -9349,3 +9349,53 @@
   and UI structure coverage before handing Phase E to Step 523 pixel/screenshot
   testing.
 - Phase E Step 522 closes the renderer diagnostics integration closeout for Steps 515-521, freezing work through runtime propagation evidence across planned/submitted work, upload bytes, draw counts, dropped resources, frame timing, live snapshots, and runtime summaries. Step 523 pixel/screenshot testing is next.
+
+## 2026-07-10 Phase E Step 523 Vulkan Frame Capture Foundation
+
+- The repository has no existing framebuffer readback, screenshot, golden-image,
+  or pixel-comparison facility. Current Vulkan tests stop at command/resource
+  recording and live presentation state.
+- The eight-step pixel band maps cleanly to one capture foundation followed by
+  text, rounded rectangle, image, clip, transform, opacity, and resize output
+  cases in Steps 524-530.
+- Step 523 must capture pixels produced by the actual renderer path. A separate
+  CPU reference rasterizer or duplicated test-only pipeline would not prove the
+  production Vulkan output.
+- The capture boundary should remain backend-neutral at the public renderer
+  surface while Vulkan owns swapchain transfer-source support, image layout
+  transitions, staging/readback memory, and row-normalized RGBA8 output.
+- Normal frames should pay no readback synchronization cost. Capture is an
+  explicit per-frame request; only that frame allocates/ensures a host-visible
+  transfer-destination buffer, records the post-render-pass copy, waits for the
+  submitted fence, and maps the completed bytes.
+- The swapchain image must advertise `VK_IMAGE_USAGE_TRANSFER_SRC_BIT` when the
+  surface capability supports it. Capture requests must report unsupported
+  capability explicitly instead of silently returning blank pixels.
+- The command buffer must transition the acquired image from
+  `VK_IMAGE_LAYOUT_PRESENT_SRC_KHR` to transfer source after the render pass,
+  copy tightly packed pixels, and restore present layout before submission.
+- Swapchain formats may be BGRA or RGBA. The public snapshot should normalize
+  channel order to tightly packed RGBA8 while recording whether the bytes use
+  sRGB or linear encoding.
+- The public request belongs to `RenderFrame`, not the renderer-wide next-frame
+  state: `request_pixel_capture()` scopes intent to exactly the frame that will
+  be presented. `Renderer::last_frame_pixels()` exposes the latest successful
+  capture afterward.
+- Both virtual additions need compatible out-of-line defaults. Non-Vulkan test
+  renderers should compile unchanged; the default frame request returns
+  `unsupported_platform`, and the default renderer snapshot pointer is null.
+- `RendererFramePixels` should expose width, height, linear/sRGB encoding,
+  tightly packed RGBA8 storage, validity, row byte count, and bounds-checked
+  pixel lookup. Its non-template bodies belong in a focused `.cpp`.
+- `vulkan_presentation.cpp` is 164 lines under a 165-line structure limit.
+  Capture resource preparation, command emission, fence completion, mapping,
+  and channel normalization must live in focused modules; presentation should
+  remain orchestration-only.
+- A requested capture must force command recording even when the ordinary frame
+  signature matches a reusable command buffer. Reusing a buffer recorded before
+  capture would omit the image-to-buffer copy.
+- Step 523 needs two coverage layers: a platform-neutral public snapshot/default
+  behavior test and a real Win32 Vulkan frame-capture test. Later pixel steps can
+  reuse the live capture fixture while Linux/Wayland receives its active-host
+  counterpart in this band.
+- Phase E Step 523 adds `RendererFramePixels` and explicit per-frame capture with optional Vulkan swapchain transfer-source readback, present-layout restoration, and normalized RGBA8 output. Step 524 text pixel coverage is next.

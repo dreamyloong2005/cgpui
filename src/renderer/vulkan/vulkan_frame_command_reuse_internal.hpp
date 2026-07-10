@@ -12,6 +12,7 @@ enum class VulkanFrameCommandReuseAction {
 enum class VulkanFrameCommandReuseReason {
   no_recording,
   pending_uploads,
+  frame_pixel_capture,
   signature_changed,
   exact_match,
 };
@@ -88,11 +89,13 @@ struct VulkanFrameCommandRecordingResult {
 [[nodiscard]] VulkanFrameCommandReusePlan vulkan_plan_frame_command_reuse(
     const VulkanFrameCommandReuseState& state,
     const VulkanFrameCommandSignatureView& signature,
-    bool has_pending_uploads);
+    bool has_pending_uploads,
+    bool frame_pixel_capture = false);
 void vulkan_commit_frame_command_recording(
     VulkanFrameCommandReuseState& state,
     const VulkanFrameCommandSignatureView& signature,
-    bool has_pending_uploads);
+    bool has_pending_uploads,
+    bool frame_pixel_capture = false);
 void vulkan_commit_frame_command_reuse(VulkanFrameCommandReuseState& state);
 void vulkan_invalidate_frame_command_reuse(
     VulkanFrameCommandReuseState& state);

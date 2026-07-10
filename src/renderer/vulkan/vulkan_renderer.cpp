@@ -32,6 +32,7 @@ class VulkanFrame final : public RenderFrame {
   }
   void upload_image(const ImageAsset& image) override;
   void invalidate_image(ImageAssetId asset_id) override;
+  Result<void> request_pixel_capture() override;
   Result<void> present() override;
 
  private:
@@ -58,6 +59,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<ImageUploadBatch> image_uploads_;
   std::vector<ImageAssetId> image_invalidations_;
   std::vector<VulkanFrameDrawOrderEntry> draw_order_;
+  bool capture_requested_ = false;
 };
 
 class VulkanRenderer final : public Renderer {
@@ -76,6 +78,9 @@ class VulkanRenderer final : public Renderer {
   [[nodiscard]] const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const override {
     return state_->last_frame_diagnostic_snapshot();
+  }
+  [[nodiscard]] const RendererFramePixels* last_frame_pixels() const override {
+    return state_->last_frame_pixels();
   }
 
  private:
@@ -118,6 +123,14 @@ void VulkanFrame::invalidate_image(ImageAssetId asset_id) {
   image_invalidations_.push_back(asset_id);
 }
 
+Result<void> VulkanFrame::request_pixel_capture() {
+  if (auto result = state_->request_pixel_capture(); !result) {
+    return result;
+  }
+  capture_requested_ = true;
+  return {};
+}
+
 Result<void> VulkanFrame::present() {
   return state_->present_frame(
       clear_color_,
@@ -129,7 +142,8 @@ Result<void> VulkanFrame::present() {
       text_carets_,
       image_draws_,
       image_uploads_,
-      image_invalidations_);
+      image_invalidations_,
+      capture_requested_);
 }
 
 Result<std::unique_ptr<Renderer>> create_renderer(
