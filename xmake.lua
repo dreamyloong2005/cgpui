@@ -847,6 +847,15 @@ target("renderer_upload_byte_diagnostics_test")
     add_includedirs(public_includedirs)
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("renderer_draw_count_diagnostics_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/renderer/renderer_draw_count_diagnostics_test.cpp")
+    add_deps("cgpui_core", "cgpui_renderer")
+    add_includedirs(public_includedirs)
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows", "linux") then
     target("vulkan_frame_geometry_buffer_test")
         set_kind("binary")

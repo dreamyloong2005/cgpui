@@ -20008,3 +20008,47 @@
 - Final source/document review found no broad renderer implementation or Vulkan
   handles in the public diagnostics leaf. WSL remains unavailable because
   `wsl.exe -l -q` returned an empty distribution list.
+
+## 2026-07-10 Phase E Step 517 Draw-Count Accounting
+
+- Started from clean tracked `master` at Step 516 commit `3acc6395`; only the
+  existing untracked `.vscode/` directory remains.
+- Traced text page-run expansion and the frame draw recorder. Chosen semantics
+  count one draw per resolved submitted resource, independently from authored
+  commands and batching.
+- Step 517 will add primitive-aware saturation-safe counters plus total
+  planned/submitted draw deltas. Live Vulkan recording integration remains
+  Step 520.
+- Confirmed the counter must retain selection/caret kinds even though the
+  current Vulkan cursor does not resolve them; that discrepancy belongs to
+  Step 518 dropped-resource diagnostics.
+- Added the Step 517 RED target. Its first build failed on the intentionally
+  missing primitive counter, renderer-command include, frame draw field, and
+  comparison delta fields.
+- The first implementation patch reported a late context mismatch after
+  partially applying the header, comparison, focused source, and structure
+  edits. Audited every intended file before continuing; only this progress log
+  entry was missing.
+- Implemented the primitive-aware counter in a focused source, extended the
+  base frame comparison, and added renderer structure ownership coverage.
+- The implementation builds; Steps 515-516 diagnostics and renderer structure
+  pass, while the new target reaches exit 60 only at the expected Step 517
+  five-document evidence gate.
+- The combined documentation patch again reported a stale first-file context
+  after partially updating all five evidence files. Audited each file and found
+  only these progress entries missing.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 518
+  dropped-resource accounting is active.
+- Step 517 draw-count behavior, Steps 515-516 regressions, and renderer source
+  structure now pass 4/4.
+- Expanded Step 517 verification passed 11/11 across diagnostics, public header
+  cleanliness, parity ledger, authored draw order, text/image/rounded recorders,
+  Vulkan solid/report behavior, and renderer structure.
+- JSON parsing, all five Step 517 phrases, focused 69/55/52/158 line counts,
+  and `git diff --check` pass.
+- The complete Windows debug build succeeded, then the full suite passed
+  198/198.
+- Final source/document review found the Step 517 boundary focused and the
+  worktree limited to this slice plus the existing untracked `.vscode/`.
+  WSL remains unavailable because `wsl.exe -l -q` returned an empty
+  distribution list.

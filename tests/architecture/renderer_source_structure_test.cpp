@@ -365,6 +365,8 @@ int main(int argc, char** argv) {
       read_source("src/renderer/renderer_frame_diagnostics.cpp");
   const std::string renderer_frame_upload_diagnostics_source =
       read_source("src/renderer/renderer_frame_upload_diagnostics.cpp");
+  const std::string renderer_frame_draw_diagnostics_source =
+      read_source("src/renderer/renderer_frame_draw_diagnostics.cpp");
   const std::string glyph_atlas =
       read_source("include/cgpui/renderer/glyph_atlas.hpp");
   const std::string glyph_atlas_types =
@@ -461,6 +463,10 @@ int main(int argc, char** argv) {
                 "renderer_upload_byte_counts(") ||
       !contains(renderer_frame_upload_diagnostics_source,
                 "renderer_upload_byte_counts(") ||
+      !contains(renderer_frame_diagnostics, "struct RendererDrawCounts") ||
+      !contains(renderer_frame_diagnostics, "renderer_add_draw_count(") ||
+      !contains(renderer_frame_draw_diagnostics_source,
+                "renderer_add_draw_count(") ||
       contains(renderer_frame, "struct RendererFrameDiagnostics") ||
       !contains(glyph_atlas_types, "struct GlyphAtlasEntry") ||
       !contains(glyph_uploads, "struct GlyphAtlasUploadBatch") ||
@@ -518,7 +524,8 @@ int main(int argc, char** argv) {
       line_count(renderer_frame_reports) > 220 ||
       line_count(renderer_frame_diagnostics) > 100 ||
       line_count(renderer_frame_diagnostics_source) > 100 ||
-      line_count(renderer_frame_upload_diagnostics_source) > 100) {
+      line_count(renderer_frame_upload_diagnostics_source) > 100 ||
+      line_count(renderer_frame_draw_diagnostics_source) > 100) {
     return 53;
   }
 

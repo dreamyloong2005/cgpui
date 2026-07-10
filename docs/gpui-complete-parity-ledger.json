@@ -1387,8 +1387,18 @@
       "xmake.lua"
     ],
     "phase_e_step_516_remaining_gap": "Step 517 draw-count accounting",
+    "phase_e_step_517_surface": "Phase E Step 517 adds RendererDrawCounts for primitive-aware GPU draw counts, saturation-safe draw-count accounting, and pending/unexpected draw comparison. Step 518 dropped-resource accounting is next.",
+    "phase_e_step_517_sources": [
+      "include/cgpui/renderer/renderer_frame_diagnostics.hpp",
+      "src/renderer/renderer_frame_diagnostics.cpp",
+      "src/renderer/renderer_frame_draw_diagnostics.cpp",
+      "tests/renderer/renderer_draw_count_diagnostics_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_517_remaining_gap": "Step 518 dropped-resource accounting",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 517 draw-count accounting"
+    "phase_e_current_handoff": "Step 518 dropped-resource accounting"
   },
   "categories": [
     "application_and_app_context",

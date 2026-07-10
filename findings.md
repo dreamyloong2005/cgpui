@@ -9209,3 +9209,31 @@
 - Step 516 final Windows verification is 197/197 after a complete debug build.
   The public leaf remains backend-neutral; WSL/Linux verification remains in
   the final Phase E gate because no distribution is installed.
+
+## 2026-07-10 Phase E Step 517 Draw-Count Accounting
+
+- Vulkan frame recording emits one draw call per resolved frame resource, not
+  per renderer batch. Solid/rounded/image resources each resolve once, while a
+  text command can resolve multiple `VulkanTextDrawCommand` page runs and emit
+  multiple draw calls.
+- Step 517 must therefore keep `draw_count` separate from command and batch
+  counts in `RendererFrameWork` and expose primitive-aware counters rather than
+  deriving draw count from existing report totals.
+- The backend-neutral model should cover every public `RendererPrimitiveKind`
+  and use an explicit saturation-safe add function. Step 520 can call it while
+  producing the live Vulkan snapshot from resolved submissions.
+- Implementation ownership will use a focused
+  `src/renderer/renderer_frame_draw_diagnostics.cpp`; Step 517 will not modify
+  the private Vulkan recorder yet.
+- `VulkanFrame` records all six public primitive kinds in authored draw order,
+  but the current resolved draw cursor submits only solid, rounded, text, and
+  image resources. Selection/caret therefore remain valid planned draw kinds;
+  Step 518 can classify their missing submitted resources explicitly rather
+  than hiding them from Step 517 counters.
+- Phase E Step 517 adds `RendererDrawCounts` for primitive-aware GPU draw counts,
+  saturation-safe draw-count accounting, and pending/unexpected draw
+  comparison. Step 518 dropped-resource accounting is next.
+- Step 517 final Windows verification is 198/198 after a complete debug build.
+  The public diagnostics boundary remains backend-neutral; WSL/Linux
+  verification remains in the final Phase E gate because no distribution is
+  installed.

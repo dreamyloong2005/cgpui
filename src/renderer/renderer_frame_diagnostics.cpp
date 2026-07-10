@@ -15,7 +15,8 @@ bool RendererFrameDiagnostics::exact_match() const {
   return pending_batch_count == 0 && unexpected_batch_count == 0 &&
          pending_command_count == 0 && unexpected_command_count == 0 &&
          pending_upload_byte_count == 0 &&
-         unexpected_upload_byte_count == 0;
+         unexpected_upload_byte_count == 0 && pending_draw_count == 0 &&
+         unexpected_draw_count == 0;
 }
 
 RendererFrameDiagnostics compare_renderer_frame_work(
@@ -42,6 +43,12 @@ RendererFrameDiagnostics compare_renderer_frame_work(
       .unexpected_upload_byte_count = saturating_difference(
           submitted_work.upload_byte_count,
           planned_work.upload_byte_count),
+      .pending_draw_count = saturating_difference(
+          planned_work.draw_count,
+          submitted_work.draw_count),
+      .unexpected_draw_count = saturating_difference(
+          submitted_work.draw_count,
+          planned_work.draw_count),
   };
 }
 
