@@ -1760,7 +1760,32 @@
       "xmake.lua"
     ],
     "phase_f_step_544_remaining_gap": "Step 545 transparent and decorated window production behavior",
-    "phase_f_current_handoff": "Step 545 transparent and decorated window production behavior"
+    "phase_f_step_545_surface": "Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.",
+    "phase_f_step_545_sources": [
+      "include/cgpui/platform/platform_window_chrome.hpp",
+      "include/cgpui/renderer/renderer_types.hpp",
+      "src/platform/platform_window_chrome.cpp",
+      "src/platform/win32/win32_window_chrome.cpp",
+      "src/platform/linux/wayland_protocol_xdg_decoration.cpp",
+      "src/platform/linux/wayland_protocol_xdg_decoration_interfaces.cpp",
+      "src/platform/linux/wayland_registry.cpp",
+      "src/platform/linux/wayland_application.cpp",
+      "src/platform/linux/wayland_window_chrome.cpp",
+      "src/platform/linux/wayland_window_creation_internal.hpp",
+      "src/platform/linux/wayland_window_decoration_internal.hpp",
+      "src/renderer/vulkan/vulkan_surface_selection.cpp",
+      "src/renderer/vulkan/vulkan_swapchain_create.cpp",
+      "src/ui/runtime_run.cpp",
+      "src/ui/runtime_window_activation.cpp",
+      "tests/platform/win32_window_chrome_test.cpp",
+      "tests/platform/wayland_window_chrome_test.cpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/renderer/vulkan_transparent_composite_alpha_test.cpp",
+      "tests/architecture/phase_f_window_chrome_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_545_remaining_gap": "Step 546 child-window ownership production behavior",
+    "phase_f_current_handoff": "Step 546 child-window ownership production behavior"
   },
   "categories": [
     "application_and_app_context",

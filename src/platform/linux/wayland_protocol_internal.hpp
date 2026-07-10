@@ -8,6 +8,8 @@ struct xdg_positioner;
 struct xdg_wm_base;
 struct xdg_surface;
 struct xdg_toplevel;
+struct zxdg_decoration_manager_v1;
+struct zxdg_toplevel_decoration_v1;
 struct zwp_text_input_manager_v3;
 struct zwp_text_input_v3;
 
@@ -15,12 +17,16 @@ extern const wl_interface xdg_positioner_interface;
 extern const wl_interface xdg_wm_base_interface;
 extern const wl_interface xdg_surface_interface;
 extern const wl_interface xdg_toplevel_interface;
+extern const wl_interface zxdg_decoration_manager_v1_interface;
+extern const wl_interface zxdg_toplevel_decoration_v1_interface;
 extern const wl_interface zwp_text_input_manager_v3_interface;
 extern const wl_interface zwp_text_input_v3_interface;
 
 constexpr std::uint32_t xdg_toplevel_state_maximized = 1;
 constexpr std::uint32_t xdg_toplevel_state_fullscreen = 2;
 constexpr std::uint32_t xdg_toplevel_state_activated = 4;
+constexpr std::uint32_t zxdg_toplevel_decoration_mode_client_side = 1;
+constexpr std::uint32_t zxdg_toplevel_decoration_mode_server_side = 2;
 
 struct xdg_wm_base_listener {
   void (*ping)(void* data, xdg_wm_base* shell, std::uint32_t serial);
@@ -38,6 +44,13 @@ struct xdg_toplevel_listener {
       std::int32_t height,
       wl_array* states);
   void (*close)(void* data, xdg_toplevel* toplevel);
+};
+
+struct zxdg_toplevel_decoration_v1_listener {
+  void (*configure)(
+      void* data,
+      zxdg_toplevel_decoration_v1* decoration,
+      std::uint32_t mode);
 };
 
 struct zwp_text_input_v3_listener {
@@ -91,6 +104,30 @@ void xdg_toplevel_unset_maximized(xdg_toplevel* toplevel);
 void xdg_toplevel_set_fullscreen(xdg_toplevel* toplevel, wl_output* output);
 void xdg_toplevel_unset_fullscreen(xdg_toplevel* toplevel);
 void xdg_toplevel_set_minimized(xdg_toplevel* toplevel);
+void xdg_toplevel_set_max_size(
+    xdg_toplevel* toplevel,
+    std::int32_t width,
+    std::int32_t height);
+void xdg_toplevel_set_min_size(
+    xdg_toplevel* toplevel,
+    std::int32_t width,
+    std::int32_t height);
+void zxdg_decoration_manager_v1_destroy(zxdg_decoration_manager_v1* manager);
+zxdg_toplevel_decoration_v1*
+zxdg_decoration_manager_v1_get_toplevel_decoration(
+    zxdg_decoration_manager_v1* manager,
+    xdg_toplevel* toplevel);
+int zxdg_toplevel_decoration_v1_add_listener(
+    zxdg_toplevel_decoration_v1* decoration,
+    const zxdg_toplevel_decoration_v1_listener* listener,
+    void* data);
+void zxdg_toplevel_decoration_v1_destroy(
+    zxdg_toplevel_decoration_v1* decoration);
+void zxdg_toplevel_decoration_v1_set_mode(
+    zxdg_toplevel_decoration_v1* decoration,
+    std::uint32_t mode);
+void zxdg_toplevel_decoration_v1_unset_mode(
+    zxdg_toplevel_decoration_v1* decoration);
 void zwp_text_input_manager_v3_destroy(zwp_text_input_manager_v3* manager);
 zwp_text_input_v3* zwp_text_input_manager_v3_get_text_input(
     zwp_text_input_manager_v3* manager,

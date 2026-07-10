@@ -13,14 +13,23 @@ VkSurfaceFormatKHR choose_vulkan_surface_format(
 }
 
 VkCompositeAlphaFlagBitsKHR choose_vulkan_composite_alpha(
-    VkCompositeAlphaFlagsKHR supported_alpha) {
-  constexpr std::array preferred_alpha{
+    VkCompositeAlphaFlagsKHR supported_alpha,
+    bool transparent_background) {
+  constexpr std::array opaque_preference{
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
       VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
       VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
       VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
   };
-  for (VkCompositeAlphaFlagBitsKHR alpha : preferred_alpha) {
+  constexpr std::array transparent_preference{
+      VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+      VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+      VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+      VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+  };
+  const auto& preference =
+      transparent_background ? transparent_preference : opaque_preference;
+  for (VkCompositeAlphaFlagBitsKHR alpha : preference) {
     if ((supported_alpha & alpha) != 0) {
       return alpha;
     }

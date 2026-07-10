@@ -5,6 +5,7 @@ namespace cgpui {
 VulkanSwapchainCreatePlan build_vulkan_swapchain_create_plan(
     const VulkanSwapchainSurfaceDetails& details,
     Size framebuffer_size,
+    bool transparent_background,
     std::uint32_t graphics_queue_family,
     std::uint32_t present_queue_family) {
   const VulkanPresentPacingPlan present_pacing = vulkan_plan_present_pacing(
@@ -22,7 +23,9 @@ VulkanSwapchainCreatePlan build_vulkan_swapchain_create_plan(
       .extent = choose_vulkan_extent(details.capabilities, framebuffer_size),
       .image_usage = image_usage,
       .composite_alpha =
-          choose_vulkan_composite_alpha(details.capabilities.supportedCompositeAlpha),
+          choose_vulkan_composite_alpha(
+              details.capabilities.supportedCompositeAlpha,
+              transparent_background),
       .pre_transform = details.capabilities.currentTransform,
       .queue_family_indices = {graphics_queue_family, present_queue_family},
       .separate_queue_families = graphics_queue_family != present_queue_family,

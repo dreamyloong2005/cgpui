@@ -8,6 +8,8 @@ PlatformWindowChromeState Win32Window::apply_window_chrome(
       .platform =
           PlatformWindowChromeState{
               .supported = true,
+              .decoration_control_supported = true,
+              .transparency_supported = true,
               .backend = "win32",
               .requested = options,
               .applied = options,

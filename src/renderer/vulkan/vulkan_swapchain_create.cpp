@@ -18,6 +18,7 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
       build_vulkan_swapchain_create_plan(
           *details,
           descriptor_.framebuffer_size,
+          descriptor_.transparent_background,
           graphics_queue_family_,
           present_queue_family_);
   const VkSwapchainCreateInfoKHR create_info =

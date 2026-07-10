@@ -28,6 +28,8 @@ struct xdg_positioner;
 struct xdg_wm_base;
 struct xdg_surface;
 struct xdg_toplevel;
+struct zxdg_decoration_manager_v1;
+struct zxdg_toplevel_decoration_v1;
 struct zwp_text_input_manager_v3;
 struct zwp_text_input_v3;
 
@@ -37,11 +39,37 @@ extern const wl_interface xdg_positioner_interface;
 extern const wl_interface xdg_wm_base_interface;
 extern const wl_interface xdg_surface_interface;
 extern const wl_interface xdg_toplevel_interface;
+extern const wl_interface zxdg_decoration_manager_v1_interface;
+extern const wl_interface zxdg_toplevel_decoration_v1_interface;
 extern const wl_interface zwp_text_input_manager_v3_interface;
 extern const wl_interface zwp_text_input_v3_interface;
 
 const wl_interface xdg_positioner_interface{
     "xdg_positioner", 1, 0, nullptr, 0, nullptr};
+
+const wl_interface* zxdg_decoration_get_toplevel_types[]{
+    &zxdg_toplevel_decoration_v1_interface,
+    &xdg_toplevel_interface,
+};
+const wl_message zxdg_decoration_manager_requests[]{
+    {"destroy", "", nullptr},
+    {"get_toplevel_decoration", "no", zxdg_decoration_get_toplevel_types},
+};
+const wl_interface zxdg_decoration_manager_v1_interface{
+    "zxdg_decoration_manager_v1", 1, 2,
+    zxdg_decoration_manager_requests, 0, nullptr};
+const wl_message zxdg_toplevel_decoration_requests[]{
+    {"destroy", "", nullptr},
+    {"set_mode", "u", nullptr},
+    {"unset_mode", "", nullptr},
+};
+const wl_message zxdg_toplevel_decoration_events[]{
+    {"configure", "u", nullptr},
+};
+const wl_interface zxdg_toplevel_decoration_v1_interface{
+    "zxdg_toplevel_decoration_v1", 1, 3,
+    zxdg_toplevel_decoration_requests, 1,
+    zxdg_toplevel_decoration_events};
 
 const wl_interface* xdg_toplevel_set_parent_types[]{&xdg_toplevel_interface};
 const wl_interface* xdg_toplevel_show_window_menu_types[]{
@@ -341,6 +369,18 @@ struct WaylandTestCompositor::State {
     void (*set_minimized)(wl_client*, wl_resource*);
   };
 
+  struct ZxdgDecorationManagerImplementation {
+    void (*destroy)(wl_client*, wl_resource*);
+    void (*get_toplevel_decoration)(
+        wl_client*, wl_resource*, std::uint32_t, wl_resource*);
+  };
+
+  struct ZxdgToplevelDecorationImplementation {
+    void (*destroy)(wl_client*, wl_resource*);
+    void (*set_mode)(wl_client*, wl_resource*, std::uint32_t);
+    void (*unset_mode)(wl_client*, wl_resource*);
+  };
+
   struct PointerButtonRequest {
     std::uint32_t button = 0;
     bool pressed = false;
@@ -399,6 +439,9 @@ struct WaylandTestCompositor::State {
     if (shell_global != nullptr) {
       wl_global_destroy(shell_global);
     }
+    if (decoration_manager_global != nullptr) {
+      wl_global_destroy(decoration_manager_global);
+    }
     if (seat_global != nullptr) {
       wl_global_destroy(seat_global);
     }
@@ -444,6 +487,12 @@ struct WaylandTestCompositor::State {
         1,
         this,
         &State::bind_shell);
+    decoration_manager_global = wl_global_create(
+        display,
+        &zxdg_decoration_manager_v1_interface,
+        1,
+        this,
+        &State::bind_decoration_manager);
     seat_global = wl_global_create(
         display,
         &wl_seat_interface,
@@ -469,6 +518,7 @@ struct WaylandTestCompositor::State {
         this,
         &State::bind_text_input_manager);
     if (compositor_global == nullptr || shell_global == nullptr ||
+        decoration_manager_global == nullptr ||
         seat_global == nullptr || output_global == nullptr ||
         data_device_manager_global == nullptr ||
         text_input_manager_global == nullptr) {
@@ -794,6 +844,41 @@ struct WaylandTestCompositor::State {
         &shell_implementation,
         compositor,
         nullptr);
+  }
+
+  static void bind_decoration_manager(
+      wl_client* client,
+      void* data,
+      std::uint32_t version,
+      std::uint32_t id) {
+    auto* resource = wl_resource_create(
+        client, &zxdg_decoration_manager_v1_interface,
+        std::min<std::uint32_t>(version, 1), id);
+    wl_resource_set_implementation(
+        resource, &decoration_manager_implementation, data, nullptr);
+  }
+
+  static void get_toplevel_decoration(
+      wl_client* client,
+      wl_resource* resource,
+      std::uint32_t id,
+      wl_resource*) {
+    auto* decoration = wl_resource_create(
+        client, &zxdg_toplevel_decoration_v1_interface, 1, id);
+    wl_resource_set_implementation(
+        decoration, &toplevel_decoration_implementation,
+        wl_resource_get_user_data(resource), nullptr);
+  }
+
+  static void set_decoration_mode(
+      wl_client*, wl_resource* resource, std::uint32_t mode) {
+    auto* state = static_cast<State*>(wl_resource_get_user_data(resource));
+    if (state == nullptr) {
+      return;
+    }
+    state->client_side_decoration_requested.store(mode == 1);
+    state->server_side_decoration_requested.store(mode == 2);
+    wl_resource_post_event(resource, 0, mode);
   }
 
   static void bind_seat(
@@ -1232,6 +1317,10 @@ struct WaylandTestCompositor::State {
   static const XdgWmBaseImplementation shell_implementation;
   static const XdgSurfaceImplementation xdg_surface_implementation;
   static const XdgToplevelImplementation toplevel_implementation;
+  static const ZxdgDecorationManagerImplementation
+      decoration_manager_implementation;
+  static const ZxdgToplevelDecorationImplementation
+      toplevel_decoration_implementation;
   static void surface_set_buffer_scale(
       wl_client* client,
       wl_resource* resource,
@@ -1240,6 +1329,7 @@ struct WaylandTestCompositor::State {
   wl_display* display = nullptr;
   wl_global* compositor_global = nullptr;
   wl_global* shell_global = nullptr;
+  wl_global* decoration_manager_global = nullptr;
   wl_global* seat_global = nullptr;
   wl_global* output_global = nullptr;
   wl_global* data_device_manager_global = nullptr;
@@ -1266,6 +1356,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool unmaximize_requested{false};
   std::atomic_bool fullscreen_requested{false};
   std::atomic_bool unfullscreen_requested{false};
+  std::atomic_bool client_side_decoration_requested{false};
+  std::atomic_bool server_side_decoration_requested{false};
   std::atomic_bool resize_configure_pending{false};
   std::atomic_bool resize_configure_sent{false};
   std::atomic_bool resize_configure_acked{false};
@@ -2784,6 +2876,20 @@ const WaylandTestCompositor::State::XdgToplevelImplementation
         },
 };
 
+const WaylandTestCompositor::State::ZxdgDecorationManagerImplementation
+    WaylandTestCompositor::State::decoration_manager_implementation{
+        .destroy = destroy_resource,
+        .get_toplevel_decoration =
+            &WaylandTestCompositor::State::get_toplevel_decoration,
+};
+
+const WaylandTestCompositor::State::ZxdgToplevelDecorationImplementation
+    WaylandTestCompositor::State::toplevel_decoration_implementation{
+        .destroy = destroy_resource,
+        .set_mode = &WaylandTestCompositor::State::set_decoration_mode,
+        .unset_mode = [](wl_client*, wl_resource*) {},
+};
+
 WaylandTestCompositor::WaylandTestCompositor(std::string name)
     : state_(std::make_unique<State>(std::move(name))) {}
 
@@ -2974,6 +3080,14 @@ bool WaylandTestCompositor::wait_for_fullscreen_requested() const {
 
 bool WaylandTestCompositor::wait_for_unfullscreen_requested() const {
   return state_->wait_for_flag(state_->unfullscreen_requested);
+}
+
+bool WaylandTestCompositor::wait_for_client_side_decoration_requested() const {
+  return state_->wait_for_flag(state_->client_side_decoration_requested);
+}
+
+bool WaylandTestCompositor::wait_for_server_side_decoration_requested() const {
+  return state_->wait_for_flag(state_->server_side_decoration_requested);
 }
 
 bool WaylandTestCompositor::wait_for_resize_configure_sent() const {

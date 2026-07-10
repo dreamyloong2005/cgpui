@@ -20622,3 +20622,62 @@
 - JSON parsing, the exact Step 544 phrase in all five authoritative documents,
   focused line caps, the preserved 120-line Wayland internal cap, and
   `git diff --check` pass.
+- Step 544 committed on `master` as `d71af39c feat: add platform window
+  positioning`; only the pre-existing `.vscode/` directory remains untracked.
+
+## 2026-07-11 Phase F Step 545 Transparent And Decorated Windows
+
+- Started the production-path audit from committed Step 544 baseline
+  `d71af39c`.
+- Confirmed Step 545 must close the earlier skeleton's real xdg-decoration and
+  transparent swapchain/compositor gaps, while preserving focused ownership.
+- Moved the base chrome default out of `src/platform/empty.cpp` into focused
+  `src/platform/platform_window_chrome.cpp`, added granular decoration and
+  transparency capability fields, and made Win32 report both capabilities.
+- Added `RenderSurfaceDescriptor::transparent_background`, runtime propagation
+  for root/additional windows, and transparent-aware Vulkan composite-alpha
+  selection that prefers pre-multiplied, post-multiplied, or inherited alpha
+  before opaque fallback.
+- Focused Windows verification passes 2/2 across real Win32 creation/live
+  chrome transitions and the Vulkan composite-alpha policy test.
+- Added focused Wayland xdg-decoration protocol interface/request modules,
+  registry binding, application manager lifetime, per-window decoration
+  ownership, server/client-side mode requests, and min/max-size requests for
+  non-resizable windows.
+- Moved Wayland chrome behavior out of `wayland_window.cpp` into focused
+  `wayland_window_chrome.cpp`; the shared internal header remains 120/120 via
+  private creation/decoration includes.
+- WSL incremental build of `wayland_window_position_test` succeeds with the
+  new protocol and window ownership path. The existing compositor does not yet
+  advertise the decoration global, so the next RED/GREEN step is focused real
+  mode-observation coverage.
+- The first real Wayland chrome test exited 5: initial client-side mode arrived,
+  but a live server-side switch stayed buffered because no event loop was
+  running during the synchronous wait. `apply_window_chrome(...)` now flushes
+  the display after committing the request.
+- The corrected real Wayland chrome test passes 1/1, observing initial/live
+  client-side frameless mode, server-side decorated mode, granular capability
+  state, and the transparent request over the production registry/window path.
+- Added the Step 545 dedicated structure guard and registered the new focused
+  default, Wayland protocol/window, and renderer boundaries in existing source
+  inventories. Its first run stopped at line gate 7 because the transparent
+  surface selector is 61 lines; the focused limit is 65 while the existing
+  broader renderer limit remains unchanged.
+- The corrected structure guard reached the intended five-document RED gate at
+  exit 8. The exact Step 545 completion sentence is now synchronized across
+  roadmap, Markdown/JSON ledger, task plan, and findings, with Step 546 as the
+  active handoff.
+- The first WSL focused gate passed 9/10; historical
+  `wayland_window_source_test` exited 74 because it still required the skeleton's
+  literal transparent-default field. The guard now requires real decoration
+  manager/mode wiring and granular transparency capability instead.
+- Final Windows implementation/runtime/structure/ledger verification passes
+  10/10, including the real Win32 chrome transition and transparent Vulkan
+  composite-alpha tests.
+- Final WSL implementation/runtime/structure/ledger verification passes 10/10,
+  including the real Wayland xdg-decoration compositor test and both platform
+  and renderer source inventories.
+- Ledger JSON parsing, the exact Step 545 phrase appearing once in each of the
+  five authoritative documents, all focused line caps, and `git diff --check`
+  pass. The resumed command-name audit also confirmed that PowerShell searches
+  now use `rg` with single-quoted alternation patterns.

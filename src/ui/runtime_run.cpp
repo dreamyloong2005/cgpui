@@ -75,7 +75,8 @@ int WindowRuntime::run(
   auto renderer_result = try_create_renderer(RenderSurfaceDescriptor{
       .native_surface = window_->native_surface(),
       .framebuffer_size = window_state.framebuffer_size,
-      .scale = window_state.scale});
+      .scale = window_state.scale,
+      .transparent_background = descriptor.chrome.transparent_background});
   if (!renderer_result) {
     if (error_callback_) {
       error_callback_(renderer_result.error());

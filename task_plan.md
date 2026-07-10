@@ -885,7 +885,12 @@ Windows/Linux core API is stable enough for parity work.
   query/request, state-before-event `WM_MOVE`, and display-state rejection;
   Wayland reports the xdg-toplevel limitation explicitly, while runtime and
   structure tests freeze `WindowMoved` delivery and focused ownership.
-- In progress: Step 545 transparent and decorated window production behavior.
+- Completed: Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.
+- Step 545 evidence: real Win32 tests observe creation/live style and layered
+  transitions; the Wayland test compositor observes client/server decoration
+  modes; Vulkan policy coverage proves transparent requests prefer supported
+  non-opaque composite alpha before opaque fallback.
+- In progress: Step 546 child-window ownership production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -912,6 +917,13 @@ Windows/Linux core API is stable enough for parity work.
 | `xmake test window_runtime_rendering_test -vD -P .` treated the bare target as a non-matching test and printed `nothing to test` | Step 544 runtime regression | Use the registered test id after options: `xmake test -P . window_runtime_rendering_test/default` |
 | The first expanded Step 544 Windows command used nonexistent `win32_window_activation_focus_test/default`; xmake silently omitted it | Step 544 Windows gate | Use the registered `win32_window_activation_focus_state_test/default` id and verify the report count |
 | The first Step 544 WSL expanded gate used `-j 1`, causing the public-event-header rebuild to serialize hundreds of objects | Step 544 WSL gate | Stop the owned xmake process after preserving completed objects, then resume the same 17-test gate incrementally with `-j 8` |
+| Initial Step 545 audit referenced nonexistent `src/platform/platform_window_chrome.cpp` and used Windows-host wildcard paths with `rg` | Step 545 ownership audit | Treat the missing focused default source as an implementation gap and use directory roots plus `rg` patterns instead of host wildcards |
+| The first combined Step 545 implementation patch assumed a different loop declaration in `vulkan_surface_selection.cpp` | Step 545 shared/Win32 implementation | The patch was rejected atomically; split public/default, renderer policy, and xmake/test edits with exact file context |
+| Two initial Wayland wiring patches targeted the wrong factory file and assumed compact call formatting | Step 545 Wayland client wiring | Both patches were rejected atomically; use `wayland_window_registered.cpp` as the real factory and patch its multiline call exactly |
+| A PowerShell `rg` target-name audit used a double-quoted alternation pattern, so `|` was parsed as a pipeline | Step 545 resume audit | Use a single-quoted `rg` pattern on PowerShell so alternation reaches ripgrep unchanged |
+| The resumed Windows gate named nonexistent `window_runtime_lifecycle_test/default`, so xmake reported only 9/9 | Step 545 final regression | Use the registered `window_runtime_test/default` lifecycle target and verify the report count explicitly |
+| Wrapping the Step 545 Wayland create declaration raised `wayland_window_internal.hpp` from 120 to 121 lines and tripped both structure guards | Step 545 final diff polish | Keep the readable declaration wrap but remove one nearby non-semantic blank line so the hard 120-line cap remains green |
+| Sandbox-scoped `git add` could not create `.git/index.lock` | Step 545 staging | Re-run the same narrowly scoped staging command with the repository's approved Git escalation; keep `.vscode/` excluded |
 
 ## Errors Encountered During Phase E Resume
 

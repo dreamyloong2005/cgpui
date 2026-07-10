@@ -47,6 +47,7 @@ struct RenderSurfaceDescriptor {
   NativeSurfaceHandle native_surface;
   Size framebuffer_size;
   DpiScale scale;
+  bool transparent_background = false;
 };
 
 struct PaintMetadata {

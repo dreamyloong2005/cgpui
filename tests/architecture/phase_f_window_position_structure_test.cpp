@@ -173,7 +173,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 545 transparent")) {
+                "\"phase_f_step_544_remaining_gap\": \"Step 545 transparent")) {
     return 11;
   }
   return 0;

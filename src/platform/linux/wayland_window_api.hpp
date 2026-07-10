@@ -33,6 +33,7 @@ Result<WaylandWindowPtr> create_wayland_window(
     wl_display* display,
     wl_compositor* compositor,
     xdg_wm_base* shell,
+    zxdg_decoration_manager_v1* decoration_manager,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,

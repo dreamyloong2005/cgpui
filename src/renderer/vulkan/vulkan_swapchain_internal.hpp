@@ -49,6 +49,7 @@ Result<VulkanSwapchainSurfaceDetails> query_vulkan_swapchain_surface(
 VulkanSwapchainCreatePlan build_vulkan_swapchain_create_plan(
     const VulkanSwapchainSurfaceDetails& details,
     Size framebuffer_size,
+    bool transparent_background,
     std::uint32_t graphics_queue_family,
     std::uint32_t present_queue_family);
 VkSwapchainCreateInfoKHR make_vulkan_swapchain_create_info(

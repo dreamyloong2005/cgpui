@@ -40,3 +40,23 @@ void xdg_toplevel_unset_fullscreen(xdg_toplevel* toplevel) {
 void xdg_toplevel_set_minimized(xdg_toplevel* toplevel) {
   xdg_toplevel_request(toplevel, 13);
 }
+
+void xdg_toplevel_set_max_size(
+    xdg_toplevel* toplevel,
+    std::int32_t width,
+    std::int32_t height) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(toplevel), 7, nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(toplevel)), 0,
+      width, height);
+}
+
+void xdg_toplevel_set_min_size(
+    xdg_toplevel* toplevel,
+    std::int32_t width,
+    std::int32_t height) {
+  wl_proxy_marshal_flags(
+      reinterpret_cast<wl_proxy*>(toplevel), 8, nullptr,
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(toplevel)), 0,
+      width, height);
+}

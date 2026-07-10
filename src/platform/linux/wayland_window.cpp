@@ -6,6 +6,7 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
     wl_display* display,
     wl_compositor* compositor,
     xdg_wm_base* shell,
+    zxdg_decoration_manager_v1* decoration_manager,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,
@@ -18,12 +19,12 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
       }, std::move(output_scale_lookup)));
   window->set_text_input_available(text_input_available);
 
-  auto initialized = window->initialize(compositor, shell, descriptor);
+  auto initialized =
+      window->initialize(compositor, shell, decoration_manager, descriptor);
   if (!initialized) {
     return std::unexpected(initialized.error());
   }
 
-  window->apply_window_chrome(descriptor.chrome);
   return window;
 }
 
@@ -39,6 +40,9 @@ WaylandWindow::WaylandWindow(
       output_scale_lookup_(std::move(output_scale_lookup)) {}
 
 WaylandWindow::~WaylandWindow() {
+  if (decoration_ != nullptr) {
+    zxdg_toplevel_decoration_v1_destroy(decoration_);
+  }
   if (toplevel_ != nullptr) {
     xdg_toplevel_destroy(toplevel_);
   }
@@ -73,28 +77,6 @@ void WaylandWindow::set_title(std::string_view title) {
   wl_surface_commit(surface_);
 }
 
-PlatformWindowChromeState WaylandWindow::apply_window_chrome(
-    WindowChromeOptions options) {
-  const WindowChromeOptions applied{
-      .titlebar_visible = true,
-      .decorations = true,
-      .resizable = true,
-      .transparent_background = false,
-  };
-  chrome_state_ = WaylandWindowChromeState{
-      .platform =
-          PlatformWindowChromeState{
-              .supported = false,
-              .backend = "wayland",
-              .requested = options,
-              .applied = applied,
-              .reason = "xdg-decoration window chrome is not implemented",
-          },
-      .xdg_decoration_supported = false,
-  };
-  return chrome_state_.platform;
-}
-
 void WaylandWindow::update_accessibility_tree(
     PlatformAccessibilityTreeUpdate update) {
   wayland_atspi_update_accessibility_tree(
@@ -105,6 +87,7 @@ void WaylandWindow::update_accessibility_tree(
 Result<void> WaylandWindow::initialize(
     wl_compositor* compositor,
     xdg_wm_base* shell,
+    zxdg_decoration_manager_v1* decoration_manager,
     const WindowDescriptor& descriptor) {
   surface_ = wl_compositor_create_surface(compositor);
   if (surface_ == nullptr) {
@@ -142,6 +125,18 @@ Result<void> WaylandWindow::initialize(
       .close = &WaylandWindow::handle_toplevel_close,
   };
   xdg_toplevel_add_listener(toplevel_, &toplevel_listener, this);
+  if (decoration_manager != nullptr) {
+    decoration_ = zxdg_decoration_manager_v1_get_toplevel_decoration(
+        decoration_manager, toplevel_);
+    if (decoration_ != nullptr) {
+      static const zxdg_toplevel_decoration_v1_listener decoration_listener{
+          .configure = &WaylandWindow::handle_decoration_configure,
+      };
+      zxdg_toplevel_decoration_v1_add_listener(
+          decoration_, &decoration_listener, this);
+    }
+  }
+  apply_window_chrome(descriptor.chrome);
   set_title(descriptor.title);
 
   wl_surface_commit(surface_);

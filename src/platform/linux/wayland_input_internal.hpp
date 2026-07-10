@@ -27,6 +27,7 @@ KeyboardModifiers modifiers_from_xkb_state(xkb_state* state);
 struct WaylandRegistryBindings {
   wl_compositor** compositor = nullptr;
   xdg_wm_base** shell = nullptr;
+  zxdg_decoration_manager_v1** decoration_manager = nullptr;
   wl_seat** seat = nullptr;
   WaylandOutputScaleRegistry* output_scales = nullptr;
   wl_data_device_manager** data_device_manager = nullptr;

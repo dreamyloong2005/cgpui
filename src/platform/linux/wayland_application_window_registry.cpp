@@ -42,6 +42,7 @@ void WaylandApplication::handle_global(
       WaylandRegistryBindings{
           .compositor = &app->compositor_,
           .shell = &app->shell_,
+          .decoration_manager = &app->decoration_manager_,
           .seat = &app->seat_,
           .output_scales = &app->output_scales_,
           .data_device_manager = &app->data_device_manager_,

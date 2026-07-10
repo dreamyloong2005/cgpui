@@ -84,6 +84,13 @@ target("phase_f_window_position_structure_test")
     add_files("tests/architecture/phase_f_window_position_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_window_chrome_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_window_chrome_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -175,6 +182,14 @@ if is_plat("windows") then
     target("win32_window_position_test")
         set_kind("binary")
         add_files("tests/platform/win32_window_position_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
+
+    target("win32_window_chrome_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_window_chrome_test.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs)
         add_syslinks("user32")
@@ -313,6 +328,17 @@ if is_plat("linux") then
     target("wayland_window_position_test")
         set_kind("binary")
         add_files("tests/platform/wayland_window_position_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs(public_includedirs)
+        add_includedirs("tests/platform")
+        add_tests("default")
+
+    target("wayland_window_chrome_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_window_chrome_test.cpp")
         add_files("tests/platform/wayland_test_compositor.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
         add_packages("wayland")
@@ -1159,6 +1185,18 @@ if is_plat("windows", "linux") then
         set_rundir(os.projectdir())
         add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
         add_files("tests/renderer/vulkan_present_pacing_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_includedirs(public_includedirs, "src/renderer/vulkan")
+        if is_plat("windows") then
+            add_packages("vulkansdk")
+        elseif is_plat("linux") then
+            add_syslinks("vulkan")
+        end
+        add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+    target("vulkan_transparent_composite_alpha_test")
+        set_kind("binary")
+        add_files("tests/renderer/vulkan_transparent_composite_alpha_test.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
         add_includedirs(public_includedirs, "src/renderer/vulkan")
         if is_plat("windows") then

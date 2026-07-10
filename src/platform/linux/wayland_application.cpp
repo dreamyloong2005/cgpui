@@ -77,6 +77,9 @@ WaylandApplication::~WaylandApplication() {
   if (text_input_manager_ != nullptr) {
     zwp_text_input_manager_v3_destroy(text_input_manager_);
   }
+  if (decoration_manager_ != nullptr) {
+    zxdg_decoration_manager_v1_destroy(decoration_manager_);
+  }
   if (shell_ != nullptr) {
     xdg_wm_base_destroy(shell_);
   }

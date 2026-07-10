@@ -104,6 +104,9 @@ std::string read_wayland_source() {
       "src/platform/linux/wayland_protocol_xdg_interfaces.cpp",
       "src/platform/linux/wayland_protocol_xdg_surface.cpp",
       "src/platform/linux/wayland_protocol_xdg_toplevel.cpp",
+      "src/platform/linux/wayland_protocol_xdg_toplevel_display.cpp",
+      "src/platform/linux/wayland_protocol_xdg_decoration.cpp",
+      "src/platform/linux/wayland_protocol_xdg_decoration_interfaces.cpp",
       "src/platform/linux/wayland_protocol_xdg_wm_base.cpp",
       "src/platform/linux/wayland_protocol_text_input_interfaces.cpp",
       "src/platform/linux/wayland_protocol_text_input_manager.cpp",
@@ -113,7 +116,10 @@ std::string read_wayland_source() {
       "src/platform/linux/wayland_window_internal.hpp",
       "src/platform/linux/wayland_registered_window_internal.hpp",
       "src/platform/linux/wayland_window_configure_internal.hpp",
+      "src/platform/linux/wayland_window_creation_internal.hpp",
+      "src/platform/linux/wayland_window_decoration_internal.hpp",
       "src/platform/linux/wayland_window.cpp",
+      "src/platform/linux/wayland_window_chrome.cpp",
       "src/platform/linux/wayland_window_configure.cpp",
       "src/platform/linux/wayland_window_events.cpp",
       "src/platform/linux/wayland_window_input_events.cpp",
@@ -404,8 +410,9 @@ int main(int argc, char** argv) {
   if (!contains(text, "WaylandWindowChromeState") ||
       !contains(text, "apply_window_chrome(") ||
       !contains(text, "PlatformWindowChromeState") ||
-      !contains(text, "titlebar_visible") ||
-      !contains(text, "transparent_background")) {
+      !contains(text, "zxdg_decoration_manager_v1_interface") ||
+      !contains(text, "zxdg_toplevel_decoration_v1_set_mode") ||
+      !contains(text, "transparency_supported = true")) {
     return 74;
   }
 

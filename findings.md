@@ -9601,3 +9601,24 @@
   Wayland should return unsupported/false, while Win32 should support initial
   descriptor placement plus later query/request behavior.
 - Phase F Step 544 adds capability-aware top-level positioning with initial/query/request support and WindowMoved delivery on Win32, while Wayland explicitly reports absolute positioning unsupported. Step 545 transparent and decorated window production behavior is next.
+
+## 2026-07-11 Phase F Step 545 Chrome Production Audit
+
+- Step 206 deliberately left `xdg-decoration` negotiation, transparent
+  swapchain/compositor behavior, frameless interaction, and native diagnostics
+  as future production work.
+- Win32 already applies `WS_OVERLAPPEDWINDOW` versus `WS_POPUP`, resizable
+  style bits, and `WS_EX_LAYERED`, but has no focused real-backend behavior
+  test for creation-time and live chrome transitions.
+- Wayland currently reports the entire request unsupported and applies an
+  opaque decorated default because the application does not bind
+  `zxdg_decoration_manager_v1` or create a toplevel-decoration object.
+- Vulkan swapchain selection always prefers `VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR`.
+  A transparent window request must travel through `RenderSurfaceDescriptor`
+  and prefer a supported non-opaque composite-alpha mode before opaque
+  fallback; this belongs in the renderer surface/swapchain boundary, not the
+  Wayland window implementation.
+- The base `PlatformWindow::apply_window_chrome(...)` body still lives in the
+  broad `src/platform/empty.cpp`; Step 545 should move it to a focused
+  `src/platform/platform_window_chrome.cpp` implementation file.
+- Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.

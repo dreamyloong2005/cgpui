@@ -30,6 +30,7 @@ Result<std::unique_ptr<PlatformWindow>> WaylandApplication::create_window(
       display_,
       compositor_,
       shell_,
+      decoration_manager_,
       descriptor,
       std::move(callback),
       wayland_text_input_available(*text_input_),

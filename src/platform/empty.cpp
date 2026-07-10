@@ -39,17 +39,6 @@ void PlatformWindow::update_accessibility_tree(
   (void)update;
 }
 
-PlatformWindowChromeState PlatformWindow::apply_window_chrome(
-    WindowChromeOptions options) {
-  return PlatformWindowChromeState{
-      .supported = false,
-      .backend = "unsupported",
-      .requested = options,
-      .applied = WindowChromeOptions{},
-      .reason = "window chrome customization unsupported",
-  };
-}
-
 void PlatformApplication::request_wakeup() {}
 
 PlatformMenuInstallationResult PlatformApplication::install_native_menu(

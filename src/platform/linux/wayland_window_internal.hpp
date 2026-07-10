@@ -12,7 +12,9 @@ class WaylandWindow final : public PlatformWindow {
       wl_display* display,
       wl_compositor* compositor,
       xdg_wm_base* shell,
-      const WindowDescriptor& descriptor, PlatformEventCallback callback,
+      zxdg_decoration_manager_v1* decoration_manager,
+      const WindowDescriptor& descriptor,
+      PlatformEventCallback callback,
       bool text_input_available,
       WaylandOutputScaleLookup output_scale_lookup);
   ~WaylandWindow() override;
@@ -37,7 +39,6 @@ class WaylandWindow final : public PlatformWindow {
 
   [[nodiscard]] CursorShape cursor_shape() const;
   [[nodiscard]] bool configured() const;
-
   void pointer_moved(Point position);
   void pointer_button(MouseButton button, bool pressed, Point position);
   void pointer_scrolled(Point delta, Point position);
@@ -90,11 +91,10 @@ class WaylandWindow final : public PlatformWindow {
   WaylandWindow(
       wl_display* display, PlatformEventCallback callback,
       WindowState state, WaylandOutputScaleLookup output_scale_lookup);
-
-  Result<void> initialize(wl_compositor* compositor, xdg_wm_base* shell,
-      const WindowDescriptor& descriptor);
+#include "wayland_window_creation_internal.hpp"
 #include "wayland_window_configure_internal.hpp"
 #include "wayland_window_close_internal.hpp"
+#include "wayland_window_decoration_internal.hpp"
 #include "wayland_window_scale_internal.hpp"
   void sync_text_input_state();
 
