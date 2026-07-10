@@ -1739,6 +1739,7 @@ int main() {
       "src/ui/element_layer_ordering.hpp",
       "src/ui/text_style_inheritance.hpp",
       "src/ui/paint_clip.hpp",
+      "src/ui/paint_clip_transform.hpp",
   };
   for (const char* header : private_headers) {
     if (read_source(header).empty()) {
@@ -1865,6 +1866,7 @@ int main() {
   const std::vector<const char*> source_files{
       "src/ui/paint.cpp",
       "src/ui/paint_clip.cpp",
+      "src/ui/paint_clip_transform.cpp",
       "src/ui/paint_rounded_rect.cpp",
       "src/ui/paint_text.cpp",
       "src/ui/paint_rich_text.cpp",
@@ -1988,6 +1990,10 @@ int main() {
 
   const std::string paint_source = read_source("src/ui/paint.cpp");
   const std::string paint_clip_source = read_source("src/ui/paint_clip.cpp");
+  const std::string paint_clip_transform_header =
+      read_source("src/ui/paint_clip_transform.hpp");
+  const std::string paint_clip_transform_source =
+      read_source("src/ui/paint_clip_transform.cpp");
   const std::string paint_rounded_rect_source =
       read_source("src/ui/paint_rounded_rect.cpp");
   const std::string paint_text_source = read_source("src/ui/paint_text.cpp");
@@ -2021,6 +2027,18 @@ int main() {
       contains(paint_clip_source, "PaintList::fill_rect(") ||
       contains(paint_clip_source, "PaintList::draw_image(")) {
     return 148;
+  }
+  if (line_count(paint_clip_transform_header) > 30 ||
+      line_count(paint_clip_transform_source) > 90 ||
+      !contains(paint_clip_transform_header,
+                "transform_clip_rect_to_framebuffer_aabb(") ||
+      !contains(paint_clip_transform_source,
+                "transform_clip_rect_to_framebuffer_aabb(") ||
+      !contains(paint_clip_transform_source, "std::isfinite") ||
+      !contains(paint_source, "transform_clip_rect_to_framebuffer_aabb(") ||
+      contains(paint_clip_source,
+               "transform_clip_rect_to_framebuffer_aabb(")) {
+    return 151;
   }
   if (line_count(paint_text_source) > 100 ||
       !contains(paint_text_source, "PaintList::fill_text(") ||

@@ -1,5 +1,33 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 487 Transform/Clip Interaction
+
+- `PaintList` call order establishes clip scope: styled elements push their
+  precomposed metadata before an overflow clip, while callers may intentionally
+  push a framebuffer clip before later transforms.
+- `RendererClipStackRecord` retains rectangles but no per-entry transform. The
+  correct zero-allocation boundary is therefore clip push time, not final draw
+  recording: capture each clip using the transform active at that scope, then
+  intersect only framebuffer-space rectangles.
+- `paint_clip.cpp` already owns nested clip intersection. Step 487 should keep
+  it unchanged, add `transform_clip_rect_to_framebuffer_aabb` in a focused
+  `paint_clip_transform` sibling, and keep broad `paint.cpp` to one call.
+- Rotation or skew cannot be represented exactly by a Vulkan scissor. A
+  conservative push-time framebuffer AABB preserves visible content; exact
+  non-rectangular clipping still requires the later stencil or shader-mask path.
+- Step 488 should continue with stable renderer command ordering after the
+  transform/clip interaction policy is frozen.
+- Phase E Step 487 now implements
+  `transform_clip_rect_to_framebuffer_aabb` in a focused private leaf. It
+  validates the active precomposed matrix, transforms four clip corners, and
+  captures their conservative push-time framebuffer AABB before intersection.
+- Nested clips retain the transform active at each push, while clips pushed
+  before later transforms stay framebuffer-space. Invalid transforms and
+  non-finite transformed corners retain the authored clip.
+- The Vulkan clip resolver remains transform-free and allocation-free; it only
+  intersects captured framebuffer rectangles and emits the dynamic scissor.
+  Step 488 owns stable renderer command ordering.
+
 ## 2026-07-10 Phase E Step 486 Composed Affine Transform Application
 
 - UI metadata already stores the composed parent/child affine transform, just as

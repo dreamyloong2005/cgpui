@@ -1582,7 +1582,14 @@ draw calls for the Windows/Linux renderer.
   identity. Text applies its positioning policy before transforming all four
   quad corners. Clip rectangles remain framebuffer-space; Step 487 owns the
   explicit transform/clip interaction policy.
-- [ ] Steps 487-490: Complete transform/clip interaction and z/layer ordering in
+- [x] Phase E Step 487 adds `transform_clip_rect_to_framebuffer_aabb` in a
+  focused private UI paint leaf. Each clip captures the then-current
+  precomposed transform as a conservative push-time framebuffer AABB before
+  nested intersection. Invalid transforms retain the authored clip, and clips
+  pushed before later transforms remain framebuffer-space. Vulkan scissor
+  resolution stays allocation-free. Step 488 owns stable renderer command
+  ordering.
+- [ ] Steps 488-490: Complete z/layer ordering in
   actual command recording, then close the clip/composition band. Rectangular
   clip stacks use Step 483 scissor recording; a future non-rectangular clip
   primitive would require a stencil or shader-mask path.

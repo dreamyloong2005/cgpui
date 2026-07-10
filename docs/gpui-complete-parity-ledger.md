@@ -492,6 +492,14 @@ consume C: drive space again.
   transformed. Existing clip rectangles remain framebuffer-space in this
   slice rather than silently changing clip semantics.
 - Handoff: Phase E Step 487 transform/clip interaction policy.
+- Phase E Step 487 adds `transform_clip_rect_to_framebuffer_aabb` in a focused
+  private paint leaf. Each local clip becomes a conservative
+  push-time framebuffer AABB using the precomposed transform active at that scope before
+  it intersects already captured parent clips.
+- Invalid transforms retain the authored clip. A clip pushed before a later
+  transform remains framebuffer-space, and Vulkan continues to resolve the
+  captured rectangles through the existing allocation-free dynamic scissor.
+- Handoff: Phase E Step 488 stable renderer command ordering.
 
 ## Categories
 

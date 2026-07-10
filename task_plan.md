@@ -629,13 +629,18 @@ Windows/Linux core API is stable enough for parity work.
   non-finite matrices resolve to identity, and text positioning precedes corner
   transformation. Clip remains framebuffer-space. Step 487 owns explicit
   transform/clip interaction.
+- Phase E Step 487 adds `transform_clip_rect_to_framebuffer_aabb`. Each local
+  clip captures the then-current precomposed transform as a conservative
+  push-time framebuffer AABB before nested intersection; invalid transforms
+  retain the authored clip and clip-before-transform order remains
+  framebuffer-space. Step 488 owns stable renderer command ordering.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-486 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-487 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -656,9 +661,10 @@ Windows/Linux core API is stable enough for parity work.
   allocation-free clip-stack resolution with per-draw dynamic scissor recording,
   single-application precomposed opacity across production color paths, and
   blend-capable solid geometry replacing authored rectangle clear commands,
-  and single-application composed affine transforms across production vertices.
-- In progress: Step 487 transform/clip interaction policy.
-- Pending bands: Steps 487-490 transform and ordering;
+  and single-application composed affine transforms across production vertices,
+  plus push-time transformed clip AABBs with scoped framebuffer semantics.
+- In progress: Step 488 stable renderer command ordering.
+- Pending bands: Steps 488-490 ordering and composition closeout;
   Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -762,6 +768,9 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_composed_transform_test` could not include `vulkan_composition_transform_internal.hpp` | Step 486 RED | Expected RED; add the focused private composed-transform policy and route solid, rounded, and text production vertices through it |
 | A Step 486 line-count diagnostic repeated the known PowerShell empty-pipe parser failure by piping directly from `foreach` | Step 486 structure discovery | Assign the loop output to a variable before formatting; no source or build state changed |
 | Git could not create `.git/index.lock` inside the default workspace sandbox | Step 486 staging | Retry the explicit Step 486 `git add` with approved repository-index write access; no files were staged by the failed attempt |
+| `vulkan_transform_clip_interaction_test` could not find `transform_clip_rect_to_framebuffer_aabb` | Step 487 RED | Expected RED; add a focused private push-time clip-transform leaf and keep intersection/scissor ownership separate |
+| A combined Step 487 implementation patch had an invalid test-file hunk boundary and was rejected atomically | Step 487 implementation | Split test, production, structure, and planning edits into file-scoped patches; the failed patch changed no files |
+| The first Step 487 documentation gate remained at exit 60 because the Markdown ledger split `push-time framebuffer AABB` across a line | Step 487 documentation gate | Keep the strict shared evidence phrase contiguous without changing clip semantics |
 
 ## Definition Of Done For This 20-Step Goal
 

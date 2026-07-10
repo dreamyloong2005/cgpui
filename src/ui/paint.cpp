@@ -1,6 +1,7 @@
 #include "ui_internal.hpp"
 
 #include "paint_clip.hpp"
+#include "paint_clip_transform.hpp"
 
 namespace cgpui {
 
@@ -24,7 +25,13 @@ void PaintList::set_text_measurement_cache(TextMeasurementCache* cache) {
 }
 
 void PaintList::push_clip(Rect rect) {
-  clip_stack_.push_back(effective_nested_clip_rect(clip_stack_, rect));
+  const AffineTransform transform =
+      metadata_stack_.empty() ? AffineTransform::identity()
+                              : metadata_stack_.back().transform;
+  const Rect framebuffer_clip =
+      transform_clip_rect_to_framebuffer_aabb(rect, transform);
+  clip_stack_.push_back(
+      effective_nested_clip_rect(clip_stack_, framebuffer_clip));
 }
 
 void PaintList::pop_clip() {

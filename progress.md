@@ -18872,6 +18872,44 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 487 Transform/Clip Interaction
+
+- Started from clean tracked `master` at
+  `5fb0729f feat: apply vulkan composed transforms`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 487 will transform each local clip into a conservative framebuffer AABB
+  at push time using the then-current precomposed transform, then retain the
+  existing allocation-free nested intersection and Vulkan scissor path.
+- Clip-before-transform call order remains explicitly framebuffer-space, and
+  Step 488 will own stable renderer command ordering.
+- The focused RED build failed exactly as intended because
+  `transform_clip_rect_to_framebuffer_aabb` did not yet exist.
+- Added a focused `paint_clip_transform` private leaf rather than expanding the
+  existing intersection module; broad `paint.cpp` only selects the active
+  precomposed transform and calls the helper.
+- `vulkan_transform_clip_interaction_test/default` now passes AABB, invalid
+  transform, nested scope, clip-before-transform, scissor, and source-boundary
+  assertions and exits 60 only at the expected documentation gate.
+- The complete Windows debug build succeeded, and six existing element,
+  render-view, UI/renderer structure, clip, and composed-transform regressions
+  passed before documentation updates.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `transform_clip_rect_to_framebuffer_aabb`, push-time framebuffer AABB
+  semantics, and the Step 488 stable command-ordering handoff.
+- The first documentation gate remained at exit 60 because the Markdown ledger
+  split `push-time framebuffer AABB` across a line; normalized the phrase.
+- Step 487 behavior, UI source structure, and parity ledger gates now pass 3/3.
+- Expanded Windows Step 487 verification passed 13/13 across transformed clips,
+  composed transforms, clip recording, element/render-view transport, solid,
+  rounded, text, live frame lifetime, source structure, and parity ledger.
+- The complete Windows debug test suite passed 168/168 after the successful
+  full build.
+- Final phrase audit, JSON parsing, source line-count checks, and
+  `git diff --check` pass. The tracked worktree contains only the Step 487 slice.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Push-time clip transform behavior remains in the
+  final Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 486 Composed Affine Transform Application
 
 - Started from clean tracked `master` at
