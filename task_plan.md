@@ -734,13 +734,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 517 adds `RendererDrawCounts` for primitive-aware GPU draw counts, saturation-safe draw-count accounting, and pending/unexpected draw comparison. Step 518 dropped-resource accounting is next.
 - Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
 - Phase E Step 519 adds `RendererFrameTimingDiagnostics` for explicit CPU frame-stage nanoseconds, saturation-safe timing accumulation, and frame-budget comparison. Step 520 live Vulkan diagnostic snapshots are next.
+- Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-519 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-520 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -802,12 +803,13 @@ Windows/Linux core API is stable enough for parity work.
   ordered planned-resource submission-gap classification for unsupported and
   missing submitted resources with command/resource identity preserved, plus
   explicit saturation-safe CPU frame-stage nanoseconds and frame-budget
-  comparison without hidden clock reads.
-- In progress: Step 520 live Vulkan diagnostic snapshots.
-- Step 520 boundary: capture planned/submitted frame work, upload bytes, draw
-  counts, dropped resources, and CPU stage timings in the Vulkan state without
-  propagating the snapshot into the UI runtime until Step 521.
-- Pending bands: Steps 520-522 diagnostics; Steps 523-530 pixel
+  comparison without hidden clock reads, plus live Vulkan state-owned snapshots
+  for planned/submitted work, upload bytes, draws, drops, and stage timing.
+- In progress: Step 521 runtime diagnostic propagation.
+- Step 521 boundary: map the renderer snapshot into `FrameStatistics` and the
+  runtime diagnostics snapshot after successful present without backend
+  downcasts or exposing Vulkan internals to UI code.
+- Pending bands: Steps 521-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -819,6 +821,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| `xmake build` treated additional target names as invalid arguments because this xmake version accepts one target per invocation | Step 520 final structure audit | Build each focused target in a separate invocation |
+| The new out-of-line renderer diagnostic default and its test initially included the non-self-contained `renderer_frame.hpp` leaf directly and failed on report/geometry types | Step 520 public implementation structure audit | Include the existing `renderer.hpp` compatibility aggregate from the focused implementation and test while keeping the public method declaration body-free |
+| Windows full suite passed 200/201 but `vulkan_glyph_atlas_frame_lifecycle_test` still required raw fence reset and queue submit calls in `vulkan_presentation.cpp` | Step 520 full GREEN | Update the Step 462 structure contract to require `submit_frame(command_buffer)` in presentation and fence-reset-before-submit inside the focused `vulkan_frame_submission.cpp` module |
 | The combined Step 513 private-header extraction patch had an invalid structure-test hunk and changed no files | Step 513 structure GREEN | Split the private header/runtime test edits from the shared structure-test edit and patch each against exact context |
 | UI structure exited 100 because Step 513 pushed `window_runtime_internal.hpp` from 260 to 264 lines | Step 513 first GREEN | Keep the 260-line private runtime limit and move frame scheduling declarations/state into `runtime_frame_scheduling_internal.hpp` |
 | Step 513 focused executable exited 11 because render-time invalidation produced only the current frame | Step 513 RED | Add focused frame-scheduling lifecycle helpers, preserve render-time invalidation, and coalesce it into one redraw after frame callbacks complete |

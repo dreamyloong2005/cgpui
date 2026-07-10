@@ -9282,3 +9282,37 @@
 - Step 519 final Windows verification is 200/200 after a complete debug build.
   WSL/Linux verification remains in the final Phase E gate because no
   distribution is installed.
+
+## 2026-07-10 Phase E Step 520 Live Vulkan Diagnostic Snapshots
+
+- A successful command recording already proves solid/rounded buffer ranges,
+  glyph page bindings, and image draw resources are usable. The diagnostic
+  resource builder can consume those prepared records after recording without
+  duplicating Vulkan command planning.
+- Planned text resources are page runs, while selection/caret each remain one
+  authored resource. The current submitted set intentionally omits
+  selection/caret, so the live snapshot exposes those drops instead of hiding
+  them in command totals.
+- `Renderer::last_frame_diagnostic_snapshot()` returns a state-owned const
+  pointer. This avoids copying the dropped-resource vector and lets Step 521
+  read the result immediately after a successful present.
+- Queue submission moved into `vulkan_frame_submission.cpp`, keeping
+  `vulkan_presentation.cpp` under its existing structure limit while the timer
+  records all six Step 519 stages.
+- Phase E Step 520 adds `RendererFrameDiagnosticSnapshot` for live Vulkan planned and submitted work, including upload bytes, draw counts, dropped selection and caret resources, and CPU stage timings. Step 521 runtime diagnostic propagation is next.
+- Focused validation confirms six authored commands with two text page runs
+  produce seven planned resources, five submitted resources, four submitted
+  commands/batches, and two explicit selection/caret drops. A real Win32
+  present exposes the same state-owned snapshot contract through `Renderer`.
+- The Step 462 glyph-atlas lifecycle structure test encoded fence reset and
+  queue submission as presentation-file responsibilities. Step 520's focused
+  submission module requires that contract to check the public call order in
+  presentation and the Vulkan operation order inside the submission leaf.
+- Step 520 final Windows verification is 201/201 after a complete debug build.
+  WSL/Linux verification remains in the final Phase E gate because no
+  distribution is installed.
+- The compatible base-renderer diagnostic default is a public non-template
+  implementation and therefore belongs in a focused `.cpp`, not inline in
+  `renderer_frame.hpp`. The existing `renderer.hpp` compatibility aggregate is
+  required when compiling that implementation because the leaf still relies on
+  report and geometry declarations supplied earlier by the aggregate.

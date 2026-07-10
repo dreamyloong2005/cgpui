@@ -2,6 +2,7 @@
 
 #include "cgpui/core/error.hpp"
 #include "cgpui/renderer/glyph_atlas.hpp"
+#include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
 
 #include <memory>
 #include <span>
@@ -32,6 +33,8 @@ class Renderer {
 
   virtual Result<void> resize(Size framebuffer_size, DpiScale scale) = 0;
   virtual Result<std::unique_ptr<RenderFrame>> begin_frame() = 0;
+  [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*
+  last_frame_diagnostic_snapshot() const;
 };
 
 Result<std::unique_ptr<Renderer>> create_renderer(

@@ -73,11 +73,23 @@ class VulkanRenderer final : public Renderer {
     return std::make_unique<VulkanFrame>(state_);
   }
 
+  [[nodiscard]] const RendererFrameDiagnosticSnapshot*
+  last_frame_diagnostic_snapshot() const override {
+    return state_->last_frame_diagnostic_snapshot();
+  }
+
  private:
   std::shared_ptr<VulkanRendererState> state_;
 };
 
 } // namespace
+
+const RendererFrameDiagnosticSnapshot*
+VulkanRendererState::last_frame_diagnostic_snapshot() const {
+  return has_frame_diagnostic_snapshot_
+             ? &last_frame_diagnostic_snapshot_
+             : nullptr;
+}
 
 void VulkanFrame::upload_image(const ImageAsset& image) {
   const std::span<const ImageAsset> assets(&image, 1);

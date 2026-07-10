@@ -164,6 +164,40 @@ int test_incremental_glyph_atlas_frames(const HiddenWindow& window) {
   return present_text_frame(**renderer, "abc") ? 0 : 8;
 }
 
+int test_live_frame_diagnostic_snapshot(const HiddenWindow& window) {
+  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+      .native_surface = window.surface(),
+      .framebuffer_size = cgpui::Size{64.0F, 64.0F},
+      .scale = cgpui::DpiScale{1.0F}});
+  if (!renderer) {
+    return 28;
+  }
+  auto frame = (*renderer)->begin_frame();
+  if (!frame) {
+    return 29;
+  }
+  (*frame)->draw_rect(cgpui::SolidRect{
+      .rect = {.size = {.width = 8.0F, .height = 8.0F}},
+      .color = {.r = 1.0F, .g = 0.0F, .b = 0.0F, .a = 1.0F},
+  });
+  (*frame)->draw_text_selection(cgpui::TextSelectionDraw{});
+  (*frame)->draw_text_caret(cgpui::TextCaretDraw{});
+  if (!(*frame)->present()) {
+    return 30;
+  }
+  const cgpui::RendererFrameDiagnosticSnapshot* snapshot =
+      (*renderer)->last_frame_diagnostic_snapshot();
+  return snapshot != nullptr &&
+                 snapshot->work.planned_work.command_count == 3 &&
+                 snapshot->work.submitted_work.command_count == 1 &&
+                 snapshot->planned_draws.total_count == 3 &&
+                 snapshot->submitted_draws.total_count == 1 &&
+                 snapshot->dropped_resources.resources.size() == 2 &&
+                 snapshot->timings.total_nanoseconds != 0
+             ? 0
+             : 31;
+}
+
 int test_image_texture_resource_frame(const HiddenWindow& window) {
   auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
@@ -345,6 +379,10 @@ int main() {
     return result;
   }
   if (const int result = test_incremental_glyph_atlas_frames(window);
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_live_frame_diagnostic_snapshot(window);
       result != 0) {
     return result;
   }

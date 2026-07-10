@@ -21,11 +21,14 @@ Result<void> VulkanRendererState::present_frame(
         "Vulkan presentation requires swapchain recreation"));
   }
 
-  last_command_batches_ = vulkan_build_renderer_command_batches(
-      rects, rounded_rects, text_draws, text_selections, text_carets);
+  VulkanFrameDiagnosticTimer diagnostic_timer;
   if (auto result = wait_for_present_pacing(); !result) {
     return result;
   }
+  diagnostic_timer.finish_stage(RendererFrameTimingStage::pacing_wait);
+  last_command_batches_ = vulkan_build_renderer_command_batches(
+      rects, rounded_rects, text_draws, text_selections, text_carets);
+  pending_frame_upload_bytes_ = renderer_upload_byte_counts({}, image_uploads);
   if (auto result = prepare_solid_rect_frame(rects); !result) {
     return result;
   }
@@ -40,6 +43,8 @@ Result<void> VulkanRendererState::present_frame(
   if (auto result = prepare_glyph_atlas_frame(text_draws); !result) {
     return result;
   }
+  diagnostic_timer.finish_stage(
+      RendererFrameTimingStage::resource_preparation);
   std::uint32_t image_index = 0;
   const VkResult acquire_result = vkAcquireNextImageKHR(
       device_,
@@ -66,6 +71,7 @@ Result<void> VulkanRendererState::present_frame(
         "vkAcquireNextImageKHR failed",
         false);
   }
+  diagnostic_timer.finish_stage(RendererFrameTimingStage::image_acquisition);
   const bool recreate_after_frame =
       acquire_plan.recovery_timing ==
       VulkanSwapchainRecoveryTiming::after_frame;
@@ -96,33 +102,21 @@ Result<void> VulkanRendererState::present_frame(
       !result) {
     return recover_after_failed_record(result.error().message);
   }
-
-  if (auto result = require_vk_success(
-          vkResetFences(device_, 1, &in_flight_), "vkResetFences failed");
-      !result) {
-    return recover_after_failed_record(result.error().message);
-  }
+  diagnostic_timer.finish_stage(RendererFrameTimingStage::command_recording);
+  VulkanFrameDiagnosticResources diagnostic_resources =
+      vulkan_build_frame_diagnostic_resources(
+          draw_order,
+          solid_rect_buffers_.draws,
+          rounded_rect_buffers_.draws,
+          glyph_atlas_draw_bindings_,
+          image_draws,
+          last_command_batches_);
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];
-
-  const VkPipelineStageFlags wait_stage =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-  const VkSubmitInfo submit_info{
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &image_available_,
-      .pWaitDstStageMask = &wait_stage,
-      .commandBufferCount = 1,
-      .pCommandBuffers = &command_buffer,
-      .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &render_finished_,
-  };
-  if (auto result = require_vk_success(
-          vkQueueSubmit(graphics_queue_, 1, &submit_info, in_flight_),
-          "vkQueueSubmit failed");
-      !result) {
+  if (auto result = submit_frame(command_buffer); !result) {
     return recover_after_failed_submit(result.error().message);
   }
+  diagnostic_timer.finish_stage(RendererFrameTimingStage::queue_submission);
   commit_image_texture_frame();
   commit_glyph_atlas_frame();
 
@@ -155,6 +149,14 @@ Result<void> VulkanRendererState::present_frame(
         ErrorCode::frame_acquisition_failed,
         "swapchain was recreated after presentation; retry the frame"));
   }
+  diagnostic_timer.finish_stage(RendererFrameTimingStage::presentation);
+  last_frame_diagnostic_snapshot_ = vulkan_build_frame_diagnostic_snapshot(
+      draw_order.size(),
+      last_command_batches_.size(),
+      std::move(diagnostic_resources),
+      pending_frame_upload_bytes_,
+      diagnostic_timer.timings());
+  has_frame_diagnostic_snapshot_ = true;
 
   return {};
 }

@@ -2,6 +2,7 @@
 
 #include "vulkan_device_internal.hpp"
 #include "vulkan_frame_command_reuse_internal.hpp"
+#include "vulkan_frame_diagnostic_snapshot_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
@@ -24,6 +25,8 @@ class VulkanRendererState final {
       RenderSurfaceDescriptor descriptor);
 
   Result<void> resize(Size framebuffer_size, DpiScale scale);
+  [[nodiscard]] const RendererFrameDiagnosticSnapshot*
+  last_frame_diagnostic_snapshot() const;
   Result<void> present_frame(
       Color color,
       std::span<const VulkanFrameDrawOrderEntry> draw_order,
@@ -47,6 +50,7 @@ class VulkanRendererState final {
   Result<void> create_command_pool();
   Result<void> create_sync_objects();
   Result<void> wait_for_present_pacing();
+  Result<void> submit_frame(VkCommandBuffer command_buffer);
   Result<void> prepare_glyph_atlas_frame(
       std::span<const TextDraw> text_draws);
   Result<void> prepare_solid_rect_frame(
@@ -133,6 +137,9 @@ class VulkanRendererState final {
   VulkanRoundedRectBufferResources solid_rect_buffers_;
   VulkanRoundedRectBufferResources rounded_rect_buffers_;
   std::vector<RendererCommandBatch> last_command_batches_;
+  RendererUploadByteCounts pending_frame_upload_bytes_;
+  RendererFrameDiagnosticSnapshot last_frame_diagnostic_snapshot_;
+  bool has_frame_diagnostic_snapshot_ = false;
   bool presentation_blocked_ = false;
 };
 

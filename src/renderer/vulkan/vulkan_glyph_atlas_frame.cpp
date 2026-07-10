@@ -10,6 +10,9 @@ Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
       vulkan_plan_glyph_atlas_uploads(
           glyph_cache_.upload_records(),
           glyph_cache_.atlas_pages());
+  pending_frame_upload_bytes_ = vulkan_merge_upload_byte_counts(
+      renderer_upload_byte_counts(batches, {}),
+      pending_frame_upload_bytes_);
   pending_glyph_atlas_plan_state_ = glyph_atlas_plan_state_;
   const GlyphAtlasProductionPlan plan =
       vulkan_plan_glyph_atlas_production_resources(

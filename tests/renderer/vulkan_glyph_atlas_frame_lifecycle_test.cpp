@@ -36,21 +36,30 @@ int test_acquired_command_buffer_recording_order() {
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
   const std::string recovery =
       read_source("src/renderer/vulkan/vulkan_presentation_recovery.cpp");
+  const std::string submission =
+      read_source("src/renderer/vulkan/vulkan_frame_submission.cpp");
   const std::string state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
-  if (presentation.empty() || recovery.empty() || state.empty()) {
+  if (presentation.empty() || recovery.empty() || submission.empty() ||
+      state.empty()) {
     return 10;
   }
 
   const std::size_t acquire = presentation.find("vkAcquireNextImageKHR");
   const std::size_t record =
       presentation.find("record_vulkan_frame_command_buffer(");
-  const std::size_t reset_fence = presentation.find("vkResetFences");
-  const std::size_t submit = presentation.find("vkQueueSubmit");
+  const std::size_t submit =
+      presentation.find("submit_frame(command_buffer)");
   if (acquire == std::string::npos || record == std::string::npos ||
-      reset_fence == std::string::npos || submit == std::string::npos ||
-      !(acquire < record && record < reset_fence && reset_fence < submit)) {
+      submit == std::string::npos || !(acquire < record && record < submit)) {
     return 11;
+  }
+  const std::size_t reset_fence = submission.find("vkResetFences");
+  const std::size_t queue_submit = submission.find("vkQueueSubmit");
+  if (reset_fence == std::string::npos || queue_submit == std::string::npos ||
+      reset_fence >= queue_submit || contains(presentation, "vkResetFences") ||
+      contains(presentation, "vkQueueSubmit")) {
+    return 12;
   }
   if (!contains(presentation, "command_buffers_[image_index]") ||
       contains(presentation,
@@ -59,7 +68,7 @@ int test_acquired_command_buffer_recording_order() {
       !contains(recovery,
                 "VulkanRendererState::recover_after_failed_record(") ||
       !contains(state, "recover_after_failed_record(std::string message)")) {
-    return 12;
+    return 13;
   }
   return 0;
 }

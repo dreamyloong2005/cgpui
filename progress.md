@@ -20104,3 +20104,55 @@
 - Final review found the tracked worktree limited to the Step 519 slice. WSL
   remains unavailable because `wsl.exe -l -q` returned an empty distribution
   list.
+
+## 2026-07-10 Phase E Step 520 Live Vulkan Diagnostic Snapshots
+
+- Started from clean tracked `master` at Step 519 commit `4e8708cc`; only the
+  existing untracked `.vscode/` directory remains.
+- Added the Step 520 RED target. Its first build failed on the intentionally
+  missing public snapshot leaf.
+- Implemented a focused public snapshot, private resource/snapshot/timing
+  modules, and a focused queue-submission module. `vulkan_presentation.cpp`
+  remains within its existing 165-line structure limit at 164 lines.
+- Platform-neutral resource/snapshot behavior builds and reaches exit 60 only
+  at the expected five-document evidence gate.
+- The real Win32 Vulkan lifetime target passes a presented solid plus
+  selection/caret frame and reads planned/submitted counts, two dropped
+  resources, and non-zero CPU timings through `Renderer`.
+- The first expanded structure build found a duplicate local
+  `renderer_frame` variable in the structure test. Renamed the new diagnostic
+  block variable without changing implementation behavior.
+- The next structure run reached the legacy presentation rule that required
+  `vkQueueSubmit` in the broad file. Updated the rule to require the focused
+  `submit_frame` call and forbid the raw Vulkan submit there.
+- Step 520 pure snapshot behavior, real Win32 live snapshot, Steps 515-519
+  diagnostics regressions, renderer structure, public headers, and parity
+  ledger pass.
+- JSON parsing, all five Step 520 phrases, focused
+  17/54/127/64/21/28/164/189 line counts, and `git diff --check` pass.
+- The first complete Windows suite passed 200/201. The remaining
+  `vulkan_glyph_atlas_frame_lifecycle_test` failure was an obsolete Step 462
+  source-order assertion that still required raw fence reset and queue submit
+  calls in `vulkan_presentation.cpp` after Step 520 extracted them.
+- Updated that structure contract to require `submit_frame(command_buffer)` in
+  presentation and `vkResetFences` before `vkQueueSubmit` in the focused
+  `vulkan_frame_submission.cpp` module.
+- Complete Windows debug build passes after the final public implementation
+  extraction (`build ok`, 41.156 seconds), and the corrected full suite passes
+  201/201 in 2.781 seconds.
+- `wsl.exe -l -q` still returns an empty distribution list, so Step 520 records
+  the unavailable Linux host while retaining the mandatory final Phase E Linux
+  gate.
+- Final source review moved the new non-template
+  `Renderer::last_frame_diagnostic_snapshot()` default body out of the public
+  header into focused `renderer_frame_diagnostic_snapshot.cpp`, preserving the
+  compatible `nullptr` default for non-Vulkan implementations.
+- The first structure-validation command used multiple xmake targets, but this
+  xmake version accepts only one target per invocation. Separate focused builds
+  are required.
+- The first out-of-line build exposed that `renderer_frame.hpp` is not a
+  self-contained leaf for implementation translation units. The focused source
+  and behavior test now include the existing `renderer.hpp` compatibility
+  aggregate; the public declaration remains body-free.
+- The default-renderer behavior check and renderer structure check pass after
+  the extraction.

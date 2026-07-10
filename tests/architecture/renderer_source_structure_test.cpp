@@ -165,6 +165,13 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_command_reuse.cpp",
+      "src/renderer/renderer_frame_diagnostic_snapshot.cpp",
+      "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_diagnostic_resources.cpp",
+      "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot.cpp",
+      "src/renderer/vulkan/vulkan_frame_diagnostic_timing.cpp",
+      "src/renderer/vulkan/vulkan_frame_submission.cpp",
+      "tests/renderer/vulkan_frame_diagnostic_snapshot_test.cpp",
       "src/renderer/vulkan/vulkan_frame_draw_order_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_draw_order.cpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp",
@@ -775,6 +782,55 @@ int main(int argc, char** argv) {
       contains(command_recording, "choose_vulkan_surface_format(")) {
     return 37;
   }
+  const std::string diagnostic_snapshot_header = read_source(
+      "include/cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp");
+  const std::string diagnostic_default = read_source(
+      "src/renderer/renderer_frame_diagnostic_snapshot.cpp");
+  const std::string diagnostic_private_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot_internal.hpp");
+  const std::string diagnostic_resources = read_source(
+      "src/renderer/vulkan/vulkan_frame_diagnostic_resources.cpp");
+  const std::string diagnostic_snapshot = read_source(
+      "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot.cpp");
+  const std::string diagnostic_timing = read_source(
+      "src/renderer/vulkan/vulkan_frame_diagnostic_timing.cpp");
+  const std::string frame_submission = read_source(
+      "src/renderer/vulkan/vulkan_frame_submission.cpp");
+  const std::string diagnostic_renderer_frame =
+      read_source("include/cgpui/renderer/renderer_frame.hpp");
+  const std::string diagnostic_presentation =
+      read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  if (line_count(diagnostic_snapshot_header) > 60 ||
+      line_count(diagnostic_default) > 40 ||
+      line_count(diagnostic_private_header) > 100 ||
+      line_count(diagnostic_resources) > 160 ||
+      line_count(diagnostic_snapshot) > 100 ||
+      line_count(diagnostic_timing) > 80 ||
+      line_count(frame_submission) > 80 ||
+      !contains(diagnostic_snapshot_header,
+                "struct RendererFrameDiagnosticSnapshot") ||
+      !contains(diagnostic_default,
+                "Renderer::last_frame_diagnostic_snapshot() const") ||
+      !contains(diagnostic_default, "return nullptr;") ||
+      !contains(diagnostic_private_header,
+                "struct VulkanFrameDiagnosticResources") ||
+      !contains(diagnostic_resources,
+                "vulkan_build_frame_diagnostic_resources(") ||
+      !contains(diagnostic_snapshot,
+                "vulkan_build_frame_diagnostic_snapshot(") ||
+      !contains(diagnostic_timing,
+                "VulkanFrameDiagnosticTimer::finish_stage(") ||
+      !contains(frame_submission, "VulkanRendererState::submit_frame(") ||
+      !contains(
+          diagnostic_renderer_frame,
+          "last_frame_diagnostic_snapshot()") ||
+      contains(
+          diagnostic_renderer_frame,
+          "last_frame_diagnostic_snapshot() const {") ||
+      !contains(diagnostic_presentation,
+                "last_frame_diagnostic_snapshot_")) {
+    return 85;
+  }
   const std::string solid_rect_geometry_header = read_source(
       "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");
   const std::string solid_rect_geometry = read_source(
@@ -987,8 +1043,9 @@ int main(int argc, char** argv) {
       !contains(presentation,
                 "recover_swapchain_after_surface_status()") ||
       !contains(presentation, "vkAcquireNextImageKHR") ||
-      !contains(presentation, "vkQueueSubmit") ||
+      !contains(presentation, "submit_frame(command_buffer)") ||
       !contains(presentation, "vkQueuePresentKHR") ||
+      contains(presentation, "vkQueueSubmit") ||
       contains(presentation,
                "Result<void> VulkanRendererState::recover_after_failed_submit(") ||
       contains(presentation,
