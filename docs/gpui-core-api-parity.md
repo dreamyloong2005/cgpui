@@ -114,8 +114,10 @@ desktop integration surfaces remain separate future work.
   creation with graceful per-record `native_window_error` storage. Independent
   child renderers, child render loops, full event routing, and production
   lifecycle ownership remain incomplete.
-- Frame timing diagnostics expose stable counters, but real profiler timing
-  and production frame pacing are not complete.
+- Frame timing diagnostics expose stable counters, and production Vulkan frame
+  pacing now covers bounded CPU submission, MAILBOX/FIFO selection, swapchain
+  recovery, and coalesced next-frame redraws; real profiler timing remains
+  incomplete.
 - Font discovery has deterministic abstractions and platform override slots,
   but real DirectWrite/fontconfig discovery is not complete.
 - Threaded async now has cancellable background work and main-runtime

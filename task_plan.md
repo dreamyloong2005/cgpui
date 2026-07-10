@@ -728,13 +728,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 511 adds automatic swapchain recreation from acquire/present result plans. The out-of-date results return a retryable frame error after recreating, suboptimal frames recreate after submission, and presentation remains unblocked after successful recovery. Step 512 present pacing is next.
 - Phase E Step 512 adds a focused Vulkan present pacing policy: MAILBOX with FIFO fallback, saturation-safe swapchain image depth, and one CPU frame in flight via shared fence/acquire waits. Step 513 next-frame scheduling is next.
 - Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.
+- Phase E Step 514 closes the batching and frame scheduling integration closeout for Steps 507-513, freezing reusable geometry buffers through next-frame scheduling. Step 515 renderer diagnostics is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-513 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-514 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -787,12 +788,12 @@ Windows/Linux core API is stable enough for parity work.
   plus focused Vulkan present pacing with MAILBOX/FIFO selection,
   saturation-safe image depth, and one CPU frame in flight, plus root-window
   next-frame scheduling that preserves render-time invalidation and coalesces
-  repeated requests into one platform redraw.
-- In progress: Step 514 batching and scheduling closeout.
-- Step 514 boundary: freeze Steps 507-513 batching/scheduling behavior,
-  structure, documentation, and Windows integration evidence without adding a
-  new renderer feature.
-- Pending bands: Step 514 batching/scheduling closeout; Steps 515-522 diagnostics; Steps 523-530 pixel
+  repeated requests into one platform redraw, plus the audit-only Steps 507-513
+  batching and frame scheduling integration closeout.
+- In progress: Step 515 renderer diagnostics.
+- Step 515 boundary: compare planned renderer work with submitted GPU work in a
+  focused diagnostics surface without expanding broad renderer entry files.
+- Pending bands: Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full

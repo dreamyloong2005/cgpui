@@ -9112,3 +9112,13 @@
   coalesce into one platform redraw. The fake platform dispatches redraws
   synchronously, making the focused test an end-to-end two-frame gate.
 - Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.
+## 2026-07-10 Phase E Step 514 Batching/Scheduling Closeout
+
+- Step 514 should be audit-only. Steps 507-513 already own the production
+  behavior for reusable geometry buffers, exact command reuse, adjacent pipeline
+  batching, upload barrier waves, swapchain recovery, Vulkan present pacing,
+  and root-window next-frame scheduling.
+- The closeout target should freeze each focused module and behavior target,
+  require the existing renderer/UI structure gates, and move the roadmap to
+  Step 515 renderer diagnostics without adding another runtime abstraction.
+- Phase E Step 514 closes the batching and frame scheduling integration closeout for Steps 507-513, freezing reusable geometry buffers through next-frame scheduling. Step 515 renderer diagnostics is next.
