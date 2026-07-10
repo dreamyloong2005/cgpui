@@ -20377,3 +20377,44 @@
 - The first focused xmake invocation supplied target names and selected no
   tests. Using the registered `target/default` test names ran the intended
   four-test suite successfully.
+
+## 2026-07-11 Phase F Entry Audit
+
+- Activated the persistent goal to complete Phase F Steps 539-618 and created a
+  ten-band execution plan matching the authoritative roadmap.
+- Confirmed the Phase E closeout commit `ac814b5a` is the `master` baseline and
+  the only pre-existing untracked path is `.vscode/`.
+- Inventoried the public platform headers, focused Win32 and Wayland sources,
+  existing platform tests, and xmake platform targets. The codebase already has
+  modular lifecycle/input/clipboard/drag-drop foundations; Phase F will deepen
+  those real backend paths rather than introduce parallel abstractions.
+- Began the Step 539 boundary audit. Next is a code-path review of public window
+  state, Win32 lifecycle procedures, Wayland configure/state ownership, and the
+  existing close/resize/focus tests before writing the RED guard.
+- Completed the Step 539 code-path audit. Existing events and private Wayland
+  configure state already carry much of the required data, but no public
+  lifecycle snapshot reports real backend readiness.
+- Chosen Step 539 slice adds a compatibility-preserving public lifecycle leaf,
+  focused Win32/Wayland snapshot implementations, real creation/close tests on
+  both backends, and structure coverage. Activation/focus and display commands
+  remain subsequent Steps 540 and 543 rather than being mixed into creation.
+- Added the public lifecycle snapshot and out-of-line compatible default, plus
+  focused Win32 and Wayland production readers and real backend tests.
+- The first public RED compile failed on the absent lifecycle types as expected.
+  Windows GREEN then passed 3/3 across the compatible default, structure guard,
+  and real Win32 create/close state.
+- Initial WSL diagnosis corrected the xmake `--root` placement. The first real
+  Wayland run then exited 4 because `RegisteredWaylandWindow` returned the base
+  default snapshot; adding focused wrapper forwarding fixed the real path.
+- Final focused WSL verification reused `.build-wsl/master` on D: plus
+  `/dev/shm/cgpui` transient temp and passed 3/3, including the real test
+  compositor create/configure/close lifecycle.
+- Synchronized Step 539 across the roadmap, Markdown/JSON ledger, task plan,
+  findings, and the dedicated structure guard. Step 540 activation/focus is
+  the active handoff.
+- Final expanded Windows verification passed 6/6 across lifecycle behavior,
+  real Win32 creation/close, dedicated and existing platform structure, and the
+  parity ledger. The corresponding WSL set passed 6/6 with the real Wayland
+  compositor lifecycle test.
+- JSON parsing, the exact Step 539 phrase in all five authoritative documents,
+  focused line caps, and `git diff --check` pass.

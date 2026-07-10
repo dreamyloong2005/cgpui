@@ -20,6 +20,7 @@ class WaylandWindow final : public PlatformWindow {
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] wl_surface* surface() const;
   [[nodiscard]] WindowState state() const override;
+  [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
 
   void request_redraw() override;
   void request_close() override;

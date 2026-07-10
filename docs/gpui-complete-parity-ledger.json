@@ -1640,7 +1640,23 @@
     ],
     "phase_e_step_538_remaining_gap": "Phase F Step 539 window lifecycle production depth",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase F Step 539 window lifecycle production depth"
+    "phase_e_current_handoff": "Phase F Step 539 window lifecycle production depth",
+    "phase_f_step_539_surface": "Phase F Step 539 adds a public window lifecycle snapshot with compatible defaults and real Win32/Wayland native-created, initial-configure, close-requested, and display-state reporting, including registered Wayland wrapper forwarding. Step 540 activation and focus production behavior is next.",
+    "phase_f_step_539_sources": [
+      "include/cgpui/platform/platform_window_lifecycle.hpp",
+      "include/cgpui/platform/platform_window.hpp",
+      "src/platform/platform_window_lifecycle.cpp",
+      "src/platform/win32/win32_window_lifecycle.cpp",
+      "src/platform/linux/wayland_window_lifecycle.cpp",
+      "src/platform/linux/wayland_window_registered.cpp",
+      "tests/api_parity/phase_f_window_lifecycle_state_test.cpp",
+      "tests/platform/win32_window_lifecycle_state_test.cpp",
+      "tests/platform/wayland_window_lifecycle_state_test.cpp",
+      "tests/architecture/phase_f_platform_lifecycle_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_539_remaining_gap": "Step 540 activation and focus production behavior",
+    "phase_f_current_handoff": "Step 540 activation and focus production behavior"
   },
   "categories": [
     "application_and_app_context",

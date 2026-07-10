@@ -42,6 +42,20 @@ target("cgpui_platform_fallback")
     add_deps("cgpui_core", "cgpui_platform")
     add_includedirs(public_includedirs, {public = true})
 
+target("phase_f_window_lifecycle_state_test")
+    set_kind("binary")
+    add_files("tests/api_parity/phase_f_window_lifecycle_state_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("phase_f_platform_lifecycle_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_platform_lifecycle_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -88,6 +102,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs)
         add_syslinks("user32", "dwrite")
+        add_tests("default")
+
+    target("win32_window_lifecycle_state_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_window_lifecycle_state_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
         add_tests("default")
 end
 
@@ -163,6 +185,17 @@ if is_plat("linux") then
         add_files("tests/platform/wayland_font_discovery_test.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
         add_includedirs(public_includedirs)
+        add_tests("default")
+
+    target("wayland_window_lifecycle_state_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_window_lifecycle_state_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs(public_includedirs)
+        add_includedirs("tests/platform")
         add_tests("default")
 
     target("wayland_vulkan_surface_test")

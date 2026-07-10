@@ -846,6 +846,45 @@ Windows/Linux core API is stable enough for parity work.
   an intentional commit on `master`. WSL full debug is batched at renderer
   milestones and required at Phase E closeout.
 
+## Active Phase F Execution Goal (2026-07-11)
+
+- Status: in_progress
+- Authoritative scope: Phase F Steps 539-618 in
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+- Goal: make Win32 and Wayland real application backends across window
+  lifecycle, input, clipboard, drag/drop, native menus, platform services,
+  multi-window behavior, diagnostics, and stress coverage.
+- Entry baseline: Phase E is committed on `master` at `ac814b5a`; Windows full
+  debug passes 214/214 and WSL Arch Linux full debug passes 204/204 with live
+  Wayland frame capture.
+- Completed: Phase F Step 539 adds a public window lifecycle snapshot with compatible defaults and real Win32/Wayland native-created, initial-configure, close-requested, and display-state reporting, including registered Wayland wrapper forwarding. Step 540 activation and focus production behavior is next.
+- Step 539 evidence: the compatible base default preserves existing platform
+  substitutes; real Win32 and Wayland creation/close tests plus the dedicated
+  structure guard pass on both hosts, including the registered Wayland wrapper.
+- In progress: Step 540 activation and focus production behavior.
+- Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
+  Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
+  587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
+  diagnostics/stress; and 611-618 final Windows/WSL verification and closeout.
+- Modular boundary rule: public platform leaves stay thin, Win32 and Wayland
+  behavior remains in focused platform sources, and broad application/window
+  entry files remain orchestration-only with structure coverage added beside
+  every new ownership boundary.
+- Verification cadence: focused Windows tests, touched JSON/ledger/structure
+  checks, and `git diff --check` for every slice; focused WSL checks for shared
+  platform/build/header changes; WSL full debug is batched at platform
+  milestones and mandatory at Phase F closeout.
+
+## Errors Encountered During Phase F
+
+| Error | Attempt | Resolution |
+|-------|---------|------------|
+| The first multi-file Phase F planning patch assumed a wrapped Phase E line that did not match the file exactly | Initial entry-plan write | The patch was rejected atomically; re-anchor the insertion on the stable `Errors Encountered During Phase E Resume` heading |
+| The first production patch assumed Win32 and Wayland declared `state()` in the same sequence | Step 539 production write | The patch was rejected atomically; read the exact Wayland class declaration and reapply with file-specific context |
+| `xmake build` was given three target names even though the build task accepts one target | Step 539 Windows focused build | Build each focused target with its own `xmake build <target>` invocation; `xmake test` still accepts multiple registered tests |
+| A WSL invocation with `--cd` transiently returned `WSL_E_DISTRO_NOT_FOUND`, and the next script placed `--root` before the xmake task | Step 539 WSL focused gate | Use the proven `wsl.exe -d archlinux -- bash -lc 'cd ...'` form and place the option after the task: `xmake f --root`, `xmake build --root`, `xmake test --root` |
+| The first Wayland lifecycle test saw the base default snapshot through `RegisteredWaylandWindow` | Step 539 real Wayland GREEN | Add a focused lifecycle override to the registered wrapper and guard the forwarding in the structure test |
+
 ## Errors Encountered During Phase E Resume
 
 | Error | Attempt | Resolution |

@@ -26,6 +26,10 @@ WindowState RegisteredWaylandWindow::state() const {
   return window_->state();
 }
 
+PlatformWindowLifecycleState RegisteredWaylandWindow::lifecycle_state() const {
+  return window_->lifecycle_state();
+}
+
 void RegisteredWaylandWindow::request_redraw() {
   window_->request_redraw();
 }

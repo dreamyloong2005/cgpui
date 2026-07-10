@@ -23,6 +23,7 @@ class Win32Window final
   void detach() override;
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] WindowState state() const override;
+  [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
   void request_redraw() override;
   void request_close() override;
   void set_title(std::string_view title) override;

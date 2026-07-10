@@ -9454,3 +9454,47 @@
 - Final Phase E ownership remains distributed across eight focused integration
   closeouts. The final guard audits them and the two broad Vulkan orchestration
   caps instead of moving implementation back into entry files.
+
+## 2026-07-11 Phase F Entry Audit
+
+- The authoritative Phase F scope is Steps 539-618 in ten eight-step bands:
+  lifecycle, Win32 input, Wayland input, clipboard, drag/drop, native menus,
+  dialogs/services, multi-window event loops, diagnostics/stress, and final
+  Windows/WSL closeout.
+- The platform layer already has focused Win32 window procedure, size, event,
+  input, IME, and OLE drag/drop modules plus focused Wayland application,
+  registry, configure, input, text-input, data-device, and window-state modules.
+  Phase F should deepen these ownership boundaries rather than create a second
+  platform stack or move behavior into broad entry files.
+- Existing platform tests cover Win32 focus, DPI scale, pointer/keyboard/text
+  input and Wayland compositor close, resize, keyboard, pointer button, and
+  scroll behavior. Phase F completion needs production-state tests for the
+  roadmap behaviors that these focused tests do not yet prove.
+- The public platform surface remains thin: `PlatformWindow` currently exposes
+  redraw, title, close, scale, and logical size, while window lifecycle depth is
+  mostly private to the platform backends. Step 539 must first freeze a focused
+  production lifecycle contract and its ownership before broadening behavior.
+- The working tree entered Phase F on `master` at `ac814b5a` with only the
+  pre-existing untracked `.vscode/` directory.
+- Core event vocabulary already includes activated, focused, minimized, and
+  restored events. Wayland also parses activated/maximized/fullscreen xdg
+  states, while Win32 handles focus, size, DPI, and close messages. The missing
+  cross-platform contract is an observable production lifecycle snapshot.
+- Many tests and the macOS backend derive from `PlatformWindow`; a new pure
+  virtual would create unrelated churn. Step 539 should add an out-of-line
+  compatible default and override it only in the active Win32 and Wayland
+  backends.
+- Step 539 ownership is now frozen: public lifecycle data in
+  `include/cgpui/platform/platform_window_lifecycle.hpp`, compatibility default
+  in a focused `src/platform/platform_window_lifecycle.cpp`, and backend reads
+  in new `win32_window_lifecycle.cpp` and `wayland_window_lifecycle.cpp` files.
+  Later Steps 540-545 can deepen the same snapshot without relocating code.
+- The lifecycle snapshot should carry native-created, initial-configured,
+  active, focused, close-requested, and display-state fields. Step 539 proves
+  creation/configure/close on real backends; later lifecycle steps own active,
+  focus, minimize/maximize/fullscreen, position, chrome, and parent behavior.
+- Real Wayland verification exposed an important ownership layer: callers hold
+  `RegisteredWaylandWindow`, not the underlying `WaylandWindow`. New platform
+  queries must be forwarded by that wrapper or they silently use compatible
+  base defaults even when the underlying backend has production state.
+- Phase F Step 539 adds a public window lifecycle snapshot with compatible defaults and real Win32/Wayland native-created, initial-configure, close-requested, and display-state reporting, including registered Wayland wrapper forwarding. Step 540 activation and focus production behavior is next.
