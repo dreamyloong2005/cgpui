@@ -1,5 +1,30 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 504 SVG Image Upload Integration
+
+- Step 503 is committed on `master` at
+  `aee3be1a feat: recolor svg raster current color`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- The integration boundary will be a focused renderer leaf/source that accepts
+  a `RenderFrame`, `SvgRasterCache`, and raster request, then uploads only a
+  ready cache-owned `ImageAsset` through the generic frame API.
+- Added the Step 504 RED behavior/structure/documentation test and xmake target.
+- RED confirmed: the focused test fails only because the new public
+  `cgpui/renderer/svg_image_upload.hpp` leaf does not yet exist.
+- Added the focused upload result/bridge, aggregate include, structure guards,
+  and behavior coverage for first raster upload, cache-hit resubmission, and
+  failed-request suppression.
+- The behavior groups pass and direct execution reaches only the expected
+  documentation exit 50. `renderer_source_structure_test` exits 0.
+- Synchronized Phase E Step 504, `SvgImageUploadResult`, cache-owned raster ImageAsset, RenderFrame::upload_image(...) integration, failed rasterization skips upload, and the Step 505 SVG public example handoff across authoritative documents.
+- Steps 499-504 SVG regressions, renderer structure, and parity ledger all exit
+  0. JSON parsing and `git diff --check` pass.
+- The complete Windows debug suite passed 184/185. The only failure remains the
+  pre-existing visible `vulkan_solid_rect_test` desktop sample established
+  against the clean Step 502 baseline during Step 503.
+- The upload leaf/source/renderer aggregate are 16/24/12 lines. `wsl.exe -l -q`
+  remains empty, so the WSL gate is unavailable.
+
 ## 2026-07-10 Phase E Step 503 SVG Recolor/Tint
 
 - RED confirmed: `xmake build -y -P . svg_recolor_tint_test` fails only

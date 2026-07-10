@@ -1239,8 +1239,18 @@
       "xmake.lua"
     ],
     "phase_e_step_503_remaining_gap": "Step 504 SVG image upload integration",
+    "phase_e_step_504_surface": "Phase E Step 504 adds SvgImageUploadResult and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset for the current frame, while failed rasterization skips upload. Step 505 SVG public example is next.",
+    "phase_e_step_504_sources": [
+      "include/cgpui/renderer/svg_image_upload.hpp",
+      "src/renderer/svg_image_upload.cpp",
+      "include/cgpui/renderer/renderer.hpp",
+      "tests/renderer/svg_image_upload_integration_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_504_remaining_gap": "Step 505 SVG public example",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 504 SVG image upload integration"
+    "phase_e_current_handoff": "Step 505 SVG public example"
   },
   "categories": [
     "application_and_app_context",

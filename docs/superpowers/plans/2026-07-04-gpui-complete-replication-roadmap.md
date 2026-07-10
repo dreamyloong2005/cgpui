@@ -1687,7 +1687,8 @@ draw calls for the Windows/Linux renderer.
   Step 502 SVG viewport scaling is next.
 - [x] Phase E Step 502 adds `SvgViewportScalingPlan` in a focused module. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels under the existing byte/dimension limits, records effective x/y raster scales, and feeds the raster planner, LunaSVG backend dimensions, and normalized cache key. Step 503 SVG recolor/tint is next.
 - [x] Phase E Step 503 adds `SvgRasterColorizationPlan` for a validated RGBA current color and normalized RGBA8 cache identity. The focused backend performs LunaSVG currentColor recolor through the document root while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
-- [ ] Steps 504-506: Add SVG image upload integration, examples,
+- [x] Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset for the current frame, while failed rasterization skips upload. Step 505 SVG public example is next.
+- [ ] Steps 505-506: Add the SVG public example
   and closeout.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
   command reuse, pipeline switches, resource barriers, swapchain recovery, and

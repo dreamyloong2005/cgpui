@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/renderer/image_sampling.hpp"
+#include "cgpui/renderer/svg_image_upload.hpp"
 #include "cgpui/renderer/svg_raster_cache.hpp"
 #include "cgpui/renderer/svg_raster_colorization.hpp"
 #include "cgpui/renderer/svg_rasterization.hpp"

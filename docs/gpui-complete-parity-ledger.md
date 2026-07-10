@@ -628,6 +628,8 @@ consume C: drive space again.
 - Handoff: Step 503 SVG recolor/tint.
 - Phase E Step 503 adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8 for raster planning and cache identity. The LunaSVG currentColor recolor sets the document-root CSS color, while existing image color stays draw-time multiplicative tint.
 - Handoff: Step 504 SVG image upload integration.
+- Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset for the current frame, while failed rasterization skips upload.
+- Handoff: Step 505 SVG public example.
 
 ## Categories
 

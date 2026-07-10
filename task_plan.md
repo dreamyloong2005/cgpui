@@ -718,13 +718,14 @@ Windows/Linux core API is stable enough for parity work.
   pixels, and failed rasterizations are not cached. Step 502 SVG viewport scaling is next.
 - Phase E Step 502 adds `SvgViewportScalingPlan`. An optional raster viewport falls back to intrinsic logical size, produces ceil-rounded viewport device pixels, and records effective x/y raster scales for the raster planner, backend, and cache. Step 503 SVG recolor/tint is next.
 - Phase E Step 503 adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8 cache identity. The LunaSVG currentColor recolor is raster-time, while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
+- Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset, while failed rasterization skips upload. Step 505 SVG public example is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-503 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-504 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -765,9 +766,10 @@ Windows/Linux core API is stable enough for parity work.
   backend and explicit result status, plus the explicit SVG raster cache and
   cache-owned result lookup, plus optional viewport scaling and effective
   device-scale metadata, plus validated SVG current-color planning,
-  LunaSVG root recolor, and normalized recolor cache identity.
-- In progress: Step 504 SVG image upload integration.
-- Pending bands: Steps 504-506 SVG; Steps
+  LunaSVG root recolor, normalized recolor cache identity, and backend-neutral
+  cache-to-`RenderFrame` SVG upload integration.
+- In progress: Step 505 SVG public example.
+- Pending bands: Steps 505-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -780,6 +782,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A multi-hunk Step 504 structure patch still failed at the line-count hunk after reading the current file | Step 504 structure sync | Apply the ownership/include checks first, then insert the two line limits with a single-line replacement hunk |
+| `svg_image_upload.cpp` failed because direct `renderer_frame.hpp` inclusion lacks report-type declarations supplied by the aggregate | Step 504 first GREEN build | Keep the new leaf lightweight with a `RenderFrame` forward declaration and include the aggregate only in the `.cpp` that needs the complete class |
+| The first Step 504 implementation patch used the pre-Step-503 renderer line-count anchor and did not apply | Step 504 implementation | Split leaf/source edits from the structure test and patch the current colorization-aware line-count block exactly |
 | Windows full debug passed 183/184, with only visible `vulkan_solid_rect_test` returning RGB(73,108,132) instead of its clear-color threshold | Step 503 full Windows gate | A clean detached `65bc81db` Step 502 baseline worktree reproduced the identical exit 5 and RGB value outside the sandbox, proving the desktop-pixel failure predates Step 503; retain the evidence and revisit with the pixel-test band |
 | A combined Step 503 documentation patch contained a malformed JSON anchor and did not apply | Step 503 documentation sync | Split the Markdown and JSON updates, then use the exact Step 502 JSON tail as the second anchor |
 | `xmake test -P . svg_recolor_tint_test` returned `nothing to test` | Step 503 focused GREEN | Use the registered test name `svg_recolor_tint_test/default`; direct `xmake run` exposes the precise executable exit code |

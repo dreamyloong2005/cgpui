@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 504 SVG Image Upload Integration
+
+- `RenderFrame::upload_image(...)` is the backend-neutral upload boundary. The
+  Vulkan frame already converts the `ImageAsset` to an `ImageUploadBatch`,
+  deduplicates same-frame asset ids, and lets the persistent texture cache
+  reuse ready GPU resources.
+- Step 504 should therefore own only the bridge from `SvgRasterCache` lookup to
+  `RenderFrame`, not duplicate Vulkan staging or make renderer code depend on
+  UI `ImageSource`/`ImageAssetRegistry` types.
+- A cache hit still submits the cached asset to the current frame. This keeps
+  frame construction stateless while the Vulkan upload/cache layer decides
+  whether GPU work is necessary.
+- Phase E Step 504 now adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset, while failed rasterization skips upload. Step 505 SVG public example is next.
+
 ## 2026-07-10 Phase E Step 503 SVG Recolor/Tint
 
 - The existing Vulkan image path already resolves optional `ImageDraw::tint`,
