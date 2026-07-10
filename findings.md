@@ -1,5 +1,31 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 488 Stable Renderer Command Ordering
+
+- UI submission already calls `RenderFrame` in authored order, but
+  `VulkanFrame` stores per-primitive vectors and command recording currently
+  replays all solid draws, then all rounded draws, then all text draws.
+- A compact `{RendererPrimitiveKind, command_index}` record can preserve frame
+  order without duplicating clip/composition metadata or introducing type
+  erasure. The existing per-type vectors remain the owning storage.
+- Solid and rounded GPU ranges already retain `source_index`. Text page-run
+  commands need to retain `text_draw_index` so one authored text draw can expand
+  to multiple atlas-page draw calls in place.
+- A zero-allocation `VulkanFrameDrawOrderCursor` can merge the compact order
+  with sorted per-type ranges, skip commands that emitted no geometry, and
+  expand text page runs while preserving stable authored interleaving.
+- Step 489 should own explicit z/layer command ordering after stable authored
+  order reaches actual Vulkan command recording.
+- Phase E Step 488 now implements compact frame order entries and a
+  zero-allocation `VulkanFrameDrawOrderCursor`. `VulkanFrame` appends only kind
+  and per-type index, leaving existing vectors as the sole command owners.
+- Rounded/solid draw ranges and text commands retain their source indices. The
+  cursor skips ranges absent after geometry filtering and expands every text
+  atlas page run at the authored text position, preserving stable authored interleaving.
+- The focused ordered recorder reuses bind/single-draw helpers and only rebinds
+  state when switching between solid buffers, rounded buffers, and text.
+  Step 489 owns explicit z/layer command ordering.
+
 ## 2026-07-10 Phase E Step 487 Transform/Clip Interaction
 
 - `PaintList` call order establishes clip scope: styled elements push their

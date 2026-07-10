@@ -13,6 +13,7 @@ Result<void> record_vulkan_frame_command_buffer(
     const VulkanTextPipelineResources& text_pipeline_resources,
     const VulkanTextVertexBufferResources& text_vertex_buffer,
     Color color,
+    std::span<const VulkanFrameDrawOrderEntry> draw_order,
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
     std::span<const TexturedGlyphQuad> glyph_atlas_draw_quads,
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,
@@ -84,22 +85,16 @@ Result<void> record_vulkan_frame_command_buffer(
       &render_pass_info,
       VK_SUBPASS_CONTENTS_INLINE);
 
-  vulkan_record_rounded_rect_draws(
+  vulkan_record_frame_draws(
       command_buffer,
       extent,
       rounded_rect_pipeline_resources,
-      solid_rect_buffers);
-  vulkan_record_rounded_rect_draws(
-      command_buffer,
-      extent,
-      rounded_rect_pipeline_resources,
-      rounded_rect_buffers);
-  vulkan_record_text_draws(
-      command_buffer,
-      extent,
+      solid_rect_buffers,
+      rounded_rect_buffers,
       text_pipeline_resources,
       text_vertex_buffer,
-      *text_draw_commands);
+      *text_draw_commands,
+      draw_order);
   vkCmdEndRenderPass(command_buffer);
 
   return require_vk_success(

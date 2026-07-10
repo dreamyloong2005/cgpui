@@ -122,9 +122,11 @@ int test_rounded_rect_draw_recording_structure() {
       "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp");
   const std::string command =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
+  const std::string ordered =
+      read_source("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
   const std::string presentation =
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
-  if (header.empty() || source.empty() || command.empty() ||
+  if (header.empty() || source.empty() || command.empty() || ordered.empty() ||
       presentation.empty()) {
     return 30;
   }
@@ -142,7 +144,9 @@ int test_rounded_rect_draw_recording_structure() {
       return 31;
     }
   }
-  if (!contains(command, "vulkan_record_rounded_rect_draws(") ||
+  if (!contains(command, "vulkan_record_frame_draws(") ||
+      contains(command, "vulkan_record_rounded_rect_draws(") ||
+      !contains(ordered, "vulkan_record_rounded_rect_draw(") ||
       contains(command, "vkCmdDrawIndexed") ||
       !contains(presentation, "rounded_rect_pipeline_resources_") ||
       !contains(presentation, "rounded_rect_buffers_")) {

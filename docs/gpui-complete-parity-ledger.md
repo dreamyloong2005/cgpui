@@ -500,6 +500,14 @@ consume C: drive space again.
   transform remains framebuffer-space, and Vulkan continues to resolve the
   captured rectangles through the existing allocation-free dynamic scissor.
 - Handoff: Phase E Step 488 stable renderer command ordering.
+- Phase E Step 488 adds compact frame order entries and a zero-allocation
+  `VulkanFrameDrawOrderCursor`. `VulkanFrame` records only primitive kind plus
+  per-type command index while existing vectors retain command ownership.
+- Actual command recording now preserves stable authored interleaving across
+  solid, rounded, and text draws. Missing geometry is skipped, text atlas page
+  runs expand at their source position, and pipeline/buffer state rebinds only
+  when the resolved resource kind changes.
+- Handoff: Phase E Step 489 explicit z/layer command ordering.
 
 ## Categories
 

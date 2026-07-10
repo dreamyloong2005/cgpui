@@ -18872,6 +18872,48 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 488 Stable Renderer Command Ordering
+
+- Started from clean tracked `master` at
+  `19ddffc1 feat: capture transformed clip bounds`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 488 will preserve stable authored interleaving across solid, rounded,
+  and text GPU draws using compact frame order entries and a zero-allocation
+  cursor over existing per-type buffers.
+- Text page commands will retain their source text draw index, and Step 489 will
+  own explicit z/layer command ordering.
+- The focused RED build failed exactly as intended because
+  `vulkan_frame_draw_order_internal.hpp` did not yet exist.
+- Added compact frame order/cursor and focused ordered-recording modules,
+  retained text source indices, exposed reusable bind/single-draw helpers, and
+  routed `VulkanFrame` through the order span without duplicating metadata.
+- `vulkan_stable_draw_order_test/default` now passes compact cursor,
+  interleaving, skipped-geometry, text page-run, and source-boundary assertions
+  and exits 40 only at the expected documentation gate.
+- The complete build passed, while legacy rounded/text draw-recording audits
+  exited 32 because they still required direct batch calls from the broad
+  command entry. Updated them to guard the new ordered-module ownership while
+  retaining their Vulkan draw-call coverage.
+- After the audit update, nine draw-recording, clip/transform, renderer
+  structure, lifecycle, surface, and live solid regressions passed 9/9.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `VulkanFrameDrawOrderCursor`, stable authored interleaving, and the
+  Step 489 z/layer ordering handoff.
+- The first documentation gate remained at exit 40 because the roadmap split
+  `stable authored interleaving` across a line; normalized the phrase.
+- Step 488 behavior, renderer source structure, and parity ledger gates now
+  pass 3/3.
+- Expanded Windows Step 488 verification passed 13/13 across stable order,
+  rounded/text recording, glyph draw data/bindings, clip/transform, lifecycle,
+  surface, live solid rendering, renderer structure, and parity ledger.
+- The complete Windows debug test suite passed 169/169 after the successful
+  full build.
+- Final phrase audit, JSON parsing, source line-count checks, and
+  `git diff --check` pass. The tracked worktree contains only the Step 488 slice.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Stable draw ordering remains in the final Phase E
+  Linux gate.
+
 ## 2026-07-10 Phase E Step 487 Transform/Clip Interaction
 
 - Started from clean tracked `master` at

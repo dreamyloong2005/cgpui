@@ -45,6 +45,7 @@ Result<std::vector<VulkanTextDrawCommand>> vulkan_plan_text_draw_commands(
           "text draw vertex range exceeds the uploaded buffer"));
     }
     commands.push_back(VulkanTextDrawCommand{
+        .text_draw_index = binding.text_draw_index,
         .descriptor_set = binding.descriptor_set,
         .first_vertex = static_cast<std::uint32_t>(first_vertex),
         .vertex_count = static_cast<std::uint32_t>(vertex_count),
@@ -54,16 +55,11 @@ Result<std::vector<VulkanTextDrawCommand>> vulkan_plan_text_draw_commands(
   return commands;
 }
 
-void vulkan_record_text_draws(
+void vulkan_bind_text_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanTextPipelineResources& pipeline_resources,
-    const VulkanTextVertexBufferResources& vertex_buffer,
-    std::span<const VulkanTextDrawCommand> commands) {
-  if (commands.empty()) {
-    return;
-  }
-
+    const VulkanTextVertexBufferResources& vertex_buffer) {
   vkCmdBindPipeline(
       command_buffer,
       VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -94,30 +90,46 @@ void vulkan_record_text_draws(
       0,
       sizeof(push_constants),
       &push_constants);
+}
 
+void vulkan_record_text_draw(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanTextPipelineResources& pipeline_resources,
+    const VulkanTextDrawCommand& command) {
+  const VulkanClipScissorResolution clip = vulkan_resolve_clip_stack_scissor(
+      extent, command.clip_rect, RendererClipStackRecord{});
+  if (!clip.visible) {
+    return;
+  }
+  vkCmdSetScissor(command_buffer, 0, 1, &clip.scissor);
+  vkCmdBindDescriptorSets(
+      command_buffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      pipeline_resources.layout,
+      0,
+      1,
+      &command.descriptor_set,
+      0,
+      nullptr);
+  vkCmdDraw(
+      command_buffer, command.vertex_count, 1, command.first_vertex, 0);
+}
+
+void vulkan_record_text_draws(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanTextPipelineResources& pipeline_resources,
+    const VulkanTextVertexBufferResources& vertex_buffer,
+    std::span<const VulkanTextDrawCommand> commands) {
+  if (commands.empty()) {
+    return;
+  }
+  vulkan_bind_text_draw_state(
+      command_buffer, extent, pipeline_resources, vertex_buffer);
   for (const VulkanTextDrawCommand& command : commands) {
-    const VulkanClipScissorResolution clip =
-        vulkan_resolve_clip_stack_scissor(
-            extent, command.clip_rect, RendererClipStackRecord{});
-    if (!clip.visible) {
-      continue;
-    }
-    vkCmdSetScissor(command_buffer, 0, 1, &clip.scissor);
-    vkCmdBindDescriptorSets(
-        command_buffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        pipeline_resources.layout,
-        0,
-        1,
-        &command.descriptor_set,
-        0,
-        nullptr);
-    vkCmdDraw(
-        command_buffer,
-        command.vertex_count,
-        1,
-        command.first_vertex,
-        0);
+    vulkan_record_text_draw(
+        command_buffer, extent, pipeline_resources, command);
   }
 }
 

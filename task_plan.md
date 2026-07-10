@@ -634,13 +634,18 @@ Windows/Linux core API is stable enough for parity work.
   push-time framebuffer AABB before nested intersection; invalid transforms
   retain the authored clip and clip-before-transform order remains
   framebuffer-space. Step 488 owns stable renderer command ordering.
+- Phase E Step 488 adds compact frame order entries and a zero-allocation
+  `VulkanFrameDrawOrderCursor`. Actual Vulkan recording preserves stable
+  authored interleaving across solid, rounded, and text draws, skips absent
+  geometry, expands text page runs in place, and avoids redundant state binds.
+  Step 489 owns explicit z/layer command ordering.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-487 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-488 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -662,9 +667,10 @@ Windows/Linux core API is stable enough for parity work.
   single-application precomposed opacity across production color paths, and
   blend-capable solid geometry replacing authored rectangle clear commands,
   and single-application composed affine transforms across production vertices,
-  plus push-time transformed clip AABBs with scoped framebuffer semantics.
-- In progress: Step 488 stable renderer command ordering.
-- Pending bands: Steps 488-490 ordering and composition closeout;
+  plus push-time transformed clip AABBs with scoped framebuffer semantics, and
+  stable authored interleaving in actual Vulkan recording.
+- In progress: Step 489 explicit z/layer command ordering.
+- Pending bands: Steps 489-490 z/layer ordering and composition closeout;
   Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -771,6 +777,12 @@ Windows/Linux core API is stable enough for parity work.
 | `vulkan_transform_clip_interaction_test` could not find `transform_clip_rect_to_framebuffer_aabb` | Step 487 RED | Expected RED; add a focused private push-time clip-transform leaf and keep intersection/scissor ownership separate |
 | A combined Step 487 implementation patch had an invalid test-file hunk boundary and was rejected atomically | Step 487 implementation | Split test, production, structure, and planning edits into file-scoped patches; the failed patch changed no files |
 | The first Step 487 documentation gate remained at exit 60 because the Markdown ledger split `push-time framebuffer AABB` across a line | Step 487 documentation gate | Keep the strict shared evidence phrase contiguous without changing clip semantics |
+| Step 488 exploration requested nonexistent generic frame, renderer-present, glyph draw-data header, and report-batches files | Step 488 ownership discovery | Use `vulkan_renderer.cpp`, `vulkan_presentation.cpp`, `vulkan_glyph_atlas_draw_bindings_internal.hpp`, and the live focused report modules |
+| `vulkan_stable_draw_order_test` could not include `vulkan_frame_draw_order_internal.hpp` | Step 488 RED | Expected RED; add compact frame order, zero-allocation cursor, and focused ordered recording modules |
+| A combined Step 488 rounded-recorder patch had an invalid file-switch hunk and was rejected atomically | Step 488 implementation | Split declaration and implementation edits into separate file-scoped patches; the failed patch changed no files |
+| Legacy rounded/text draw-recording audits exited 32 after ordered recording replaced their direct command-entry calls | Step 488 regression gate | Keep batch-wrapper Vulkan behavior assertions, but require broad recording to call the focused ordered module and that module to call single-draw helpers |
+| A combined Step 488 authority-file patch referenced a progress line added later in the same patch and was rejected atomically | Step 488 documentation sync | Split progress and authority-file updates so each patch matches live file context |
+| The first Step 488 documentation gate remained at exit 40 because the roadmap split `stable authored interleaving` across a line | Step 488 documentation gate | Keep the strict shared evidence phrase contiguous without weakening the ordering audit |
 
 ## Definition Of Done For This 20-Step Goal
 

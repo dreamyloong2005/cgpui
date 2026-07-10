@@ -124,9 +124,11 @@ int test_text_draw_recording_structure() {
       read_source("src/renderer/vulkan/vulkan_text_draw_recording.cpp");
   const std::string command =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
+  const std::string ordered =
+      read_source("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
   const std::string presentation =
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
-  if (header.empty() || source.empty() || command.empty() ||
+  if (header.empty() || source.empty() || command.empty() || ordered.empty() ||
       presentation.empty()) {
     return 30;
   }
@@ -144,7 +146,9 @@ int test_text_draw_recording_structure() {
       return 31;
     }
   }
-  if (!contains(command, "vulkan_record_text_draws(") ||
+  if (!contains(command, "vulkan_record_frame_draws(") ||
+      contains(command, "vulkan_record_text_draws(") ||
+      !contains(ordered, "vulkan_record_text_draw(") ||
       contains(command, "vkCmdDraw") ||
       !contains(presentation, "text_pipeline_resources_") ||
       !contains(presentation, "text_vertex_buffer_")) {

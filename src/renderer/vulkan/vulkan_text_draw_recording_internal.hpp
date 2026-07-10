@@ -7,6 +7,7 @@
 namespace cgpui {
 
 struct VulkanTextDrawCommand {
+  std::size_t text_draw_index = 0;
   VkDescriptorSet descriptor_set = VK_NULL_HANDLE;
   std::uint32_t first_vertex = 0;
   std::uint32_t vertex_count = 0;
@@ -18,6 +19,16 @@ vulkan_plan_text_draw_commands(
     std::span<const VulkanGlyphAtlasDrawBinding> bindings,
     const VulkanTextPipelineResources& pipeline_resources,
     const VulkanTextVertexBufferResources& vertex_buffer);
+void vulkan_bind_text_draw_state(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanTextPipelineResources& pipeline_resources,
+    const VulkanTextVertexBufferResources& vertex_buffer);
+void vulkan_record_text_draw(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanTextPipelineResources& pipeline_resources,
+    const VulkanTextDrawCommand& command);
 void vulkan_record_text_draws(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,

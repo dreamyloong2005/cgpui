@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_device_internal.hpp"
+#include "vulkan_frame_draw_order_internal.hpp"
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
@@ -20,6 +21,7 @@ class VulkanRendererState final {
   Result<void> resize(Size framebuffer_size, DpiScale scale);
   Result<void> present_frame(
       Color color,
+      std::span<const VulkanFrameDrawOrderEntry> draw_order,
       std::span<const SolidRect> rects,
       std::span<const RoundedRectDraw> rounded_rects,
       std::span<const TextDraw> text_draws,

@@ -8,6 +8,15 @@ namespace cgpui {
 [[nodiscard]] Result<void> vulkan_validate_rounded_rect_draw_resources(
     const VulkanRoundedRectPipelineResources& pipeline_resources,
     const VulkanRoundedRectBufferResources& buffer_resources);
+void vulkan_bind_rounded_rect_draw_state(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanRoundedRectPipelineResources& pipeline_resources,
+    const VulkanRoundedRectBufferResources& buffer_resources);
+void vulkan_record_rounded_rect_draw(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanRoundedRectDrawRange& draw);
 void vulkan_record_rounded_rect_draws(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,

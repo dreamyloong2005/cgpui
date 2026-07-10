@@ -4,6 +4,7 @@ namespace cgpui {
 
 Result<void> VulkanRendererState::present_frame(
     Color color,
+    std::span<const VulkanFrameDrawOrderEntry> draw_order,
     std::span<const SolidRect> rects,
     std::span<const RoundedRectDraw> rounded_rects,
     std::span<const TextDraw> text_draws,
@@ -70,6 +71,7 @@ Result<void> VulkanRendererState::present_frame(
           text_pipeline_resources_,
           text_vertex_buffer_,
           color,
+          draw_order,
           glyph_atlas_resources_,
           glyph_atlas_draw_quads_,
           glyph_atlas_draw_bindings_,

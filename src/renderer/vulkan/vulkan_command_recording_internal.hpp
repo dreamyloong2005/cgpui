@@ -3,8 +3,7 @@
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
-#include "vulkan_rounded_rect_draw_recording_internal.hpp"
-#include "vulkan_text_draw_recording_internal.hpp"
+#include "vulkan_frame_draw_recording_internal.hpp"
 
 namespace cgpui {
 
@@ -19,6 +18,7 @@ Result<void> record_vulkan_frame_command_buffer(
     const VulkanTextPipelineResources& text_pipeline_resources,
     const VulkanTextVertexBufferResources& text_vertex_buffer,
     Color color,
+    std::span<const VulkanFrameDrawOrderEntry> draw_order,
     const VulkanGlyphAtlasResources& glyph_atlas_resources,
     std::span<const TexturedGlyphQuad> glyph_atlas_draw_quads,
     std::span<const VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings,

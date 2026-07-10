@@ -987,8 +987,24 @@
       "xmake.lua"
     ],
     "phase_e_step_487_remaining_gap": "Step 488 owns stable renderer command ordering",
+    "phase_e_step_488_surface": "Phase E Step 488 adds compact frame order entries and a zero-allocation VulkanFrameDrawOrderCursor. VulkanFrame stores only primitive kind and per-type command index while existing vectors retain command ownership. Actual Vulkan recording preserves stable authored interleaving across solid, rounded, and text draws, skips commands with no generated geometry, expands multi-page text commands in place, and rebinds pipeline or buffer state only when the resolved resource kind changes. Step 489 owns explicit z/layer command ordering.",
+    "phase_e_step_488_sources": [
+      "src/renderer/vulkan/vulkan_frame_draw_order_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_draw_order.cpp",
+      "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_renderer.cpp",
+      "src/renderer/vulkan/vulkan_presentation.cpp",
+      "src/renderer/vulkan/vulkan_command_recording.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_text_draw_recording.cpp",
+      "tests/renderer/vulkan_stable_draw_order_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_488_remaining_gap": "Step 489 owns explicit z/layer command ordering",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 488 stable renderer command ordering"
+    "phase_e_current_handoff": "Phase E Step 489 explicit z/layer command ordering"
   },
   "categories": [
     "application_and_app_context",

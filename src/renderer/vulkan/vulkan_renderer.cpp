@@ -9,23 +9,40 @@ class VulkanFrame final : public RenderFrame {
       : state_(std::move(state)) {}
 
   void clear(Color color) override { clear_color_ = color; }
-  void draw_rect(const SolidRect& rect) override { rects_.push_back(rect); }
-  void draw_rounded_rect(const RoundedRectDraw& rect) override {
-    rounded_rects_.push_back(rect);
+  void draw_rect(const SolidRect& rect) override {
+    append_draw(rects_, rect, RendererPrimitiveKind::solid_rect);
   }
-  void draw_text(const TextDraw& text) override { text_draws_.push_back(text); }
+  void draw_rounded_rect(const RoundedRectDraw& rect) override {
+    append_draw(rounded_rects_, rect, RendererPrimitiveKind::rounded_rect);
+  }
+  void draw_text(const TextDraw& text) override {
+    append_draw(text_draws_, text, RendererPrimitiveKind::text);
+  }
   void draw_text_selection(const TextSelectionDraw& selection) override {
-    text_selections_.push_back(selection);
+    append_draw(
+        text_selections_, selection, RendererPrimitiveKind::text_selection);
   }
   void draw_text_caret(const TextCaretDraw& caret) override {
-    text_carets_.push_back(caret);
+    append_draw(text_carets_, caret, RendererPrimitiveKind::text_caret);
   }
   void draw_image(const ImageDraw& image) override {
-    image_draws_.push_back(image);
+    append_draw(image_draws_, image, RendererPrimitiveKind::image);
   }
   Result<void> present() override;
 
  private:
+  template <typename Draw>
+  void append_draw(
+      std::vector<Draw>& draws,
+      const Draw& draw,
+      RendererPrimitiveKind primitive_kind) {
+    draw_order_.push_back(VulkanFrameDrawOrderEntry{
+        .primitive_kind = primitive_kind,
+        .command_index = draws.size(),
+    });
+    draws.push_back(draw);
+  }
+
   std::shared_ptr<VulkanRendererState> state_;
   Color clear_color_{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F};
   std::vector<SolidRect> rects_;
@@ -34,6 +51,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<TextSelectionDraw> text_selections_;
   std::vector<TextCaretDraw> text_carets_;
   std::vector<ImageDraw> image_draws_;
+  std::vector<VulkanFrameDrawOrderEntry> draw_order_;
 };
 
 class VulkanRenderer final : public Renderer {
@@ -58,6 +76,7 @@ class VulkanRenderer final : public Renderer {
 Result<void> VulkanFrame::present() {
   return state_->present_frame(
       clear_color_,
+      draw_order_,
       rects_,
       rounded_rects_,
       text_draws_,

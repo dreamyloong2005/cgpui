@@ -37,15 +37,11 @@ Result<void> vulkan_validate_rounded_rect_draw_resources(
   return {};
 }
 
-void vulkan_record_rounded_rect_draws(
+void vulkan_bind_rounded_rect_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanRoundedRectPipelineResources& pipeline_resources,
     const VulkanRoundedRectBufferResources& buffer_resources) {
-  if (buffer_resources.draws.empty()) {
-    return;
-  }
-
   vkCmdBindPipeline(
       command_buffer,
       VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -82,22 +78,39 @@ void vulkan_record_rounded_rect_draws(
       0,
       sizeof(push_constants),
       &push_constants);
+}
 
+void vulkan_record_rounded_rect_draw(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanRoundedRectDrawRange& draw) {
+  const VulkanClipScissorResolution clip = vulkan_resolve_clip_stack_scissor(
+      extent, draw.clip_rect, RendererClipStackRecord{});
+  if (!clip.visible) {
+    return;
+  }
+  vkCmdSetScissor(command_buffer, 0, 1, &clip.scissor);
+  vkCmdDrawIndexed(
+      command_buffer,
+      static_cast<std::uint32_t>(draw.index_count),
+      1,
+      static_cast<std::uint32_t>(draw.first_index),
+      0,
+      0);
+}
+
+void vulkan_record_rounded_rect_draws(
+    VkCommandBuffer command_buffer,
+    VkExtent2D extent,
+    const VulkanRoundedRectPipelineResources& pipeline_resources,
+    const VulkanRoundedRectBufferResources& buffer_resources) {
+  if (buffer_resources.draws.empty()) {
+    return;
+  }
+  vulkan_bind_rounded_rect_draw_state(
+      command_buffer, extent, pipeline_resources, buffer_resources);
   for (const VulkanRoundedRectDrawRange& draw : buffer_resources.draws) {
-    const VulkanClipScissorResolution clip =
-        vulkan_resolve_clip_stack_scissor(
-            extent, draw.clip_rect, RendererClipStackRecord{});
-    if (!clip.visible) {
-      continue;
-    }
-    vkCmdSetScissor(command_buffer, 0, 1, &clip.scissor);
-    vkCmdDrawIndexed(
-        command_buffer,
-        static_cast<std::uint32_t>(draw.index_count),
-        1,
-        static_cast<std::uint32_t>(draw.first_index),
-        0,
-        0);
+    vulkan_record_rounded_rect_draw(command_buffer, extent, draw);
   }
 }
 

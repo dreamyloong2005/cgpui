@@ -151,6 +151,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_swapchain_internal.hpp",
       "src/renderer/vulkan/vulkan_device_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_draw_order_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_draw_order.cpp",
+      "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_draw_recording.cpp",
       "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp",
       "src/renderer/vulkan/vulkan_clip_scissor.cpp",
       "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp",
@@ -515,6 +519,9 @@ int main(int argc, char** argv) {
       !contains(command_recording, "record_vulkan_frame_command_buffer(") ||
       !contains(command_recording, "vkCmdBeginRenderPass") ||
       !contains(command_recording, "solid_rect_buffers") ||
+      !contains(command_recording, "vulkan_record_frame_draws(") ||
+      contains(command_recording, "vulkan_record_rounded_rect_draws(") ||
+      contains(command_recording, "vulkan_record_text_draws(") ||
       contains(command_recording, "vulkan_record_solid_rects(") ||
       contains(command_recording, "vkCmdClearAttachments") ||
       contains(command_recording, "choose_vulkan_surface_format(")) {
@@ -578,6 +585,35 @@ int main(int argc, char** argv) {
       !contains(solid_rect_geometry, "vulkan_apply_composed_transform(") ||
       contains(command_recording, "vulkan_apply_composed_transform(")) {
     return 75;
+  }
+  const std::string frame_draw_order_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_draw_order_internal.hpp");
+  const std::string frame_draw_order =
+      read_source("src/renderer/vulkan/vulkan_frame_draw_order.cpp");
+  const std::string frame_draw_recording_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp");
+  const std::string frame_draw_recording =
+      read_source("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
+  const std::string draw_order_presentation =
+      read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  if (line_count(frame_draw_order_header) > 80 ||
+      line_count(frame_draw_order) > 100 ||
+      line_count(frame_draw_recording_header) > 50 ||
+      line_count(frame_draw_recording) > 100 ||
+      !contains(frame_draw_order_header, "struct VulkanFrameDrawOrderEntry") ||
+      !contains(frame_draw_order_header, "class VulkanFrameDrawOrderCursor") ||
+      contains(frame_draw_order_header, "std::vector") ||
+      contains(frame_draw_order, "std::vector") ||
+      !contains(renderer, "draw_order_") ||
+      !contains(renderer, "append_draw(") ||
+      !contains(draw_order_presentation, "VulkanFrameDrawOrderEntry") ||
+      !contains(frame_draw_recording, "VulkanFrameDrawOrderCursor") ||
+      !contains(frame_draw_recording,
+                "vulkan_bind_rounded_rect_draw_state(") ||
+      !contains(frame_draw_recording, "vulkan_record_rounded_rect_draw(") ||
+      !contains(frame_draw_recording, "vulkan_bind_text_draw_state(") ||
+      !contains(frame_draw_recording, "vulkan_record_text_draw(")) {
+    return 76;
   }
 
   const std::string internal =
@@ -1179,7 +1215,7 @@ int main(int argc, char** argv) {
       !contains(text_draw_recording, "vkCmdBindPipeline") ||
       !contains(text_draw_recording, "vkCmdBindDescriptorSets") ||
       !contains(text_draw_recording, "vkCmdDraw") ||
-      !contains(command_recording, "vulkan_record_text_draws(") ||
+      contains(command_recording, "vulkan_record_text_draws(") ||
       contains(command_recording, "vkCmdDraw")) {
     return 65;
   }
@@ -1353,8 +1389,8 @@ int main(int argc, char** argv) {
                 "vulkan_validate_rounded_rect_draw_resources(") ||
       !contains(rounded_rect_draw_recording, "vkCmdBindIndexBuffer") ||
       !contains(rounded_rect_draw_recording, "vkCmdDrawIndexed") ||
-      !contains(command_recording,
-                "vulkan_record_rounded_rect_draws(") ||
+      contains(command_recording,
+               "vulkan_record_rounded_rect_draws(") ||
       contains(command_recording, "vkCmdDrawIndexed")) {
     return 71;
   }

@@ -1589,7 +1589,13 @@ draw calls for the Windows/Linux renderer.
   pushed before later transforms remain framebuffer-space. Vulkan scissor
   resolution stays allocation-free. Step 488 owns stable renderer command
   ordering.
-- [ ] Steps 488-490: Complete z/layer ordering in
+- [x] Phase E Step 488 adds compact frame order entries and a zero-allocation
+  `VulkanFrameDrawOrderCursor`. Actual Vulkan recording now preserves
+  stable authored interleaving across solid, rounded, and text draws, skips commands
+  with no generated geometry, expands multi-page text commands in place, and
+  rebinds pipeline/buffer state only when the resolved resource kind changes.
+  Step 489 owns explicit z/layer command ordering.
+- [ ] Steps 489-490: Complete z/layer ordering in
   actual command recording, then close the clip/composition band. Rectangular
   clip stacks use Step 483 scissor recording; a future non-rectangular clip
   primitive would require a stencil or shader-mask path.
