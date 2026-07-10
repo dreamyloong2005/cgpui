@@ -1257,8 +1257,14 @@
       "xmake.lua"
     ],
     "phase_e_step_505_remaining_gap": "Step 506 SVG integration closeout",
+    "phase_e_step_506_surface": "Phase E Step 506 SVG integration closeout is audit-only in tests/api_parity/phase_e_svg_integration_closeout_test.cpp. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.",
+    "phase_e_step_506_sources": [
+      "tests/api_parity/phase_e_svg_integration_closeout_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_506_remaining_gap": "Step 507 batching and frame scheduling",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 506 SVG integration closeout"
+    "phase_e_current_handoff": "Step 507 batching and frame scheduling"
   },
   "categories": [
     "application_and_app_context",

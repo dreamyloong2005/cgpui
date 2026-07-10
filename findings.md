@@ -1,5 +1,14 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 506 SVG Integration Closeout
+
+- Step 506 is audit-only. Steps 499-505 already own the full behavior chain,
+  so closeout should add no renderer API, raster behavior, or Vulkan code.
+- The closeout must freeze module and focused-test evidence for planning,
+  LunaSVG rasterization, cache ownership, viewport scaling, current-color
+  recolor, frame upload, and the prelude-only example before batching begins.
+- Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
+
 ## 2026-07-10 Phase E Step 505 SVG Public Example
 
 - The example can remain platform-neutral and executable by using a small

@@ -632,6 +632,7 @@ consume C: drive space again.
 - Handoff: Step 505 SVG public example.
 - Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw through public APIs.
 - Handoff: Step 506 SVG integration closeout.
+- Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
 
 ## Categories
 

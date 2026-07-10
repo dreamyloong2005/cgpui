@@ -720,13 +720,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 503 adds `SvgRasterColorizationPlan` with a validated RGBA current color normalized to RGBA8 cache identity. The LunaSVG currentColor recolor is raster-time, while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
 - Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset, while failed rasterization skips upload. Step 505 SVG public example is next.
 - Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw. Step 506 SVG integration closeout is next.
+- Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-505 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-506 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -769,10 +770,10 @@ Windows/Linux core API is stable enough for parity work.
   device-scale metadata, plus validated SVG current-color planning,
   LunaSVG root recolor, normalized recolor cache identity, and backend-neutral
   cache-to-`RenderFrame` SVG upload integration, plus the prelude-only public
-  registered-source/raster-cache/upload/draw example.
-- In progress: Step 506 SVG integration closeout.
-- Pending bands: Step 506 SVG; Steps
-  507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  registered-source/raster-cache/upload/draw example, plus the audit-only SVG
+  integration closeout.
+- In progress: Step 507 batching and frame scheduling.
+- Pending bands: Steps 507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -784,6 +785,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 506 closeout exited 80 because four historical SVG behavior function names were guessed instead of read | Step 506 first GREEN | Read the actual focused test declarations and update only the audit needles while preserving all seven evidence checks |
 | A multi-hunk Step 504 structure patch still failed at the line-count hunk after reading the current file | Step 504 structure sync | Apply the ownership/include checks first, then insert the two line limits with a single-line replacement hunk |
 | `svg_image_upload.cpp` failed because direct `renderer_frame.hpp` inclusion lacks report-type declarations supplied by the aggregate | Step 504 first GREEN build | Keep the new leaf lightweight with a `RenderFrame` forward declaration and include the aggregate only in the `.cpp` that needs the complete class |
 | The first Step 504 implementation patch used the pre-Step-503 renderer line-count anchor and did not apply | Step 504 implementation | Split leaf/source edits from the structure test and patch the current colorization-aware line-count block exactly |

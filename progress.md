@@ -1,5 +1,32 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 506 SVG Integration Closeout
+
+- Step 505 is committed on `master` at
+  `269f9ddf docs: add svg raster upload example`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- Added an audit-only closeout target that requires Steps 499-505 module,
+  behavior, xmake, documentation, and example evidence without introducing new
+  renderer behavior.
+- RED confirmed: the closeout executable reaches the expected documentation
+  exit 30 after all target/module/behavior evidence checks pass.
+- Synchronized the audit-only SVG closeout and Step 507 handoff across the
+  roadmap, ledgers, task plan, and findings.
+- The first closeout GREEN attempt exited 80 because four historical focused
+  function names were stale guesses. Replaced them with the actual declarations
+  while retaining all seven behavior evidence checks.
+- Resumed the active Phase E goal from Step 506. Session catch-up found no
+  unsynchronized source changes beyond this audit slice, and `git diff --stat`
+  matches the intended documentation, xmake, and closeout-test files.
+- The WinGet-linked `rg.exe` remains unusable on this host, so repository and
+  planning-file lookups continue through PowerShell `Select-String`.
+- The complete Steps 499-506 SVG focused band passed 10/10, and the
+  `api_parity_public_svg_raster_upload` executable exits 0.
+- The complete Windows debug suite passes 187/187. Ledger JSON parsing and
+  `git diff --check` pass.
+- `wsl.exe -l -q` still returns an empty distribution list, so Step 506 Linux
+  verification remains deferred to the final Phase E gate.
+
 ## 2026-07-10 Phase E Step 505 SVG Public Example
 
 - Step 504 is committed on `master` at

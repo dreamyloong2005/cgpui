@@ -1689,7 +1689,7 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 503 adds `SvgRasterColorizationPlan` for a validated RGBA current color and normalized RGBA8 cache identity. The focused backend performs LunaSVG currentColor recolor through the document root while existing image color remains draw-time multiplicative tint. Step 504 SVG image upload integration is next.
 - [x] Phase E Step 504 adds `SvgImageUploadResult` and consumes a cache-owned raster ImageAsset through RenderFrame::upload_image(...) integration. Cache hits resubmit the ready asset for the current frame, while failed rasterization skips upload. Step 505 SVG public example is next.
 - [x] Phase E Step 505 adds the prelude-only `public_svg_raster_upload` executable. It turns a registered SVG source into a viewport-aware raster request, proves cache miss/hit behavior, and performs cached upload and image draw through public APIs. Step 506 SVG integration closeout is next.
-- [ ] Step 506: Close the SVG integration band.
+- [x] Phase E Step 506 closes the SVG integration band. Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
   command reuse, pipeline switches, resource barriers, swapchain recovery, and
   present pacing.

@@ -815,6 +815,13 @@ target("phase_e_svg_public_example_test")
     add_files("tests/api_parity/phase_e_svg_public_example_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_e_svg_integration_closeout_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/api_parity/phase_e_svg_integration_closeout_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows", "linux") then
     target("vulkan_glyph_atlas_descriptor_test")
         set_kind("binary")
