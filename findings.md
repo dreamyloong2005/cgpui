@@ -9622,3 +9622,19 @@
   broad `src/platform/empty.cpp`; Step 545 should move it to a focused
   `src/platform/platform_window_chrome.cpp` implementation file.
 - Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.
+
+## 2026-07-11 Phase F Step 546 Child Window Ownership Audit
+
+- App setup runs before `WindowRuntime::run(...)`, so app-opened windows cannot
+  receive a real root native owner on the old immediate-creation path. Their
+  runtime records must remain pending until root platform-window and renderer
+  activation completes.
+- `PlatformApplication::create_child_window(...)` is the compatibility
+  boundary: generic/test applications may fall back to `create_window(...)`,
+  while production backends own native parent semantics.
+- Win32 top-level child windows must remain overlapped/popup windows and pass
+  the root `HWND` as the `CreateWindowExW` owner, rather than using `WS_CHILD`.
+- Wayland already declares the xdg-shell `set_parent` request in its interface
+  table, but lacked the client request wrapper and parent toplevel plumbing.
+  The request belongs before the child's initial `wl_surface_commit`.
+- Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.

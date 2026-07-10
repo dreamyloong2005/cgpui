@@ -7,6 +7,7 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
     wl_compositor* compositor,
     xdg_wm_base* shell,
     zxdg_decoration_manager_v1* decoration_manager,
+    xdg_toplevel* parent,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,
@@ -20,7 +21,8 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
   window->set_text_input_available(text_input_available);
 
   auto initialized =
-      window->initialize(compositor, shell, decoration_manager, descriptor);
+      window->initialize(
+          compositor, shell, decoration_manager, parent, descriptor);
   if (!initialized) {
     return std::unexpected(initialized.error());
   }
@@ -88,6 +90,7 @@ Result<void> WaylandWindow::initialize(
     wl_compositor* compositor,
     xdg_wm_base* shell,
     zxdg_decoration_manager_v1* decoration_manager,
+    xdg_toplevel* parent,
     const WindowDescriptor& descriptor) {
   surface_ = wl_compositor_create_surface(compositor);
   if (surface_ == nullptr) {
@@ -125,6 +128,9 @@ Result<void> WaylandWindow::initialize(
       .close = &WaylandWindow::handle_toplevel_close,
   };
   xdg_toplevel_add_listener(toplevel_, &toplevel_listener, this);
+  if (parent != nullptr) {
+    xdg_toplevel_set_parent(toplevel_, parent);
+  }
   if (decoration_manager != nullptr) {
     decoration_ = zxdg_decoration_manager_v1_get_toplevel_decoration(
         decoration_manager, toplevel_);

@@ -171,7 +171,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 546 child-window")) {
+                "\"phase_f_step_545_remaining_gap\": \"Step 546 child-window")) {
     return 10;
   }
   return 0;

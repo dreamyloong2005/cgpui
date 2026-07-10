@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <expected>
+#include <functional>
 #include <memory>
 #include <string_view>
 #include <type_traits>
@@ -96,13 +97,34 @@ class ResultConventionApplication final : public cgpui::PlatformApplication {
         new BorrowedWindow(window_));
   }
 
-  int run() override { return 0; }
+  cgpui::Result<std::unique_ptr<cgpui::PlatformWindow>> create_child_window(
+      const cgpui::WindowDescriptor& descriptor,
+      cgpui::PlatformWindow&,
+      cgpui::PlatformEventCallback callback) override {
+    create_child_window_count += 1;
+    if (fail_create_child_window) {
+      return std::unexpected(cgpui::Error{
+          .code = cgpui::ErrorCode::window_creation_failed,
+          .message = "test window creation failure"});
+    }
+    return create_window(descriptor, std::move(callback));
+  }
+
+  int run() override {
+    if (on_run) {
+      on_run();
+    }
+    return 0;
+  }
   void quit() override {}
 
   bool fail_create_window = false;
+  bool fail_create_child_window = false;
   int create_window_count = 0;
+  int create_child_window_count = 0;
   cgpui::WindowDescriptor last_descriptor{};
   cgpui::PlatformEventCallback window_callback;
+  std::function<void()> on_run;
 
  private:
   class BorrowedWindow final : public cgpui::PlatformWindow {
@@ -137,7 +159,7 @@ class ResultConventionApplication final : public cgpui::PlatformApplication {
 int test_try_open_window_returns_platform_error() {
   ResultConventionWindow window;
   ResultConventionApplication app(window);
-  app.fail_create_window = true;
+  app.fail_create_child_window = true;
   ResultConventionView view;
   int begin_frame_count = 0;
   int renderer_factory_count = 0;
@@ -152,17 +174,24 @@ int test_try_open_window_returns_platform_error() {
       });
   const std::size_t record_count_before = runtime.window_runtime_records().size();
 
-  cgpui::Result<cgpui::AppOpenedWindow> opened =
-      runtime.try_open_window(cgpui::WindowOptions{}.title("Fails early"));
+  std::optional<cgpui::Result<cgpui::AppOpenedWindow>> opened;
+  app.on_run = [&] {
+    opened = runtime.try_open_window(
+        cgpui::WindowOptions{}.title("Fails after root"));
+  };
+  const int run_result = runtime.run(
+      cgpui::WindowDescriptor{},
+      cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
 
-  if (opened.has_value()) {
+  if (run_result != 0 || !opened.has_value() || opened->has_value()) {
     return 1;
   }
-  if (opened.error().code != cgpui::ErrorCode::window_creation_failed ||
-      opened.error().message != "test window creation failure") {
+  if (opened->error().code != cgpui::ErrorCode::window_creation_failed ||
+      opened->error().message != "test window creation failure") {
     return 2;
   }
-  if (app.create_window_count != 1 || renderer_factory_count != 0 ||
+  if (app.create_window_count != 1 || app.create_child_window_count != 1 ||
+      renderer_factory_count != 1 ||
       begin_frame_count != 0) {
     return 3;
   }
@@ -177,31 +206,43 @@ int test_try_open_window_returns_renderer_error() {
   ResultConventionWindow window;
   ResultConventionApplication app(window);
   ResultConventionView view;
+  int begin_frame_count = 0;
   int renderer_factory_count = 0;
+  ResultConventionRenderer root_renderer(begin_frame_count);
   cgpui::WindowRuntime runtime(
       app,
       view,
       [&](const cgpui::RenderSurfaceDescriptor&)
           -> cgpui::Result<cgpui::Renderer*> {
         renderer_factory_count += 1;
+        if (renderer_factory_count == 1) {
+          return &root_renderer;
+        }
         return std::unexpected(cgpui::Error{
             .code = cgpui::ErrorCode::renderer_initialization_failed,
             .message = "test renderer failure"});
       });
   const std::size_t record_count_before = runtime.window_runtime_records().size();
 
-  cgpui::Result<cgpui::AppOpenedWindow> opened =
-      runtime.try_open_window(cgpui::WindowOptions{}.title("Fails renderer"));
+  std::optional<cgpui::Result<cgpui::AppOpenedWindow>> opened;
+  app.on_run = [&] {
+    opened = runtime.try_open_window(
+        cgpui::WindowOptions{}.title("Fails renderer"));
+  };
+  const int run_result = runtime.run(
+      cgpui::WindowDescriptor{},
+      cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
 
-  if (opened.has_value()) {
+  if (run_result != 0 || !opened.has_value() || opened->has_value()) {
     return 4;
   }
-  if (opened.error().code !=
+  if (opened->error().code !=
           cgpui::ErrorCode::renderer_initialization_failed ||
-      opened.error().message != "test renderer failure") {
+      opened->error().message != "test renderer failure") {
     return 5;
   }
-  if (app.create_window_count != 1 || renderer_factory_count != 1) {
+  if (app.create_window_count != 2 || app.create_child_window_count != 1 ||
+      renderer_factory_count != 2) {
     return 6;
   }
   if (!runtime.app_opened_windows().empty() ||
@@ -253,7 +294,8 @@ int test_app_facades_forward_try_open_window_results() {
       from_context->descriptor.title != "Result Context") {
     return 9;
   }
-  if (app.create_window_count != 2 || renderer_factory_count != 2 ||
+  if (app.create_window_count != 0 || app.create_child_window_count != 0 ||
+      renderer_factory_count != 0 ||
       begin_frame_count != 0) {
     return 10;
   }

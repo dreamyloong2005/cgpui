@@ -255,6 +255,30 @@ class FakeApplication final : public cgpui::PlatformApplication {
     return std::unique_ptr<cgpui::PlatformWindow>(new BorrowedWindow(window_));
   }
 
+  cgpui::Result<std::unique_ptr<cgpui::PlatformWindow>> create_child_window(
+      const cgpui::WindowDescriptor& descriptor,
+      cgpui::PlatformWindow&,
+      cgpui::PlatformEventCallback callback) override {
+    create_window_count += 1;
+    last_descriptor = descriptor;
+    created_descriptors.push_back(descriptor);
+    if (!failing_window_title.empty() &&
+        descriptor.title == failing_window_title) {
+      return std::unexpected(cgpui::Error{
+          .code = cgpui::ErrorCode::window_creation_failed,
+          .message = "native child window unsupported"});
+    }
+    auto child = std::make_unique<FakeWindow>(cgpui::WindowState{
+        .framebuffer_size = descriptor.size,
+        .scale = cgpui::DpiScale{1.0F},
+        .close_requested = false});
+    child->callback = std::move(callback);
+    FakeWindow* child_ptr = child.get();
+    child_windows_.push_back(std::move(child));
+    return std::unique_ptr<cgpui::PlatformWindow>(
+        new BorrowedWindow(*child_ptr));
+  }
+
   int run() override {
     run_count += 1;
     if (window_.callback) {
@@ -355,6 +379,7 @@ class FakeApplication final : public cgpui::PlatformApplication {
   };
 
   FakeWindow& window_;
+  std::vector<std::unique_ptr<FakeWindow>> child_windows_;
 };
 
 class MultiWindowFakeApplication final : public cgpui::PlatformApplication {
@@ -378,7 +403,7 @@ class MultiWindowFakeApplication final : public cgpui::PlatformApplication {
   int run() override {
     run_count += 1;
     if (!created_windows.empty()) {
-      created_windows.back()->emit(cgpui::WindowRedrawRequested{});
+      created_windows.front()->emit(cgpui::WindowRedrawRequested{});
     }
     if (on_run) {
       on_run(*this);
@@ -691,9 +716,9 @@ int test_window_options_and_app_context_open_window_skeleton() {
   }
   if (application.create_window_count != 3 ||
       application.created_descriptors.size() != 3 ||
-      application.created_descriptors[0].title != "Secondary Window" ||
-      application.created_descriptors[1].title != "Palette" ||
-      application.created_descriptors[2].title != "CGPUI") {
+      application.created_descriptors[0].title != "CGPUI" ||
+      application.created_descriptors[1].title != "Secondary Window" ||
+      application.created_descriptors[2].title != "Palette") {
     return 19;
   }
   return 0;
@@ -880,7 +905,7 @@ int test_multi_window_registry_owns_independent_runtime_records() {
   bool setup_records_ok = false;
   bool frame_root_record_ok = false;
   bool frame_secondary_records_ok = false;
-  bool setup_child_renderers_distinct = false;
+  bool setup_children_pending = false;
   bool frame_child_renderers_distinct = false;
   const cgpui::View* first_root_ptr = nullptr;
   const cgpui::View* second_root_ptr = nullptr;
@@ -942,27 +967,30 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                     second_record->root_view_id == second_opened.root_view_id &&
                     first_record->owns_root_view &&
                     second_record->owns_root_view &&
-                    first_record->window != nullptr &&
-                    second_record->window != nullptr &&
-                    first_record->renderer != nullptr &&
-                    second_record->renderer != nullptr &&
+                    first_record->window == nullptr &&
+                    second_record->window == nullptr &&
+                    first_record->renderer == nullptr &&
+                    second_record->renderer == nullptr &&
                     first_record->owns_window &&
                     second_record->owns_window &&
                     first_record->owns_renderer &&
                     second_record->owns_renderer &&
-                    first_record->active &&
-                    second_record->active &&
+                    !first_record->active &&
+                    !second_record->active &&
+                    first_record->parent_runtime_id ==
+                        context.runtime.root_window_runtime_id() &&
+                    second_record->parent_runtime_id ==
+                        context.runtime.root_window_runtime_id() &&
                     !first_record->native_window_error.has_value() &&
                     !second_record->native_window_error.has_value() &&
                     context.runtime.app_opened_window_root_view(
                         first_opened.root_view_id) == first_root_ptr &&
                     context.runtime.app_opened_window_root_view(
                         second_opened.root_view_id) == second_root_ptr;
-                setup_child_renderers_distinct =
+                setup_children_pending =
                     first_record != nullptr && second_record != nullptr &&
-                    first_record->renderer != nullptr &&
-                    second_record->renderer != nullptr &&
-                    first_record->renderer != second_record->renderer;
+                    first_record->renderer == nullptr &&
+                    second_record->renderer == nullptr;
 
                 context.runtime.set_after_frame_callback(
                     [&](const cgpui::ViewContext& frame_context) {
@@ -1028,7 +1056,7 @@ int test_multi_window_registry_owns_independent_runtime_records() {
       !frame_secondary_records_ok) {
     return 34;
   }
-  if (!setup_child_renderers_distinct || !frame_child_renderers_distinct) {
+  if (!setup_children_pending || !frame_child_renderers_distinct) {
     return 43;
   }
   if (renderer_factory_count != 3 || renderer_begin_frame_count != 1 ||
@@ -1040,9 +1068,9 @@ int test_multi_window_registry_owns_independent_runtime_records() {
   }
   if (application.create_window_count != 3 ||
       application.created_descriptors.size() != 3 ||
-      application.created_descriptors[0].title != "First Child" ||
-      application.created_descriptors[1].title != "Second Child" ||
-      application.created_descriptors[2].title != "CGPUI") {
+      application.created_descriptors[0].title != "CGPUI" ||
+      application.created_descriptors[1].title != "First Child" ||
+      application.created_descriptors[2].title != "Second Child") {
     return 37;
   }
   return 0;
@@ -1079,7 +1107,7 @@ int test_app_opened_window_routes_native_events_by_runtime_id() {
       [&](const cgpui::RenderSurfaceDescriptor&)
           -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
         int* resize_counter =
-            renderer_factory_count == 0 ? &child_renderer_resize_count
+            renderer_factory_count == 1 ? &child_renderer_resize_count
                                         : nullptr;
         renderer_factory_count += 1;
         auto owned = std::make_unique<RecordingRenderer>(
@@ -1340,9 +1368,9 @@ int test_app_opened_window_records_native_creation_error() {
                 setup_error_record_ok =
                     record != nullptr && record->window == nullptr &&
                     !record->active &&
-                    record->native_window_error.has_value() &&
-                    record->native_window_error->code ==
-                        cgpui::ErrorCode::window_creation_failed;
+                    !record->native_window_error.has_value() &&
+                    record->parent_runtime_id ==
+                        context.runtime.root_window_runtime_id();
                 context.runtime.set_after_frame_callback(
                     [&](const cgpui::ViewContext& frame_context) {
                       after_frame_called = true;
@@ -1370,8 +1398,8 @@ int test_app_opened_window_records_native_creation_error() {
   }
   if (application.create_window_count != 2 ||
       application.created_descriptors.size() != 2 ||
-      application.created_descriptors[0].title != "Unsupported Child" ||
-      application.created_descriptors[1].title != "CGPUI") {
+      application.created_descriptors[0].title != "CGPUI" ||
+      application.created_descriptors[1].title != "Unsupported Child") {
     return 41;
   }
   if (renderer_begin_frame_count != 1 || frame.present_count != 1) {

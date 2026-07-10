@@ -13,6 +13,7 @@ class WaylandWindow final : public PlatformWindow {
       wl_compositor* compositor,
       xdg_wm_base* shell,
       zxdg_decoration_manager_v1* decoration_manager,
+      xdg_toplevel* parent,
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback,
       bool text_input_available,
@@ -20,6 +21,7 @@ class WaylandWindow final : public PlatformWindow {
   ~WaylandWindow() override;
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] wl_surface* surface() const;
+#include "wayland_window_parent_internal.hpp"
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
 #include "wayland_window_display_internal.hpp"
@@ -36,7 +38,6 @@ class WaylandWindow final : public PlatformWindow {
       WindowChromeOptions options) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
-
   [[nodiscard]] CursorShape cursor_shape() const;
   [[nodiscard]] bool configured() const;
   void pointer_moved(Point position);
@@ -86,7 +87,6 @@ class WaylandWindow final : public PlatformWindow {
   void set_text_input_available(bool available);
   void focus_changed(bool focused);
   void output_scale_changed(wl_output* output, std::int32_t scale, bool present);
-
  private:
   WaylandWindow(
       wl_display* display, PlatformEventCallback callback,

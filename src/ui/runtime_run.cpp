@@ -91,6 +91,7 @@ int WindowRuntime::run(
     root_record->renderer = renderer_;
     root_record->active = true;
   }
+  activate_pending_native_windows();
 
   if (options.request_initial_redraw) {
     redraw_scheduled_ = true;

@@ -28,12 +28,14 @@ struct WindowOptions {
 
 struct AppOpenedWindow {
   WindowRuntimeId runtime_id;
+  WindowRuntimeId parent_runtime_id;
   WindowDescriptor descriptor;
   ViewId root_view_id;
 };
 
 struct WindowRuntimeRecord {
   WindowRuntimeId runtime_id;
+  WindowRuntimeId parent_runtime_id;
   WindowDescriptor descriptor;
   ViewId root_view_id;
   PlatformWindow* window = nullptr;

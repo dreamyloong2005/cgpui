@@ -14,6 +14,7 @@ WindowRuntime::WindowRuntime(
       RegisteredView{.view = &view_});
   window_runtime_records_.push_back(WindowRuntimeRecord{
       .runtime_id = root_window_runtime_id_,
+      .parent_runtime_id = {},
       .descriptor = {},
       .root_view_id = root_view_id_,
       .window = nullptr,

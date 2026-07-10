@@ -98,6 +98,9 @@ int xdg_toplevel_add_listener(
     const xdg_toplevel_listener* listener,
     void* data);
 void xdg_toplevel_destroy(xdg_toplevel* toplevel);
+void xdg_toplevel_set_parent(
+    xdg_toplevel* toplevel,
+    xdg_toplevel* parent);
 void xdg_toplevel_set_title(xdg_toplevel* toplevel, const char* title);
 void xdg_toplevel_set_maximized(xdg_toplevel* toplevel);
 void xdg_toplevel_unset_maximized(xdg_toplevel* toplevel);

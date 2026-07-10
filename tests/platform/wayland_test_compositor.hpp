@@ -116,6 +116,7 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_unfullscreen_requested() const;
   [[nodiscard]] bool wait_for_client_side_decoration_requested() const;
   [[nodiscard]] bool wait_for_server_side_decoration_requested() const;
+  [[nodiscard]] bool wait_for_parent_requested() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_acked() const;
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const;

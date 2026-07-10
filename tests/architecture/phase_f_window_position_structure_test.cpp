@@ -56,6 +56,8 @@ int main() {
       read_source("src/platform/platform_window_position.cpp");
   const std::string win32_application =
       read_source("src/platform/win32/win32_application.cpp");
+  const std::string win32_factory =
+      read_source("src/platform/win32/win32_window_factory.cpp");
   const std::string win32_position =
       read_source("src/platform/win32/win32_window_position.cpp");
   const std::string win32_proc = read_source(
@@ -87,7 +89,8 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &position_header, &platform_window, &window_header, &event_header,
-      &event_platform, &position_default, &win32_application, &win32_position,
+      &event_platform, &position_default, &win32_application, &win32_factory,
+      &win32_position,
       &win32_proc, &wayland_position_internal, &wayland_position,
       &wayland_registered, &runtime_control, &runtime_windows, &event_kind,
       &win32_test, &wayland_test, &xmake, &roadmap, &ledger_md, &ledger_json,
@@ -111,7 +114,7 @@ int main() {
       !contains(position_default, "return false;")) {
     return 3;
   }
-  if (!contains(win32_application, "descriptor.position.has_value()") ||
+  if (!contains(win32_factory, "descriptor.position.has_value()") ||
       !contains(win32_position, "GetWindowRect(hwnd_, &rect)") ||
       !contains(win32_position, "SetWindowPos(") ||
       !contains(win32_position, "display_command_state_.fullscreen") ||

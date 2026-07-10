@@ -1927,6 +1927,7 @@ int main() {
       "src/ui/runtime_key_binding_sequences.cpp",
       "src/ui/runtime_windows.cpp",
       "src/ui/runtime_window_activation.cpp",
+      "src/ui/runtime_window_ownership.cpp",
       "src/ui/runtime_window_records.cpp",
       "src/ui/runtime_window_rendering.cpp",
       "src/ui/runtime_window_results.cpp",
@@ -2315,7 +2316,7 @@ int main() {
       !contains(runtime_window_activation_source,
                 "void WindowRuntime::activate_native_window_for_record(") ||
       !contains(runtime_window_activation_source,
-                "application_.create_window(") ||
+                "application_.create_child_window(") ||
       !contains(runtime_window_activation_source, "try_create_renderer(") ||
       contains(runtime_window_activation_source, "renderer_factory_(") ||
       contains(runtime_window_activation_source,

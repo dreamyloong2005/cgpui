@@ -890,7 +890,12 @@ Windows/Linux core API is stable enough for parity work.
   transitions; the Wayland test compositor observes client/server decoration
   modes; Vulkan policy coverage proves transparent requests prefer supported
   non-opaque composite alpha before opaque fallback.
-- In progress: Step 546 child-window ownership production behavior.
+- Completed: Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.
+- Step 546 evidence: setup-authored child records retain explicit root runtime
+  ownership until the root native window is active; real Win32 tests observe
+  `GW_OWNER`, and the Wayland test compositor observes non-null
+  `xdg_toplevel.set_parent` before the child's first surface commit.
+- In progress: Step 547 Win32 pointer input production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -924,6 +929,11 @@ Windows/Linux core API is stable enough for parity work.
 | The resumed Windows gate named nonexistent `window_runtime_lifecycle_test/default`, so xmake reported only 9/9 | Step 545 final regression | Use the registered `window_runtime_test/default` lifecycle target and verify the report count explicitly |
 | Wrapping the Step 545 Wayland create declaration raised `wayland_window_internal.hpp` from 120 to 121 lines and tripped both structure guards | Step 545 final diff polish | Keep the readable declaration wrap but remove one nearby non-semantic blank line so the hard 120-line cap remains green |
 | Sandbox-scoped `git add` could not create `.git/index.lock` | Step 545 staging | Re-run the same narrowly scoped staging command with the repository's approved Git escalation; keep `.vscode/` excluded |
+| The first combined Step 546 test patch assumed the decoration atomics were adjacent to a different context and was rejected atomically | Step 546 behavior coverage | Locate the exact compositor fields and split compositor, test-file, and xmake edits into independent patches |
+| The first WSL Step 546 build could not see `RegisteredWaylandWindow` from the application-only internal include | Step 546 Wayland child creation | Include `wayland_window_internal.hpp` explicitly in the focused child-window implementation where the internal dynamic cast is owned |
+| The first Step 546 structure-test launch hit a transient xmake `cannot create filelock for package(ninja)` error after the WSL build | Step 546 structure RED | Confirm no Windows or WSL xmake/ninja process remains, then rerun after the stale package lock releases |
+| The expanded Step 546 Windows gate exposed three historical structure assumptions: creation evidence still lived in `win32_application.cpp`, Step 545 bound the global handoff, and Wayland display protocol exceeded 55 lines after Step 545 min/max requests | Step 546 lifecycle-band regression | Point position evidence at the factory, freeze Step 545's own remaining-gap field, and move min/max requests into focused `wayland_protocol_xdg_toplevel_size.cpp` |
+| The first public compatibility gate failed `public_result_conventions_test` because its direct pre-run calls expected immediate native child errors | Step 546 Result compatibility | Test pending publication before root activation separately, then invoke `try_open_window` during the active event loop to preserve synchronous platform/renderer error propagation |
 
 ## Errors Encountered During Phase E Resume
 

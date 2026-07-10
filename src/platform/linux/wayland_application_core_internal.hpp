@@ -12,6 +12,10 @@ class WaylandApplication final : public PlatformApplication {
   Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) override;
+  Result<std::unique_ptr<PlatformWindow>> create_child_window(
+      const WindowDescriptor& descriptor,
+      PlatformWindow& parent,
+      PlatformEventCallback callback) override;
   int run() override;
   void request_wakeup() override;
   void quit() override;
@@ -23,6 +27,7 @@ class WaylandApplication final : public PlatformApplication {
       const override;
 
  private:
+#include "wayland_application_window_creation_internal.hpp"
 #include "wayland_application_registry_internal.hpp"
 #include "wayland_application_input_internal.hpp"
 #include "wayland_application_cursor_internal.hpp"

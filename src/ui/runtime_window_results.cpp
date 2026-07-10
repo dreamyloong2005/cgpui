@@ -10,10 +10,12 @@ Result<AppOpenedWindow> WindowRuntime::try_open_window(
   const WindowDescriptor descriptor = options.to_descriptor();
   AppOpenedWindow opened{
       .runtime_id = runtime_id,
+      .parent_runtime_id = root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = {}};
   WindowRuntimeRecord record{
       .runtime_id = runtime_id,
+      .parent_runtime_id = root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = {},
       .window = nullptr,
@@ -39,10 +41,12 @@ Result<AppOpenedWindow> WindowRuntime::try_open_window(
   const ViewId root_view_id = register_view(std::move(root_view));
   AppOpenedWindow opened{
       .runtime_id = runtime_id,
+      .parent_runtime_id = root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = root_view_id};
   WindowRuntimeRecord record{
       .runtime_id = runtime_id,
+      .parent_runtime_id = root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = root_view_id,
       .window = nullptr,

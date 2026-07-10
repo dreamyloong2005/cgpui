@@ -1,4 +1,4 @@
-#include "win32_window_internal.hpp"
+#include "win32_window_factory_internal.hpp"
 
 #include <memory>
 #include <utility>
@@ -23,63 +23,25 @@ class Win32Application final : public PlatformApplication {
   Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) override {
-    const wchar_t* class_name = L"CGPUIWindow";
+    return create_window_with_owner(descriptor, std::move(callback), nullptr);
+  }
 
-    WNDCLASSEXW window_class{};
-    window_class.cbSize = sizeof(WNDCLASSEXW);
-    window_class.style = CS_HREDRAW | CS_VREDRAW;
-    window_class.lpfnWndProc = win32_window_proc;
-    window_class.hInstance = instance_;
-    window_class.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
-    window_class.lpszClassName = class_name;
-
-    if (RegisterClassExW(&window_class) == 0 && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
+  Result<std::unique_ptr<PlatformWindow>> create_child_window(
+      const WindowDescriptor& descriptor,
+      PlatformWindow& parent,
+      PlatformEventCallback callback) override {
+    const NativeSurfaceHandle native_parent = parent.native_surface();
+    const auto* parent_surface =
+        std::get_if<Win32SurfaceHandle>(&native_parent);
+    if (parent_surface == nullptr || parent_surface->hwnd == nullptr) {
       return std::unexpected(Error{
-          .code = ErrorCode::platform_initialization_failed,
-          .message = "RegisterClassExW failed"});
+          .code = ErrorCode::invalid_argument,
+          .message = "Win32 child window requires a Win32 parent"});
     }
-
-    auto state = WindowState{
-        .framebuffer_size = descriptor.size,
-        .scale = DpiScale{1.0F},
-        .close_requested = false,
-        .ime_text_input_support = ImeTextInputSupport::available};
-    auto window = std::make_unique<Win32Window>(instance_, std::move(callback), state);
-
-    const auto title = widen(descriptor.title);
-    const DWORD style = win32_window_style_for(descriptor.chrome);
-    const DWORD extended_style =
-        win32_window_extended_style_for(descriptor.chrome);
-    const int initial_x = descriptor.position.has_value()
-        ? static_cast<int>(descriptor.position->x)
-        : CW_USEDEFAULT;
-    const int initial_y = descriptor.position.has_value()
-        ? static_cast<int>(descriptor.position->y)
-        : CW_USEDEFAULT;
-    HWND hwnd = CreateWindowExW(
-        extended_style,
-        class_name,
-        title.c_str(),
-        style,
-        initial_x,
-        initial_y,
-        static_cast<int>(descriptor.size.width),
-        static_cast<int>(descriptor.size.height),
-        nullptr,
-        nullptr,
-        instance_,
-        static_cast<Win32WindowMessageTarget*>(window.get()));
-    if (hwnd == nullptr) {
-      return std::unexpected(Error{
-          .code = ErrorCode::window_creation_failed,
-          .message = "CreateWindowExW failed"});
-    }
-
-    window->apply_window_chrome(descriptor.chrome);
-    ShowWindow(hwnd, SW_SHOW);
-    window->update_size();
-    windows_.push_back(window.get());
-    return window;
+    return create_window_with_owner(
+        descriptor,
+        std::move(callback),
+        static_cast<HWND>(parent_surface->hwnd));
   }
 
   int run() override {
@@ -129,6 +91,19 @@ class Win32Application final : public PlatformApplication {
   }
 
  private:
+  Result<std::unique_ptr<PlatformWindow>> create_window_with_owner(
+      const WindowDescriptor& descriptor,
+      PlatformEventCallback callback,
+      HWND owner) {
+    auto window =
+        create_win32_window(instance_, descriptor, std::move(callback), owner);
+    if (!window) {
+      return std::unexpected(window.error());
+    }
+    windows_.push_back(window->get());
+    return std::unique_ptr<PlatformWindow>(std::move(*window));
+  }
+
   void dispatch_wakeup() {
     for (Win32Window* window : windows_) {
       if (window != nullptr) {

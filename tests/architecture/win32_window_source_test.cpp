@@ -57,6 +57,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_size.cpp",
       "src/platform/win32/win32_window_drag_drop.cpp",
       "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_factory_internal.hpp",
+      "src/platform/win32/win32_window_factory.cpp",
       "src/platform/win32/win32_window_ime.cpp",
       "src/platform/win32/win32_window_ime_placement.cpp",
       "src/platform/win32/win32_window_proc.cpp",
@@ -294,6 +296,8 @@ int main() {
 
   const std::string win32_application =
       read_source("src/platform/win32/win32_application.cpp");
+  const std::string win32_window_factory =
+      read_source("src/platform/win32/win32_window_factory.cpp");
   const std::string win32_internal =
       read_source("src/platform/win32/win32_internal.hpp");
   const std::string win32_accessibility_internal =
@@ -578,7 +582,8 @@ int main() {
       !contains(win32_window_proc, "win32_window_proc_handle_lifecycle(") ||
       !contains(win32_window_proc, "win32_window_proc_handle_pointer(") ||
       !contains(win32_window_proc, "win32_window_proc_handle_keyboard(") ||
-      !contains(win32_application, "win32_window_proc")) {
+      !contains(win32_window_factory, "win32_window_proc") ||
+      !contains(win32_window_factory, "CreateWindowExW(")) {
     return 74;
   }
   if (line_count(win32_window_proc) > 80 ||

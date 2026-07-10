@@ -5,6 +5,14 @@ namespace cgpui {
 Result<std::unique_ptr<PlatformWindow>> WaylandApplication::create_window(
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback) {
+  return create_window_with_parent(descriptor, std::move(callback), nullptr);
+}
+
+Result<std::unique_ptr<PlatformWindow>>
+WaylandApplication::create_window_with_parent(
+    const WindowDescriptor& descriptor,
+    PlatformEventCallback callback,
+    xdg_toplevel* parent) {
   if (display_ == nullptr) {
     return std::unexpected(wayland_error(
         ErrorCode::platform_initialization_failed,
@@ -31,6 +39,7 @@ Result<std::unique_ptr<PlatformWindow>> WaylandApplication::create_window(
       compositor_,
       shell_,
       decoration_manager_,
+      parent,
       descriptor,
       std::move(callback),
       wayland_text_input_available(*text_input_),

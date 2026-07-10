@@ -28,6 +28,7 @@ class RegisteredWaylandWindow final : public PlatformWindow {
       WindowChromeOptions options) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
+  [[nodiscard]] WaylandWindow& wayland_window() const;
 
  private:
   WaylandWindowPtr window_;

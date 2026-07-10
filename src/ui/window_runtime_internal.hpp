@@ -42,7 +42,7 @@ void apply_cursor_shape(CursorShape cursor_shape);
 void apply_focused_text_ime_placement();
 void record_platform_diagnostic(PlatformDiagnosticEvent event);
 void fail_and_quit(Error error);
-void activate_native_window_for_record(WindowRuntimeRecord& record);
+void activate_native_window_for_record(WindowRuntimeRecord& record), activate_pending_native_windows();
 [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor, std::string_view empty_renderer_message);
 [[nodiscard]] Result<void> try_draw_frame_for_record(WindowRuntimeRecord& record, View& view);
 #include "runtime_static_rendering_internal.hpp"

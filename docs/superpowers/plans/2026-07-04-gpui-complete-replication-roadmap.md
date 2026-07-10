@@ -1749,7 +1749,8 @@ not protocol/test skeletons.
 - [x] Phase F Step 543 adds real Win32 minimize/maximize/restore and reversible borderless fullscreen, plus Wayland xdg-toplevel display requests with compositor-confirmed lifecycle state. Step 544 window positioning production behavior is next.
 - [x] Phase F Step 544 adds capability-aware top-level positioning with initial/query/request support and WindowMoved delivery on Win32, while Wayland explicitly reports absolute positioning unsupported. Step 545 transparent and decorated window production behavior is next.
 - [x] Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.
-- [ ] Steps 539-546: Complete window lifecycle: creation, activation, focus,
+- [x] Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.
+- [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
 - [ ] Steps 547-554: Complete Win32 input: pointer, wheel, high precision

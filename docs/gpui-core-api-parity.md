@@ -109,11 +109,11 @@ desktop integration surfaces remain separate future work.
   edge cases remain incomplete.
 - Win32 drag/drop uses deterministic event hooks and public payload shapes, not
   full OLE `IDropTarget` shell integration or drag-effect negotiation.
-- Multi-window support records per-window runtime ownership and app-opened
-  roots, and app-opened child windows now attempt native `PlatformWindow`
-  creation with graceful per-record `native_window_error` storage. Independent
-  child renderers, child render loops, full event routing, and production
-  lifecycle ownership remain incomplete.
+- Multi-window support records per-window runtime ownership, independent child
+  renderers, event routing, and deterministic close cleanup. App-opened child
+  windows defer native activation until the root exists, then use a real root
+  owner HWND on Win32 and `xdg_toplevel.set_parent` on Wayland. Broader
+  simultaneous multi-window event-loop fairness and stress remain incomplete.
 - Frame timing diagnostics expose stable counters, and production Vulkan frame
   pacing now covers bounded CPU submission, MAILBOX/FIFO selection, swapchain
   recovery, and coalesced next-frame redraws; real profiler timing remains

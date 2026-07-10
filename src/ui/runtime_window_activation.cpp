@@ -5,8 +5,20 @@ namespace cgpui {
 void WindowRuntime::activate_native_window_for_record(
     WindowRuntimeRecord& record) {
   record.native_window_error.reset();
-  auto window_result = application_.create_window(
+  WindowRuntimeRecord* parent_record =
+      find_window_runtime_record(record.parent_runtime_id);
+  if (parent_record == nullptr) {
+    record.native_window_error = Error{
+        .code = ErrorCode::invalid_argument,
+        .message = "Child window parent runtime record not found"};
+    return;
+  }
+  if (!parent_record->active || parent_record->window == nullptr) {
+    return;
+  }
+  auto window_result = application_.create_child_window(
       record.descriptor,
+      *parent_record->window,
       [this, runtime_id = record.runtime_id](const PlatformEvent& event) {
         handle_native_additional_window_event(runtime_id, event);
       });

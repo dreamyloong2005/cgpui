@@ -1768,6 +1768,7 @@
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/linux/wayland_protocol_xdg_decoration.cpp",
       "src/platform/linux/wayland_protocol_xdg_decoration_interfaces.cpp",
+      "src/platform/linux/wayland_protocol_xdg_toplevel_size.cpp",
       "src/platform/linux/wayland_registry.cpp",
       "src/platform/linux/wayland_application.cpp",
       "src/platform/linux/wayland_window_chrome.cpp",
@@ -1785,7 +1786,26 @@
       "xmake.lua"
     ],
     "phase_f_step_545_remaining_gap": "Step 546 child-window ownership production behavior",
-    "phase_f_current_handoff": "Step 546 child-window ownership production behavior"
+    "phase_f_step_546_surface": "Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.",
+    "phase_f_step_546_sources": [
+      "include/cgpui/platform/platform_application.hpp",
+      "include/cgpui/ui/runtime_window_options.hpp",
+      "src/platform/platform_child_window.cpp",
+      "src/platform/win32/win32_window_factory.cpp",
+      "src/platform/linux/wayland_application_child_window.cpp",
+      "src/platform/linux/wayland_protocol_xdg_toplevel_parent.cpp",
+      "src/platform/linux/wayland_window_parent.cpp",
+      "src/ui/runtime_window_activation.cpp",
+      "src/ui/runtime_window_ownership.cpp",
+      "src/ui/runtime_run.cpp",
+      "tests/platform/win32_child_window_ownership_test.cpp",
+      "tests/platform/wayland_child_window_ownership_test.cpp",
+      "tests/ui/window_runtime_child_ownership_test.cpp",
+      "tests/architecture/phase_f_child_window_ownership_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_546_remaining_gap": "Step 547 Win32 pointer input production behavior",
+    "phase_f_current_handoff": "Step 547 Win32 pointer input production behavior"
   },
   "categories": [
     "application_and_app_context",

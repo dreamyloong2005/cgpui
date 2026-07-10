@@ -87,6 +87,10 @@ void RegisteredWaylandWindow::update_accessibility_tree(
   window_->update_accessibility_tree(std::move(update));
 }
 
+WaylandWindow& RegisteredWaylandWindow::wayland_window() const {
+  return *window_;
+}
+
 void WaylandWindowDeleter::operator()(WaylandWindow* window) const {
   delete window;
 }
@@ -96,6 +100,7 @@ Result<WaylandWindowPtr> create_wayland_window(
     wl_compositor* compositor,
     xdg_wm_base* shell,
     zxdg_decoration_manager_v1* decoration_manager,
+    xdg_toplevel* parent,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,
@@ -105,6 +110,7 @@ Result<WaylandWindowPtr> create_wayland_window(
       compositor,
       shell,
       decoration_manager,
+      parent,
       descriptor,
       std::move(callback),
       text_input_available,

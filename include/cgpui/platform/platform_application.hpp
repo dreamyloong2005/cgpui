@@ -19,6 +19,10 @@ class PlatformApplication {
   virtual Result<std::unique_ptr<PlatformWindow>> create_window(
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback) = 0;
+  virtual Result<std::unique_ptr<PlatformWindow>> create_child_window(
+      const WindowDescriptor& descriptor,
+      PlatformWindow& parent,
+      PlatformEventCallback callback);
   [[nodiscard]] virtual PlatformFontDiscoveryResult discover_font_discovery()
       const;
   [[nodiscard]] virtual std::vector<FontFaceDescriptor> discover_font_records()

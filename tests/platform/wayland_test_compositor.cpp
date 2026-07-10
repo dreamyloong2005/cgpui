@@ -1358,6 +1358,7 @@ struct WaylandTestCompositor::State {
   std::atomic_bool unfullscreen_requested{false};
   std::atomic_bool client_side_decoration_requested{false};
   std::atomic_bool server_side_decoration_requested{false};
+  std::atomic_bool parent_requested{false};
   std::atomic_bool resize_configure_pending{false};
   std::atomic_bool resize_configure_sent{false};
   std::atomic_bool resize_configure_acked{false};
@@ -2824,7 +2825,13 @@ const WaylandTestCompositor::State::XdgSurfaceImplementation
 const WaylandTestCompositor::State::XdgToplevelImplementation
     WaylandTestCompositor::State::toplevel_implementation{
         .destroy = destroy_resource,
-        .set_parent = [](wl_client*, wl_resource*, wl_resource*) {},
+        .set_parent = [](wl_client*, wl_resource* resource, wl_resource* parent) {
+          auto* surface =
+              static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+          if (surface != nullptr && parent != nullptr) {
+            surface->compositor->parent_requested.store(true);
+          }
+        },
         .set_title = [](wl_client*, wl_resource*, const char*) {},
         .set_app_id = [](wl_client*, wl_resource*, const char*) {},
         .show_window_menu = [](
@@ -3088,6 +3095,10 @@ bool WaylandTestCompositor::wait_for_client_side_decoration_requested() const {
 
 bool WaylandTestCompositor::wait_for_server_side_decoration_requested() const {
   return state_->wait_for_flag(state_->server_side_decoration_requested);
+}
+
+bool WaylandTestCompositor::wait_for_parent_requested() const {
+  return state_->wait_for_flag(state_->parent_requested);
 }
 
 bool WaylandTestCompositor::wait_for_resize_configure_sent() const {

@@ -20681,3 +20681,49 @@
   five authoritative documents, all focused line caps, and `git diff --check`
   pass. The resumed command-name audit also confirmed that PowerShell searches
   now use `rg` with single-quoted alternation patterns.
+
+## 2026-07-11 Phase F Step 546 Child Window Ownership
+
+- Audited the setup-time child creation path and confirmed app-opened windows
+  were created before the root native window, making real native ownership
+  impossible on the old immediate path.
+- Added the compatible `PlatformApplication::create_child_window(...)`
+  boundary with a focused default fallback, explicit `parent_runtime_id`
+  metadata, pending setup records, and root-complete activation through the
+  focused `runtime_window_ownership.cpp` module.
+- Moved Win32 native construction into `win32_window_factory.cpp`; production
+  child creation passes the root HWND as owner while preserving top-level
+  window styles. The real owner test passes.
+- Added the Wayland `xdg_toplevel.set_parent` request wrapper, parent-toplevel
+  plumbing before first commit, a focused application child-window module, and
+  compositor observation. The real Wayland ownership test passes.
+- Updated app-runner fakes and expectations for root-first creation and pending
+  setup records. Initial Windows and WSL behavior/structure gates pass 6/6.
+- Added the dedicated Step 546 structure guard and source inventory entries.
+  Its first semantic run reached the intended five-document RED gate at exit
+  7 after a transient xmake package lock released.
+- Synchronized the exact Step 546 completion sentence across roadmap,
+  Markdown/JSON ledger, task plan, and findings, with Step 547 Win32 pointer
+  input production behavior as the active handoff.
+- The expanded lifecycle-band regression first passed 12/15 on Windows; three
+  historical guards still assumed creation logic lived in
+  `win32_application.cpp`, Step 545 still owned the global handoff, and the
+  Wayland display protocol file had absorbed Step 545 min/max-size requests.
+- Redirected position evidence to the Win32 factory, froze the Step 545 guard
+  on its own remaining-gap field, and moved xdg-toplevel min/max-size requests
+  into focused `wayland_protocol_xdg_toplevel_size.cpp` without raising any
+  line cap.
+- Final expanded lifecycle-band verification passes 15/15 on Windows and
+  15/15 on WSL across real ownership behavior, runtime/app-runner behavior,
+  all seven Phase F structure guards, source inventories, and the parity
+  ledger.
+- Public compatibility verification initially passed 3/4 because the old
+  Result test requested native child errors before a parent could exist. It
+  now distinguishes pending pre-root publication from active-runtime creation:
+  active `try_open_window(...)` calls still propagate platform and renderer
+  errors synchronously without publishing failed records.
+- Header cleanliness, public Result conventions, and the application facade
+  pass 4/4 on both Windows and WSL.
+- Final JSON parsing, exact Step 546 phrase counts across all five authority
+  documents, focused line caps, and `git diff --check` pass; the only
+  unrelated worktree entry remains the pre-existing untracked `.vscode/`.
