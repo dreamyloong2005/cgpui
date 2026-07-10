@@ -1,6 +1,7 @@
 #include "vulkan_rounded_rect_geometry_internal.hpp"
 
 #include "vulkan_clip_scissor_internal.hpp"
+#include "vulkan_composition_opacity_internal.hpp"
 #include "vulkan_rounded_rect_contour_internal.hpp"
 #include "vulkan_rounded_rect_indices_internal.hpp"
 #include "vulkan_rounded_rect_radii_internal.hpp"
@@ -83,6 +84,10 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
 
     const std::size_t first_vertex = geometry.vertices.size();
     const std::size_t first_index = geometry.indices.size();
+    const Color fill_color = vulkan_apply_composed_opacity(
+        draw.color, draw.metadata, draw.composition_stack);
+    const Color stroke_color = vulkan_apply_composed_opacity(
+        stroke.color, draw.metadata, draw.composition_stack);
     std::uint32_t center_index = 0;
     std::uint32_t first_fill = 0;
     std::uint32_t first_stroke_inner = 0;
@@ -97,7 +102,7 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
               .x = draw.rect.origin.x + draw.rect.size.width * 0.5F,
               .y = draw.rect.origin.y + draw.rect.size.height * 0.5F,
           },
-          draw.color,
+          fill_color,
           1.0F);
       first_fill = static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
@@ -105,7 +110,7 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
           stroke.enabled ? stroke.inner_rect : draw.rect,
           stroke.enabled ? stroke.inner_radii : radii,
           segments,
-          draw.color,
+          fill_color,
           1.0F);
     }
 
@@ -117,19 +122,19 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
           stroke.inner_rect,
           stroke.inner_radii,
           segments,
-          stroke.color,
+          stroke_color,
           1.0F);
       first_stroke_outer =
           static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
-          geometry.vertices, draw.rect, radii, segments, stroke.color, 1.0F);
+          geometry.vertices, draw.rect, radii, segments, stroke_color, 1.0F);
       first_fringe = static_cast<std::uint32_t>(geometry.vertices.size());
       vulkan_append_rounded_rect_contour(
           geometry.vertices,
           expanded_rect(draw.rect, fringe_width),
           expanded_radii(radii, fringe_width),
           segments,
-          stroke.color,
+          stroke_color,
           0.0F);
     } else {
       first_fringe = static_cast<std::uint32_t>(geometry.vertices.size());
@@ -138,7 +143,7 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
           expanded_rect(draw.rect, fringe_width),
           expanded_radii(radii, fringe_width),
           segments,
-          draw.color,
+          fill_color,
           0.0F);
     }
 

@@ -1,5 +1,29 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 484 Nested Opacity Command Recording
+
+- `PaintList::push_metadata(...)` already composes parent and child opacity, so
+  the current stack metadata and scalar command metadata carry the final product.
+  The renderer must clamp and apply that value once rather than multiplying all
+  retained stack entries again.
+- A focused private opacity leaf can keep the policy shared and allocation-free.
+  Solid clear colors should resolve at recording, rounded fill/stroke colors at
+  geometry construction, and production text quad colors before vertex upload.
+- Renderer reports should retain authored color plus composition metadata; the
+  production text draw-data path is the appropriate place to bake opacity into
+  GPU vertex color without changing diagnostic quad semantics.
+- `vkCmdClearAttachments` writes alpha but does not execute pipeline blending.
+  Therefore clear writes do not blend even after applying the opacity policy;
+  Step 485 must promote solid rectangles to blend-capable geometry before
+  composed affine transforms move to Step 486.
+- Phase E Step 484 now implements `vulkan_apply_composed_opacity`. The resolver
+  uses current stack metadata when present, otherwise scalar metadata, treats
+  non-finite opacity as 1, clamps to `[0, 1]`, and multiplies authored alpha once.
+- Solid clear attachment color, rounded fill/stroke vertex colors, and
+  production text atlas quad colors now consume precomposed opacity. Rounded
+  and text pipelines blend; solid clear writes do not blend. Step 485 owns
+  blend-capable solid rectangle geometry.
+
 ## 2026-07-10 Phase E Step 483 Clip-Stack Command Recording
 
 - Paint commands already carry an effective nested `clip_rect` plus bounded

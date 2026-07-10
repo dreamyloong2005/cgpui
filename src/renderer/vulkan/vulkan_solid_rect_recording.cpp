@@ -1,6 +1,7 @@
 #include "vulkan_solid_rect_recording_internal.hpp"
 
 #include "vulkan_clip_scissor_internal.hpp"
+#include "vulkan_composition_opacity_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -78,13 +79,15 @@ void vulkan_record_solid_rects(
       continue;
     }
     VkClearAttachment attachment{};
+    const Color color = vulkan_apply_composed_opacity(
+        rect.color, rect.metadata, rect.composition_stack);
     attachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     attachment.colorAttachment = 0;
     attachment.clearValue.color = VkClearColorValue{{
-        rect.color.r,
-        rect.color.g,
-        rect.color.b,
-        rect.color.a,
+        color.r,
+        color.g,
+        color.b,
+        color.a,
     }};
     vkCmdClearAttachments(command_buffer, 1, &attachment, 1, &clear_rect);
   }

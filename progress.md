@@ -18796,3 +18796,45 @@
 - WSL verification remains unavailable: `wsl.exe -l -q` returned success with
   an empty distribution list. Shared clip/scissor recording remains in the
   final Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 484 Nested Opacity Command Recording
+
+- Started from clean tracked `master` at
+  `16a09c64 feat: record vulkan clip stack scissors`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed nested UI metadata is precomposed at push time: parent 0.8 and child
+  0.5 produce command/current opacity 0.4. Step 484 must apply that value once.
+- Step 484 will add a focused private composed-opacity policy and route solid
+  clear, rounded fill/stroke geometry, and production text quad colors through
+  it before actual GPU work.
+- Two exploratory reads guessed nonexistent `paint_metadata.cpp` and
+  `vulkan_rounded_rect_vertex.cpp` files. The live ownership is
+  `ui_paint_internal.hpp` and `vulkan_rounded_rect_contour.cpp`.
+- Added `vulkan_nested_opacity_test` and observed the expected RED compile
+  failure because the focused private composition-opacity header did not exist.
+- The first GREEN compile could not see the perimeter-count helper through the
+  intentionally thin geometry header; included the focused contour header
+  directly in the test instead of restoring a transitive dependency.
+- Added the focused composition-opacity policy and applied final current/scalar
+  opacity once to solid clear, rounded fill/stroke, and production text colors.
+  Authored diagnostic text quad colors remain unchanged.
+- `vulkan_nested_opacity_test/default` passed behavior and structure assertions
+  and exited 60 only at its expected documentation gate.
+- Ten existing clip, rounded, text, solid, renderer-structure, live-frame, and
+  parity regressions passed before documentation updates.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `vulkan_apply_composed_opacity`, precomposed opacity semantics, and the
+  Step 485 solid-rectangle blend handoff.
+- Final semantic review confirmed `vkCmdClearAttachments` carries alpha but
+  bypasses blend state. The Step 484 audit now states that clear writes do not
+  blend; Step 485 will promote solid rectangles to the graphics pipeline before
+  Step 486 affine transforms.
+- Focused Windows Step 484 verification passed 11/11: nested opacity, clip
+  recording, rounded geometry/stroke/fill variants, glyph draw data, text
+  vertices, solid live rendering, renderer structure, real first-frame
+  submission, and parity ledger.
+- The complete Windows debug build succeeded, then the full test suite passed
+  165/165 with `xmake test -y -P .`.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Shared opacity policy remains in the final Phase
+  E Linux gate.

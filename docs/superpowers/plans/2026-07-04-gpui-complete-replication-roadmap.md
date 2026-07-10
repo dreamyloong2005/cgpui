@@ -1562,10 +1562,18 @@ draw calls for the Windows/Linux renderer.
   solid clears reuse it, while rounded and text draws preserve the effective
   clip and install a per-draw dynamic scissor before visible GPU work. Empty
   clip results skip the draw. Step 484 owns nested opacity command recording.
-- [ ] Steps 484-490: Complete nested opacity, transform composition, and
-  z/layer ordering in actual command recording, then close the clip/composition
-  band. Rectangular clip stacks use Step 483 scissor recording; a future
-  non-rectangular clip primitive would require a stencil or shader-mask path.
+- [x] Phase E Step 484 adds `vulkan_apply_composed_opacity` in a focused private
+  policy leaf. The renderer consumes the already precomposed opacity once,
+  clamps invalid/range values, and multiplies only alpha. Solid clear colors,
+  rounded fill/stroke vertices, and production text quads now carry that alpha
+  into GPU commands without changing authored-color diagnostics. Rounded/text
+  pipelines blend; solid clear writes do not blend. Step 485 promotes solid
+  rectangles to blend-capable geometry before affine transform work.
+- [ ] Steps 485-490: Complete transform composition and z/layer ordering in
+  actual command recording, including Step 485 solid-rectangle blend promotion,
+  then close the clip/composition band. Rectangular clip stacks use Step 483
+  scissor recording; a future non-rectangular clip primitive would require a
+  stencil or shader-mask path.
 - [ ] Steps 491-498: Build image texture resources, upload staging, sampler
   modes, tint/opacity support, cache lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization

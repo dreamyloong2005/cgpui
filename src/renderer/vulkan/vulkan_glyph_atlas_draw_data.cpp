@@ -1,6 +1,7 @@
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 
 #include "vulkan_clip_scissor_internal.hpp"
+#include "vulkan_composition_opacity_internal.hpp"
 
 #include <utility>
 
@@ -43,10 +44,13 @@ VulkanGlyphAtlasDrawData vulkan_plan_glyph_atlas_draw_data(
     const TextDraw& text_draw = text_draws[text_draw_index];
     const std::optional<Rect> clip_rect = vulkan_resolve_effective_clip_rect(
         text_draw.clip_rect, text_draw.clip_stack);
+    const Color color = vulkan_apply_composed_opacity(
+        text_draw.color, text_draw.metadata, text_draw.composition_stack);
     std::vector<TexturedGlyphQuad> quads = vulkan_build_textured_glyph_quads(
         text_draw,
         glyph_cache);
     for (TexturedGlyphQuad& quad : quads) {
+      quad.color = color;
       const std::size_t quad_index = draw_data.quads.size();
       append_page_run(
           draw_data.page_usages,

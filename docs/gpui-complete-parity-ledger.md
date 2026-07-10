@@ -468,6 +468,15 @@ consume C: drive space again.
   text page-run commands retain one effective rectangle, then install a
   per-draw dynamic scissor and skip empty clip results before issuing GPU work.
 - Handoff: Phase E Step 484 nested opacity command recording.
+- Phase E Step 484 adds `vulkan_apply_composed_opacity` as an allocation-free
+  private policy. Because UI metadata already carries precomposed opacity, the
+  renderer reads the final current/scalar value once, normalizes it to `[0, 1]`,
+  and multiplies only the authored alpha channel.
+- Solid clear attachments, rounded fill/stroke geometry, and production text
+  atlas quads now bake the resolved alpha before GPU work. Rounded/text pipelines
+  blend; solid clear writes do not blend. Diagnostic textured glyph quads keep
+  authored color plus composition metadata.
+- Handoff: Phase E Step 485 blend-capable solid rectangle geometry.
 
 ## Categories
 

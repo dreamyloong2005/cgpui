@@ -615,13 +615,18 @@ Windows/Linux core API is stable enough for parity work.
   allocation; solid clears share the result, while rounded/text GPU draws use a
   per-draw dynamic scissor and skip empty clips. Step 484 owns nested opacity
   command recording.
+- Phase E Step 484 adds `vulkan_apply_composed_opacity`. The renderer consumes
+  precomposed opacity once, clamps invalid/range values, and multiplies only
+  alpha for solid clears, rounded fill/stroke vertices, and production text
+  quads. Rounded/text pipelines blend; solid clear writes do not blend. Step 485
+  promotes solid rectangles to blend-capable geometry.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-483 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-484 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -639,10 +644,11 @@ Windows/Linux core API is stable enough for parity work.
   anti-aliasing geometry and shader path, plus CSS-style radius normalization,
   plus inset border-stroke contour geometry, plus rounded paint fill variants,
   uniform styled-border coalescing, compact stroke-only geometry, and
-  allocation-free clip-stack resolution with per-draw dynamic scissor recording.
-- In progress: Step 484 nested opacity command recording.
-- Pending bands: Steps 484-490 opacity,
-  transform, and ordering; Steps 491-498 images; Steps 499-506 SVG; Steps
+  allocation-free clip-stack resolution with per-draw dynamic scissor recording,
+  and single-application precomposed opacity across production color paths.
+- In progress: Step 485 blend-capable solid rectangle geometry.
+- Pending bands: Steps 485-490 transform and ordering;
+  Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -736,6 +742,9 @@ Windows/Linux core API is stable enough for parity work.
 | `xmake test -l -P .` treated `-l -P` as an invalid option combination | Step 483 test-name diagnosis | Inspect the Lua scope directly and run the complete test name; do not use the unsupported list flag |
 | The first Step 483 documentation gate remained at exit 60 because the Markdown ledger split `per-draw dynamic scissor` across a line break | Step 483 documentation gate | Keep the shared evidence phrase contiguous without changing the scissor conclusion |
 | A Step 483 phrase-audit command repeated the known PowerShell direct-`foreach` pipe parser failure | Step 483 documentation diagnosis | Assign the loop output before piping it to `Format-Table` |
+| Step 484 exploration guessed nonexistent `paint_metadata.cpp` and `vulkan_rounded_rect_vertex.cpp` files | Step 484 boundary discovery | Read the live composition helper in `ui_paint_internal.hpp` and vertex writer in `vulkan_rounded_rect_contour.cpp` instead of creating duplicate ownership |
+| `vulkan_nested_opacity_test` could not include `vulkan_composition_opacity_internal.hpp` | Step 484 RED | Expected RED; add the focused private opacity policy and route current production color paths through it |
+| The first Step 484 GREEN compile could not see `vulkan_rounded_rect_perimeter_vertex_count` through the geometry header | Step 484 first GREEN attempt | Include the focused contour private header directly in the test and preserve the thin geometry boundary |
 
 ## Definition Of Done For This 20-Step Goal
 

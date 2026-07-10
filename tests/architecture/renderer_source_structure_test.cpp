@@ -153,6 +153,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_command_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp",
       "src/renderer/vulkan/vulkan_clip_scissor.cpp",
+      "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp",
+      "src/renderer/vulkan/vulkan_composition_opacity.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
@@ -538,6 +540,21 @@ int main(int argc, char** argv) {
       !contains(solid_rect_recording,
                 "vulkan_resolve_clip_stack_scissor(")) {
     return 73;
+  }
+  const std::string composition_opacity_header = read_source(
+      "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp");
+  const std::string composition_opacity = read_source(
+      "src/renderer/vulkan/vulkan_composition_opacity.cpp");
+  if (line_count(composition_opacity_header) > 30 ||
+      line_count(composition_opacity) > 50 ||
+      !contains(composition_opacity_header,
+                "vulkan_resolve_composed_opacity(") ||
+      !contains(composition_opacity_header,
+                "vulkan_apply_composed_opacity(") ||
+      !contains(solid_rect_recording,
+                "vulkan_apply_composed_opacity(") ||
+      contains(command_recording, "vulkan_apply_composed_opacity(")) {
+    return 74;
   }
 
   const std::string internal =
