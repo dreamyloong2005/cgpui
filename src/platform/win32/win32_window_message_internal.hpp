@@ -21,6 +21,7 @@ class Win32WindowMessageTarget {
   virtual void detach() = 0;
   virtual void update_size() = 0;
   virtual void dpi_changed(WPARAM wparam, LPARAM lparam) = 0;
+  virtual void activation_changed(bool active) = 0;
   virtual void focus_changed(bool focused) = 0;
   virtual void ime_start_composition() = 0;
   virtual void ime_composition(LPARAM lparam) = 0;

@@ -9498,3 +9498,21 @@
   queries must be forwarded by that wrapper or they silently use compatible
   base defaults even when the underlying backend has production state.
 - Phase F Step 539 adds a public window lifecycle snapshot with compatible defaults and real Win32/Wayland native-created, initial-configure, close-requested, and display-state reporting, including registered Wayland wrapper forwarding. Step 540 activation and focus production behavior is next.
+
+## 2026-07-11 Phase F Step 540 Activation And Focus Audit
+
+- Win32 currently emits `WindowFocused` for `WM_SETFOCUS`/`WM_KILLFOCUS` but
+  does not handle `WM_ACTIVATE`, and its Step 539 snapshot queries Win32 global
+  focus/activation functions. Synthetic lifecycle messages therefore cannot
+  prove state-before-event ordering. Focused backend-owned booleans are needed.
+- Wayland xdg configure already stores the current activated state before
+  emitting `WindowActivated`. Keyboard enter/leave calls
+  `WaylandWindow::focus_changed`, but that method only emits an event; adding a
+  focused member closes the lifecycle snapshot gap without changing input
+  ownership.
+- Step 540 tests should read `lifecycle_state()` inside activation/focus event
+  callbacks. This proves the backend updates observable state before dispatch,
+  not merely that an event spelling exists.
+- The existing Wayland test compositor can drive activated true/false configure
+  states and keyboard enter/leave without adding new helper APIs.
+- Phase F Step 540 makes activation and focus state-before-event observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/`WM_KILLFOCUS` and on Wayland through xdg activated configures plus keyboard enter/leave, with lifecycle snapshots matching callback state. Step 541 resize and scale-change production behavior is next.

@@ -19,6 +19,7 @@ void WaylandWindow::wakeup_requested() {
 }
 
 void WaylandWindow::focus_changed(bool focused) {
+  focused_ = focused;
   callback_(WindowFocused{.focused = focused});
 }
 

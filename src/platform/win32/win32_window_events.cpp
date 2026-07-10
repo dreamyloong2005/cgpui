@@ -55,7 +55,13 @@ void Win32Window::text_input(WPARAM wparam) {
   }
 }
 
+void Win32Window::activation_changed(bool active) {
+  active_ = active;
+  callback_(WindowActivated{.active = active});
+}
+
 void Win32Window::focus_changed(bool focused) {
+  focused_ = focused;
   callback_(WindowFocused{.focused = focused});
 }
 

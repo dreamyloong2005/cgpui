@@ -861,7 +861,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 539 evidence: the compatible base default preserves existing platform
   substitutes; real Win32 and Wayland creation/close tests plus the dedicated
   structure guard pass on both hosts, including the registered Wayland wrapper.
-- In progress: Step 540 activation and focus production behavior.
+- Completed: Phase F Step 540 makes activation and focus state-before-event observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/`WM_KILLFOCUS` and on Wayland through xdg activated configures plus keyboard enter/leave, with lifecycle snapshots matching callback state. Step 541 resize and scale-change production behavior is next.
+- Step 540 evidence: real Win32 and Wayland tests observe activated, focused,
+  blurred, and deactivated transitions with matching snapshots inside callbacks;
+  the shared lifecycle structure guard freezes message/configure ownership.
+- In progress: Step 541 resize and scale-change production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -884,6 +888,7 @@ Windows/Linux core API is stable enough for parity work.
 | `xmake build` was given three target names even though the build task accepts one target | Step 539 Windows focused build | Build each focused target with its own `xmake build <target>` invocation; `xmake test` still accepts multiple registered tests |
 | A WSL invocation with `--cd` transiently returned `WSL_E_DISTRO_NOT_FOUND`, and the next script placed `--root` before the xmake task | Step 539 WSL focused gate | Use the proven `wsl.exe -d archlinux -- bash -lc 'cd ...'` form and place the option after the task: `xmake f --root`, `xmake build --root`, `xmake test --root` |
 | The first Wayland lifecycle test saw the base default snapshot through `RegisteredWaylandWindow` | Step 539 real Wayland GREEN | Add a focused lifecycle override to the registered wrapper and guard the forwarding in the structure test |
+| `Select-String -Recurse` is not supported by this PowerShell environment | Step 540 symbol audit | Use `Get-ChildItem -Recurse -File | Select-String ...` for recursive source searches |
 
 ## Errors Encountered During Phase E Resume
 

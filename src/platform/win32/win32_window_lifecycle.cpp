@@ -23,8 +23,8 @@ PlatformWindowLifecycleState Win32Window::lifecycle_state() const {
   return PlatformWindowLifecycleState{
       .native_window_created = created,
       .initial_configure_complete = configured,
-      .active = created && GetActiveWindow() == hwnd_,
-      .focused = created && GetFocus() == hwnd_,
+      .active = created && active_,
+      .focused = created && focused_,
       .close_requested = state_.close_requested,
       .display_state = created ? display_state_for(hwnd_)
                                : PlatformWindowDisplayState::normal,

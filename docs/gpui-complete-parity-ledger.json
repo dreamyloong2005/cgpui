@@ -1656,7 +1656,22 @@
       "xmake.lua"
     ],
     "phase_f_step_539_remaining_gap": "Step 540 activation and focus production behavior",
-    "phase_f_current_handoff": "Step 540 activation and focus production behavior"
+    "phase_f_step_540_surface": "Phase F Step 540 makes activation and focus state-before-event observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/`WM_KILLFOCUS` and on Wayland through xdg activated configures plus keyboard enter/leave, with lifecycle snapshots matching callback state. Step 541 resize and scale-change production behavior is next.",
+    "phase_f_step_540_sources": [
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_proc_lifecycle.cpp",
+      "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_lifecycle.cpp",
+      "src/platform/linux/wayland_window_configure.cpp",
+      "src/platform/linux/wayland_window_events.cpp",
+      "src/platform/linux/wayland_window_lifecycle.cpp",
+      "tests/platform/win32_window_activation_focus_state_test.cpp",
+      "tests/platform/wayland_window_activation_focus_state_test.cpp",
+      "tests/architecture/phase_f_platform_lifecycle_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_540_remaining_gap": "Step 541 resize and scale-change production behavior",
+    "phase_f_current_handoff": "Step 541 resize and scale-change production behavior"
   },
   "categories": [
     "application_and_app_context",

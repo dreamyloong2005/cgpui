@@ -20418,3 +20418,31 @@
   compositor lifecycle test.
 - JSON parsing, the exact Step 539 phrase in all five authoritative documents,
   focused line caps, and `git diff --check` pass.
+
+## 2026-07-11 Phase F Step 540 Activation And Focus
+
+- Started from committed Step 539 baseline `c47f95ab` with only `.vscode/`
+  untracked.
+- Audited Win32 lifecycle messages and Wayland xdg/keyboard paths. Chosen slice
+  stores activation/focus in backend-owned state before emitting existing
+  events and verifies matching snapshots inside real platform callbacks.
+- Recursive symbol search initially used unsupported `Select-String -Recurse`;
+  subsequent searches use `Get-ChildItem -Recurse -File | Select-String`.
+- Added Win32 `WM_ACTIVATE` decoding plus backend-owned activation/focus state,
+  and persisted Wayland keyboard focus alongside the existing xdg activation
+  state. Both backends update the lifecycle snapshot before callbacks run.
+- The Win32 test first failed on the missing activation event/state as expected.
+  Final Windows focused behavior/structure verification passed 2/2.
+- Focused WSL verification reused `.build-wsl/master` plus `/dev/shm/cgpui` and
+  passed 2/2 with real activated/deactivated xdg configure and keyboard
+  enter/leave focus transitions.
+- Added the Step 540 five-document completion/handoff gate; its RED run failed
+  at the expected unsynchronized documentation check before the ledger update.
+- Synchronized the roadmap, Markdown/JSON ledger, task plan, and findings and
+  advanced the active handoff to Step 541 resize/scale-change production.
+- Final expanded Step 540 verification passed 7/7 on Windows and 7/7 on WSL,
+  covering both lifecycle steps, real backend behavior, dedicated/existing
+  structure guards, and parity-ledger synchronization.
+- JSON parsing, both exact five-document completion phrases, focused source
+  counts, and `git diff --check` pass. The lifecycle structure guard is 222
+  lines under the current 240-line band limit.

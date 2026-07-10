@@ -26,7 +26,7 @@ PlatformWindowLifecycleState WaylandWindow::lifecycle_state() const {
           configured_ && pending_configure_.configured &&
           pending_configure_.last_acked_configure_serial != 0,
       .active = current.activated,
-      .focused = false,
+      .focused = focused_,
       .close_requested = state_.close_requested,
       .display_state = display_state_for(current),
   };

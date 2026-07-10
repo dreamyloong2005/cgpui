@@ -38,6 +38,7 @@ class Win32Window final
   void update_size() override;
   void update_size_for_dpi(float dpi);
   void dpi_changed(WPARAM wparam, LPARAM lparam) override;
+  void activation_changed(bool active) override;
   void focus_changed(bool focused) override;
   void ime_start_composition() override;
   void ime_composition(LPARAM lparam) override;
@@ -86,6 +87,8 @@ class Win32Window final
   PlatformEventCallback callback_;
   WindowState state_;
   Win32WindowChromeState chrome_state_;
+  bool active_ = false;
+  bool focused_ = false;
   Win32UiaAccessibilityAdapter uia_accessibility_;
   std::unique_ptr<Win32OleDropTarget> ole_drop_target_;
   Win32OleDropTargetRegistrationState ole_drop_target_registration_;

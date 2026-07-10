@@ -110,6 +110,7 @@ class WaylandWindow final : public PlatformWindow {
   WaylandXdgConfigureState pending_configure_;
   bool configured_ = false;
   bool resize_pending_surface_configure_ = false;
+  bool focused_ = false;
 };
 
 #include "wayland_registered_window_internal.hpp"

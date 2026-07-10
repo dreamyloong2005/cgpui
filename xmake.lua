@@ -111,6 +111,14 @@ if is_plat("windows") then
         add_includedirs(public_includedirs)
         add_syslinks("user32")
         add_tests("default")
+
+    target("win32_window_activation_focus_state_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_window_activation_focus_state_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
 end
 
 if is_plat("linux") then
@@ -190,6 +198,17 @@ if is_plat("linux") then
     target("wayland_window_lifecycle_state_test")
         set_kind("binary")
         add_files("tests/platform/wayland_window_lifecycle_state_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs(public_includedirs)
+        add_includedirs("tests/platform")
+        add_tests("default")
+
+    target("wayland_window_activation_focus_state_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_window_activation_focus_state_test.cpp")
         add_files("tests/platform/wayland_test_compositor.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
         add_packages("wayland")

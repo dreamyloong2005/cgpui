@@ -52,10 +52,18 @@ int main() {
       read_source("src/platform/win32/win32_window_internal.hpp");
   const std::string win32_lifecycle =
       read_source("src/platform/win32/win32_window_lifecycle.cpp");
+  const std::string win32_message_internal =
+      read_source("src/platform/win32/win32_window_message_internal.hpp");
+  const std::string win32_proc_lifecycle =
+      read_source("src/platform/win32/win32_window_proc_lifecycle.cpp");
+  const std::string win32_events =
+      read_source("src/platform/win32/win32_window_events.cpp");
   const std::string wayland_internal =
       read_source("src/platform/linux/wayland_window_internal.hpp");
   const std::string wayland_lifecycle =
       read_source("src/platform/linux/wayland_window_lifecycle.cpp");
+  const std::string wayland_events =
+      read_source("src/platform/linux/wayland_window_events.cpp");
   const std::string wayland_registered_internal =
       read_source("src/platform/linux/wayland_registered_window_internal.hpp");
   const std::string wayland_registered =
@@ -72,8 +80,10 @@ int main() {
 
   if (lifecycle_header.empty() || platform_window.empty() ||
       lifecycle_default.empty() || win32_internal.empty() ||
-      win32_lifecycle.empty() || wayland_internal.empty() ||
-      wayland_lifecycle.empty() || wayland_registered_internal.empty() ||
+      win32_lifecycle.empty() || win32_message_internal.empty() ||
+      win32_proc_lifecycle.empty() || win32_events.empty() ||
+      wayland_internal.empty() || wayland_lifecycle.empty() ||
+      wayland_events.empty() || wayland_registered_internal.empty() ||
       wayland_registered.empty() || xmake.empty() || roadmap.empty() ||
       ledger_md.empty() || ledger_json.empty() || task_plan.empty() ||
       findings.empty()) {
@@ -110,13 +120,28 @@ int main() {
     return 5;
   }
 
+  if (!contains(win32_message_internal,
+                "virtual void activation_changed(bool active) = 0;") ||
+      !contains(win32_proc_lifecycle, "case WM_ACTIVATE:") ||
+      !contains(win32_events, "Win32Window::activation_changed(bool active)") ||
+      !contains(win32_events, "active_ = active;") ||
+      !contains(win32_events, "focused_ = focused;") ||
+      !contains(win32_lifecycle, ".active = created && active_") ||
+      !contains(win32_lifecycle, ".focused = created && focused_")) {
+    return 6;
+  }
+
   if (!contains(wayland_internal,
                 "PlatformWindowLifecycleState lifecycle_state() const override;") ||
       !contains(wayland_lifecycle, "WaylandWindow::lifecycle_state() const") ||
       !contains(wayland_lifecycle, "pending_configure_.configured") ||
       !contains(wayland_lifecycle,
                 "pending_configure_.current_toplevel_state")) {
-    return 6;
+    return 7;
+  }
+  if (!contains(wayland_events, "focused_ = focused;") ||
+      !contains(wayland_lifecycle, ".focused = focused_")) {
+    return 8;
   }
 
   if (!contains(
@@ -126,14 +151,16 @@ int main() {
           wayland_registered,
           "RegisteredWaylandWindow::lifecycle_state() const") ||
       !contains(wayland_registered, "return window_->lifecycle_state();")) {
-    return 7;
+    return 9;
   }
 
   if (line_count(lifecycle_header) > 35 ||
       line_count(lifecycle_default) > 25 ||
       line_count(win32_lifecycle) > 70 ||
-      line_count(wayland_lifecycle) > 55) {
-    return 8;
+      line_count(win32_proc_lifecycle) > 110 ||
+      line_count(wayland_lifecycle) > 55 ||
+      line_count(wayland_events) > 35) {
+    return 10;
   }
 
   if (!contains(xmake, "target(\"phase_f_window_lifecycle_state_test\")") ||
@@ -142,8 +169,14 @@ int main() {
       !contains(xmake,
                 "target(\"win32_window_lifecycle_state_test\")") ||
       !contains(xmake,
-                "target(\"wayland_window_lifecycle_state_test\")")) {
-    return 9;
+                "target(\"wayland_window_lifecycle_state_test\")") ||
+      !contains(
+          xmake,
+          "target(\"win32_window_activation_focus_state_test\")") ||
+      !contains(
+          xmake,
+          "target(\"wayland_window_activation_focus_state_test\")")) {
+    return 11;
   }
 
   constexpr const char* completion =
@@ -166,8 +199,24 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 540 activation and focus")) {
-    return 11;
+          "\"phase_f_step_539_remaining_gap\": \"Step 540 activation and focus")) {
+    return 14;
+  }
+  constexpr const char* activation_focus_completion =
+      "Phase F Step 540 makes activation and focus state-before-event "
+      "observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/"
+      "`WM_KILLFOCUS` and on Wayland through xdg activated configures plus "
+      "keyboard enter/leave, with lifecycle snapshots matching callback "
+      "state. Step 541 resize and scale-change production behavior is next.";
+  for (const std::string* document : documents) {
+    if (!contains(*document, activation_focus_completion)) {
+      return 12;
+    }
+  }
+  if (!contains(
+          ledger_json,
+          "\"phase_f_current_handoff\": \"Step 541 resize and scale-change")) {
+    return 13;
   }
   return 0;
 }
