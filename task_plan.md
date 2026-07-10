@@ -684,13 +684,18 @@ Windows/Linux core API is stable enough for parity work.
   to opaque white; composition opacity reuses the precomposed resolver for
   single application to tint alpha before the fragment shader multiplies the
   sampled texel. Step 496 image cache lifetime is next.
+- Phase E Step 496 adds a frame-generation image cache with last-used state on
+  each Vulkan texture. Draw/upload requests touch existing resources before
+  fence-safe eviction, the default policy retains 120 idle frames, generation
+  wrap rebases live resources, and a live upload-idle-draw sequence proves
+  reuse without re-upload. Step 497 image invalidation is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-495 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-496 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -723,9 +728,10 @@ Windows/Linux core API is stable enough for parity work.
   production image graphics pipeline with transformed source-UV vertices,
   sampling descriptor selection, stable interleaving, and actual Vulkan image
   draw recording, plus multiplicative image tint and single-application
-  composition opacity through the explicit RGBA vertex/shader path.
-- In progress: Step 496 image cache lifetime.
-- Pending bands: Steps 496-498 images; Steps 499-506 SVG; Steps
+  composition opacity through the explicit RGBA vertex/shader path, plus a
+  120-idle-frame generation cache with fence-safe retention and eviction.
+- In progress: Step 497 image invalidation.
+- Pending bands: Steps 497-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -738,6 +744,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 496 line-count diagnostic repeated the known direct `foreach`-to-pipe PowerShell parser error | Step 496 pre-implementation audit | Assign the loop output to `$rows` before formatting; the corrected read-only audit passed |
+| `vulkan_image_texture_cache_test` failed to compile because the focused cache header did not exist | Step 496 RED | Expected RED; add frame-generation cache state, idle eviction, frame orchestration, and live reuse coverage |
 | The Step 495 documentation gate remained at exit 50 because the Markdown ledger split `single application` across lines | Step 495 first documentation GREEN | Keep the exact audit phrase contiguous; all behavior and structure checks already passed |
 | `vulkan_image_tint_opacity_test` failed to compile because the focused image-color header did not exist | Step 495 RED | Expected RED; add the private tint/opacity resolver, color vertex ABI, and shader multiplication path |
 | The first Step 494 unreadable-texture guard patch attached the command-recording call hunk to the draw-recording file and was rejected atomically | Step 494 final Vulkan layout audit | Split planner, call site, focused test, and structure assertions into exact file patches; no partial changes were applied |

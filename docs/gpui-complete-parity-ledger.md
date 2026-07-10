@@ -587,6 +587,12 @@ consume C: drive space again.
   to tint alpha, preserving authored RGB and texture alpha through
   the existing straight-alpha blend pipeline.
 - Handoff: Step 496 image cache lifetime.
+- Phase E Step 496 adds a frame-generation image cache. Each Vulkan texture
+  records its last-used frame, active draw/upload requests are touched before
+  fence-safe eviction, and the default policy retains 120 idle frames.
+- Generation wrap rebases live resources. A real upload -> idle -> draw frame
+  sequence proves the shader-readable texture survives without re-upload.
+- Handoff: Step 497 image invalidation.
 
 ## Categories
 

@@ -194,17 +194,13 @@ int test_image_texture_resource_frame(const HiddenWindow& window) {
   return (*frame)->present() ? 0 : 13;
 }
 
-int test_image_texture_upload_frame(const HiddenWindow& window) {
+int test_image_texture_cache_idle_frame(const HiddenWindow& window) {
   auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});
   if (!renderer) {
     return 14;
-  }
-  auto frame = (*renderer)->begin_frame();
-  if (!frame) {
-    return 15;
   }
   cgpui::ImageAsset image{
       .id = cgpui::ImageAssetId{42},
@@ -222,12 +218,46 @@ int test_image_texture_upload_frame(const HiddenWindow& window) {
                   },
           },
   };
-  (*frame)->upload_image(image);
+  const cgpui::ImageAssetDescriptor descriptor =
+      cgpui::describe_image_asset(image);
+  {
+    auto frame = (*renderer)->begin_frame();
+    if (!frame) {
+      return 15;
+    }
+    (*frame)->upload_image(image);
+    (*frame)->draw_image(cgpui::ImageDraw{
+        .bounds = {.size = {.width = 16.0F, .height = 16.0F}},
+        .asset = descriptor,
+    });
+    if (!(*frame)->present()) {
+      return 16;
+    }
+  }
+  {
+    auto frame = (*renderer)->begin_frame();
+    if (!frame) {
+      return 17;
+    }
+    (*frame)->clear(
+        cgpui::Color{.r = 0.30F, .g = 0.33F, .b = 0.35F, .a = 1.0F});
+    if (!(*frame)->present()) {
+      return 18;
+    }
+  }
+  auto frame = (*renderer)->begin_frame();
+  if (!frame) {
+    return 19;
+  }
   (*frame)->draw_image(cgpui::ImageDraw{
       .bounds = {.size = {.width = 16.0F, .height = 16.0F}},
-      .asset = cgpui::describe_image_asset(image),
+      .asset = descriptor,
   });
-  return (*frame)->present() ? 0 : 16;
+  return (*frame)->present() ? 0 : 20;
+}
+
+int test_image_texture_upload_frame(const HiddenWindow& window) {
+  return test_image_texture_cache_idle_frame(window);
 }
 
 int test_multi_page_glyph_atlas_frame(const HiddenWindow& window) {

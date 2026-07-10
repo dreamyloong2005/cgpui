@@ -1,5 +1,7 @@
 #include "vulkan_internal.hpp"
 
+#include "vulkan_image_texture_cache_internal.hpp"
+
 namespace cgpui {
 namespace {
 
@@ -57,6 +59,8 @@ Result<void> VulkanRendererState::prepare_image_texture_frame(
 
   vulkan_destroy_image_texture_upload_resources(
       device_, image_texture_uploads_);
+  (void)vulkan_prepare_image_texture_cache_frame(
+      device_, image_draws, image_uploads, image_texture_resources_);
   if (auto result = vulkan_update_image_texture_resources(
           physical_device_,
           device_,

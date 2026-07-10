@@ -1650,8 +1650,14 @@ draw calls for the Windows/Linux renderer.
   to opaque white, while composition opacity reuses the existing precomposed
   resolver for single application to tint alpha. Optimized embedded shaders
   remain validated. Step 496 image cache lifetime is next.
-- [ ] Steps 496-498: Build image cache lifetime, invalidation, and the image
-  integration closeout.
+- [x] Phase E Step 496 adds a frame-generation image cache with last-used
+  generations on every Vulkan texture. Existing draw/upload requests touch
+  resources before fence-safe eviction, the default policy retains 120 idle frames,
+  and generation wrap rebases live resources. A real upload -> idle -> draw
+  frame sequence reuses the shader-readable texture without re-upload.
+  Step 497 image invalidation is next.
+- [ ] Steps 497-498: Build image invalidation and the image integration
+  closeout.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,

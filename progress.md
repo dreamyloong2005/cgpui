@@ -18872,6 +18872,41 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 496 Image Cache Lifetime
+
+- Started from clean tracked `master` at
+  `6472f778 feat: apply vulkan image tint`; only the existing untracked
+  `.vscode/` directory remains.
+- Confirmed current Vulkan image resources have no frame generation or idle
+  eviction and otherwise persist until renderer teardown.
+- Chosen modular boundary is a private frame-generation image cache with a
+  120-idle-frame default. Frame requests touch resources before fence-safe
+  eviction; allocation/content invalidation remains Step 497.
+- Added `vulkan_image_texture_cache_test` and its xmake target. The RED build
+  failed exactly as intended because the focused cache private header did not
+  exist.
+- Added cache generation/last-used state, 120-idle-frame retention, wrap-safe
+  rebasing, request touching, fence-safe eviction orchestration, and ensure-path
+  usage tracking in focused private modules.
+- The cache target builds and direct execution reaches exit `50`, proving
+  generation, touch, idle-boundary, eviction, wrap, and structure checks before
+  the expected documentation gate.
+- Extended the live Vulkan frame smoke to upload an image, present an idle
+  frame, then draw the same shader-readable texture without re-upload. Live
+  frame and renderer structure tests pass 2/2.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  frame-generation image cache, 120 idle frames, fence-safe eviction, and the
+  Step 497 image invalidation handoff.
+- The complete Windows debug build succeeds. Focused cache/resource/descriptor/
+  upload/draw/tint/live-frame/structure/ledger regressions pass 9/9.
+- The complete Windows debug suite passes 177/177.
+- WSL remains unavailable because `wsl.exe -l -q` reports zero installed
+  distributions. Linux cache lifetime verification remains in the final Phase E
+  gate.
+- Final Step 496 behavior/structure/ledger gates pass 3/3. Required phrases pass
+  25/25, ledger JSON parses, cache/resource/frame/presentation modules remain
+  within structure limits, and `git diff --check` passes.
+
 ## 2026-07-10 Phase E Step 495 Image Tint And Composition Opacity
 
 - Started from clean tracked `master` at

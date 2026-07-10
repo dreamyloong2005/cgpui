@@ -20,6 +20,7 @@ Result<void> vulkan_ensure_image_texture_resource(
   if (texture != nullptr &&
       vulkan_image_texture_resource_matches(*texture, descriptor)) {
     texture->descriptor = descriptor;
+    texture->last_used_frame = resources.frame_index;
     return {};
   }
   if (texture != nullptr) {
@@ -50,6 +51,7 @@ Result<void> vulkan_ensure_image_texture_resource(
     vulkan_destroy_image_texture_resource(device, *created);
     return result;
   }
+  created->last_used_frame = resources.frame_index;
   resources.textures.push_back(*created);
   return {};
 }

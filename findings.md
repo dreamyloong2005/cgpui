@@ -1,5 +1,34 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 496 Image Cache Lifetime
+
+- Step 495 commit `6472f778` leaves tracked `master` clean with only the
+  existing untracked `.vscode/` directory.
+- Current image textures persist indefinitely in `VulkanImageTextureResources`
+  until renderer teardown or allocation-identity replacement. Step 496 should
+  make retention and eviction explicit without taking Step 497 invalidation.
+- The focused boundary should be a private frame-generation image cache leaf.
+  Each texture records its last-used frame; the default policy retains 120 idle
+  frames and evicts only during frame preparation after the in-flight fence.
+- Draw and upload requests must touch existing resources before eviction so an
+  asset used by the new frame cannot be reclaimed. New/reused resources then
+  record the current generation through the existing ensure path.
+- Live coverage should prove an uploaded texture survives an idle frame and can
+  be drawn again without re-upload. Step 497 image invalidation remains next.
+- Phase E Step 496 now provides a frame-generation image cache with a default
+  retention of 120 idle frames. Draw and upload ids are touched before
+  fence-safe eviction, resource creation/reuse records the current generation,
+  and generation wrap conservatively rebases live entries.
+- The live upload -> idle -> draw path passes without a second upload, proving
+  retained shader-readable layout and descriptor reuse. Step 497 image invalidation
+  remains next.
+- The complete Windows debug build succeeds, focused cache and image regressions
+  pass 9/9, and the full suite passes 177/177. WSL has no installed distribution,
+  so Linux verification remains a final Phase E requirement.
+- Final Step 496 audits pass: behavior/structure/ledger 3/3, required phrases
+  25/25, valid parity JSON, module line counts 76/32/72/59/96/149 within their
+  limits, and clean diff hygiene.
+
 ## 2026-07-10 Phase E Step 495 Image Tint And Composition Opacity
 
 - Step 494 commit `99e54f52` leaves tracked `master` clean with only the

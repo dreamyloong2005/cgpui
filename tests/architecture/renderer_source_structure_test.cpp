@@ -165,6 +165,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_images.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resources.cpp",
       "src/renderer/vulkan/vulkan_image_texture_frame.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_cache_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_cache.cpp",
       "src/renderer/vulkan/vulkan_image_texture_descriptors_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_samplers.cpp",
       "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp",
@@ -1438,6 +1440,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_resources.cpp");
   const std::string image_texture_frame = read_source(
       "src/renderer/vulkan/vulkan_image_texture_frame.cpp");
+  const std::string image_texture_cache_header = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_cache_internal.hpp");
+  const std::string image_texture_cache = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_cache.cpp");
   const std::string image_texture_upload_header = read_source(
       "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp");
   const std::string image_texture_staging = read_source(
@@ -1452,6 +1458,8 @@ int main(int argc, char** argv) {
       line_count(image_texture_images) > 180 ||
       line_count(image_texture_resources) > 160 ||
       line_count(image_texture_frame) > 110 ||
+      line_count(image_texture_cache_header) > 60 ||
+      line_count(image_texture_cache) > 110 ||
       !contains(image_texture_header, "struct VulkanImageTextureResource") ||
       !contains(image_texture_header, "struct VulkanImageTextureResources") ||
       !contains(image_texture_images, "vkCreateImage") ||
@@ -1459,6 +1467,12 @@ int main(int argc, char** argv) {
       !contains(image_texture_resources,
                 "vulkan_update_image_texture_resources(") ||
       !contains(image_texture_frame, "prepare_image_texture_frame(") ||
+      !contains(image_texture_frame,
+                "vulkan_prepare_image_texture_cache_frame(") ||
+      !contains(image_texture_cache_header,
+                "vulkan_image_texture_cache_max_idle_frames") ||
+      !contains(image_texture_cache,
+                "vulkan_evict_idle_image_texture_resources(") ||
       !contains(image_texture_state,
                 "VulkanImageTextureResources image_texture_resources_") ||
       !contains(image_texture_presentation,

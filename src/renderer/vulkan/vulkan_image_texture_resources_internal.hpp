@@ -2,6 +2,7 @@
 
 #include "vulkan_platform_internal.hpp"
 
+#include <cstdint>
 #include <span>
 #include <vector>
 
@@ -18,6 +19,7 @@ struct VulkanImageTextureResource {
   VkDescriptorSet nearest_descriptor_set = VK_NULL_HANDLE;
   VkDescriptorSet linear_descriptor_set = VK_NULL_HANDLE;
   VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+  std::uint64_t last_used_frame = 0;
 };
 
 struct VulkanImageTextureResources {
@@ -25,6 +27,7 @@ struct VulkanImageTextureResources {
   VkDescriptorPool descriptor_pool = VK_NULL_HANDLE;
   VkSampler nearest_sampler = VK_NULL_HANDLE;
   VkSampler linear_sampler = VK_NULL_HANDLE;
+  std::uint64_t frame_index = 0;
   std::vector<VulkanImageTextureResource> textures;
 };
 
