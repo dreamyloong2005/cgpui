@@ -102,6 +102,8 @@ int test_upload_module_structure() {
       "src/renderer/vulkan/vulkan_glyph_atlas_staging.cpp");
   const std::string recording = read_source(
       "src/renderer/vulkan/vulkan_glyph_atlas_upload_recording.cpp");
+  const std::string barriers = read_source(
+      "src/renderer/vulkan/vulkan_upload_barrier_batch.cpp");
   const std::string memory =
       read_source("src/renderer/vulkan/vulkan_device_memory.cpp");
   const std::string command_header = read_source(
@@ -113,6 +115,7 @@ int test_upload_module_structure() {
   const std::string state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
   if (internal.empty() || staging.empty() || recording.empty() ||
+      barriers.empty() ||
       memory.empty() || command_header.empty() || command_source.empty() ||
       frame.empty() || state.empty()) {
     return 20;
@@ -128,7 +131,8 @@ int test_upload_module_structure() {
       !contains(staging, "std::memcpy")) {
     return 21;
   }
-  if (!contains(recording, "vkCmdPipelineBarrier") ||
+  if (!contains(barriers, "vkCmdPipelineBarrier") ||
+      !contains(recording, "vulkan_plan_upload_image_barriers(") ||
       !contains(recording, "vkCmdCopyBufferToImage") ||
       !contains(recording, "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL") ||
       !contains(recording, "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL") ||

@@ -210,6 +210,9 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_staging.cpp",
       "src/renderer/vulkan/vulkan_image_texture_upload_recording.cpp",
+      "src/renderer/vulkan/vulkan_upload_barrier_batch_internal.hpp",
+      "src/renderer/vulkan/vulkan_upload_barrier_batch.cpp",
+      "tests/renderer/vulkan_upload_barrier_batching_test.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
@@ -1225,6 +1228,12 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_staging.cpp");
   const std::string glyph_atlas_upload_recording = read_source(
       "src/renderer/vulkan/vulkan_glyph_atlas_upload_recording.cpp");
+  const std::string upload_barrier_batch_header = read_source(
+      "src/renderer/vulkan/vulkan_upload_barrier_batch_internal.hpp");
+  const std::string upload_barrier_batch = read_source(
+      "src/renderer/vulkan/vulkan_upload_barrier_batch.cpp");
+  const std::string upload_barrier_batch_test = read_source(
+      "tests/renderer/vulkan_upload_barrier_batching_test.cpp");
   const std::string glyph_atlas_frame =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   if (line_count(report_texture_resources) > 150 ||
@@ -1287,6 +1296,17 @@ int main(int argc, char** argv) {
                 "test_descriptor_capacity_rejection_is_preflight(")) {
     return 59;
   }
+  if (line_count(upload_barrier_batch_header) > 70 ||
+      line_count(upload_barrier_batch) > 150 ||
+      line_count(upload_barrier_batch_test) > 260 ||
+      !contains(upload_barrier_batch_header,
+                "struct VulkanUploadBarrierPlan") ||
+      !contains(upload_barrier_batch,
+                "vulkan_plan_upload_image_barriers(") ||
+      !contains(upload_barrier_batch, "vkCmdPipelineBarrier") ||
+      contains(upload_barrier_batch, "vkCmdCopyBufferToImage")) {
+    return 57;
+  }
   if (line_count(glyph_atlas_uploads_internal) > 80 ||
       line_count(command_recording_internal) > 40 ||
       line_count(device_memory) > 50 ||
@@ -1294,6 +1314,9 @@ int main(int argc, char** argv) {
       line_count(glyph_atlas_upload_recording) > 170 ||
       line_count(glyph_atlas_frame) > 80 ||
       !contains(glyph_atlas_staging, "VK_BUFFER_USAGE_TRANSFER_SRC_BIT") ||
+      !contains(glyph_atlas_upload_recording,
+                "vulkan_plan_upload_image_barriers(") ||
+      contains(glyph_atlas_upload_recording, "vkCmdPipelineBarrier") ||
       !contains(glyph_atlas_upload_recording, "vkCmdCopyBufferToImage") ||
       !contains(glyph_atlas_frame, "prepare_glyph_atlas_frame(")) {
     return 60;
@@ -1664,6 +1687,9 @@ int main(int argc, char** argv) {
       !contains(image_texture_staging,
                 "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT") ||
       !contains(image_texture_staging, "vkMapMemory") ||
+      !contains(image_texture_upload_recording,
+                "vulkan_plan_upload_image_barriers(") ||
+      contains(image_texture_upload_recording, "vkCmdPipelineBarrier") ||
       !contains(image_texture_upload_recording,
                 "vkCmdCopyBufferToImage") ||
       !contains(image_texture_upload_recording,

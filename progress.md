@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 510 Resource-Barrier Batching
+
+- Step 509 is committed on `master` at
+  `f3aaff55 perf: batch vulkan pipeline switches`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- Glyph-atlas and image-texture upload recording currently duplicate barrier
+  mapping/building and emit transfer/readable barriers around every individual
+  copy. Step 510 will move shared image-barrier planning/recording into a focused
+  private leaf and batch unique targets into ordered waves.
+- Repeated image targets will start a new wave rather than appearing twice in
+  one barrier call; their later transition starts from shader-read layout after
+  the prior wave. Step 511 retains swapchain recovery ownership.
+- Added `vulkan_upload_barrier_batching_test` before implementation. RED is
+  exact: compilation fails only because the focused private barrier-batch
+  header does not exist yet.
+- Added the focused shared barrier planner/recorder and routed glyph-atlas and
+  image-texture copies through ordered duplicate-safe waves. The two recorders
+  now resolve all targets before emitting commands and no longer own direct
+  `vkCmdPipelineBarrier` calls.
+- The new behavior test reaches exit 50 only at the expected documentation
+  gate. Both legacy upload tests and renderer structure pass; the shared
+  header/source are 40/123 lines, the glyph/image recorders are 87/81, and the
+  focused test is 200/260.
+- Synchronized Phase E Step 510 ordered upload barrier waves with batched transfer and shader-read transitions. Unique glyph-atlas or image-texture targets share two barrier calls around their copies, while duplicate image targets start a new wave with shader-read old-layout continuity. Step 511 swapchain recovery is next.
+- Step 510 expanded regressions pass 11/11 across barrier planning, both upload
+  paths, glyph/image lifecycle, cache/invalidation, command reuse, surface,
+  live frame lifetime, renderer structure, and parity.
+- The complete Windows debug suite passes 191/191. Ledger JSON parsing and
+  `git diff --check` pass; `wsl.exe -l -q` remains empty, so Linux verification
+  stays deferred to the final Phase E gate.
+
 ## 2026-07-10 Phase E Step 509 Pipeline-Switch Batching
 
 - Step 508 is committed on `master` at

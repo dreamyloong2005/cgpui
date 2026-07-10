@@ -1,5 +1,22 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 510 Resource-Barrier Batching
+
+- Glyph-atlas and image-texture upload recording duplicate the same layout,
+  access-mask, stage-mask, and `VkImageMemoryBarrier` construction logic. Each
+  upload also emits one barrier before and one after its copy, so a batch of N
+  independent images records 2N `vkCmdPipelineBarrier` calls.
+- Step 510 should centralize upload-image barrier planning and recording in a
+  focused private module. Ordered barrier waves can transition all unique image
+  targets to transfer layout together, execute their copies, and transition the
+  whole wave to shader-read layout together.
+- A repeated image target cannot appear twice in one Vulkan image-barrier call.
+  The planner should preserve upload order by starting a new wave at a repeated
+  target and should treat that target's later old layout as shader-read because
+  the preceding wave completed the readable transition. Step 511 retains
+  swapchain recovery ownership.
+- Phase E Step 510 adds ordered upload barrier waves with batched transfer and shader-read transitions. Unique glyph-atlas or image-texture targets share two barrier calls around their copies, while duplicate image targets start a new wave with shader-read old-layout continuity. Step 511 swapchain recovery is next.
+
 ## 2026-07-10 Phase E Step 509 Pipeline-Switch Batching
 
 - `vulkan_record_frame_draws(...)` already skips all draw-state binding for

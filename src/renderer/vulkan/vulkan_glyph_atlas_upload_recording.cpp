@@ -1,68 +1,34 @@
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 
+#include "vulkan_upload_barrier_batch_internal.hpp"
+
 #include <algorithm>
 
 namespace cgpui {
-namespace {
-
-VkAccessFlags access_for_layout(VkImageLayout layout) {
-  switch (layout) {
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      return VK_ACCESS_TRANSFER_WRITE_BIT;
-    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-      return VK_ACCESS_SHADER_READ_BIT;
-    default:
-      return 0;
-  }
-}
-
-VkPipelineStageFlags destination_stage(VkImageLayout layout) {
-  return layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-             ? VK_PIPELINE_STAGE_TRANSFER_BIT
-             : VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-}
-
-} // namespace
 
 VkPipelineStageFlags vulkan_glyph_atlas_source_stage(VkImageLayout layout) {
-  switch (layout) {
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      return VK_PIPELINE_STAGE_TRANSFER_BIT;
-    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-      return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    default:
-      return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-  }
+  return vulkan_upload_layout_stage(layout);
 }
 
 VkImageMemoryBarrier vulkan_glyph_atlas_image_barrier(
     VkImage image,
     VkImageLayout old_layout,
     VkImageLayout new_layout) {
-  return VkImageMemoryBarrier{
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .srcAccessMask = access_for_layout(old_layout),
-      .dstAccessMask = access_for_layout(new_layout),
-      .oldLayout = old_layout,
-      .newLayout = new_layout,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = image,
-      .subresourceRange =
-          VkImageSubresourceRange{
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .baseMipLevel = 0,
-              .levelCount = 1,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-  };
+  return vulkan_upload_image_barrier(image, old_layout, new_layout);
 }
 
 Result<void> vulkan_record_glyph_atlas_uploads(
     VkCommandBuffer command_buffer,
     const VulkanGlyphAtlasResources& atlas_resources,
     const VulkanGlyphAtlasUploadResources& upload_resources) {
+  struct ResolvedUpload {
+    const VulkanGlyphAtlasStagingUpload* upload = nullptr;
+    const VulkanGlyphAtlasPageResource* page = nullptr;
+  };
+  std::vector<ResolvedUpload> resolved_uploads;
+  std::vector<VulkanUploadImageBarrierRequest> barrier_requests;
+  resolved_uploads.reserve(upload_resources.uploads.size());
+  barrier_requests.reserve(upload_resources.uploads.size());
   for (const VulkanGlyphAtlasStagingUpload& upload :
        upload_resources.uploads) {
     const auto page = std::ranges::find_if(
@@ -75,47 +41,30 @@ Result<void> vulkan_record_glyph_atlas_uploads(
           ErrorCode::renderer_initialization_failed,
           "glyph atlas upload page resource is missing"));
     }
-
-    const VkImageMemoryBarrier to_transfer =
-        vulkan_glyph_atlas_image_barrier(
-            page->image,
-            page->layout,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    vkCmdPipelineBarrier(
-        command_buffer,
-        vulkan_glyph_atlas_source_stage(page->layout),
-        VK_PIPELINE_STAGE_TRANSFER_BIT,
-        0,
-        0,
-        nullptr,
-        0,
-        nullptr,
-        1,
-        &to_transfer);
-    vkCmdCopyBufferToImage(
-        command_buffer,
-        upload.buffer,
-        page->image,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        static_cast<std::uint32_t>(upload.copy_regions.size()),
-        upload.copy_regions.data());
-
-    const VkImageMemoryBarrier to_readable =
-        vulkan_glyph_atlas_image_barrier(
-            page->image,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    vkCmdPipelineBarrier(
-        command_buffer,
-        VK_PIPELINE_STAGE_TRANSFER_BIT,
-        destination_stage(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
-        0,
-        0,
-        nullptr,
-        0,
-        nullptr,
-        1,
-        &to_readable);
+    resolved_uploads.push_back(
+        ResolvedUpload{.upload = &upload, .page = &*page});
+    barrier_requests.push_back(VulkanUploadImageBarrierRequest{
+        .image = page->image,
+        .old_layout = page->layout,
+    });
+  }
+  const VulkanUploadBarrierPlan barrier_plan =
+      vulkan_plan_upload_image_barriers(barrier_requests);
+  for (const VulkanUploadBarrierWave& wave : barrier_plan.waves) {
+    vulkan_record_upload_image_barrier_batch(
+        command_buffer, wave.to_transfer);
+    for (std::size_t upload_index : wave.upload_indices) {
+      const ResolvedUpload& resolved = resolved_uploads[upload_index];
+      vkCmdCopyBufferToImage(
+          command_buffer,
+          resolved.upload->buffer,
+          resolved.page->image,
+          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+          static_cast<std::uint32_t>(resolved.upload->copy_regions.size()),
+          resolved.upload->copy_regions.data());
+    }
+    vulkan_record_upload_image_barrier_batch(
+        command_buffer, wave.to_readable);
   }
   return {};
 }

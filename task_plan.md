@@ -724,13 +724,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 507 adds `VulkanFrameGeometryBufferResources` and reusable host-visible vertex/index buffers for text, image, solid, and rounded geometry. Empty frames keep retained capacity, matching-capacity uploads remap the existing allocation, and growth replaces buffers geometrically after the single in-flight fence. Step 508 command reuse is next.
 - Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.
 - Phase E Step 509 adds pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.
+- Phase E Step 510 adds ordered upload barrier waves with batched transfer and shader-read transitions. Unique glyph-atlas or image-texture targets share two barrier calls around their copies, while duplicate image targets start a new wave with shader-read old-layout continuity. Step 511 swapchain recovery is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-509 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-510 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -777,9 +778,10 @@ Windows/Linux core API is stable enough for parity work.
   integration closeout, plus reusable host-visible vertex/index buffers with
   retained capacity for frame geometry, plus exact per-swapchain-image recorded
   command reuse for upload-free frames, plus shared rounded-rectangle pipeline
-  batching with authored order preserved across distinct geometry buffers.
-- In progress: Step 510 resource barriers.
-- Pending bands: Steps 510-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  batching with authored order preserved across distinct geometry buffers, plus
+  ordered duplicate-safe glyph/image upload barrier waves.
+- In progress: Step 511 swapchain recovery.
+- Pending bands: Steps 511-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -791,6 +793,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 510 focused build cannot include `vulkan_upload_barrier_batch_internal.hpp` | Step 510 RED | Expected missing private leaf; implement ordered duplicate-safe barrier waves and route glyph/image upload recording through them |
+| Step 510 discovery requested nonexistent `*_upload_recording_internal.hpp` and `*_uploads.cpp` files | Step 510 ownership discovery | Use the existing `*_uploads_internal.hpp`, focused `*_staging.cpp`, and `*_upload_recording.cpp` split instead of generic filenames |
 | Direct Step 509 executable lookup searched `.build`, but this project writes Windows targets under `build/windows/x64/debug` | Step 509 documentation-gate diagnosis | Use `xmake show -t <target>` to resolve the configured target file before direct exit-code checks |
 | The combined Step 509 runtime/structure patch missed the current structure-test context and changed no files | Step 509 implementation | Split runtime edits from the current-context structure guard patch |
 | Step 509 focused build cannot include `vulkan_frame_pipeline_switch_internal.hpp` | Step 509 RED | Expected missing private leaf; implement the pipeline/resource switch planner and consume it from ordered frame draw recording |
