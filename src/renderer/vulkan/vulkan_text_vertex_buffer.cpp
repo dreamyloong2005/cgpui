@@ -1,5 +1,6 @@
 #include "vulkan_text_vertex_buffer_internal.hpp"
 
+#include "vulkan_composition_transform_internal.hpp"
 #include "vulkan_device_internal.hpp"
 
 #include <cstring>
@@ -41,14 +42,30 @@ void append_text_quad_vertices(
       quad.color.a,
   };
 
-  const VulkanTextVertex top_left =
-      make_text_vertex(left, top, atlas_left, atlas_top, color);
-  const VulkanTextVertex top_right =
-      make_text_vertex(right, top, atlas_right, atlas_top, color);
-  const VulkanTextVertex bottom_right =
-      make_text_vertex(right, bottom, atlas_right, atlas_bottom, color);
-  const VulkanTextVertex bottom_left =
-      make_text_vertex(left, bottom, atlas_left, atlas_bottom, color);
+  const Point top_left_point = vulkan_apply_composed_transform(
+      Point{.x = left, .y = top}, quad.metadata, quad.composition_stack);
+  const Point top_right_point = vulkan_apply_composed_transform(
+      Point{.x = right, .y = top}, quad.metadata, quad.composition_stack);
+  const Point bottom_right_point = vulkan_apply_composed_transform(
+      Point{.x = right, .y = bottom}, quad.metadata, quad.composition_stack);
+  const Point bottom_left_point = vulkan_apply_composed_transform(
+      Point{.x = left, .y = bottom}, quad.metadata, quad.composition_stack);
+  const VulkanTextVertex top_left = make_text_vertex(
+      top_left_point.x, top_left_point.y, atlas_left, atlas_top, color);
+  const VulkanTextVertex top_right = make_text_vertex(
+      top_right_point.x, top_right_point.y, atlas_right, atlas_top, color);
+  const VulkanTextVertex bottom_right = make_text_vertex(
+      bottom_right_point.x,
+      bottom_right_point.y,
+      atlas_right,
+      atlas_bottom,
+      color);
+  const VulkanTextVertex bottom_left = make_text_vertex(
+      bottom_left_point.x,
+      bottom_left_point.y,
+      atlas_left,
+      atlas_bottom,
+      color);
   vertices.insert(
       vertices.end(),
       {top_left, top_right, bottom_right, top_left, bottom_right, bottom_left});

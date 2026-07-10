@@ -485,6 +485,13 @@ consume C: drive space again.
   rectangles, so blend-capable solid geometry now participates in straight-
   alpha composition without a temporary adapted-draw vector.
 - Handoff: Phase E Step 486 composed affine transform application.
+- Phase E Step 486 adds `vulkan_apply_composed_transform` in a focused private
+  Vulkan module. Solid, rounded, and text production vertices consume the
+  precomposed affine transform once; non-finite matrices resolve to identity.
+- Text positioning policy resolves before all four glyph quad corners are
+  transformed. Existing clip rectangles remain framebuffer-space in this
+  slice rather than silently changing clip semantics.
+- Handoff: Phase E Step 487 transform/clip interaction policy.
 
 ## Categories
 

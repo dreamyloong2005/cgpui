@@ -624,13 +624,18 @@ Windows/Linux core API is stable enough for parity work.
   six-index quads retain effective clip and precomposed opacity in separate
   fence-safe buffers, then reuse the straight-alpha rounded pipeline. The old
   clear recorder is removed. Step 486 owns composed affine transforms.
+- Phase E Step 486 adds `vulkan_apply_composed_transform`. Solid, rounded, and
+  text production vertices consume the precomposed affine transform once;
+  non-finite matrices resolve to identity, and text positioning precedes corner
+  transformation. Clip remains framebuffer-space. Step 487 owns explicit
+  transform/clip interaction.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-485 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-486 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -650,9 +655,10 @@ Windows/Linux core API is stable enough for parity work.
   uniform styled-border coalescing, compact stroke-only geometry, and
   allocation-free clip-stack resolution with per-draw dynamic scissor recording,
   single-application precomposed opacity across production color paths, and
-  blend-capable solid geometry replacing authored rectangle clear commands.
-- In progress: Step 486 composed affine transform application.
-- Pending bands: Steps 486-490 transform and ordering;
+  blend-capable solid geometry replacing authored rectangle clear commands,
+  and single-application composed affine transforms across production vertices.
+- In progress: Step 487 transform/clip interaction policy.
+- Pending bands: Steps 487-490 transform and ordering;
   Steps 491-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
@@ -752,6 +758,10 @@ Windows/Linux core API is stable enough for parity work.
 | The first Step 484 GREEN compile could not see `vulkan_rounded_rect_perimeter_vertex_count` through the geometry header | Step 484 first GREEN attempt | Include the focused contour private header directly in the test and preserve the thin geometry boundary |
 | `vulkan_solid_rect_geometry_test` could not include `vulkan_solid_rect_geometry_internal.hpp` | Step 485 RED | Expected RED; add compact solid geometry, shared upload, separate state buffers, and blended recording through the existing rounded pipeline |
 | The first Step 485 documentation gate remained at exit 30 because two files did not contain the exact `blend-capable solid geometry` phrase | Step 485 documentation gate | Normalize the roadmap line break and findings wording without changing the promotion conclusion |
+| Two Step 486 repository searches repeated the known WinGet-linked `rg.exe` startup failure | Step 486 boundary discovery | Continue with `Select-String` and `Get-ChildItem`; do not retry the broken shim in this run |
+| `vulkan_composed_transform_test` could not include `vulkan_composition_transform_internal.hpp` | Step 486 RED | Expected RED; add the focused private composed-transform policy and route solid, rounded, and text production vertices through it |
+| A Step 486 line-count diagnostic repeated the known PowerShell empty-pipe parser failure by piping directly from `foreach` | Step 486 structure discovery | Assign the loop output to a variable before formatting; no source or build state changed |
+| Git could not create `.git/index.lock` inside the default workspace sandbox | Step 486 staging | Retry the explicit Step 486 `git add` with approved repository-index write access; no files were staged by the failed attempt |
 
 ## Definition Of Done For This 20-Step Goal
 

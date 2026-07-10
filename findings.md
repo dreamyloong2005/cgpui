@@ -1,5 +1,28 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 486 Composed Affine Transform Application
+
+- UI metadata already stores the composed parent/child affine transform, just as
+  it stores precomposed opacity. Production geometry must select current stack
+  metadata when present and apply the resulting matrix once.
+- A focused transform leaf should own matrix validation and point application:
+  `x' = scale_x*x + skew_x*y + translate_x` and the corresponding y equation.
+  Non-finite matrices should fall back to identity before reaching GPU buffers.
+- Solid and rounded vertices can transform during CPU geometry construction.
+  Text must first apply its subpixel/pixel-snap positioning policy, then transform
+  all four quad corners before emitting six triangle-list vertices.
+- Existing clip rectangles are framebuffer-space. Step 486 should not silently
+  transform them; Step 487 must define transform/clip interaction explicitly.
+- Phase E Step 486 now implements `vulkan_apply_composed_transform` in a focused
+  private renderer leaf. It selects current stack metadata when present,
+  otherwise scalar metadata, validates every matrix component, and resolves a
+  non-finite precomposed affine transform to identity.
+- Solid quads and each rounded draw range transform their CPU vertices once.
+  Text first applies the selected positioning policy, then transforms all four
+  quad corners before emitting the six triangle-list vertices.
+- Clip rectangles remain framebuffer-space. Step 487 owns the explicit
+  transform/clip interaction policy.
+
 ## 2026-07-10 Phase E Step 485 Blend-Capable Solid Geometry
 
 - `vkCmdClearAttachments` cannot implement source-alpha blending, so solid

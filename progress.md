@@ -18871,3 +18871,40 @@
 - WSL verification remains unavailable: `wsl.exe -l -q` returned success with
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
+
+## 2026-07-10 Phase E Step 486 Composed Affine Transform Application
+
+- Started from clean tracked `master` at
+  `5ac734ae feat: blend vulkan solid rect geometry`; only the existing untracked
+  `.vscode/` directory remains.
+- Step 486 will apply the already composed affine transform once to solid,
+  rounded, and text production vertices through a focused private transform leaf.
+- Clip rectangles remain framebuffer-space in this slice; Step 487 owns the
+  explicit transform/clip interaction policy.
+- Focused RED build failed exactly as intended: `vulkan_composed_transform_test`
+  could not include the not-yet-created
+  `vulkan_composition_transform_internal.hpp` private leaf.
+- Two repository searches also repeated the known WinGet-linked `rg.exe`
+  startup failure; use PowerShell `Select-String` for the rest of this slice.
+- Added the focused composed-transform policy and routed solid, rounded, and
+  text production vertices through it after text positioning policy resolves.
+- `vulkan_composed_transform_test/default` now passes all behavior and source
+  boundary assertions and exits 60 only at the expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, `task_plan.md`, and `findings.md`
+  with `vulkan_apply_composed_transform`, precomposed affine transform
+  semantics, and the Step 487 transform/clip interaction handoff.
+- The Step 486 behavior/documentation test and renderer source-structure test
+  both pass. JSON parses successfully, and all touched renderer sources remain
+  within their existing line-count limits.
+- Focused Windows Step 486 verification passed 17/17 across transform, clip,
+  opacity, solid/rounded/text geometry and recording, live solid pixels,
+  surface validation, frame lifetime, renderer structure, and parity ledger.
+- The complete Windows debug build succeeded, then the full test suite passed
+  167/167 with `xmake test -y -P .`.
+- Final phrase audit, JSON parsing, source line-count checks, and
+  `git diff --check` pass. The tracked worktree contains only the Step 486 slice.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. Transform behavior remains in the final Phase E
+  Linux gate.
+- The first explicit staging attempt could not create `.git/index.lock` in the
+  default sandbox and changed no index state; retry with approved git access.

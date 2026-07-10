@@ -2,16 +2,16 @@
 
 #include "vulkan_clip_scissor_internal.hpp"
 #include "vulkan_composition_opacity_internal.hpp"
+#include "vulkan_composition_transform_internal.hpp"
 
 namespace cgpui {
 namespace {
 
 [[nodiscard]] VulkanRoundedRectVertex solid_vertex(
-    float x,
-    float y,
+    Point point,
     Color color) {
   return VulkanRoundedRectVertex{
-      .position = {x, y},
+      .position = {point.x, point.y},
       .color = {color.r, color.g, color.b, color.a},
       .coverage = 1.0F,
   };
@@ -41,14 +41,22 @@ VulkanRoundedRectGeometry vulkan_build_solid_rect_geometry(
     const float top = rect.rect.origin.y;
     const float right = left + rect.rect.size.width;
     const float bottom = top + rect.rect.size.height;
+    const Point top_left = vulkan_apply_composed_transform(
+        Point{.x = left, .y = top}, rect.metadata, rect.composition_stack);
+    const Point top_right = vulkan_apply_composed_transform(
+        Point{.x = right, .y = top}, rect.metadata, rect.composition_stack);
+    const Point bottom_right = vulkan_apply_composed_transform(
+        Point{.x = right, .y = bottom}, rect.metadata, rect.composition_stack);
+    const Point bottom_left = vulkan_apply_composed_transform(
+        Point{.x = left, .y = bottom}, rect.metadata, rect.composition_stack);
     const std::size_t first_vertex = geometry.vertices.size();
     const std::size_t first_index = geometry.indices.size();
     geometry.vertices.insert(
         geometry.vertices.end(),
-        {solid_vertex(left, top, color),
-         solid_vertex(right, top, color),
-         solid_vertex(right, bottom, color),
-         solid_vertex(left, bottom, color)});
+        {solid_vertex(top_left, color),
+         solid_vertex(top_right, color),
+         solid_vertex(bottom_right, color),
+         solid_vertex(bottom_left, color)});
     const auto base = static_cast<std::uint32_t>(first_vertex);
     geometry.indices.insert(
         geometry.indices.end(),

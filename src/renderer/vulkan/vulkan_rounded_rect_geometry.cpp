@@ -2,6 +2,7 @@
 
 #include "vulkan_clip_scissor_internal.hpp"
 #include "vulkan_composition_opacity_internal.hpp"
+#include "vulkan_composition_transform_internal.hpp"
 #include "vulkan_rounded_rect_contour_internal.hpp"
 #include "vulkan_rounded_rect_indices_internal.hpp"
 #include "vulkan_rounded_rect_radii_internal.hpp"
@@ -162,6 +163,15 @@ VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
     } else {
       vulkan_append_rounded_rect_ring_indices(
           geometry.indices, first_fill, first_fringe, perimeter_count);
+    }
+    for (std::size_t vertex_index = first_vertex;
+         vertex_index < geometry.vertices.size(); ++vertex_index) {
+      VulkanRoundedRectVertex& vertex = geometry.vertices[vertex_index];
+      const Point transformed = vulkan_apply_composed_transform(
+          Point{.x = vertex.position[0], .y = vertex.position[1]},
+          draw.metadata,
+          draw.composition_stack);
+      vertex.position = {transformed.x, transformed.y};
     }
     geometry.draws.push_back(VulkanRoundedRectDrawRange{
         .source_index = source_index,

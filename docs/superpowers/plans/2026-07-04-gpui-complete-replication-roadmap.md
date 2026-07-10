@@ -1576,7 +1576,13 @@ draw calls for the Windows/Linux renderer.
   `vkCmdClearAttachments` draw path is removed. This completes
   blend-capable solid geometry without a temporary adapted-draw vector.
   Step 486 owns composed affine transform application.
-- [ ] Steps 486-490: Complete transform composition and z/layer ordering in
+- [x] Phase E Step 486 adds `vulkan_apply_composed_transform` in a focused
+  private Vulkan leaf. Solid, rounded, and text CPU vertices consume the
+  precomposed affine transform once, with non-finite matrices falling back to
+  identity. Text applies its positioning policy before transforming all four
+  quad corners. Clip rectangles remain framebuffer-space; Step 487 owns the
+  explicit transform/clip interaction policy.
+- [ ] Steps 487-490: Complete transform/clip interaction and z/layer ordering in
   actual command recording, then close the clip/composition band. Rectangular
   clip stacks use Step 483 scissor recording; a future non-rectangular clip
   primitive would require a stencil or shader-mask path.

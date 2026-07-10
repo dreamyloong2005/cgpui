@@ -155,6 +155,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_clip_scissor.cpp",
       "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp",
       "src/renderer/vulkan/vulkan_composition_opacity.cpp",
+      "src/renderer/vulkan/vulkan_composition_transform_internal.hpp",
+      "src/renderer/vulkan/vulkan_composition_transform.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
@@ -561,6 +563,21 @@ int main(int argc, char** argv) {
                 "vulkan_apply_composed_opacity(") ||
       contains(command_recording, "vulkan_apply_composed_opacity(")) {
     return 74;
+  }
+  const std::string composition_transform_header = read_source(
+      "src/renderer/vulkan/vulkan_composition_transform_internal.hpp");
+  const std::string composition_transform = read_source(
+      "src/renderer/vulkan/vulkan_composition_transform.cpp");
+  if (line_count(composition_transform_header) > 30 ||
+      line_count(composition_transform) > 70 ||
+      !contains(composition_transform_header,
+                "vulkan_resolve_composed_transform(") ||
+      !contains(composition_transform_header, "vulkan_transform_point(") ||
+      !contains(composition_transform_header,
+                "vulkan_apply_composed_transform(") ||
+      !contains(solid_rect_geometry, "vulkan_apply_composed_transform(") ||
+      contains(command_recording, "vulkan_apply_composed_transform(")) {
+    return 75;
   }
 
   const std::string internal =
@@ -1147,6 +1164,7 @@ int main(int argc, char** argv) {
       !contains(text_vertex_buffer, "vulkan_build_text_vertices(") ||
       !contains(text_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
       !contains(text_vertex_buffer, "vkMapMemory") ||
+      !contains(text_vertex_buffer, "vulkan_apply_composed_transform(") ||
       contains(command_recording, "vulkan_build_text_vertices(")) {
     return 64;
   }
@@ -1270,6 +1288,8 @@ int main(int argc, char** argv) {
                 "vulkan_resolve_rounded_rect_radii(") ||
       !contains(rounded_rect_geometry,
                 "vulkan_resolve_rounded_rect_stroke(") ||
+      !contains(rounded_rect_geometry,
+                "vulkan_apply_composed_transform(") ||
       contains(rounded_rect_geometry, "indices.insert(") ||
       contains(rounded_rect_geometry, "append_corner_arc(") ||
       contains(command_recording, "append_corner_arc(")) {
