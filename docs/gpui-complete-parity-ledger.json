@@ -1397,8 +1397,18 @@
       "xmake.lua"
     ],
     "phase_e_step_517_remaining_gap": "Step 518 dropped-resource accounting",
+    "phase_e_step_518_surface": "Phase E Step 518 adds RendererDroppedResourceDiagnostics for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.",
+    "phase_e_step_518_sources": [
+      "include/cgpui/renderer/renderer_dropped_resource_diagnostics.hpp",
+      "src/renderer/renderer_dropped_resource_diagnostics.cpp",
+      "include/cgpui/renderer/renderer_reports.hpp",
+      "tests/renderer/renderer_dropped_resource_diagnostics_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_518_remaining_gap": "Step 519 frame-timing diagnostics",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 518 dropped-resource accounting"
+    "phase_e_current_handoff": "Step 519 frame-timing diagnostics"
   },
   "categories": [
     "application_and_app_context",

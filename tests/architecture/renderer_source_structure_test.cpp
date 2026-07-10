@@ -367,6 +367,10 @@ int main(int argc, char** argv) {
       read_source("src/renderer/renderer_frame_upload_diagnostics.cpp");
   const std::string renderer_frame_draw_diagnostics_source =
       read_source("src/renderer/renderer_frame_draw_diagnostics.cpp");
+  const std::string renderer_dropped_resource_diagnostics = read_source(
+      "include/cgpui/renderer/renderer_dropped_resource_diagnostics.hpp");
+  const std::string renderer_dropped_resource_diagnostics_source = read_source(
+      "src/renderer/renderer_dropped_resource_diagnostics.cpp");
   const std::string glyph_atlas =
       read_source("include/cgpui/renderer/glyph_atlas.hpp");
   const std::string glyph_atlas_types =
@@ -419,10 +423,14 @@ int main(int argc, char** argv) {
                 "#include \"cgpui/renderer/renderer_frame_reports.hpp\"") ||
       !contains(renderer_reports,
                 "#include \"cgpui/renderer/renderer_frame_diagnostics.hpp\"") ||
+      !contains(
+          renderer_reports,
+          "#include \"cgpui/renderer/renderer_dropped_resource_diagnostics.hpp\"") ||
       line_count(renderer_reports) > 40 ||
       contains(renderer_reports, "struct RendererCommandReport") ||
       contains(renderer_reports, "struct RendererFrameReport") ||
-      contains(renderer_reports, "struct RendererFrameDiagnostics")) {
+      contains(renderer_reports, "struct RendererFrameDiagnostics") ||
+      contains(renderer_reports, "struct RendererDroppedResourceDiagnostics")) {
     return 51;
   }
   if (!contains(glyph_atlas,
@@ -467,6 +475,14 @@ int main(int argc, char** argv) {
       !contains(renderer_frame_diagnostics, "renderer_add_draw_count(") ||
       !contains(renderer_frame_draw_diagnostics_source,
                 "renderer_add_draw_count(") ||
+      !contains(renderer_dropped_resource_diagnostics,
+                "struct RendererFrameResource") ||
+      !contains(renderer_dropped_resource_diagnostics,
+                "struct RendererDroppedResourceDiagnostics") ||
+      !contains(renderer_dropped_resource_diagnostics,
+                "classify_renderer_dropped_resources(") ||
+      !contains(renderer_dropped_resource_diagnostics_source,
+                "classify_renderer_dropped_resources(") ||
       contains(renderer_frame, "struct RendererFrameDiagnostics") ||
       !contains(glyph_atlas_types, "struct GlyphAtlasEntry") ||
       !contains(glyph_uploads, "struct GlyphAtlasUploadBatch") ||
@@ -525,7 +541,9 @@ int main(int argc, char** argv) {
       line_count(renderer_frame_diagnostics) > 100 ||
       line_count(renderer_frame_diagnostics_source) > 100 ||
       line_count(renderer_frame_upload_diagnostics_source) > 100 ||
-      line_count(renderer_frame_draw_diagnostics_source) > 100) {
+      line_count(renderer_frame_draw_diagnostics_source) > 100 ||
+      line_count(renderer_dropped_resource_diagnostics) > 100 ||
+      line_count(renderer_dropped_resource_diagnostics_source) > 100) {
     return 53;
   }
 

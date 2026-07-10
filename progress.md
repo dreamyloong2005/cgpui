@@ -20052,3 +20052,30 @@
   worktree limited to this slice plus the existing untracked `.vscode/`.
   WSL remains unavailable because `wsl.exe -l -q` returned an empty
   distribution list.
+
+## 2026-07-10 Phase E Step 518 Dropped-Resource Accounting
+
+- Started from clean tracked `master` at Step 517 commit `52c6a010`; only the
+  existing untracked `.vscode/` directory remains.
+- Chosen boundary compares explicit ordered planned/submitted frame-resource
+  records while the caller supplies the backend-supported primitive set. This
+  keeps unsupported-primitive policy out of the backend-neutral diagnostics
+  implementation and preserves command/resource identity for expanded text
+  page runs.
+- Added the Step 518 RED target. Its first build failed on the intentionally
+  missing `renderer_dropped_resource_diagnostics.hpp` public leaf.
+- Implemented the focused public leaf/source, thin renderer-report aggregate
+  include, and renderer structure ownership checks. Behavior builds and the
+  new test reaches exit 60 only at the expected five-document evidence gate;
+  renderer source structure remains green.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings. Step 519
+  frame-timing diagnostics is active.
+- Step 518 behavior, Steps 515-517 diagnostics regressions, renderer source
+  structure, public header cleanliness, and parity ledger pass 7/7.
+- JSON parsing, all five Step 518 phrases, focused 51/58/214 line counts, and
+  `git diff --check` pass.
+- The complete Windows debug build succeeded, then the full suite passed
+  199/199.
+- Final review found the tracked worktree limited to the Step 518 slice. WSL
+  remains unavailable because `wsl.exe -l -q` returned an empty distribution
+  list.

@@ -732,13 +732,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 515 adds `RendererFrameWork` and `RendererFrameDiagnostics` to compare planned and submitted renderer work across command and batch counts with saturation-safe pending and unexpected counts. Step 516 upload-byte accounting is next.
 - Phase E Step 516 adds `RendererUploadByteCounts` for glyph and image upload payload bytes, saturation-safe upload-byte accounting, and pending/unexpected upload-byte comparison. Step 517 draw-count accounting is next.
 - Phase E Step 517 adds `RendererDrawCounts` for primitive-aware GPU draw counts, saturation-safe draw-count accounting, and pending/unexpected draw comparison. Step 518 dropped-resource accounting is next.
+- Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-517 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-518 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -796,11 +797,14 @@ Windows/Linux core API is stable enough for parity work.
   submitted renderer work comparison with saturation-safe pending and
   unexpected command/batch counts, plus saturation-safe glyph/image upload
   payload-byte accounting and planned/submitted byte deltas, plus
-  primitive-aware saturation-safe GPU draw counters and draw deltas.
-- In progress: Step 518 dropped-resource accounting.
-- Step 518 boundary: classify planned renderer resources that do not reach GPU
-  submission without wiring the live Vulkan snapshot until Step 520.
-- Pending bands: Steps 518-522 diagnostics; Steps 523-530 pixel
+  primitive-aware saturation-safe GPU draw counters and draw deltas, plus
+  ordered planned-resource submission-gap classification for unsupported and
+  missing submitted resources with command/resource identity preserved.
+- In progress: Step 519 frame-timing diagnostics.
+- Step 519 boundary: add explicit CPU frame timing records and comparisons
+  without querying clocks inside public helpers or wiring the live Vulkan
+  snapshot until Step 520.
+- Pending bands: Steps 519-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full

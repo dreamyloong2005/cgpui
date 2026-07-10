@@ -9237,3 +9237,27 @@
   The public diagnostics boundary remains backend-neutral; WSL/Linux
   verification remains in the final Phase E gate because no distribution is
   installed.
+
+## 2026-07-10 Phase E Step 518 Dropped-Resource Accounting
+
+- Dropped-resource identity must distinguish authored command index from the
+  resolved resource index because one text command can expand into multiple
+  page-run draw resources.
+- The comparison contract should consume ordered planned and submitted
+  `RendererFrameResource` spans. Submitted work is an ordered subsequence of
+  planned work; unexpected submitted records may appear before a later exact
+  match without hiding that match.
+- Backend support is explicit input rather than a hard-coded Vulkan policy.
+  Missing unsupported kinds classify as `unsupported_primitive`; missing
+  supported kinds classify as `missing_submission_resource`.
+- Ownership belongs in a new focused public leaf and `.cpp`, with the existing
+  `renderer_reports.hpp` remaining a thin compatibility aggregate. Live Vulkan
+  snapshot population remains Step 520.
+- Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
+- Focused Step 518 validation confirms exact resources stay clean, unsupported
+  selection/caret resources remain visible, missing supported text page runs
+  preserve their resource identity, and unexpected submitted records do not
+  hide later stable-order matches.
+- Step 518 final Windows verification is 199/199 after a complete debug build.
+  WSL/Linux verification remains in the final Phase E gate because no
+  distribution is installed.

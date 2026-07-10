@@ -1701,6 +1701,7 @@ draw calls for the Windows/Linux renderer.
 - [x] Phase E Step 515 adds `RendererFrameWork` and `RendererFrameDiagnostics` to compare planned and submitted renderer work across command and batch counts with saturation-safe pending and unexpected counts. Step 516 upload-byte accounting is next.
 - [x] Phase E Step 516 adds `RendererUploadByteCounts` for glyph and image upload payload bytes, saturation-safe upload-byte accounting, and pending/unexpected upload-byte comparison. Step 517 draw-count accounting is next.
 - [x] Phase E Step 517 adds `RendererDrawCounts` for primitive-aware GPU draw counts, saturation-safe draw-count accounting, and pending/unexpected draw comparison. Step 518 dropped-resource accounting is next.
+- [x] Phase E Step 518 adds `RendererDroppedResourceDiagnostics` for ordered planned-resource submission gaps, classifying unsupported and missing submission resources while preserving command/resource identity. Step 519 frame-timing diagnostics is next.
 - [ ] Steps 518-522: Continue renderer diagnostics that compare planned work with
   submitted GPU work, including upload bytes, draw counts, dropped resources,
   and frame timing.

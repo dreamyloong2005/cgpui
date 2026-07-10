@@ -6,3 +6,4 @@
 #include "cgpui/renderer/renderer_geometry_reports.hpp"
 #include "cgpui/renderer/renderer_frame_reports.hpp"
 #include "cgpui/renderer/renderer_frame_diagnostics.hpp"
+#include "cgpui/renderer/renderer_dropped_resource_diagnostics.hpp"
