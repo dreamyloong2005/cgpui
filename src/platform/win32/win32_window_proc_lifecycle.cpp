@@ -72,7 +72,10 @@ bool win32_window_proc_handle_lifecycle(
       return true;
     case WM_CLOSE:
       if (window != nullptr) {
-        window->close_requested();
+        window->close_requested(
+            wparam == win32_application_close_wparam
+                ? WindowCloseRequestSource::application
+                : WindowCloseRequestSource::window_manager);
       }
       result = 0;
       return true;

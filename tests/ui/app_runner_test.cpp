@@ -152,6 +152,28 @@ class FakeWindow final : public cgpui::PlatformWindow {
     return state_;
   }
 
+  [[nodiscard]] cgpui::PlatformWindowCloseState close_request_state()
+      const override {
+    return close_state_;
+  }
+
+  bool resolve_close_request(
+      cgpui::PlatformWindowCloseResolution resolution) override {
+    if (!close_state_.pending) {
+      return false;
+    }
+    close_state_.pending = false;
+    close_state_.accepted =
+        resolution == cgpui::PlatformWindowCloseResolution::accept;
+    if (close_state_.accepted) {
+      close_state_.accepted_count += 1;
+    } else {
+      close_state_.cancelled_count += 1;
+      state_.close_requested = false;
+    }
+    return true;
+  }
+
   void request_redraw() override {
     request_redraw_count += 1;
     if (callback) {
@@ -161,12 +183,15 @@ class FakeWindow final : public cgpui::PlatformWindow {
 
   void request_close() override {
     request_close_count += 1;
-    if (callback) {
-      callback(cgpui::WindowCloseRequested{});
-    }
+    emit_close(cgpui::WindowCloseRequestSource::application);
   }
 
   void emit(const cgpui::PlatformEvent& event) {
+    if (const auto* close = std::get_if<cgpui::WindowCloseRequested>(&event);
+        close != nullptr) {
+      emit_close(close->source);
+      return;
+    }
     if (callback) {
       callback(event);
     }
@@ -190,7 +215,24 @@ class FakeWindow final : public cgpui::PlatformWindow {
   std::string_view last_title;
 
  private:
+  void emit_close(cgpui::WindowCloseRequestSource source) {
+    if (close_state_.pending || close_state_.accepted) {
+      close_state_.coalesced_count += 1;
+      return;
+    }
+    close_state_.pending = true;
+    close_state_.source = source;
+    close_state_.sequence += 1;
+    state_.close_requested = true;
+    if (callback) {
+      callback(cgpui::WindowCloseRequested{
+          .source = source,
+          .sequence = close_state_.sequence});
+    }
+  }
+
   cgpui::WindowState state_;
+  cgpui::PlatformWindowCloseState close_state_;
 };
 
 class FakeApplication final : public cgpui::PlatformApplication {
@@ -217,6 +259,9 @@ class FakeApplication final : public cgpui::PlatformApplication {
     run_count += 1;
     if (window_.callback) {
       window_.callback(cgpui::WindowRedrawRequested{});
+    }
+    if (on_run) {
+      on_run(*this);
     }
     return run_result;
   }
@@ -266,6 +311,7 @@ class FakeApplication final : public cgpui::PlatformApplication {
   cgpui::NativeMenuModel last_menu_model;
   cgpui::NativeFileDialogOptions last_file_dialog_options;
   std::string failing_window_title;
+  std::function<void(FakeApplication&)> on_run;
 
  private:
   class BorrowedWindow final : public cgpui::PlatformWindow {
@@ -279,6 +325,16 @@ class FakeApplication final : public cgpui::PlatformApplication {
 
     [[nodiscard]] cgpui::WindowState state() const override {
       return window_.state();
+    }
+
+    [[nodiscard]] cgpui::PlatformWindowCloseState close_request_state()
+        const override {
+      return window_.close_request_state();
+    }
+
+    bool resolve_close_request(
+        cgpui::PlatformWindowCloseResolution resolution) override {
+      return window_.resolve_close_request(resolution);
     }
 
     void request_redraw() override { window_.request_redraw(); }
@@ -361,6 +417,16 @@ class MultiWindowFakeApplication final : public cgpui::PlatformApplication {
 
     [[nodiscard]] cgpui::WindowState state() const override {
       return window_.state();
+    }
+
+    [[nodiscard]] cgpui::PlatformWindowCloseState close_request_state()
+        const override {
+      return window_.close_request_state();
+    }
+
+    bool resolve_close_request(
+        cgpui::PlatformWindowCloseResolution resolution) override {
+      return window_.resolve_close_request(resolution);
     }
 
     void request_redraw() override { window_.request_redraw(); }
@@ -1590,6 +1656,65 @@ int test_app_context_registers_command_palette_entries() {
   return 0;
 }
 
+int test_runtime_close_callback_can_cancel_then_accept() {
+  FakeWindow window(cgpui::WindowState{
+      .framebuffer_size = {.width = 320.0F, .height = 240.0F},
+      .scale = cgpui::DpiScale{1.0F},
+      .close_requested = false});
+  FakeApplication application(window);
+  TestView view;
+  RecordingFrame frame;
+  int close_callback_count = 0;
+  bool pending_state_matched = true;
+
+  application.on_run = [&](FakeApplication&) {
+    window.request_close();
+    window.request_close();
+  };
+  const int result = cgpui::run_app(
+      application,
+      view,
+      [&](const cgpui::RenderSurfaceDescriptor&)
+          -> cgpui::Result<std::unique_ptr<cgpui::Renderer>> {
+        return std::make_unique<RecordingRenderer>(frame, application.run_count);
+      },
+      cgpui::AppRunnerOptions{
+          .runtime = {.request_initial_redraw = false},
+          .setup =
+              [&](cgpui::WindowRuntime& runtime) {
+                runtime.set_close_requested_callback(
+                    [&](const cgpui::WindowRuntimeContext& context) {
+                      close_callback_count += 1;
+                      const auto close =
+                          context.platform_window.close_request_state();
+                      pending_state_matched = pending_state_matched &&
+                          close.pending && !close.accepted &&
+                          close.source ==
+                              cgpui::WindowCloseRequestSource::application &&
+                          close.sequence ==
+                              static_cast<std::uint64_t>(close_callback_count);
+                      if (close_callback_count == 1) {
+                        (void)context.cancel_window_close();
+                      } else {
+                        (void)context.accept_window_close();
+                      }
+                    });
+              },
+      });
+
+  const auto close = window.close_request_state();
+  if (result != 0 || close_callback_count != 2 ||
+      application.quit_count != 1 || !pending_state_matched) {
+    return 930;
+  }
+  if (close.pending || !close.accepted || close.sequence != 2 ||
+      close.cancelled_count != 1 || close.accepted_count != 1 ||
+      !window.state().close_requested) {
+    return 931;
+  }
+  return 0;
+}
+
 } // namespace
 
 int main() {
@@ -1646,6 +1771,10 @@ int main() {
     return result;
   }
   if (const int result = test_app_context_registers_command_palette_entries();
+      result != 0) {
+    return result;
+  }
+  if (const int result = test_runtime_close_callback_can_cancel_then_accept();
       result != 0) {
     return result;
   }

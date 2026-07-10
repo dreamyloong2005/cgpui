@@ -2,9 +2,20 @@
 
 #include "cgpui/core/geometry.hpp"
 
+#include <cstdint>
+
 namespace cgpui {
 
-struct WindowCloseRequested {};
+enum class WindowCloseRequestSource {
+  window_manager,
+  application,
+};
+
+struct WindowCloseRequested {
+  WindowCloseRequestSource source =
+      WindowCloseRequestSource::window_manager;
+  std::uint64_t sequence = 0;
+};
 
 struct WindowRedrawRequested {};
 

@@ -4,7 +4,8 @@ namespace cgpui {
 
 bool WindowRuntime::handle_window_control_event(const PlatformEvent& event) {
   if (std::holds_alternative<WindowCloseRequested>(event)) {
-    should_quit_ = true;
+    const bool close_policy_pending =
+        window_ != nullptr && window_->close_request_state().pending;
     if (window_ != nullptr && renderer_ != nullptr) {
       record_lifecycle_event(event);
     }
@@ -12,6 +13,16 @@ bool WindowRuntime::handle_window_control_event(const PlatformEvent& event) {
         renderer_ != nullptr) {
       close_requested_callback_(context());
     }
+    if (close_policy_pending && window_ != nullptr) {
+      if (window_->close_request_state().pending) {
+        (void)window_->resolve_close_request(
+            PlatformWindowCloseResolution::accept);
+      }
+      if (!window_->close_request_state().accepted) {
+        return true;
+      }
+    }
+    should_quit_ = true;
     application_.quit();
     return true;
   }

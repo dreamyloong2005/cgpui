@@ -12,6 +12,8 @@ class RegisteredWaylandWindow final : public PlatformWindow {
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
+  [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
+  bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
 
   void request_redraw() override;
   void request_close() override;

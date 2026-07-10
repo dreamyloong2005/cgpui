@@ -5,6 +5,7 @@
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/platform_accessibility.hpp"
 #include "cgpui/platform/platform_window_chrome.hpp"
+#include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_lifecycle.hpp"
 
 #include <functional>
@@ -20,6 +21,8 @@ class PlatformWindow {
   [[nodiscard]] virtual NativeSurfaceHandle native_surface() const = 0;
   [[nodiscard]] virtual WindowState state() const = 0;
   [[nodiscard]] virtual PlatformWindowLifecycleState lifecycle_state() const;
+  [[nodiscard]] virtual PlatformWindowCloseState close_request_state() const;
+  virtual bool resolve_close_request(PlatformWindowCloseResolution resolution);
   virtual void request_redraw() = 0;
   virtual void request_close() = 0;
   virtual void set_title(std::string_view title) = 0;

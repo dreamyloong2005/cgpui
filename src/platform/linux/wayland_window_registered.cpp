@@ -30,6 +30,15 @@ PlatformWindowLifecycleState RegisteredWaylandWindow::lifecycle_state() const {
   return window_->lifecycle_state();
 }
 
+PlatformWindowCloseState RegisteredWaylandWindow::close_request_state() const {
+  return window_->close_request_state();
+}
+
+bool RegisteredWaylandWindow::resolve_close_request(
+    PlatformWindowCloseResolution resolution) {
+  return window_->resolve_close_request(resolution);
+}
+
 void RegisteredWaylandWindow::request_redraw() {
   window_->request_redraw();
 }

@@ -81,7 +81,7 @@ void WaylandWindow::handle_toplevel_close(
     xdg_toplevel* toplevel) {
   (void)toplevel;
   auto* window = static_cast<WaylandWindow*>(data);
-  window->close_requested();
+  window->close_requested(WindowCloseRequestSource::window_manager);
 }
 
 } // namespace cgpui

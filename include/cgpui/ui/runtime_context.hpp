@@ -45,6 +45,8 @@ struct WindowRuntimeContext {
   [[nodiscard]] ElementContextCapability element_context(
       ElementId element_id) const;
   [[nodiscard]] ViewInputState input_state() const;
+  [[nodiscard]] bool accept_window_close() const;
+  [[nodiscard]] bool cancel_window_close() const;
   [[nodiscard]] ViewId allocate_view_id() const;
   [[nodiscard]] bool is_view_id_allocated(ViewId view_id) const;
   [[nodiscard]] std::optional<ViewId> upgrade_view(WeakView view) const;

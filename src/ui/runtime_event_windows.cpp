@@ -51,7 +51,18 @@ void WindowRuntime::handle_native_additional_window_event(
     return;
   }
   if (std::holds_alternative<WindowCloseRequested>(event)) {
+    const bool close_policy_pending = record->window != nullptr &&
+        record->window->close_request_state().pending;
     record_lifecycle_event_for_record(*record, event);
+    if (close_policy_pending && record->window != nullptr) {
+      if (record->window->close_request_state().pending) {
+        (void)record->window->resolve_close_request(
+            PlatformWindowCloseResolution::accept);
+      }
+      if (!record->window->close_request_state().accepted) {
+        return;
+      }
+    }
     cleanup_closed_additional_window(*record);
     return;
   }

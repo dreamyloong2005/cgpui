@@ -20491,3 +20491,46 @@
   `/dev/shm/cgpui`, including real dynamic Wayland output scale, existing xdg
   compositor resize regression, both Phase F structure guards, platform source
   structure, and the parity ledger.
+- Step 541 committed on `master` as `0c94f59c feat: synchronize platform resize
+  scale state`; only the pre-existing `.vscode/` directory remains untracked.
+
+## 2026-07-11 Phase F Step 542 Close Policy
+
+- Audited platform and runtime close paths. Existing code reports an empty
+  close event, cannot distinguish system/programmatic sources, cannot resolve
+  pending close requests, and unconditionally quits/cleans up at runtime.
+- Chosen Step 542 slice adds a compatible public close policy snapshot,
+  private shared controller, focused backend close modules, runtime context
+  accept/cancel, and real Win32/Wayland policy tests.
+- An attempted `xmake build` with two target names printed usage because build
+  accepts one target. Multi-target verification continues through `xmake test`.
+- Win32 and WSL behavior verification each passed 2/2 across the real backend
+  close-policy target and `app_runner_test` runtime cancellation/acceptance.
+- The new Step 542 structure guard reached the expected documentation-only RED
+  exit 11, while platform and UI total structure guards remained green.
+- Expanded Windows verification passed 8/8. Expanded WSL verification passed
+  7/8; only `ui_source_structure_test/default` exits 1, corresponding to its
+  return code 8 required-source read loop. Windows enumeration confirms all
+  listed sources exist and are non-empty. One exploratory `rg` command had a
+  PowerShell double-quote regex escaping error; fixed-string `rg -F` searches
+  are used for literal xmake target lookups.
+- Added the established `CGPUI_SOURCE_ROOT` plus project rundir contract to
+  `ui_source_structure_test`, retaining its direct and build-directory relative
+  fallbacks. The expanded Windows gate passes 9/9. The first WSL retry stopped
+  before tests because xmake rejected root execution; the corrected retry sets
+  `XMAKE_ROOT=y`.
+- The corrected WSL run initialized its missing Python/Meson/libxkbcommon tool
+  cache, rebuilt from compiler cache, and passed the expanded 9/9 gate. JSON
+  parsing, the exact five-document Step 542 phrase, focused line caps, the
+  preserved 120-line Wayland window-internal cap, and `git diff --check` pass.
+- Submission review expanded coverage to all 13 `window_runtime_*` targets.
+  Twelve passed; `window_runtime_rendering_test` exited 21 because its legacy
+  fake emits a close event without a pending policy state. Runtime close
+  handling now records whether a policy was pending before the callback: new
+  backends retain cancel/accept semantics, while compatibility implementations
+  without policy state keep the historical default-accept behavior.
+- Final compatibility verification passes all 13/13 Windows runtime targets,
+  the expanded Windows Step 542 gate 9/9, and the corresponding WSL gate 9/9.
+- The first explicit staging wrapper did not execute because its JavaScript
+  `yield_time_ms` property was unquoted; the corrected wrapper uses quoted tool
+  property names and the same Step 542-only path list.

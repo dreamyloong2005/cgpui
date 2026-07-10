@@ -1691,7 +1691,31 @@
       "xmake.lua"
     ],
     "phase_f_step_541_remaining_gap": "Step 542 close policy production behavior",
-    "phase_f_current_handoff": "Step 542 close policy production behavior"
+    "phase_f_step_542_surface": "Phase F Step 542 adds source-aware, state-before-event close requests with shared pending/accept/cancel/coalescing policy on Win32 and Wayland, plus runtime callback cancellation with compatible default acceptance. Step 543 fullscreen and minimize/maximize production behavior is next.",
+    "phase_f_step_542_sources": [
+      "include/cgpui/core/event_window.hpp",
+      "include/cgpui/platform/platform_window_close.hpp",
+      "include/cgpui/platform/platform_window.hpp",
+      "src/platform/platform_window_close_internal.hpp",
+      "src/platform/platform_window_close.cpp",
+      "src/platform/win32/win32_window_close.cpp",
+      "src/platform/win32/win32_window_proc_lifecycle.cpp",
+      "src/platform/linux/wayland_window_close_internal.hpp",
+      "src/platform/linux/wayland_window_close.cpp",
+      "src/platform/linux/wayland_window_configure.cpp",
+      "src/platform/linux/wayland_window_registered.cpp",
+      "include/cgpui/ui/runtime_context.hpp",
+      "src/ui/runtime_context_window_close.cpp",
+      "src/ui/runtime_event_control.cpp",
+      "src/ui/runtime_event_windows.cpp",
+      "tests/platform/win32_window_close_policy_test.cpp",
+      "tests/platform/wayland_window_close_policy_test.cpp",
+      "tests/ui/app_runner_test.cpp",
+      "tests/architecture/phase_f_window_close_policy_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_542_remaining_gap": "Step 543 fullscreen and minimize/maximize production behavior",
+    "phase_f_current_handoff": "Step 543 fullscreen and minimize/maximize production behavior"
   },
   "categories": [
     "application_and_app_context",

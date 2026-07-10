@@ -9539,3 +9539,26 @@
   apply it with `wl_surface_set_buffer_scale`, and react to dynamic
   `wl_output.scale` changes through an application-to-window notification.
 - Phase F Step 541 makes resize and scale state-before-event observable on Win32, and adds production Wayland `wl_output` scale tracking, surface enter/leave handling, buffer-scale updates, logical-to-framebuffer conversion, and real dynamic scale/resize coverage. Step 542 close policy production behavior is next.
+
+## 2026-07-11 Phase F Step 542 Close Policy Audit
+
+- Win32 `WM_CLOSE`, Win32 programmatic `request_close()`, Wayland xdg close,
+  and Wayland programmatic `request_close()` currently collapse into an empty
+  `WindowCloseRequested{}` event. Callers cannot distinguish the source.
+- Both backends set `WindowState::close_requested` before the callback, but the
+  state cannot be cancelled or explicitly accepted and repeated requests are
+  not coalesced through a shared policy contract.
+- The root runtime invokes its existing close callback and then unconditionally
+  quits. Additional windows are immediately cleaned up. A usable close policy
+  needs context-level accept/cancel resolution while preserving default accept
+  behavior for existing callbacks and applications.
+- The ownership boundary is a thin public close snapshot/resolution leaf, a
+  private shared close controller compiled in `cgpui_platform`, focused Win32
+  and Wayland close implementation files, and a focused runtime context bridge.
+  Broad platform entry files and event-routing files should only orchestrate.
+- Phase F Step 542 adds source-aware, state-before-event close requests with shared pending/accept/cancel/coalescing policy on Win32 and Wayland, plus runtime callback cancellation with compatible default acceptance. Step 543 fullscreen and minimize/maximize production behavior is next.
+- The expanded WSL gate reaches `ui_source_structure_test` return code 8, the
+  required-source read loop. Windows-side enumeration confirms every listed
+  path exists and is non-empty, including the new
+  `src/ui/runtime_context_window_close.cpp`; the remaining diagnosis is the
+  WSL test process source-root/copy view, not a missing repository file.

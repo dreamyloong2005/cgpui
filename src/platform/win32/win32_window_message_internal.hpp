@@ -8,6 +8,8 @@
 
 namespace cgpui {
 
+inline constexpr WPARAM win32_application_close_wparam = 1;
+
 struct Win32WindowChromeState {
   PlatformWindowChromeState platform;
   DWORD style = WS_OVERLAPPEDWINDOW;
@@ -26,7 +28,7 @@ class Win32WindowMessageTarget {
   virtual void ime_start_composition() = 0;
   virtual void ime_composition(LPARAM lparam) = 0;
   virtual void ime_end_composition() = 0;
-  virtual void close_requested() = 0;
+  virtual void close_requested(WindowCloseRequestSource source) = 0;
   virtual void redraw_requested() = 0;
   virtual void pointer_moved(LPARAM lparam) = 0;
   virtual void pointer_button(

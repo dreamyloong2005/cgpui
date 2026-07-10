@@ -67,10 +67,6 @@ void WaylandWindow::request_redraw() {
   callback_(WindowRedrawRequested{});
 }
 
-void WaylandWindow::request_close() {
-  close_requested();
-}
-
 void WaylandWindow::set_title(std::string_view title) {
   const std::string title_string(title);
   xdg_toplevel_set_title(toplevel_, title_string.c_str());
@@ -159,11 +155,6 @@ Result<void> WaylandWindow::initialize(
 
   callback_(WindowResized{.size = state_.framebuffer_size, .scale = state_.scale});
   return {};
-}
-
-void WaylandWindow::close_requested() {
-  state_.close_requested = true;
-  callback_(WindowCloseRequested{});
 }
 
 } // namespace cgpui

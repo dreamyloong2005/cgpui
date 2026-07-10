@@ -2,6 +2,7 @@
 
 #include "wayland_internal.hpp"
 #include "wayland_window_state.hpp"
+#include "../platform_window_close_internal.hpp"
 
 namespace cgpui {
 
@@ -11,16 +12,17 @@ class WaylandWindow final : public PlatformWindow {
       wl_display* display,
       wl_compositor* compositor,
       xdg_wm_base* shell,
-      const WindowDescriptor& descriptor,
-      PlatformEventCallback callback, bool text_input_available,
+      const WindowDescriptor& descriptor, PlatformEventCallback callback,
+      bool text_input_available,
       WaylandOutputScaleLookup output_scale_lookup);
 
   ~WaylandWindow() override;
-
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] wl_surface* surface() const;
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
+  [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
+  bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
 
   void request_redraw() override;
   void request_close() override;
@@ -86,15 +88,13 @@ class WaylandWindow final : public PlatformWindow {
 
  private:
   WaylandWindow(
-      wl_display* display,
-      PlatformEventCallback callback,
+      wl_display* display, PlatformEventCallback callback,
       WindowState state, WaylandOutputScaleLookup output_scale_lookup);
 
-  Result<void> initialize(
-      wl_compositor* compositor,
-      xdg_wm_base* shell,
+  Result<void> initialize(wl_compositor* compositor, xdg_wm_base* shell,
       const WindowDescriptor& descriptor);
 #include "wayland_window_configure_internal.hpp"
+#include "wayland_window_close_internal.hpp"
 #include "wayland_window_scale_internal.hpp"
   void sync_text_input_state();
 

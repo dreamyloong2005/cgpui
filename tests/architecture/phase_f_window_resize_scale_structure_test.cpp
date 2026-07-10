@@ -152,7 +152,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 542 close policy")) {
+          "\"phase_f_step_541_remaining_gap\": \"Step 542 close policy")) {
     return 11;
   }
   return 0;

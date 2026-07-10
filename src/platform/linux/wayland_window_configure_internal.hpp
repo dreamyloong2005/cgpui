@@ -19,4 +19,3 @@ static void handle_toplevel_configure(
     std::int32_t height,
     wl_array* states);
 static void handle_toplevel_close(void* data, xdg_toplevel* toplevel);
-void close_requested();

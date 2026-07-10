@@ -44,12 +44,6 @@ void Win32Window::request_redraw() {
   InvalidateRect(hwnd_, nullptr, FALSE);
 }
 
-void Win32Window::request_close() {
-  if (hwnd_ != nullptr) {
-    PostMessageW(hwnd_, WM_CLOSE, 0, 0);
-  }
-}
-
 void Win32Window::set_title(std::string_view title) {
   const auto wide_title = widen(title);
   SetWindowTextW(hwnd_, wide_title.c_str());
@@ -76,11 +70,6 @@ void Win32Window::set_ime_text_input_placement(
 void Win32Window::update_accessibility_tree(
     PlatformAccessibilityTreeUpdate update) {
   uia_accessibility_.update(std::move(update));
-}
-
-void Win32Window::close_requested() {
-  state_.close_requested = true;
-  callback_(WindowCloseRequested{});
 }
 
 void Win32Window::redraw_requested() {

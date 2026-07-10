@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -5,8 +6,18 @@
 
 namespace {
 
+std::string source_root() {
+  if (const char* root = std::getenv("CGPUI_SOURCE_ROOT"); root != nullptr) {
+    return root;
+  }
+  return ".";
+}
+
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(source_root() + "/" + path);
+  if (!source) {
+    source.open(path);
+  }
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -1952,6 +1963,7 @@ int main() {
       "src/ui/runtime_context_platform.cpp",
       "src/ui/runtime_context_scheduling.cpp",
       "src/ui/runtime_context_text.cpp",
+      "src/ui/runtime_context_window_close.cpp",
       "src/ui/subscription.cpp",
       "src/ui/runtime_subscriptions.cpp",
       "src/ui/app_context_window_options.cpp",
