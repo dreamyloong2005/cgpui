@@ -12,7 +12,8 @@ void vulkan_bind_rounded_rect_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanRoundedRectPipelineResources& pipeline_resources,
-    const VulkanRoundedRectBufferResources& buffer_resources);
+    const VulkanRoundedRectBufferResources& buffer_resources,
+    bool bind_pipeline = true);
 void vulkan_record_rounded_rect_draw(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,

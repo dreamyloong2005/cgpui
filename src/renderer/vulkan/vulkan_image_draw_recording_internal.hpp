@@ -27,7 +27,8 @@ void vulkan_bind_image_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanImagePipelineResources& pipeline_resources,
-    const VulkanImageVertexBufferResources& vertex_buffer);
+    const VulkanImageVertexBufferResources& vertex_buffer,
+    bool bind_pipeline = true);
 void vulkan_record_image_draw(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,

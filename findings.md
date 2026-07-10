@@ -1,5 +1,19 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 509 Pipeline-Switch Batching
+
+- `vulkan_record_frame_draws(...)` already skips all draw-state binding for
+  consecutive draws of the same resource kind, but it treats solid and rounded
+  rectangles as different active kinds even though both use the same rounded
+  rectangle Vulkan pipeline. An authored solid/rounded transition therefore
+  performs a redundant `vkCmdBindPipeline` while still requiring different
+  vertex/index buffers.
+- Step 509 should preserve authored order and split pipeline changes from
+  geometry-resource changes. A focused planner can coalesce adjacent
+  solid/rounded pipeline use without moving Vulkan command ownership out of the
+  existing primitive recording modules. Resource barriers remain Step 510.
+- Phase E Step 509 adds pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.
+
 ## 2026-07-10 Phase E Step 508 Recorded Command Reuse
 
 - Vulkan already retains one command-buffer handle per swapchain image, but

@@ -59,11 +59,14 @@ void vulkan_bind_text_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanTextPipelineResources& pipeline_resources,
-    const VulkanTextVertexBufferResources& vertex_buffer) {
-  vkCmdBindPipeline(
-      command_buffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,
-      pipeline_resources.pipeline);
+    const VulkanTextVertexBufferResources& vertex_buffer,
+    bool bind_pipeline) {
+  if (bind_pipeline) {
+    vkCmdBindPipeline(
+        command_buffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        pipeline_resources.pipeline);
+  }
   const VkViewport viewport{
       .x = 0.0F,
       .y = 0.0F,

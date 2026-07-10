@@ -1283,8 +1283,21 @@
       "xmake.lua"
     ],
     "phase_e_step_508_remaining_gap": "Step 509 pipeline-switch batching",
+    "phase_e_step_509_surface": "Phase E Step 509 adds pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.",
+    "phase_e_step_509_sources": [
+      "src/renderer/vulkan/vulkan_frame_pipeline_switch_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_pipeline_switch.cpp",
+      "src/renderer/vulkan/vulkan_frame_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_text_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_image_draw_recording.cpp",
+      "tests/renderer/vulkan_pipeline_switch_batching_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_509_remaining_gap": "Step 510 resource barriers",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 509 pipeline-switch batching"
+    "phase_e_current_handoff": "Step 510 resource barriers"
   },
   "categories": [
     "application_and_app_context",

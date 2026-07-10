@@ -41,11 +41,14 @@ void vulkan_bind_rounded_rect_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanRoundedRectPipelineResources& pipeline_resources,
-    const VulkanRoundedRectBufferResources& buffer_resources) {
-  vkCmdBindPipeline(
-      command_buffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,
-      pipeline_resources.pipeline);
+    const VulkanRoundedRectBufferResources& buffer_resources,
+    bool bind_pipeline) {
+  if (bind_pipeline) {
+    vkCmdBindPipeline(
+        command_buffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        pipeline_resources.pipeline);
+  }
   const VkViewport viewport{
       .x = 0.0F,
       .y = 0.0F,

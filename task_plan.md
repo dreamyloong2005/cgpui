@@ -723,13 +723,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 506 SVG integration closeout is audit-only in `tests/api_parity/phase_e_svg_integration_closeout_test.cpp`. It freezes Steps 499-505 across bounded RGBA raster planning, the LunaSVG raster backend, cache-owned raster results, viewport-aware scaling, currentColor recolor, RenderFrame image upload, and the prelude-only public example. Step 507 batching and frame scheduling is next.
 - Phase E Step 507 adds `VulkanFrameGeometryBufferResources` and reusable host-visible vertex/index buffers for text, image, solid, and rounded geometry. Empty frames keep retained capacity, matching-capacity uploads remap the existing allocation, and growth replaces buffers geometrically after the single in-flight fence. Step 508 command reuse is next.
 - Phase E Step 508 adds per-swapchain-image recorded command reuse guarded by an exact semantic command signature. Matching upload-free frames resubmit the recorded buffer without reset or recording, while pending uploads force recording and invalidate reuse state. Step 509 pipeline-switch batching is next.
+- Phase E Step 509 adds pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-508 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-509 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -775,9 +776,10 @@ Windows/Linux core API is stable enough for parity work.
   registered-source/raster-cache/upload/draw example, plus the audit-only SVG
   integration closeout, plus reusable host-visible vertex/index buffers with
   retained capacity for frame geometry, plus exact per-swapchain-image recorded
-  command reuse for upload-free frames.
-- In progress: Step 509 pipeline-switch batching.
-- Pending bands: Steps 509-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  command reuse for upload-free frames, plus shared rounded-rectangle pipeline
+  batching with authored order preserved across distinct geometry buffers.
+- In progress: Step 510 resource barriers.
+- Pending bands: Steps 510-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -789,6 +791,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Direct Step 509 executable lookup searched `.build`, but this project writes Windows targets under `build/windows/x64/debug` | Step 509 documentation-gate diagnosis | Use `xmake show -t <target>` to resolve the configured target file before direct exit-code checks |
+| The combined Step 509 runtime/structure patch missed the current structure-test context and changed no files | Step 509 implementation | Split runtime edits from the current-context structure guard patch |
+| Step 509 focused build cannot include `vulkan_frame_pipeline_switch_internal.hpp` | Step 509 RED | Expected missing private leaf; implement the pipeline/resource switch planner and consume it from ordered frame draw recording |
 | Renderer structure exited 32 because Step 508 forwarding moved `vulkan_presentation.cpp` from 145 to 154 lines | Step 508 structure GREEN | Raise the narrow orchestration limit to 165 and require state forwarding while forbidding signature comparison/copy ownership in presentation |
 | The combined Step 508 implementation patch failed at the swapchain lifecycle hunk and changed no files | Step 508 implementation | Split the private leaf, command-recording integration, and state/lifecycle integration into separate current-context patches |
 | Step 508 focused build cannot include `vulkan_frame_command_reuse_internal.hpp` | Step 508 RED | Expected missing private leaf; implement exact per-swapchain command signatures and integrate them before command-buffer reset |

@@ -23,7 +23,8 @@ void vulkan_bind_text_draw_state(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,
     const VulkanTextPipelineResources& pipeline_resources,
-    const VulkanTextVertexBufferResources& vertex_buffer);
+    const VulkanTextVertexBufferResources& vertex_buffer,
+    bool bind_pipeline = true);
 void vulkan_record_text_draw(
     VkCommandBuffer command_buffer,
     VkExtent2D extent,

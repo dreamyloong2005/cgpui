@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Progress
 
+## 2026-07-10 Phase E Step 509 Pipeline-Switch Batching
+
+- Step 508 is committed on `master` at
+  `048a0734 perf: reuse vulkan frame command buffers`; only the pre-existing
+  untracked `.vscode/` directory remains.
+- Existing frame draw recording suppresses repeated state binds for identical
+  adjacent resource kinds, but solid and rounded rectangles share one Vulkan
+  pipeline and still rebind it when authored order transitions between their
+  separate geometry buffers.
+- Step 509 will add a focused pipeline-switch planner that independently tracks
+  active pipeline and geometry resource. It will preserve authored order while
+  coalescing solid/rounded pipeline binds; Step 510 retains resource-barrier
+  ownership.
+- Added `vulkan_pipeline_switch_batching_test` before implementation. RED is
+  exact: compilation fails only because the focused private pipeline-switch
+  header does not exist yet.
+- Added the focused switch planner and routed ordered frame recording through
+  independent pipeline/geometry decisions. Primitive recording modules still
+  own Vulkan binds and accept only the planner's `bind_pipeline` decision.
+- Behavior and structure compile cleanly; the structure target passes, and the
+  focused executable exits 50 only at the expected documentation gate. New
+  planner header/source are 33/38 lines, frame draw orchestration is 89/100,
+  and the focused test is 155/230.
+- Synchronized Phase E Step 509 pipeline-switch batching with authored draw order preserved. Adjacent solid and rounded rectangle draws reuse the shared rounded-rectangle pipeline while rebinding only their distinct geometry buffers. Step 510 resource barriers are next.
+- Step 509 expanded regressions pass 10/10 across the switch planner, all three
+  primitive recording paths, stable/layer ordering, command reuse, live frame
+  lifetime, renderer structure, and parity.
+- The complete Windows debug suite passes 190/190. Ledger JSON parsing and
+  `git diff --check` pass; `wsl.exe -l -q` remains empty, so Linux verification
+  stays deferred to the final Phase E gate.
+
 ## 2026-07-10 Phase E Step 508 Recorded Command Reuse
 
 - Step 507 is committed on `master` at

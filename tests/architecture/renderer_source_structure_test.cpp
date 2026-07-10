@@ -169,6 +169,9 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_frame_draw_order.cpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_draw_recording.cpp",
+      "src/renderer/vulkan/vulkan_frame_pipeline_switch_internal.hpp",
+      "src/renderer/vulkan/vulkan_frame_pipeline_switch.cpp",
+      "tests/renderer/vulkan_pipeline_switch_batching_test.cpp",
       "src/renderer/vulkan/vulkan_frame_geometry_buffer_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp",
       "tests/renderer/vulkan_frame_command_reuse_test.cpp",
@@ -734,8 +737,27 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_frame_draw_recording_internal.hpp");
   const std::string frame_draw_recording =
       read_source("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
+  const std::string frame_pipeline_switch_header = read_source(
+      "src/renderer/vulkan/vulkan_frame_pipeline_switch_internal.hpp");
+  const std::string frame_pipeline_switch = read_source(
+      "src/renderer/vulkan/vulkan_frame_pipeline_switch.cpp");
+  const std::string pipeline_switch_test = read_source(
+      "tests/renderer/vulkan_pipeline_switch_batching_test.cpp");
   const std::string draw_order_presentation =
       read_source("src/renderer/vulkan/vulkan_presentation.cpp");
+  if (frame_pipeline_switch_header.empty() || frame_pipeline_switch.empty() ||
+      pipeline_switch_test.empty() ||
+      line_count(frame_pipeline_switch_header) > 60 ||
+      line_count(frame_pipeline_switch) > 70 ||
+      line_count(pipeline_switch_test) > 230 ||
+      !contains(frame_pipeline_switch_header,
+                "struct VulkanFramePipelineSwitchState") ||
+      !contains(frame_pipeline_switch,
+                "vulkan_plan_frame_pipeline_switch(") ||
+      contains(frame_pipeline_switch, "vkCmdBindPipeline") ||
+      contains(frame_pipeline_switch, "VkCommandBuffer")) {
+    return 54;
+  }
   if (line_count(frame_draw_order_header) > 80 ||
       line_count(frame_draw_order) > 100 ||
       line_count(frame_draw_recording_header) > 50 ||
@@ -748,6 +770,9 @@ int main(int argc, char** argv) {
       !contains(renderer, "append_draw(") ||
       !contains(draw_order_presentation, "VulkanFrameDrawOrderEntry") ||
       !contains(frame_draw_recording, "VulkanFrameDrawOrderCursor") ||
+      !contains(frame_draw_recording,
+                "VulkanFramePipelineSwitchState") ||
+      !contains(frame_draw_recording, "switch_plan.bind_pipeline") ||
       !contains(frame_draw_recording,
                 "vulkan_bind_rounded_rect_draw_state(") ||
       !contains(frame_draw_recording, "vulkan_record_rounded_rect_draw(") ||
