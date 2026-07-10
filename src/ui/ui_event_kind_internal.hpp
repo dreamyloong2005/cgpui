@@ -22,6 +22,9 @@ inline EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<WindowRestored>(event)) {
     return EventKind::window_restored;
   }
+  if (std::holds_alternative<WindowMoved>(event)) {
+    return EventKind::window_moved;
+  }
   if (std::holds_alternative<WindowCloseRequested>(event)) {
     return EventKind::window_close_requested;
   }

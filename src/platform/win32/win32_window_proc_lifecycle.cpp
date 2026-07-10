@@ -34,6 +34,12 @@ bool win32_window_proc_handle_lifecycle(
       }
       result = 0;
       return true;
+    case WM_MOVE:
+      if (window != nullptr) {
+        window->position_changed();
+      }
+      result = 0;
+      return true;
     case WM_ACTIVATE:
       if (window != nullptr) {
         window->activation_changed(LOWORD(wparam) != WA_INACTIVE);

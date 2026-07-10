@@ -880,7 +880,12 @@ Windows/Linux core API is stable enough for parity work.
   reversible monitor-sized borderless fullscreen with callback-time lifecycle
   state; Wayland tests observe all five xdg display requests and only accept
   maximize/fullscreen/normal state after matching configure acknowledgements.
-- In progress: Step 544 window positioning production behavior.
+- Completed: Phase F Step 544 adds capability-aware top-level positioning with initial/query/request support and WindowMoved delivery on Win32, while Wayland explicitly reports absolute positioning unsupported. Step 545 transparent and decorated window production behavior is next.
+- Step 544 evidence: Win32 tests cover initial descriptor placement, live
+  query/request, state-before-event `WM_MOVE`, and display-state rejection;
+  Wayland reports the xdg-toplevel limitation explicitly, while runtime and
+  structure tests freeze `WindowMoved` delivery and focused ownership.
+- In progress: Step 545 transparent and decorated window production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -904,6 +909,9 @@ Windows/Linux core API is stable enough for parity work.
 | A WSL invocation with `--cd` transiently returned `WSL_E_DISTRO_NOT_FOUND`, and the next script placed `--root` before the xmake task | Step 539 WSL focused gate | Use the proven `wsl.exe -d archlinux -- bash -lc 'cd ...'` form and place the option after the task: `xmake f --root`, `xmake build --root`, `xmake test --root` |
 | The first Wayland lifecycle test saw the base default snapshot through `RegisteredWaylandWindow` | Step 539 real Wayland GREEN | Add a focused lifecycle override to the registered wrapper and guard the forwarding in the structure test |
 | `Select-String -Recurse` is not supported by this PowerShell environment | Step 540 symbol audit | Use `Get-ChildItem -Recurse -File | Select-String ...` for recursive source searches |
+| `xmake test window_runtime_rendering_test -vD -P .` treated the bare target as a non-matching test and printed `nothing to test` | Step 544 runtime regression | Use the registered test id after options: `xmake test -P . window_runtime_rendering_test/default` |
+| The first expanded Step 544 Windows command used nonexistent `win32_window_activation_focus_test/default`; xmake silently omitted it | Step 544 Windows gate | Use the registered `win32_window_activation_focus_state_test/default` id and verify the report count |
+| The first Step 544 WSL expanded gate used `-j 1`, causing the public-event-header rebuild to serialize hundreds of objects | Step 544 WSL gate | Stop the owned xmake process after preserving completed objects, then resume the same 17-test gate incrementally with `-j 8` |
 
 ## Errors Encountered During Phase E Resume
 

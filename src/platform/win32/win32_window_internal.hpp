@@ -27,6 +27,8 @@ class Win32Window final
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
   bool request_display_state(PlatformWindowDisplayState display_state) override;
+  [[nodiscard]] PlatformWindowPositionState position_state() const override;
+  bool request_position(Point position) override;
   [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
   bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
   void request_redraw() override;
@@ -41,6 +43,7 @@ class Win32Window final
       PlatformAccessibilityTreeUpdate update) override;
 
   void update_size() override;
+  void position_changed() override;
   void update_size_for_dpi(float dpi);
   void dpi_changed(WPARAM wparam, LPARAM lparam) override;
   void activation_changed(bool active) override;

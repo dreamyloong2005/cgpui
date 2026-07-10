@@ -9586,3 +9586,18 @@
   reaches the compositor, while maximized/fullscreen/normal lifecycle state is
   only asserted after matching compositor configures are acknowledged.
 - Phase F Step 543 adds real Win32 minimize/maximize/restore and reversible borderless fullscreen, plus Wayland xdg-toplevel display requests with compositor-confirmed lifecycle state. Step 544 window positioning production behavior is next.
+
+## 2026-07-11 Phase F Step 544 Window Positioning Audit
+
+- No public window position query/request or initial descriptor position exists.
+  Win32 creation always uses `CW_USEDEFAULT`; later `SetWindowPos` calls are
+  currently limited to DPI, chrome, and fullscreen internals.
+- Win32 can provide real top-level desktop positioning through
+  `GetWindowRect`, `SetWindowPos`, and `WM_MOVE`.
+- Wayland xdg-toplevel deliberately does not expose absolute desktop
+  positioning. `xdg_positioner` is popup-only and xdg surface window geometry
+  is surface-local, so neither may be presented as top-level placement.
+- The public boundary must expose capability/optional position explicitly.
+  Wayland should return unsupported/false, while Win32 should support initial
+  descriptor placement plus later query/request behavior.
+- Phase F Step 544 adds capability-aware top-level positioning with initial/query/request support and WindowMoved delivery on Win32, while Wayland explicitly reports absolute positioning unsupported. Step 545 transparent and decorated window production behavior is next.

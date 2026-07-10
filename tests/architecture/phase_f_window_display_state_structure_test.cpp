@@ -164,7 +164,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 544 window positioning")) {
+          "\"phase_f_step_543_remaining_gap\": \"Step 544 window positioning")) {
     return 10;
   }
   return 0;

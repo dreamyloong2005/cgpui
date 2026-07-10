@@ -35,6 +35,14 @@ bool RegisteredWaylandWindow::request_display_state(
   return window_->request_display_state(display_state);
 }
 
+PlatformWindowPositionState RegisteredWaylandWindow::position_state() const {
+  return window_->position_state();
+}
+
+bool RegisteredWaylandWindow::request_position(Point position) {
+  return window_->request_position(position);
+}
+
 PlatformWindowCloseState RegisteredWaylandWindow::close_request_state() const {
   return window_->close_request_state();
 }

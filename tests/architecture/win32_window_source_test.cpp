@@ -53,6 +53,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/win32/win32_window_close.cpp",
       "src/platform/win32/win32_window_display.cpp",
+      "src/platform/win32/win32_window_position.cpp",
       "src/platform/win32/win32_window_size.cpp",
       "src/platform/win32/win32_window_drag_drop.cpp",
       "src/platform/win32/win32_window_events.cpp",

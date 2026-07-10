@@ -20575,3 +20575,50 @@
   structure regression 4/4. Final JSON parsing, exact five-document phrase,
   focused line caps, the preserved 120-line Wayland window-internal cap, and
   `git diff --check` pass.
+- Step 543 committed on `master` as `a423b3d7 feat: add platform window display
+  controls`; only the pre-existing `.vscode/` directory remains untracked.
+
+## 2026-07-11 Phase F Step 544 Window Positioning
+
+- Started the public/backend positioning audit from the committed Step 543
+  baseline.
+- Confirmed the cross-platform contract must be capability-aware: Win32 can
+  position top-level windows, while Wayland xdg-toplevel cannot expose global
+  desktop coordinates.
+- The Win32 RED build failed on the expected absent descriptor field,
+  `WindowMoved` event, position state, and position request API. A first combined
+  implementation patch contained an empty Wayland wrapper hunk and was rejected
+  without changes; the implementation was split into public/Win32 and
+  Wayland/runtime patches.
+- Real Win32 positioning passed 1/1 across initial descriptor placement,
+  query/request, `WM_MOVE` state-before-event, and fullscreen rejection. The
+  Wayland capability test passed 1/1 with explicit unsupported state and false
+  request results.
+- An initial runtime regression command used the target name before options and
+  matched no registered test. The corrected invocation uses
+  `window_runtime_rendering_test/default` after `-P .`.
+- The corrected runtime test failed with exit 207 because the lifecycle focus
+  snapshot assertion still used the pre-`WindowMoved` indices. The assertion
+  now keeps focus through activated/focused/moved and expects it cleared for
+  minimized/restored/close.
+- The corrected runtime lifecycle regression passes 1/1.
+- Added the Step 544 structure guard and registered all new position-owned
+  sources in the Win32 and cross-platform structure inventories. Its first run
+  reached the intended five-document RED gate at exit 9.
+- Synchronized the exact Step 544 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; the active handoff is now
+  Step 545 transparent and decorated window production behavior.
+- The expanded Windows command passed all 15 matched tests but used a
+  nonexistent activation target name. The missing Step 540 behavior target is
+  rerun separately as `win32_window_activation_focus_state_test/default`.
+- Windows verification is complete at 16/16: the 15-test expanded report plus
+  the separately corrected activation/focus behavior target all pass.
+- The first WSL expanded invocation used `-j 1`; public event-header changes
+  made that rebuild impractically serial. After preserving completed objects,
+  the same gate resumed incrementally with `-j 8` and passed 17/17, including
+  all six real Wayland lifecycle behaviors, compositor resize regression, five
+  Phase F structure guards, both source inventories, runtime lifecycle
+  recording, public lifecycle parity, and the ledger.
+- JSON parsing, the exact Step 544 phrase in all five authoritative documents,
+  focused line caps, the preserved 120-line Wayland internal cap, and
+  `git diff --check` pass.

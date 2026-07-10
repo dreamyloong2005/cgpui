@@ -446,6 +446,7 @@ void dispatch_window_lifecycle_events() {
   auto& callback = lifecycle_fixture->window.callback;
   callback(cgpui::WindowActivated{.active = true});
   callback(cgpui::WindowFocused{.focused = true});
+  callback(cgpui::WindowMoved{.position = {12.0F, 18.0F}});
   callback(cgpui::WindowMinimized{.minimized = true});
   callback(cgpui::WindowRestored{});
   callback(cgpui::WindowCloseRequested{});
@@ -493,13 +494,14 @@ int test_window_lifecycle_events_update_dispatch_records() {
       !close_callback_saw_last_dispatch) {
     return 204;
   }
-  if (records.size() != 5 || input_snapshots.size() != records.size()) {
+  if (records.size() != 6 || input_snapshots.size() != records.size()) {
     return 205;
   }
 
   const std::vector<cgpui::EventKind> expected_kinds{
       cgpui::EventKind::window_activated,
       cgpui::EventKind::window_focused,
+      cgpui::EventKind::window_moved,
       cgpui::EventKind::window_minimized,
       cgpui::EventKind::window_restored,
       cgpui::EventKind::window_close_requested};
@@ -515,8 +517,8 @@ int test_window_lifecycle_events_update_dispatch_records() {
     }
   }
   if (!input_snapshots[0].focused || !input_snapshots[1].focused ||
-      input_snapshots[2].focused || input_snapshots[3].focused ||
-      input_snapshots[4].focused) {
+      !input_snapshots[2].focused || input_snapshots[3].focused ||
+      input_snapshots[4].focused || input_snapshots[5].focused) {
     return 207;
   }
   if (fixture.view.event_count != 1 || fixture.view.focus_count != 1 ||

@@ -26,6 +26,10 @@ struct WindowResized {
   DpiScale scale;
 };
 
+struct WindowMoved {
+  Point position;
+};
+
 struct WindowActivated {
   bool active = false;
 };

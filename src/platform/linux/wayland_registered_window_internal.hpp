@@ -13,6 +13,8 @@ class RegisteredWaylandWindow final : public PlatformWindow {
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
   bool request_display_state(PlatformWindowDisplayState display_state) override;
+  [[nodiscard]] PlatformWindowPositionState position_state() const override;
+  bool request_position(Point position) override;
   [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
   bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
 

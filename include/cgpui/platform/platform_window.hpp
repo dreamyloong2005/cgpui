@@ -7,6 +7,7 @@
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_lifecycle.hpp"
+#include "cgpui/platform/platform_window_position.hpp"
 
 #include <functional>
 #include <optional>
@@ -22,6 +23,8 @@ class PlatformWindow {
   [[nodiscard]] virtual WindowState state() const = 0;
   [[nodiscard]] virtual PlatformWindowLifecycleState lifecycle_state() const;
   virtual bool request_display_state(PlatformWindowDisplayState display_state);
+  [[nodiscard]] virtual PlatformWindowPositionState position_state() const;
+  virtual bool request_position(Point position);
   [[nodiscard]] virtual PlatformWindowCloseState close_request_state() const;
   virtual bool resolve_close_request(PlatformWindowCloseResolution resolution);
   virtual void request_redraw() = 0;

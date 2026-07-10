@@ -34,6 +34,7 @@ struct WindowChromeOptions {
 struct WindowDescriptor {
   std::string title = "CGPUI";
   Size size{1280.0F, 720.0F};
+  std::optional<Point> position;
   WindowChromeOptions chrome;
 };
 

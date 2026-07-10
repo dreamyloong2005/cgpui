@@ -50,13 +50,19 @@ class Win32Application final : public PlatformApplication {
     const DWORD style = win32_window_style_for(descriptor.chrome);
     const DWORD extended_style =
         win32_window_extended_style_for(descriptor.chrome);
+    const int initial_x = descriptor.position.has_value()
+        ? static_cast<int>(descriptor.position->x)
+        : CW_USEDEFAULT;
+    const int initial_y = descriptor.position.has_value()
+        ? static_cast<int>(descriptor.position->y)
+        : CW_USEDEFAULT;
     HWND hwnd = CreateWindowExW(
         extended_style,
         class_name,
         title.c_str(),
         style,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
+        initial_x,
+        initial_y,
         static_cast<int>(descriptor.size.width),
         static_cast<int>(descriptor.size.height),
         nullptr,

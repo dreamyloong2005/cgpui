@@ -45,6 +45,13 @@ bool WindowRuntime::handle_window_control_event(const PlatformEvent& event) {
     return true;
   }
 
+  if (std::holds_alternative<WindowMoved>(event)) {
+    if (window_ != nullptr && renderer_ != nullptr) {
+      record_lifecycle_event(event);
+    }
+    return true;
+  }
+
   if (const auto* resized = std::get_if<WindowResized>(&event);
       resized != nullptr) {
     handle_resize(*resized);

@@ -1736,7 +1736,31 @@
       "xmake.lua"
     ],
     "phase_f_step_543_remaining_gap": "Step 544 window positioning production behavior",
-    "phase_f_current_handoff": "Step 544 window positioning production behavior"
+    "phase_f_step_544_surface": "Phase F Step 544 adds capability-aware top-level positioning with initial/query/request support and WindowMoved delivery on Win32, while Wayland explicitly reports absolute positioning unsupported. Step 545 transparent and decorated window production behavior is next.",
+    "phase_f_step_544_sources": [
+      "include/cgpui/platform/platform_window_position.hpp",
+      "include/cgpui/platform/platform_window.hpp",
+      "include/cgpui/core/window.hpp",
+      "include/cgpui/core/event_window.hpp",
+      "include/cgpui/core/event_platform.hpp",
+      "src/platform/platform_window_position.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_window_position.cpp",
+      "src/platform/win32/win32_window_proc_lifecycle.cpp",
+      "src/platform/linux/wayland_window_position_internal.hpp",
+      "src/platform/linux/wayland_window_position.cpp",
+      "src/platform/linux/wayland_window_registered.cpp",
+      "src/ui/runtime_event_control.cpp",
+      "src/ui/runtime_event_windows.cpp",
+      "src/ui/ui_event_kind_internal.hpp",
+      "tests/platform/win32_window_position_test.cpp",
+      "tests/platform/wayland_window_position_test.cpp",
+      "tests/ui/window_runtime_rendering_test.cpp",
+      "tests/architecture/phase_f_window_position_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_544_remaining_gap": "Step 545 transparent and decorated window production behavior",
+    "phase_f_current_handoff": "Step 545 transparent and decorated window production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -21,9 +21,9 @@ class WaylandWindow final : public PlatformWindow {
   [[nodiscard]] WindowState state() const override;
   [[nodiscard]] PlatformWindowLifecycleState lifecycle_state() const override;
 #include "wayland_window_display_internal.hpp"
+#include "wayland_window_position_internal.hpp"
   [[nodiscard]] PlatformWindowCloseState close_request_state() const override;
   bool resolve_close_request(PlatformWindowCloseResolution resolution) override;
-
   void request_redraw() override;
   void request_close() override;
   void set_title(std::string_view title) override;

@@ -97,6 +97,11 @@ void WindowRuntime::handle_native_additional_window_event(
     record_lifecycle_event_for_record(*record, event);
     return;
   }
+
+  if (std::holds_alternative<WindowMoved>(event)) {
+    record_lifecycle_event_for_record(*record, event);
+    return;
+  }
   dispatch_view_event_for_record(*record, *view, event);
 }
 
