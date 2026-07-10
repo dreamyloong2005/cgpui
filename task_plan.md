@@ -702,13 +702,20 @@ Windows/Linux core API is stable enough for parity work.
   stable authored image interleaving, multiplicative image tint, the
   frame-generation image cache, and deduplicated image invalidations. Step 499
   SVG rendering strategy is next.
+- Phase E Steps 499-506 are split into focused SVG strategy/request/result,
+  raster backend, caller-visible cache, viewport scaling, recolor/tint,
+  image-upload integration, public example, and audit closeout slices.
+- Phase E Step 499 adds `SvgRasterizationRequest` and `SvgRasterizationPlan` in
+  a focused renderer leaf. The planner creates an
+  explicit RGBA8 output plan with ceil-rounded device dimensions and a
+  bounded raster byte budget. Step 500 LunaSVG raster backend is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-498 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-499 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -744,9 +751,10 @@ Windows/Linux core API is stable enough for parity work.
   composition opacity through the explicit RGBA vertex/shader path, plus a
   120-idle-frame generation cache with fence-safe retention and eviction, plus
   explicit deduplicated image invalidation and same-frame refresh ordering,
-  plus the audit-only image integration closeout.
-- In progress: Step 499 SVG rendering strategy.
-- Pending bands: Steps 499-506 SVG; Steps
+  plus the audit-only image integration closeout, plus the explicit SVG
+  rasterization request/plan boundary.
+- In progress: Step 500 LunaSVG raster backend.
+- Pending bands: Steps 500-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -759,6 +767,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| `svg_rasterization_plan_test` failed after the implementation and structure test passed | Step 499 first GREEN | Expected documentation gate; add the six exact Step 499 phrases to the five authoritative files |
+| `xmake build` rejected two positional targets and printed help | Step 499 first GREEN build | Build `svg_rasterization_plan_test` and `renderer_source_structure_test` as separate commands |
+| Step 499 cleanliness scan guessed nonexistent `renderer_header_cleanliness.cpp` | Step 499 structure inventory | List the actual header-cleanliness files and use the existing renderer aggregate coverage |
+| `svg_rasterization_plan_test` could not include the new focused public leaf | Step 499 RED | Expected RED; add the request/plan leaf, focused implementation, aggregate include, and structure guard |
 | Step 498 second documentation audit reached 54/55 because the findings handoff phrase still crossed one line break | Step 498 second GREEN | Move the complete `Step 499 SVG rendering strategy` phrase onto one line |
 | Two broad Step 498 phrase-reflow patches did not match the current line wrapping | Step 498 phrase fix | Apply smaller exact-line replacements per affected document |
 | Step 498 documentation audit reached only 47/55 because eight required phrases were split across Markdown lines | Step 498 first GREEN | Reflow only the affected closeout sentences so each exact audit phrase stays contiguous |

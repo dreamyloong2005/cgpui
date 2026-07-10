@@ -1,5 +1,40 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 499 SVG Rasterization Strategy
+
+- Step 498 is committed at
+  `3aea175b test: close vulkan image integration band`; tracked `master` is
+  clean and only the existing `.vscode/` directory remains untracked.
+- Existing Phase C SVG support owns markup metadata only through `ImageSource`,
+  `ImageAssetRegistry::register_svg(...)`, and the public source example. The
+  repository currently has no SVG parser/raster dependency or renderer backend.
+- The Steps 499-506 ownership split is: strategy/request/result boundary,
+  raster backend, caller-visible raster cache, viewport scaling, recolor/tint,
+  image-upload integration, public example, and audit closeout.
+- Step 499 should begin in focused public renderer leaves plus a focused
+  implementation file; it must not place parser bodies in `image_source.cpp`,
+  `image_asset_registry.cpp`, broad renderer entry files, or aggregate headers.
+- The local xmake repository exposes `lunasvg v3.5.0`, a cross-platform C++ SVG
+  rendering library. Use it as the Step 500 backend while keeping its types out
+  of public headers and preserving a focused implementation boundary.
+- Step 499 should define a public planning boundary rather than a backend stub:
+  `SvgRasterizationRequest` and `SvgRasterizationPlan` expose RGBA8 output,
+  device-pixel dimensions, stride/byte budget, validity, and strategy. Step 500
+  then consumes that plan through the LunaSVG implementation.
+- `cgpui_renderer` already owns focused `src/renderer/*.cpp` implementations.
+  The compatibility aggregate `renderer.hpp` should include the new leaf only;
+  structure coverage should cap the leaf/implementation and reject bodies in
+  the aggregate.
+- Phase E Step 499 now adds `SvgRasterizationRequest` and
+  `SvgRasterizationPlan`. The focused planner emits an
+  explicit RGBA8 output plan with ceil-rounded device pixels and a
+  bounded raster byte budget. Step 500 LunaSVG raster backend is next.
+- Focused Step 499 behavior/structure/ledger coverage passes 3/3 with the
+  public header at 48 lines and focused implementation at 77 lines.
+- The complete Windows debug build and full 180/180 test suite pass. WSL has no
+  installed distribution, so Linux verification remains deferred to the final
+  Phase E gate.
+
 ## 2026-07-10 Phase E Step 498 Image Integration Closeout
 
 - Step 497 is committed at `5d77f965 feat: invalidate vulkan image textures`;

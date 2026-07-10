@@ -18872,6 +18872,41 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 499 SVG Rasterization Strategy
+
+- Started from clean tracked `master` at
+  `3aea175b test: close vulkan image integration band`; only the existing
+  untracked `.vscode/` directory remains.
+- Confirmed Phase C SVG support is metadata-only and no SVG parser/raster
+  dependency exists in the current xmake graph.
+- Split Steps 499-506 into strategy/request/result, raster backend, cache,
+  scaling, recolor/tint, image-upload integration, public example, and audit
+  closeout modules.
+- Confirmed the local xmake package index provides `lunasvg v3.5.0`; selected
+  it for the focused Step 500 backend rather than hand-writing SVG parsing.
+- Chosen Step 499 boundary is public request/plan metadata with explicit RGBA8
+  output sizing and byte budget; third-party backend types remain private.
+- Confirmed `cgpui_renderer` is the owning target and can pick up a focused
+  `src/renderer/svg_rasterization.cpp`; the aggregate stays include-only.
+- Added `svg_rasterization_plan_test` and its xmake target. The RED build failed
+  exactly as intended because the focused public header does not yet exist.
+- A read-only cleanliness scan guessed a nonexistent filename; switched to the
+  actual directory inventory before extending aggregate coverage.
+- The first GREEN command passed two targets to `xmake build`, which accepts
+  only one positional target. No compile ran; switched to separate builds.
+- Separate plan and structure builds succeeded. Renderer structure passes, and
+  the Step 499 behavior test now reaches only the expected documentation gate.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  request/plan boundary and Step 500 LunaSVG handoff.
+- Step 499 behavior/structure/ledger gates pass 3/3, exact documentation
+  phrases pass 30/30, ledger JSON parses, module line limits pass, and
+  `git diff --check` is clean.
+- The complete Windows debug build succeeded and the full test suite passed
+  180/180.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. SVG planning remains in the final Phase E Linux
+  gate.
+
 ## 2026-07-10 Phase E Step 498 Image Integration Closeout
 
 - Started from clean tracked `master` at

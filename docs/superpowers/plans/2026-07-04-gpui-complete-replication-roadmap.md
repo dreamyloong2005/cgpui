@@ -1669,8 +1669,13 @@ draw calls for the Windows/Linux renderer.
   multiplicative image tint, the frame-generation image cache, and deduplicated
   image invalidations. Phase E now hands off to Step 499 SVG rendering strategy
   without adding renderer behavior in the closeout.
-- [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
-  boundary, including cache, scaling, recolor/tint, and examples.
+- [x] Phase E Step 499 adds `SvgRasterizationRequest` and
+  `SvgRasterizationPlan` in the focused public
+  `include/cgpui/renderer/svg_rasterization.hpp` leaf. The planner produces an
+  explicit RGBA8 output plan with ceil-rounded device pixels and a
+  bounded raster byte budget before any backend allocation. Step 500 LunaSVG raster backend is next.
+- [ ] Steps 500-506: Add the LunaSVG raster backend, cache, scaling,
+  recolor/tint, image upload integration, examples, and closeout.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,
   command reuse, pipeline switches, resource barriers, swapchain recovery, and
   present pacing.

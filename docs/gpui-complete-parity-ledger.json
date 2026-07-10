@@ -1182,8 +1182,18 @@
       "xmake.lua"
     ],
     "phase_e_step_498_remaining_gap": "Step 499 SVG rendering strategy",
+    "phase_e_step_499_surface": "Phase E Step 499 adds SvgRasterizationRequest and SvgRasterizationPlan in a focused public renderer leaf. The planner produces an explicit RGBA8 output plan from logical size and DPI scale while enforcing a bounded raster byte budget before backend allocation. Step 500 LunaSVG raster backend is next.",
+    "phase_e_step_499_sources": [
+      "include/cgpui/renderer/svg_rasterization.hpp",
+      "src/renderer/svg_rasterization.cpp",
+      "include/cgpui/renderer/renderer.hpp",
+      "tests/renderer/svg_rasterization_plan_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_499_remaining_gap": "Step 500 LunaSVG raster backend",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 499 SVG rendering strategy"
+    "phase_e_current_handoff": "Phase E Step 500 LunaSVG raster backend"
   },
   "categories": [
     "application_and_app_context",

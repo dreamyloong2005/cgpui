@@ -608,6 +608,12 @@ consume C: drive space again.
   frame-generation image cache, and deduplicated image invalidations without
   adding renderer behavior.
 - Handoff: Step 499 SVG rendering strategy.
+- Phase E Step 499 adds `SvgRasterizationRequest` and `SvgRasterizationPlan` in
+  a focused public renderer leaf with non-template planning in
+  `src/renderer/svg_rasterization.cpp`. It produces an
+  explicit RGBA8 output plan from logical size and DPI scale while enforcing a
+  bounded raster byte budget before backend allocation.
+- Handoff: Step 500 LunaSVG raster backend.
 
 ## Categories
 
