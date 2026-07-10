@@ -727,13 +727,14 @@ Windows/Linux core API is stable enough for parity work.
 - Phase E Step 510 adds ordered upload barrier waves with batched transfer and shader-read transitions. Unique glyph-atlas or image-texture targets share two barrier calls around their copies, while duplicate image targets start a new wave with shader-read old-layout continuity. Step 511 swapchain recovery is next.
 - Phase E Step 511 adds automatic swapchain recreation from acquire/present result plans. The out-of-date results return a retryable frame error after recreating, suboptimal frames recreate after submission, and presentation remains unblocked after successful recovery. Step 512 present pacing is next.
 - Phase E Step 512 adds a focused Vulkan present pacing policy: MAILBOX with FIFO fallback, saturation-safe swapchain image depth, and one CPU frame in flight via shared fence/acquire waits. Step 513 next-frame scheduling is next.
+- Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-512 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-513 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -784,12 +785,14 @@ Windows/Linux core API is stable enough for parity work.
   ordered duplicate-safe glyph/image upload barrier waves, plus automatic
   acquire/present swapchain recreation with retryable out-of-date handling,
   plus focused Vulkan present pacing with MAILBOX/FIFO selection,
-  saturation-safe image depth, and one CPU frame in flight.
-- In progress: Step 513 next-frame scheduling.
-- Step 513 boundary: preserve invalidation requested while rendering and issue
-  exactly one next-frame platform redraw after the current frame completes.
-  Step 514 owns batching/scheduling integration closeout.
-- Pending bands: Steps 513-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
+  saturation-safe image depth, and one CPU frame in flight, plus root-window
+  next-frame scheduling that preserves render-time invalidation and coalesces
+  repeated requests into one platform redraw.
+- In progress: Step 514 batching and scheduling closeout.
+- Step 514 boundary: freeze Steps 507-513 batching/scheduling behavior,
+  structure, documentation, and Windows integration evidence without adding a
+  new renderer feature.
+- Pending bands: Step 514 batching/scheduling closeout; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
   focused WSL when shared renderer/build/header surfaces change, Windows full
@@ -801,6 +804,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The combined Step 513 private-header extraction patch had an invalid structure-test hunk and changed no files | Step 513 structure GREEN | Split the private header/runtime test edits from the shared structure-test edit and patch each against exact context |
+| UI structure exited 100 because Step 513 pushed `window_runtime_internal.hpp` from 260 to 264 lines | Step 513 first GREEN | Keep the 260-line private runtime limit and move frame scheduling declarations/state into `runtime_frame_scheduling_internal.hpp` |
+| Step 513 focused executable exited 11 because render-time invalidation produced only the current frame | Step 513 RED | Add focused frame-scheduling lifecycle helpers, preserve render-time invalidation, and coalesce it into one redraw after frame callbacks complete |
 | The combined Step 512 image-audit update missed the invalidation test's current empty-source guard and changed no files | Step 512 post-refactor audit repair | Re-read both focused source blocks and patch their exact current contexts separately |
 | Windows full suite failed image texture cache/invalidation audits after fence execution moved out of presentation | Step 512 post-refactor full GREEN | Preserve their ordering checks against `wait_for_present_pacing()` in presentation and separately require `vkWaitForFences` in the focused pacing execution leaf |
 | Renderer structure exited 32 because Step 512 pacing integration moved `vulkan_presentation.cpp` from its 165-line limit to 172 lines | Step 512 focused GREEN | Keep the 165-line orchestration limit and compact only the fence-call formatting; policy ownership remains in the focused pacing leaf |

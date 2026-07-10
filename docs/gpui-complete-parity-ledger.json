@@ -1338,8 +1338,21 @@
       "xmake.lua"
     ],
     "phase_e_step_512_remaining_gap": "Step 513 next-frame scheduling",
+    "phase_e_step_513_surface": "Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.",
+    "phase_e_step_513_sources": [
+      "src/ui/runtime_frame_scheduling_internal.hpp",
+      "src/ui/runtime_frame_scheduling.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "src/ui/runtime_renderer_frame_results.cpp",
+      "src/ui/runtime_run.cpp",
+      "src/ui/window_runtime_internal.hpp",
+      "tests/ui/window_runtime_frame_scheduling_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_513_remaining_gap": "Step 514 batching and scheduling closeout",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Step 513 next-frame scheduling"
+    "phase_e_current_handoff": "Step 514 batching and scheduling closeout"
   },
   "categories": [
     "application_and_app_context",

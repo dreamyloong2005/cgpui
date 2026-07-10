@@ -23,6 +23,7 @@ void apply_text_input_for_event(const PlatformEvent& event);
 void finish_event_dispatch(EventResult result);
 void handle_resize(const WindowResized& event);
 void handle_redraw(), schedule_redraw(), flush_deferred_redraw_request();
+#include "runtime_frame_scheduling_internal.hpp"
 void request_platform_wakeup();
 void handle_wakeup();
 void drain_deferred_callbacks();
@@ -123,7 +124,6 @@ struct RuntimeTimer {
   bool repeating = false;
   TimerCallback callback;
 };
-
 struct RuntimeAnimation {
   AnimationId id;
   AnimationOptions options;

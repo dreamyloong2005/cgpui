@@ -44,6 +44,8 @@ int WindowRuntime::run(
   update_batch_depth_ = 0;
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
+  rendering_frame_ = false;
+  next_frame_redraw_requested_ = false;
   event_dispatch_sequence_ = 0;
   render_sequence_ = 0;
   frame_index_ = 0;

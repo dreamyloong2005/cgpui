@@ -1916,6 +1916,7 @@ int main() {
       "src/ui/runtime_renderer_results.cpp",
       "src/ui/runtime_renderer_resize_results.cpp",
       "src/ui/runtime_renderer_frame_results.cpp",
+      "src/ui/runtime_frame_scheduling.cpp",
       "src/ui/window.cpp",
       "src/ui/window_context.cpp",
       "src/ui/runtime_theme.cpp",
@@ -2336,6 +2337,10 @@ int main() {
 
   const std::string runtime_renderer_frame_results_source =
       read_source("src/ui/runtime_renderer_frame_results.cpp");
+  const std::string runtime_frame_scheduling_header =
+      read_source("src/ui/runtime_frame_scheduling_internal.hpp");
+  const std::string runtime_frame_scheduling_source =
+      read_source("src/ui/runtime_frame_scheduling.cpp");
   if (line_count(runtime_renderer_frame_results_source) > 180 ||
       !contains(runtime_renderer_frame_results_source,
                 "Result<void> WindowRuntime::try_draw_frame(") ||
@@ -2343,12 +2348,38 @@ int main() {
                 "WindowRuntime::try_draw_frame_for_record(") ||
       !contains(runtime_renderer_frame_results_source, "render_view(") ||
       !contains(runtime_renderer_frame_results_source, "frame_index_ += 1") ||
+      !contains(runtime_renderer_frame_results_source,
+                "begin_frame_scheduling()") ||
+      !contains(runtime_renderer_frame_results_source,
+                "complete_frame_scheduling()") ||
+      !contains(runtime_renderer_frame_results_source,
+                "abort_frame_scheduling()") ||
+      contains(runtime_renderer_frame_results_source,
+               "next_frame_redraw_requested_") ||
       contains(runtime_renderer_frame_results_source, "fail_and_quit(") ||
       contains(runtime_renderer_frame_results_source,
                "WindowRuntime::try_resize_surface(") ||
       contains(runtime_renderer_frame_results_source,
                "WindowRuntime::try_create_renderer(")) {
     return 142;
+  }
+  if (line_count(runtime_frame_scheduling_header) > 20 ||
+      line_count(runtime_frame_scheduling_source) > 70 ||
+      !contains(window_runtime_internal_header,
+                "#include \"runtime_frame_scheduling_internal.hpp\"") ||
+      !contains(runtime_frame_scheduling_header,
+                "bool rendering_frame_ = false") ||
+      !contains(runtime_frame_scheduling_header,
+                "bool next_frame_redraw_requested_ = false") ||
+      !contains(runtime_frame_scheduling_source,
+                "WindowRuntime::begin_frame_scheduling()") ||
+      !contains(runtime_frame_scheduling_source,
+                "WindowRuntime::complete_frame_scheduling()") ||
+      !contains(runtime_frame_scheduling_source,
+                "WindowRuntime::abort_frame_scheduling()") ||
+      contains(runtime_frame_scheduling_source, "render_view(") ||
+      contains(runtime_frame_scheduling_source, "window_->request_redraw()")) {
+    return 160;
   }
 
   const std::string runtime_window_rendering_source =

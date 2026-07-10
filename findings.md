@@ -9096,3 +9096,19 @@
 - The pure policy leaf contains no Vulkan operations; the focused
   `vulkan_present_pacing_wait.cpp` execution leaf owns `vkWaitForFences`, keeping
   `vulkan_presentation.cpp` below its existing orchestration limit.
+## 2026-07-10 Phase E Step 513 Next-Frame Scheduling
+
+- `WindowRuntime::schedule_redraw()` currently returns immediately while
+  `redraw_scheduled_` is true. During `try_draw_frame()`, that flag stays true
+  until after presentation, so invalidation requested by render callbacks is
+  silently dropped and the later `clear_invalidation()` erases its flags.
+- The focused ownership boundary is a new private
+  `src/ui/runtime_frame_scheduling.cpp`, with begin/complete/abort helpers and
+  two runtime booleans for active rendering and one coalesced next-frame request.
+  `runtime_scheduling.cpp` only marks the next frame while rendering, and
+  `runtime_renderer_frame_results.cpp` only brackets frame work with the helper.
+- Complete scheduling after the `after_frame` callback so render,
+  after-render, and after-frame invalidation all survive the current frame and
+  coalesce into one platform redraw. The fake platform dispatches redraws
+  synchronously, making the focused test an end-to-end two-frame gate.
+- Phase E Step 513 adds next-frame scheduling: render-time invalidation survives frame completion and repeated requests are coalesced into exactly one platform redraw. Step 514 batching and scheduling closeout is next.

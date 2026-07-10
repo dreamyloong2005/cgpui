@@ -19869,3 +19869,30 @@
 - JSON parsing, all six cross-document phrases, focused source line limits, and
   `git diff --check` pass. WSL verification remains unavailable because
   `wsl.exe -l -q` returns an empty distribution list.
+## 2026-07-10 Phase E Step 513 Next-Frame Scheduling
+
+- Started from clean tracked `master` at Step 512 commit `cdffba24`; only the
+  existing untracked `.vscode/` directory remains.
+- Traced render-time invalidation loss to the `redraw_scheduled_` early return
+  plus end-of-frame `clear_invalidation()`. Chosen boundary is a focused private
+  frame-scheduling implementation and a separate UI runtime regression target.
+- Added the focused target; it built and exited 11 at the expected one-frame
+  behavior failure.
+- Implemented begin/complete/abort frame scheduling in a new private source,
+  taught `schedule_redraw()` to retain one next-frame request while rendering,
+  and bracketed the root renderer frame path without adding public API.
+- First GREEN run reached only the expected documentation exit 40 in the new
+  test; UI structure exited 100 because the main private runtime header reached
+  264 lines. Extracted the declarations/state into a focused private header
+  instead of raising the 260-line limit.
+- Synced the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  verified next-frame scheduling behavior. Step 514 batching and scheduling
+  closeout is active.
+- Expanded runtime verification passed 8/8 across next-frame scheduling,
+  ordinary scheduling/rendering, static render, multiwindow, test frame pump,
+  runtime smoke, and UI source structure.
+- The complete Windows debug build succeeded, then the full suite passed
+  194/194.
+- JSON parsing, all five Step 513 phrases, focused line limits, and
+  `git diff --check` pass. WSL remains unavailable because `wsl.exe -l -q`
+  returns an empty distribution list.

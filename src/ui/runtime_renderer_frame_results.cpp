@@ -6,6 +6,7 @@ Result<void> WindowRuntime::try_draw_frame() {
   if (renderer_ == nullptr || should_quit_) {
     return {};
   }
+  begin_frame_scheduling();
 
   FrameStatistics frame_statistics;
   frame_statistics.render_pass_count = 1;
@@ -61,12 +62,10 @@ Result<void> WindowRuntime::try_draw_frame() {
       scale_,
       &frame_statistics);
   if (!result) {
+    abort_frame_scheduling();
     return std::unexpected(result.error());
   }
 
-  clear_invalidation();
-  redraw_scheduled_ = false;
-  deferred_redraw_request_ = false;
   frame_index_ += 1;
   frame_statistics.frame_index = frame_index_;
   if (last_render_record_.has_value()) {
@@ -76,6 +75,7 @@ Result<void> WindowRuntime::try_draw_frame() {
   if (after_frame_callback_) {
     after_frame_callback_(context());
   }
+  complete_frame_scheduling();
   return {};
 }
 

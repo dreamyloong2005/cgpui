@@ -51,6 +51,7 @@ void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
   redraw_scheduled_ = false;
   deferred_redraw_request_ = false;
+  next_frame_redraw_requested_ = false;
 }
 
 InvalidationState WindowRuntime::invalidation_state() const {
@@ -59,7 +60,14 @@ InvalidationState WindowRuntime::invalidation_state() const {
 
 
 void WindowRuntime::schedule_redraw() {
-  if (window_ == nullptr || redraw_scheduled_ || should_quit_) {
+  if (window_ == nullptr || should_quit_) {
+    return;
+  }
+  if (rendering_frame_) {
+    next_frame_redraw_requested_ = true;
+    return;
+  }
+  if (redraw_scheduled_) {
     return;
   }
   redraw_scheduled_ = true;
