@@ -165,6 +165,10 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_images.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resources.cpp",
       "src/renderer/vulkan/vulkan_image_texture_frame.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_descriptors_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_samplers.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp",
       "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_staging.cpp",
       "src/renderer/vulkan/vulkan_image_texture_upload_recording.cpp",
@@ -1466,6 +1470,34 @@ int main(int argc, char** argv) {
       !contains(image_texture_state,
                 "VulkanImageTextureUploadResources image_texture_uploads_")) {
     return 73;
+  }
+  const std::string image_sampling =
+      read_source("include/cgpui/renderer/image_sampling.hpp");
+  const std::string image_commands =
+      read_source("include/cgpui/renderer/renderer_commands.hpp");
+  const std::string image_texture_descriptor_header = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_descriptors_internal.hpp");
+  const std::string image_texture_samplers = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_samplers.cpp");
+  const std::string image_texture_descriptors = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp");
+  const std::string image_texture_resource_binding = read_source(
+      "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp");
+  if (line_count(image_sampling) > 40 ||
+      line_count(image_texture_descriptor_header) > 100 ||
+      line_count(image_texture_samplers) > 80 ||
+      line_count(image_texture_descriptors) > 220 ||
+      line_count(image_texture_resource_binding) > 100 ||
+      !contains(image_sampling, "enum class ImageSamplingMode") ||
+      !contains(image_commands, "ImageSamplingMode sampling") ||
+      !contains(image_texture_descriptor_header,
+                "vulkan_image_texture_descriptor_capacity = 256") ||
+      !contains(image_texture_samplers, "vkCreateSampler") ||
+      !contains(image_texture_descriptors, "vkCreateDescriptorSetLayout") ||
+      !contains(image_texture_descriptors, "vkAllocateDescriptorSets") ||
+      !contains(image_texture_resource_binding,
+                "vulkan_bind_image_texture_resource_descriptors(")) {
+    return 74;
   }
 
   const std::string report_text_quads =

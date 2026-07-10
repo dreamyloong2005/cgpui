@@ -667,13 +667,18 @@ Windows/Linux core API is stable enough for parity work.
   transition from their current layout to transfer-destination and
   shader-readable layouts, then commit readable layout state only after queue
   submission succeeds. Step 493 owns image sampler modes and descriptor binding.
+- Phase E Step 493 adds the public `ImageSamplingMode` leaf, a linear default on
+  `ImageDraw`, persistent nearest/linear samplers, and descriptor set binding for
+  both modes on each cached texture. One layout/pool supports 256 textures and
+  512 combined-image-sampler sets. Step 494 owns image pipeline creation and draw
+  recording.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-492 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-493 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -701,9 +706,10 @@ Windows/Linux core API is stable enough for parity work.
   Steps 475-489 clip/composition integration closeout audit, and descriptor-keyed
   Vulkan image texture resource ownership, plus explicit bitmap transport,
   host-visible RGBA staging, buffer-to-image copy recording, layout transitions,
-  and submit-time image layout commit.
-- In progress: Step 493 image sampler modes and descriptor binding.
-- Pending bands: Steps 493-498 images; Steps 499-506 SVG; Steps
+  and submit-time image layout commit, plus explicit image sampling metadata,
+  persistent nearest/linear samplers, and per-texture descriptor set binding.
+- In progress: Step 494 image graphics pipeline and draw recording.
+- Pending bands: Steps 494-498 images; Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -716,6 +722,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 493 line-count audit piped directly from a `foreach` block and PowerShell reported an empty pipe element | Step 493 final audit | Collect rows into an array before `Format-Table`; the corrected audit passed and the failed read-only command changed no files |
+| `vulkan_image_texture_descriptor_test` failed to compile because the private descriptor header did not exist | Step 493 RED | Expected RED; add the public sampling leaf plus focused sampler/descriptor resource modules |
+| Step 493 discovery requested nonexistent `src/ui/image_builder.cpp` | Step 493 UI propagation discovery | Locate image builder implementation by file inventory before Step 494; Step 493 does not require UI builder changes |
 | Passing three target names to one `xmake build -y -P . ...` invocation failed because the build task accepts one target | Step 492 post-format focused rebuild | Rebuild the upload and lifetime targets in separate invocations; the parser failure changed no outputs |
 | The first Step 492 documentation sync split `host-visible RGBA staging` across a roadmap line break | Step 492 first GREEN attempt | Keep the exact audit phrase contiguous in the roadmap; the other behavior, structure, ledger, and live-frame gates already passed |
 | Step 492 focused regressions initially failed renderer structure at exit 32 and Step 491 resource structure at exit 31 | Step 492 pre-documentation regression gate | Keep presentation at its existing 150-line limit and update the Step 491 forwarding assertion for the new final `image_uploads_` argument; live upload already passed |

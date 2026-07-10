@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/renderer/image_sampling.hpp"
 #include "cgpui/renderer/renderer_types.hpp"
 #include "cgpui/ui/text.hpp"
 
@@ -79,6 +80,7 @@ struct ImageDraw {
   ImageAssetDescriptor asset;
   std::optional<Rect> source_rect;
   std::optional<Color> tint;
+  ImageSamplingMode sampling = ImageSamplingMode::linear;
   std::optional<Rect> clip_rect;
   RendererClipStackRecord clip_stack;
   RendererCompositionStackRecord composition_stack;

@@ -1073,8 +1073,26 @@
       "xmake.lua"
     ],
     "phase_e_step_492_remaining_gap": "Step 493 image sampler modes and descriptor binding",
+    "phase_e_step_493_surface": "Phase E Step 493 adds the public ImageSamplingMode leaf with linear default draw metadata, persistent nearest/linear samplers, and descriptor set binding for both modes on every cached texture. Vulkan image resources own one combined-image-sampler descriptor layout and pool with capacity for 256 textures and 512 sets. Resource binding allocates and writes both sets after image/view creation, frees them before image teardown, and destroys samplers, pool, and layout during state teardown. Step 494 owns the image graphics pipeline and draw recording.",
+    "phase_e_step_493_sources": [
+      "include/cgpui/renderer/image_sampling.hpp",
+      "include/cgpui/renderer/renderer.hpp",
+      "include/cgpui/renderer/renderer_commands.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_descriptors_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_samplers.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_resources_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_resources.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_images.cpp",
+      "src/renderer/vulkan/vulkan_state.cpp",
+      "tests/renderer/vulkan_image_texture_descriptor_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_493_remaining_gap": "Step 494 image graphics pipeline and draw recording",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 493 image sampler modes and descriptor binding"
+    "phase_e_current_handoff": "Phase E Step 494 image graphics pipeline and draw recording"
   },
   "categories": [
     "application_and_app_context",

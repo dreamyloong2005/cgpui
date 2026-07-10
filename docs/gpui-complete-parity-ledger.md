@@ -557,6 +557,17 @@ consume C: drive space again.
   Vulkan frame exercises actual staging allocation, upload recording, and
   teardown without claiming image sampling or draw recording.
 - Handoff: Phase E Step 493 image sampler modes and descriptor binding.
+- Phase E Step 493 adds the focused public `ImageSamplingMode` leaf. `ImageDraw`
+  defaults to linear sampling while retaining an explicit nearest mode for
+  pixel-aligned content.
+- Vulkan image texture resources now own persistent nearest/linear samplers, one
+  combined-image-sampler descriptor layout and pool, and descriptor set binding
+  for both modes on every cached texture. The fixed capacity is 256 textures and
+  512 descriptor sets.
+- Resource binding allocates and writes both sets after image/view creation;
+  resource teardown frees the sets before destroying the view/image/memory, then
+  state teardown destroys samplers, pool, and layout.
+- Handoff: Phase E Step 494 image graphics pipeline and draw recording.
 
 ## Categories
 

@@ -14,10 +14,17 @@ struct VulkanImageTextureResource {
   VkImage image = VK_NULL_HANDLE;
   VkDeviceMemory memory = VK_NULL_HANDLE;
   VkImageView image_view = VK_NULL_HANDLE;
+  VkDescriptorPool descriptor_pool = VK_NULL_HANDLE;
+  VkDescriptorSet nearest_descriptor_set = VK_NULL_HANDLE;
+  VkDescriptorSet linear_descriptor_set = VK_NULL_HANDLE;
   VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
 };
 
 struct VulkanImageTextureResources {
+  VkDescriptorSetLayout descriptor_set_layout = VK_NULL_HANDLE;
+  VkDescriptorPool descriptor_pool = VK_NULL_HANDLE;
+  VkSampler nearest_sampler = VK_NULL_HANDLE;
+  VkSampler linear_sampler = VK_NULL_HANDLE;
   std::vector<VulkanImageTextureResource> textures;
 };
 

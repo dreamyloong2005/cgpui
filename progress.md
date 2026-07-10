@@ -18872,6 +18872,37 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 493 Image Sampler Modes And Descriptors
+
+- Started from clean tracked `master` at
+  `9aa9dea1 feat: upload vulkan image textures`; only the existing untracked
+  `.vscode/` directory remains.
+- Chosen boundary is a public `ImageSamplingMode` leaf plus private persistent
+  nearest/linear samplers, one descriptor layout/pool, and two descriptor sets
+  per cached texture. Step 494 retains pipeline and draw recording ownership.
+- Added `vulkan_image_texture_descriptor_test` and its xmake target. The RED
+  build failed exactly as intended because the private descriptor header does
+  not exist yet.
+- Added the public `ImageSamplingMode` leaf, nearest/linear sampler creation,
+  combined-image-sampler layout/pool ownership, two descriptor sets per texture,
+  and focused resource binding/teardown modules.
+- The focused descriptor test compiles and exits `50` only at the documentation
+  gate. Renderer structure plus Step 491/492 resource/upload/live regressions pass
+  4/4 before documentation sync.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with
+  descriptor set binding and the Step 494 pipeline/draw handoff.
+- The complete Windows debug build succeeded, then `xmake test -y -P .`
+  passed 174/174.
+- WSL remains unavailable: `wsl.exe -l -q` returned success with an empty
+  distribution list. Linux verification remains queued for the final Phase E
+  gate.
+- Final focused verification passed 9/9 across descriptor behavior, renderer
+  structure, Step 491 resources, Step 492 uploads, live frame lifetime, parity
+  ledger, core/prelude header cleanliness, and render-view transport.
+- The final five-phrase/five-document audit passed 25/25, ledger JSON parsing
+  passed, module nonblank line counts remain within their structure limits, and
+  `git diff --check` passes.
+
 ## 2026-07-10 Phase E Step 492 Image Upload Staging
 
 - Started from clean tracked `master` at

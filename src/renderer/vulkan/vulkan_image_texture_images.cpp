@@ -2,6 +2,8 @@
 
 #include "vulkan_device_internal.hpp"
 
+#include <array>
+
 namespace cgpui {
 
 VkFormat vulkan_image_texture_format(ImageFormat format) {
@@ -129,6 +131,21 @@ void vulkan_destroy_image_texture_resource(
     VkDevice device,
     VulkanImageTextureResource& resource) {
   if (device != VK_NULL_HANDLE) {
+    std::array<VkDescriptorSet, 2> descriptor_sets{};
+    std::uint32_t descriptor_count = 0;
+    if (resource.nearest_descriptor_set != VK_NULL_HANDLE) {
+      descriptor_sets[descriptor_count++] = resource.nearest_descriptor_set;
+    }
+    if (resource.linear_descriptor_set != VK_NULL_HANDLE) {
+      descriptor_sets[descriptor_count++] = resource.linear_descriptor_set;
+    }
+    if (descriptor_count != 0 && resource.descriptor_pool != VK_NULL_HANDLE) {
+      (void)vkFreeDescriptorSets(
+          device,
+          resource.descriptor_pool,
+          descriptor_count,
+          descriptor_sets.data());
+    }
     if (resource.image_view != VK_NULL_HANDLE) {
       vkDestroyImageView(device, resource.image_view, nullptr);
     }

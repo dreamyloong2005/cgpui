@@ -1,5 +1,36 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 493 Image Sampler Modes And Descriptors
+
+- Step 492 commit `9aa9dea1` leaves tracked `master` clean with only the existing
+  untracked `.vscode/` directory.
+- Step 493 should add a focused public `ImageSamplingMode` leaf and carry the
+  mode on `ImageDraw`, defaulting to linear without expanding broad renderer
+  type aggregates.
+- Private Vulkan ownership should mirror the proven glyph atlas descriptor
+  pattern: one descriptor layout and pool, fixed capacity for 256 textures, two
+  descriptor sets per texture, and persistent nearest/linear samplers.
+- Resource creation will allocate and write both sampler-mode descriptor sets
+  after image/view creation. Actual image pipeline creation, UI builder
+  propagation, and draw command recording remain Step 494.
+- The Step 493 RED build fails exactly at the missing focused private descriptor
+  header before any public sampling or Vulkan descriptor implementation exists.
+- Phase E Step 493 now adds `ImageSamplingMode`, persistent nearest/linear
+  samplers, and descriptor set binding for both modes on every cached texture.
+  The fixed pool supports 256 textures and 512 sets. Step 494 owns the image
+  graphics pipeline and draw recording.
+- The complete Windows debug build succeeds, and the full suite passes 174/174.
+  Descriptor sets are freed before image/view/memory teardown; descriptor
+  layout, pool, and sampler ownership remains in the focused Vulkan image
+  texture resource state.
+- WSL verification remains unavailable because `wsl.exe -l -q` returns success
+  with an empty distribution list. Linux verification remains a required final
+  Phase E gate when a distribution is available.
+- Final Step 493 focused verification passes 9/9. The five required phrases are
+  present across all five authoritative documents (25/25), the ledger JSON
+  parses, all focused modules remain within structure limits, and
+  `git diff --check` passes.
+
 ## 2026-07-10 Phase E Step 492 Image Upload Staging
 
 - Step 491 commit `9e903644` leaves tracked `master` clean with only the existing

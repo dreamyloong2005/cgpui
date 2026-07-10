@@ -1632,7 +1632,13 @@ draw calls for the Windows/Linux renderer.
   and commits the readable layout only after successful queue submission. A
   live frame exercises real staging allocation, mapping, copy, barriers, and
   teardown. Step 493 owns image sampler modes and descriptor binding.
-- [ ] Steps 493-498: Build image sampler modes, tint/opacity support, cache
+- [x] Phase E Step 493 adds the public `ImageSamplingMode` leaf with linear
+  default draw metadata, persistent nearest/linear samplers, and descriptor set
+  binding for both modes on every cached texture. Vulkan image resources own one
+  combined-image-sampler layout and a fixed pool for 256 textures, allocate two
+  descriptor sets after image/view creation, and free those sets before resource
+  teardown. Step 494 owns the image graphics pipeline and draw recording.
+- [ ] Steps 494-498: Build image pipeline recording, tint/opacity support, cache
   lifetime, and invalidation.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.

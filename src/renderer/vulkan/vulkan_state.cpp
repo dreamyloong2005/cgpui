@@ -16,6 +16,8 @@ VulkanRendererState::~VulkanRendererState() {
     vulkan_destroy_image_texture_upload_resources(
         device_, image_texture_uploads_);
     vulkan_destroy_image_texture_resources(device_, image_texture_resources_);
+    vulkan_destroy_image_texture_descriptor_resources(
+        device_, image_texture_resources_);
     vulkan_destroy_glyph_atlas_upload_resources(device_, glyph_atlas_uploads_);
     vulkan_destroy_glyph_atlas_resources(device_, glyph_atlas_resources_);
     if (command_pool_ != VK_NULL_HANDLE) {
@@ -45,6 +47,11 @@ Result<std::shared_ptr<VulkanRendererState>> VulkanRendererState::create(
     return std::unexpected(result.error());
   }
   if (auto result = renderer->create_device(); !result) {
+    return std::unexpected(result.error());
+  }
+  if (auto result = vulkan_create_image_texture_descriptor_resources(
+          renderer->device_, renderer->image_texture_resources_);
+      !result) {
     return std::unexpected(result.error());
   }
   if (auto result = renderer->create_command_pool(); !result) {
