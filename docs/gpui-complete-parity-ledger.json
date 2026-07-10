@@ -1169,8 +1169,21 @@
       "xmake.lua"
     ],
     "phase_e_step_497_remaining_gap": "Step 498 image integration closeout",
+    "phase_e_step_498_surface": "Phase E Step 498 image integration closeout is audit-only in tests/api_parity/phase_e_image_integration_closeout_test.cpp. It freezes Steps 491-497 across persistent image texture resources, explicit bitmap upload transport, nearest/linear sampling descriptors, stable authored image interleaving, multiplicative image tint, the frame-generation image cache, and deduplicated image invalidations without adding renderer behavior. Phase E now hands off to Step 499 SVG rendering strategy.",
+    "phase_e_step_498_sources": [
+      "tests/api_parity/phase_e_image_integration_closeout_test.cpp",
+      "src/renderer/vulkan/vulkan_image_texture_resources_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_uploads_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_descriptors_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_draw_recording_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_color_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_cache_internal.hpp",
+      "src/renderer/vulkan/vulkan_image_texture_invalidation_internal.hpp",
+      "xmake.lua"
+    ],
+    "phase_e_step_498_remaining_gap": "Step 499 SVG rendering strategy",
     "phase_d_final_handoff": "Phase E Step 459 Vulkan glyph atlas production",
-    "phase_e_current_handoff": "Phase E Step 498 image integration closeout"
+    "phase_e_current_handoff": "Phase E Step 499 SVG rendering strategy"
   },
   "categories": [
     "application_and_app_context",

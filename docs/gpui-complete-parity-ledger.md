@@ -600,6 +600,14 @@ consume C: drive space again.
   recreate and refresh the texture; invalidated draw-only textures remain
   undefined and are skipped by the existing shader-readiness guard.
 - Handoff: Step 498 image integration closeout.
+- Phase E Step 498 image integration closeout is audit-only in
+  `tests/api_parity/phase_e_image_integration_closeout_test.cpp`. It freezes
+  Steps 491-497 across persistent image texture resources,
+  explicit bitmap upload transport, nearest/linear sampling descriptors,
+  stable authored image interleaving, multiplicative image tint, the
+  frame-generation image cache, and deduplicated image invalidations without
+  adding renderer behavior.
+- Handoff: Step 499 SVG rendering strategy.
 
 ## Categories
 

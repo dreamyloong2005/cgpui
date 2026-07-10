@@ -18872,6 +18872,47 @@
   an empty distribution list. Shared solid geometry/buffer recording remains in
   the final Phase E Linux gate.
 
+## 2026-07-10 Phase E Step 498 Image Integration Closeout
+
+- Started from clean tracked `master` at
+  `5d77f965 feat: invalidate vulkan image textures`; only the existing
+  untracked `.vscode/` directory remains.
+- Step 498 is scoped as an audit-only closeout with a focused API-parity test
+  and xmake target. It will freeze Steps 491-497 and hand Phase E to Step 499
+  SVG rendering strategy without adding renderer behavior.
+- Confirmed the existing Phase E closeout pattern: standalone source-reading
+  audit, explicit target/module/behavior evidence, five-document phrase gates,
+  and roadmap checkbox validation.
+- An initial evidence scan guessed nonexistent sampler/draw/tint test filenames;
+  switched to the authoritative xmake target-to-source mappings before writing
+  the audit.
+- Confirmed all seven authoritative image-band targets and their source files
+  from `xmake.lua`.
+- A module scan also guessed a nonexistent public `image_asset.hpp`; switched
+  to searching the public include tree for the actual `ImageSamplingMode`
+  owner before freezing module evidence.
+- Added `phase_e_image_integration_closeout_test.cpp` and its standalone xmake
+  target. The first sandboxed build could not create xmake's Vulkan SDK package
+  lock; the approved scoped build then succeeded.
+- The first audit run failed as expected while the Step 498 closeout phrases
+  and roadmap completion state remain intentionally absent.
+- Updated the roadmap, Markdown/JSON ledger, task plan, and findings with the
+  audit-only Steps 491-497 closeout and the Step 499 SVG handoff.
+- The first GREEN audit reached 47/55 exact documentation phrases because
+  eight phrases were split across Markdown lines. Two broad reflow patches did
+  not match the current wrapping; smaller exact-line replacements succeeded.
+- The second audit reached 54/55; moved the remaining findings handoff phrase
+  onto one line.
+- Final Step 498 audit, renderer structure, and parity ledger gates pass 3/3.
+  The exact five-document phrase audit passes 55/55, ledger JSON parses, and
+  `git diff --check` is clean.
+- The complete Windows debug build succeeded. Focused image integration
+  verification passed 11/11, including live frame lifetime coverage.
+- The complete Windows debug test suite passed 179/179.
+- WSL verification remains unavailable: `wsl.exe -l -q` returned success with
+  an empty distribution list. The image band remains covered by the final
+  Phase E Linux gate.
+
 ## 2026-07-10 Phase E Step 497 Image Invalidation
 
 - Started from clean tracked `master` at

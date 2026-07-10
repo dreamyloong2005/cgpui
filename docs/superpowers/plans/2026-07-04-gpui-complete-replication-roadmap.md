@@ -1661,7 +1661,14 @@ draw calls for the Windows/Linux renderer.
   Invalidations run before cache touch/resource ensure, so a same-frame upload
   rebuilds cleanly while an invalidated draw-only texture remains unreadable and
   is skipped. Step 498 image integration closeout is next.
-- [ ] Step 498: Close the image integration band with a focused audit.
+- [x] Phase E Step 498 closes the image integration band with audit-only
+  `tests/api_parity/phase_e_image_integration_closeout_test.cpp`. This
+  Phase E Step 498 image integration closeout freezes Steps 491-497:
+  persistent image texture resources, explicit bitmap upload transport,
+  nearest/linear sampling descriptors, stable authored image interleaving,
+  multiplicative image tint, the frame-generation image cache, and deduplicated
+  image invalidations. Phase E now hands off to Step 499 SVG rendering strategy
+  without adding renderer behavior in the closeout.
 - [ ] Steps 499-506: Add SVG path rendering strategy or SVG rasterization
   boundary, including cache, scaling, recolor/tint, and examples.
 - [ ] Steps 507-514: Add batching and frame scheduling: vertex/index buffers,

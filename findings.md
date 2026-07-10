@@ -1,5 +1,42 @@
 # CGPUI GPUI-Core Findings
 
+## 2026-07-10 Phase E Step 498 Image Integration Closeout
+
+- Step 497 is committed at `5d77f965 feat: invalidate vulkan image textures`;
+  tracked `master` is clean and only the existing `.vscode/` directory remains
+  untracked.
+- Step 498 is an audit-only closeout. It should add a focused API-parity test
+  and xmake target that freeze the Steps 491-497 resource, upload, sampling,
+  draw, tint/opacity, cache lifetime, and invalidation evidence without adding
+  renderer behavior.
+- Existing Phase E closeouts use one standalone source-reading test that checks
+  the band targets, focused module symbols, behavior-test symbols, five exact
+  documentation surfaces, and roadmap completion state. Step 498 should follow
+  that established structure as
+  `phase_e_image_integration_closeout_test`.
+- The authoritative Steps 491-497 targets are
+  `vulkan_image_texture_resources_test`, `vulkan_image_texture_upload_test`,
+  `vulkan_image_texture_descriptor_test`, `vulkan_image_draw_recording_test`,
+  `vulkan_image_tint_opacity_test`, `vulkan_image_texture_cache_test`, and
+  `vulkan_image_texture_invalidation_test`.
+- The standalone Step 498 audit target compiles. Its initial test is RED only
+  because the five closeout documents and completed roadmap state have not yet
+  been authored.
+- The closeout should move the Phase E handoff to Step 499 SVG rendering
+  strategy while retaining the explicit Windows/WSL final verification gate.
+- Phase E Step 498 image integration closeout is now audit-only in
+  `tests/api_parity/phase_e_image_integration_closeout_test.cpp`. It freezes
+  Steps 491-497 across persistent image texture resources,
+  explicit bitmap upload transport, nearest/linear sampling descriptors,
+  stable authored image interleaving, multiplicative image tint, the
+  frame-generation image cache, and deduplicated image invalidations.
+  Step 499 SVG rendering strategy is next.
+- The focused closeout/structure/ledger gate passes 3/3, exact documentation
+  phrases pass 55/55, ledger JSON parses, and diff hygiene is clean.
+- Windows verification passes the complete build, focused image integration
+  regressions 11/11, and the full debug suite 179/179. WSL remains unavailable
+  because the current host has no installed distribution.
+
 ## 2026-07-10 Phase E Step 497 Image Invalidation
 
 - Step 496 commit `4fa1981f` leaves tracked `master` clean with only the

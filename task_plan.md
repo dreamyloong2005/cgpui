@@ -695,13 +695,20 @@ Windows/Linux core API is stable enough for parity work.
   then cache touch/ensure lets same-frame uploads rebuild while draw-only
   invalidations remain safely unreadable. Step 498 image integration closeout
   is next.
+- Phase E Step 498 image integration closeout is audit-only in
+  `tests/api_parity/phase_e_image_integration_closeout_test.cpp`. It freezes
+  Steps 491-497 across persistent image texture resources,
+  explicit bitmap upload transport, nearest/linear sampling descriptors,
+  stable authored image interleaving, multiplicative image tint, the
+  frame-generation image cache, and deduplicated image invalidations. Step 499
+  SVG rendering strategy is next.
 
 ## Active Phase E Execution Goal (2026-07-10)
 
 - Status: in_progress
 - Authoritative scope: Phase E Steps 459-538 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- Completed: Steps 459-497 Vulkan glyph atlas production planning, private
+- Completed: Steps 459-498 Vulkan glyph atlas production planning, private
   image/memory/view/sampler ownership, descriptor-set binding, dirty staging,
   layout transitions, buffer-to-image command recording, and acquired-buffer
   multi-frame reuse, three atlas pages, cross-page uploads, and resolved draw
@@ -736,9 +743,10 @@ Windows/Linux core API is stable enough for parity work.
   draw recording, plus multiplicative image tint and single-application
   composition opacity through the explicit RGBA vertex/shader path, plus a
   120-idle-frame generation cache with fence-safe retention and eviction, plus
-  explicit deduplicated image invalidation and same-frame refresh ordering.
-- In progress: Step 498 image integration closeout.
-- Pending bands: Step 498 images; Steps 499-506 SVG; Steps
+  explicit deduplicated image invalidation and same-frame refresh ordering,
+  plus the audit-only image integration closeout.
+- In progress: Step 499 SVG rendering strategy.
+- Pending bands: Steps 499-506 SVG; Steps
   507-514 batching/scheduling; Steps 515-522 diagnostics; Steps 523-530 pixel
   tests; Steps 531-538 full verification and closeout.
 - Per-slice gate: RED behavior/structure coverage, focused Windows GREEN,
@@ -751,6 +759,13 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 498 second documentation audit reached 54/55 because the findings handoff phrase still crossed one line break | Step 498 second GREEN | Move the complete `Step 499 SVG rendering strategy` phrase onto one line |
+| Two broad Step 498 phrase-reflow patches did not match the current line wrapping | Step 498 phrase fix | Apply smaller exact-line replacements per affected document |
+| Step 498 documentation audit reached only 47/55 because eight required phrases were split across Markdown lines | Step 498 first GREEN | Reflow only the affected closeout sentences so each exact audit phrase stays contiguous |
+| xmake could not create the Vulkan SDK package file lock in the default sandbox | Step 498 RED build | Re-run the scoped xmake build with approved package-cache access; the audit target compiled successfully |
+| `phase_e_image_integration_closeout_test` failed after compiling | Step 498 RED | Expected RED while the five closeout documents and roadmap completion state are intentionally absent |
+| Step 498 module scan guessed nonexistent `include/cgpui/ui/image_asset.hpp` | Step 498 audit inventory | Search the public include tree for `ImageSamplingMode` and bind the audit to its actual leaf owner |
+| Step 498 evidence scan guessed nonexistent sampler/draw/tint test filenames from target semantics | Step 498 audit inventory | Read the authoritative `add_files(...)` mappings from `xmake.lua` before selecting behavior symbols |
 | Renderer structure exited 72 because the Step 491 forwarding audit still required the two-argument image-frame call | Step 497 live/structure regression | Update the old audit to require `image_invalidations` while retaining the original image resource ownership checks |
 | `vulkan_image_texture_invalidation_test` failed to compile because the focused invalidation header did not exist | Step 497 RED | Expected RED; add the frame invalidation API, deduplicated transport, focused destruction module, and live refresh coverage |
 | A Step 496 line-count diagnostic repeated the known direct `foreach`-to-pipe PowerShell parser error | Step 496 pre-implementation audit | Assign the loop output to `$rows` before formatting; the corrected read-only audit passed |
