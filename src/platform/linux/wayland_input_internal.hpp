@@ -22,7 +22,6 @@ class WaylandDataDevice;
 Error wayland_error(ErrorCode code, std::string message);
 MouseButton mouse_button_from_wayland(std::uint32_t button);
 Point point_from_fixed(wl_fixed_t x, wl_fixed_t y);
-std::vector<std::string> parse_uri_list(std::string_view payload);
 KeyboardModifiers modifiers_from_xkb_state(xkb_state* state);
 
 struct WaylandRegistryBindings {

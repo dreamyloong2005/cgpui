@@ -21701,6 +21701,32 @@
   46/146/70/57 line budgets, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 577 Wayland URI-List Policy
+
+- Started from committed Step 576 at `d39ffc02`; only unrelated untracked
+  `.vscode/` remains.
+- Audit identifies missing focused coverage plus malformed-percent, decoded-NUL,
+  and case-sensitive local-authority defects in the existing URI-list parser.
+- Assigned URI parsing and local-authority policy to a focused private Wayland
+  leaf, leaving general pointer/keyboard helpers in `wayland_helpers.cpp`.
+- Moved URI-list parsing into `wayland_uri_list_internal.hpp/.cpp`, added strict
+  case-insensitive file/localhost handling and rejection for remote authorities,
+  other schemes, relative paths, queries/fragments, malformed escapes, and NUL.
+- Added a pure parser test and extended the real compositor URI-list payload
+  with remote and percent-decoded-NUL entries that must be filtered.
+- Initial WSL behavior/source/structure verification passes 4/4 after the
+  one-time Linux static-library rebuild caused by the new source leaf.
+- Added the Step 577 structure guard; it reached the intended five-document RED
+  while Step 576 plus both Wayland/platform source guards remained green.
+- Synchronized the exact Step 577 completion phrase across all five authority
+  documents and advanced twenty-six structure handoff guards to Step 578.
+- Final Windows shared structure/ledger verification passes 5/5. Final WSL
+  behavior/shared structure/ledger verification passes 7/7.
+- JSON parsing, five-document unique phrase, twenty-six Step 578 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  11/86/61/24/353/61 line budgets, and `git diff --check` pass. `.vscode/`
+  remains unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

@@ -308,6 +308,13 @@ target("phase_f_win32_ole_file_payload_structure_test")
     add_files("tests/architecture/phase_f_win32_ole_file_payload_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_wayland_uri_policy_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_wayland_uri_policy_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -577,6 +584,14 @@ if is_plat("linux") then
         add_syslinks("wayland-server")
         add_includedirs(public_includedirs)
         add_includedirs("tests/platform")
+        add_tests("default")
+
+    target("wayland_uri_list_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_uri_list_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("wayland")
+        add_includedirs(public_includedirs, "src/platform/linux")
         add_tests("default")
 
     target("wayland_pointer_motion_test")

@@ -2294,7 +2294,22 @@
       "xmake.lua"
     ],
     "phase_f_step_576_remaining_gap": "Step 577 Wayland non-local URI-list drag policy production behavior",
-    "phase_f_current_handoff": "Step 577 Wayland non-local URI-list drag policy production behavior"
+    "phase_f_step_577_surface": "Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.",
+    "phase_f_step_577_sources": [
+      "src/platform/linux/wayland_uri_list_internal.hpp",
+      "src/platform/linux/wayland_uri_list.cpp",
+      "src/platform/linux/wayland_helpers.cpp",
+      "src/platform/linux/wayland_input_internal.hpp",
+      "src/platform/linux/wayland_data_device_payload.cpp",
+      "tests/platform/wayland_uri_list_test.cpp",
+      "tests/platform/wayland_pointer_button_test.cpp",
+      "tests/architecture/phase_f_wayland_uri_policy_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_577_remaining_gap": "Step 578 drag/drop cancellation and band closeout",
+    "phase_f_current_handoff": "Step 578 drag/drop cancellation and band closeout"
   },
   "categories": [
     "application_and_app_context",

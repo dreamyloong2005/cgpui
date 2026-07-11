@@ -1025,7 +1025,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 576 evidence: the focused COM test enumerates and reads ordered wide
   DROPFILES paths, preserves Unicode, and proves empty/invalid path collections
   never reach the injected drag runner.
-- In progress: Step 577 Wayland non-local URI-list drag policy production behavior.
+- Completed: Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.
+- Step 577 evidence: the pure parser and real compositor keep valid local file
+  entries while filtering remote authorities/schemes, malformed percent escapes,
+  queries/fragments, relative paths, and decoded NUL.
+- In progress: Step 578 drag/drop cancellation and band closeout.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

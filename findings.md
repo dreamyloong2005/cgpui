@@ -10257,3 +10257,17 @@
   embedded NUL, and size overflow before the drag runner is invoked, while
   preserving multi-file order and Unicode paths.
 - Phase F Step 576 adds a strict Win32 OLE file IDataObject, enumerates CF_HDROP through an owned wide DROPFILES HGLOBAL, preserves Unicode multi-file ordering, rejects invalid or empty paths before drag, and composes with the drag runner. Step 577 Wayland non-local URI-list drag policy production behavior is next.
+
+## 2026-07-12 Phase F Step 577 Wayland URI-List Policy
+
+- The current parser already ignores non-file schemes and non-local authorities,
+  but URI parsing is buried in broad `wayland_helpers.cpp` and has no focused
+  behavior coverage.
+- Existing percent decoding preserves malformed escapes and permits `%00` to
+  inject an embedded NUL into a public file path. Scheme and `localhost`
+  matching are also incorrectly case-sensitive.
+- The production policy should accept only absolute local file URIs with empty
+  authority or case-insensitive `localhost`, keep valid local entries from a
+  mixed list, and reject remote authorities, other schemes, relative paths,
+  malformed percent escapes, and decoded NUL.
+- Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.

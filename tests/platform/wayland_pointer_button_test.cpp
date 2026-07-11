@@ -302,6 +302,8 @@ int main() {
                   .payload =
                       "file:///tmp/cgpui-one.txt\r\n"
                       "# ignored comment\r\n"
+                      "file://remote.example/share/ignored.txt\r\n"
+                      "file:///tmp/ignored%00suffix\r\n"
                       "file:///home/test/two%20words.txt\r\n",
               },
           },
