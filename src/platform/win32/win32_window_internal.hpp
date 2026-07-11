@@ -64,6 +64,11 @@ class Win32Window final
   void pointer_capture_lost() override;
   void refresh_cursor(bool reload_system_cursor) override;
   void key_event(KeyboardKey event) override;
+  void native_menu_command(
+      UINT command_id,
+      NativeMenuCommandSource source) override;
+  void set_native_menu_commands(
+      std::shared_ptr<const Win32NativeMenuCommandMap> commands);
   void dead_key(wchar_t character) override;
   void text_input(Win32TextInputMessage message) override;
   void drag_entered(const Win32TestDragDropPayload* payload) override;
@@ -110,6 +115,7 @@ class Win32Window final
   Point last_ole_drag_position_{};
   DragDropPayload last_ole_drag_payload_;
   Win32TextInputState text_input_state_;
+  std::shared_ptr<const Win32NativeMenuCommandMap> native_menu_commands_;
 };
 
 } // namespace cgpui

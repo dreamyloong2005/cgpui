@@ -1,6 +1,6 @@
 friend class AnimationHandle; friend class TestContextCapability; friend class TaskHandle;
 struct RuntimeTaskDiagnostics;
-void handle_event(const PlatformEvent& event);
+void handle_event(const PlatformEvent& event); [[nodiscard]] bool handle_native_menu_command_event(const PlatformEvent& event, ViewId target_view_id);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);
 void update_input_state_for_event(const PlatformEvent& event);
 void handle_pointer_capture_changed(const PointerCaptureChanged& changed);

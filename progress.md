@@ -21881,6 +21881,30 @@
   40/92/157/115/97/96 line counts, and `git diff --check` pass. `.vscode/`
   remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 584 Native Menu Command Dispatch
+
+- Started from committed Step 583 at `0992c7f5`; only unrelated untracked
+  `.vscode/` remains.
+- Traced `WM_COMMAND`, platform callbacks, `WindowRuntime::handle_event`, and
+  scoped action dispatch. Added focused Win32 command-event and runtime action
+  bridge tests before defining the missing public event.
+- Both focused tests reached compile RED on the missing `NativeMenuCommand`
+  type, then passed with a public event leaf, immutable shared command map,
+  focused Win32 command-proc/window leaves, and a focused runtime event bridge.
+- Win32 command emission, runtime window-action dispatch, accelerator
+  registration, and native menu-tree behavior pass 4/4.
+- Added the Step 584 structure guard and cross-module inventories; it reached
+  the intended five-document RED at exit 10. Existing UI structure first
+  exposed the 260-line private-runtime and 120-line event-kind caps, both kept
+  intact through compact declarations rather than relaxed limits.
+- Final Windows behavior/header/structure/ledger verification passes 18/18.
+  Final WSL shared runtime/header/structure/ledger verification passes 13/13.
+- JSON parsing, five-document unique phrase, thirty-three Step 585 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  19/29/51/20/23/17/260/119/55/44/111 line counts, and `git diff --check`
+  pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
+  batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

@@ -1914,6 +1914,7 @@ int main() {
       "src/ui/runtime_event_input.cpp",
       "src/ui/runtime_event_keyboard.cpp",
       "src/ui/runtime_event_lifecycle.cpp",
+      "src/ui/runtime_event_native_menu.cpp",
       "src/ui/runtime_event_focus_routes.cpp",
       "src/ui/runtime_event_route_dispatch.cpp",
       "src/ui/runtime_event_text.cpp",

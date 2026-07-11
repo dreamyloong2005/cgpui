@@ -8,6 +8,7 @@ PlatformMenuInstallationResult Win32NativeMenuState::install_native_menu(
     NativeMenuModel menu) {
   auto menu_tree = Win32NativeMenuTree::build(menu);
   auto accelerator_table = Win32NativeMenuAcceleratorTable::build(menu);
+  auto command_map = Win32NativeMenuCommandMap::build(menu);
   last_menu_installation_ = PlatformMenuInstallationResult{
       .supported = menu_tree.has_value() && accelerator_table.has_value(),
       .backend = "win32",
@@ -19,6 +20,7 @@ PlatformMenuInstallationResult Win32NativeMenuState::install_native_menu(
     model_ = std::move(menu);
     menu_tree_ = std::move(*menu_tree);
     accelerator_table_ = std::move(*accelerator_table);
+    command_map_ = std::move(command_map);
   }
   return last_menu_installation_;
 }
@@ -32,6 +34,11 @@ HMENU Win32NativeMenuState::native_menu() const { return menu_tree_.root(); }
 
 bool Win32NativeMenuState::translate_accelerator(MSG& message) const {
   return accelerator_table_.translate(message);
+}
+
+std::shared_ptr<const Win32NativeMenuCommandMap>
+Win32NativeMenuState::command_map() const {
+  return command_map_;
 }
 
 NativeFileDialogResult Win32NativeFileDialogState::show_native_file_dialog(

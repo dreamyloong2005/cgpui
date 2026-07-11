@@ -45,6 +45,9 @@ class Win32WindowMessageTarget {
   virtual void pointer_capture_lost() = 0;
   virtual void refresh_cursor(bool reload_system_cursor) = 0;
   virtual void key_event(KeyboardKey event) = 0;
+  virtual void native_menu_command(
+      UINT command_id,
+      NativeMenuCommandSource source) = 0;
   virtual void dead_key(wchar_t character) = 0;
   virtual void text_input(Win32TextInputMessage message) = 0;
   virtual void drag_entered(const Win32TestDragDropPayload* payload) = 0;

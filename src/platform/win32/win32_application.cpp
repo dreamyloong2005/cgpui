@@ -122,6 +122,9 @@ class Win32Application final : public PlatformApplication {
   }
 
   void apply_native_menu(Win32Window* window) {
+    if (window != nullptr) {
+      window->set_native_menu_commands(native_menu_state_.command_map());
+    }
     if (native_menu_state_.native_menu() == nullptr) return;
     (void)win32_apply_native_menu(
         window_handle(window),

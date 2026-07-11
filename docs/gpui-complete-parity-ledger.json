@@ -2386,7 +2386,28 @@
       "xmake.lua"
     ],
     "phase_f_step_583_remaining_gap": "Step 584 native menu command dispatch production behavior",
-    "phase_f_current_handoff": "Step 584 native menu command dispatch production behavior"
+    "phase_f_step_584_surface": "Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.",
+    "phase_f_step_584_sources": [
+      "include/cgpui/core/event_native_menu.hpp",
+      "include/cgpui/core/event_platform.hpp",
+      "include/cgpui/core/events.hpp",
+      "src/platform/win32/win32_native_menu_command_internal.hpp",
+      "src/platform/win32/win32_native_menu_command.cpp",
+      "src/platform/win32/win32_window_native_menu.cpp",
+      "src/platform/win32/win32_window_proc_command_internal.hpp",
+      "src/platform/win32/win32_window_proc_command.cpp",
+      "src/ui/runtime_event_native_menu.cpp",
+      "tests/platform/win32_native_menu_command_test.cpp",
+      "tests/ui/native_menu_action_dispatch_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_command_dispatch_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_584_remaining_gap": "Step 585 native menu dispatch diagnostics production behavior",
+    "phase_f_current_handoff": "Step 585 native menu dispatch diagnostics production behavior"
   },
   "categories": [
     "application_and_app_context",

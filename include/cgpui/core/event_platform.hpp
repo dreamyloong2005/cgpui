@@ -2,6 +2,7 @@
 
 #include "cgpui/core/event_drag_drop.hpp"
 #include "cgpui/core/event_keyboard.hpp"
+#include "cgpui/core/event_native_menu.hpp"
 #include "cgpui/core/event_pointer.hpp"
 #include "cgpui/core/event_text.hpp"
 #include "cgpui/core/event_window.hpp"
@@ -29,6 +30,7 @@ using PlatformEvent = std::variant<
     DragUpdated,
     DragDropped,
     DragExited,
+    NativeMenuCommand,
     KeyboardKey,
     TextInput,
     ImeComposition,
@@ -51,6 +53,7 @@ enum class EventKind {
   drag_updated,
   drag_dropped,
   drag_exited,
+  native_menu_command,
   keyboard_key,
   text_input,
   ime_composition,

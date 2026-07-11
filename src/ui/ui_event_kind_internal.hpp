@@ -50,9 +50,8 @@ inline EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<DragDropped>(event)) {
     return EventKind::drag_dropped;
   }
-  if (std::holds_alternative<DragExited>(event)) {
-    return EventKind::drag_exited;
-  }
+  if (std::holds_alternative<DragExited>(event)) return EventKind::drag_exited;
+  if (std::holds_alternative<NativeMenuCommand>(event)) return EventKind::native_menu_command;
   if (std::holds_alternative<KeyboardKey>(event)) {
     return EventKind::keyboard_key;
   }

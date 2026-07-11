@@ -1053,7 +1053,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 583 evidence: the real Win32 message loop translates Ctrl+O into the
   first recursive HMENU command id (`0x1000`) while display, tree, and dynamic
   replacement behavior remain green.
-- In progress: Step 584 native menu command dispatch production behavior.
+- Completed: Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.
+- Step 584 evidence: real Win32 menu and accelerator `WM_COMMAND` sources emit
+  `file.open` with command id `0x1000`, and a focused runtime test dispatches
+  the event to the registered window-scoped action handler.
+- In progress: Step 585 native menu dispatch diagnostics production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1071,6 +1075,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| After fixing the private runtime-header cap, Step 584 UI structure advanced to exit 77 because the event-kind leaf grew from 120 to 123 lines | Step 584 event-kind structure | Compact the adjacent DragExited/native-menu variant checks and keep the 120-line cap |
+| Step 584 first structure group returned `ui_source_structure_test` exit 100 because the new private declaration crossed the 260-line internal-header cap; a standalone one-line form still totaled 261 | Step 584 runtime structure | Co-locate the two adjacent event-entry declarations on one line and preserve the existing cap |
+| A Step 584 Win32-proc search again passed wildcard paths directly to `rg` and returned OS error 123 | Step 584 message-proc audit | Use `rg` directory roots with `-g "*.cpp" -g "*.hpp"` filters |
+| A combined Step 584 support/xmake read had nested PowerShell quoting parsed as a member-access expression | Step 584 test-fixture audit | Split the reads and use single-quoted `rg` patterns |
 | The first Step 583 structure `xmake run` stopped before build with a transient `cannot create filelock for package(ninja)` and no live xmake/ninja process | Step 583 structure RED | Use the registered `/default` test path after confirming no competing process instead of repeating the direct-run invocation |
 | Step 583 first GREEN build let the Win32 `max` macro expand `numeric_limits<WORD>::max()` | Step 583 accelerator-table implementation | Use the macro-resistant `(std::numeric_limits<WORD>::max)()` spelling |
 | A Step 583 inspection guessed two nonexistent platform-event/application-internal paths | Step 583 ownership audit | Use `rg --files` first; the event variant is `include/cgpui/core/event_platform.hpp` and `Win32Application` is local to `win32_application.cpp` |

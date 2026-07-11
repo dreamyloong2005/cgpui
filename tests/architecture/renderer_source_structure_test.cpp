@@ -156,6 +156,7 @@ int main(int argc, char** argv) {
       "include/cgpui/core/event_pointer.hpp",
       "include/cgpui/core/event_drag_drop.hpp",
       "include/cgpui/core/event_keyboard.hpp",
+      "include/cgpui/core/event_native_menu.hpp",
       "include/cgpui/core/event_text.hpp",
       "include/cgpui/core/event_platform.hpp",
       "include/cgpui/core/events.hpp",
@@ -653,6 +654,8 @@ int main(int argc, char** argv) {
       read_source("include/cgpui/core/event_drag_drop.hpp");
   const std::string event_keyboard_header =
       read_source("include/cgpui/core/event_keyboard.hpp");
+  const std::string event_native_menu_header =
+      read_source("include/cgpui/core/event_native_menu.hpp");
   const std::string event_text_header =
       read_source("include/cgpui/core/event_text.hpp");
   const std::string event_text_source =
@@ -663,6 +666,7 @@ int main(int argc, char** argv) {
       !contains(events_header, "#include \"cgpui/core/event_pointer.hpp\"") ||
       !contains(events_header, "#include \"cgpui/core/event_drag_drop.hpp\"") ||
       !contains(events_header, "#include \"cgpui/core/event_keyboard.hpp\"") ||
+      !contains(events_header, "#include \"cgpui/core/event_native_menu.hpp\"") ||
       !contains(events_header, "#include \"cgpui/core/event_text.hpp\"") ||
       !contains(events_header, "#include \"cgpui/core/event_platform.hpp\"") ||
       line_count(events_header) > 40 ||
@@ -675,6 +679,7 @@ int main(int argc, char** argv) {
       !contains(event_pointer_header, "struct PointerMoved") ||
       !contains(event_drag_drop_header, "struct DragEntered") ||
       !contains(event_keyboard_header, "struct KeyboardKey") ||
+      !contains(event_native_menu_header, "struct NativeMenuCommand") ||
       !contains(event_text_header, "struct ImeComposition") ||
       !contains(event_text_header, "struct ImePreeditStyleSpan") ||
       !contains(event_text_header, "kImePreeditStyleSpanCapacity") ||

@@ -10394,3 +10394,20 @@
   before ordinary key dispatch. Display, tree, and replacement regressions pass
   with it.
 - Phase F Step 583 builds and transactionally owns a focused Win32 HACCEL table, shares recursive command ids with HMENU construction, translates supported Ctrl/Alt/Shift key-down accelerators before ordinary key dispatch, and preserves unsupported Win-key/key-up descriptors for diagnostics. Step 584 native menu command dispatch production behavior is next.
+
+## 2026-07-12 Phase F Step 584 Native Menu Command Dispatch
+
+- `WM_COMMAND` currently reaches the Win32 window procedure after menu
+  selection or `TranslateAcceleratorW`, but no command-id/action mapping or
+  platform event exists.
+- A dedicated `NativeMenuCommand` public event should carry command id,
+  action name, and menu-vs-accelerator source. The platform mapping can be an
+  immutable shared object so window callbacks never borrow application state.
+- Runtime ownership belongs in a focused event leaf that routes the command to
+  the existing focused/view/window/app action dispatcher instead of teaching
+  platform code about UI action registrations.
+- The two focused behaviors compile-RED on the missing public command event,
+  then pass after immutable Win32 mapping, `WM_COMMAND` event emission, and the
+  runtime action bridge are present. Registration and menu-tree regressions
+  remain green.
+- Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.

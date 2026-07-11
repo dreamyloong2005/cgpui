@@ -53,6 +53,9 @@ void WindowRuntime::handle_native_additional_window_event(
   if (record == nullptr) {
     return;
   }
+  if (handle_native_menu_command_event(event, record->root_view_id)) {
+    return;
+  }
   if (std::holds_alternative<WindowCloseRequested>(event)) {
     const bool close_policy_pending = record->window != nullptr &&
         record->window->close_request_state().pending;
