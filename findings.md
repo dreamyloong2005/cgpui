@@ -10200,3 +10200,20 @@
 - A function-pointer runner seam allows production to call `DoDragDrop` while
   tests exercise the real source object without opening a modal desktop drag.
 - Phase F Step 572 adds a Win32 OLE IDropSource and injectable DoDragDrop runner, supports escape cancellation, button-release drop, default cursor feedback, allowed-effect propagation, and final effect reporting. Step 573 Wayland data-device accept and action negotiation production behavior is next.
+
+## 2026-07-11 Phase F Step 573 Wayland Data-Device Negotiation
+
+- Step 200 already issues real `wl_data_offer.accept`, `set_actions`, and
+  `finish` requests, so Step 573 must deepen protocol behavior rather than add
+  another negotiation facade.
+- Wayland defines `set_actions.dnd_actions` as destination-supported actions;
+  the current implementation incorrectly intersects that mask with source
+  actions. This can advertise zero actions when `source_actions` arrives after
+  `wl_data_device.enter`, even though the destination supports copy and move.
+- `wl_data_offer.set_actions` may be called repeatedly during a drag. The offer
+  listener currently stores late `source_actions` but cannot reach its owning
+  `WaylandDataDevice`, so it never corrects the initial negotiation.
+- `wl_data_offer.finish` is valid only after a non-null MIME acceptance and a
+  selected action. The production state needs explicit acceptance tracking so
+  rejected or actionless offers are destroyed without an invalid finish.
+- Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.

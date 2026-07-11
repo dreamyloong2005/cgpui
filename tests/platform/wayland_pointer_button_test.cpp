@@ -40,6 +40,7 @@ struct ExpectedDragPayload {
   std::uint32_t selected_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
   std::uint32_t client_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
   std::uint32_t preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+  bool allow_pending_enter_action = false;
 };
 
 bool payload_matches(
@@ -112,8 +113,11 @@ int run_drag_payload_case(
         }
         if (const auto* drag = std::get_if<cgpui::DragEntered>(&event);
             drag != nullptr && point_equals(drag->position, expected_position)) {
-          drag_entered = payload_matches(drag->payload, expected) &&
-                         drag_action_matches(drag->action, expected);
+          drag_entered =
+              payload_matches(drag->payload, expected) &&
+              (drag_action_matches(drag->action, expected) ||
+               (expected.allow_pending_enter_action &&
+                drag->action == cgpui::DragDropAction::none));
           if (!hand_cursor_requested && platform_window != nullptr) {
             platform_window->set_cursor(cgpui::CursorShape::pointing_hand);
             hand_cursor_requested = true;
@@ -275,6 +279,7 @@ int main() {
               .client_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY |
                                 WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE,
               .preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE,
+              .allow_pending_enter_action = true,
           },
           100);
       result != 0) {
@@ -301,10 +306,34 @@ int main() {
               .accepted_mime = "text/uri-list",
               .source_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
               .selected_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
-              .client_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+              .client_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY |
+                                WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE,
               .preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+              .allow_pending_enter_action = true,
           },
           200);
+      result != 0) {
+    return result;
+  }
+  if (const int result = run_drag_payload_case(
+          "pointer-button-unsupported",
+          {
+              cgpui::test::WaylandMimePayload{
+                  .mime_type = "application/octet-stream",
+                  .payload = "unsupported",
+              },
+          },
+          ExpectedDragPayload{
+              .kind = cgpui::DragDropPayloadKind::none,
+              .action = cgpui::DragDropAction::copy,
+              .source_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+              .selected_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+              .client_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY |
+                                WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE,
+              .preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+              .allow_pending_enter_action = true,
+          },
+          300);
       result != 0) {
     return result;
   }

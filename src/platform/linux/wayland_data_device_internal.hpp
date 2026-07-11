@@ -16,10 +16,14 @@ class WaylandDataDevice {
 
  private:
   struct Offer {
+    WaylandDataDevice* owner = nullptr;
     wl_data_offer* offer = nullptr;
     std::vector<std::string> mime_types;
     std::uint32_t source_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
     std::uint32_t selected_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+    std::uint32_t enter_serial = 0;
+    bool entered = false;
+    bool accepted = false;
     bool finished = false;
   };
 
@@ -70,6 +74,7 @@ class WaylandDataDevice {
   [[nodiscard]] std::uint32_t active_offer_client_actions() const;
   [[nodiscard]] std::uint32_t preferred_drag_action() const;
   [[nodiscard]] std::optional<std::string> preferred_drag_mime_type() const;
+  void active_offer_negotiation_changed(Offer& offer);
   void negotiate_active_offer(std::uint32_t serial);
   void finish_active_offer();
   [[nodiscard]] DragDropAction current_drag_action() const;

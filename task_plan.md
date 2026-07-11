@@ -1008,7 +1008,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 572 evidence: the injected runner exercises the production `IDropSource`
   cancel/drop/continue decisions, default feedback, allowed effects, and final
   move result without opening a modal desktop drag.
-- In progress: Step 573 Wayland data-device accept and action negotiation production behavior.
+- Completed: Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.
+- Step 573 evidence: the real compositor sends source and selected actions after
+  enter, observes destination copy/move actions and the selected preference,
+  preserves a pending action on enter, and rejects invalid finish attempts for
+  an unsupported MIME offer.
+- In progress: Step 574 Wayland data-device finish negotiation production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

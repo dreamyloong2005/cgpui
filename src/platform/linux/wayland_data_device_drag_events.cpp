@@ -15,6 +15,10 @@ void WaylandDataDevice::handle_enter(
   self->drag_window_ = self->find_window_ ? self->find_window_(surface) : nullptr;
   self->last_drag_position_ = point_from_fixed(x, y);
   self->replace_active_offer(offer);
+  if (self->active_offer_ != nullptr) {
+    self->active_offer_->enter_serial = serial;
+    self->active_offer_->entered = true;
+  }
   self->negotiate_active_offer(serial);
   if (self->drag_window_ != nullptr) {
     wayland_window_drag_entered(

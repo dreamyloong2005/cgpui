@@ -2245,7 +2245,21 @@
       "xmake.lua"
     ],
     "phase_f_step_572_remaining_gap": "Step 573 Wayland data-device accept and action negotiation production behavior",
-    "phase_f_current_handoff": "Step 573 Wayland data-device accept and action negotiation production behavior"
+    "phase_f_step_573_surface": "Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.",
+    "phase_f_step_573_sources": [
+      "src/platform/linux/wayland_data_device_internal.hpp",
+      "src/platform/linux/wayland_data_device_offer.cpp",
+      "src/platform/linux/wayland_data_device_drag_actions.cpp",
+      "src/platform/linux/wayland_data_device_drag_events.cpp",
+      "tests/platform/wayland_pointer_button_test.cpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/architecture/phase_f_wayland_drag_negotiation_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_573_remaining_gap": "Step 574 Wayland data-device finish negotiation production behavior",
+    "phase_f_current_handoff": "Step 574 Wayland data-device finish negotiation production behavior"
   },
   "categories": [
     "application_and_app_context",

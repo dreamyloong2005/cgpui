@@ -10,6 +10,7 @@ void WaylandDataDevice::handle_data_offer(
   auto* self = static_cast<WaylandDataDevice*>(data);
   self->clear_offer(self->pending_offer_);
   self->pending_offer_ = std::make_unique<Offer>();
+  self->pending_offer_->owner = self;
   self->pending_offer_->offer = offer;
   static const wl_data_offer_listener offer_listener{
       .offer = &WaylandDataDevice::handle_offer_mime_type,
@@ -39,6 +40,9 @@ void WaylandDataDevice::handle_offer_source_actions(
   auto* offer = static_cast<Offer*>(data);
   if (offer != nullptr) {
     offer->source_actions = source_actions;
+    if (offer->owner != nullptr) {
+      offer->owner->active_offer_negotiation_changed(*offer);
+    }
   }
 }
 
@@ -49,6 +53,9 @@ void WaylandDataDevice::handle_offer_action(
   auto* offer = static_cast<Offer*>(data);
   if (offer != nullptr) {
     offer->selected_action = action;
+    if (offer->owner != nullptr) {
+      offer->owner->active_offer_negotiation_changed(*offer);
+    }
   }
 }
 
@@ -79,6 +86,7 @@ void WaylandDataDevice::replace_active_offer(wl_data_offer* offer) {
     active_offer_ = std::move(pending_offer_);
   } else if (active_offer_ == nullptr) {
     active_offer_ = std::make_unique<Offer>();
+    active_offer_->owner = this;
     active_offer_->offer = offer;
   }
 }

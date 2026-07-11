@@ -21578,6 +21578,41 @@
   focused line caps, and `git diff --check` pass. `.vscode/` remains unrelated
   and untracked; WSL full debug remains batched.
 
+## 2026-07-11 Phase F Step 573 Wayland Data-Device Negotiation
+
+- Started from committed Step 572 at `3553f74c`; only unrelated untracked
+  `.vscode/` remains.
+- Protocol audit identifies destination/source action conflation, missing
+  renegotiation for post-enter source-action events, and invalid finish risk
+  for rejected or actionless offers.
+- RED coverage reorders the real test compositor to deliver source and selected
+  actions after `wl_data_device.enter`, and requires the destination to keep
+  advertising copy plus move even when the source only offers copy.
+- The focused WSL behavior test reached RED at 3.115 seconds: the initial enter
+  legitimately carried no selected action, while production never corrected
+  the zero destination-action advertisement after late offer events.
+- WSL briefly appeared to lose the Arch registration inside the sandbox;
+  repeated in-sandbox probes returned `WSL_E_DISTRO_NOT_FOUND`. The same probe
+  succeeded with the approved WSL execution boundary, confirming a sandbox
+  visibility issue rather than a removed distribution.
+- Production now advertises destination copy plus move independently of source
+  actions, re-runs negotiation for active post-enter source/action events,
+  tracks MIME acceptance, and refuses invalid finish requests without a
+  selected action. The real delayed-event behavior test passes 1/1 in 0.137s.
+- Added an unsupported-MIME compositor case that treats an invalid finish as a
+  protocol error; the expanded real behavior test passes 1/1 in 0.165s.
+- Added the Step 573 structure guard; it reached the intended five-document RED
+  at exit 8 while existing Wayland/platform source guards stayed green.
+- Synchronized the exact Step 573 completion phrase across all five authority
+  documents and advanced twenty-two structure handoff guards to Step 574.
+- Final Windows structure/ledger verification passes 4/4. Final WSL behavior
+  and shared structure/ledger verification passes 6/6.
+- JSON parsing, five-document unique phrase, twenty-two Step 574 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  line caps, and `git diff --check` pass. The shared test compositor remains at
+  3700 lines. `.vscode/` remains unrelated and untracked; WSL full debug remains
+  batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

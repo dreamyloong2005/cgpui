@@ -29,7 +29,7 @@ std::uint32_t WaylandDataDevice::active_offer_client_actions() const {
   if (active_offer_ == nullptr) {
     return WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
   }
-  return active_offer_->source_actions & drag_supported_actions();
+  return drag_supported_actions();
 }
 
 std::uint32_t WaylandDataDevice::preferred_drag_action() const {
@@ -53,12 +53,19 @@ std::uint32_t WaylandDataDevice::preferred_drag_action() const {
   return WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
 }
 
+void WaylandDataDevice::active_offer_negotiation_changed(Offer& offer) {
+  if (active_offer_.get() == &offer && offer.entered) {
+    negotiate_active_offer(offer.enter_serial);
+  }
+}
+
 void WaylandDataDevice::negotiate_active_offer(std::uint32_t serial) {
   if (active_offer_ == nullptr || active_offer_->offer == nullptr) {
     return;
   }
 
   const std::optional<std::string> mime_type = preferred_drag_mime_type();
+  active_offer_->accepted = mime_type.has_value();
   wl_data_offer_accept(
       active_offer_->offer,
       serial,
@@ -77,7 +84,8 @@ void WaylandDataDevice::negotiate_active_offer(std::uint32_t serial) {
 
 void WaylandDataDevice::finish_active_offer() {
   if (active_offer_ == nullptr || active_offer_->offer == nullptr ||
-      active_offer_->finished) {
+      active_offer_->finished || !active_offer_->accepted ||
+      current_drag_action() == DragDropAction::none) {
     return;
   }
   if (data_offer_version(active_offer_->offer) < 3) {

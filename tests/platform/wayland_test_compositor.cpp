@@ -2056,9 +2056,13 @@ void WaylandTestCompositor::State::data_offer_finish(
     wl_resource* resource) {
   auto* compositor =
       static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
-  if (compositor != nullptr && resource == compositor->drag_offer_resource) {
-    compositor->drag_offer_finished.store(true);
+  if (compositor == nullptr || resource != compositor->drag_offer_resource) return;
+  if (compositor->last_drag_accept_mime.empty() ||
+      compositor->drag_selected_action.load() == WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE) {
+    wl_resource_post_error(resource, WL_DATA_OFFER_ERROR_INVALID_FINISH, "invalid finish");
+    return;
   }
+  compositor->drag_offer_finished.store(true);
 }
 
 void WaylandTestCompositor::State::data_offer_set_actions(
@@ -2471,8 +2475,6 @@ void WaylandTestCompositor::State::dispatch_pending_drag_enter() {
     for (const auto& payload : payloads) {
       wl_data_offer_send_offer(offer, payload.mime_type.c_str());
     }
-    wl_data_offer_send_source_actions(offer, drag_source_actions.load());
-    wl_data_offer_send_action(offer, drag_selected_action.load());
   }
 
   wl_data_device_send_enter(
@@ -2482,6 +2484,10 @@ void WaylandTestCompositor::State::dispatch_pending_drag_enter() {
       wl_fixed_from_int(drag_x.load()),
       wl_fixed_from_int(drag_y.load()),
       offer);
+  if (offer != nullptr) {
+    wl_data_offer_send_source_actions(offer, drag_source_actions.load());
+    wl_data_offer_send_action(offer, drag_selected_action.load());
+  }
   wl_display_flush_clients(display);
   drag_entered = true;
   drag_enter_sent.store(true);
