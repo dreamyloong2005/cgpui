@@ -988,8 +988,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 567 evidence: a real compositor proves mixed-case UTF-8 offers outrank
   plain text, unsupported charsets are rejected, case-folded plain text remains
   available as fallback, and the original offer spelling is used for receive.
-- In progress: Step 568 Wayland clipboard incremental transfer production
-  behavior.
+- Completed: Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.
+- Step 568 evidence: a real compositor sends delayed 4 KiB selection chunks
+  and requests a 256 KiB owned payload through a prefilled nonblocking pipe;
+  both complete without truncation while existing clipboard paths stay green.
+- In progress: Step 569 Wayland clipboard failure handling production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

@@ -25,7 +25,7 @@ std::optional<std::string> WaylandClipboard::Connection::read_offer_payload(
   pipe_fds[1] = -1;
 
   std::string payload;
-  const auto deadline =
+  auto deadline =
       std::chrono::steady_clock::now() + std::chrono::seconds(3);
   while (std::chrono::steady_clock::now() < deadline) {
     pollfd descriptor{
@@ -45,8 +45,10 @@ std::optional<std::string> WaylandClipboard::Connection::read_offer_payload(
     const auto bytes_read = read(pipe_fds[0], buffer, sizeof(buffer));
     if (bytes_read > 0) {
       payload.append(buffer, static_cast<std::size_t>(bytes_read));
+      deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
       continue;
     }
+    if (bytes_read == -1 && errno == EINTR) continue;
     close(pipe_fds[0]);
     return bytes_read == 0 ? std::optional<std::string>{std::move(payload)}
                            : std::nullopt;

@@ -3,6 +3,8 @@
 #include "wayland_test_configure_state.hpp"
 #include "wayland_test_cursor_state.hpp"
 
+#include <chrono>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -15,6 +17,8 @@ namespace cgpui::test {
 struct WaylandMimePayload {
   std::string mime_type;
   std::string payload;
+  std::size_t transfer_chunk_size = 0;
+  std::chrono::milliseconds transfer_chunk_delay{0};
 };
 
 using WaylandClipboardMimePayload = WaylandMimePayload;
@@ -129,6 +133,9 @@ class WaylandTestCompositor {
   void set_clipboard_selection(
       std::vector<WaylandMimePayload> payloads);
   void request_clipboard_client_selection(std::string_view mime_type);
+  void request_clipboard_client_selection_nonblocking(
+      std::string_view mime_type,
+      std::chrono::milliseconds read_delay);
 
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_minimize_requested() const;

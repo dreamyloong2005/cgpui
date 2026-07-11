@@ -2177,7 +2177,23 @@
       "xmake.lua"
     ],
     "phase_f_step_567_remaining_gap": "Step 568 Wayland clipboard incremental transfer production behavior",
-    "phase_f_current_handoff": "Step 568 Wayland clipboard incremental transfer production behavior"
+    "phase_f_step_568_surface": "Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.",
+    "phase_f_step_568_sources": [
+      "src/platform/clipboard_wayland_internal.hpp",
+      "src/platform/clipboard_wayland_transfer.cpp",
+      "src/platform/clipboard_wayland_source_io.cpp",
+      "src/platform/clipboard_wayland_read_payload.cpp",
+      "tests/platform/wayland_test_clipboard_transfer.hpp",
+      "tests/platform/wayland_test_clipboard_source_state.hpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_clipboard_incremental_transfer_test.cpp",
+      "tests/architecture/phase_f_wayland_clipboard_incremental_transfer_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_568_remaining_gap": "Step 569 Wayland clipboard failure handling production behavior",
+    "phase_f_current_handoff": "Step 569 Wayland clipboard failure handling production behavior"
   },
   "categories": [
     "application_and_app_context",

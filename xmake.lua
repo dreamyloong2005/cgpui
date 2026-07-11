@@ -245,6 +245,13 @@ target("phase_f_wayland_clipboard_mime_structure_test")
     add_files("tests/architecture/phase_f_wayland_clipboard_mime_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_wayland_clipboard_incremental_transfer_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_wayland_clipboard_incremental_transfer_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -940,6 +947,16 @@ if is_plat("linux") then
         add_syslinks("wayland-server")
         add_includedirs(public_includedirs, "tests/platform")
         add_tests("default")
+
+    target("wayland_clipboard_incremental_transfer_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_clipboard_incremental_transfer_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_deps("cgpui_core", "cgpui_platform")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs(public_includedirs, "tests/platform")
+        add_tests("default", {run_timeout = 10000})
 end
 
 target("platform_font_discovery_test")

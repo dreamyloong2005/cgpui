@@ -10125,3 +10125,25 @@
   the compositor's original MIME spelling for `receive`, and rejects a
   non-UTF-8 charset so case-folded plain text can win as fallback.
 - Phase F Step 567 adds case-insensitive Wayland text MIME parsing and ranking, accepts normalized UTF-8 charset parameters, preserves original offer strings for receive, and rejects unsupported charsets. Step 568 Wayland clipboard incremental transfer production behavior is next.
+
+## 2026-07-11 Phase F Step 568 Wayland Clipboard Incremental Transfer Audit
+
+- `read_offer_payload(...)` appends 4 KiB reads, but its fixed three-second
+  total deadline expires even when a producer continues making regular
+  progress. A valid slow chunked transfer can therefore be truncated solely
+  because its total duration exceeds the deadline.
+- The read-side deadline should represent idle time and reset after every
+  successful chunk. Read interruption should also retry instead of converting
+  an `EINTR` into transfer failure.
+- `write_payload_to_fd(...)` already loops until the owned payload is written;
+  the Step 568 behavior test should preserve this path with a payload larger
+  than a pipe buffer while adding a delayed multi-chunk external read.
+- Test-only chunk scheduling belongs in a focused clipboard transfer helper so
+  the 3652-line compositor remains below its 3700-line structure cap.
+- The first Step 568 search repeated a PowerShell wildcard path form that `rg`
+  cannot expand; subsequent searches use directory roots plus `--glob`.
+- Two assumed split filenames, `clipboard_wayland_write.cpp` and
+  `wayland_test_compositor_clipboard.cpp`, do not exist; `rg --files` located
+  the actual owners in `clipboard_wayland_source_io.cpp` and the main test
+  compositor plus its focused clipboard source-state header.
+- Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.

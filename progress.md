@@ -21458,3 +21458,46 @@
 - Final JSON parsing, five-document unique phrase, stale-handoff audit, focused
   line caps, and `git diff --check` pass. `.vscode/` remains unrelated and
   untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 568 Wayland Clipboard Incremental Transfer
+
+- Started from committed Step 567 at `3e33844c`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit identifies the fixed three-second total read deadline as the
+  concrete incremental-transfer defect: active chunk progress does not extend
+  the transfer lifetime.
+- Assigned production changes to the focused read-payload source and test
+  chunk scheduling to a new focused helper, preserving the compositor cap.
+- The first RED run overlapped xmake's default roughly three-second test
+  timeout and was not valid production evidence; the direct executable
+  completed. The target timeout is now explicit and the chunk schedule is
+  longer so framework timeout and the production deadline are separable.
+- The first timeout edit matched an earlier generic `add_tests` line and was
+  corrected immediately to the Step 568 target. The following WSL invocation
+  hit transient `WSL_E_DISTRO_NOT_FOUND`; retry begins with a lightweight
+  distro probe.
+- A fast nonblocking large-payload run failed under xmake but passed when run
+  directly, exposing a scheduling race in the test setup. The compositor now
+  preloads the nonblocking pipe and discards that known prefix after reading,
+  making the initial writer `EAGAIN` deterministic before the read is delayed.
+- After authority sync, the Windows structure group passed 17/19; both failures
+  were historical 130-line caps on the private clipboard internal header. The
+  new focused transfer declaration makes it 131 lines, so those two caps now
+  match the new Step 568 guard's 135-line boundary.
+- Production now resets read idle deadlines after each chunk, retries read
+  interruption, and routes owned writes through a focused incremental helper
+  that waits for `POLLOUT` after `EAGAIN`/`EWOULDBLOCK` while refreshing its
+  idle deadline after progress.
+- The deterministic real compositor test passes in about 2.3 seconds across
+  delayed 4 KiB external chunks and a 256 KiB owned payload requested through
+  a prefilled nonblocking pipe. Clipboard behavior regressions pass 6/6.
+- Added the Step 568 structure guard; it reached the intended five-document
+  RED at exit 8 while platform source structure remained green.
+- Synchronized the exact Step 568 completion phrase across all five authority
+  documents and advanced seventeen dynamic handoff guards to Step 569.
+- Final Windows shared structure/ledger verification passes 19/19. Final WSL
+  verification passes 24/24 across five clipboard behaviors, seventeen Phase F
+  structure guards, platform source structure, and the parity ledger.
+- Final JSON parsing, five-document unique phrase, stale-handoff audit, focused
+  line caps, warning-free Linux rebuild, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

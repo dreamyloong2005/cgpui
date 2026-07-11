@@ -80,7 +80,7 @@ int main() {
                 "target(\"phase_f_wayland_clipboard_ownership_structure_test\")")) {
     return 7;
   }
-  if (line_count(internal) > 130 || line_count(source) > 100 ||
+  if (line_count(internal) > 135 || line_count(source) > 100 ||
       line_count(dispatch) > 90 || line_count(helper) > 160 ||
       line_count(compositor) > 3700 || line_count(behavior) > 90) return 8;
   constexpr const char* completion =
@@ -99,7 +99,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 568 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 569 Wayland")) {
     return 11;
   }
   return 0;

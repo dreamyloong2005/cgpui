@@ -279,6 +279,7 @@ int main(int argc, char** argv) {
       "src/platform/clipboard_wayland_source.cpp",
       "src/platform/clipboard_wayland_source_events.cpp",
       "src/platform/clipboard_wayland_source_io.cpp",
+      "src/platform/clipboard_wayland_transfer.cpp",
       "src/platform/clipboard_wayland.cpp",
       "src/platform/clipboard.cpp",
   };
@@ -331,6 +332,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/clipboard_wayland_source_events.cpp");
   const std::string clipboard_wayland_source_io =
       read_source("src/platform/clipboard_wayland_source_io.cpp");
+  const std::string clipboard_wayland_transfer =
+      read_source("src/platform/clipboard_wayland_transfer.cpp");
   const std::string clipboard_wayland =
       read_source("src/platform/clipboard_wayland.cpp");
   if (!contains(clipboard_memory, "MemoryClipboard::read_text") ||
@@ -379,6 +382,8 @@ int main(int argc, char** argv) {
                 "void WaylandClipboard::Connection::handle_source_send(") ||
       !contains(clipboard_wayland_source_io,
                 "void WaylandClipboard::Connection::write_payload_to_fd(") ||
+      !contains(clipboard_wayland_transfer,
+                "wayland_clipboard_write_payload_incrementally(") ||
       !contains(clipboard_wayland, "create_wayland_clipboard")) {
     return 20;
   }
@@ -419,7 +424,10 @@ int main(int argc, char** argv) {
       line_count(clipboard_wayland_source_io) > 50 ||
       contains(clipboard_wayland_source_io, "handle_source_send(") ||
       contains(clipboard_wayland_source_io,
-               "dispatch_owned_selection_events(")) {
+               "dispatch_owned_selection_events(") ||
+      line_count(clipboard_wayland_transfer) > 80 ||
+      contains(clipboard_wayland_transfer,
+               "WaylandClipboard::Connection::")) {
     return 22;
   }
   if (line_count(clipboard_wayland) > 120 ||

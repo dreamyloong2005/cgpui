@@ -1,5 +1,6 @@
 #include "wayland_test_compositor.hpp"
 #include "wayland_test_clipboard_source_state.hpp"
+#include "wayland_test_clipboard_transfer.hpp"
 
 #include <wayland-server-core.h>
 #include <wayland-server-protocol.h>
@@ -879,6 +880,12 @@ struct WaylandTestCompositor::State {
 
   void request_clipboard_client_selection(std::string_view mime_type) {
     clipboard_source.request_payload(mime_type);
+  }
+
+  void request_clipboard_client_selection_nonblocking(
+      std::string_view mime_type,
+      std::chrono::milliseconds read_delay) {
+    clipboard_source.request_payload(mime_type, true, read_delay);
   }
 
   [[nodiscard]] std::vector<std::string>
@@ -1974,7 +1981,7 @@ void WaylandTestCompositor::State::data_offer_receive(
     return;
   }
 
-  std::string payload;
+  WaylandMimePayload payload;
   bool found = false;
   const bool is_clipboard_offer = resource == compositor->clipboard_offer_resource;
   const bool is_drag_offer = resource == compositor->drag_offer_resource;
@@ -1986,7 +1993,7 @@ void WaylandTestCompositor::State::data_offer_receive(
           return candidate.mime_type == std::string_view{mime_type};
         });
     if (selected != compositor->clipboard_selection_payloads.end()) {
-      payload = selected->payload;
+      payload = *selected;
       found = true;
     }
   } else if (is_drag_offer) {
@@ -1997,23 +2004,17 @@ void WaylandTestCompositor::State::data_offer_receive(
           return candidate.mime_type == std::string_view{mime_type};
         });
     if (selected != compositor->drag_payloads.end()) {
-      payload = selected->payload;
+      payload = *selected;
       found = true;
     }
   }
 
   if (found) {
-    std::size_t written = 0;
-    while (written < payload.size()) {
-      const auto count = write(
-          fd,
-          payload.data() + written,
-          static_cast<unsigned int>(payload.size() - written));
-      if (count <= 0) {
-        break;
-      }
-      written += static_cast<std::size_t>(count);
-    }
+    write_wayland_test_clipboard_payload(
+        fd,
+        payload.payload,
+        payload.transfer_chunk_size,
+        payload.transfer_chunk_delay);
     if (is_clipboard_offer) {
       std::lock_guard lock(compositor->clipboard_receive_mutex);
       compositor->last_clipboard_receive_mime = mime_type;
@@ -2533,20 +2534,29 @@ void WaylandTestCompositor::State::
   auto mime_type = clipboard_source.take_payload_request();
   if (!mime_type) return;
   ClientDataSource* source = clipboard_source.active_source();
-  if (source == nullptr || source->resource == nullptr || mime_type->empty()) {
+  if (source == nullptr || source->resource == nullptr ||
+      mime_type->mime_type.empty()) {
     clipboard_source.retry_payload_request();
     return;
   }
 
   int pipe_fds[2] = {-1, -1};
-  if (pipe2(pipe_fds, O_CLOEXEC) == -1) {
+  const int pipe_flags = O_CLOEXEC | (mime_type->nonblocking ? O_NONBLOCK : 0);
+  if (pipe2(pipe_fds, pipe_flags) == -1) {
     return;
   }
+  const std::size_t preloaded = mime_type->nonblocking
+      ? fill_wayland_test_clipboard_pipe(pipe_fds[1])
+      : 0;
 
-  wl_data_source_send_send(source->resource, mime_type->c_str(), pipe_fds[1]);
+  wl_data_source_send_send(
+      source->resource, mime_type->mime_type.c_str(), pipe_fds[1]);
   wl_display_flush_clients(display);
   close(pipe_fds[1]);
   pipe_fds[1] = -1;
+  if (mime_type->read_delay.count() > 0) {
+    std::this_thread::sleep_for(mime_type->read_delay);
+  }
 
   std::string payload;
   bool completed = false;
@@ -2580,6 +2590,8 @@ void WaylandTestCompositor::State::
   if (!completed) {
     return;
   }
+  if (payload.size() < preloaded) return;
+  payload.erase(0, preloaded);
 
   clipboard_source.record_payload(std::move(payload));
 }
@@ -3399,6 +3411,12 @@ void WaylandTestCompositor::set_clipboard_selection(
 void WaylandTestCompositor::request_clipboard_client_selection(
     std::string_view mime_type) {
   state_->request_clipboard_client_selection(mime_type);
+}
+
+void WaylandTestCompositor::request_clipboard_client_selection_nonblocking(
+    std::string_view mime_type,
+    std::chrono::milliseconds read_delay) {
+  state_->request_clipboard_client_selection_nonblocking(mime_type, read_delay);
 }
 
 bool WaylandTestCompositor::wait_for_close_sent() const {

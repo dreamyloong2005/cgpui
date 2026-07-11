@@ -20,6 +20,12 @@ struct WaylandTestClipboardClientSource {
   std::vector<std::string> mime_types;
 };
 
+struct WaylandTestClipboardPayloadRequest {
+  std::string mime_type;
+  bool nonblocking = false;
+  std::chrono::milliseconds read_delay{0};
+};
+
 class WaylandTestClipboardSourceState {
  public:
   void offer(WaylandTestClipboardClientSource* source, const char* mime_type) {
@@ -66,10 +72,17 @@ class WaylandTestClipboardSourceState {
         : active_source_->mime_types;
   }
 
-  void request_payload(std::string_view mime_type) {
+  void request_payload(
+      std::string_view mime_type,
+      bool nonblocking = false,
+      std::chrono::milliseconds read_delay = std::chrono::milliseconds{0}) {
     {
       std::lock_guard lock(request_mutex_);
-      pending_mime_type_ = std::string(mime_type);
+      pending_request_ = WaylandTestClipboardPayloadRequest{
+          .mime_type = std::string(mime_type),
+          .nonblocking = nonblocking,
+          .read_delay = read_delay,
+      };
     }
     {
       std::lock_guard lock(payload_mutex_);
@@ -79,10 +92,11 @@ class WaylandTestClipboardSourceState {
     request_pending_.store(true);
   }
 
-  [[nodiscard]] std::optional<std::string> take_payload_request() {
+  [[nodiscard]] std::optional<WaylandTestClipboardPayloadRequest>
+  take_payload_request() {
     if (!request_pending_.exchange(false)) return std::nullopt;
     std::lock_guard lock(request_mutex_);
-    return pending_mime_type_;
+    return pending_request_;
   }
 
   void retry_payload_request() { request_pending_.store(true); }
@@ -127,7 +141,7 @@ class WaylandTestClipboardSourceState {
   mutable std::mutex selection_mutex_;
   WaylandTestClipboardClientSource* active_source_ = nullptr;
   mutable std::mutex request_mutex_;
-  std::string pending_mime_type_;
+  WaylandTestClipboardPayloadRequest pending_request_;
   mutable std::mutex payload_mutex_;
   std::string last_payload_;
   std::atomic_bool selection_set_{false};

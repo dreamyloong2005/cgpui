@@ -69,7 +69,7 @@ int main() {
                 "target(\"phase_f_wayland_clipboard_read_structure_test\")")) {
     return 6;
   }
-  if (line_count(internal) > 130 || line_count(read) > 70 ||
+  if (line_count(internal) > 135 || line_count(read) > 70 ||
       line_count(payload) > 80 || line_count(behavior) > 80) return 7;
   constexpr const char* completion =
       "Phase F Step 566 makes Wayland selection reads dispatch-safe, "
@@ -87,7 +87,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 568 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 569 Wayland")) {
     return 10;
   }
   return 0;
