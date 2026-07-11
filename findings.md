@@ -10453,3 +10453,12 @@
 - The save plan must use overwrite prompting without file-must-exist, preserve
   the suggested name, and return exactly one filesystem path on acceptance.
 - Phase F Step 588 implements Win32 save-file dialogs in a focused IFileSaveDialog leaf, preserves suggested names and filters, requests overwrite confirmation without file-must-exist, and returns one filesystem path on acceptance. Step 589 native directory-picker production behavior is next.
+
+## 2026-07-12 Phase F Step 589 Native Directory Picker
+
+- `NativeFileDialogKind` has no directory variant yet, while the existing
+  `IFileOpenDialog` execution can return a filesystem folder with the same
+  single-result extraction path.
+- Directory planning should add `FOS_PICKFOLDERS | FOS_PATHMUSTEXIST`, omit
+  file-must-exist/multi-select, and ignore file-extension filters.
+- Phase F Step 589 adds an explicit native directory-picker request kind, maps Win32 folder selection to FOS_PICKFOLDERS and existing-path requirements, ignores file filters, and preserves the shared single-path result contract. Step 590 native message-dialog production behavior is next.

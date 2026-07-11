@@ -10,6 +10,7 @@ enum class NativeFileDialogKind {
   open_file,
   open_files,
   save_file,
+  pick_directory,
 };
 
 struct NativeFileDialogFilter {

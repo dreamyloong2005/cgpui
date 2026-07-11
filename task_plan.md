@@ -1074,9 +1074,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 588 evidence: a non-interactive save-plan test verifies overwrite,
   suggested-name, directory, and filter mapping while the focused COM leaf
   owns cancellation and accepted-path extraction.
-- In progress: Step 589 native directory-picker production behavior.
-- Step 589 plan: add an explicit directory-picker request kind and map it to
-  Win32 `FOS_PICKFOLDERS` while preserving unsupported Wayland/default results.
+- Completed: Phase F Step 589 adds an explicit native directory-picker request kind, maps Win32 folder selection to FOS_PICKFOLDERS and existing-path requirements, ignores file filters, and preserves the shared single-path result contract. Step 590 native message-dialog production behavior is next.
+- Step 589 evidence: focused Windows planning verifies folder/existing-path
+  flags, no file or multi-select flags, default directory, and ignored filters.
+- In progress: Step 590 native message-dialog production behavior.
+- Step 590 plan: define a focused public message-dialog request/result leaf,
+  implement Win32 presentation outside broad application sources, and keep
+  Wayland/default unsupported results explicit.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

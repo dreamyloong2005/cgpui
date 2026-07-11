@@ -99,7 +99,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 589 native directory-picker")) {
+                "\"phase_f_current_handoff\": \"Step 590 native message-dialog")) {
     return 11;
   }
   return 0;

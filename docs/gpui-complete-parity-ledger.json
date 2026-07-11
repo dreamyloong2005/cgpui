@@ -2458,7 +2458,18 @@
       "xmake.lua"
     ],
     "phase_f_step_588_remaining_gap": "Step 589 native directory-picker production behavior",
-    "phase_f_current_handoff": "Step 589 native directory-picker production behavior"
+    "phase_f_step_589_surface": "Phase F Step 589 adds an explicit native directory-picker request kind, maps Win32 folder selection to FOS_PICKFOLDERS and existing-path requirements, ignores file filters, and preserves the shared single-path result contract. Step 590 native message-dialog production behavior is next.",
+    "phase_f_step_589_sources": [
+      "include/cgpui/platform/platform_file_dialog.hpp",
+      "src/platform/win32/win32_file_dialog.cpp",
+      "tests/platform/win32_directory_dialog_plan_test.cpp",
+      "tests/architecture/phase_f_native_directory_picker_structure_test.cpp",
+      "tests/architecture/phase_f_win32_file_save_dialog_structure_test.cpp",
+      "tests/api_parity/platform_service_result_conventions_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_589_remaining_gap": "Step 590 native message-dialog production behavior",
+    "phase_f_current_handoff": "Step 590 native message-dialog production behavior"
   },
   "categories": [
     "application_and_app_context",

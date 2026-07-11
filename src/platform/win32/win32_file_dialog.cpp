@@ -43,6 +43,8 @@ std::optional<Win32FileDialogPlan> win32_file_dialog_plan(
   FILEOPENDIALOGOPTIONS dialog_options = FOS_FORCEFILESYSTEM;
   if (options.kind == NativeFileDialogKind::save_file) {
     dialog_options |= FOS_OVERWRITEPROMPT;
+  } else if (options.kind == NativeFileDialogKind::pick_directory) {
+    dialog_options |= FOS_PICKFOLDERS | FOS_PATHMUSTEXIST;
   } else {
     dialog_options |= FOS_FILEMUSTEXIST;
     if (options.kind == NativeFileDialogKind::open_files) {
@@ -56,6 +58,7 @@ std::optional<Win32FileDialogPlan> win32_file_dialog_plan(
       .suggested_name = widen(options.suggested_name),
   };
   for (const auto& filter : options.filters) {
+    if (options.kind == NativeFileDialogKind::pick_directory) break;
     std::wstring pattern;
     for (const auto& extension : filter.extensions) {
       const std::wstring item = extension_pattern(extension);

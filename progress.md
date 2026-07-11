@@ -20891,6 +20891,23 @@
   `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
   full debug remains batched.
 
+## 2026-07-12 Phase F Step 589 Native Directory Picker
+
+- Started from committed Step 588 at `4cf4bf1a`; only unrelated untracked
+  `.vscode/` remains.
+- Added public `pick_directory` plus focused Win32 folder-selection planning
+  and a non-interactive flag/filter behavior test.
+- Directory behavior plus open/save and public-result regressions pass 4/4.
+- Added the Step 589 public-header/plan/behavior/structure/ledger guard.
+- The Step 589 structure guard reached the intended five-document RED at
+  child exit 7 after public-header, behavior, line, and Xmake checks passed.
+- Final Windows directory/public-header/result/structure/ledger verification
+  passes 10/10. Final WSL shared rebuild and gate passes 9/9.
+- JSON parsing, five-document unique phrase, thirty-eight Step 590 structure
+  handoff guards, focused 39/148/21/56 line budgets, and `git diff --check`
+  pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
+  batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked
