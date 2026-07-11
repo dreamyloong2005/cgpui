@@ -21809,6 +21809,32 @@
   58/112/117/72 line budgets, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 581 Native Menu Dynamic Update
+
+- Started from committed Step 580 at `7f6cd1b2`; only unrelated untracked
+  `.vscode/` remains.
+- Added a real two-window replacement/clear test. The first target name
+  contained `update` and Windows refused to launch it with error 740, so the
+  executable was renamed to avoid installer/UAC filename heuristics.
+- The renamed test reached behavior RED at exit 6 after transactional
+  replacement passed, proving the remaining gap was empty-model clearing.
+- Empty models now commit a successful null-root menu tree, leaving existing
+  and future windows without an attached menu while preserving supported result
+  semantics and zero item counts.
+- The replacement/clear behavior plus the existing menu-tree regression passes
+  2/2 on Windows.
+- Added the Step 581 structure guard; its initial executable name also hit the
+  Windows error-740 `update` heuristic, then the renamed replacement target
+  reached the intended five-document RED at exit 7.
+- Synchronized the exact Step 581 completion phrase across all five authority
+  documents and advanced thirty structure handoff guards to Step 582.
+- Final Windows dynamic behavior/structure/ledger verification passes 8/8.
+  Final WSL shared structure/ledger verification passes 6/6.
+- JSON parsing, five-document unique phrase, thirty Step 582 structure handoff
+  guards plus the JSON handoff, stale-current-handoff audit, focused 113/93/69
+  line budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
+  untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

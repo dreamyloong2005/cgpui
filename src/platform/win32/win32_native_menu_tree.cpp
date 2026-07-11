@@ -92,6 +92,7 @@ Win32NativeMenuTree& Win32NativeMenuTree::operator=(
 
 std::optional<Win32NativeMenuTree> Win32NativeMenuTree::build(
     const NativeMenuModel& model) {
+  if (model.items.empty()) return Win32NativeMenuTree{};
   HMENU root = CreateMenu();
   if (root == nullptr) return std::nullopt;
   UINT_PTR next_command_id = 0x1000;

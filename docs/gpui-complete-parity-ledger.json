@@ -2349,7 +2349,17 @@
       "xmake.lua"
     ],
     "phase_f_step_580_remaining_gap": "Step 581 native menu dynamic update production behavior",
-    "phase_f_current_handoff": "Step 581 native menu dynamic update production behavior"
+    "phase_f_step_581_surface": "Phase F Step 581 makes Win32 native menu installation dynamically replace all live window menus, preserves transactional tree ownership, treats an empty model as a successful clear, and keeps future windows aligned with the current menu state. Step 582 native menu accelerator display production behavior is next.",
+    "phase_f_step_581_sources": [
+      "src/platform/win32/win32_native_menu_tree.cpp",
+      "src/platform/win32/win32_native.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "tests/platform/win32_native_menu_update_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_update_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_581_remaining_gap": "Step 582 native menu accelerator display production behavior",
+    "phase_f_current_handoff": "Step 582 native menu accelerator display production behavior"
   },
   "categories": [
     "application_and_app_context",

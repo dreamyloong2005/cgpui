@@ -10339,3 +10339,22 @@
   `MFT_RADIOCHECK`, not an `AppendMenuW` `MF_*` flag. The leaf now uses
   `MENUITEMINFOW` and `InsertMenuItemW`, which cleanly separates type and state.
 - Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.
+
+## 2026-07-12 Phase F Step 581 Native Menu Dynamic Update
+
+- The existing Win32 application already detaches old menu handles before a
+  transactional tree rebuild and applies the committed root to all live
+  windows, so Step 581 should freeze multi-window replacement rather than add a
+  second update mechanism.
+- The concrete remaining gap is empty-model semantics: an empty installation
+  currently creates and attaches an empty menu bar. Production clearing should
+  commit a successful null-root tree so existing and future windows have no
+  attached menu.
+- The first test executable name contained `update` and Windows refused to run
+  it with error 740 through installer/UAC filename detection. The registered
+  target uses `replacement` instead; no product manifest change is warranted.
+- The renamed behavior test reached RED at exit 6 after both live windows
+  observed a successful transactional replacement, isolating the gap to empty
+  model clearing. An empty model now builds a successful null-root tree so the
+  application leaves current and future windows without a menu.
+- Phase F Step 581 makes Win32 native menu installation dynamically replace all live window menus, preserves transactional tree ownership, treats an empty model as a successful clear, and keeps future windows aligned with the current menu state. Step 582 native menu accelerator display production behavior is next.

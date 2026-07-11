@@ -707,6 +707,7 @@ consume C: drive space again.
 - Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.
 - Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.
 - Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.
+- Phase F Step 581 makes Win32 native menu installation dynamically replace all live window menus, preserves transactional tree ownership, treats an empty model as a successful clear, and keeps future windows aligned with the current menu state. Step 582 native menu accelerator display production behavior is next.
 
 ## Categories
 

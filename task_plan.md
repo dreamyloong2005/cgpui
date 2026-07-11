@@ -1041,7 +1041,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 580 evidence: the real Win32 menu exposes gray disabled state, an
   ordinary checkmark, and a checked radio visual through structured item type
   and state records; public radio intent remains a defaulted zero-cost field.
-- In progress: Step 581 native menu dynamic update production behavior.
+- Completed: Phase F Step 581 makes Win32 native menu installation dynamically replace all live window menus, preserves transactional tree ownership, treats an empty model as a successful clear, and keeps future windows aligned with the current menu state. Step 582 native menu accelerator display production behavior is next.
+- Step 581 evidence: two live Win32 windows atomically move from the initial
+  tree to a replacement tree, an empty model clears both menu bars, and a new
+  window created afterward remains menu-free.
+- In progress: Step 582 native menu accelerator display production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1059,6 +1063,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Windows also refused the initial Step 581 structure executable with error 740 because its target name contained `update` | Step 581 structure RED | Rename the structure target to `phase_f_win32_native_menu_replacement_structure_test` and update its self-check |
+| Windows refused to launch the initial Step 581 test executable with error 740 because its filename contained `update` | Step 581 dynamic-update RED | Rename the xmake target/executable to `win32_native_menu_replacement_test` to avoid Windows installer/UAC filename heuristics |
 | Step 579 historical menu-tree guard returned exit 3 after Step 580 replaced `AppendMenuW` with structured insertion | Step 580 historical structure regression | Freeze recursive native insertion through `InsertMenuItemW`; keep detailed `MENUITEMINFO` state assertions in the new Step 580 guard |
 | Step 580 first GREEN build failed because `MF_RADIOCHECK` is not an `AppendMenuW` flag | Step 580 Win32 item-state implementation | Use structured `MENUITEMINFOW` with `MFT_RADIOCHECK`, `MFS_GRAYED`, and `MFS_CHECKED` through `InsertMenuItemW` |
 | Step 579 final WSL gate passed 4/5 and direct `win32_window_source_test` returned exit 2 while the same guard passed on Windows | Step 579 WSL shared structure gate | The test's four-level fallback could not escape the deep WSL build-root; set its xmake run directory explicitly to `os.projectdir()` like the other structure guards |
