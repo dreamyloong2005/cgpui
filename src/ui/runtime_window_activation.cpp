@@ -50,6 +50,12 @@ void WindowRuntime::activate_native_window_for_record(
 
   record.window = window.get();
   record.renderer = *renderer_result;
+  record.framebuffer_size = window_state.framebuffer_size;
+  record.viewport_size = to_logical_pixels(
+      window_state.framebuffer_size,
+      window_state.scale);
+  record.scale = window_state.scale;
+  record.redraw_scheduled = false;
   record.active = true;
   native_additional_windows_.push_back(std::move(window));
 }

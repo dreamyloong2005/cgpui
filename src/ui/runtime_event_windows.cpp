@@ -78,6 +78,9 @@ void WindowRuntime::handle_native_additional_window_event(
   }
   if (const auto* resized = std::get_if<WindowResized>(&event);
       resized != nullptr) {
+    record->framebuffer_size = resized->size;
+    record->viewport_size = to_logical_pixels(resized->size, resized->scale);
+    record->scale = resized->scale;
     record->descriptor.size = to_logical_pixels(resized->size, resized->scale);
     if (record->renderer != nullptr) {
       (void)record->renderer->resize(resized->size, resized->scale);
@@ -85,6 +88,7 @@ void WindowRuntime::handle_native_additional_window_event(
     return;
   }
   if (std::holds_alternative<WindowRedrawRequested>(event)) {
+    record->redraw_scheduled = true;
     handle_redraw_for_record(*record, *view);
     return;
   }

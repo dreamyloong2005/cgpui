@@ -1799,6 +1799,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.
 - [x] Phase F Step 594 audits and closes the Steps 587-593 dialogs and platform-services band, freezing Win32 file/directory/message/URL behavior, shared reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior. Step 595 multi-window event-loop ownership production behavior is next.
 - [x] Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.
+- [x] Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

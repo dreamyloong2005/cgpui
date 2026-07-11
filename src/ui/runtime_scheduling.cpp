@@ -50,6 +50,7 @@ void WindowRuntime::batch_updates(UpdateBatchCallback callback) {
 void WindowRuntime::clear_invalidation() {
   invalidation_state_ = {};
   redraw_scheduled_ = false;
+  set_root_redraw_scheduled(false);
   deferred_redraw_request_ = false;
   next_frame_redraw_requested_ = false;
 }
@@ -71,6 +72,7 @@ void WindowRuntime::schedule_redraw() {
     return;
   }
   redraw_scheduled_ = true;
+  set_root_redraw_scheduled(true);
   if (dispatching_view_event_ || draining_deferred_callbacks_ || firing_timers_ ||
       draining_task_completions_ || handling_wakeup_ || update_batch_depth_ > 0) {
     deferred_redraw_request_ = true;

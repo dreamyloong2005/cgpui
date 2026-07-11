@@ -1099,10 +1099,14 @@ Windows/Linux core API is stable enough for parity work.
 - Step 595 evidence: the focused callback-lifetime test proves close detaches
   the record immediately, requests wakeup, avoids callback-stack destruction,
   and reclaims the wrapper on the later root wakeup.
-- In progress: Step 596 multi-window redraw and resize isolation production behavior.
-- Step 596 plan: isolate per-window framebuffer, viewport, scale, redraw, and
-  renderer resize state so additional-window events cannot mutate root-window
-  runtime geometry or scheduling state.
+- Completed: Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.
+- Step 596 evidence: focused geometry coverage verifies record/context sizes,
+  child-only renderer resize/frame work, redraw state during/after rendering,
+  and unchanged root render/layout/paint invalidation.
+- In progress: Step 597 multi-window input and focus isolation production behavior.
+- Step 597 plan: move focus, pointer, hover, active, and keyboard-owner state to
+  per-window runtime records or a focused private state map while preserving
+  root public compatibility accessors.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1120,6 +1124,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 596 root-redraw synchronization patch assumed one declaration per line in the compact frame-scheduling include | Step 596 root record consistency | Patch the existing comma-combined declaration format exactly and keep the helper in the focused scheduling leaf |
+| Step 596 structure-cap search again passed a wildcard path directly to `rg` on Windows | Step 596 public-record audit | Search the concrete architecture directory or exact structure file without shell wildcard arguments |
 | A Step 595 `rg` command passed a PowerShell wildcard path directly and Windows rejected it | Step 595 multi-window test inventory | Search the concrete `tests/ui` directory and filter filenames/results with `rg` instead of shell glob syntax |
 | Step 594 final audit treated silent `rg -q` output as a PowerShell boolean and falsely reported the completed band missing | Step 594 pre-commit audit | Evaluate `rg -q` through `$LASTEXITCODE` instead of its intentionally empty stdout |
 | Step 594 audit guard exited 3 because it assumed the default file-dialog result carried an error string | Step 594 audit RED | Freeze the actual default contract: unsupported result/backend for file dialogs, explicit error strings for message, URL, and reopen |

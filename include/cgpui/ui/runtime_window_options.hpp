@@ -38,6 +38,10 @@ struct WindowRuntimeRecord {
   WindowRuntimeId parent_runtime_id;
   WindowDescriptor descriptor;
   ViewId root_view_id;
+  Size framebuffer_size{};
+  Size viewport_size{};
+  DpiScale scale{};
+  bool redraw_scheduled = false;
   PlatformWindow* window = nullptr;
   Renderer* renderer = nullptr;
   bool owns_window = false;

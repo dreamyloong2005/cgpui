@@ -10545,3 +10545,16 @@
   the beginning of the later root event after the close callback has returned.
   `run()` return remains the fallback collection point.
 - Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.
+
+## 2026-07-12 Phase F Step 596 Multi-Window Redraw And Resize Isolation
+
+- Additional-window resize currently updates only `record.descriptor.size` and
+  the child renderer. `WindowRuntimeRecord` has no framebuffer, viewport,
+  scale, or redraw state, so per-window geometry is not directly observable.
+- Additional-window drawing calls `clear_invalidation()` and clears the root
+  runtime's `redraw_scheduled_` and `deferred_redraw_request_`. A child redraw
+  can therefore erase a pending root render/layout/paint request.
+- Step 596 should store geometry/redraw state on each record, initialize it at
+  native activation, update it on child resize, render from it, and stop child
+  completion from mutating root invalidation/scheduling fields.
+- Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.

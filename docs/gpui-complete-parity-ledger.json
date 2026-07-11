@@ -2552,7 +2552,25 @@
       "xmake.lua"
     ],
     "phase_f_step_595_remaining_gap": "Step 596 multi-window redraw and resize isolation production behavior",
-    "phase_f_current_handoff": "Step 596 multi-window redraw and resize isolation production behavior"
+    "phase_f_step_596_surface": "Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.",
+    "phase_f_step_596_sources": [
+      "include/cgpui/ui/runtime_window_options.hpp",
+      "src/ui/runtime_window_activation.cpp",
+      "src/ui/runtime_event_windows.cpp",
+      "src/ui/runtime_window_records.cpp",
+      "src/ui/runtime_renderer_frame_results.cpp",
+      "src/ui/runtime_renderer_resize_results.cpp",
+      "src/ui/runtime_window_rendering.cpp",
+      "src/ui/runtime_frame_scheduling_internal.hpp",
+      "src/ui/runtime_frame_scheduling.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "src/ui/runtime_run.cpp",
+      "tests/ui/window_runtime_multi_window_geometry_test.cpp",
+      "tests/architecture/phase_f_multi_window_geometry_isolation_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_596_remaining_gap": "Step 597 multi-window input and focus isolation production behavior",
+    "phase_f_current_handoff": "Step 597 multi-window input and focus isolation production behavior"
   },
   "categories": [
     "application_and_app_context",

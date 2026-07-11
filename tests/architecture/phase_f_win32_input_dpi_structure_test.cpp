@@ -109,7 +109,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 596 multi-window redraw and resize isolation")) {
+                "\"phase_f_current_handoff\": \"Step 597 multi-window input and focus isolation")) {
     return 8;
   }
   return 0;

@@ -21040,6 +21040,33 @@
   `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
   full debug remains batched.
 
+## 2026-07-12 Phase F Step 596 Multi-Window Redraw And Resize Isolation
+
+- Started from committed Step 595 at `2efa56a9`; only unrelated untracked
+  `.vscode/` remains.
+- Focused RED failed to compile because `WindowRuntimeRecord` lacked
+  framebuffer, viewport, scale, and redraw state.
+- Added per-window geometry/redraw fields, initialized them from native state,
+  updated child resize/render to use the record, and removed child-frame writes
+  to root invalidation/redraw scheduling.
+- Added a focused root redraw helper so root and child records share the same
+  observable scheduling semantics without duplicating state transitions.
+- New geometry isolation, event-loop ownership, app runner, renderer result,
+  UI structure, and header regressions pass 7/7.
+- Added a structure guard for the per-window geometry data flow, child/root
+  isolation, scheduling helper, line budgets, and xmake ownership; it reached
+  the intended five-document RED at child exit 10.
+- Synchronized the exact Step 596 completion phrase across all five authority
+  documents and advanced forty-five historical dynamic handoff guards to Step
+  597 with zero stale Step 596 handoffs.
+- Final Windows focused behavior/header/structure/ledger verification passes
+  11/11. After the shared UI rebuild, final WSL focused verification also
+  passes 11/11.
+- JSON parsing, five-document phrase count, forty-five Step 597 handoff
+  guards, zero stale dynamic Step 596 handoffs, focused line budgets, and
+  `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
+  full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

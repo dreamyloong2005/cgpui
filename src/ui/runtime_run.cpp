@@ -14,6 +14,10 @@ int WindowRuntime::run(
       root_record != nullptr) {
     root_record->descriptor = descriptor;
     root_record->root_view_id = root_view_id_;
+    root_record->framebuffer_size = descriptor.size;
+    root_record->viewport_size = descriptor.size;
+    root_record->scale = {};
+    root_record->redraw_scheduled = false;
     root_record->window = nullptr;
     root_record->renderer = nullptr;
     root_record->active = false;
@@ -89,12 +93,16 @@ int WindowRuntime::run(
       root_record != nullptr) {
     root_record->window = window_;
     root_record->renderer = renderer_;
+    root_record->framebuffer_size = framebuffer_size_;
+    root_record->viewport_size = viewport_size_;
+    root_record->scale = scale_;
     root_record->active = true;
   }
   activate_pending_native_windows();
 
   if (options.request_initial_redraw) {
     redraw_scheduled_ = true;
+    set_root_redraw_scheduled(true);
     window_->request_redraw();
   }
 

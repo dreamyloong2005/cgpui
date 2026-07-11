@@ -441,6 +441,13 @@ target("phase_f_multi_window_event_loop_ownership_structure_test")
     add_files("tests/architecture/phase_f_multi_window_event_loop_ownership_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_multi_window_geometry_isolation_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_multi_window_geometry_isolation_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -1242,6 +1249,13 @@ target("window_runtime_event_loop_ownership_test")
     add_files("tests/ui/window_runtime_event_loop_ownership_test.cpp")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
     add_includedirs(public_includedirs, "tests/ui")
+    add_tests("default")
+
+target("window_runtime_multi_window_geometry_test")
+    set_kind("binary")
+    add_files("tests/ui/window_runtime_multi_window_geometry_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    add_includedirs(public_includedirs)
     add_tests("default")
 
 target("phase_f_platform_service_result_policy_test")

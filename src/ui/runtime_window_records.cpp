@@ -23,7 +23,6 @@ const View* WindowRuntime::app_opened_window_root_view(
 
 WindowRuntimeContext WindowRuntime::context_for_record(
     const WindowRuntimeRecord& record) {
-  const WindowState state = record.window->state();
   const ViewInputState input = input_state();
 
   return WindowRuntimeContext{
@@ -33,8 +32,8 @@ WindowRuntimeContext WindowRuntime::context_for_record(
       .renderer = *record.renderer,
       .window_runtime_id = record.runtime_id,
       .view_id = record.root_view_id,
-      .viewport_size = to_logical_pixels(state.framebuffer_size, state.scale),
-      .scale = state.scale,
+      .viewport_size = record.viewport_size,
+      .scale = record.scale,
       .input = input,
       .event_route = current_event_route_,
       .last_event_result = last_event_result_,
@@ -72,6 +71,7 @@ void WindowRuntime::cleanup_closed_additional_window(
   record.owns_window = false;
   record.owns_renderer = false;
   record.owns_root_view = false;
+  record.redraw_scheduled = false;
   request_platform_wakeup();
 }
 
@@ -98,6 +98,7 @@ void WindowRuntime::deactivate_native_additional_windows() {
     record.window = nullptr;
     record.renderer = nullptr;
     record.active = false;
+    record.redraw_scheduled = false;
   }
   native_additional_windows_.clear();
   retired_native_windows_.clear();
