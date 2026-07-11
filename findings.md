@@ -10189,3 +10189,14 @@
   invalid-argument rejection with `DROPEFFECT_NONE`, and valid callback
   forwarding without requiring a real drag source.
 - Phase F Step 571 validates Win32 OLE drop target COM inputs, returns E_INVALIDARG for missing data/effect pointers, clears rejected effects, and preserves QueryInterface, reference counting, and valid owner forwarding. Step 572 Win32 OLE drop source production behavior is next.
+
+## 2026-07-11 Phase F Step 572 Win32 OLE Drop Source Audit
+
+- No `IDropSource` or `DoDragDrop` execution boundary exists today.
+- Source control and payload `IDataObject` formats are separate ownership
+  concerns. Step 572 should own COM source lifecycle, cancel/drop decisions,
+  feedback, allowed effects, and final result; later drag payload steps can
+  build text/files/URI data objects over this runner.
+- A function-pointer runner seam allows production to call `DoDragDrop` while
+  tests exercise the real source object without opening a modal desktop drag.
+- Phase F Step 572 adds a Win32 OLE IDropSource and injectable DoDragDrop runner, supports escape cancellation, button-release drop, default cursor feedback, allowed-effect propagation, and final effect reporting. Step 573 Wayland data-device accept and action negotiation production behavior is next.

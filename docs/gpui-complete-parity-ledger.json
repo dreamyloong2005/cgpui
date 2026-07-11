@@ -2234,7 +2234,18 @@
       "xmake.lua"
     ],
     "phase_f_step_571_remaining_gap": "Step 572 Win32 OLE drop source production behavior",
-    "phase_f_current_handoff": "Step 572 Win32 OLE drop source production behavior"
+    "phase_f_step_572_surface": "Phase F Step 572 adds a Win32 OLE IDropSource and injectable DoDragDrop runner, supports escape cancellation, button-release drop, default cursor feedback, allowed-effect propagation, and final effect reporting. Step 573 Wayland data-device accept and action negotiation production behavior is next.",
+    "phase_f_step_572_sources": [
+      "src/platform/win32/win32_drag_drop_internal.hpp",
+      "src/platform/win32/win32_ole_drop_source.cpp",
+      "tests/platform/win32_ole_drop_source_test.cpp",
+      "tests/architecture/phase_f_win32_ole_drop_source_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_572_remaining_gap": "Step 573 Wayland data-device accept and action negotiation production behavior",
+    "phase_f_current_handoff": "Step 573 Wayland data-device accept and action negotiation production behavior"
   },
   "categories": [
     "application_and_app_context",

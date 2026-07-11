@@ -57,6 +57,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_application.cpp",
       "src/platform/win32/win32_native.cpp",
       "src/platform/win32/win32_ole_drop_target.cpp",
+      "src/platform/win32/win32_ole_drop_source.cpp",
       "src/platform/win32/win32_pointer_button_internal.hpp",
       "src/platform/win32/win32_pointer_button.cpp",
       "src/platform/win32/win32_pointer_capture_internal.hpp",
@@ -357,6 +358,8 @@ int main() {
       read_source("src/platform/win32/win32_native.cpp");
   const std::string win32_ole_drop_target =
       read_source("src/platform/win32/win32_ole_drop_target.cpp");
+  const std::string win32_ole_drop_source =
+      read_source("src/platform/win32/win32_ole_drop_source.cpp");
   const std::string win32_window =
       read_source("src/platform/win32/win32_window.cpp");
   const std::string win32_window_chrome =
@@ -413,7 +416,8 @@ int main() {
       win32_input_helpers.empty() || win32_cursor.empty() ||
       win32_font_discovery.empty() ||
       win32_native.empty() ||
-      win32_ole_drop_target.empty() || win32_window.empty() ||
+      win32_ole_drop_target.empty() || win32_ole_drop_source.empty() ||
+      win32_window.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
       win32_window_cursor.empty() ||
       win32_window_drag_drop.empty() || win32_window_pointer_events.empty() ||
@@ -448,7 +452,7 @@ int main() {
       contains(win32_accessibility_internal, "class Win32OleDropTarget")) {
     return 86;
   }
-  if (line_count(win32_drag_drop_internal) > 110 ||
+  if (line_count(win32_drag_drop_internal) > 120 ||
       !contains(win32_drag_drop_internal, "Win32TestDragDropPayload") ||
       !contains(win32_drag_drop_internal,
                 "class Win32OleDropTarget final") ||
@@ -762,6 +766,10 @@ int main() {
   if (!contains(text_input_target, "cgpui_platform_win32")) {
     return 49;
   }
+  if (line_count(win32_ole_drop_source) > 90 ||
+      !contains(win32_ole_drop_source,
+                "Win32OleDropSource::QueryContinueDrag(") ||
+      !contains(win32_ole_drop_source, "run_win32_ole_drag(")) return 90;
   if (!contains(text_input_target, "add_tests(\"default\")")) {
     return 50;
   }

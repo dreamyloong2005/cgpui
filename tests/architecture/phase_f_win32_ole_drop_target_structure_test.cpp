@@ -60,7 +60,7 @@ int main() {
                 "target(\"phase_f_win32_ole_drop_target_structure_test\")")) {
     return 5;
   }
-  if (line_count(header) > 110 || line_count(target) > 100 ||
+  if (line_count(header) > 120 || line_count(target) > 100 ||
       line_count(behavior) > 90) return 6;
   constexpr const char* completion =
       "Phase F Step 571 validates Win32 OLE drop target COM inputs, returns "
@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 572 Win32")) return 9;
+                "\"phase_f_current_handoff\": \"Step 573 Wayland")) return 9;
   return 0;
 }

@@ -79,4 +79,35 @@ class Win32OleDropTarget final : public IDropTarget {
   Win32OleDropTargetOwner* owner_ = nullptr;
 };
 
+class Win32OleDropSource final : public IDropSource {
+ public:
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID interface_id, void** object)
+      override;
+  ULONG STDMETHODCALLTYPE AddRef() override;
+  ULONG STDMETHODCALLTYPE Release() override;
+  HRESULT STDMETHODCALLTYPE QueryContinueDrag(
+      BOOL escape_pressed,
+      DWORD key_state) override;
+  HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD effect) override;
+
+ private:
+  std::atomic_ulong reference_count_{1};
+};
+
+struct Win32OleDragResult {
+  HRESULT result = E_FAIL;
+  DWORD effect = DROPEFFECT_NONE;
+};
+
+using Win32DoDragDrop = HRESULT(WINAPI*)(
+    IDataObject*,
+    IDropSource*,
+    DWORD,
+    DWORD*);
+
+[[nodiscard]] Win32OleDragResult run_win32_ole_drag(
+    IDataObject& data_object,
+    DWORD allowed_effects,
+    Win32DoDragDrop runner = &DoDragDrop);
+
 } // namespace cgpui

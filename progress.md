@@ -21559,6 +21559,25 @@
 - Final WSL shared structure/ledger verification passes 22/22. JSON, unique
   phrase, handoff inventory, line caps, and `git diff --check` pass.
 
+## 2026-07-11 Phase F Step 572 Win32 OLE Drop Source
+
+- Started from committed Step 571 at `702a32fc`; only unrelated untracked
+  `.vscode/` remains.
+- Confirmed no `IDropSource` or `DoDragDrop` boundary exists. Assigned source
+  control and runner result to focused private files, separate from later
+  payload-format data objects.
+- Initial Windows focused verification passes 5/5 across drop-source behavior,
+  the new structure guard, Win32/platform source guards, and the parity ledger.
+- Initial WSL shared structure verification passes 4/5. The sole failure is the
+  Step 571 historical 110-line cap on `win32_drag_drop_internal.hpp`; the
+  focused drop-source declaration raises the shared private leaf to 113 lines,
+  so the historical cap now matches the new 120-line boundary.
+- Final WSL shared structure/ledger verification passes 5/5 after the historical
+  cap update. JSON parsing, five-document unique phrase, twenty-one Step 573
+  structure handoff guards plus the JSON handoff, stale-current-handoff audit,
+  focused line caps, and `git diff --check` pass. `.vscode/` remains unrelated
+  and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

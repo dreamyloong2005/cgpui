@@ -225,6 +225,7 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_drag_drop_helpers.cpp",
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
+      "src/platform/win32/win32_ole_drop_source.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
       "src/platform/win32/win32_cursor_internal.hpp",
       "src/platform/win32/win32_cursor.cpp",
@@ -981,6 +982,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/win32/win32_drag_drop_payload.cpp");
   const std::string win32_drag_drop_ole_payload =
       read_source("src/platform/win32/win32_drag_drop_ole_payload.cpp");
+  const std::string win32_ole_drop_source =
+      read_source("src/platform/win32/win32_ole_drop_source.cpp");
   const std::string win32_input_helpers =
       read_source("src/platform/win32/win32_input_helpers.cpp");
   const std::string win32_cursor =
@@ -1020,6 +1023,10 @@ int main(int argc, char** argv) {
                 "DragDropPayload drag_payload_from_ole_data_object(") ||
       !contains(win32_drag_drop_ole_payload, "CF_HDROP") ||
       contains(win32_drag_drop_helpers, "KeyboardModifiers current_modifiers()") ||
+      line_count(win32_ole_drop_source) > 90 ||
+      !contains(win32_ole_drop_source,
+                "Win32OleDropSource::QueryContinueDrag(") ||
+      !contains(win32_ole_drop_source, "run_win32_ole_drag(") ||
       !contains(win32_input_helpers, "KeyboardModifiers current_modifiers()") ||
       contains(win32_input_helpers, "cursor_id_for(") ||
       !contains(win32_cursor, "win32_system_cursor_id(") ||
