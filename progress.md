@@ -20992,6 +20992,28 @@
   `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
   full debug remains batched.
 
+## 2026-07-12 Phase F Step 594 Dialogs And Platform Services Closeout
+
+- Started from committed Step 593 at `c905e12d`; only unrelated untracked
+  `.vscode/` remains.
+- Added an audit-only closeout guard that aggregates the seven Steps 587-593
+  structure tests, default/Wayland unsupported contracts, Result state,
+  bounded diagnostics, and all registered targets.
+- The first audit run exited 3 because the default file-dialog result has no
+  error string; corrected the guard to freeze its actual unsupported
+  result/backend contract while preserving explicit message/URL/reopen errors.
+- The corrected guard reached the intended five-document RED at child exit 6.
+- Synchronized the exact Step 594 completion phrase across all five authority
+  documents, marked the Steps 587-594 band complete, and advanced forty-two
+  historical handoff guards to Step 595; the closeout brings the total to
+  forty-three.
+- Final Windows closeout structure/source/ledger verification passes 11/11;
+  final WSL closeout verification passes the same 11/11 targets.
+- JSON parsing, five-document unique phrase, zero stale Step 594 dynamic
+  handoffs, forty-three Step 595 structure guards, and `git diff --check`
+  pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
+  batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

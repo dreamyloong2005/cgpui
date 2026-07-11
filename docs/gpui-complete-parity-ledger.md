@@ -720,6 +720,7 @@ consume C: drive space again.
 - Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.
 - Phase F Step 592 adds explicit reopen callback/result lifecycle behavior shared by Win32 and Wayland backends, reports missing callbacks without dispatch, supports callback replacement/clearing, and preserves existing platform quit paths. Step 593 platform-service result and unsupported-policy production behavior is next.
 - Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.
+- Phase F Step 594 audits and closes the Steps 587-593 dialogs and platform-services band, freezing Win32 file/directory/message/URL behavior, shared reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior. Step 595 multi-window event-loop ownership production behavior is next.
 
 ## Categories
 

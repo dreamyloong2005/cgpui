@@ -10520,3 +10520,10 @@
   public runtime surface declaration-only with a narrowly raised cap backed by
   the Step 593 structure guard.
 - Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.
+
+## 2026-07-12 Phase F Step 594 Dialogs And Platform Services Closeout
+
+- Steps 587-593 already own focused behavior and structure guards for file
+  open/save, directory selection, message dialogs, URL opening, reopen, and
+  runtime Result/diagnostic policy. The closeout remains audit-only.
+- Phase F Step 594 audits and closes the Steps 587-593 dialogs and platform-services band, freezing Win32 file/directory/message/URL behavior, shared reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior. Step 595 multi-window event-loop ownership production behavior is next.

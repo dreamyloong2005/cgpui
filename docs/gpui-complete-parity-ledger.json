@@ -2524,7 +2524,20 @@
       "xmake.lua"
     ],
     "phase_f_step_593_remaining_gap": "Step 594 dialogs and platform-services closeout audit",
-    "phase_f_current_handoff": "Step 594 dialogs and platform-services closeout audit"
+    "phase_f_step_594_surface": "Phase F Step 594 audits and closes the Steps 587-593 dialogs and platform-services band, freezing Win32 file/directory/message/URL behavior, shared reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior. Step 595 multi-window event-loop ownership production behavior is next.",
+    "phase_f_step_594_sources": [
+      "tests/architecture/phase_f_win32_file_open_dialog_structure_test.cpp",
+      "tests/architecture/phase_f_win32_file_save_dialog_structure_test.cpp",
+      "tests/architecture/phase_f_native_directory_picker_structure_test.cpp",
+      "tests/architecture/phase_f_native_message_dialog_structure_test.cpp",
+      "tests/architecture/phase_f_native_open_url_structure_test.cpp",
+      "tests/architecture/phase_f_quit_reopen_lifecycle_structure_test.cpp",
+      "tests/architecture/phase_f_platform_service_result_policy_structure_test.cpp",
+      "tests/architecture/phase_f_platform_services_closeout_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_594_remaining_gap": "Step 595 multi-window event-loop ownership production behavior",
+    "phase_f_current_handoff": "Step 595 multi-window event-loop ownership production behavior"
   },
   "categories": [
     "application_and_app_context",

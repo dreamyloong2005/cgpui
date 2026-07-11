@@ -85,7 +85,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 594 dialogs and platform-services")) {
+                "\"phase_f_current_handoff\": \"Step 595 multi-window event-loop ownership")) {
     return 10;
   }
   return 0;

@@ -1091,10 +1091,14 @@ Windows/Linux core API is stable enough for parity work.
 - Step 593 evidence: focused API/behavior coverage verifies typed adapters,
   AppContext forwarding, supported incomplete values, unsupported errors,
   retained supported state, and the existing 32-event diagnostic bound.
-- In progress: Step 594 dialogs and platform-services closeout audit.
-- Step 594 plan: audit and freeze the Steps 587-593 file, directory, message,
-  URL, reopen, Result-policy, diagnostics, and explicit unsupported behavior
-  without adding another production path.
+- Completed: Phase F Step 594 audits and closes the Steps 587-593 dialogs and platform-services band, freezing Win32 file/directory/message/URL behavior, shared reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior. Step 595 multi-window event-loop ownership production behavior is next.
+- Step 594 evidence: the audit-only closeout aggregates all seven focused
+  structure guards, default/Wayland unsupported behavior, Result state, the
+  bounded diagnostic stream, and registered build ownership.
+- In progress: Step 595 multi-window event-loop ownership production behavior.
+- Step 595 plan: audit root/additional window event-loop ownership and make
+  native event routing and cleanup explicit without duplicating per-backend
+  orchestration in broad runtime or platform entry files.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1112,6 +1116,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 594 final audit treated silent `rg -q` output as a PowerShell boolean and falsely reported the completed band missing | Step 594 pre-commit audit | Evaluate `rg -q` through `$LASTEXITCODE` instead of its intentionally empty stdout |
+| Step 594 audit guard exited 3 because it assumed the default file-dialog result carried an error string | Step 594 audit RED | Freeze the actual default contract: unsupported result/backend for file dialogs, explicit error strings for message, URL, and reopen |
+| Step 594 audit RED configure/test chain hit the recurring Ninja package filelock | Step 594 audit RED | Keep configure and registered target runs separated for subsequent new audit targets |
 | First Step 593 structure RED configure stopped on transient Ninja package filelock | Step 593 structure RED | Rerun the newly registered `/default` target after the configure process exits |
 | First Step 593 implementation patch was atomically rejected on the UI structure-cap hunk | Step 593 GREEN implementation | Split production/state edits from exact structure-inventory and line-cap edits |
 | First Step 593 RED launch stopped before compilation with transient `cannot create filelock for package(ninja)` | Step 593 focused RED | Let the configure process exit, then rerun the registered `/default` target separately |
