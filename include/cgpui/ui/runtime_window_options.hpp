@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
+#include "cgpui/ui/runtime_input_state.hpp"
 
 #include <memory>
 #include <optional>
@@ -42,6 +43,7 @@ struct WindowRuntimeRecord {
   Size viewport_size{};
   DpiScale scale{};
   bool redraw_scheduled = false;
+  ViewInputState input{};
   PlatformWindow* window = nullptr;
   Renderer* renderer = nullptr;
   bool owns_window = false;

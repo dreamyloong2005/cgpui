@@ -10,22 +10,7 @@ void WindowRuntime::dispatch_view_event_for_record(
     return;
   }
 
-  if (const auto* focused = std::get_if<WindowFocused>(&event);
-      focused != nullptr) {
-    input_.focused = focused->focused;
-  } else if (const auto* moved = std::get_if<PointerMoved>(&event);
-             moved != nullptr) {
-    input_.pointer_position = moved->position;
-  } else if (const auto* exited = std::get_if<PointerExited>(&event);
-             exited != nullptr) {
-    input_.pointer_position = exited->position;
-  } else if (const auto* button = std::get_if<PointerButton>(&event);
-             button != nullptr) {
-    input_.pointer_position = button->position;
-  } else if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
-             scrolled != nullptr) {
-    input_.pointer_position = scrolled->position;
-  }
+  update_input_state_for_record(record, event);
 
   current_event_route_ = EventRouter::route_to_root(event, record.root_view_id);
   refresh_route_ancestry(*current_event_route_);
@@ -97,12 +82,12 @@ void WindowRuntime::handle_native_additional_window_event(
       std::holds_alternative<WindowRestored>(event)) {
     if (const auto* activated = std::get_if<WindowActivated>(&event);
         activated != nullptr) {
-      input_.focused = activated->active;
+      record->input.focused = activated->active;
     } else if (const auto* minimized = std::get_if<WindowMinimized>(&event);
                minimized != nullptr) {
-      input_.focused = !minimized->minimized;
+      record->input.focused = !minimized->minimized;
     } else {
-      input_.focused = false;
+      record->input.focused = false;
     }
     record_lifecycle_event_for_record(*record, event);
     return;

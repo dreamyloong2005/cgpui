@@ -45,6 +45,7 @@ void WindowRuntime::finish_event_dispatch(EventResult result) {
       .event_kind = current_event_route_->event_kind,
       .route = *current_event_route_,
       .result = last_event_result_};
+  sync_root_input_record();
   if (after_event_callback_) {
     after_event_callback_(context(), *last_event_dispatch_);
   }

@@ -39,7 +39,7 @@ void FocusHandle::request(WindowRuntime& runtime) const {
 }
 
 void FocusHandle::request(const WindowRuntimeContext& context) const {
-  context.runtime.request_keyboard_focus(id_);
+  context.request_keyboard_focus(id_);
 }
 
 void FocusHandle::release(WindowRuntime& runtime) const {
@@ -47,7 +47,7 @@ void FocusHandle::release(WindowRuntime& runtime) const {
 }
 
 void FocusHandle::release(const WindowRuntimeContext& context) const {
-  context.runtime.release_keyboard_focus(id_);
+  context.release_keyboard_focus(id_);
 }
 
 bool FocusHandle::contains(const ViewInputState& input) const {

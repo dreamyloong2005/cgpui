@@ -3,6 +3,7 @@
 namespace cgpui {
 
 void WindowRuntime::record_lifecycle_event(const PlatformEvent& event) {
+  sync_root_input_record();
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::window_lifecycle,
       .event_kind = event_kind_for(event),

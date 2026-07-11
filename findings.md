@@ -10558,3 +10558,14 @@
   native activation, update it on child resize, render from it, and stop child
   completion from mutating root invalidation/scheduling fields.
 - Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.
+
+## 2026-07-12 Phase F Step 597 Multi-Window Input And Focus Isolation
+
+- Additional-window focus and pointer events currently mutate the root
+  `input_`, so child motion/focus contaminates `WindowRuntime::input_state()`.
+- `WindowRuntimeContext` focus and pointer-capture methods currently ignore
+  `window_runtime_id` and always operate on the root native window/state.
+- A focused per-window input-state leaf can own child state and context routing
+  while root APIs retain their existing semantics and mirror into the root
+  runtime record for observable consistency.
+- Phase F Step 597 stores input state per runtime window, routes context focus and pointer capture to the originating window, and keeps root input accessors synchronized without child contamination. Step 598 multi-window event routing isolation production behavior is next.

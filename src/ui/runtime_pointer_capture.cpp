@@ -8,6 +8,7 @@ void WindowRuntime::capture_pointer(PointerCaptureOwner owner) {
   }
   const bool was_captured = pointer_capture_owner_.has_value();
   pointer_capture_owner_ = owner;
+  sync_root_input_record();
   if (!was_captured && window_ != nullptr) {
     window_->set_pointer_capture(true);
   }
@@ -18,6 +19,7 @@ void WindowRuntime::release_pointer(PointerCaptureOwner owner) {
     return;
   }
   pointer_capture_owner_.reset();
+  sync_root_input_record();
   if (window_ != nullptr) {
     window_->set_pointer_capture(false);
   }
@@ -34,6 +36,7 @@ void WindowRuntime::handle_pointer_capture_changed(
   input_.dragging = false;
   const std::optional<ElementId> previous = active_element_id_;
   active_element_id_.reset();
+  sync_root_input_record();
   request_style_state_invalidation(previous, active_element_id_);
 }
 

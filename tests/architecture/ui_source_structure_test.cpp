@@ -2655,11 +2655,27 @@ int main() {
 
   const std::string runtime_event_windows_source =
       read_source("src/ui/runtime_event_windows.cpp");
+  const std::string runtime_window_input_state_source =
+      read_source("src/ui/runtime_window_input_state.cpp");
+  const std::string runtime_window_input_state_header =
+      read_source("src/ui/runtime_window_input_state_internal.hpp");
   if (!contains(runtime_event_windows_source,
                 "void WindowRuntime::dispatch_view_event_for_record(") ||
       !contains(runtime_event_windows_source,
                 "void WindowRuntime::handle_native_additional_window_event(") ||
-      !contains(runtime_event_windows_source, "std::get_if<PointerExited>")) {
+      !contains(runtime_event_windows_source,
+                "update_input_state_for_record(record, event)") ||
+      contains(runtime_event_windows_source, "input_.pointer_position") ||
+      runtime_window_input_state_source.empty() ||
+      runtime_window_input_state_header.empty() ||
+      line_count(runtime_window_input_state_source) > 140 ||
+      line_count(runtime_window_input_state_header) > 30 ||
+      !contains(runtime_window_input_state_source,
+                "WindowRuntime::update_input_state_for_record(") ||
+      !contains(runtime_window_input_state_source,
+                "WindowRuntime::capture_pointer_for_window(") ||
+      !contains(runtime_window_input_state_source,
+                "WindowRuntime::request_keyboard_focus_for_window(")) {
     return 35;
   }
 

@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 597 multi-window input and focus isolation")) return 9;
+                "\"phase_f_current_handoff\": \"Step 598 multi-window event routing isolation")) return 9;
   return 0;
 }

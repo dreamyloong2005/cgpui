@@ -1103,10 +1103,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 596 evidence: focused geometry coverage verifies record/context sizes,
   child-only renderer resize/frame work, redraw state during/after rendering,
   and unchanged root render/layout/paint invalidation.
-- In progress: Step 597 multi-window input and focus isolation production behavior.
-- Step 597 plan: move focus, pointer, hover, active, and keyboard-owner state to
-  per-window runtime records or a focused private state map while preserving
-  root public compatibility accessors.
+- Completed: Phase F Step 597 stores input state per runtime window, routes context focus and pointer capture to the originating window, and keeps root input accessors synchronized without child contamination. Step 598 multi-window event routing isolation production behavior is next.
+- Step 597 evidence: focused root/child coverage verifies independent focus,
+  pointer position, pointer capture, and keyboard ownership in public records,
+  callback contexts, compatibility accessors, and native windows.
+- In progress: Step 598 multi-window event routing isolation production behavior.
+- Step 598 plan: isolate route, dispatch result, callback context, and deferred
+  event state per runtime window without regressing root element routing.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

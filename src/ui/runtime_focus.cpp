@@ -8,6 +8,7 @@ void WindowRuntime::request_keyboard_focus() {
 
 void WindowRuntime::request_keyboard_focus(ViewId view_id) {
   keyboard_focus_owner_ = view_id;
+  sync_root_input_record();
   apply_focused_text_ime_placement();
 }
 
@@ -19,6 +20,7 @@ void WindowRuntime::request_keyboard_focus(ElementId element_id) {
     request_style_state_invalidation(
         previous_focused_element_id,
         keyboard_focus_element_owner_);
+    sync_root_input_record();
     apply_focused_text_ime_placement();
   }
 }
@@ -30,6 +32,7 @@ void WindowRuntime::release_keyboard_focus() {
 void WindowRuntime::release_keyboard_focus(ViewId view_id) {
   if (keyboard_focus_owner_ == view_id) {
     keyboard_focus_owner_.reset();
+    sync_root_input_record();
     apply_focused_text_ime_placement();
   }
 }
@@ -42,6 +45,7 @@ void WindowRuntime::release_keyboard_focus(ElementId element_id) {
     request_style_state_invalidation(
         previous_focused_element_id,
         keyboard_focus_element_owner_);
+    sync_root_input_record();
     apply_focused_text_ime_placement();
   }
 }

@@ -18,6 +18,7 @@ int WindowRuntime::run(
     root_record->viewport_size = descriptor.size;
     root_record->scale = {};
     root_record->redraw_scheduled = false;
+    root_record->input = {};
     root_record->window = nullptr;
     root_record->renderer = nullptr;
     root_record->active = false;
@@ -58,6 +59,7 @@ int WindowRuntime::run(
   last_platform_accessibility_update_.reset();
   platform_diagnostics_.clear();
   platform_diagnostic_sequence_ = 0;
+  sync_root_input_record();
 
   auto window_result = application_.create_window(
       descriptor,
@@ -97,6 +99,7 @@ int WindowRuntime::run(
     root_record->viewport_size = viewport_size_;
     root_record->scale = scale_;
     root_record->active = true;
+    root_record->input = input_state();
   }
   activate_pending_native_windows();
 

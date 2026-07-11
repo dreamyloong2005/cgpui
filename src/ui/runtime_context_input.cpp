@@ -25,51 +25,51 @@ std::optional<ViewId> WindowRuntimeContext::upgrade_view(WeakView view) const {
 }
 
 void WindowRuntimeContext::capture_pointer(PointerCaptureOwner owner) const {
-  runtime.capture_pointer(owner);
+  runtime.capture_pointer_for_window(window_runtime_id, owner);
 }
 
 void WindowRuntimeContext::capture_pointer(ElementId element_id) const {
-  runtime.capture_pointer(PointerCaptureOwner::element(element_id));
+  capture_pointer(PointerCaptureOwner::element(element_id));
 }
 
 void WindowRuntimeContext::release_pointer(PointerCaptureOwner owner) const {
-  runtime.release_pointer(owner);
+  runtime.release_pointer_for_window(window_runtime_id, owner);
 }
 
 void WindowRuntimeContext::release_pointer(ElementId element_id) const {
-  runtime.release_pointer(PointerCaptureOwner::element(element_id));
+  release_pointer(PointerCaptureOwner::element(element_id));
 }
 
 void WindowRuntimeContext::request_keyboard_focus() const {
-  runtime.request_keyboard_focus();
+  request_keyboard_focus(view_id);
 }
 
 void WindowRuntimeContext::request_keyboard_focus(ViewId view_id) const {
-  runtime.request_keyboard_focus(view_id);
+  runtime.request_keyboard_focus_for_window(window_runtime_id, view_id);
 }
 
 void WindowRuntimeContext::request_keyboard_focus(ElementId element_id) const {
-  runtime.request_keyboard_focus(element_id);
+  runtime.request_keyboard_focus_for_window(window_runtime_id, element_id);
 }
 
 void WindowRuntimeContext::focus(ElementId element_id) const {
-  runtime.request_keyboard_focus(element_id);
+  request_keyboard_focus(element_id);
 }
 
 void WindowRuntimeContext::release_keyboard_focus() const {
-  runtime.release_keyboard_focus();
+  release_keyboard_focus(view_id);
 }
 
 void WindowRuntimeContext::release_keyboard_focus(ViewId view_id) const {
-  runtime.release_keyboard_focus(view_id);
+  runtime.release_keyboard_focus_for_window(window_runtime_id, view_id);
 }
 
 void WindowRuntimeContext::release_keyboard_focus(ElementId element_id) const {
-  runtime.release_keyboard_focus(element_id);
+  runtime.release_keyboard_focus_for_window(window_runtime_id, element_id);
 }
 
 void WindowRuntimeContext::blur(ElementId element_id) const {
-  runtime.release_keyboard_focus(element_id);
+  release_keyboard_focus(element_id);
 }
 
 FocusHandle WindowRuntimeContext::focus_handle(ElementId element_id) const {

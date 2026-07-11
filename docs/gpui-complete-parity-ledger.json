@@ -2570,7 +2570,27 @@
       "xmake.lua"
     ],
     "phase_f_step_596_remaining_gap": "Step 597 multi-window input and focus isolation production behavior",
-    "phase_f_current_handoff": "Step 597 multi-window input and focus isolation production behavior"
+    "phase_f_step_597_surface": "Phase F Step 597 stores input state per runtime window, routes context focus and pointer capture to the originating window, and keeps root input accessors synchronized without child contamination. Step 598 multi-window event routing isolation production behavior is next.",
+    "phase_f_step_597_sources": [
+      "include/cgpui/ui/runtime_window_options.hpp",
+      "src/ui/runtime_window_input_state_internal.hpp",
+      "src/ui/runtime_window_input_state.cpp",
+      "src/ui/runtime_context_input.cpp",
+      "src/ui/runtime_event_windows.cpp",
+      "src/ui/runtime_event_dispatch.cpp",
+      "src/ui/runtime_event_lifecycle.cpp",
+      "src/ui/runtime_focus.cpp",
+      "src/ui/runtime_pointer_capture.cpp",
+      "src/ui/runtime_window_records.cpp",
+      "src/ui/runtime_run.cpp",
+      "src/ui/view.cpp",
+      "tests/ui/window_runtime_multi_window_input_test.cpp",
+      "tests/architecture/phase_f_multi_window_input_isolation_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_597_remaining_gap": "Step 598 multi-window event routing isolation production behavior",
+    "phase_f_current_handoff": "Step 598 multi-window event routing isolation production behavior"
   },
   "categories": [
     "application_and_app_context",

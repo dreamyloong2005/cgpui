@@ -21067,6 +21067,31 @@
   `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
   full debug remains batched.
 
+## 2026-07-12 Phase F Step 597 Multi-Window Input And Focus Isolation
+
+- Started from committed Step 596 at `a111d699`; only unrelated untracked
+  `.vscode/` remains.
+- Focused RED failed to compile because `WindowRuntimeRecord` lacked
+  per-window input state.
+- Added a focused private input-state leaf, routed context focus/capture by
+  runtime window, and synchronized root compatibility state into its record.
+- Child focus, pointer position, capture, and keyboard ownership now remain
+  isolated in the child record/context and target the child native window.
+- Focused input, focus, pointer-capture, multi-window, geometry, header, and UI
+  structure regressions pass 9/9 on Windows.
+- Added a structure guard for record ownership, focused implementation/header
+  boundaries, context routing, root synchronization, line budgets, xmake, and
+  five-document handoff; it reached the intended RED at child exit 9.
+- Synchronized the exact Step 597 completion phrase across all five authority
+  documents and advanced forty-six historical dynamic handoff guards to Step
+  598 with zero stale Step 597 handoffs.
+- Final Windows focused behavior/header/structure/ledger verification passes
+  13/13. After the shared UI rebuild, final WSL focused verification also
+  passes 13/13.
+- JSON parsing, five-document phrase count, focused 56/130/23/260/84/103/80/
+  43/135/183 line budgets, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

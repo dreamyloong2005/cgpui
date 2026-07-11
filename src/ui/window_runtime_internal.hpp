@@ -1,8 +1,8 @@
-friend class AnimationHandle; friend class TestContextCapability; friend class TaskHandle;
+friend class AnimationHandle; friend class TestContextCapability; friend class TaskHandle; friend struct WindowRuntimeContext;
 struct RuntimeTaskDiagnostics;
 void handle_event(const PlatformEvent& event); [[nodiscard]] bool handle_native_menu_command_event(const PlatformEvent& event, ViewId target_view_id);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);
-void update_input_state_for_event(const PlatformEvent& event);
+#include "runtime_window_input_state_internal.hpp"
 void handle_pointer_capture_changed(const PointerCaptureChanged& changed);
 [[nodiscard]] std::optional<ElementId> hit_test_target_for_event(
     const PlatformEvent& event);
