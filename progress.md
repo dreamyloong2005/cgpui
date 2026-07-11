@@ -21780,6 +21780,35 @@
   33/81/49/156/97/92 line budgets, and `git diff --check` pass. `.vscode/`
   remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 580 Native Menu Item State
+
+- Started from committed Step 579 at `812aa59b`; only unrelated untracked
+  `.vscode/` remains.
+- Added the defaulted public `NativeMenuItem::radio` flag after confirming all
+  existing construction sites use designated initialization.
+- Expanded the real Win32 menu test with disabled, ordinary checked, and
+  checked radio items. It reached behavior RED at exit 6 with hierarchy and
+  counts already passing.
+- Added focused Win32 item mapping in the existing menu-tree leaf for
+  `MFS_GRAYED`, `MFS_CHECKED`, and `MFT_RADIOCHECK` across commands and submenus.
+- The first GREEN build corrected the API boundary from nonexistent
+  `MF_RADIOCHECK` to structured `MENUITEMINFOW` type/state fields and
+  `InsertMenuItemW`; the real Win32 state behavior then passes 1/1.
+- Advanced the Step 579 historical source/test caps to 125/130 and updated its
+  stable insertion evidence from `AppendMenuW` to `InsertMenuItemW`.
+- Added the Step 580 structure guard; after the historical guard update it
+  reached the intended five-document RED at exit 8.
+- Synchronized the exact Step 580 completion phrase across all five authority
+  documents and advanced twenty-nine structure handoff guards to Step 581.
+- Final Windows behavior/public-header/API/structure/ledger verification passes
+  9/9. WSL rebuilt shared platform/UI dependents for the public menu-field
+  addition, then final shared-header/API/structure/ledger verification passes
+  8/8.
+- JSON parsing, five-document unique phrase, twenty-nine Step 581 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  58/112/117/72 line budgets, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

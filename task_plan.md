@@ -1037,7 +1037,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 579 evidence: a real Win32 window exposes the recursively installed
   Unicode menu bar, nested popup, commands, and separator through `HMENU`,
   while focused structure guards freeze RAII ownership and source inventory.
-- In progress: Step 580 native menu check/radio/enabled state production behavior.
+- Completed: Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.
+- Step 580 evidence: the real Win32 menu exposes gray disabled state, an
+  ordinary checkmark, and a checked radio visual through structured item type
+  and state records; public radio intent remains a defaulted zero-cost field.
+- In progress: Step 581 native menu dynamic update production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1055,6 +1059,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 579 historical menu-tree guard returned exit 3 after Step 580 replaced `AppendMenuW` with structured insertion | Step 580 historical structure regression | Freeze recursive native insertion through `InsertMenuItemW`; keep detailed `MENUITEMINFO` state assertions in the new Step 580 guard |
+| Step 580 first GREEN build failed because `MF_RADIOCHECK` is not an `AppendMenuW` flag | Step 580 Win32 item-state implementation | Use structured `MENUITEMINFOW` with `MFT_RADIOCHECK`, `MFS_GRAYED`, and `MFS_CHECKED` through `InsertMenuItemW` |
 | Step 579 final WSL gate passed 4/5 and direct `win32_window_source_test` returned exit 2 while the same guard passed on Windows | Step 579 WSL shared structure gate | The test's four-level fallback could not escape the deep WSL build-root; set its xmake run directory explicitly to `os.projectdir()` like the other structure guards |
 | The first generated Step 579 historical-handoff patch over-escaped C++ string literals and was rejected atomically | Step 578 authority synchronization | Regenerate the patch with the exact single-backslash source spelling and explicit compact-line return values |
 | `xmake build win32_ole_drop_source_test -P .` treated `-P` as an invalid trailing build argument | Step 578 Win32 cancellation RED build | Put the project option before the target: `xmake build -P . win32_ole_drop_source_test` |

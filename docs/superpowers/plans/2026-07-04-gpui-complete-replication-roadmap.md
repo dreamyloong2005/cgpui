@@ -1783,6 +1783,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.
 - [x] Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.
 - [x] Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.
+- [x] Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

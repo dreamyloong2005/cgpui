@@ -40,6 +40,7 @@ int main() {
                   cgpui::NativeMenuItem{
                       .title = "Open",
                       .action_name = "file.open",
+                      .enabled = false,
                   },
                   cgpui::NativeMenuItem{
                       .kind = cgpui::NativeMenuItemKind::separator,
@@ -55,6 +56,17 @@ int main() {
                       },
                   },
                   cgpui::NativeMenuItem{
+                      .title = "Autosave",
+                      .action_name = "file.autosave",
+                      .checked = true,
+                  },
+                  cgpui::NativeMenuItem{
+                      .title = "Mode A",
+                      .action_name = "mode.a",
+                      .checked = true,
+                      .radio = true,
+                  },
+                  cgpui::NativeMenuItem{
                       .title = "Quit",
                       .action_name = "app.quit",
                   },
@@ -64,7 +76,7 @@ int main() {
   };
   const auto installed = (*app)->install_native_menu(std::move(model));
   if (!installed.supported || installed.backend != "win32" ||
-      installed.menu_count != 1 || installed.item_count != 6) return 3;
+      installed.menu_count != 1 || installed.item_count != 8) return 3;
 
   const auto native_surface = (*window)->native_surface();
   const auto* surface = std::get_if<cgpui::Win32SurfaceHandle>(&native_surface);
@@ -73,25 +85,33 @@ int main() {
   if (root == nullptr || GetMenuItemCount(root) != 1 ||
       menu_title(root, 0) != L"\x6587\x4EF6") return 5;
   const HMENU file = GetSubMenu(root, 0);
-  if (file == nullptr || GetMenuItemCount(file) != 4 ||
+  if (file == nullptr || GetMenuItemCount(file) != 6 ||
       menu_title(file, 0) != L"Open" ||
+      (GetMenuState(file, 0, MF_BYPOSITION) & (MF_DISABLED | MF_GRAYED)) == 0 ||
       (GetMenuState(file, 1, MF_BYPOSITION) & MF_SEPARATOR) == 0 ||
-      menu_title(file, 2) != L"Recent" || menu_title(file, 3) != L"Quit") {
+      menu_title(file, 2) != L"Recent" ||
+      (GetMenuState(file, 3, MF_BYPOSITION) & MF_CHECKED) == 0 ||
+      menu_title(file, 5) != L"Quit") {
     return 6;
   }
   const HMENU recent = GetSubMenu(file, 2);
   if (recent == nullptr || GetMenuItemCount(recent) != 1 ||
       menu_title(recent, 0) != L"One") return 7;
+  MENUITEMINFOW radio_info{.cbSize = sizeof(MENUITEMINFOW)};
+  radio_info.fMask = MIIM_FTYPE | MIIM_STATE;
+  if (GetMenuItemInfoW(file, 4, TRUE, &radio_info) == FALSE ||
+      (radio_info.fType & MFT_RADIOCHECK) == 0 ||
+      (radio_info.fState & MFS_CHECKED) == 0) return 8;
   auto future_window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Win32 Future Menu Test",
           .size = {320.0F, 200.0F}},
       [](const cgpui::PlatformEvent&) {});
-  if (!future_window) return 8;
+  if (!future_window) return 9;
   const auto future_surface_handle = (*future_window)->native_surface();
   const auto* future_surface =
       std::get_if<cgpui::Win32SurfaceHandle>(&future_surface_handle);
   if (future_surface == nullptr || future_surface->hwnd == nullptr ||
-      GetMenu(static_cast<HWND>(future_surface->hwnd)) != root) return 9;
+      GetMenu(static_cast<HWND>(future_surface->hwnd)) != root) return 10;
   return 0;
 }

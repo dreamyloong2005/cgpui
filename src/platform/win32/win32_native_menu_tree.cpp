@@ -5,34 +5,65 @@
 namespace cgpui {
 namespace {
 
+bool append_native_menu_item(
+    HMENU parent,
+    const NativeMenuItem& item,
+    UINT_PTR command_id,
+    HMENU submenu = nullptr) {
+  MENUITEMINFOW info{.cbSize = sizeof(MENUITEMINFOW)};
+  if (item.kind == NativeMenuItemKind::separator) {
+    info.fMask = MIIM_FTYPE;
+    info.fType = MFT_SEPARATOR;
+  } else {
+    std::wstring title = widen(item.title);
+    info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_STRING;
+    info.fType = MFT_STRING | (item.radio ? MFT_RADIOCHECK : 0U);
+    info.fState = item.enabled ? MFS_ENABLED : MFS_GRAYED;
+    if (item.checked) info.fState |= MFS_CHECKED;
+    info.dwTypeData = title.data();
+    info.cch = static_cast<UINT>(title.size());
+    if (submenu != nullptr) {
+      info.fMask |= MIIM_SUBMENU;
+      info.hSubMenu = submenu;
+    } else {
+      info.fMask |= MIIM_ID;
+      info.wID = static_cast<UINT>(command_id);
+    }
+    return InsertMenuItemW(
+               parent,
+               static_cast<UINT>(GetMenuItemCount(parent)),
+               TRUE,
+               &info) != FALSE;
+  }
+  return InsertMenuItemW(
+             parent,
+             static_cast<UINT>(GetMenuItemCount(parent)),
+             TRUE,
+             &info) != FALSE;
+}
+
 bool append_menu_items(
     HMENU parent,
     const std::vector<NativeMenuItem>& items,
     UINT_PTR& next_command_id) {
   for (const NativeMenuItem& item : items) {
     if (item.kind == NativeMenuItemKind::separator) {
-      if (AppendMenuW(parent, MF_SEPARATOR, 0, nullptr) == FALSE) return false;
+      if (!append_native_menu_item(parent, item, 0)) return false;
       continue;
     }
 
-    const std::wstring title = widen(item.title);
     if (item.kind == NativeMenuItemKind::submenu) {
       HMENU submenu = CreatePopupMenu();
       if (submenu == nullptr) return false;
       if (!append_menu_items(submenu, item.children, next_command_id) ||
-          AppendMenuW(
-              parent,
-              MF_POPUP | MF_STRING,
-              reinterpret_cast<UINT_PTR>(submenu),
-              title.c_str()) == FALSE) {
+          !append_native_menu_item(parent, item, 0, submenu)) {
         DestroyMenu(submenu);
         return false;
       }
       continue;
     }
 
-    if (AppendMenuW(parent, MF_STRING, next_command_id++, title.c_str()) ==
-        FALSE) {
+    if (!append_native_menu_item(parent, item, next_command_id++)) {
       return false;
     }
   }

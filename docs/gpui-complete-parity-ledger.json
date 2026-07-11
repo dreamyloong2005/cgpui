@@ -2339,7 +2339,17 @@
       "xmake.lua"
     ],
     "phase_f_step_579_remaining_gap": "Step 580 native menu check/radio/enabled state production behavior",
-    "phase_f_current_handoff": "Step 580 native menu check/radio/enabled state production behavior"
+    "phase_f_step_580_surface": "Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.",
+    "phase_f_step_580_sources": [
+      "include/cgpui/platform/platform_native_menu.hpp",
+      "src/platform/win32/win32_native_menu_tree.cpp",
+      "tests/platform/win32_native_menu_tree_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_tree_structure_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_state_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_580_remaining_gap": "Step 581 native menu dynamic update production behavior",
+    "phase_f_current_handoff": "Step 581 native menu dynamic update production behavior"
   },
   "categories": [
     "application_and_app_context",

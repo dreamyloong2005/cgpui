@@ -10322,3 +10322,20 @@
   could not escape the deeper WSL build root. Its xmake target now runs from
   `os.projectdir()`, matching the repository's other source structure guards.
 - Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.
+
+## 2026-07-12 Phase F Step 580 Native Menu Item State
+
+- Existing `NativeMenuItem` initialization sites use C++ designated fields, so
+  adding a defaulted `radio` flag immediately before `children` preserves
+  source compatibility while exposing the missing radio-check visual intent.
+- The focused behavior target should cover disabled command state, ordinary
+  checked state, and Win32 `MFT_RADIOCHECK` plus `MFS_CHECKED` without moving
+  state logic back into `win32_native.cpp` or the application orchestrator.
+- The expanded real-window test reached RED at exit 6 after menu hierarchy and
+  counts passed, isolating the missing production behavior to Win32 item flags.
+  The focused leaf now maps disabled, checked, and radio state for both commands
+  and submenus through one flag helper.
+- The first implementation attempt failed to compile because radio-check is
+  `MFT_RADIOCHECK`, not an `AppendMenuW` `MF_*` flag. The leaf now uses
+  `MENUITEMINFOW` and `InsertMenuItemW`, which cleanly separates type and state.
+- Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.

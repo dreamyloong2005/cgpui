@@ -56,7 +56,7 @@ int main() {
   if (!contains(source, "CreateMenu()") ||
       !contains(source, "CreatePopupMenu()") ||
       !contains(source, "append_menu_items(submenu") ||
-      !contains(source, "AppendMenuW(") ||
+      !contains(source, "InsertMenuItemW(") ||
       !contains(source, "DestroyMenu(root_)") ||
       !contains(source, "SetMenu(hwnd, menu)")) return 3;
   if (!contains(state_header, "Win32NativeMenuTree menu_tree_") ||
@@ -77,9 +77,9 @@ int main() {
       !contains(win32_structure, "win32_native_menu_tree.cpp") ||
       !contains(platform_structure, "win32_native_menu_tree_internal.hpp") ||
       !contains(platform_structure, "win32_native_menu_tree.cpp")) return 7;
-  if (line_count(header) > 50 || line_count(source) > 110 ||
+  if (line_count(header) > 50 || line_count(source) > 125 ||
       line_count(state) > 70 || line_count(application) > 190 ||
-      line_count(behavior) > 115) return 8;
+      line_count(behavior) > 130) return 8;
   if (!contains(xmake, "target(\"win32_native_menu_tree_test\")") ||
       !contains(xmake, "target(\"phase_f_win32_native_menu_tree_structure_test\")")) return 9;
   constexpr const char* completion =
@@ -87,6 +87,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 10;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 580 native menu")) return 11;
+                "\"phase_f_current_handoff\": \"Step 581 native menu")) return 11;
   return 0;
 }

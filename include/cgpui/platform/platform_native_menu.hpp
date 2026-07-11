@@ -29,6 +29,7 @@ struct NativeMenuItem {
   std::optional<NativeMenuAccelerator> accelerator;
   bool enabled = true;
   bool checked = false;
+  bool radio = false;
   std::vector<NativeMenuItem> children;
 };
 
