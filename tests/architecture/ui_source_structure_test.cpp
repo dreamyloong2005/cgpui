@@ -1802,6 +1802,7 @@ int main() {
       read_source("src/ui/ui_event_kind_internal.hpp");
   if (line_count(ui_event_kind_internal_header) > 120 ||
       !contains(ui_event_kind_internal_header, "event_kind_for(") ||
+      !contains(ui_event_kind_internal_header, "PointerExited") ||
       !contains(ui_event_kind_internal_header,
                 "drag_drop_payload_value_count(") ||
       !contains(ui_event_kind_internal_header, "drag_drop_operation_for(") ||
@@ -1815,6 +1816,8 @@ int main() {
       read_source("src/ui/ui_event_pointer_internal.hpp");
   if (line_count(ui_event_pointer_internal_header) > 90 ||
       !contains(ui_event_pointer_internal_header, "pointer_position_for(") ||
+      !contains(ui_event_pointer_internal_header,
+                "std::get_if<PointerExited>") ||
       !contains(ui_event_pointer_internal_header,
                 "is_valid_pointer_capture_owner(") ||
       !contains(ui_event_pointer_internal_header,
@@ -2583,6 +2586,9 @@ int main() {
       !contains(runtime_event_input_source, "hit_test_runtime_element_root(") ||
       !contains(runtime_event_input_source,
                 "apply_pointer_capture_owner_to_route(") ||
+      !contains(runtime_event_input_source, "std::get_if<PointerExited>") ||
+      !contains(runtime_event_input_source, "hovered_element_id_.reset()") ||
+      !contains(runtime_event_input_source, "CursorShape::default_arrow") ||
       contains(runtime_event_input_source, "for (const KeyBinding&") ||
       contains(runtime_event_input_source, "ImeComposition")) {
     return 69;
@@ -2648,7 +2654,8 @@ int main() {
   if (!contains(runtime_event_windows_source,
                 "void WindowRuntime::dispatch_view_event_for_record(") ||
       !contains(runtime_event_windows_source,
-                "void WindowRuntime::handle_native_additional_window_event(")) {
+                "void WindowRuntime::handle_native_additional_window_event(") ||
+      !contains(runtime_event_windows_source, "std::get_if<PointerExited>")) {
     return 35;
   }
 

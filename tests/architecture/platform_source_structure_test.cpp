@@ -574,12 +574,14 @@ int main(int argc, char** argv) {
       !contains(window_configure, "WaylandWindow::handle_surface_configure(") ||
       !contains(window_events, "WaylandWindow::set_cursor(") ||
       !contains(window_input_events, "WaylandWindow::pointer_moved(") ||
+      !contains(window_input_events, "WaylandWindow::pointer_exited(") ||
       !contains(window_drag_events, "WaylandWindow::drag_entered(") ||
       !contains(window_text_events, "WaylandWindow::text_input_commit(") ||
       !contains(window_text_events, "append_ime_default_preedit_style") ||
       !contains(window_text_events, "ImeDeleteSurroundingText") ||
       !contains(window_registered, "make_registered_wayland_window(") ||
-      !contains(window_bridge, "wayland_window_pointer_moved(")) {
+      !contains(window_bridge, "wayland_window_pointer_moved(") ||
+      !contains(window_bridge, "wayland_window_pointer_exited(")) {
     return 10;
   }
   if (line_count(window_internal) > 120 ||
@@ -698,9 +700,17 @@ int main(int argc, char** argv) {
                 "WaylandApplication::handle_keyboard_key(") ||
       line_count(application_pointer) > 80 ||
       !contains(application_pointer,
+                "WaylandApplication::handle_pointer_enter(") ||
+      !contains(application_pointer,
+                "WaylandApplication::handle_pointer_leave(") ||
+      !contains(application_pointer,
                 "WaylandApplication::handle_pointer_button(") ||
       !contains(application_pointer,
                 "WaylandApplication::handle_pointer_motion(") ||
+      !contains(application_pointer, "wayland_window_pointer_moved(") ||
+      !contains(application_pointer, "wayland_window_pointer_exited(") ||
+      !contains(application_pointer, "pointer_enter_serial_ = 0") ||
+      !contains(application_pointer, "pending_scroll_delta_ = {}") ||
       contains(application_pointer,
                "WaylandApplication::handle_pointer_axis(") ||
       contains(application_pointer,

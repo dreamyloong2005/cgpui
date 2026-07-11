@@ -15,6 +15,9 @@ void WaylandApplication::handle_pointer_enter(
   app->pointer_window_ = app->find_window(surface);
   app->pointer_position_ = point_from_fixed(surface_x, surface_y);
   app->apply_cursor_for(app->pointer_window_);
+  if (app->pointer_window_ != nullptr) {
+    wayland_window_pointer_moved(*app->pointer_window_, app->pointer_position_);
+  }
 }
 
 void WaylandApplication::handle_pointer_leave(
@@ -27,9 +30,12 @@ void WaylandApplication::handle_pointer_leave(
   auto* app = static_cast<WaylandApplication*>(data);
   if (app->pointer_window_ != nullptr &&
       wayland_window_surface(*app->pointer_window_) == surface) {
+    WaylandWindow* window = app->pointer_window_;
     app->pointer_window_ = nullptr;
+    app->pointer_enter_serial_ = 0;
     app->pending_scroll_delta_ = {};
     app->pointer_scroll_pending_ = false;
+    wayland_window_pointer_exited(*window, app->pointer_position_);
   }
 }
 

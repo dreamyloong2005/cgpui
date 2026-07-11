@@ -41,6 +41,7 @@ class WaylandWindow final : public PlatformWindow {
   [[nodiscard]] CursorShape cursor_shape() const;
   [[nodiscard]] bool configured() const;
   void pointer_moved(Point position);
+  void pointer_exited(Point position);
   void pointer_button(MouseButton button, bool pressed, Point position);
   void pointer_scrolled(Point delta, Point position);
   void drag_entered(
@@ -114,7 +115,6 @@ class WaylandWindow final : public PlatformWindow {
   bool resize_pending_surface_configure_ = false;
   bool focused_ = false;
 };
-
 #include "wayland_registered_window_internal.hpp"
 
 } // namespace cgpui

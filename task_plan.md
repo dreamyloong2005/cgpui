@@ -941,7 +941,12 @@ Windows/Linux core API is stable enough for parity work.
   effective modifier snapshots for all three mask classes, reloads the keymap,
   and proves both modifier state and generated text remain stable without a
   second modifiers event.
-- In progress: Step 557 Wayland pointer enter, leave, and motion production behavior.
+- Completed: Phase F Step 557 publishes Wayland pointer enter coordinates immediately, delivers explicit leave with the last position, and clears runtime hover and cursor state. Step 558 Wayland pointer axis and frame production behavior is next.
+- Step 557 evidence: real Wayland compositor enter/motion/leave delivery and a
+  focused runtime test prove initial coordinate publication, last-position exit
+  records, hover clearing, and default-cursor restoration through the public
+  event surface.
+- In progress: Step 558 Wayland pointer axis and frame production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -963,6 +968,7 @@ Windows/Linux core API is stable enough for parity work.
 | The first production patch assumed Win32 and Wayland declared `state()` in the same sequence | Step 539 production write | The patch was rejected atomically; read the exact Wayland class declaration and reapply with file-specific context |
 | `xmake build` was given three target names even though the build task accepts one target | Step 539 Windows focused build | Build each focused target with its own `xmake build <target>` invocation; `xmake test` still accepts multiple registered tests |
 | A WSL invocation with `--cd` transiently returned `WSL_E_DISTRO_NOT_FOUND`, and the next script placed `--root` before the xmake task | Step 539 WSL focused gate | Use the proven `wsl.exe -d archlinux -- bash -lc 'cd ...'` form and place the option after the task: `xmake f --root`, `xmake build --root`, `xmake test --root` |
+| Sandboxed Windows xmake could not create the user-level Ninja package lock after adding a target | Step 557 structure build | Re-run the approved `xmake build` outside the workspace sandbox so xmake can update its user-level package lock; the guard then reached its intended document RED exit 8 |
 | The first Wayland lifecycle test saw the base default snapshot through `RegisteredWaylandWindow` | Step 539 real Wayland GREEN | Add a focused lifecycle override to the registered wrapper and guard the forwarding in the structure test |
 | `Select-String -Recurse` is not supported by this PowerShell environment | Step 540 symbol audit | Use `Get-ChildItem -Recurse -File | Select-String ...` for recursive source searches |
 | `xmake test window_runtime_rendering_test -vD -P .` treated the bare target as a non-matching test and printed `nothing to test` | Step 544 runtime regression | Use the registered test id after options: `xmake test -P . window_runtime_rendering_test/default` |

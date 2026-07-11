@@ -627,6 +627,16 @@ struct WaylandTestCompositor::State {
     pointer_move_pending.store(true);
   }
 
+  void request_pointer_enter(std::int32_t x, std::int32_t y) {
+    pointer_x.store(x);
+    pointer_y.store(y);
+    pointer_enter_pending.store(true);
+  }
+
+  void request_pointer_leave() {
+    pointer_leave_pending.store(true);
+  }
+
   void request_pointer_button(std::uint32_t button, bool pressed) {
     {
       std::lock_guard lock(pointer_button_mutex);
@@ -1247,7 +1257,9 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_resize_configure();
   void dispatch_pending_output_scale();
   void dispatch_pending_seat_capabilities();
+  void dispatch_pending_pointer_enter();
   void dispatch_pending_pointer_move();
+  void dispatch_pending_pointer_leave();
   void dispatch_pending_pointer_button();
   void dispatch_pending_pointer_scroll();
   void dispatch_pending_drag_enter();
@@ -1276,7 +1288,9 @@ struct WaylandTestCompositor::State {
       dispatch_pending_resize_configure();
       dispatch_pending_output_scale();
       dispatch_pending_seat_capabilities();
+      dispatch_pending_pointer_enter();
       dispatch_pending_pointer_move();
+      dispatch_pending_pointer_leave();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
       dispatch_pending_drag_enter();
@@ -1303,7 +1317,9 @@ struct WaylandTestCompositor::State {
       dispatch_pending_resize_configure();
       dispatch_pending_output_scale();
       dispatch_pending_seat_capabilities();
+      dispatch_pending_pointer_enter();
       dispatch_pending_pointer_move();
+      dispatch_pending_pointer_leave();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
       dispatch_pending_drag_enter();
@@ -1422,8 +1438,12 @@ struct WaylandTestCompositor::State {
   std::atomic_bool seat_capabilities_pending{false};
   std::atomic_bool pointer_bound{false};
   std::atomic_bool keyboard_bound{false};
+  std::atomic_bool pointer_enter_pending{false};
+  std::atomic_bool pointer_enter_sent{false};
   std::atomic_bool pointer_move_pending{false};
   std::atomic_bool pointer_move_sent{false};
+  std::atomic_bool pointer_leave_pending{false};
+  std::atomic_bool pointer_leave_sent{false};
   std::atomic_bool pointer_button_pending{false};
   std::atomic_bool pointer_button_sent{false};
   std::atomic_bool pointer_scroll_pending{false};
@@ -2514,6 +2534,44 @@ void WaylandTestCompositor::State::dispatch_pending_keyboard_modifiers() {
   keyboard_modifiers_sent.store(true);
 }
 
+void WaylandTestCompositor::State::dispatch_pending_pointer_enter() {
+  if (!pointer_enter_pending.exchange(false)) {
+    return;
+  }
+  const SurfaceState* surface = first_pointer_surface();
+  if (pointer_resource == nullptr || surface == nullptr) {
+    pointer_enter_pending.store(true);
+    return;
+  }
+  wl_pointer_send_enter(
+      pointer_resource,
+      next_pointer_serial++,
+      surface->surface,
+      wl_fixed_from_int(pointer_x.load()),
+      wl_fixed_from_int(pointer_y.load()));
+  pointer_entered = true;
+  wl_display_flush_clients(display);
+  pointer_enter_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_pointer_leave() {
+  if (!pointer_leave_pending.exchange(false)) {
+    return;
+  }
+  const SurfaceState* surface = first_pointer_surface();
+  if (pointer_resource == nullptr || surface == nullptr || !pointer_entered) {
+    pointer_leave_pending.store(true);
+    return;
+  }
+  wl_pointer_send_leave(
+      pointer_resource,
+      next_pointer_serial++,
+      surface->surface);
+  pointer_entered = false;
+  wl_display_flush_clients(display);
+  pointer_leave_sent.store(true);
+}
+
 void WaylandTestCompositor::State::dispatch_pending_keyboard_keymap() {
   if (!keyboard_keymap_pending.exchange(false)) {
     return;
@@ -3028,6 +3086,16 @@ void WaylandTestCompositor::request_pointer_move(std::int32_t x, std::int32_t y)
   state_->request_pointer_move(x, y);
 }
 
+void WaylandTestCompositor::request_pointer_enter(
+    std::int32_t x,
+    std::int32_t y) {
+  state_->request_pointer_enter(x, y);
+}
+
+void WaylandTestCompositor::request_pointer_leave() {
+  state_->request_pointer_leave();
+}
+
 void WaylandTestCompositor::request_pointer_button(
     std::uint32_t button,
     bool pressed) {
@@ -3226,6 +3294,14 @@ bool WaylandTestCompositor::wait_for_keyboard_bound(bool bound) const {
 
 bool WaylandTestCompositor::wait_for_pointer_move_sent() const {
   return state_->wait_for_flag(state_->pointer_move_sent);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_enter_sent() const {
+  return state_->wait_for_flag(state_->pointer_enter_sent);
+}
+
+bool WaylandTestCompositor::wait_for_pointer_leave_sent() const {
+  return state_->wait_for_flag(state_->pointer_leave_sent);
 }
 
 bool WaylandTestCompositor::wait_for_pointer_button_sent() const {

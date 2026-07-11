@@ -6,6 +6,10 @@ void WaylandWindow::pointer_moved(Point position) {
   callback_(PointerMoved{.position = position});
 }
 
+void WaylandWindow::pointer_exited(Point position) {
+  callback_(PointerExited{.position = position});
+}
+
 void WaylandWindow::pointer_button(
     MouseButton button,
     bool pressed,

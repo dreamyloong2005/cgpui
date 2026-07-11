@@ -28,6 +28,10 @@ void wayland_window_pointer_moved(WaylandWindow& window, Point position) {
   window.pointer_moved(position);
 }
 
+void wayland_window_pointer_exited(WaylandWindow& window, Point position) {
+  window.pointer_exited(position);
+}
+
 void wayland_window_pointer_button(
     WaylandWindow& window,
     MouseButton button,

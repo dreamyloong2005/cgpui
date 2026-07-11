@@ -31,6 +31,7 @@ inline EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<PointerMoved>(event)) {
     return EventKind::pointer_moved;
   }
+  if (std::holds_alternative<PointerExited>(event)) return EventKind::pointer_exited;
   if (std::holds_alternative<PointerButton>(event)) {
     return EventKind::pointer_button;
   }
@@ -116,5 +117,4 @@ inline std::string drag_drop_operation_for(const PlatformEvent& event) {
 }
 
 } // namespace
-
 } // namespace cgpui

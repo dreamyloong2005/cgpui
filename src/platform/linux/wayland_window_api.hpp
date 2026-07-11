@@ -53,6 +53,7 @@ void wayland_window_set_ime_text_input_placement(
     WaylandWindow& window,
     std::optional<ImeTextInputPlacement> placement);
 void wayland_window_pointer_moved(WaylandWindow& window, Point position);
+void wayland_window_pointer_exited(WaylandWindow& window, Point position);
 void wayland_window_pointer_button(
     WaylandWindow& window,
     MouseButton button,

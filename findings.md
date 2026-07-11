@@ -9837,3 +9837,38 @@
   preserves the prior live keymap on compile failure, and clears them only on
   full keyboard reset/capability loss.
 - Phase F Step 556 preserves depressed, latched, and locked Wayland modifiers plus the active layout group across XKB keymap reloads, with real multi-layout text and modifier coverage. Step 557 Wayland pointer enter, leave, and motion production behavior is next.
+
+## 2026-07-11 Phase F Step 557 Wayland Pointer Enter/Leave/Motion Audit
+
+- The public pointer surface currently has move/button/scroll/capture only.
+  Wayland enter records target/position/cursor without publishing the initial
+  coordinates, and leave silently clears target/scroll without informing the
+  runtime, so hover and cursor state can remain stale indefinitely.
+- The narrow adaptation is to publish the enter coordinates as the existing
+  `PointerMoved` event and add one explicit `PointerExited` event carrying the
+  last position. A separate `PointerEntered` type would duplicate the initial
+  move and add broader public/runtime complexity without new information.
+- Wayland leave should clear target, enter serial, and pending scroll before
+  publishing exit to the captured window pointer, preserving state-before-event
+  semantics and preventing cursor updates from using a stale enter serial.
+- Runtime input handling must recognize exit position for routing/records but
+  clear the hovered element and restore the default cursor instead of hit
+  testing it as another move.
+- The resumed production path passes the real WSL compositor test: pointer
+  enter publishes the initial coordinates immediately, motion publishes the
+  updated coordinates, and leave publishes `PointerExited` with the last
+  position.
+- Existing source guards already own the relevant focused boundaries. Step 557
+  should extend them in place for `pointer_exited`, target/serial/scroll
+  cleanup, and runtime hover/default-cursor clearing, while a dedicated
+  structure guard locks both focused behavior tests and authority handoff.
+- Current touched-file caps remain within the established limits:
+  `wayland_application_pointer.cpp` 77/80, `runtime_event_input.cpp` 153/160,
+  `ui_event_pointer_internal.hpp` 84/90, and
+  `ui_event_kind_internal.hpp` exactly 120/120 after compaction.
+- The first synchronized Windows gate exposed one additional historical cap:
+  `wayland_window_internal.hpp` reached 121/120 solely from the adjacent exit
+  declaration. Removing an unnecessary separator before the registered-window
+  include retains the 120-line cap and keeps both declarations readable in the
+  same focused private window boundary.
+- Phase F Step 557 publishes Wayland pointer enter coordinates immediately, delivers explicit leave with the last position, and clears runtime hover and cursor state. Step 558 Wayland pointer axis and frame production behavior is next.

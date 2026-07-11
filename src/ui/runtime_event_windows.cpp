@@ -16,6 +16,9 @@ void WindowRuntime::dispatch_view_event_for_record(
   } else if (const auto* moved = std::get_if<PointerMoved>(&event);
              moved != nullptr) {
     input_.pointer_position = moved->position;
+  } else if (const auto* exited = std::get_if<PointerExited>(&event);
+             exited != nullptr) {
+    input_.pointer_position = exited->position;
   } else if (const auto* button = std::get_if<PointerButton>(&event);
              button != nullptr) {
     input_.pointer_position = button->position;

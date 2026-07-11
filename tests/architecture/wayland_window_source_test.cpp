@@ -811,6 +811,8 @@ int main(int argc, char** argv) {
       !contains(wayland_window_input_events,
                 "WaylandWindow::pointer_moved(") ||
       !contains(wayland_window_input_events,
+                "WaylandWindow::pointer_exited(") ||
+      !contains(wayland_window_input_events,
                 "WaylandWindow::pointer_button(") ||
       !contains(wayland_window_input_events,
                 "WaylandWindow::pointer_scrolled(") ||
@@ -859,6 +861,7 @@ int main(int argc, char** argv) {
     return 92;
   }
   if (!contains(wayland_window_bridge, "wayland_window_pointer_moved(") ||
+      !contains(wayland_window_bridge, "wayland_window_pointer_exited(") ||
       !contains(wayland_window_bridge,
                 "wayland_window_text_input_delete_surrounding(") ||
       !contains(wayland_window_bridge, "wayland_window_focus_changed(")) {
@@ -1049,9 +1052,19 @@ int main(int argc, char** argv) {
   }
   if (line_count(wayland_application_pointer) > 80 ||
       !contains(wayland_application_pointer,
+                "WaylandApplication::handle_pointer_enter(") ||
+      !contains(wayland_application_pointer,
+                "WaylandApplication::handle_pointer_leave(") ||
+      !contains(wayland_application_pointer,
                 "WaylandApplication::handle_pointer_button(") ||
       !contains(wayland_application_pointer,
                 "WaylandApplication::handle_pointer_motion(") ||
+      !contains(wayland_application_pointer,
+                "wayland_window_pointer_moved(") ||
+      !contains(wayland_application_pointer,
+                "wayland_window_pointer_exited(") ||
+      !contains(wayland_application_pointer, "pointer_enter_serial_ = 0") ||
+      !contains(wayland_application_pointer, "pending_scroll_delta_ = {}") ||
       contains(wayland_application_pointer,
                "WaylandApplication::handle_pointer_axis(") ||
       contains(wayland_application_pointer,

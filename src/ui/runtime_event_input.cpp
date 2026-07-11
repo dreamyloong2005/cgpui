@@ -12,6 +12,9 @@ void WindowRuntime::update_input_state_for_event(const PlatformEvent& event) {
   } else if (const auto* moved = std::get_if<PointerMoved>(&event);
              moved != nullptr) {
     input_.pointer_position = moved->position;
+  } else if (const auto* exited = std::get_if<PointerExited>(&event);
+             exited != nullptr) {
+    input_.pointer_position = exited->position;
   } else if (const auto* button = std::get_if<PointerButton>(&event);
              button != nullptr) {
     input_.pointer_position = button->position;
@@ -74,7 +77,9 @@ std::optional<ElementId> WindowRuntime::hit_test_target_for_event(
 void WindowRuntime::update_hover_cursor_for_event(
     const PlatformEvent& event,
     std::optional<ElementId> hit_element_id) {
-  if (!std::holds_alternative<PointerMoved>(event)) {
+  const bool pointer_moved = std::holds_alternative<PointerMoved>(event);
+  const bool pointer_exited = std::holds_alternative<PointerExited>(event);
+  if (!pointer_moved && !pointer_exited) {
     return;
   }
 
@@ -82,7 +87,8 @@ void WindowRuntime::update_hover_cursor_for_event(
       hovered_element_id_;
   hovered_element_id_.reset();
   cursor_shape_ = CursorShape::default_arrow;
-  if (static_element_tree_installed() || element_root() != nullptr) {
+  if (!pointer_exited &&
+      (static_element_tree_installed() || element_root() != nullptr)) {
     hovered_element_id_ = hit_element_id;
     if (hit_element_id.has_value()) {
       const Element* hovered_element = routed_element(*hit_element_id);

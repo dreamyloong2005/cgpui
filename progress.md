@@ -21088,3 +21088,56 @@
   five authority documents, keyboard/input/test line caps, and
   `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL full
   debug remains batched.
+
+## 2026-07-11 Phase F Step 557 Resume
+
+- Restored the persistent goal and planning files after session catchup; the
+  worktree still contains the uncommitted Wayland pointer enter/leave/motion
+  behavior, focused compositor/runtime tests, and unrelated untracked
+  `.vscode/` only.
+- Confirmed the two completed local checks remain
+  `window_runtime_pointer_exit_test/default` and
+  `core_header_cleanliness/default`; the only recorded blocker is the existing
+  120-line UI event-kind structure cap.
+- Compacted the new `PointerExited` event-kind branch and namespace footer so
+  `ui_event_kind_internal.hpp` returns from 123 to 120 lines without raising
+  the architecture limit or moving behavior into a broader source.
+- The first resumed Windows command built all three targets successfully, but
+  `xmake test <target>` reported `nothing to test`; as with earlier executable
+  architecture guards, final evidence must use `xmake run <target>` or the
+  registered `<target>/default` test id rather than this filter form.
+- Direct Windows execution then passed all three resumed gates: runtime pointer
+  exit behavior, core header cleanliness, and UI source structure.
+- Focused WSL Arch Linux verification reused `.build-wsl/master` plus
+  `/dev/shm/cgpui`; `wayland_pointer_motion_test/default` built and passed 1/1
+  against the real test compositor.
+- One exploratory `rg` expression for Wayland xmake targets had an unmatched
+  group after PowerShell quoting; the fixed search used `-F` literal matching.
+- Added the dedicated Step 557 structure guard plus Wayland/platform/UI source
+  ownership assertions without raising line caps. Its first Windows build was
+  interrupted before compilation by `cannot create filelock for package(ninja)`;
+  no xmake or ninja process remained, so this is treated as a transient package
+  lock/cache issue rather than a test result.
+- A serialized retry reproduced the same sandboxed package-lock failure. The
+  approved out-of-sandbox xmake build succeeded, and the new structure guard
+  reached its intended authority-document RED at child exit 8.
+- Synchronized the exact Step 557 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; the active handoff is now Step
+  558 Wayland pointer axis and frame production behavior.
+- The first 12-test Windows focused gate passed 10/12. Both failures were the
+  same historical private Wayland window 120-line cap (`platform` exit 38,
+  `wayland` exit 128); removed an unnecessary registered-window include
+  separator without raising the cap.
+- Final Windows focused verification passes 12/12 across runtime pointer exit,
+  public headers, UI/platform/Wayland source ownership, the new Step 557 guard,
+  five advancing historical handoff guards, and the parity ledger.
+- Final WSL Arch Linux focused verification reuses `.build-wsl/master` plus
+  `/dev/shm/cgpui` and passes 13/13, including the real Wayland
+  enter/motion/leave path, shared runtime behavior, all corresponding source
+  and handoff guards, public headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 557 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+- Final readability cleanup keeps the two pointer declarations on separate
+  lines while removing one unnecessary include separator; both affected source
+  guards pass again on Windows 2/2 and WSL 2/2 at exactly 120/120 lines.

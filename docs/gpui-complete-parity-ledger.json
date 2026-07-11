@@ -1979,7 +1979,31 @@
       "xmake.lua"
     ],
     "phase_f_step_556_remaining_gap": "Step 557 Wayland pointer enter, leave, and motion production behavior",
-    "phase_f_current_handoff": "Step 557 Wayland pointer enter, leave, and motion production behavior"
+    "phase_f_step_557_surface": "Phase F Step 557 publishes Wayland pointer enter coordinates immediately, delivers explicit leave with the last position, and clears runtime hover and cursor state. Step 558 Wayland pointer axis and frame production behavior is next.",
+    "phase_f_step_557_sources": [
+      "include/cgpui/core/event_pointer.hpp",
+      "include/cgpui/core/event_platform.hpp",
+      "src/platform/linux/wayland_application_pointer.cpp",
+      "src/platform/linux/wayland_window_api.hpp",
+      "src/platform/linux/wayland_window_bridge.cpp",
+      "src/platform/linux/wayland_window_input_events.cpp",
+      "src/platform/linux/wayland_window_internal.hpp",
+      "src/ui/runtime_event_input.cpp",
+      "src/ui/runtime_event_windows.cpp",
+      "src/ui/ui_event_kind_internal.hpp",
+      "src/ui/ui_event_pointer_internal.hpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_pointer_motion_test.cpp",
+      "tests/ui/window_runtime_pointer_exit_test.cpp",
+      "tests/architecture/phase_f_wayland_pointer_motion_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_557_remaining_gap": "Step 558 Wayland pointer axis and frame production behavior",
+    "phase_f_current_handoff": "Step 558 Wayland pointer axis and frame production behavior"
   },
   "categories": [
     "application_and_app_context",

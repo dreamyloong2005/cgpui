@@ -13,6 +13,10 @@ inline std::optional<Point> pointer_position_for(const PlatformEvent& event) {
       moved != nullptr) {
     return moved->position;
   }
+  if (const auto* exited = std::get_if<PointerExited>(&event);
+      exited != nullptr) {
+    return exited->position;
+  }
   if (const auto* button = std::get_if<PointerButton>(&event);
       button != nullptr) {
     return button->position;

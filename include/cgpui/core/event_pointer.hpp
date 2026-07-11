@@ -36,6 +36,10 @@ struct PointerMoved {
   Point position;
 };
 
+struct PointerExited {
+  Point position;
+};
+
 struct PointerButton {
   MouseButton button;
   bool pressed = false;
