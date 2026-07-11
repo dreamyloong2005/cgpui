@@ -1045,7 +1045,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 581 evidence: two live Win32 windows atomically move from the initial
   tree to a replacement tree, an empty model clears both menu bars, and a new
   window created afterward remains menu-free.
-- In progress: Step 582 native menu accelerator display production behavior.
+- Completed: Phase F Step 582 formats Win32 native menu accelerator labels in a focused leaf, appends tab-aligned Ctrl/Alt/Shift/Win key text for letters, digits, function keys, and named keys, and preserves accelerator counts without claiming dispatch. Step 583 native menu accelerator registration production behavior is next.
+- Step 582 evidence: a real Win32 menu displays Ctrl+Shift+O, Alt+F4,
+  Ctrl+Del, and Win+1 labels through the focused formatter while installation
+  retains the expected accelerator count.
+- In progress: Step 583 native menu accelerator registration production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1063,6 +1067,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 582 focused `xmake test` command passed bare target names and returned `nothing to test` | Step 582 final Windows gate | Select registered test names with the `/default` suffix |
+| The first Step 582 structure patch used the pre-rename Step 581 xmake target as its anchor and was rejected atomically | Step 582 structure guard | Re-anchor the insertion on `phase_f_win32_native_menu_replacement_structure_test` |
 | Windows also refused the initial Step 581 structure executable with error 740 because its target name contained `update` | Step 581 structure RED | Rename the structure target to `phase_f_win32_native_menu_replacement_structure_test` and update its self-check |
 | Windows refused to launch the initial Step 581 test executable with error 740 because its filename contained `update` | Step 581 dynamic-update RED | Rename the xmake target/executable to `win32_native_menu_replacement_test` to avoid Windows installer/UAC filename heuristics |
 | Step 579 historical menu-tree guard returned exit 3 after Step 580 replaced `AppendMenuW` with structured insertion | Step 580 historical structure regression | Freeze recursive native insertion through `InsertMenuItemW`; keep detailed `MENUITEMINFO` state assertions in the new Step 580 guard |

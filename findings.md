@@ -10358,3 +10358,21 @@
   model clearing. An empty model now builds a successful null-root tree so the
   application leaves current and future windows without a menu.
 - Phase F Step 581 makes Win32 native menu installation dynamically replace all live window menus, preserves transactional tree ownership, treats an empty model as a successful clear, and keeps future windows aligned with the current menu state. Step 582 native menu accelerator display production behavior is next.
+
+## 2026-07-12 Phase F Step 582 Native Menu Accelerator Display
+
+- No existing platform key-label formatter covers native menu text. Ownership
+  should be a focused Win32 accelerator-display leaf, leaving recursive HMENU
+  construction and application orchestration unchanged.
+- The display convention for this slice is a tab separator plus ordered
+  `Ctrl`, `Alt`, `Shift`, and `Win` modifier names followed by a stable key
+  label. Coverage should include letters, digits, function keys, and named
+  navigation/edit keys before later steps own accelerator registration/dispatch.
+- The real Win32 display test reached RED at exit 4 after installation and
+  accelerator counting passed. A focused formatter leaf now owns modifier/key
+  labels and the menu-tree leaf only consumes the resulting display title.
+- The first formatter run still failed because Win32 function-key codes overlap
+  lowercase ASCII values (`VK_F4 == 's'`). Native accelerator key codes follow
+  virtual-key semantics and existing public examples use uppercase letters, so
+  the ambiguous lowercase branch was removed.
+- Phase F Step 582 formats Win32 native menu accelerator labels in a focused leaf, appends tab-aligned Ctrl/Alt/Shift/Win key text for letters, digits, function keys, and named keys, and preserves accelerator counts without claiming dispatch. Step 583 native menu accelerator registration production behavior is next.

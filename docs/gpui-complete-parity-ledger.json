@@ -2359,7 +2359,19 @@
       "xmake.lua"
     ],
     "phase_f_step_581_remaining_gap": "Step 582 native menu accelerator display production behavior",
-    "phase_f_current_handoff": "Step 582 native menu accelerator display production behavior"
+    "phase_f_step_582_surface": "Phase F Step 582 formats Win32 native menu accelerator labels in a focused leaf, appends tab-aligned Ctrl/Alt/Shift/Win key text for letters, digits, function keys, and named keys, and preserves accelerator counts without claiming dispatch. Step 583 native menu accelerator registration production behavior is next.",
+    "phase_f_step_582_sources": [
+      "src/platform/win32/win32_native_menu_accelerator_internal.hpp",
+      "src/platform/win32/win32_native_menu_accelerator.cpp",
+      "src/platform/win32/win32_native_menu_tree.cpp",
+      "tests/platform/win32_native_menu_accelerator_display_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_accelerator_display_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_582_remaining_gap": "Step 583 native menu accelerator registration production behavior",
+    "phase_f_current_handoff": "Step 583 native menu accelerator registration production behavior"
   },
   "categories": [
     "application_and_app_context",

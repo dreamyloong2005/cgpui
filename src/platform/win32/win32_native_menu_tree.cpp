@@ -1,4 +1,5 @@
 #include "win32_internal.hpp"
+#include "win32_native_menu_accelerator_internal.hpp"
 
 #include <utility>
 
@@ -15,7 +16,7 @@ bool append_native_menu_item(
     info.fMask = MIIM_FTYPE;
     info.fType = MFT_SEPARATOR;
   } else {
-    std::wstring title = widen(item.title);
+    std::wstring title = win32_native_menu_display_title(item);
     info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_STRING;
     info.fType = MFT_STRING | (item.radio ? MFT_RADIOCHECK : 0U);
     info.fState = item.enabled ? MFS_ENABLED : MFS_GRAYED;

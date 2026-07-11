@@ -21835,6 +21835,29 @@
   line budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
   untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 582 Native Menu Accelerator Display
+
+- Started from committed Step 581 at `f1914cde`; only unrelated untracked
+  `.vscode/` remains.
+- Added a real Win32 accelerator-label test for Ctrl+Shift+O, Alt+F4,
+  Ctrl+Del, and Win+1. It reached behavior RED at exit 4 after installation and
+  accelerator counting passed.
+- Added focused `win32_native_menu_accelerator_internal.hpp/.cpp` ownership for
+  modifier and virtual-key labels; the menu-tree leaf consumes only the final
+  display title.
+- The first formatter run exposed the `VK_F4 == 's'` lowercase-ASCII overlap;
+  virtual-key semantics now take precedence and the display plus menu
+  regressions pass 3/3.
+- Added the Step 582 structure guard and source inventories; after correcting a
+  stale Step 581 xmake anchor, the guard reached the intended five-document RED
+  at exit 9.
+- Final Windows behavior/structure/ledger verification passes 10/10. Final WSL
+  shared structure/ledger verification passes 7/7.
+- JSON parsing, five-document unique phrase, thirty-one Step 583 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  12/60/114/86/81 line counts, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked
