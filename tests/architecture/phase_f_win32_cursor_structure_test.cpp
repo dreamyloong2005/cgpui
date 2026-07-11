@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 556 Wayland keyboard layout")) {
+                "\"phase_f_current_handoff\": \"Step 557 Wayland pointer enter")) {
     return 8;
   }
   return 0;

@@ -84,6 +84,12 @@ class WaylandTestCompositor {
       bool control,
       bool alt,
       bool super);
+  void request_keyboard_modifier_masks(
+      std::uint32_t depressed,
+      std::uint32_t latched,
+      std::uint32_t locked,
+      std::uint32_t group);
+  void request_keyboard_keymap_reload();
   void request_keyboard_key(std::uint32_t key, bool pressed);
   void request_keyboard_leave();
   void request_text_input_enter();
@@ -142,6 +148,8 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_pointer_cursor_set_count(
       std::uint32_t count) const;
   [[nodiscard]] bool wait_for_keyboard_modifiers_sent() const;
+  [[nodiscard]] bool wait_for_keyboard_keymap_sent_count(
+      std::uint32_t count) const;
   [[nodiscard]] bool wait_for_keyboard_key_sent() const;
   [[nodiscard]] bool wait_for_keyboard_leave_sent() const;
   [[nodiscard]] bool wait_for_text_input_enter_sent() const;

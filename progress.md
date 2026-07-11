@@ -21059,3 +21059,32 @@
 - Ledger JSON parsing, the exact Step 555 phrase appearing once in each of the
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 556 Wayland Keyboard Layout/Modifiers
+
+- Started from committed Step 555 at `2699c3a7`; only `.vscode/` remains
+  unrelated and untracked.
+- Audited XKB keymap load/reset, modifier-mask updates, effective modifier
+  extraction, group-aware UTF-8 generation, the real keyboard test, and the
+  test compositor's single-group/depressed-Shift-only coverage.
+- Added a two-group XKB test keymap, raw depressed/latched/locked/group requests,
+  runtime keymap reload, and an independent real behavior target.
+- Refined the first RED after confirming effective Control correctly maps `Q`
+  to control byte `0x11`; the precise RED then exited 10 because modifier state
+  was lost only after keymap reload.
+- Added private mask/group fields, focused XKB resource release and modifier
+  replay helpers, reload-time state restoration, and reset-time clearing.
+- New and existing real Wayland keyboard behavior pass 2/2. The total Wayland
+  source guard passes, and the Step 556 structure guard reaches the intended
+  five-document RED at exit 6 before synchronization.
+- After synchronization, Windows cross-platform structure verification passes
+  8/8 across both Wayland input guards, source inventories, three historical
+  Win32 handoff guards, and the parity ledger.
+- Final WSL focused verification passes 11/11 across real layout/modifier,
+  existing keyboard, seat transition, both Wayland input structure guards,
+  platform/Wayland inventories, historical handoff guards, and the ledger,
+  reusing `.build-wsl/master` plus `/dev/shm/cgpui` transient temp.
+- Ledger JSON parsing, the exact Step 556 phrase appearing once in each of the
+  five authority documents, keyboard/input/test line caps, and
+  `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL full
+  debug remains batched.

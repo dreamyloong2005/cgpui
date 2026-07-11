@@ -902,6 +902,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_application_seat.cpp");
   const std::string wayland_application_keyboard =
       read_source("src/platform/linux/wayland_application_keyboard.cpp");
+  const std::string wayland_keyboard =
+      read_source("src/platform/linux/wayland_keyboard.cpp");
   const std::string wayland_application_pointer =
       read_source("src/platform/linux/wayland_application_pointer.cpp");
   const std::string wayland_application_pointer_scroll =
@@ -931,6 +933,7 @@ int main(int argc, char** argv) {
       wayland_application_cursor_internal.empty() ||
       wayland_application_input.empty() || wayland_application_seat.empty() ||
       wayland_application_keyboard.empty() ||
+      wayland_keyboard.empty() ||
       wayland_application_pointer.empty() ||
       wayland_application_pointer_scroll.empty() ||
       wayland_application_cursor.empty() ||
@@ -1036,6 +1039,13 @@ int main(int argc, char** argv) {
       !contains(wayland_application_keyboard,
                 "wayland_window_text_input(")) {
     return 95;
+  }
+  if (line_count(wayland_keyboard) > 145 ||
+      !contains(wayland_keyboard, "release_xkb_resources(") ||
+      !contains(wayland_keyboard, "apply_modifier_state(") ||
+      !contains(wayland_keyboard, "keyboard.layout_group = group") ||
+      contains(wayland_application_keyboard, "xkb_state_update_mask(")) {
+    return 130;
   }
   if (line_count(wayland_application_pointer) > 80 ||
       !contains(wayland_application_pointer,

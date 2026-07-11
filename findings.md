@@ -9808,3 +9808,32 @@
   while text-input binding now follows keyboard availability so IME state is
   reset when keyboard capability disappears.
 - Phase F Step 555 adds live Wayland seat capability transitions with version-aware pointer and keyboard release, removal-time focus loss, stale input-state cleanup, and proxy reacquisition. Step 556 Wayland keyboard layout and modifier production behavior is next.
+
+## 2026-07-11 Phase F Step 556 Wayland Keyboard Layout/Modifier Audit
+
+- Production already compiles compositor-provided XKB keymaps, updates state
+  with depressed/latched/locked masks plus layout group, exposes effective
+  Shift/Control/Alt/Super modifiers, and derives key text through XKB.
+- Existing real Wayland coverage only drives depressed Shift in layout Group 0.
+  It does not prove latched or locked masks, layout-group switching, combined
+  modifier snapshots, or group-aware UTF-8 text generation.
+- Step 556 can stay within the focused keyboard/test-compositor boundary by
+  adding a second keymap group and a raw mask/group request alongside the
+  existing boolean convenience request; no public application API is needed.
+- Successful runtime keymap replacement currently creates a fresh `xkb_state`
+  and loses the active depressed/latched/locked masks plus layout group until a
+  later modifiers event arrives. The private keyboard state should retain
+  those four values and replay them immediately onto a newly compiled keymap.
+- A real compositor test can expose this by selecting Group 1 with combined
+  depressed/latched/locked modifiers, verifying text/modifier snapshots,
+  re-sending the keymap, then pressing the same key without another modifiers
+  event. The post-reload result must remain identical.
+- Effective Control intentionally transforms `Q` into control byte `0x11` in
+  XKB UTF-8 output. The final test therefore proves readable `Q` with Shift and
+  Group 1 first, then compares the combined-mask text byte-for-byte before and
+  after reload while checking modifier snapshots independently.
+- The private keyboard state now stores all four compositor values even when no
+  XKB state exists, replays them immediately after successful keymap compile,
+  preserves the prior live keymap on compile failure, and clears them only on
+  full keyboard reset/capability loss.
+- Phase F Step 556 preserves depressed, latched, and locked Wayland modifiers plus the active layout group across XKB keymap reloads, with real multi-layout text and modifier coverage. Step 557 Wayland pointer enter, leave, and motion production behavior is next.

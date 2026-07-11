@@ -40,6 +40,10 @@ struct WaylandKeyboardState {
   xkb_context* context = nullptr;
   xkb_keymap* keymap = nullptr;
   xkb_state* state = nullptr;
+  std::uint32_t mods_depressed = 0;
+  std::uint32_t mods_latched = 0;
+  std::uint32_t mods_locked = 0;
+  std::uint32_t layout_group = 0;
 };
 
 enum class WaylandCursorThemeLoadStatus {

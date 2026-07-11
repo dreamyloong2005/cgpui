@@ -1,6 +1,38 @@
 #include "wayland_internal.hpp"
 
 namespace cgpui {
+namespace {
+
+void release_xkb_resources(WaylandKeyboardState& keyboard) {
+  if (keyboard.state != nullptr) {
+    xkb_state_unref(keyboard.state);
+    keyboard.state = nullptr;
+  }
+  if (keyboard.keymap != nullptr) {
+    xkb_keymap_unref(keyboard.keymap);
+    keyboard.keymap = nullptr;
+  }
+  if (keyboard.context != nullptr) {
+    xkb_context_unref(keyboard.context);
+    keyboard.context = nullptr;
+  }
+}
+
+void apply_modifier_state(WaylandKeyboardState& keyboard) {
+  if (keyboard.state == nullptr) {
+    return;
+  }
+  xkb_state_update_mask(
+      keyboard.state,
+      keyboard.mods_depressed,
+      keyboard.mods_latched,
+      keyboard.mods_locked,
+      0,
+      0,
+      keyboard.layout_group);
+}
+
+} // namespace
 
 void wayland_keyboard_load_keymap(
     WaylandKeyboardState& keyboard,
@@ -48,25 +80,19 @@ void wayland_keyboard_load_keymap(
     return;
   }
 
-  wayland_keyboard_reset(keyboard);
+  release_xkb_resources(keyboard);
   keyboard.context = context;
   keyboard.keymap = keymap;
   keyboard.state = state;
+  apply_modifier_state(keyboard);
 }
 
 void wayland_keyboard_reset(WaylandKeyboardState& keyboard) {
-  if (keyboard.state != nullptr) {
-    xkb_state_unref(keyboard.state);
-    keyboard.state = nullptr;
-  }
-  if (keyboard.keymap != nullptr) {
-    xkb_keymap_unref(keyboard.keymap);
-    keyboard.keymap = nullptr;
-  }
-  if (keyboard.context != nullptr) {
-    xkb_context_unref(keyboard.context);
-    keyboard.context = nullptr;
-  }
+  release_xkb_resources(keyboard);
+  keyboard.mods_depressed = 0;
+  keyboard.mods_latched = 0;
+  keyboard.mods_locked = 0;
+  keyboard.layout_group = 0;
 }
 
 void wayland_keyboard_update_modifiers(
@@ -75,17 +101,11 @@ void wayland_keyboard_update_modifiers(
     std::uint32_t mods_latched,
     std::uint32_t mods_locked,
     std::uint32_t group) {
-  if (keyboard.state == nullptr) {
-    return;
-  }
-  xkb_state_update_mask(
-      keyboard.state,
-      mods_depressed,
-      mods_latched,
-      mods_locked,
-      0,
-      0,
-      group);
+  keyboard.mods_depressed = mods_depressed;
+  keyboard.mods_latched = mods_latched;
+  keyboard.mods_locked = mods_locked;
+  keyboard.layout_group = group;
+  apply_modifier_state(keyboard);
 }
 
 KeyboardModifiers wayland_keyboard_modifiers(

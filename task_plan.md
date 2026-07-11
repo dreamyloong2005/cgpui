@@ -936,7 +936,12 @@ Windows/Linux core API is stable enough for parity work.
   pointer-only, and combined capabilities; client resource release, focus
   transitions, independent proxy reacquisition, and renewed input delivery are
   observed through the production event loop.
-- In progress: Step 556 Wayland keyboard layout and modifier production behavior.
+- Completed: Phase F Step 556 preserves depressed, latched, and locked Wayland modifiers plus the active layout group across XKB keymap reloads, with real multi-layout text and modifier coverage. Step 557 Wayland pointer enter, leave, and motion production behavior is next.
+- Step 556 evidence: a real two-group XKB keymap selects Group 1, publishes
+  effective modifier snapshots for all three mask classes, reloads the keymap,
+  and proves both modifier state and generated text remain stable without a
+  second modifiers event.
+- In progress: Step 557 Wayland pointer enter, leave, and motion production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1013,6 +1018,7 @@ Windows/Linux core API is stable enough for parity work.
 | The first complete Step 554 Windows input gate passed 22/24 because the Step 552 cursor and Step 553 capture guards froze the global handoff at Step 554 | Step 554 expanded Windows verification | Preserve each historical step's surface and remaining-gap fields while advancing only their dynamic global handoff assertion to Step 555 |
 | A direct Step 555 WSL test binary launch lacked xmake's registered run environment and exited during compositor startup | Step 555 behavior RED confirmation | Use the registered `wayland_seat_capability_test/default` or `xmake run -vD` target so package/runtime environment and child exit diagnostics are preserved |
 | The first Step 555 GREEN attempt still exited 6 because local proxy destroy did not release the server resource | Step 555 capability teardown | Use version-gated Wayland pointer/keyboard `release` requests and reserve local destroy for protocol versions predating release support |
+| The first Step 556 multi-layout assertion expected printable `Q` while effective Control correctly produced byte `0x11` | Step 556 behavior RED refinement | Verify readable Group 1 text under Shift alone, then compare the combined-mask text byte-for-byte across keymap reload while asserting effective modifiers separately |
 
 ## Errors Encountered During Phase E Resume
 

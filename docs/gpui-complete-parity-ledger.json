@@ -1962,7 +1962,24 @@
       "xmake.lua"
     ],
     "phase_f_step_555_remaining_gap": "Step 556 Wayland keyboard layout and modifier production behavior",
-    "phase_f_current_handoff": "Step 556 Wayland keyboard layout and modifier production behavior"
+    "phase_f_step_556_surface": "Phase F Step 556 preserves depressed, latched, and locked Wayland modifiers plus the active layout group across XKB keymap reloads, with real multi-layout text and modifier coverage. Step 557 Wayland pointer enter, leave, and motion production behavior is next.",
+    "phase_f_step_556_sources": [
+      "src/platform/linux/wayland_input_internal.hpp",
+      "src/platform/linux/wayland_keyboard.cpp",
+      "src/platform/linux/wayland_application_keyboard.cpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_keyboard_layout_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "tests/architecture/phase_f_wayland_keyboard_layout_structure_test.cpp",
+      "tests/architecture/phase_f_wayland_seat_capability_structure_test.cpp",
+      "tests/architecture/phase_f_win32_cursor_structure_test.cpp",
+      "tests/architecture/phase_f_win32_pointer_capture_structure_test.cpp",
+      "tests/architecture/phase_f_win32_input_dpi_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_556_remaining_gap": "Step 557 Wayland pointer enter, leave, and motion production behavior",
+    "phase_f_current_handoff": "Step 557 Wayland pointer enter, leave, and motion production behavior"
   },
   "categories": [
     "application_and_app_context",

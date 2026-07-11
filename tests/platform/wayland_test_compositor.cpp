@@ -250,7 +250,12 @@ xkb_compatibility "test" {
 };
 xkb_symbols "test" {
     key <AE01> { [ 1, exclam ] };
-    key <AC01> { type="ALPHABETIC", [ a, A ] };
+    name[Group1] = "Latin";
+    name[Group2] = "Alternate";
+    key <AC01> {
+        type[Group1]="ALPHABETIC", symbols[Group1]=[ a, A ],
+        type[Group2]="ALPHABETIC", symbols[Group2]=[ q, Q ]
+    };
     key <LFSH> { [ Shift_L ] };
     modifier_map Shift { <LFSH> };
 };
@@ -397,10 +402,10 @@ struct WaylandTestCompositor::State {
   };
 
   struct KeyboardModifiersRequest {
-    bool shift = false;
-    bool control = false;
-    bool alt = false;
-    bool super = false;
+    std::uint32_t depressed = 0;
+    std::uint32_t latched = 0;
+    std::uint32_t locked = 0;
+    std::uint32_t group = 0;
   };
 
   struct TextInputDeleteSurroundingRequest {
@@ -692,16 +697,41 @@ struct WaylandTestCompositor::State {
       bool control,
       bool alt,
       bool super) {
+    std::uint32_t depressed = 0;
+    if (shift) {
+      depressed |= 1U;
+    }
+    if (control) {
+      depressed |= 4U;
+    }
+    if (alt) {
+      depressed |= 8U;
+    }
+    if (super) {
+      depressed |= 64U;
+    }
+    request_keyboard_modifier_masks(depressed, 0, 0, 0);
+  }
+
+  void request_keyboard_modifier_masks(
+      std::uint32_t depressed,
+      std::uint32_t latched,
+      std::uint32_t locked,
+      std::uint32_t group) {
     {
       std::lock_guard lock(keyboard_modifiers_mutex);
       keyboard_modifiers = KeyboardModifiersRequest{
-          .shift = shift,
-          .control = control,
-          .alt = alt,
-          .super = super,
+          .depressed = depressed,
+          .latched = latched,
+          .locked = locked,
+          .group = group,
       };
     }
     keyboard_modifiers_pending.store(true);
+  }
+
+  void request_keyboard_keymap_reload() {
+    keyboard_keymap_pending.store(true);
   }
 
   void request_keyboard_leave() {
@@ -1225,6 +1255,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_drag_drop();
   void dispatch_pending_drag_leave();
   void dispatch_pending_keyboard_modifiers();
+  void dispatch_pending_keyboard_keymap();
   void dispatch_pending_keyboard_key();
   void dispatch_pending_keyboard_leave();
   void dispatch_pending_text_input_enter();
@@ -1252,6 +1283,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_drag_motion();
       dispatch_pending_drag_drop();
       dispatch_pending_drag_leave();
+      dispatch_pending_keyboard_keymap();
       dispatch_pending_keyboard_modifiers();
       dispatch_pending_keyboard_key();
       dispatch_pending_keyboard_leave();
@@ -1278,6 +1310,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_drag_motion();
       dispatch_pending_drag_drop();
       dispatch_pending_drag_leave();
+      dispatch_pending_keyboard_keymap();
       dispatch_pending_keyboard_modifiers();
       dispatch_pending_keyboard_key();
       dispatch_pending_keyboard_leave();
@@ -1409,6 +1442,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool pointer_cursor_set{false};
   std::atomic_uint32_t pointer_cursor_set_count{0};
   std::atomic_bool keyboard_keymap_sent{false};
+  std::atomic_bool keyboard_keymap_pending{false};
+  std::atomic_uint32_t keyboard_keymap_sent_count{0};
   std::atomic_bool keyboard_modifiers_pending{false};
   std::atomic_bool keyboard_modifiers_sent{false};
   std::atomic_bool keyboard_key_pending{false};
@@ -1738,6 +1773,7 @@ void WaylandTestCompositor::State::send_keyboard_keymap() {
   close(fd);
   wl_display_flush_clients(display);
   keyboard_keymap_sent.store(true);
+  keyboard_keymap_sent_count.fetch_add(1);
 }
 
 void WaylandTestCompositor::State::handle_seat_destroyed(wl_resource* resource) {
@@ -2467,29 +2503,26 @@ void WaylandTestCompositor::State::dispatch_pending_keyboard_modifiers() {
     request = keyboard_modifiers;
   }
 
-  std::uint32_t depressed = 0;
-  if (request.shift) {
-    depressed |= 1U;
-  }
-  if (request.control) {
-    depressed |= 4U;
-  }
-  if (request.alt) {
-    depressed |= 8U;
-  }
-  if (request.super) {
-    depressed |= 64U;
-  }
-
   wl_keyboard_send_modifiers(
       keyboard_resource,
       next_keyboard_serial++,
-      depressed,
-      0,
-      0,
-      0);
+      request.depressed,
+      request.latched,
+      request.locked,
+      request.group);
   wl_display_flush_clients(display);
   keyboard_modifiers_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_keyboard_keymap() {
+  if (!keyboard_keymap_pending.exchange(false)) {
+    return;
+  }
+  if (keyboard_resource == nullptr) {
+    keyboard_keymap_pending.store(true);
+    return;
+  }
+  send_keyboard_keymap();
 }
 
 void WaylandTestCompositor::State::dispatch_pending_keyboard_key() {
@@ -3046,6 +3079,22 @@ void WaylandTestCompositor::request_keyboard_modifiers(
   state_->request_keyboard_modifiers(shift, control, alt, super);
 }
 
+void WaylandTestCompositor::request_keyboard_modifier_masks(
+    std::uint32_t depressed,
+    std::uint32_t latched,
+    std::uint32_t locked,
+    std::uint32_t group) {
+  state_->request_keyboard_modifier_masks(
+      depressed,
+      latched,
+      locked,
+      group);
+}
+
+void WaylandTestCompositor::request_keyboard_keymap_reload() {
+  state_->request_keyboard_keymap_reload();
+}
+
 void WaylandTestCompositor::request_keyboard_leave() {
   state_->request_keyboard_leave();
 }
@@ -3239,6 +3288,16 @@ bool WaylandTestCompositor::wait_for_pointer_cursor_set_count(
 
 bool WaylandTestCompositor::wait_for_keyboard_modifiers_sent() const {
   return state_->wait_for_flag(state_->keyboard_modifiers_sent);
+}
+
+bool WaylandTestCompositor::wait_for_keyboard_keymap_sent_count(
+    std::uint32_t count) const {
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+  while (state_->keyboard_keymap_sent_count.load() < count &&
+         std::chrono::steady_clock::now() < deadline) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  return state_->keyboard_keymap_sent_count.load() >= count;
 }
 
 bool WaylandTestCompositor::wait_for_keyboard_key_sent() const {
