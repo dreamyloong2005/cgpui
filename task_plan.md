@@ -980,7 +980,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 565 evidence: a real compositor observes two continuous selection
   generations and receives first then replacement payloads through both
   UTF-8 and plain-text MIME requests without writer starvation.
-- In progress: Step 566 Wayland selection read production behavior.
+- Completed: Phase F Step 566 makes Wayland selection reads dispatch-safe, processes replacement offers and payload transfer in one display transaction, and resumes source dispatch only when ownership remains. Step 567 Wayland clipboard MIME negotiation production behavior is next.
+- Step 566 evidence: a clipboard with active owned-source dispatch accepts an
+  external compositor replacement and reads its UTF-8 payload in 0.16 seconds
+  without mutex starvation, while ownership and legacy reads remain green.
+- In progress: Step 567 Wayland clipboard MIME negotiation production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

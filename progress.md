@@ -21411,3 +21411,27 @@
 - Final JSON parsing, five-document unique phrase, production/test/compositor
   line caps, fourteen Step 566 handoff guards, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 566 Wayland Selection Read
+
+- Started from committed Step 565 at `cae6ba7b`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit identifies read-side display-lock starvation when a clipboard
+  with an active owned-source dispatch thread reads a compositor replacement.
+- The focused lifecycle test built successfully and then hit controlled RED by
+  exceeding an 8-second external timeout in `read_text`; the timeout wrapper
+  exited without leaving a background test process.
+- Production now pauses source dispatch for the read transaction, performs the
+  selection roundtrip and payload receive under one display lock, and restarts
+  dispatch only when source cancellation did not remove owned selection.
+- The new read lifecycle test plus ownership replacement and existing clipboard
+  coverage pass 3/3 on WSL.
+- Added the Step 566 structure guard; platform source structure remains green
+  while the new guard reaches the intended five-document RED at exit 8.
+- Synchronized the exact Step 566 completion phrase across all five authority
+  documents, advanced the handoff to Step 567 MIME negotiation, and passed the
+  Windows shared structure/ledger group 17/17.
+- Final WSL verification passes 20/20 across three clipboard behaviors,
+  fifteen Phase F structure guards, platform source structure, and the parity
+  ledger. JSON, unique phrase, line caps, handoff inventory, and diff hygiene
+  also pass; `.vscode/` remains unrelated and untracked.

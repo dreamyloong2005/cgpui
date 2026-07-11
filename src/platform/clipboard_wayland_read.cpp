@@ -8,17 +8,25 @@ std::optional<std::string> WaylandClipboard::Connection::read_text() {
     return std::nullopt;
   }
 
-  std::lock_guard display_lock(display_mutex_);
-  if (wl_display_roundtrip(display_) == -1) {
-    return std::nullopt;
+  stop_dispatch_thread();
+  std::optional<std::string> result;
+  {
+    std::lock_guard display_lock(display_mutex_);
+    if (wl_display_roundtrip(display_) != -1) {
+      const auto mime_type = preferred_text_mime_type();
+      if (mime_type.has_value()) {
+        result = read_offer_payload(*mime_type);
+      }
+    }
   }
 
-  const auto mime_type = preferred_text_mime_type();
-  if (!mime_type.has_value()) {
-    return std::nullopt;
+  bool owns_selection = false;
+  {
+    std::lock_guard selection_lock(owned_selection_mutex_);
+    owns_selection = owned_source_ != nullptr;
   }
-
-  return read_offer_payload(*mime_type);
+  if (owns_selection) start_dispatch_thread();
+  return result;
 }
 
 std::optional<std::string>

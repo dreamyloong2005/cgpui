@@ -2153,7 +2153,20 @@
       "xmake.lua"
     ],
     "phase_f_step_565_remaining_gap": "Step 566 Wayland selection read production behavior",
-    "phase_f_current_handoff": "Step 566 Wayland selection read production behavior"
+    "phase_f_step_566_surface": "Phase F Step 566 makes Wayland selection reads dispatch-safe, processes replacement offers and payload transfer in one display transaction, and resumes source dispatch only when ownership remains. Step 567 Wayland clipboard MIME negotiation production behavior is next.",
+    "phase_f_step_566_sources": [
+      "src/platform/clipboard_wayland_internal.hpp",
+      "src/platform/clipboard_wayland_read.cpp",
+      "src/platform/clipboard_wayland_read_payload.cpp",
+      "tests/platform/wayland_clipboard_read_lifecycle_test.cpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/architecture/phase_f_wayland_clipboard_read_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_566_remaining_gap": "Step 567 Wayland clipboard MIME negotiation production behavior",
+    "phase_f_current_handoff": "Step 567 Wayland clipboard MIME negotiation production behavior"
   },
   "categories": [
     "application_and_app_context",

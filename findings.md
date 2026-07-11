@@ -10098,3 +10098,16 @@
   creates a transactional point where the new selection is flushed before the
   old source is destroyed.
 - Phase F Step 565 makes Wayland selection writes transactional, prevents display-lock starvation during replacement, preserves continuous ownership, and serves the newest payload across UTF-8 and plain-text MIME requests. Step 566 Wayland selection read production behavior is next.
+
+## 2026-07-11 Phase F Step 566 Wayland Selection Read Audit
+
+- Existing reads correctly roundtrip selection events, prefer UTF-8 text,
+  request the chosen offer through a pipe, and return empty payloads as valid
+  text, but existing tests use a fresh clipboard with no dispatch thread.
+- When the same clipboard already owns a selection, its source dispatch thread
+  continuously polls under `display_mutex_`. `read_text()` competes for that
+  mutex without pausing dispatch and can suffer the same indefinite starvation
+  fixed for replacement writes in Step 565.
+- A focused real test should own text first, accept a compositor-provided
+  replacement selection, and read its payload through the same connection.
+- Phase F Step 566 makes Wayland selection reads dispatch-safe, processes replacement offers and payload transfer in one display transaction, and resumes source dispatch only when ownership remains. Step 567 Wayland clipboard MIME negotiation production behavior is next.
