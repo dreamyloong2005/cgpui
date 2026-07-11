@@ -33,6 +33,7 @@ void tick_animation(AnimationId id);
 void update_platform_accessibility_tree();
 [[nodiscard]] PlatformAccessibilityTreeUpdate build_platform_accessibility_update()
     const;
+#include "runtime_window_accessibility_internal.hpp"
 [[nodiscard]] bool task_active(TaskId id) const;
 [[nodiscard]] bool task_complete(TaskId id) const;
 [[nodiscard]] bool task_cancelled(TaskId id) const;

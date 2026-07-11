@@ -52,6 +52,6 @@ int main() {
       "Phase F Step 575 adds a strict Win32 OLE text IDataObject, enumerates CF_UNICODETEXT through owned HGLOBAL storage, preserves emoji, CRLF, and empty text, rejects malformed UTF-8 and embedded NUL, and composes with the drag runner. Step 576 Win32 OLE file drag payload production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 7;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 600 per-window accessibility isolation")) return 8;
+  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 601 multi-window lifecycle integration and churn production behavior")) return 8;
   return 0;
 }

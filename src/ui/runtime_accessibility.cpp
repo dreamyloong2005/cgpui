@@ -22,17 +22,12 @@ void WindowRuntime::update_platform_accessibility_tree() {
       (owned_element_tree_ == nullptr && !static_element_tree_installed())) {
     return;
   }
-  PlatformAccessibilityTreeUpdate update = build_platform_accessibility_update();
-  record_platform_diagnostic(PlatformDiagnosticEvent{
-      .kind = PlatformDiagnosticKind::accessibility,
-      .backend = "runtime",
-      .operation = "update-tree",
-      .supported = true,
-      .succeeded = true,
-      .value_count = update.node_count,
-  });
-  last_platform_accessibility_update_ = update;
-  window_->update_accessibility_tree(std::move(update));
+  WindowRuntimeRecord* record =
+      find_window_runtime_record(root_window_runtime_id_);
+  if (record != nullptr) {
+    update_platform_accessibility_tree_for_record(
+        *record, accessibility_snapshot());
+  }
 }
 
 PlatformAccessibilityTreeUpdate WindowRuntime::build_platform_accessibility_update() const {

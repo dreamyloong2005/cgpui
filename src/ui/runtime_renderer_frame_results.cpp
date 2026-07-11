@@ -96,12 +96,19 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   RenderTreeKind tree_kind = RenderTreeKind::none;
   std::optional<ElementId> rendered_root_id;
   std::size_t static_node_count = 0;
+  std::optional<AccessibilityTreeSnapshot> accessibility_snapshot;
   if (view.supports_static_render()) {
     const StaticElementTreeView rendered = view.render_static(render_context);
     if (!rendered.empty() && rendered.valid()) {
       rendered_root_id = rendered.root_id();
       static_node_count = rendered.size();
       tree_kind = RenderTreeKind::static_element_tree;
+      accessibility_snapshot = static_accessibility_snapshot_for(
+          rendered,
+          AccessibilitySnapshotOptions{
+              .focused_element_id =
+                  record.input.keyboard_focus_element_owner,
+          });
     }
   }
   if (tree_kind != RenderTreeKind::static_element_tree) {
@@ -118,6 +125,10 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   };
   if (after_render_callback_) {
     after_render_callback_(context_for_record(record), *last_render_record_);
+  }
+  if (accessibility_snapshot.has_value()) {
+    update_platform_accessibility_tree_for_record(
+        record, *accessibility_snapshot);
   }
 
   auto result = render_view(

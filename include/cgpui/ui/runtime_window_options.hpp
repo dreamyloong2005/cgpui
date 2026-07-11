@@ -3,6 +3,7 @@
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
+#include "cgpui/platform/platform_accessibility.hpp"
 
 #include <memory>
 #include <optional>
@@ -47,6 +48,7 @@ struct WindowRuntimeRecord {
   std::optional<EventRoute> event_route;
   EventResult last_event_result{};
   std::optional<EventDispatchRecord> last_event_dispatch;
+  std::optional<PlatformAccessibilityTreeUpdate> last_accessibility_update;
   PlatformWindow* window = nullptr;
   Renderer* renderer = nullptr;
   bool owns_window = false;

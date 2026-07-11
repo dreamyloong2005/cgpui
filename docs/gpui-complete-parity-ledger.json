@@ -2620,7 +2620,26 @@
       "xmake.lua"
     ],
     "phase_f_step_599_remaining_gap": "Step 600 per-window accessibility isolation production behavior",
-    "phase_f_current_handoff": "Step 600 per-window accessibility isolation production behavior"
+    "phase_f_step_600_surface": "Phase F Step 600 submits accessibility trees and live updates per runtime window, derives child snapshots from their own static render trees and focus state, and preserves root accessibility history across child frames. Step 601 multi-window lifecycle integration and churn production behavior is next.",
+    "phase_f_step_600_sources": [
+      "include/cgpui/ui/runtime_window_options.hpp",
+      "src/ui/runtime_accessibility.cpp",
+      "src/ui/runtime_window_accessibility_internal.hpp",
+      "src/ui/runtime_window_accessibility.cpp",
+      "src/ui/runtime_static_rendering_internal.hpp",
+      "src/ui/runtime_static_accessibility.cpp",
+      "src/ui/runtime_renderer_frame_results.cpp",
+      "src/ui/runtime_window_activation.cpp",
+      "src/ui/runtime_window_records.cpp",
+      "src/ui/runtime_run.cpp",
+      "src/ui/window_runtime_internal.hpp",
+      "tests/ui/window_runtime_multi_window_accessibility_test.cpp",
+      "tests/architecture/phase_f_multi_window_accessibility_isolation_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_600_remaining_gap": "Step 601 multi-window lifecycle integration and churn production behavior",
+    "phase_f_current_handoff": "Step 601 multi-window lifecycle integration and churn production behavior"
   },
   "categories": [
     "application_and_app_context",

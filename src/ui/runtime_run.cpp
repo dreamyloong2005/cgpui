@@ -20,6 +20,7 @@ int WindowRuntime::run(
     root_record->redraw_scheduled = false;
     root_record->input = {};
     reset_event_state_for_record(*root_record);
+    reset_accessibility_state_for_record(*root_record);
     root_record->window = nullptr;
     root_record->renderer = nullptr;
     root_record->active = false;
@@ -58,7 +59,6 @@ int WindowRuntime::run(
   render_sequence_ = 0;
   frame_index_ = 0;
   applied_ime_text_input_placement_.reset();
-  last_platform_accessibility_update_.reset();
   platform_diagnostics_.clear();
   platform_diagnostic_sequence_ = 0;
   sync_root_input_record();

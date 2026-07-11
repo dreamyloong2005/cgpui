@@ -1908,6 +1908,8 @@ int main() {
       "src/ui/runtime_element_tree.cpp",
       "src/ui/runtime_entities.cpp",
       "src/ui/runtime_accessibility.cpp",
+      "src/ui/runtime_window_accessibility.cpp",
+      "src/ui/runtime_window_accessibility_internal.hpp",
       "src/ui/runtime_events.cpp",
       "src/ui/runtime_event_control.cpp",
       "src/ui/runtime_event_dispatch.cpp",
@@ -3648,6 +3650,10 @@ int main() {
 
   const std::string runtime_accessibility_source =
       read_source("src/ui/runtime_accessibility.cpp");
+  const std::string runtime_window_accessibility_source =
+      read_source("src/ui/runtime_window_accessibility.cpp");
+  const std::string runtime_window_accessibility_header =
+      read_source("src/ui/runtime_window_accessibility_internal.hpp");
   if (line_count(runtime_accessibility_source) > 100 ||
       !contains(runtime_accessibility_source,
                 "void WindowRuntime::update_platform_accessibility_tree(") ||
@@ -3658,6 +3664,16 @@ int main() {
       contains(runtime_accessibility_source, "install_native_menu(") ||
       contains(runtime_accessibility_source,
                "RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot(")) {
+    return 64;
+  }
+  if (runtime_window_accessibility_source.empty() ||
+      runtime_window_accessibility_header.empty() ||
+      line_count(runtime_window_accessibility_source) > 60 ||
+      line_count(runtime_window_accessibility_header) > 8 ||
+      !contains(runtime_window_accessibility_source,
+                "WindowRuntime::update_platform_accessibility_tree_for_record(") ||
+      !contains(runtime_window_accessibility_source,
+                "WindowRuntime::reset_accessibility_state_for_record(")) {
     return 64;
   }
 

@@ -1115,9 +1115,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 599 evidence: focused root/child coverage verifies app-wide redraw,
   target-only set/clear redraw, child context override lookup, root override
   isolation, and app-token fallback.
-- In progress: Step 600 per-window accessibility isolation production behavior.
-- Step 600 plan: store and submit accessibility snapshots per runtime window,
-  using each record's root view and platform window without root-state overwrite.
+- Completed: Phase F Step 600 submits accessibility trees and live updates per runtime window, derives child snapshots from their own static render trees and focus state, and preserves root accessibility history across child frames. Step 601 multi-window lifecycle integration and churn production behavior is next.
+- Step 600 evidence: focused root/child static-tree coverage verifies native
+  submission isolation, per-window focus, independent update history, and
+  child-only text live updates after interleaved frames.
+- In progress: Step 601 multi-window lifecycle integration and churn production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

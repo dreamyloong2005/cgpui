@@ -72,6 +72,7 @@ void WindowRuntime::cleanup_closed_additional_window(
   record.redraw_scheduled = false;
   record.input = {};
   reset_event_state_for_record(record);
+  reset_accessibility_state_for_record(record);
   request_platform_wakeup();
 }
 
@@ -101,6 +102,7 @@ void WindowRuntime::deactivate_native_additional_windows() {
     record.redraw_scheduled = false;
     record.input = {};
     reset_event_state_for_record(record);
+    reset_accessibility_state_for_record(record);
   }
   native_additional_windows_.clear();
   retired_native_windows_.clear();

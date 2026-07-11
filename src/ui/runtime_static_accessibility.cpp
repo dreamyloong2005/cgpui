@@ -22,17 +22,22 @@ AccessibilityRole accessibility_role_for(StaticElementKind kind) {
 
 AccessibilityTreeSnapshot WindowRuntime::static_accessibility_snapshot(
     AccessibilitySnapshotOptions options) const {
-  AccessibilityTreeSnapshot snapshot;
   const StaticElementTreeView* tree = static_element_tree();
   if (tree == nullptr) {
-    return snapshot;
+    return {};
   }
+  return static_accessibility_snapshot_for(*tree, options);
+}
 
-  snapshot.root_element_id = tree->root_id();
-  snapshot.nodes.reserve(tree->size());
-  tree->for_each_preorder([&](const StaticElementNode& node) {
+AccessibilityTreeSnapshot WindowRuntime::static_accessibility_snapshot_for(
+    const StaticElementTreeView& tree,
+    AccessibilitySnapshotOptions options) const {
+  AccessibilityTreeSnapshot snapshot;
+  snapshot.root_element_id = tree.root_id();
+  snapshot.nodes.reserve(tree.size());
+  tree.for_each_preorder([&](const StaticElementNode& node) {
     std::vector<ElementId> children;
-    const std::span<const ElementId> child_ids = tree->children(node.id);
+    const std::span<const ElementId> child_ids = tree.children(node.id);
     children.reserve(child_ids.size());
     for (ElementId child_id : child_ids) {
       children.push_back(child_id);

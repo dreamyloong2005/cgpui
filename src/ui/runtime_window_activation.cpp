@@ -5,6 +5,7 @@ namespace cgpui {
 void WindowRuntime::activate_native_window_for_record(
     WindowRuntimeRecord& record) {
   record.native_window_error.reset();
+  reset_accessibility_state_for_record(record);
   WindowRuntimeRecord* parent_record =
       find_window_runtime_record(record.parent_runtime_id);
   if (parent_record == nullptr) {

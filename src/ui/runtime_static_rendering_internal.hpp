@@ -17,3 +17,6 @@ void clear_static_element_tree();
     ElementId element_id) const;
 [[nodiscard]] AccessibilityTreeSnapshot static_accessibility_snapshot(
     AccessibilitySnapshotOptions options) const;
+[[nodiscard]] AccessibilityTreeSnapshot static_accessibility_snapshot_for(
+    const StaticElementTreeView& tree,
+    AccessibilitySnapshotOptions options) const;

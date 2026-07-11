@@ -22287,3 +22287,41 @@
 - Final JSON parsing, five-document unique phrase, stale-handoff audit, focused
   line caps, warning-free Linux rebuild, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-12 Phase F Step 600 Per-Window Accessibility Isolation
+
+- Resumed from committed Step 599 at `6c8180e5`; the only unrelated worktree
+  state is untracked `.vscode/`.
+- Confirmed the active `/goal` remains Phase F completion and restored the
+  persistent plan with the `planning-with-files` workflow.
+- Audited root/child frame submission, static accessibility conversion,
+  window-record lifecycle, existing accessibility coverage, and xmake/source
+  structure ownership.
+- Planned a standalone root/child static-tree behavior test followed by a
+  focused per-window accessibility module and lifecycle resets.
+- Added the standalone behavior target and confirmed compile RED: MSVC reports
+  that `WindowRuntimeRecord` has no `last_accessibility_update` member at every
+  root/child history assertion.
+- The first implementation patch partially applied before an exact-context
+  mismatch in `runtime_window_options.hpp`; subsequent focused patches used
+  `rg`-verified anchors and completed the intended changes.
+- The first structure build command passed two targets to `xmake build`, which
+  accepts one target; rerun the structure targets separately.
+- Added per-record update history, generalized static snapshot conversion, and
+  focused per-window submission/reset ownership without growing the 260-line
+  private runtime header.
+- The new behavior plus root accessibility, static rendering, and Steps
+  596-599 multi-window regressions pass 7/7 on Windows.
+- Added the Step 600 structure guard and global UI source inventory; the guard
+  reached the intended five-document RED at exit 10 while the global structure
+  test remained green.
+- Synchronized the exact Step 600 completion phrase across all five authority
+  documents and advanced forty-eight historical dynamic handoff guards; the
+  new guard brings the Step 601 total to forty-nine with zero stale Step 600
+  dynamic handoffs.
+- Final Windows behavior/structure/header/ledger verification passes 12/12.
+  Final WSL shared verification passes 12/12, followed by a clean 2/2 rerun
+  after removing an unused private helper.
+- JSON parsing, five-document unique phrase, focused 260/158/40/239 line
+  budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
+  untracked; WSL full debug remains batched.

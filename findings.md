@@ -10591,3 +10591,20 @@
   schedule active child records through their own redraw flags/windows, and
   retain redraw coalescing.
 - Phase F Step 599 schedules app-theme redraws across all active windows, confines window-theme redraws to the target runtime record, and preserves per-window token fallback in child contexts. Step 600 per-window accessibility isolation production behavior is next.
+
+## 2026-07-12 Phase F Step 600 Per-Window Accessibility Isolation
+
+- Root rendering builds accessibility from the installed root dynamic/static
+  tree, submits only through `window_`, and compares against the single
+  `last_platform_accessibility_update_` compatibility value.
+- Child rendering already receives its own valid `StaticElementTreeView`, but
+  drops that tree after render metadata and never calls
+  `PlatformWindow::update_accessibility_tree`.
+- The focused ownership boundary is a per-window accessibility leaf: each
+  `WindowRuntimeRecord` retains its previous platform update, child frames
+  derive snapshots from their local static tree plus local keyboard focus, and
+  root submission mirrors the compatibility history into the root record.
+- Activation, close cleanup, run reset, and run deactivation must clear the
+  matching record history so live-update comparison never crosses native
+  window lifetimes.
+- Phase F Step 600 submits accessibility trees and live updates per runtime window, derives child snapshots from their own static render trees and focus state, and preserves root accessibility history across child frames. Step 601 multi-window lifecycle integration and churn production behavior is next.
