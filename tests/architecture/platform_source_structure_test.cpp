@@ -215,6 +215,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_cursor_internal.hpp",
+      "src/platform/win32/win32_cursor.cpp",
       "src/platform/win32/win32_dead_key_internal.hpp",
       "src/platform/win32/win32_dead_key.cpp",
       "src/platform/win32/win32_keyboard_key_internal.hpp",
@@ -232,6 +234,9 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_window_ime.cpp",
       "src/platform/win32/win32_window_ime_placement.cpp",
       "src/platform/win32/win32_window_text.cpp",
+      "src/platform/win32/win32_window_cursor.cpp",
+      "src/platform/win32/win32_window_proc_cursor_internal.hpp",
+      "src/platform/win32/win32_window_proc_cursor.cpp",
       "src/platform/win32/win32_window_proc_text.cpp",
       "src/platform/win32/win32_window_close.cpp",
       "src/platform/win32/win32_window_display_internal.hpp",
@@ -910,6 +915,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/win32/win32_drag_drop_ole_payload.cpp");
   const std::string win32_input_helpers =
       read_source("src/platform/win32/win32_input_helpers.cpp");
+  const std::string win32_cursor =
+      read_source("src/platform/win32/win32_cursor.cpp");
   const std::string win32_font_discovery =
       read_source("src/platform/win32/win32_font_discovery.cpp");
   const std::string win32_window_ime =
@@ -946,7 +953,8 @@ int main(int argc, char** argv) {
       !contains(win32_drag_drop_ole_payload, "CF_HDROP") ||
       contains(win32_drag_drop_helpers, "KeyboardModifiers current_modifiers()") ||
       !contains(win32_input_helpers, "KeyboardModifiers current_modifiers()") ||
-      !contains(win32_input_helpers, "const wchar_t* cursor_id_for(") ||
+      contains(win32_input_helpers, "cursor_id_for(") ||
+      !contains(win32_cursor, "win32_system_cursor_id(") ||
       !contains(win32_input_helpers, "win32_window_style_for(") ||
       contains(win32_input_helpers,
                "DragDropPayload drag_payload_from_ole_data_object(")) {

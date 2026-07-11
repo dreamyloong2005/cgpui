@@ -22,6 +22,13 @@ enum class CursorShape {
   crosshair,
   resize_left_right,
   resize_up_down,
+  resize_north_west_south_east,
+  resize_north_east_south_west,
+  resize_all,
+  wait,
+  progress,
+  help,
+  up_arrow,
   not_allowed,
 };
 

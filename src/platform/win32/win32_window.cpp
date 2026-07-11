@@ -24,6 +24,7 @@ Win32Window::~Win32Window() {
 
 void Win32Window::attach(HWND hwnd) {
   hwnd_ = hwnd;
+  refresh_cursor(true);
   register_drop_target(hwnd);
 }
 
@@ -47,18 +48,6 @@ void Win32Window::request_redraw() {
 void Win32Window::set_title(std::string_view title) {
   const auto wide_title = widen(title);
   SetWindowTextW(hwnd_, wide_title.c_str());
-}
-
-void Win32Window::set_cursor(CursorShape cursor_shape) {
-  HCURSOR cursor = LoadCursorW(nullptr, cursor_id_for(cursor_shape));
-  if (cursor == nullptr) {
-    cursor = LoadCursorW(nullptr, cursor_id_for(CursorShape::default_arrow));
-  }
-  current_cursor_ = cursor;
-  if (hwnd_ != nullptr) {
-    SetClassLongPtrW(hwnd_, GCLP_HCURSOR, reinterpret_cast<LONG_PTR>(cursor));
-    SetCursor(cursor);
-  }
 }
 
 void Win32Window::set_ime_text_input_placement(

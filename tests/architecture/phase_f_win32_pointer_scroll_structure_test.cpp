@@ -76,7 +76,7 @@ int main() {
                 "target(\"phase_f_win32_pointer_scroll_structure_test\")")) {
     return 3;
   }
-  if (line_count(pointer_header) > 50 || line_count(decoder_header) > 20 ||
+  if (line_count(pointer_header) > 60 || line_count(decoder_header) > 20 ||
       line_count(decoder) > 30 || line_count(proc) > 60 ||
       line_count(events) > 105 || line_count(behavior) > 90) {
     return 4;

@@ -42,6 +42,7 @@ class Win32WindowMessageTarget {
       Point delta,
       bool precise,
       LPARAM lparam) = 0;
+  virtual void refresh_cursor(bool reload_system_cursor) = 0;
   virtual void key_event(KeyboardKey event) = 0;
   virtual void dead_key(wchar_t character) = 0;
   virtual void text_input(Win32TextInputMessage message) = 0;

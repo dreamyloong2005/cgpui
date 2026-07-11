@@ -20897,3 +20897,38 @@
 - Ledger JSON parsing, the exact Step 551 phrase appearing once in each of the
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 552 Win32 Cursors
+
+- Audited the narrow seven-shape Win32 mapping and planned focused ownership for
+  system-resource mapping, per-window cursor application, and cursor messages.
+- Added public standard-system cursor variants and real HWND coverage for every
+  new mapping, client `WM_SETCURSOR` reapplication, and `WM_SETTINGCHANGE`
+  cursor-theme refresh.
+- The first RED build used generic `IDC_*` aliases with explicit `LoadCursorW`
+  and a constexpr pointer table, which MSVC rejected. The test now uses the
+  stable numeric system resource ids through `MAKEINTRESOURCEW`.
+- The corrected RED run exited 4 on the first unmapped system cursor. Added
+  focused resource/window/procedure modules; initial Windows cursor behavior
+  and the existing aggregate input regression now pass 2/2.
+- The first structure run reached the intended new-guard document gate but the
+  old window-source test exited 85 because `win32_internal.hpp` reached 82
+  lines. The cursor procedure declaration now lives in its own private header.
+- Registered all focused cursor boundaries and added the Step 552 structure
+  guard. It reached the intended five-document RED gate at exit 6 after both
+  platform and Win32 source inventories passed.
+- Synchronized the exact Step 552 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; Step 553 pointer capture/drag
+  behavior is now the active handoff.
+- The first expanded Windows gate passed 17/18: the historical Step 548 guard
+  retained a 50-line pointer-header cap after the new cursor shapes. Direct
+  execution confirmed exit 4; its cap now matches Step 552's 60-line limit.
+- Final Windows focused verification passes 18/18 across system cursor behavior,
+  all prior Win32 input behavior, runtime/modifier regressions, six input
+  structure guards, source inventories, headers, and the parity ledger.
+- Final WSL focused verification passes 13/13 across real Wayland pointer/cursor
+  behavior, shared runtime consumers, all six cross-platform Win32 input guards,
+  Wayland/platform source inventories, headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 552 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

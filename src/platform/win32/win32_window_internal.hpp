@@ -18,7 +18,6 @@ class Win32Window final
       PlatformEventCallback callback,
       WindowState state);
   ~Win32Window() override;
-
   void attach(HWND hwnd) override;
   void detach() override;
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
@@ -59,6 +58,7 @@ class Win32Window final
       std::uint8_t click_count,
       LPARAM lparam) override;
   void pointer_scrolled(Point delta, bool precise, LPARAM lparam) override;
+  void refresh_cursor(bool reload_system_cursor) override;
   void key_event(KeyboardKey event) override;
   void dead_key(wchar_t character) override;
   void text_input(Win32TextInputMessage message) override;
@@ -91,6 +91,7 @@ class Win32Window final
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
   HCURSOR current_cursor_ = nullptr;
+  CursorShape current_cursor_shape_ = CursorShape::default_arrow;
   PlatformEventCallback callback_;
   WindowState state_;
   Win32WindowDisplayCommandState display_command_state_;

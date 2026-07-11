@@ -916,7 +916,11 @@ Windows/Linux core API is stable enough for parity work.
   pairs, validates UTF-32 input, answers Unicode capability probes, clears stale
   state on system characters/focus loss, and publishes through a dedicated text
   window-procedure module.
-- In progress: Step 552 Win32 cursor theme and system cursor production behavior.
+- Completed: Phase F Step 552 adds production Win32 system cursors with expanded public shapes, focused system-resource mapping, client WM_SETCURSOR reapplication, and settings/theme refresh. Step 553 Win32 pointer capture and drag production behavior is next.
+- Step 552 evidence: public system shapes map in a focused resource module;
+  windows retain the logical shape, reapply it for client `WM_SETCURSOR`, and
+  reload shared cursor handles after cursor/theme settings change.
+- In progress: Step 553 Win32 pointer capture and drag production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -973,6 +977,9 @@ Windows/Linux core API is stable enough for parity work.
 | The first Step 549 WSL aggregate returned only partial build output; direct confirmation found the new guard missing and the prior guard stale | Step 549 WSL verification | Build the Step 549 guard explicitly, then execute all ten built targets sequentially with explicit paths and source-root environment |
 | The first Step 550 Windows expanded gate passed 13/14 because the historical Step 549 guard still capped the focused keyboard procedure at 40 lines | Step 550 Windows expanded verification | Confirm child exit 4 and align the historical procedure cap to the Step 550 guard's still-focused 50-line limit |
 | The first Step 550 WSL xmake probe omitted the required root opt-in | Step 550 WSL environment probe | Keep the D-drive cache environment and pass `--root` after the xmake task for every WSL invocation |
+| The first Step 552 RED test used generic `IDC_*` pointer macros with explicit `LoadCursorW` and a constexpr pointer table | Step 552 cursor behavior RED | Use the stable numeric system cursor resource ids with `MAKEINTRESOURCEW` at the call site |
+| The first Step 552 structure run left `win32_internal.hpp` at 82 lines and failed the historical 80-line guard | Step 552 cursor structure | Move the cursor-procedure declaration into a focused private header and register that boundary in both source inventories |
+| The first Step 552 expanded Windows gate passed 17/18 because the historical Step 548 guard capped `event_pointer.hpp` at 50 lines | Step 552 Windows expanded verification | Confirm child exit 4 and align the historical public pointer-header cap with the Step 552 guard's 60-line limit |
 
 ## Errors Encountered During Phase E Resume
 

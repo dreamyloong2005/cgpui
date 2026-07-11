@@ -678,6 +678,7 @@ consume C: drive space again.
 - Phase F Step 549 adds real Win32 key and system-key decoding with scan-code, repeat, extended-key, and system-message metadata through a focused keyboard-key decoder. Step 550 Win32 dead-key production behavior is next.
 - Phase F Step 550 adds explicit Win32 dead/system-dead character suppression with pending composition state, composed TextInput metadata, and focus-loss reset through focused dead-key and window-text modules. Step 551 Win32 text-input production behavior is next.
 - Phase F Step 551 adds production Win32 text input with UTF-16 surrogate pairing, WM_UNICHAR negotiation and codepoint delivery, system-character suppression, and focus-loss state reset through focused text-input and window-procedure modules. Step 552 Win32 cursor theme and system cursor production behavior is next.
+- Phase F Step 552 adds production Win32 system cursors with expanded public shapes, focused system-resource mapping, client WM_SETCURSOR reapplication, and settings/theme refresh. Step 553 Win32 pointer capture and drag production behavior is next.
 
 ## Categories
 

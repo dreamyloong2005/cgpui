@@ -1,4 +1,5 @@
 #include "win32_internal.hpp"
+#include "win32_window_proc_cursor_internal.hpp"
 
 namespace cgpui {
 
@@ -24,6 +25,8 @@ LRESULT CALLBACK win32_window_proc(
           lparam,
           window,
           result) ||
+      win32_window_proc_handle_cursor(
+          message, wparam, lparam, window, result) ||
       win32_window_proc_handle_keyboard(
           message, wparam, lparam, window, result) ||
       win32_window_proc_handle_text(message, wparam, window, result)) {

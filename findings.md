@@ -9704,3 +9704,15 @@
   C0/DEL control `WM_CHAR` values must remain keyboard events rather than being
   published a second time as insertable text.
 - Phase F Step 551 adds production Win32 text input with UTF-16 surrogate pairing, WM_UNICHAR negotiation and codepoint delivery, system-character suppression, and focus-loss state reset through focused text-input and window-procedure modules. Step 552 Win32 cursor theme and system cursor production behavior is next.
+
+## 2026-07-11 Phase F Step 552 Win32 Cursor Audit
+
+- The current Win32 helper maps only seven cursor shapes and keeps cursor
+  resource ownership inside the mixed keyboard/cursor input-helper file.
+- Standard system coverage is missing diagonal resize, all-direction resize,
+  wait, app-starting/progress, help, and up-arrow cursors.
+- Updating only the class cursor and current thread cursor is insufficient:
+  client `WM_SETCURSOR` must reapply the active shape after Windows changes it.
+- System cursor/theme changes must reload the active shared system cursor and
+  update both the class cursor and current client cursor.
+- Phase F Step 552 adds production Win32 system cursors with expanded public shapes, focused system-resource mapping, client WM_SETCURSOR reapplication, and settings/theme refresh. Step 553 Win32 pointer capture and drag production behavior is next.

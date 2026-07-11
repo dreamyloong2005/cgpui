@@ -1887,7 +1887,27 @@
       "xmake.lua"
     ],
     "phase_f_step_551_remaining_gap": "Step 552 Win32 cursor theme and system cursor production behavior",
-    "phase_f_current_handoff": "Step 552 Win32 cursor theme and system cursor production behavior"
+    "phase_f_step_552_surface": "Phase F Step 552 adds production Win32 system cursors with expanded public shapes, focused system-resource mapping, client WM_SETCURSOR reapplication, and settings/theme refresh. Step 553 Win32 pointer capture and drag production behavior is next.",
+    "phase_f_step_552_sources": [
+      "include/cgpui/core/event_pointer.hpp",
+      "src/platform/win32/win32_cursor_internal.hpp",
+      "src/platform/win32/win32_cursor.cpp",
+      "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window.cpp",
+      "src/platform/win32/win32_window_cursor.cpp",
+      "src/platform/win32/win32_window_proc.cpp",
+      "src/platform/win32/win32_window_proc_cursor_internal.hpp",
+      "src/platform/win32/win32_window_proc_cursor.cpp",
+      "tests/platform/win32_cursor_production_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/phase_f_win32_cursor_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_552_remaining_gap": "Step 553 Win32 pointer capture and drag production behavior",
+    "phase_f_current_handoff": "Step 553 Win32 pointer capture and drag production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -45,6 +45,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_cursor_internal.hpp",
+      "src/platform/win32/win32_cursor.cpp",
       "src/platform/win32/win32_dead_key_internal.hpp",
       "src/platform/win32/win32_dead_key.cpp",
       "src/platform/win32/win32_keyboard_key_internal.hpp",
@@ -65,6 +67,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_display.cpp",
       "src/platform/win32/win32_window_position.cpp",
       "src/platform/win32/win32_window_size.cpp",
+      "src/platform/win32/win32_window_cursor.cpp",
       "src/platform/win32/win32_window_drag_drop.cpp",
       "src/platform/win32/win32_window_events.cpp",
       "src/platform/win32/win32_window_text.cpp",
@@ -76,6 +79,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_proc_drag.cpp",
       "src/platform/win32/win32_window_proc_lifecycle.cpp",
       "src/platform/win32/win32_window_proc_pointer.cpp",
+      "src/platform/win32/win32_window_proc_cursor_internal.hpp",
+      "src/platform/win32/win32_window_proc_cursor.cpp",
       "src/platform/win32/win32_window_proc_keyboard.cpp",
       "src/platform/win32/win32_window_proc_text.cpp",
   };
@@ -336,6 +341,8 @@ int main() {
       read_source("src/platform/win32/win32_drag_drop_ole_payload.cpp");
   const std::string win32_input_helpers =
       read_source("src/platform/win32/win32_input_helpers.cpp");
+  const std::string win32_cursor =
+      read_source("src/platform/win32/win32_cursor.cpp");
   const std::string win32_font_discovery =
       read_source("src/platform/win32/win32_font_discovery.cpp");
   const std::string win32_native =
@@ -348,6 +355,8 @@ int main() {
       read_source("src/platform/win32/win32_window_chrome.cpp");
   const std::string win32_window_size =
       read_source("src/platform/win32/win32_window_size.cpp");
+  const std::string win32_window_cursor =
+      read_source("src/platform/win32/win32_window_cursor.cpp");
   const std::string win32_window_drag_drop =
       read_source("src/platform/win32/win32_window_drag_drop.cpp");
   const std::string win32_window_events =
@@ -366,6 +375,8 @@ int main() {
       read_source("src/platform/win32/win32_window_proc_lifecycle.cpp");
   const std::string win32_window_proc_pointer =
       read_source("src/platform/win32/win32_window_proc_pointer.cpp");
+  const std::string win32_window_proc_cursor =
+      read_source("src/platform/win32/win32_window_proc_cursor.cpp");
   const std::string win32_pointer_button =
       read_source("src/platform/win32/win32_pointer_button.cpp");
   const std::string win32_pointer_scroll =
@@ -389,17 +400,19 @@ int main() {
       win32_string.empty() || win32_drag_drop_helpers.empty() ||
       win32_drag_drop_payload.empty() ||
       win32_drag_drop_ole_payload.empty() ||
-      win32_input_helpers.empty() || win32_font_discovery.empty() ||
+      win32_input_helpers.empty() || win32_cursor.empty() ||
+      win32_font_discovery.empty() ||
       win32_native.empty() ||
       win32_ole_drop_target.empty() || win32_window.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
+      win32_window_cursor.empty() ||
       win32_window_drag_drop.empty() || win32_window_events.empty() ||
       win32_window_text.empty() ||
       win32_window_ime.empty() || win32_window_ime_placement.empty() ||
       win32_window_proc.empty() ||
       win32_window_proc_drag.empty() ||
       win32_window_proc_lifecycle.empty() ||
-      win32_window_proc_pointer.empty() ||
+      win32_window_proc_pointer.empty() || win32_window_proc_cursor.empty() ||
       win32_pointer_button.empty() || win32_pointer_scroll.empty() ||
       win32_keyboard_key.empty() || win32_dead_key.empty() ||
       win32_text_input.empty() || win32_window_proc_keyboard.empty() ||
@@ -505,7 +518,8 @@ int main() {
     return 86;
   }
   if (!contains(win32_input_helpers, "KeyboardModifiers current_modifiers()") ||
-      !contains(win32_input_helpers, "const wchar_t* cursor_id_for(") ||
+      contains(win32_input_helpers, "cursor_id_for(") ||
+      !contains(win32_cursor, "win32_system_cursor_id(") ||
       !contains(win32_input_helpers, "DWORD win32_window_style_for(") ||
       contains(win32_input_helpers,
                "DragDropPayload drag_payload_from_ole_data_object(")) {
@@ -640,6 +654,8 @@ int main() {
       !contains(win32_pointer_button, "WM_LBUTTONDBLCLK") ||
       !contains(win32_pointer_scroll, "WM_MOUSEWHEEL") ||
       !contains(win32_pointer_scroll, "WM_MOUSEHWHEEL") ||
+      !contains(win32_window_cursor, "Win32Window::refresh_cursor(") ||
+      !contains(win32_window_proc_cursor, "WM_SETCURSOR") ||
       !contains(win32_window_proc_keyboard, "decode_win32_keyboard_key(") ||
       !contains(win32_window_proc_keyboard, "decode_win32_dead_key(") ||
       !contains(win32_keyboard_key, "WM_KEYDOWN") ||

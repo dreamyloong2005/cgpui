@@ -12,26 +12,6 @@ KeyboardModifiers current_modifiers() {
   };
 }
 
-const wchar_t* cursor_id_for(CursorShape cursor_shape) {
-  switch (cursor_shape) {
-    case CursorShape::pointing_hand:
-      return MAKEINTRESOURCEW(32649);
-    case CursorShape::text:
-      return MAKEINTRESOURCEW(32513);
-    case CursorShape::crosshair:
-      return MAKEINTRESOURCEW(32515);
-    case CursorShape::resize_left_right:
-      return MAKEINTRESOURCEW(32644);
-    case CursorShape::resize_up_down:
-      return MAKEINTRESOURCEW(32645);
-    case CursorShape::not_allowed:
-      return MAKEINTRESOURCEW(32648);
-    case CursorShape::default_arrow:
-      return MAKEINTRESOURCEW(32512);
-  }
-  return MAKEINTRESOURCEW(32512);
-}
-
 DWORD win32_window_style_for(const WindowChromeOptions& chrome) {
   DWORD style = chrome.decorations ? WS_OVERLAPPEDWINDOW : WS_POPUP;
   if (!chrome.titlebar_visible) {
