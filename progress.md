@@ -21674,6 +21674,33 @@
   44/121/57/57 line budgets, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 576 Win32 OLE File Payload
+
+- Started from committed Step 575 at `6b4c56dd`; only unrelated untracked
+  `.vscode/` remains.
+- Assigned strict path conversion, overflow-safe wide `DROPFILES` construction,
+  read-only `CF_HDROP` COM methods, and runner composition to a focused private
+  Win32 file data-object leaf.
+- Added `Win32OleFileDataObject` and `run_win32_ole_file_drag(...)` in focused
+  private header/source files. The COM object exposes and enumerates `CF_HDROP`
+  through an owned wide `DROPFILES` HGLOBAL.
+- The focused Windows test covers COM identity/refcount, format rejection,
+  multi-file ordering, Unicode paths, move effect, empty list/path, malformed
+  UTF-8, embedded NUL, and runner bypass on invalid input.
+- Initial Windows behavior/source/structure verification passes 5/5 across file
+  and text data objects, the Step 572 source, Win32 source structure, and
+  platform source structure.
+- Added the Step 576 structure guard; it reached the intended five-document RED
+  while the Step 575 and platform structure guards remained green.
+- Synchronized the exact Step 576 completion phrase across all five authority
+  documents and advanced twenty-five structure handoff guards to Step 577.
+- Final Windows behavior/structure/ledger verification passes 8/8. Final WSL
+  shared structure/ledger verification passes 5/5.
+- JSON parsing, five-document unique phrase, twenty-five Step 577 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  46/146/70/57 line budgets, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

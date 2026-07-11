@@ -2283,7 +2283,18 @@
       "xmake.lua"
     ],
     "phase_f_step_575_remaining_gap": "Step 576 Win32 OLE file drag payload production behavior",
-    "phase_f_current_handoff": "Step 576 Win32 OLE file drag payload production behavior"
+    "phase_f_step_576_surface": "Phase F Step 576 adds a strict Win32 OLE file IDataObject, enumerates CF_HDROP through an owned wide DROPFILES HGLOBAL, preserves Unicode multi-file ordering, rejects invalid or empty paths before drag, and composes with the drag runner. Step 577 Wayland non-local URI-list drag policy production behavior is next.",
+    "phase_f_step_576_sources": [
+      "src/platform/win32/win32_ole_file_data_object_internal.hpp",
+      "src/platform/win32/win32_ole_file_data_object.cpp",
+      "tests/platform/win32_ole_file_data_object_test.cpp",
+      "tests/architecture/phase_f_win32_ole_file_payload_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_576_remaining_gap": "Step 577 Wayland non-local URI-list drag policy production behavior",
+    "phase_f_current_handoff": "Step 577 Wayland non-local URI-list drag policy production behavior"
   },
   "categories": [
     "application_and_app_context",

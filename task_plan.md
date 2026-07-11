@@ -1021,7 +1021,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 575 evidence: the focused COM test enumerates and reads owned Unicode
   global memory, preserves emoji/CRLF/empty text, and proves malformed UTF-8 or
   embedded NUL never reaches the injected drag runner.
-- In progress: Step 576 Win32 OLE file drag payload production behavior.
+- Completed: Phase F Step 576 adds a strict Win32 OLE file IDataObject, enumerates CF_HDROP through an owned wide DROPFILES HGLOBAL, preserves Unicode multi-file ordering, rejects invalid or empty paths before drag, and composes with the drag runner. Step 577 Wayland non-local URI-list drag policy production behavior is next.
+- Step 576 evidence: the focused COM test enumerates and reads ordered wide
+  DROPFILES paths, preserves Unicode, and proves empty/invalid path collections
+  never reach the injected drag runner.
+- In progress: Step 577 Wayland non-local URI-list drag policy production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

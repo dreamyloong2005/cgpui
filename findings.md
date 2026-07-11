@@ -10244,3 +10244,16 @@
   malformed UTF-8 and embedded NUL, preserve emoji/CRLF, and encode empty text
   as a valid one-wide-NUL global-memory payload.
 - Phase F Step 575 adds a strict Win32 OLE text IDataObject, enumerates CF_UNICODETEXT through owned HGLOBAL storage, preserves emoji, CRLF, and empty text, rejects malformed UTF-8 and embedded NUL, and composes with the drag runner. Step 576 Win32 OLE file drag payload production behavior is next.
+
+## 2026-07-12 Phase F Step 576 Win32 OLE File Payload
+
+- The existing Win32 clipboard writer demonstrates the required `DROPFILES`
+  layout: a wide-character list with one NUL after each path and a final second
+  NUL, `pFiles = sizeof(DROPFILES)`, and `fWide = TRUE`.
+- The OLE file data object should own the same strict conversion and overflow
+  checks in a focused drag leaf without opening or mutating the system
+  clipboard. It should expose only `CF_HDROP` through `TYMED_HGLOBAL`.
+- Production validation must reject an empty list, empty paths, malformed UTF-8,
+  embedded NUL, and size overflow before the drag runner is invoked, while
+  preserving multi-file order and Unicode paths.
+- Phase F Step 576 adds a strict Win32 OLE file IDataObject, enumerates CF_HDROP through an owned wide DROPFILES HGLOBAL, preserves Unicode multi-file ordering, rejects invalid or empty paths before drag, and composes with the drag runner. Step 577 Wayland non-local URI-list drag policy production behavior is next.
