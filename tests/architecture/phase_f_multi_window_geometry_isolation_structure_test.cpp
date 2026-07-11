@@ -72,9 +72,9 @@ int main() {
       !contains(behavior, "child_scheduled_during_render") ||
       !contains(behavior, "record->viewport_size.width == 400.0F") ||
       !contains(behavior, "renderers[0]->resize_count == 0")) return 7;
-  if (line_count(record) > 60 || line_count(activation) > 70 ||
+  if (line_count(record) > 65 || line_count(activation) > 70 ||
       line_count(events) > 125 || line_count(records) > 145 ||
-      line_count(frames) > 155 || line_count(resize) > 30 ||
+      line_count(frames) > 165 || line_count(resize) > 30 ||
       line_count(window_render) > 20 || line_count(frame_schedule) > 50 ||
       line_count(frame_state) > 10 || line_count(scheduling) > 135 ||
       line_count(run) > 145 || line_count(behavior) > 210) return 8;
@@ -86,6 +86,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 10;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 602 multi-window event-loop closeout audit")) return 11;
+                "\"phase_f_current_handoff\": \"Step 603 window churn diagnostics and stress production behavior")) return 11;
   return 0;
 }

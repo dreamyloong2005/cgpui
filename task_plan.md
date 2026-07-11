@@ -1123,7 +1123,10 @@ Windows/Linux core API is stable enough for parity work.
 - Step 601 evidence: twelve repeated in-run open/close/wakeup cycles preserve
   inactive record lookup until deferred native destruction, then return runtime
   records/opened windows/themes/views to the root-only baseline.
-- In progress: Step 602 multi-window event-loop closeout audit.
+- Completed: Phase F Step 602 audits and closes the Steps 595-601 multi-window event-loop band, freezing deferred native ownership, per-window geometry/input/routing/theme/accessibility isolation, close-callback observability, and bounded child-window churn. Step 603 window churn diagnostics and stress production behavior is next.
+- Step 602 evidence: the audit-only guard freezes all seven step guards,
+  focused runtime leaves, and behavior targets for the completed 595-602 band.
+- In progress: Step 603 window churn diagnostics and stress production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

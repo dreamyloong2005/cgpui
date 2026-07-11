@@ -60,6 +60,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 5;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 602 multi-window event-loop closeout audit")) return 6;
+                "\"phase_f_current_handoff\": \"Step 603 window churn diagnostics and stress production behavior")) return 6;
   return 0;
 }

@@ -65,7 +65,7 @@ int main() {
   if (!contains(ui_structure, "runtime_window_input_state_source") ||
       !contains(ui_structure, "line_count(runtime_window_input_state_source) > 140") ||
       !contains(previous, "Phase F Step 596")) return 6;
-  if (line_count(record) > 60 || line_count(state) > 140 ||
+  if (line_count(record) > 65 || line_count(state) > 140 ||
       line_count(state_header) > 30 || line_count(private_header) > 260 ||
       line_count(context) > 90 || line_count(events) > 110 ||
       line_count(focus) > 90 || line_count(capture) > 50 ||
@@ -77,6 +77,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 9;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 602 multi-window event-loop closeout audit")) return 10;
+                "\"phase_f_current_handoff\": \"Step 603 window churn diagnostics and stress production behavior")) return 10;
   return 0;
 }

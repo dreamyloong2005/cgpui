@@ -22361,3 +22361,23 @@
 - JSON parsing, five-document unique phrase, focused 20/36/184/260 line
   budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
   untracked; WSL full debug remains batched.
+
+## 2026-07-12 Phase F Step 602 Multi-Window Event-Loop Closeout
+
+- Started from committed Step 601 at `c0db776f`; only unrelated untracked
+  `.vscode/` remains.
+- Audited the established Phase F closeout pattern and selected an
+  architecture-only guard for the Steps 595-601 multi-window band.
+- Added the audit-only closeout guard and confirmed intended five-document RED
+  at exit 5 after all seven step/source/target evidence checks passed.
+- The first closeout gate exposed stale Step 596/597 line caps after later
+  event/accessibility fields: raised only the historical record/frame caps from
+  60/155 to 65/165 while retaining all ownership assertions.
+- Synchronized the exact Step 602 completion phrase across all five authority
+  documents, marked the 595-602 roadmap band complete, and advanced fifty
+  historical dynamic handoff guards; the new guard brings Step 603 to fifty-one.
+- Final Windows multi-window closeout verification passes 9/9. Final WSL
+  shared structure/ledger verification also passes 9/9.
+- JSON parsing, five-document unique phrase, 74-line closeout guard, zero stale
+  Step 602 handoffs, and `git diff --check` pass. `.vscode/` remains unrelated
+  and untracked; WSL full debug remains batched.

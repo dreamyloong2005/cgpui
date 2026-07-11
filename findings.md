@@ -10627,3 +10627,14 @@
   `collect_retired_native_windows()`, preserving pending/failed/reopenable
   records while bounding repeated open-close churn.
 - Phase F Step 601 reclaims closed child runtime records, opened-window entries, and per-window themes only after deferred native destruction, preserves close-callback observability, and keeps repeated child-window churn bounded. Step 602 multi-window event-loop closeout audit is next.
+
+## 2026-07-12 Phase F Step 602 Multi-Window Event-Loop Closeout
+
+- Steps 595-601 now cover deferred native destruction, independent geometry
+  and redraw scheduling, per-window input/focus, event routes/results,
+  app/window theme scheduling, static accessibility submission/history, and
+  post-retirement logical reclamation under repeated churn.
+- Step 602 is audit-only: freeze the seven structure guards, focused runtime
+  modules, behavior targets, and the 603 diagnostics/stress handoff without
+  adding another production ownership path.
+- Phase F Step 602 audits and closes the Steps 595-601 multi-window event-loop band, freezing deferred native ownership, per-window geometry/input/routing/theme/accessibility isolation, close-callback observability, and bounded child-window churn. Step 603 window churn diagnostics and stress production behavior is next.

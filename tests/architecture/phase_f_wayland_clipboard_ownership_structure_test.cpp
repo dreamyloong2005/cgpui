@@ -99,7 +99,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 602 multi-window event-loop closeout audit")) {
+                "\"phase_f_current_handoff\": \"Step 603 window churn diagnostics and stress production behavior")) {
     return 11;
   }
   return 0;

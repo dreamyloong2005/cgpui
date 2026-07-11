@@ -2653,7 +2653,20 @@
       "xmake.lua"
     ],
     "phase_f_step_601_remaining_gap": "Step 602 multi-window event-loop closeout audit",
-    "phase_f_current_handoff": "Step 602 multi-window event-loop closeout audit"
+    "phase_f_step_602_surface": "Phase F Step 602 audits and closes the Steps 595-601 multi-window event-loop band, freezing deferred native ownership, per-window geometry/input/routing/theme/accessibility isolation, close-callback observability, and bounded child-window churn. Step 603 window churn diagnostics and stress production behavior is next.",
+    "phase_f_step_602_sources": [
+      "tests/architecture/phase_f_multi_window_event_loop_ownership_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_geometry_isolation_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_input_isolation_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_event_routing_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_theme_isolation_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_accessibility_isolation_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_lifecycle_churn_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_event_loop_closeout_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_602_remaining_gap": "Step 603 window churn diagnostics and stress production behavior",
+    "phase_f_current_handoff": "Step 603 window churn diagnostics and stress production behavior"
   },
   "categories": [
     "application_and_app_context",
