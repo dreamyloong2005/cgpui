@@ -21533,6 +21533,32 @@
   pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
   batched.
 
+## 2026-07-11 Phase F Step 571 Win32 OLE Drop Target
+
+- Started from committed Step 570 at `4fd86f3f`; only unrelated untracked
+  `.vscode/` remains.
+- Existing code already covers target implementation, registration lifecycle,
+  payload extraction, and event forwarding. The focused gap is COM required-
+  pointer validation before owner callbacks.
+- The first Windows Step 571 build exposed that Step 570's private Wayland
+  diagnostics header/source were not conditionally empty on Windows even though
+  their public types are Linux-only. Added matching `__linux__` guards before
+  continuing the OLE target RED cycle.
+- The next Windows build found the same cross-platform boundary issue in the
+  Step 569 signal source's unconditional `pthread.h` include; the Linux-only
+  includes are now guarded alongside the implementation.
+- The focused COM test reached behavior RED at exit 5 for null `IDataObject*`
+  acceptance. Required data/effect pointers now return `E_INVALIDARG`, rejected
+  effects are cleared, and invalid calls never reach the owner.
+- The target behavior, Win32 input regression, Win32/platform source guards,
+  and Step 570 diagnostics guard pass 7/7 on Windows.
+- Added the Step 571 structure guard; it reached the intended five-document
+  RED at exit 7 before authority synchronization.
+- Synchronized the exact Step 571 completion phrase across all five authority
+  documents and advanced twenty current handoff guards to Step 572.
+- Final WSL shared structure/ledger verification passes 22/22. JSON, unique
+  phrase, handoff inventory, line caps, and `git diff --check` pass.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

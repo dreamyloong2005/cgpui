@@ -10177,3 +10177,15 @@
   the async `receiver_closed` snapshot, then prove a normal request advances to
   a successful send snapshot without losing ownership.
 - Phase F Step 570 adds allocation-free Wayland clipboard diagnostic snapshots for write and async send operations, reports receiver-close and timeout failures with byte counts and revisions, and records recovery after failure. Step 571 Win32 OLE drop target production behavior is next.
+
+## 2026-07-11 Phase F Step 571 Win32 OLE Drop Target Audit
+
+- The repository already owns a focused `IDropTarget`, window registration and
+  revocation lifecycle, OLE payload extraction, and window event forwarding.
+- The remaining concrete target defect is COM input validation:
+  `DragEnter`, `DragOver`, and `Drop` accept null required pointers, return
+  `S_OK`, and can forward invalid calls into the owner.
+- A focused target test should lock `QueryInterface`, reference count behavior,
+  invalid-argument rejection with `DROPEFFECT_NONE`, and valid callback
+  forwarding without requiring a real drag source.
+- Phase F Step 571 validates Win32 OLE drop target COM inputs, returns E_INVALIDARG for missing data/effect pointers, clears rejected effects, and preserves QueryInterface, reference counting, and valid owner forwarding. Step 572 Win32 OLE drop source production behavior is next.

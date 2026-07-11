@@ -6,6 +6,7 @@
 
 namespace cgpui {
 
+#if defined(__linux__)
 class WaylandClipboardDiagnosticState {
  public:
   void record(
@@ -22,5 +23,6 @@ class WaylandClipboardDiagnosticState {
       WaylandClipboardFailure::none};
   std::atomic_size_t bytes_transferred_{0};
 };
+#endif
 
 } // namespace cgpui

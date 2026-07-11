@@ -2,6 +2,7 @@
 
 namespace cgpui {
 
+#if defined(__linux__)
 void WaylandClipboardDiagnosticState::record(
     WaylandClipboardOperation operation,
     WaylandClipboardFailure failure,
@@ -26,5 +27,6 @@ WaylandClipboardDiagnostics WaylandClipboardDiagnosticState::snapshot() const {
     if (sequence_.load(std::memory_order_acquire) == before) return result;
   }
 }
+#endif
 
 } // namespace cgpui

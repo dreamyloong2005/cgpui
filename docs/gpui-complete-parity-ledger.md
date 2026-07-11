@@ -697,6 +697,7 @@ consume C: drive space again.
 - Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.
 - Phase F Step 569 prevents abandoned Wayland clipboard receivers from terminating the host with SIGPIPE, scopes signal masking to the writer thread, preserves caller signal state, and keeps selection ownership usable after EPIPE. Step 570 Wayland clipboard diagnostics production behavior is next.
 - Phase F Step 570 adds allocation-free Wayland clipboard diagnostic snapshots for write and async send operations, reports receiver-close and timeout failures with byte counts and revisions, and records recovery after failure. Step 571 Win32 OLE drop target production behavior is next.
+- Phase F Step 571 validates Win32 OLE drop target COM inputs, returns E_INVALIDARG for missing data/effect pointers, clears rejected effects, and preserves QueryInterface, reference counting, and valid owner forwarding. Step 572 Win32 OLE drop source production behavior is next.
 
 ## Categories
 

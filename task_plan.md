@@ -1000,7 +1000,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 570 evidence: a real compositor observes diagnostic revisions for
   selection installation, abandoned-receiver failure, and successful send
   recovery without strings, allocation, or process-global signal state.
-- In progress: Step 571 Win32 OLE drop target production behavior.
+- Completed: Phase F Step 571 validates Win32 OLE drop target COM inputs, returns E_INVALIDARG for missing data/effect pointers, clears rejected effects, and preserves QueryInterface, reference counting, and valid owner forwarding. Step 572 Win32 OLE drop source production behavior is next.
+- Step 571 evidence: the focused COM target test covers `QueryInterface`,
+  balanced AddRef/Release, invalid required pointers, cleared drop effects, and
+  valid enter/update/leave/drop owner forwarding.
+- In progress: Step 572 Win32 OLE drop source production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

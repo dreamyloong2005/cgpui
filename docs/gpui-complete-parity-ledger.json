@@ -2225,7 +2225,16 @@
       "xmake.lua"
     ],
     "phase_f_step_570_remaining_gap": "Step 571 Win32 OLE drop target production behavior",
-    "phase_f_current_handoff": "Step 571 Win32 OLE drop target production behavior"
+    "phase_f_step_571_surface": "Phase F Step 571 validates Win32 OLE drop target COM inputs, returns E_INVALIDARG for missing data/effect pointers, clears rejected effects, and preserves QueryInterface, reference counting, and valid owner forwarding. Step 572 Win32 OLE drop source production behavior is next.",
+    "phase_f_step_571_sources": [
+      "src/platform/win32/win32_drag_drop_internal.hpp",
+      "src/platform/win32/win32_ole_drop_target.cpp",
+      "tests/platform/win32_ole_drop_target_test.cpp",
+      "tests/architecture/phase_f_win32_ole_drop_target_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_571_remaining_gap": "Step 572 Win32 OLE drop source production behavior",
+    "phase_f_current_handoff": "Step 572 Win32 OLE drop source production behavior"
   },
   "categories": [
     "application_and_app_context",

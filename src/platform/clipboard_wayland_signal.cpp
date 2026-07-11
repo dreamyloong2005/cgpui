@@ -1,7 +1,9 @@
 #include "clipboard_wayland_internal.hpp"
 
+#if defined(__linux__)
 #include <csignal>
 #include <pthread.h>
+#endif
 
 namespace cgpui {
 

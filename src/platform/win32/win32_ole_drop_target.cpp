@@ -35,6 +35,11 @@ HRESULT STDMETHODCALLTYPE Win32OleDropTarget::DragEnter(
     DWORD key_state,
     POINTL point,
     DWORD* effect) {
+  if (effect == nullptr) return E_INVALIDARG;
+  if (data_object == nullptr) {
+    *effect = DROPEFFECT_NONE;
+    return E_INVALIDARG;
+  }
   if (owner_ != nullptr) {
     owner_->ole_drag_entered(data_object, point, key_state, effect);
   }
@@ -45,6 +50,7 @@ HRESULT STDMETHODCALLTYPE Win32OleDropTarget::DragOver(
     DWORD key_state,
     POINTL point,
     DWORD* effect) {
+  if (effect == nullptr) return E_INVALIDARG;
   if (owner_ != nullptr) {
     owner_->ole_drag_updated(point, key_state, effect);
   }
@@ -63,6 +69,11 @@ HRESULT STDMETHODCALLTYPE Win32OleDropTarget::Drop(
     DWORD key_state,
     POINTL point,
     DWORD* effect) {
+  if (effect == nullptr) return E_INVALIDARG;
+  if (data_object == nullptr) {
+    *effect = DROPEFFECT_NONE;
+    return E_INVALIDARG;
+  }
   if (owner_ != nullptr) {
     owner_->ole_drag_dropped(data_object, point, key_state, effect);
   }
