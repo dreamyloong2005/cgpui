@@ -21121,6 +21121,31 @@
   137/65/140/191 line budgets, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 599 Per-Window Theme Isolation
+
+- Started from committed Step 598 at `e3f99e0b`; only unrelated untracked
+  `.vscode/` remains.
+- The initial focused test first exposed that `Color` intentionally has no
+  equality operator; component comparison corrected the test before behavior
+  RED showed root-only theme invalidation.
+- Added a focused theme-scheduling leaf: app theme changes schedule root and
+  every active child, while window theme set/clear schedule only their target.
+- Focused child context lookup preserves window override and app spacing
+  fallback; root and child overrides remain independent.
+- Theme, render, scheduling, multi-window, header, and UI structure regressions
+  pass 9/9 on Windows.
+- Added a structure guard for theme/context flow, focused scheduling ownership,
+  redraw coalescing, line budgets, xmake, and five-document handoff; it reached
+  the intended RED at child exit 9.
+- Synchronized the exact Step 599 completion phrase across all five authority
+  documents and advanced forty-eight historical dynamic handoff guards to Step
+  600 with zero stale Step 599 handoffs.
+- Final Windows focused theme/render/scheduling/structure/ledger verification
+  passes 12/12. Final WSL shared focused verification also passes 12/12.
+- JSON parsing, five-document phrase count, focused 69/28/2/259/64/186 line
+  budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
+  untracked; WSL full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

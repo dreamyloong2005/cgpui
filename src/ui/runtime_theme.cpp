@@ -4,7 +4,7 @@ namespace cgpui {
 
 void WindowRuntime::set_app_theme(Theme theme) {
   app_theme_ = std::move(theme);
-  request_render();
+  request_all_theme_renders();
 }
 
 const Theme& WindowRuntime::app_theme() const {
@@ -18,7 +18,7 @@ void WindowRuntime::set_window_theme(
     return;
   }
   window_themes_[runtime_id.value] = std::move(theme);
-  request_render();
+  request_theme_render(runtime_id);
 }
 
 bool WindowRuntime::clear_window_theme(WindowRuntimeId runtime_id) {
@@ -27,7 +27,7 @@ bool WindowRuntime::clear_window_theme(WindowRuntimeId runtime_id) {
   }
   const bool erased = window_themes_.erase(runtime_id.value) != 0;
   if (erased) {
-    request_render();
+    request_theme_render(runtime_id);
   }
   return erased;
 }

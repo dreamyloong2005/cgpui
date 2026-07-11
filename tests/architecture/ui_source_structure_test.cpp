@@ -3621,6 +3621,10 @@ int main() {
 
   const std::string runtime_theme_source =
       read_source("src/ui/runtime_theme.cpp");
+  const std::string runtime_theme_scheduling_source =
+      read_source("src/ui/runtime_theme_scheduling.cpp");
+  const std::string runtime_theme_scheduling_header =
+      read_source("src/ui/runtime_theme_scheduling_internal.hpp");
   if (line_count(runtime_theme_source) > 120 ||
       !contains(runtime_theme_source, "void WindowRuntime::set_app_theme(") ||
       !contains(runtime_theme_source, "const Theme& WindowRuntime::app_theme(") ||
@@ -3629,6 +3633,16 @@ int main() {
       !contains(runtime_theme_source,
                 "std::optional<Color> WindowRuntime::theme_color(") ||
       contains(runtime_theme_source, "install_native_menu(")) {
+    return 63;
+  }
+  if (runtime_theme_scheduling_source.empty() ||
+      runtime_theme_scheduling_header.empty() ||
+      line_count(runtime_theme_scheduling_source) > 35 ||
+      line_count(runtime_theme_scheduling_header) > 5 ||
+      !contains(runtime_theme_scheduling_source,
+                "WindowRuntime::request_theme_render(") ||
+      !contains(runtime_theme_scheduling_source,
+                "WindowRuntime::request_all_theme_renders(")) {
     return 63;
   }
 

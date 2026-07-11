@@ -61,6 +61,6 @@ int main() {
       "Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 599 per-window theme isolation")) return 9;
+  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 600 per-window accessibility isolation")) return 9;
   return 0;
 }

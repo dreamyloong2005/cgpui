@@ -85,7 +85,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 599 per-window theme isolation")) {
+                "\"phase_f_current_handoff\": \"Step 600 per-window accessibility isolation")) {
     return 10;
   }
   return 0;

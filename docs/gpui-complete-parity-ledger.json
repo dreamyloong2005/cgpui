@@ -2607,7 +2607,20 @@
       "xmake.lua"
     ],
     "phase_f_step_598_remaining_gap": "Step 599 per-window theme isolation production behavior",
-    "phase_f_current_handoff": "Step 599 per-window theme isolation production behavior"
+    "phase_f_step_599_surface": "Phase F Step 599 schedules app-theme redraws across all active windows, confines window-theme redraws to the target runtime record, and preserves per-window token fallback in child contexts. Step 600 per-window accessibility isolation production behavior is next.",
+    "phase_f_step_599_sources": [
+      "src/ui/runtime_theme.cpp",
+      "src/ui/runtime_theme_scheduling_internal.hpp",
+      "src/ui/runtime_theme_scheduling.cpp",
+      "src/ui/runtime_context_platform.cpp",
+      "src/ui/window_runtime_internal.hpp",
+      "tests/ui/window_runtime_multi_window_theme_test.cpp",
+      "tests/architecture/phase_f_multi_window_theme_isolation_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_599_remaining_gap": "Step 600 per-window accessibility isolation production behavior",
+    "phase_f_current_handoff": "Step 600 per-window accessibility isolation production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -10580,3 +10580,14 @@
   retain a global sequence for cross-window ordering, and mirror root state at
   existing root completion points.
 - Phase F Step 598 stores event route, result, and dispatch state per runtime window, keeps callback contexts bound to the originating record, and preserves root dispatch state across child events. Step 599 per-window theme isolation production behavior is next.
+
+## 2026-07-12 Phase F Step 599 Per-Window Theme Isolation
+
+- Theme storage and `WindowRuntimeContext` lookup already use the originating
+  runtime id, including per-window override with app-theme fallback.
+- Theme mutation invalidation is still root-only: app theme changes do not
+  redraw active children, and child set/clear incorrectly redraws root.
+- A focused theme-scheduling leaf should preserve root invalidation behavior,
+  schedule active child records through their own redraw flags/windows, and
+  retain redraw coalescing.
+- Phase F Step 599 schedules app-theme redraws across all active windows, confines window-theme redraws to the target runtime record, and preserves per-window token fallback in child contexts. Step 600 per-window accessibility isolation production behavior is next.
