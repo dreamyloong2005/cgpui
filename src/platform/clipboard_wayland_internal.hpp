@@ -26,6 +26,9 @@
 namespace cgpui {
 
 #if defined(__linux__)
+[[nodiscard]] int wayland_clipboard_text_mime_rank(
+    std::string_view mime_type);
+
 struct WaylandClipboard::Connection {
   struct Offer {
     wl_data_offer* offer = nullptr;

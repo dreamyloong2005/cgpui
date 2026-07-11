@@ -273,6 +273,7 @@ int main(int argc, char** argv) {
       "src/platform/clipboard_wayland_connection.cpp",
       "src/platform/clipboard_wayland_dispatch.cpp",
       "src/platform/clipboard_wayland_offer.cpp",
+      "src/platform/clipboard_wayland_mime.cpp",
       "src/platform/clipboard_wayland_read.cpp",
       "src/platform/clipboard_wayland_read_payload.cpp",
       "src/platform/clipboard_wayland_source.cpp",
@@ -316,6 +317,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/clipboard_wayland_connection.cpp");
   const std::string clipboard_wayland_offer =
       read_source("src/platform/clipboard_wayland_offer.cpp");
+  const std::string clipboard_wayland_mime =
+      read_source("src/platform/clipboard_wayland_mime.cpp");
   const std::string clipboard_wayland_read =
       read_source("src/platform/clipboard_wayland_read.cpp");
   const std::string clipboard_wayland_read_payload =
@@ -353,6 +356,8 @@ int main(int argc, char** argv) {
                 "void WaylandClipboard::Connection::handle_data_offer(") ||
       !contains(clipboard_wayland_offer,
                 "void WaylandClipboard::Connection::handle_selection(") ||
+      !contains(clipboard_wayland_mime,
+                "wayland_clipboard_text_mime_rank(") ||
       !contains(clipboard_wayland_read,
                 "std::optional<std::string> "
                 "WaylandClipboard::Connection::read_text()") ||
@@ -430,6 +435,8 @@ int main(int argc, char** argv) {
       line_count(clipboard_wayland_offer) > 100 ||
       contains(clipboard_wayland_offer, "read_offer_payload(") ||
       contains(clipboard_wayland_offer, "wl_data_offer_receive") ||
+      line_count(clipboard_wayland_mime) > 90 ||
+      contains(clipboard_wayland_mime, "WaylandClipboard::Connection::") ||
       line_count(clipboard_wayland_read_payload) > 80 ||
       contains(clipboard_wayland_read_payload, "handle_data_offer(")) {
     return 31;

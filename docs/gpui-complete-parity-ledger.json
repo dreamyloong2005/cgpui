@@ -2166,7 +2166,18 @@
       "xmake.lua"
     ],
     "phase_f_step_566_remaining_gap": "Step 567 Wayland clipboard MIME negotiation production behavior",
-    "phase_f_current_handoff": "Step 567 Wayland clipboard MIME negotiation production behavior"
+    "phase_f_step_567_surface": "Phase F Step 567 adds case-insensitive Wayland text MIME parsing and ranking, accepts normalized UTF-8 charset parameters, preserves original offer strings for receive, and rejects unsupported charsets. Step 568 Wayland clipboard incremental transfer production behavior is next.",
+    "phase_f_step_567_sources": [
+      "src/platform/clipboard_wayland_internal.hpp",
+      "src/platform/clipboard_wayland_mime.cpp",
+      "src/platform/clipboard_wayland_read.cpp",
+      "tests/platform/wayland_clipboard_mime_negotiation_test.cpp",
+      "tests/architecture/phase_f_wayland_clipboard_mime_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_567_remaining_gap": "Step 568 Wayland clipboard incremental transfer production behavior",
+    "phase_f_current_handoff": "Step 568 Wayland clipboard incremental transfer production behavior"
   },
   "categories": [
     "application_and_app_context",

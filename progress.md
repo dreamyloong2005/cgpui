@@ -21435,3 +21435,26 @@
   fifteen Phase F structure guards, platform source structure, and the parity
   ledger. JSON, unique phrase, line caps, handoff inventory, and diff hygiene
   also pass; `.vscode/` remains unrelated and untracked.
+
+## 2026-07-11 Phase F Step 567 Wayland Clipboard MIME Negotiation
+
+- Started from committed Step 566 at `12a60a55`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit identifies exact case-sensitive MIME comparison as the concrete
+  negotiation defect and assigns normalization/ranking to a focused source.
+- The focused mixed-case offer test reached precise RED in 0.07 seconds because
+  production ignored Text/Plain with Charset=UTF-8 and selected plain fallback.
+- Added focused ASCII MIME normalization/ranking and moved it out of read
+  orchestration. Mixed-case UTF-8 selection plus unsupported-charset/plain
+  fallback now pass with original offer strings preserved for receive.
+- Added the Step 567 structure guard and advanced all fifteen historical
+  dynamic handoff guards. The new guard reached its intended five-document
+  RED at exit 7 before authority synchronization.
+- Synchronized the exact Step 567 completion phrase across all five authority
+  documents and advanced the current handoff to Step 568 incremental transfer.
+- Final Windows shared structure/ledger verification passes 18/18. Final WSL
+  verification passes 22/22 across four clipboard behaviors, sixteen Phase F
+  structure guards, platform source structure, and the parity ledger.
+- Final JSON parsing, five-document unique phrase, stale-handoff audit, focused
+  line caps, and `git diff --check` pass. `.vscode/` remains unrelated and
+  untracked; WSL full debug remains batched.

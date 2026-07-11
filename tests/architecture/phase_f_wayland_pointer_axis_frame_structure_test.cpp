@@ -111,7 +111,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 567 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 568 Wayland")) {
     return 9;
   }
   return 0;

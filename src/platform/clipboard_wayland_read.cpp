@@ -36,20 +36,16 @@ WaylandClipboard::Connection::preferred_text_mime_type() const {
   }
 
   const auto& mime_types = selection_offer_->mime_types;
-  const auto utf8 = std::ranges::find(
-      mime_types,
-      std::string_view{"text/plain;charset=utf-8"});
-  if (utf8 != mime_types.end()) {
-    return *utf8;
+  int best_rank = 0;
+  std::optional<std::string> preferred;
+  for (const std::string& mime_type : mime_types) {
+    const int rank = wayland_clipboard_text_mime_rank(mime_type);
+    if (rank > best_rank) {
+      best_rank = rank;
+      preferred = mime_type;
+    }
   }
-
-  const auto plain =
-      std::ranges::find(mime_types, std::string_view{"text/plain"});
-  if (plain != mime_types.end()) {
-    return *plain;
-  }
-
-  return std::nullopt;
+  return preferred;
 }
 #endif
 

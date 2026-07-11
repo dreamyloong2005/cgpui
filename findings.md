@@ -10111,3 +10111,17 @@
 - A focused real test should own text first, accept a compositor-provided
   replacement selection, and read its payload through the same connection.
 - Phase F Step 566 makes Wayland selection reads dispatch-safe, processes replacement offers and payload transfer in one display transaction, and resumes source dispatch only when ownership remains. Step 567 Wayland clipboard MIME negotiation production behavior is next.
+
+## 2026-07-11 Phase F Step 567 Wayland Clipboard MIME Audit
+
+- MIME preference currently uses exact, case-sensitive string equality for
+  `text/plain;charset=utf-8` and `text/plain`.
+- MIME type/subtype and charset tokens are case-insensitive, and optional
+  whitespace around parameters is valid. A legal mixed-case UTF-8 offer is
+  therefore ignored today and can lose to a lower-quality plain offer.
+- MIME normalization/ranking belongs in a focused private source; read
+  orchestration should only select the highest-ranked original offer string.
+- The focused ranker now accepts mixed-case UTF-8 charset parameters, preserves
+  the compositor's original MIME spelling for `receive`, and rejects a
+  non-UTF-8 charset so case-folded plain text can win as fallback.
+- Phase F Step 567 adds case-insensitive Wayland text MIME parsing and ranking, accepts normalized UTF-8 charset parameters, preserves original offer strings for receive, and rejects unsupported charsets. Step 568 Wayland clipboard incremental transfer production behavior is next.
