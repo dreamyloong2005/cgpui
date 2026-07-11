@@ -1,12 +1,11 @@
 #include "cgpui/platform/clipboard.hpp"
 
-#if defined(__linux__)
-#include "wayland_test_compositor.hpp"
+#ifdef _WIN32
+#include "win32_clipboard_test_lock.hpp"
 #endif
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#if defined(__linux__)
+#include "wayland_test_compositor.hpp"
 #endif
 
 #if defined(__linux__)
@@ -402,6 +401,10 @@ int test_wayland_clipboard_write_owns_selection_and_sends_payload() {
 } // namespace
 
 int main() {
+#ifdef _WIN32
+  const cgpui::test::Win32ClipboardTestLock clipboard_lock;
+  if (!clipboard_lock) return 45;
+#endif
   if (const int result = test_memory_clipboard_round_trips_utf8_text();
       result != 0) {
     return result;

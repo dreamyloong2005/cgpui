@@ -2125,7 +2125,21 @@
       "xmake.lua"
     ],
     "phase_f_step_563_remaining_gap": "Step 564 Win32 file clipboard production behavior",
-    "phase_f_current_handoff": "Step 564 Win32 file clipboard production behavior"
+    "phase_f_step_564_surface": "Phase F Step 564 adds Win32 CF_HDROP file clipboard read and write with strict UTF-8 paths, wide DROPFILES payloads, multi-file ordering, and rejection-safe system content preservation. Step 565 Wayland selection ownership and write production behavior is next.",
+    "phase_f_step_564_sources": [
+      "include/cgpui/platform/clipboard.hpp",
+      "src/platform/clipboard.cpp",
+      "src/platform/clipboard_win32_internal.hpp",
+      "src/platform/clipboard_win32_text.cpp",
+      "src/platform/clipboard_win32_files.cpp",
+      "tests/platform/win32_clipboard_files_test.cpp",
+      "tests/platform/win32_clipboard_test_lock.hpp",
+      "tests/architecture/phase_f_win32_clipboard_files_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_564_remaining_gap": "Step 565 Wayland selection ownership and write production behavior",
+    "phase_f_current_handoff": "Step 565 Wayland selection ownership and write production behavior"
   },
   "categories": [
     "application_and_app_context",

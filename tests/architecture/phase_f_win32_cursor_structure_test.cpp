@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 564 Win32 file")) {
+                "\"phase_f_current_handoff\": \"Step 565 Wayland selection")) {
     return 8;
   }
   return 0;

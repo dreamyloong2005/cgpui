@@ -267,6 +267,7 @@ int main(int argc, char** argv) {
       "src/platform/clipboard_win32_text.cpp",
       "src/platform/clipboard_win32_read.cpp",
       "src/platform/clipboard_win32_write.cpp",
+      "src/platform/clipboard_win32_files.cpp",
       "src/platform/clipboard_win32.cpp",
       "src/platform/clipboard_wayland_internal.hpp",
       "src/platform/clipboard_wayland_connection.cpp",
@@ -305,6 +306,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/clipboard_win32_read.cpp");
   const std::string clipboard_win32_write =
       read_source("src/platform/clipboard_win32_write.cpp");
+  const std::string clipboard_win32_files =
+      read_source("src/platform/clipboard_win32_files.cpp");
   const std::string clipboard_win32 =
       read_source("src/platform/clipboard_win32.cpp");
   const std::string clipboard_wayland_internal =
@@ -335,6 +338,10 @@ int main(int argc, char** argv) {
       !contains(clipboard_win32_read, "GetClipboardData") ||
       !contains(clipboard_win32_write, "Win32Clipboard::write_text(") ||
       !contains(clipboard_win32_write, "SetClipboardData") ||
+      !contains(clipboard_win32_files, "Win32Clipboard::read_files()") ||
+      !contains(clipboard_win32_files, "Win32Clipboard::write_files(") ||
+      !contains(clipboard_win32_files, "CF_HDROP") ||
+      !contains(clipboard_win32_files, "DROPFILES") ||
       !contains(clipboard_win32, "create_win32_clipboard") ||
       !contains(clipboard_wayland_internal,
                 "struct WaylandClipboard::Connection") ||
@@ -382,6 +389,8 @@ int main(int argc, char** argv) {
       line_count(clipboard_win32_write) > 80 ||
       contains(clipboard_win32_write, "GetClipboardData") ||
       contains(clipboard_win32_write, "narrow_clipboard_text(") ||
+      line_count(clipboard_win32_files) > 130 ||
+      contains(clipboard_win32_files, "class Win32Clipboard") ||
       line_count(clipboard_win32) > 40 ||
       contains(clipboard_win32, "class Win32Clipboard") ||
       contains(clipboard_win32, "GetClipboardData") ||

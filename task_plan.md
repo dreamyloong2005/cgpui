@@ -972,7 +972,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 563 evidence: real CF_UNICODETEXT tests preserve emoji, CRLF, and empty
   text, reject malformed UTF-8 and embedded NUL before opening the clipboard,
   and prove rejected writes do not replace existing system content.
-- In progress: Step 564 Win32 file clipboard production behavior.
+- Completed: Phase F Step 564 adds Win32 CF_HDROP file clipboard read and write with strict UTF-8 paths, wide DROPFILES payloads, multi-file ordering, and rejection-safe system content preservation. Step 565 Wayland selection ownership and write production behavior is next.
+- Step 564 evidence: real system clipboard tests round-trip ordered Unicode file
+  paths, inspect the native wide DROPFILES payload, reject empty/invalid paths
+  before opening the clipboard, and preserve baseline text on rejection.
+- In progress: Step 565 Wayland selection ownership and write production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1053,6 +1057,11 @@ Windows/Linux core API is stable enough for parity work.
 | The first Step 556 multi-layout assertion expected printable `Q` while effective Control correctly produced byte `0x11` | Step 556 behavior RED refinement | Verify readable Group 1 text under Shift alone, then compare the combined-mask text byte-for-byte across keymap reload while asserting effective modifiers separately |
 | A Step 563 two-file cleanup patch contained a malformed file-boundary hunk | Step 563 final audit polish | The patch was rejected atomically; reapply with valid per-file contexts and keep the implementation and progress edits narrowly scoped |
 | The first Step 563 handoff inventory pattern omitted the escaped quotes present in C++ string literals | Step 563 final audit | Search for the literal `\"phase_f_current_handoff` prefix; the corrected inventory finds all twelve Step 564 guards |
+
+| The first Step 564 production patch repeated a malformed multi-file hunk boundary | Step 564 production write | The patch was rejected atomically; split the public contract, default implementation, Win32 declaration/source, xmake, and progress edits into separate per-file patches |
+| The first Step 564 GREEN compile hit the Windows `max` macro and a missing `DROPFILES` declaration | Step 564 production GREEN | Use the macro-safe `(std::numeric_limits<std::size_t>::max)()` form and include `ShlObj_core.h` only in the focused Win32 files source |
+| The first system-link propagation edit matched a later `user32` line instead of the platform target, so `DragQueryFileW` remained unresolved | Step 564 aggregate Windows link | Inspect `xmake show -t` metadata, restore the unrelated lifecycle test, and anchor public `shell32` propagation on `cgpui_platform` |
+| A Step 564 xmake audit used an over-escaped `rg` regular expression and reported an unclosed group | Step 564 link diagnosis | Use fixed-string `rg -F` for literal xmake declarations |
 
 ## Errors Encountered During Phase E Resume
 

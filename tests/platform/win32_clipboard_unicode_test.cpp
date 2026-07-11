@@ -1,7 +1,5 @@
 #include "cgpui/platform/clipboard.hpp"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "win32_clipboard_test_lock.hpp"
 
 #include <cstring>
 #include <memory>
@@ -72,6 +70,8 @@ class ClipboardRestore {
 } // namespace
 
 int main() {
+  const cgpui::test::Win32ClipboardTestLock clipboard_lock;
+  if (!clipboard_lock) return 11;
   const ClipboardRestore restore;
   std::unique_ptr<cgpui::Clipboard> clipboard =
       cgpui::create_platform_clipboard();

@@ -21341,3 +21341,42 @@
 - Final JSON parsing, five-document unique phrase, clipboard/test line caps,
   historical handoff diff inventory, and `git diff --check` pass. `.vscode/`
   remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 564 Win32 File Clipboard
+
+- Started from committed Step 563 at `d4712ec8`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit finds no public file clipboard contract or Win32 `CF_HDROP`
+  implementation. Ownership is assigned to the public clipboard leaf plus a
+  focused Win32 files source, with unsupported default behavior for other
+  backends and a dedicated real-system Windows test.
+- The focused Windows test reached precise compile-time RED because
+  `Clipboard` had no `write_files` or `read_files` members.
+- The first GREEN build then exposed Windows SDK integration details: the
+  `max` macro intercepted `numeric_limits::max()`, and `DROPFILES` requires
+  `ShlObj_core.h`. The focused source now uses the macro-safe call form and
+  owns that SDK include directly.
+- The next aggregate build linked the new target but exposed
+  `DragQueryFileW` unresolved in existing clipboard consumers. Marking
+  `shell32` and the existing `user32` system links public on the static
+  platform target propagates its native dependencies to every consumer.
+- After correcting the system-link edit to the actual platform target, the new
+  file behavior plus Unicode and generic clipboard regressions pass 3/3.
+- Added the Step 564 structure guard and platform source inventory. The source
+  inventory stays green while the new guard reaches the intended five-document
+  RED at exit 9.
+- Synchronized the exact Step 564 completion phrase across all five authority
+  documents, advanced the handoff to Step 565 Wayland selection ownership and
+  write, and passed the Windows behavior/structure/ledger group 18/18.
+- Final WSL shared structure/ledger verification reused the established D-drive
+  caches plus `/dev/shm/cgpui` transient temp and passed 15/15.
+- A final default-parallel Windows rerun exposed real system clipboard test
+  contention: the file test failed only alongside the two text tests and passed
+  alone. Added a focused named-mutex test support header used by all three
+  Windows system clipboard tests so default xmake parallelism is deterministic.
+- Final default-parallel Windows verification passes 18/18, and the matching
+  final WSL shared structure/ledger group passes 15/15 after the mutex boundary
+  was added to the Step 564 structure guard.
+- Final JSON parsing, five-document unique phrase, public/private/test line
+  caps, thirteen Step 565 handoff guards, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

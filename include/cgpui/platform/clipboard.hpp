@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace cgpui {
 
@@ -13,6 +15,9 @@ class Clipboard {
 
   [[nodiscard]] virtual std::optional<std::string> read_text() const = 0;
   [[nodiscard]] virtual bool write_text(std::string_view text) = 0;
+  [[nodiscard]] virtual std::optional<std::vector<std::string>>
+  read_files() const;
+  [[nodiscard]] virtual bool write_files(std::span<const std::string> paths);
 };
 
 class MemoryClipboard final : public Clipboard {

@@ -21,6 +21,10 @@ class Win32Clipboard final : public Clipboard {
  public:
   [[nodiscard]] std::optional<std::string> read_text() const override;
   [[nodiscard]] bool write_text(std::string_view text) override;
+  [[nodiscard]] std::optional<std::vector<std::string>>
+  read_files() const override;
+  [[nodiscard]] bool write_files(
+      std::span<const std::string> paths) override;
 };
 
 } // namespace cgpui

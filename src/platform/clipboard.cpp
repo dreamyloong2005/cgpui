@@ -4,6 +4,14 @@
 
 namespace cgpui {
 
+std::optional<std::vector<std::string>> Clipboard::read_files() const {
+  return std::nullopt;
+}
+
+bool Clipboard::write_files(std::span<const std::string>) {
+  return false;
+}
+
 std::unique_ptr<Clipboard> create_platform_clipboard() {
 #if defined(_WIN32)
   return create_win32_clipboard();

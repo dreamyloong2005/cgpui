@@ -10057,3 +10057,25 @@
   unchanged. Existing cross-platform clipboard and structure coverage remains
   green.
 - Phase F Step 563 makes Win32 Unicode clipboard conversion strict, preserves emoji, CRLF, and empty text, rejects invalid UTF-8 and embedded NUL, and leaves existing system content intact on rejection. Step 564 Win32 file clipboard production behavior is next.
+
+## 2026-07-11 Phase F Step 564 Win32 File Clipboard Audit
+
+- The public `Clipboard` leaf currently exposes text only, and the focused
+  Win32 clipboard modules contain no `CF_HDROP` or `DROPFILES` behavior.
+- Win32 OLE drag/drop already decodes `CF_HDROP`, but that module is owned by
+  window drag/drop. Clipboard file transfer should use the same UTF-8 public
+  path semantics in a separate `clipboard_win32_files.cpp` owner rather than
+  coupling clipboard production to OLE window code.
+- The compatibility-preserving public shape is default `read_files()` and
+  `write_files(std::span<const std::string>)` virtual behavior on `Clipboard`;
+  unsupported backends return no files/false while Win32 overrides both.
+- A focused real-system test should prove multiple Unicode paths round-trip
+  through a wide `DROPFILES` payload, empty and malformed path lists are
+  rejected before opening the clipboard, and rejected writes preserve existing
+  text content.
+- The production path now passes those real-system cases while unsupported
+  backends retain explicit default no-file behavior.
+- Default-parallel xmake execution can overlap the three Windows system
+  clipboard tests. A focused named-mutex test support header serializes only
+  those processes, preserving normal parallelism for the rest of the suite.
+- Phase F Step 564 adds Win32 CF_HDROP file clipboard read and write with strict UTF-8 paths, wide DROPFILES payloads, multi-file ordering, and rejection-safe system content preservation. Step 565 Wayland selection ownership and write production behavior is next.
