@@ -17,7 +17,8 @@ class WaylandWindow final : public PlatformWindow {
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback,
       bool text_input_available,
-      WaylandOutputScaleLookup output_scale_lookup);
+      WaylandOutputScaleLookup output_scale_lookup,
+      WaylandWindowScaleCallback scale_changed);
   ~WaylandWindow() override;
   [[nodiscard]] NativeSurfaceHandle native_surface() const override;
   [[nodiscard]] wl_surface* surface() const;
@@ -89,9 +90,6 @@ class WaylandWindow final : public PlatformWindow {
   void focus_changed(bool focused);
   void output_scale_changed(wl_output* output, std::int32_t scale, bool present);
  private:
-  WaylandWindow(
-      wl_display* display, PlatformEventCallback callback,
-      WindowState state, WaylandOutputScaleLookup output_scale_lookup);
 #include "wayland_window_creation_internal.hpp"
 #include "wayland_window_configure_internal.hpp"
 #include "wayland_window_close_internal.hpp"
@@ -113,6 +111,7 @@ class WaylandWindow final : public PlatformWindow {
   WaylandXdgConfigureState pending_configure_;
   bool configured_ = false;
   bool focused_ = false;
+  WaylandWindowScaleCallback scale_changed_;
 };
 #include "wayland_registered_window_internal.hpp"
 

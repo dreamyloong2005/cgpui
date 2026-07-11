@@ -960,7 +960,11 @@ Windows/Linux core API is stable enough for parity work.
   sizes stay invisible before surface acknowledgement, a newer zero-size
   configure supersedes an older requested size, committed size changes publish
   once, and duplicate sizes do not emit redundant resize events.
-- In progress: Step 561 Wayland cursor theme loading production behavior.
+- Completed: Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.
+- Step 561 evidence: a deterministic temporary Xcursor theme and real shm
+  compositor prove non-null cursor surfaces, image-buffer attach/commit,
+  shape changes, hotspot conversion, and ceiling-scale 2 at fractional 1.25x.
+- In progress: Step 562 Wayland event-loop wakeup production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

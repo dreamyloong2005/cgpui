@@ -21262,3 +21262,34 @@
 - Final JSON parsing, five-document unique phrase, configure/helper/test line
   caps, handoff inventory, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 561 Wayland Cursor Theme Loading
+
+- Started from committed Step 560 at `ad21f342`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit confirms cursor-name mapping and unavailable diagnostics exist,
+  but production always sends a null cursor surface and owns no theme/image/
+  buffer resources.
+- Added the focused cursor observation helper, standard compositor shm support,
+  deterministic temporary Xcursor theme generation, and a real cursor-surface
+  behavior target. Its first build found only a test cleanup mistake: the
+  `Result` wrappers require resetting their contained `unique_ptr` values.
+- The native cursor target then exercised three real surface applications and
+  passed after fixing its event-stage compare-exchange. A combined fractional
+  regression found Step 560's configure flush occurred before viewport update;
+  moved that flush after pending configure acknowledgement.
+- Added the Step 561 structure guard and advanced platform/Wayland source
+  inventories for the focused cursor resource module. It reached the intended
+  five-document RED at exit 8 while all three existing structure guards passed.
+- Synchronized the exact Step 561 completion sentence across all five authority
+  documents, advanced the handoff to Step 562 event-loop wakeup, and passed the
+  Windows structure/ledger group 13/13.
+- Final WSL verification reuses the established caches and passes 18/18 across
+  real cursor theme, fractional scale, pointer/button, configure, and seat
+  behavior plus thirteen structure/source/handoff/ledger gates.
+- Final JSON parsing, five-document unique phrase, cursor/theme/application/
+  window/test line caps, handoff inventory, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+- The first dynamic staging command merged Git CRLF warnings into its path
+  list and failed before staging anything. Filtering `warning:` output lines
+  fixes the path list; the index is re-audited after retry.

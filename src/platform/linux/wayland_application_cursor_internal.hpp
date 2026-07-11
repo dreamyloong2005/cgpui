@@ -3,5 +3,7 @@
 void set_window_cursor(WaylandWindow& window, CursorShape cursor_shape);
 void record_cursor_theme_state(
     CursorShape cursor_shape,
-    std::uint32_t serial);
+    std::uint32_t serial,
+    const WaylandCursorThemeApplyResult& result);
 void apply_cursor_for(WaylandWindow* window);
+void cursor_scale_changed(WaylandWindow& window);

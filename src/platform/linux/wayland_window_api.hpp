@@ -23,6 +23,7 @@ using WaylandWindowPtr = std::unique_ptr<WaylandWindow, WaylandWindowDeleter>;
 using WaylandWindowUnregisterCallback = std::function<void(WaylandWindow*)>;
 using WaylandWindowCursorCallback =
     std::function<void(WaylandWindow&, CursorShape)>;
+using WaylandWindowScaleCallback = std::function<void(WaylandWindow&)>;
 using WaylandWindowImePlacementCallback = std::function<void(
     WaylandWindow&,
     std::optional<ImeTextInputPlacement>)>;
@@ -43,7 +44,8 @@ Result<WaylandWindowPtr> create_wayland_window(
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,
-    WaylandOutputScaleLookup output_scale_lookup);
+    WaylandOutputScaleLookup output_scale_lookup,
+    WaylandWindowScaleCallback scale_changed);
 std::unique_ptr<PlatformWindow> make_registered_wayland_window(
     WaylandWindowPtr window,
     WaylandWindowUnregisterCallback unregister,

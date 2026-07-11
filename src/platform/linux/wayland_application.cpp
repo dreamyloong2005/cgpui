@@ -36,6 +36,7 @@ WaylandApplication::WaylandApplication()
     initialization_error_ = "wl_display_roundtrip failed";
     return;
   }
+  cursor_theme_ = create_wayland_cursor_theme(compositor_, shm_);
 
   if (shell_ != nullptr) {
     static const xdg_wm_base_listener shell_listener{
@@ -58,6 +59,7 @@ WaylandApplication::WaylandApplication()
 }
 
 WaylandApplication::~WaylandApplication() {
+  cursor_theme_.reset();
   wayland_text_input_reset(*text_input_);
   wayland_data_device_reset(*data_device_);
   wayland_keyboard_reset(keyboard_state_);
@@ -91,6 +93,9 @@ WaylandApplication::~WaylandApplication() {
   }
   if (compositor_ != nullptr) {
     wl_compositor_destroy(compositor_);
+  }
+  if (shm_ != nullptr) {
+    wl_shm_destroy(shm_);
   }
   if (registry_ != nullptr) {
     wl_registry_destroy(registry_);

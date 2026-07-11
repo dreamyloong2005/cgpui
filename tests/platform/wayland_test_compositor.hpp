@@ -1,6 +1,7 @@
 #pragma once
 
 #include "wayland_test_configure_state.hpp"
+#include "wayland_test_cursor_state.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -167,6 +168,8 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_pointer_cursor_set() const;
   [[nodiscard]] bool wait_for_pointer_cursor_set_count(
       std::uint32_t count) const;
+  [[nodiscard]] bool wait_for_cursor_surface_ready() const;
+  [[nodiscard]] WaylandCursorSurfaceState cursor_surface_state() const;
   [[nodiscard]] bool wait_for_keyboard_modifiers_sent() const;
   [[nodiscard]] bool wait_for_keyboard_keymap_sent_count(
       std::uint32_t count) const;

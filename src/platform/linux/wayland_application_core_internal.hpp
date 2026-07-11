@@ -1,6 +1,7 @@
 #pragma once
 
 #include "wayland_internal.hpp"
+#include "wayland_cursor_theme_internal.hpp"
 #include "wayland_pointer_scroll_frame_internal.hpp"
 
 namespace cgpui {
@@ -36,6 +37,7 @@ class WaylandApplication final : public PlatformApplication {
   wl_display* display_ = nullptr;
   wl_registry* registry_ = nullptr;
   wl_compositor* compositor_ = nullptr;
+  wl_shm* shm_ = nullptr;
   xdg_wm_base* shell_ = nullptr;
   zxdg_decoration_manager_v1* decoration_manager_ = nullptr;
   wl_seat* seat_ = nullptr;
@@ -64,6 +66,7 @@ class WaylandApplication final : public PlatformApplication {
   WaylandCursorThemeLoadStatus cursor_theme_status_ =
       WaylandCursorThemeLoadStatus::unavailable;
   WaylandCursorThemeState cursor_theme_state_;
+  WaylandCursorThemeResourcesPtr cursor_theme_;
   std::uint32_t pointer_enter_serial_ = 0;
 };
 

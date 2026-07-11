@@ -105,7 +105,8 @@ Result<WaylandWindowPtr> create_wayland_window(
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,
-    WaylandOutputScaleLookup output_scale_lookup) {
+    WaylandOutputScaleLookup output_scale_lookup,
+    WaylandWindowScaleCallback scale_changed) {
   auto window = WaylandWindow::create(
       display,
       compositor,
@@ -116,7 +117,8 @@ Result<WaylandWindowPtr> create_wayland_window(
       descriptor,
       std::move(callback),
       text_input_available,
-      std::move(output_scale_lookup));
+      std::move(output_scale_lookup),
+      std::move(scale_changed));
   if (!window) {
     return std::unexpected(window.error());
   }

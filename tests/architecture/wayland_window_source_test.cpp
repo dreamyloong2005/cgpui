@@ -97,6 +97,8 @@ std::string read_wayland_source() {
   const std::vector<const char*> wayland_files{
       "src/platform/linux/wayland_internal.hpp",
       "src/platform/linux/wayland_input_internal.hpp",
+      "src/platform/linux/wayland_cursor_theme_internal.hpp",
+      "src/platform/linux/wayland_cursor_theme.cpp",
       "src/platform/linux/wayland_protocol_internal.hpp",
       "src/platform/linux/wayland_services_internal.hpp",
       "src/platform/linux/wayland_window_api.hpp",

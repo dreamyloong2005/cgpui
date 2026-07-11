@@ -687,6 +687,7 @@ consume C: drive space again.
 - Phase F Step 558 aggregates Wayland axis frames with source-aware precision, high-resolution value120 metadata, stop-only cleanup, and v9 pointer negotiation. Step 559 Wayland fractional scale production behavior is next.
 - Phase F Step 559 adds production Wayland fractional scaling with preferred 120-based scale, integer-ceiling buffer scale, viewporter logical destinations, and integer output fallback. Step 560 Wayland configure lifecycle production behavior is next.
 - Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.
+- Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.
 
 ## Categories
 

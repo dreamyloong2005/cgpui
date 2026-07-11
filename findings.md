@@ -9972,3 +9972,40 @@
   committed non-zero size applies at ack, and a duplicate size does not emit a
   redundant resize event.
 - Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.
+
+## 2026-07-11 Phase F Step 561 Wayland Cursor Theme Loading Audit
+
+- Production currently maps public cursor shapes to Wayland cursor names and
+  records deterministic unavailable diagnostics, but every application still
+  submits a null cursor surface through `wl_pointer_set_cursor`.
+- No `wl_cursor_theme`, cursor image/buffer ownership, cursor surface, hotspot,
+  animation frame, environment theme/size, or scale-aware reload path exists.
+  Step 561 must add real resource ownership in focused cursor modules and keep
+  the broad Wayland application source orchestration-only.
+- WSL exposes `wayland-cursor` 1.25.0 through pkg-config. The production path
+  can use `wl_cursor_theme_load`, `wl_cursor_theme_get_cursor`,
+  `wl_cursor_image_get_buffer`, a dedicated cursor surface, integer-ceiling
+  window scale, and surface buffer scale instead of adding a custom protocol.
+- The real test compositor can advertise standard shared-memory support with
+  `wl_display_init_shm`. Its pointer set-cursor and surface attach/commit hooks
+  should observe a non-null cursor surface, buffer attachment, hotspot, and
+  shape reapplication without embedding cursor-image behavior in broad test
+  callbacks.
+- `wayland_window_state()` already exposes the active fractional/integer scale,
+  but the application is not notified when that scale changes. A narrow
+  window-scale callback can reapply only the currently hovered window cursor;
+  the cursor resource module can cache/reload the theme at `ceil(scale)`.
+- Keep libwayland-cursor types out of the broad application header through an
+  opaque resource pointer. The focused implementation should own theme and
+  cursor-surface destruction, environment theme/size parsing, image fallback,
+  buffer scale/attach/damage/commit, and hotspot conversion.
+- The first production run proved the complete native path through a temporary
+  theme: three cursor applications used a non-null surface, attached and
+  committed a real shm buffer, and preserved hotspot (1,2) at scale 1. The only
+  failure was test bookkeeping: a second PointerMoved overwrote stage 2 back to
+  1; compare-exchange now lets only the first move own the transition.
+- Cursor regression coverage exposed a latent Step 560 ordering issue rather
+  than a cursor defect: configure ack was flushed before pending size applied
+  its viewport destination. Moving the flush after acknowledgement sends the
+  ack and matching viewport state together before resize callbacks observe it.
+- Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.

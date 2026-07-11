@@ -47,6 +47,9 @@ WaylandApplication::create_window_with_parent(
       wayland_text_input_available(*text_input_),
       [this](wl_output* output) {
         return output_scales_.scale_for(output);
+      },
+      [this](WaylandWindow& scaled_window) {
+        cursor_scale_changed(scaled_window);
       });
   if (!window) {
     return std::unexpected(window.error());

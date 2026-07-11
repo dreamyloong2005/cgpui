@@ -26,6 +26,7 @@ KeyboardModifiers modifiers_from_xkb_state(xkb_state* state);
 
 struct WaylandRegistryBindings {
   wl_compositor** compositor = nullptr;
+  wl_shm** shm = nullptr;
   xdg_wm_base** shell = nullptr;
   zxdg_decoration_manager_v1** decoration_manager = nullptr;
   wl_seat** seat = nullptr;
@@ -65,6 +66,7 @@ struct WaylandCursorImageState {
       WaylandCursorImageStatus::cursor_image_unavailable;
   std::int32_t hotspot_x = 0;
   std::int32_t hotspot_y = 0;
+  std::int32_t buffer_scale = 1;
   std::string unavailable_reason;
 };
 

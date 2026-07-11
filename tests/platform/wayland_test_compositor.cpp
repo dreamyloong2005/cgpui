@@ -301,13 +301,6 @@ void destroy_resource(wl_client*, wl_resource* resource) {
 
 void noop_resource(wl_client*, wl_resource*) {}
 
-void noop_surface_attach(
-    wl_client*,
-    wl_resource*,
-    wl_resource*,
-    std::int32_t,
-    std::int32_t) {}
-
 void noop_surface_damage(
     wl_client*,
     wl_resource*,
@@ -509,6 +502,9 @@ struct WaylandTestCompositor::State {
     if (display == nullptr) {
       return false;
     }
+    if (wl_display_init_shm(display) < 0) {
+      return false;
+    }
 
     const auto runtime_string = runtime_dir.string();
     setenv("XDG_RUNTIME_DIR", runtime_string.c_str(), 1);
@@ -612,17 +608,6 @@ struct WaylandTestCompositor::State {
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     return flag.load() == value;
-  }
-
-  [[nodiscard]] bool wait_for_cursor_count(std::uint32_t count) const {
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
-    while (std::chrono::steady_clock::now() < deadline) {
-      if (pointer_cursor_set_count.load() >= count) {
-        return true;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-    return pointer_cursor_set_count.load() >= count;
   }
 
   void request_resize_configure(std::int32_t width, std::int32_t height) {
@@ -1174,6 +1159,9 @@ struct WaylandTestCompositor::State {
       wl_resource* resource,
       std::uint32_t serial);
   static void surface_commit(wl_client*, wl_resource* resource);
+  static void surface_attach(
+      wl_client*, wl_resource* resource, wl_resource* buffer,
+      std::int32_t, std::int32_t);
   static void shell_get_positioner(
       wl_client* client,
       wl_resource*,
@@ -1338,19 +1326,8 @@ struct WaylandTestCompositor::State {
       std::uint32_t dnd_actions,
       std::uint32_t preferred_action);
   static void pointer_set_cursor(
-      wl_client*,
-      wl_resource* resource,
-      std::uint32_t,
-      wl_resource*,
-      std::int32_t,
-      std::int32_t) {
-    auto* compositor =
-        static_cast<State*>(wl_resource_get_user_data(resource));
-    if (compositor != nullptr) {
-      compositor->pointer_cursor_set.store(true);
-      compositor->pointer_cursor_set_count.fetch_add(1);
-    }
-  }
+      wl_client*, wl_resource* resource, std::uint32_t, wl_resource* surface,
+      std::int32_t hotspot_x, std::int32_t hotspot_y);
   static void handle_pointer_destroyed(wl_resource* resource);
   static void handle_keyboard_destroyed(wl_resource* resource);
 
@@ -1592,8 +1569,6 @@ struct WaylandTestCompositor::State {
   std::atomic_bool drag_offer_accepted{false};
   std::atomic_bool drag_offer_actions_set{false};
   std::atomic_bool drag_offer_finished{false};
-  std::atomic_bool pointer_cursor_set{false};
-  std::atomic_uint32_t pointer_cursor_set_count{0};
   std::atomic_bool keyboard_keymap_sent{false};
   std::atomic_bool keyboard_keymap_pending{false};
   std::atomic_uint32_t keyboard_keymap_sent_count{0};
@@ -1671,6 +1646,7 @@ struct WaylandTestCompositor::State {
       WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE};
   std::uint32_t next_configure_serial = 1;
   WaylandTestConfigureState configure;
+  WaylandTestCursorState cursor;
   std::uint32_t next_pointer_serial = 1;
   std::uint32_t pointer_time = 1;
   bool pointer_entered = false;
@@ -1692,6 +1668,7 @@ struct WaylandTestCompositor::State::SurfaceState {
   std::uint32_t initial_configure_serial = 0;
   bool initial_configure_sent = false;
   bool output_enter_sent = false;
+  bool cursor_surface = false;
 };
 
 void WaylandTestCompositor::State::create_surface(
@@ -1787,6 +1764,10 @@ void WaylandTestCompositor::State::surface_commit(
     wl_client*,
     wl_resource* resource) {
   auto* state = static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+  if (state != nullptr && state->cursor_surface) {
+    state->compositor->cursor.record_surface_committed();
+    return;
+  }
   if (state == nullptr || state->xdg_surface == nullptr ||
       state->initial_configure_sent) {
     return;
@@ -1808,6 +1789,26 @@ void WaylandTestCompositor::State::surface_commit(
   wl_display_flush_clients(state->compositor->display);
 }
 
+void WaylandTestCompositor::State::surface_attach(
+    wl_client*, wl_resource* resource, wl_resource* buffer,
+    std::int32_t, std::int32_t) {
+  auto* state = static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
+  if (state == nullptr || !state->cursor_surface || buffer == nullptr) return;
+  state->compositor->cursor.record_buffer_attached();
+}
+
+void WaylandTestCompositor::State::pointer_set_cursor(
+    wl_client*, wl_resource* resource, std::uint32_t, wl_resource* surface,
+    std::int32_t hotspot_x,
+    std::int32_t hotspot_y) {
+  auto* compositor = static_cast<State*>(wl_resource_get_user_data(resource));
+  if (compositor == nullptr) return;
+  SurfaceState* state = compositor->find_surface(surface);
+  if (state != nullptr) state->cursor_surface = true;
+  compositor->cursor.record_set_cursor(
+      surface != nullptr, hotspot_x, hotspot_y);
+}
+
 void WaylandTestCompositor::State::surface_set_buffer_scale(
     wl_client*,
     wl_resource* resource,
@@ -1815,6 +1816,9 @@ void WaylandTestCompositor::State::surface_set_buffer_scale(
   auto* state = static_cast<SurfaceState*>(wl_resource_get_user_data(resource));
   if (state == nullptr) {
     return;
+  }
+  if (state->cursor_surface) {
+    state->compositor->cursor.record_buffer_scale(scale);
   }
   state->compositor->surface_buffer_scale.store(scale);
 }
@@ -2998,7 +3002,7 @@ const struct wl_compositor_interface WaylandTestCompositor::State::compositor_im
 
 const struct wl_surface_interface WaylandTestCompositor::State::surface_implementation{
     .destroy = destroy_resource,
-    .attach = noop_surface_attach,
+    .attach = &WaylandTestCompositor::State::surface_attach,
     .damage = noop_surface_damage,
     .frame = noop_surface_frame,
     .set_opaque_region = noop_surface_region,
@@ -3593,12 +3597,20 @@ std::uint32_t WaylandTestCompositor::last_drag_preferred_action() const {
 }
 
 bool WaylandTestCompositor::wait_for_pointer_cursor_set() const {
-  return state_->wait_for_flag(state_->pointer_cursor_set);
+  return state_->cursor.wait_for_apply_count(1);
 }
 
 bool WaylandTestCompositor::wait_for_pointer_cursor_set_count(
     std::uint32_t count) const {
-  return state_->wait_for_cursor_count(count);
+  return state_->cursor.wait_for_apply_count(count);
+}
+
+bool WaylandTestCompositor::wait_for_cursor_surface_ready() const {
+  return state_->cursor.wait_for_surface_ready();
+}
+
+WaylandCursorSurfaceState WaylandTestCompositor::cursor_surface_state() const {
+  return state_->cursor.snapshot();
 }
 
 bool WaylandTestCompositor::wait_for_keyboard_modifiers_sent() const {

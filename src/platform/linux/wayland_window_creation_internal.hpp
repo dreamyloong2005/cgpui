@@ -1,5 +1,11 @@
 #pragma once
 
+WaylandWindow(
+    wl_display* display,
+    PlatformEventCallback callback,
+    WindowState state,
+    WaylandOutputScaleLookup output_scale_lookup,
+    WaylandWindowScaleCallback scale_changed);
 Result<void> initialize(
     wl_compositor* compositor,
     xdg_wm_base* shell,

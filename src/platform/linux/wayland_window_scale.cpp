@@ -37,6 +37,7 @@ void WaylandWindow::refresh_output_scale() {
       surface_, static_cast<std::int32_t>(std::ceil(scale)));
   wl_surface_commit(surface_);
   update_framebuffer_size();
+  if (scale_changed_) scale_changed_(*this);
   if (configured_) {
     callback_(WindowResized{
         .size = state_.framebuffer_size,

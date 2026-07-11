@@ -12,13 +12,14 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     bool text_input_available,
-    WaylandOutputScaleLookup output_scale_lookup) {
+    WaylandOutputScaleLookup output_scale_lookup,
+    WaylandWindowScaleCallback scale_changed) {
   auto window = std::unique_ptr<WaylandWindow>(
       new WaylandWindow(display, std::move(callback), WindowState{
           .framebuffer_size = descriptor.size,
           .scale = DpiScale{1.0F},
           .close_requested = false,
-      }, std::move(output_scale_lookup)));
+      }, std::move(output_scale_lookup), std::move(scale_changed)));
   window->set_text_input_available(text_input_available);
 
   auto initialized =
@@ -36,12 +37,14 @@ WaylandWindow::WaylandWindow(
     wl_display* display,
     PlatformEventCallback callback,
     WindowState state,
-    WaylandOutputScaleLookup output_scale_lookup)
+    WaylandOutputScaleLookup output_scale_lookup,
+    WaylandWindowScaleCallback scale_changed)
     : display_(display),
       callback_(std::move(callback)),
       state_(state),
       logical_size_(state.framebuffer_size),
-      output_scale_lookup_(std::move(output_scale_lookup)) {}
+      output_scale_lookup_(std::move(output_scale_lookup)),
+      scale_changed_(std::move(scale_changed)) {}
 
 WaylandWindow::~WaylandWindow() {
   if (viewport_ != nullptr) {

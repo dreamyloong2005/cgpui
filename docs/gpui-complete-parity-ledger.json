@@ -2071,7 +2071,36 @@
       "xmake.lua"
     ],
     "phase_f_step_560_remaining_gap": "Step 561 Wayland cursor theme loading production behavior",
-    "phase_f_current_handoff": "Step 561 Wayland cursor theme loading production behavior"
+    "phase_f_step_561_surface": "Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.",
+    "phase_f_step_561_sources": [
+      "src/platform/linux/wayland_cursor_theme_internal.hpp",
+      "src/platform/linux/wayland_cursor_theme.cpp",
+      "src/platform/linux/wayland_input_internal.hpp",
+      "src/platform/linux/wayland_registry.cpp",
+      "src/platform/linux/wayland_application_core_internal.hpp",
+      "src/platform/linux/wayland_application.cpp",
+      "src/platform/linux/wayland_application_cursor_internal.hpp",
+      "src/platform/linux/wayland_application_cursor.cpp",
+      "src/platform/linux/wayland_application_window_registry.cpp",
+      "src/platform/linux/wayland_application_window_creation.cpp",
+      "src/platform/linux/wayland_window_api.hpp",
+      "src/platform/linux/wayland_window_internal.hpp",
+      "src/platform/linux/wayland_window_creation_internal.hpp",
+      "src/platform/linux/wayland_window.cpp",
+      "src/platform/linux/wayland_window_registered.cpp",
+      "src/platform/linux/wayland_window_scale.cpp",
+      "src/platform/linux/wayland_window_configure.cpp",
+      "tests/platform/wayland_test_cursor_state.hpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_cursor_theme_test.cpp",
+      "tests/architecture/phase_f_wayland_cursor_theme_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_561_remaining_gap": "Step 562 Wayland event-loop wakeup production behavior",
+    "phase_f_current_handoff": "Step 562 Wayland event-loop wakeup production behavior"
   },
   "categories": [
     "application_and_app_context",

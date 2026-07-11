@@ -52,8 +52,8 @@ void WaylandWindow::handle_surface_configure(
   const WaylandXdgToplevelState previous_state =
       window->pending_configure_.current_toplevel_state;
   xdg_surface_ack_configure(surface, serial);
-  (void)wl_display_flush(window->display_);
   const bool resized = window->acknowledge_configure(serial);
+  (void)wl_display_flush(window->display_);
   window->configured_ = true;
   window->dispatch_configure_lifecycle_events(
       previous_state,
