@@ -10376,3 +10376,21 @@
   virtual-key semantics and existing public examples use uppercase letters, so
   the ambiguous lowercase branch was removed.
 - Phase F Step 582 formats Win32 native menu accelerator labels in a focused leaf, appends tab-aligned Ctrl/Alt/Shift/Win key text for letters, digits, function keys, and named keys, and preserves accelerator counts without claiming dispatch. Step 583 native menu accelerator registration production behavior is next.
+
+## 2026-07-12 Phase F Step 583 Native Menu Accelerator Registration
+
+- Win32 currently assigns recursive HMENU command ids from `0x1000`, but owns
+  no `HACCEL` table and the application loop always routes key messages through
+  `TranslateMessage` and `DispatchMessageW`.
+- Accelerator-table ownership belongs in a focused RAII leaf next to, but not
+  inside, display formatting or recursive HMENU construction. The native menu
+  state should commit the menu tree and accelerator table together.
+- Win32 `ACCEL` records support virtual-key key-down plus Ctrl/Alt/Shift flags;
+  they cannot represent the public `super` modifier or key-up action. This step
+  registers the representable subset while preserving the public descriptor
+  count; later platform diagnostics can expose skipped descriptors.
+- The real Win32 loop test reached RED at exit 5 after installation succeeded,
+  then passed once the focused table was owned by native menu state and checked
+  before ordinary key dispatch. Display, tree, and replacement regressions pass
+  with it.
+- Phase F Step 583 builds and transactionally owns a focused Win32 HACCEL table, shares recursive command ids with HMENU construction, translates supported Ctrl/Alt/Shift key-down accelerators before ordinary key dispatch, and preserves unsupported Win-key/key-up descriptors for diagnostics. Step 584 native menu command dispatch production behavior is next.

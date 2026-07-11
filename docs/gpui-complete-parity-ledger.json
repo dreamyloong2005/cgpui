@@ -2371,7 +2371,22 @@
       "xmake.lua"
     ],
     "phase_f_step_582_remaining_gap": "Step 583 native menu accelerator registration production behavior",
-    "phase_f_current_handoff": "Step 583 native menu accelerator registration production behavior"
+    "phase_f_step_583_surface": "Phase F Step 583 builds and transactionally owns a focused Win32 HACCEL table, shares recursive command ids with HMENU construction, translates supported Ctrl/Alt/Shift key-down accelerators before ordinary key dispatch, and preserves unsupported Win-key/key-up descriptors for diagnostics. Step 584 native menu command dispatch production behavior is next.",
+    "phase_f_step_583_sources": [
+      "src/platform/win32/win32_native_menu_accelerator_table_internal.hpp",
+      "src/platform/win32/win32_native_menu_accelerator_table.cpp",
+      "src/platform/win32/win32_native_internal.hpp",
+      "src/platform/win32/win32_native.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_native_menu_tree.cpp",
+      "tests/platform/win32_native_menu_accelerator_registration_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_accelerator_registration_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_583_remaining_gap": "Step 584 native menu command dispatch production behavior",
+    "phase_f_current_handoff": "Step 584 native menu command dispatch production behavior"
   },
   "categories": [
     "application_and_app_context",

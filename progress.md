@@ -21858,6 +21858,29 @@
   12/60/114/86/81 line counts, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 583 Native Menu Accelerator Registration
+
+- Started from committed Step 582 at `10a919ef`; only unrelated untracked
+  `.vscode/` remains.
+- The ownership audit found no existing `HACCEL` lifecycle or accelerator
+  translation in the Win32 loop. Planned a focused RAII table leaf and a real
+  message-loop behavior test before production integration.
+- The real Ctrl+O loop test reached precise RED at exit 5 after its watchdog
+  ended the untranslated loop. The first GREEN build exposed the Win32 `max`
+  macro; the macro-resistant numeric-limit spelling fixed compilation.
+- Added transactional `HACCEL` ownership, recursive command-id alignment, and
+  pre-dispatch translation. Registration plus the three existing native-menu
+  behavior regressions pass 4/4.
+- Added the Step 583 structure guard and source inventories; it reached the
+  intended five-document RED at exit 10 after a transient Xmake package-lock
+  failure was bypassed through the registered test path.
+- Final Windows behavior/structure/ledger verification passes 12/12. Final WSL
+  shared structure/ledger verification passes 8/8.
+- JSON parsing, five-document unique phrase, thirty-two Step 584 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  40/92/157/115/97/96 line counts, and `git diff --check` pass. `.vscode/`
+  remains unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

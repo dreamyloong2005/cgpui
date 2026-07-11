@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 583 native menu")) {
+                "\"phase_f_current_handoff\": \"Step 584 native menu")) {
     return 11;
   }
   return 0;

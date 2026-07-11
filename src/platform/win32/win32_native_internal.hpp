@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "win32_native_menu_accelerator_table_internal.hpp"
 #include "win32_native_menu_tree_internal.hpp"
 
 namespace cgpui {
@@ -12,10 +13,12 @@ class Win32NativeMenuState {
   [[nodiscard]] const PlatformMenuInstallationResult& last_menu_installation()
       const;
   [[nodiscard]] HMENU native_menu() const;
+  [[nodiscard]] bool translate_accelerator(MSG& message) const;
 
  private:
   NativeMenuModel model_;
   Win32NativeMenuTree menu_tree_;
+  Win32NativeMenuAcceleratorTable accelerator_table_;
   PlatformMenuInstallationResult last_menu_installation_;
 };
 

@@ -1,5 +1,6 @@
 #include "win32_internal.hpp"
 #include "win32_native_menu_accelerator_internal.hpp"
+#include "win32_native_menu_accelerator_table_internal.hpp"
 
 #include <utility>
 
@@ -96,7 +97,7 @@ std::optional<Win32NativeMenuTree> Win32NativeMenuTree::build(
   if (model.items.empty()) return Win32NativeMenuTree{};
   HMENU root = CreateMenu();
   if (root == nullptr) return std::nullopt;
-  UINT_PTR next_command_id = 0x1000;
+  UINT_PTR next_command_id = win32_native_menu_first_command_id;
   if (!append_menu_items(root, model.items, next_command_id)) {
     DestroyMenu(root);
     return std::nullopt;

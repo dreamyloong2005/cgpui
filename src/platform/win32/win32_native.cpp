@@ -7,16 +7,18 @@ namespace cgpui {
 PlatformMenuInstallationResult Win32NativeMenuState::install_native_menu(
     NativeMenuModel menu) {
   auto menu_tree = Win32NativeMenuTree::build(menu);
+  auto accelerator_table = Win32NativeMenuAcceleratorTable::build(menu);
   last_menu_installation_ = PlatformMenuInstallationResult{
-      .supported = menu_tree.has_value(),
+      .supported = menu_tree.has_value() && accelerator_table.has_value(),
       .backend = "win32",
       .menu_count = menu.items.size(),
       .item_count = native_menu_item_count(menu),
       .accelerator_count = native_menu_accelerator_count(menu),
   };
-  if (menu_tree.has_value()) {
+  if (menu_tree.has_value() && accelerator_table.has_value()) {
     model_ = std::move(menu);
     menu_tree_ = std::move(*menu_tree);
+    accelerator_table_ = std::move(*accelerator_table);
   }
   return last_menu_installation_;
 }
@@ -27,6 +29,10 @@ Win32NativeMenuState::last_menu_installation() const {
 }
 
 HMENU Win32NativeMenuState::native_menu() const { return menu_tree_.root(); }
+
+bool Win32NativeMenuState::translate_accelerator(MSG& message) const {
+  return accelerator_table_.translate(message);
+}
 
 NativeFileDialogResult Win32NativeFileDialogState::show_native_file_dialog(
     NativeFileDialogOptions options) {

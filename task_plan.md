@@ -1049,7 +1049,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 582 evidence: a real Win32 menu displays Ctrl+Shift+O, Alt+F4,
   Ctrl+Del, and Win+1 labels through the focused formatter while installation
   retains the expected accelerator count.
-- In progress: Step 583 native menu accelerator registration production behavior.
+- Completed: Phase F Step 583 builds and transactionally owns a focused Win32 HACCEL table, shares recursive command ids with HMENU construction, translates supported Ctrl/Alt/Shift key-down accelerators before ordinary key dispatch, and preserves unsupported Win-key/key-up descriptors for diagnostics. Step 584 native menu command dispatch production behavior is next.
+- Step 583 evidence: the real Win32 message loop translates Ctrl+O into the
+  first recursive HMENU command id (`0x1000`) while display, tree, and dynamic
+  replacement behavior remain green.
+- In progress: Step 584 native menu command dispatch production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1067,6 +1071,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 583 structure `xmake run` stopped before build with a transient `cannot create filelock for package(ninja)` and no live xmake/ninja process | Step 583 structure RED | Use the registered `/default` test path after confirming no competing process instead of repeating the direct-run invocation |
+| Step 583 first GREEN build let the Win32 `max` macro expand `numeric_limits<WORD>::max()` | Step 583 accelerator-table implementation | Use the macro-resistant `(std::numeric_limits<WORD>::max)()` spelling |
+| A Step 583 inspection guessed two nonexistent platform-event/application-internal paths | Step 583 ownership audit | Use `rg --files` first; the event variant is `include/cgpui/core/event_platform.hpp` and `Win32Application` is local to `win32_application.cpp` |
+| A Windows `rg` command passed the literal wildcard path `docs/gpui-complete-parity-ledger.*` and returned OS error 123 | Step 583 roadmap audit | Pass the markdown and JSON paths explicitly because PowerShell did not expand the wildcard for `rg` |
 | A Step 582 focused `xmake test` command passed bare target names and returned `nothing to test` | Step 582 final Windows gate | Select registered test names with the `/default` suffix |
 | The first Step 582 structure patch used the pre-rename Step 581 xmake target as its anchor and was rejected atomically | Step 582 structure guard | Re-anchor the insertion on `phase_f_win32_native_menu_replacement_structure_test` |
 | Windows also refused the initial Step 581 structure executable with error 740 because its target name contained `update` | Step 581 structure RED | Rename the structure target to `phase_f_win32_native_menu_replacement_structure_test` and update its self-check |

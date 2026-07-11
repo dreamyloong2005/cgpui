@@ -52,6 +52,7 @@ class Win32Application final : public PlatformApplication {
         dispatch_wakeup();
         continue;
       }
+      if (native_menu_state_.translate_accelerator(message)) continue;
       TranslateMessage(&message);
       DispatchMessageW(&message);
     }
