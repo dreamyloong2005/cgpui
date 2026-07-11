@@ -1868,7 +1868,26 @@
       "xmake.lua"
     ],
     "phase_f_step_550_remaining_gap": "Step 551 Win32 text-input production behavior",
-    "phase_f_current_handoff": "Step 551 Win32 text-input production behavior"
+    "phase_f_step_551_surface": "Phase F Step 551 adds production Win32 text input with UTF-16 surrogate pairing, WM_UNICHAR negotiation and codepoint delivery, system-character suppression, and focus-loss state reset through focused text-input and window-procedure modules. Step 552 Win32 cursor theme and system cursor production behavior is next.",
+    "phase_f_step_551_sources": [
+      "src/platform/win32/win32_text_input_internal.hpp",
+      "src/platform/win32/win32_text_input.cpp",
+      "src/platform/win32/win32_internal.hpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_window_proc.cpp",
+      "src/platform/win32/win32_window_proc_keyboard.cpp",
+      "src/platform/win32/win32_window_proc_text.cpp",
+      "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_text.cpp",
+      "tests/platform/win32_text_input_production_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/phase_f_win32_text_input_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_551_remaining_gap": "Step 552 Win32 cursor theme and system cursor production behavior",
+    "phase_f_current_handoff": "Step 552 Win32 cursor theme and system cursor production behavior"
   },
   "categories": [
     "application_and_app_context",

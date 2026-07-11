@@ -68,5 +68,10 @@ bool win32_window_proc_handle_keyboard(
     LPARAM lparam,
     Win32WindowMessageTarget* window,
     LRESULT& result);
+bool win32_window_proc_handle_text(
+    UINT message,
+    WPARAM wparam,
+    Win32WindowMessageTarget* window,
+    LRESULT& result);
 
 } // namespace cgpui

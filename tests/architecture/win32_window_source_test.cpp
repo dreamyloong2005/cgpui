@@ -57,6 +57,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_pointer_button.cpp",
       "src/platform/win32/win32_pointer_scroll_internal.hpp",
       "src/platform/win32/win32_pointer_scroll.cpp",
+      "src/platform/win32/win32_text_input_internal.hpp",
+      "src/platform/win32/win32_text_input.cpp",
       "src/platform/win32/win32_window.cpp",
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/win32/win32_window_close.cpp",
@@ -75,6 +77,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_proc_lifecycle.cpp",
       "src/platform/win32/win32_window_proc_pointer.cpp",
       "src/platform/win32/win32_window_proc_keyboard.cpp",
+      "src/platform/win32/win32_window_proc_text.cpp",
   };
 
   std::string text;
@@ -371,8 +374,12 @@ int main() {
       read_source("src/platform/win32/win32_keyboard_key.cpp");
   const std::string win32_dead_key =
       read_source("src/platform/win32/win32_dead_key.cpp");
+  const std::string win32_text_input =
+      read_source("src/platform/win32/win32_text_input.cpp");
   const std::string win32_window_proc_keyboard =
       read_source("src/platform/win32/win32_window_proc_keyboard.cpp");
+  const std::string win32_window_proc_text =
+      read_source("src/platform/win32/win32_window_proc_text.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
       win32_accessibility_internal.empty() ||
       win32_drag_drop_internal.empty() || win32_native_internal.empty() ||
@@ -395,7 +402,8 @@ int main() {
       win32_window_proc_pointer.empty() ||
       win32_pointer_button.empty() || win32_pointer_scroll.empty() ||
       win32_keyboard_key.empty() || win32_dead_key.empty() ||
-      win32_window_proc_keyboard.empty()) {
+      win32_text_input.empty() || win32_window_proc_keyboard.empty() ||
+      win32_window_proc_text.empty()) {
     return 68;
   }
   if (line_count(win32_internal) > 80 ||
@@ -638,7 +646,9 @@ int main() {
       !contains(win32_keyboard_key, "WM_SYSKEYDOWN") ||
       !contains(win32_dead_key, "WM_DEADCHAR") ||
       !contains(win32_dead_key, "WM_SYSDEADCHAR") ||
-      !contains(win32_window_proc_keyboard, "WM_CHAR")) {
+      contains(win32_window_proc_keyboard, "WM_CHAR") ||
+      !contains(win32_text_input, "WM_UNICHAR") ||
+      !contains(win32_window_proc_text, "decode_win32_text_input(")) {
     return 93;
   }
 

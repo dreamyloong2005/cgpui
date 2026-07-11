@@ -53,7 +53,7 @@ void Win32Window::activation_changed(bool active) {
 void Win32Window::focus_changed(bool focused) {
   focused_ = focused;
   if (!focused) {
-    pending_dead_key_ = 0;
+    reset_win32_text_input_state(text_input_state_);
   }
   callback_(WindowFocused{.focused = focused});
 }

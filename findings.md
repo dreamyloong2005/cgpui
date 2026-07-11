@@ -9689,3 +9689,18 @@
 - The first Windows behavior verification passes 3/3 for dead-key behavior,
   existing Win32 text input, and ordinary/system keyboard-key regression.
 - Phase F Step 550 adds explicit Win32 dead/system-dead character suppression with pending composition state, composed TextInput metadata, and focus-loss reset through focused dead-key and window-text modules. Step 551 Win32 text-input production behavior is next.
+
+## 2026-07-11 Phase F Step 551 Win32 Text-Input Audit
+
+- The current `WM_CHAR` path converts one UTF-16 code unit at a time, so it
+  cannot preserve supplementary-plane characters delivered as surrogate pairs.
+- Win32 production text input also needs explicit `WM_UNICHAR` support: return
+  `TRUE` for `UNICODE_NOCHAR` capability probes and commit valid UTF-32 values.
+- `WM_SYSCHAR` must not become ordinary text input, but it must clear pending
+  dead-key and surrogate state before continuing to `DefWindowProc`.
+- Partial surrogate state must be per-window, allocation-free, and reset on
+  focus loss alongside pending dead-key composition state.
+- Runtime `TextInput` routing inserts the payload without filtering, so Win32
+  C0/DEL control `WM_CHAR` values must remain keyboard events rather than being
+  published a second time as insertable text.
+- Phase F Step 551 adds production Win32 text input with UTF-16 surrogate pairing, WM_UNICHAR negotiation and codepoint delivery, system-character suppression, and focus-loss state reset through focused text-input and window-procedure modules. Step 552 Win32 cursor theme and system cursor production behavior is next.

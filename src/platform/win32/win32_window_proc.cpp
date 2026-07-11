@@ -25,7 +25,8 @@ LRESULT CALLBACK win32_window_proc(
           window,
           result) ||
       win32_window_proc_handle_keyboard(
-          message, wparam, lparam, window, result)) {
+          message, wparam, lparam, window, result) ||
+      win32_window_proc_handle_text(message, wparam, window, result)) {
     return result;
   }
   return DefWindowProcW(hwnd, message, wparam, lparam);

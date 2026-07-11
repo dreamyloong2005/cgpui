@@ -2,6 +2,7 @@
 
 #include "cgpui/platform/platform.hpp"
 #include "win32_drag_drop_internal.hpp"
+#include "win32_text_input_internal.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -43,7 +44,7 @@ class Win32WindowMessageTarget {
       LPARAM lparam) = 0;
   virtual void key_event(KeyboardKey event) = 0;
   virtual void dead_key(wchar_t character) = 0;
-  virtual void text_input(WPARAM wparam) = 0;
+  virtual void text_input(Win32TextInputMessage message) = 0;
   virtual void drag_entered(const Win32TestDragDropPayload* payload) = 0;
   virtual void drag_updated(const Win32TestDragDropPayload* payload) = 0;
   virtual void drag_dropped(const Win32TestDragDropPayload* payload) = 0;

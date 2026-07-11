@@ -20867,3 +20867,33 @@
 - Ledger JSON parsing, the exact Step 550 phrase appearing once in each of the
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 551 Win32 Text Input
+
+- Audited the current one-code-unit `WM_CHAR` path and fixed the ownership plan:
+  focused text-message decoding, a dedicated text window-procedure module, and
+  allocation-free per-window surrogate/dead-key state in the window-text leaf.
+- Added production behavior coverage for UTF-16 surrogate pairs,
+  `WM_UNICHAR` probing/codepoints, `WM_SYSCHAR` suppression/state clearing,
+  invalid codepoints, and focus-loss partial-surrogate reset.
+- The RED run exited 4 on the missing `UNICODE_NOCHAR` response. Added the
+  focused decoder/state machine and dedicated text window-procedure module;
+  initial Windows behavior/regression verification now passes 5/5.
+- Registered all three new private source boundaries and added the Step 551
+  structure/documentation guard. Direct execution reached the intended
+  five-document RED gate at exit 6 with all behavior and line caps green.
+- Synchronized the exact Step 551 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; Step 552 cursor production
+  behavior is now the active handoff.
+- Consumer review found that runtime `TextInput` payloads are inserted without
+  filtering. The Win32 state machine now rejects C0/DEL controls and oversized
+  `WM_CHAR` values; the production test covers Backspace and control-A.
+- Final Windows focused verification passes 16/16 across production/dead-key/
+  legacy text and keyboard behavior, runtime/modifier regressions, all five
+  Win32 input structure guards, source inventories, headers, and the ledger.
+- Final WSL focused verification passes 12/12 across real Wayland keyboard,
+  runtime/modifier regressions, all five cross-platform Win32 input guards,
+  Wayland/platform source inventories, headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 551 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

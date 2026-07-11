@@ -32,16 +32,7 @@ bool win32_window_proc_handle_keyboard(
     result = 0;
     return true;
   }
-  switch (message) {
-    case WM_CHAR:
-      if (window != nullptr) {
-        window->text_input(wparam);
-      }
-      result = 0;
-      return true;
-    default:
-      return false;
-  }
+  return false;
 }
 
 } // namespace cgpui

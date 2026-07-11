@@ -911,7 +911,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 550 evidence: dead/system-dead messages update per-window pending state
   without publishing text; the next committed character exposes defaulted
   `TextInput::composed` metadata, and focus loss clears stale state.
-- In progress: Step 551 Win32 text-input production behavior.
+- Completed: Phase F Step 551 adds production Win32 text input with UTF-16 surrogate pairing, WM_UNICHAR negotiation and codepoint delivery, system-character suppression, and focus-loss state reset through focused text-input and window-procedure modules. Step 552 Win32 cursor theme and system cursor production behavior is next.
+- Step 551 evidence: a zero-allocation state machine coalesces UTF-16 surrogate
+  pairs, validates UTF-32 input, answers Unicode capability probes, clears stale
+  state on system characters/focus loss, and publishes through a dedicated text
+  window-procedure module.
+- In progress: Step 552 Win32 cursor theme and system cursor production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

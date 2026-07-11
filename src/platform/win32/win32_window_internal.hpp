@@ -61,7 +61,7 @@ class Win32Window final
   void pointer_scrolled(Point delta, bool precise, LPARAM lparam) override;
   void key_event(KeyboardKey event) override;
   void dead_key(wchar_t character) override;
-  void text_input(WPARAM wparam) override;
+  void text_input(Win32TextInputMessage message) override;
   void drag_entered(const Win32TestDragDropPayload* payload) override;
   void drag_updated(const Win32TestDragDropPayload* payload) override;
   void drag_dropped(const Win32TestDragDropPayload* payload) override;
@@ -88,7 +88,6 @@ class Win32Window final
   void revoke_drop_target();
   Point client_position_from_screen(POINTL point) const;
   void apply_ime_text_input_placement();
-
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
   HCURSOR current_cursor_ = nullptr;
@@ -104,7 +103,7 @@ class Win32Window final
   Win32OleDropTargetRegistrationState ole_drop_target_registration_;
   Point last_ole_drag_position_{};
   DragDropPayload last_ole_drag_payload_;
-  wchar_t pending_dead_key_ = 0;
+  Win32TextInputState text_input_state_;
 };
 
 } // namespace cgpui

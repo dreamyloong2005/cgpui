@@ -74,14 +74,14 @@ int main() {
       !contains(proc, "window->dead_key(dead_key->character)") ||
       !contains(proc, "if (dead_key->system)") ||
       !contains(message_target, "virtual void dead_key(wchar_t character)") ||
-      !contains(window_internal, "wchar_t pending_dead_key_ = 0")) {
+      !contains(window_internal, "Win32TextInputState text_input_state_")) {
     return 2;
   }
   if (!contains(window_text, "Win32Window::dead_key(") ||
-      !contains(window_text, "const bool composed = pending_dead_key_ != 0") ||
-      !contains(window_text, ".composed = composed") ||
+      !contains(window_text, "record_win32_dead_key(text_input_state_") ||
+      !contains(window_text, ".composed = commit->composed") ||
       contains(window_events, "Win32Window::text_input(") ||
-      !contains(window_events, "pending_dead_key_ = 0") ||
+      !contains(window_events, "reset_win32_text_input_state(text_input_state_)") ||
       !contains(behavior, "WM_SYSDEADCHAR") ||
       !contains(behavior, "text_events[3].composed") ||
       !contains(xmake, "target(\"win32_dead_key_test\")") ||
@@ -110,10 +110,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_550_remaining_gap\": \"Step 551 Win32")) {
     return 6;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 551 Win32")) {
-    return 7;
   }
   return 0;
 }
