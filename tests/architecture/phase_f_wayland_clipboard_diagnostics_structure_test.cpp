@@ -101,7 +101,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 586 native menu")) {
+                "\"phase_f_current_handoff\": \"Step 587 open-file")) {
     return 10;
   }
   return 0;

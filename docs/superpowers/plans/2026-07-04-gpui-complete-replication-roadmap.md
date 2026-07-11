@@ -1789,6 +1789,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 583 builds and transactionally owns a focused Win32 HACCEL table, shares recursive command ids with HMENU construction, translates supported Ctrl/Alt/Shift key-down accelerators before ordinary key dispatch, and preserves unsupported Win-key/key-up descriptors for diagnostics. Step 584 native menu command dispatch production behavior is next.
 - [x] Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.
 - [x] Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.
+- [x] Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
@@ -1804,7 +1805,7 @@ not protocol/test skeletons.
 - [x] Steps 571-578: Complete drag/drop: Win32 OLE drop target/source,
   Wayland data-device accept/action/finish negotiation, text/files/URI-list,
   non-local URI policy, and cancellation.
-- [ ] Steps 579-586: Complete native menus and accelerators: menu tree,
+- [x] Steps 579-586: Complete native menus and accelerators: menu tree,
   check/radio/enabled state, dynamic updates, accelerator display, dispatch,
   and platform diagnostics.
 - [ ] Steps 587-594: Complete dialogs and platform services: open/save file,

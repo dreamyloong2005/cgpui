@@ -20868,6 +20868,25 @@
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 586 Native Menu And Accelerator Closeout
+
+- Started from committed Step 585 at `d337d532`; only unrelated untracked
+  `.vscode/` remains.
+- Added an audit-only structure guard that aggregates the Steps 579-585 menu
+  evidence and freezes Wayland's explicit unsupported/skipped result.
+- The new guard returned the intended five-document RED at child exit 5 after
+  all prior-step evidence, Wayland policy, and Xmake registration passed.
+- Synchronized the exact Step 586 completion phrase across all five authority
+  documents, marked the Steps 579-586 roadmap band complete, and advanced
+  thirty-four historical dynamic handoff guards to Step 587.
+- Final Windows native-menu structure/ledger verification passes 10/10. Final
+  WSL shared native-menu structure/ledger verification also passes 10/10.
+- JSON parsing, five-document unique phrase, thirty-five Step 587 structure
+  handoff guards, the 65-line audit leaf, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+- The first combined final-check/stage command was denied while creating
+  `.git/index.lock`; rerun the approved, narrowly scoped `git add` separately.
+
 ## 2026-07-11 Phase F Step 551 Win32 Text Input
 
 - Audited the current one-code-unit `WM_CHAR` path and fixed the ownership plan:

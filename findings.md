@@ -10426,3 +10426,13 @@
   two skipped Win-key/key-up descriptors. Runtime diagnostics record handled
   accelerator and unhandled menu-command dispatches separately.
 - Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.
+
+## 2026-07-12 Phase F Step 586 Native Menu And Accelerator Closeout
+
+- Steps 579-585 already have focused structure guards for Win32 tree ownership,
+  item state, replacement/clear, accelerator display and registration, command
+  dispatch, and bounded runtime diagnostics.
+- The closeout should remain audit-only: aggregate those guards, preserve the
+  explicit Wayland unsupported/skipped result, and hand off to dialogs without
+  widening any production module.
+- Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.

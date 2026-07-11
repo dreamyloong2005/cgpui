@@ -1062,10 +1062,14 @@ Windows/Linux core API is stable enough for parity work.
   and two skipped descriptors, unsupported backends report all declared
   accelerators skipped, and focused runtime coverage records handled and
   unhandled accelerator/menu command diagnostics.
-- In progress: Step 586 native menu and accelerator closeout audit.
-- Step 586 plan: freeze the Steps 579-585 native-menu tree, item state,
-  replacement, accelerator display/registration, command dispatch, and
-  diagnostics evidence in one focused audit guard before dialogs/services.
+- Completed: Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.
+- Step 586 evidence: one audit-only structure guard aggregates all seven prior
+  native-menu guards, preserves Wayland's unsupported/skipped result, and
+  closes the band without widening production modules.
+- In progress: Step 587 open-file dialog production behavior.
+- Step 587 plan: audit the existing platform dialog result/service boundary,
+  then add focused native and unsupported behavior without placing dialog
+  implementation in broad application or platform entry files.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1083,6 +1087,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 586 combined final-check/stage command could not create `.git/index.lock` inside the workspace sandbox | Step 586 staging | Keep checks separate and rerun the narrowly scoped approved `git add` command on its own |
 | A Step 585 WSL process poll returned `WSL_E_DISTRO_NOT_FOUND` while the original focused gate had been linking | Step 585 WSL focused verification | Confirm the original Windows-side WSL process exited, then restart one serialized Arch Linux registered-test gate with captured completion output |
 | Sandboxed `Get-CimInstance Win32_Process` returned access denied while checking whether the long Step 585 WSL gate still ran | Step 585 WSL process audit | Use ordinary `Get-Process` state and a serialized registered-test rerun after the first process exits |
 | The first Step 585 structure launch stopped before the test with a transient `cannot create filelock for package(ninja)` error | Step 585 structure RED | Use the registered `/default` test path, matching the successful Step 583 workaround, instead of repeating the direct-run invocation |

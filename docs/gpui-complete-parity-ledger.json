@@ -2420,7 +2420,21 @@
       "xmake.lua"
     ],
     "phase_f_step_585_remaining_gap": "Step 586 native menu and accelerator closeout audit",
-    "phase_f_current_handoff": "Step 586 native menu and accelerator closeout audit"
+    "phase_f_step_586_surface": "Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.",
+    "phase_f_step_586_sources": [
+      "tests/architecture/phase_f_win32_native_menu_tree_structure_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_state_structure_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_update_structure_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_accelerator_display_structure_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_accelerator_registration_structure_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_command_dispatch_structure_test.cpp",
+      "tests/architecture/phase_f_native_menu_dispatch_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_native_menu_closeout_structure_test.cpp",
+      "src/platform/linux/wayland_native.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_586_remaining_gap": "Step 587 open-file dialog production behavior",
+    "phase_f_current_handoff": "Step 587 open-file dialog production behavior"
   },
   "categories": [
     "application_and_app_context",
