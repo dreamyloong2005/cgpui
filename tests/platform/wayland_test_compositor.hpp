@@ -170,6 +170,7 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_drag_offer_accepted() const;
   [[nodiscard]] bool wait_for_drag_offer_actions_set() const;
   [[nodiscard]] bool wait_for_drag_offer_finished() const;
+  [[nodiscard]] bool wait_for_drag_offer_destroyed() const;
   [[nodiscard]] std::string last_drag_accept_mime_type() const;
   [[nodiscard]] std::uint32_t last_drag_offer_actions() const;
   [[nodiscard]] std::uint32_t last_drag_preferred_action() const;

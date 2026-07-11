@@ -83,7 +83,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 574 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 575 Win32")) {
     return 9;
   }
   return 0;

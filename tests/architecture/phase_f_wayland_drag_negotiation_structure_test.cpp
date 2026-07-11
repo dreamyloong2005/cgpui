@@ -42,8 +42,8 @@ int main() {
       !contains(offer, "active_offer_negotiation_changed(*offer)")) return 2;
   if (!contains(actions, "return drag_supported_actions()") ||
       !contains(actions, "active_offer_->accepted = mime_type.has_value()") ||
-      !contains(actions, "!active_offer_->accepted") ||
-      !contains(actions, "current_drag_action() == DragDropAction::none")) return 3;
+      !contains(actions, "active_offer_->accepted &&") ||
+      !contains(actions, "current_drag_action() != DragDropAction::none")) return 3;
   if (!contains(events, "active_offer_->enter_serial = serial") ||
       !contains(events, "active_offer_->entered = true") ||
       !contains(behavior, "allow_pending_enter_action") ||
@@ -61,6 +61,6 @@ int main() {
       "Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 574 Wayland")) return 9;
+  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 575 Win32")) return 9;
   return 0;
 }

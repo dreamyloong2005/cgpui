@@ -21613,6 +21613,39 @@
   3700 lines. `.vscode/` remains unrelated and untracked; WSL full debug remains
   batched.
 
+## 2026-07-11 Phase F Step 574 Wayland Finish Negotiation
+
+- Started from committed Step 573 at `c3ace5f7`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit identifies delayed offer destruction after successful finish as
+  the production lifecycle gap. The test compositor is at its 3700-line cap,
+  so finish/destroy observation must first move into a focused test-state
+  module rather than expanding the broad compositor source.
+- Extracted drag-offer accept/action/finish/destroy observation into the focused
+  `wayland_test_drag_offer_state.hpp` leaf, reducing the shared compositor below
+  its cap and adding a bounded pre-leave destroy wait.
+- The real compositor test reached precise RED in 0.640 seconds because
+  production finished the accepted offer but retained it until `leave`.
+- The first Step 574 structure run also tripped the Step 573 historical guard
+  because its rejected-offer assertion still expected an early return. The
+  guard now freezes the stronger accepted/non-none/v3 finish condition while
+  Step 574 owns the following unconditional destroy.
+- Production now queues finish only for accepted, action-selected version-3
+  offers, then immediately destroys every completed drop offer and flushes the
+  finish/destroy requests in order. The real behavior test passes in 0.184s.
+- Added the Step 574 structure guard; after the historical Step 573 assertion
+  update it reached the intended five-document RED at exit 7 while platform
+  source structure remained green.
+- Synchronized the exact Step 574 completion phrase across all five authority
+  documents and advanced twenty-three structure handoff guards to Step 575.
+- Final Windows structure/ledger verification passes 4/4. Final WSL behavior
+  and shared structure/ledger verification passes 6/6.
+- JSON parsing, five-document unique phrase, twenty-three Step 575 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  line caps, and `git diff --check` pass. The shared compositor is 3681 lines
+  and the focused drag-offer state leaf is 95 lines. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

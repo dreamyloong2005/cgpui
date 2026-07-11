@@ -1777,6 +1777,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 571 validates Win32 OLE drop target COM inputs, returns E_INVALIDARG for missing data/effect pointers, clears rejected effects, and preserves QueryInterface, reference counting, and valid owner forwarding. Step 572 Win32 OLE drop source production behavior is next.
 - [x] Phase F Step 572 adds a Win32 OLE IDropSource and injectable DoDragDrop runner, supports escape cancellation, button-release drop, default cursor feedback, allowed-effect propagation, and final effect reporting. Step 573 Wayland data-device accept and action negotiation production behavior is next.
 - [x] Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.
+- [x] Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

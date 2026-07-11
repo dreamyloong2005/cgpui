@@ -2259,7 +2259,20 @@
       "xmake.lua"
     ],
     "phase_f_step_573_remaining_gap": "Step 574 Wayland data-device finish negotiation production behavior",
-    "phase_f_current_handoff": "Step 574 Wayland data-device finish negotiation production behavior"
+    "phase_f_step_574_surface": "Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.",
+    "phase_f_step_574_sources": [
+      "src/platform/linux/wayland_data_device_drag_actions.cpp",
+      "tests/platform/wayland_test_drag_offer_state.hpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_pointer_button_test.cpp",
+      "tests/architecture/phase_f_wayland_drag_finish_structure_test.cpp",
+      "tests/architecture/phase_f_wayland_drag_negotiation_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_574_remaining_gap": "Step 575 Win32 OLE text drag payload production behavior",
+    "phase_f_current_handoff": "Step 575 Win32 OLE text drag payload production behavior"
   },
   "categories": [
     "application_and_app_context",

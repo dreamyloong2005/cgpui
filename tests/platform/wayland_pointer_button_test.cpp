@@ -172,6 +172,13 @@ int run_drag_payload_case(
       static_cast<std::int32_t>(expected_position.x),
       static_cast<std::int32_t>(expected_position.y));
   compositor.request_drag_drop();
+  const bool offer_expected =
+      expected.source_actions != WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+  const bool finish_before_leave =
+      !offer_expected || expected.kind == cgpui::DragDropPayloadKind::none ||
+      compositor.wait_for_drag_offer_finished();
+  const bool destroy_before_leave =
+      !offer_expected || compositor.wait_for_drag_offer_destroyed();
   compositor.request_drag_leave();
 
   if (!wait_for_run_finished(run_finished)) {
@@ -225,6 +232,8 @@ int run_drag_payload_case(
   if (!drag_entered || !drag_updated || !drag_dropped || !drag_exited) {
     return failure_base + 17;
   }
+  if (!finish_before_leave) return failure_base + 24;
+  if (!destroy_before_leave) return failure_base + 25;
   if (expected.kind != cgpui::DragDropPayloadKind::none) {
     if (!compositor.wait_for_drag_offer_accepted()) {
       return failure_base + 18;

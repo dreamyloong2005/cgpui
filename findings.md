@@ -10217,3 +10217,17 @@
   selected action. The production state needs explicit acceptance tracking so
   rejected or actionless offers are destroyed without an invalid finish.
 - Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.
+
+## 2026-07-11 Phase F Step 574 Wayland Finish Negotiation
+
+- A successful version-3 drop currently calls `wl_data_offer_finish` but keeps
+  the offer proxy alive until a later `leave`. After finish, Wayland permits no
+  request other than destroy, and the destination should release the offer
+  immediately after the finish request.
+- Step 574 should make successful finish plus destroy exactly-once, while
+  rejected MIME, missing action, cancellation, and pre-version-3 offers stay on
+  destroy-without-finish paths.
+- The shared test compositor already observes server-side offer destruction,
+  but its broad source is exactly 3700 lines. New lifecycle records must move
+  into a focused drag-offer test-state module before adding assertions.
+- Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.

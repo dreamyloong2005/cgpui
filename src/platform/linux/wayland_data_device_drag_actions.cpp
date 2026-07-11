@@ -84,15 +84,16 @@ void WaylandDataDevice::negotiate_active_offer(std::uint32_t serial) {
 
 void WaylandDataDevice::finish_active_offer() {
   if (active_offer_ == nullptr || active_offer_->offer == nullptr ||
-      active_offer_->finished || !active_offer_->accepted ||
-      current_drag_action() == DragDropAction::none) {
+      active_offer_->finished) {
     return;
   }
-  if (data_offer_version(active_offer_->offer) < 3) {
-    return;
+  if (active_offer_->accepted &&
+      current_drag_action() != DragDropAction::none &&
+      data_offer_version(active_offer_->offer) >= 3) {
+    active_offer_->finished = true;
+    wl_data_offer_finish(active_offer_->offer);
   }
-  active_offer_->finished = true;
-  wl_data_offer_finish(active_offer_->offer);
+  clear_active_offer();
   if (display_ != nullptr) {
     (void)wl_display_flush(display_);
   }

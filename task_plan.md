@@ -1013,7 +1013,11 @@ Windows/Linux core API is stable enough for parity work.
   enter, observes destination copy/move actions and the selected preference,
   preserves a pending action on enter, and rejects invalid finish attempts for
   an unsupported MIME offer.
-- In progress: Step 574 Wayland data-device finish negotiation production behavior.
+- Completed: Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.
+- Step 574 evidence: the real compositor observes valid finish and offer destroy
+  before leave for accepted text/file offers, and destroy without finish for an
+  unsupported MIME offer through the focused drag-offer lifecycle state.
+- In progress: Step 575 Win32 OLE text drag payload production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
