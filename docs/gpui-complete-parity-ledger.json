@@ -2272,7 +2272,18 @@
       "xmake.lua"
     ],
     "phase_f_step_574_remaining_gap": "Step 575 Win32 OLE text drag payload production behavior",
-    "phase_f_current_handoff": "Step 575 Win32 OLE text drag payload production behavior"
+    "phase_f_step_575_surface": "Phase F Step 575 adds a strict Win32 OLE text IDataObject, enumerates CF_UNICODETEXT through owned HGLOBAL storage, preserves emoji, CRLF, and empty text, rejects malformed UTF-8 and embedded NUL, and composes with the drag runner. Step 576 Win32 OLE file drag payload production behavior is next.",
+    "phase_f_step_575_sources": [
+      "src/platform/win32/win32_ole_text_data_object_internal.hpp",
+      "src/platform/win32/win32_ole_text_data_object.cpp",
+      "tests/platform/win32_ole_text_data_object_test.cpp",
+      "tests/architecture/phase_f_win32_ole_text_payload_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_575_remaining_gap": "Step 576 Win32 OLE file drag payload production behavior",
+    "phase_f_current_handoff": "Step 576 Win32 OLE file drag payload production behavior"
   },
   "categories": [
     "application_and_app_context",

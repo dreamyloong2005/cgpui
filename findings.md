@@ -10231,3 +10231,16 @@
   but its broad source is exactly 3700 lines. New lifecycle records must move
   into a focused drag-offer test-state module before adding assertions.
 - Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.
+
+## 2026-07-12 Phase F Step 575 Win32 OLE Text Payload
+
+- The Win32 drop target already reads `CF_UNICODETEXT`, and Step 572 owns the
+  `IDropSource` plus `DoDragDrop` runner, but there is no source-side
+  `IDataObject` implementation that can provide text to a real drop target.
+- The text data object belongs in a focused private Win32 leaf, not the shared
+  drag/drop internal header or window source. It should expose only
+  `CF_UNICODETEXT` through `TYMED_HGLOBAL` and compose with the existing runner.
+- Source text conversion must match the strict clipboard boundary: reject
+  malformed UTF-8 and embedded NUL, preserve emoji/CRLF, and encode empty text
+  as a valid one-wide-NUL global-memory payload.
+- Phase F Step 575 adds a strict Win32 OLE text IDataObject, enumerates CF_UNICODETEXT through owned HGLOBAL storage, preserves emoji, CRLF, and empty text, rejects malformed UTF-8 and embedded NUL, and composes with the drag runner. Step 576 Win32 OLE file drag payload production behavior is next.

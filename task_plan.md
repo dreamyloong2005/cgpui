@@ -1017,7 +1017,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 574 evidence: the real compositor observes valid finish and offer destroy
   before leave for accepted text/file offers, and destroy without finish for an
   unsupported MIME offer through the focused drag-offer lifecycle state.
-- In progress: Step 575 Win32 OLE text drag payload production behavior.
+- Completed: Phase F Step 575 adds a strict Win32 OLE text IDataObject, enumerates CF_UNICODETEXT through owned HGLOBAL storage, preserves emoji, CRLF, and empty text, rejects malformed UTF-8 and embedded NUL, and composes with the drag runner. Step 576 Win32 OLE file drag payload production behavior is next.
+- Step 575 evidence: the focused COM test enumerates and reads owned Unicode
+  global memory, preserves emoji/CRLF/empty text, and proves malformed UTF-8 or
+  embedded NUL never reaches the injected drag runner.
+- In progress: Step 576 Win32 OLE file drag payload production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

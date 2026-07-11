@@ -21646,6 +21646,34 @@
   and the focused drag-offer state leaf is 95 lines. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 575 Win32 OLE Text Payload
+
+- Started from committed Step 574 at `018fd0c4`; only unrelated untracked
+  `.vscode/` remains.
+- Audit confirms the read-side `CF_UNICODETEXT` extractor and Step 572 drag
+  runner exist, but no source-side text `IDataObject` exists.
+- Assigned strict UTF-8 conversion, HGLOBAL ownership, read-only COM methods,
+  and the text-runner composition to a focused private Win32 leaf.
+- Added `Win32OleTextDataObject` and `run_win32_ole_text_drag(...)` in focused
+  private header/source files. The read-only COM object exposes and enumerates
+  `CF_UNICODETEXT` through owned `TYMED_HGLOBAL` storage.
+- The focused Windows behavior test covers QueryInterface/refcount, format
+  rejection, enumeration, emoji/CRLF, empty text, malformed UTF-8, embedded
+  NUL, runner bypass on invalid input, and final copy effect.
+- Initial Windows behavior/source/structure verification passes 4/4 across the
+  new data object, Step 572 source regression, Win32 source structure, and
+  platform source structure.
+- Added the Step 575 structure guard; it reached the intended five-document RED
+  while the Step 574 and platform structure guards remained green.
+- Synchronized the exact Step 575 completion phrase across all five authority
+  documents and advanced twenty-four structure handoff guards to Step 576.
+- Final Windows behavior/structure/ledger verification passes 7/7. Final WSL
+  shared structure/ledger verification passes 5/5.
+- JSON parsing, five-document unique phrase, twenty-four Step 576 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  44/121/57/57 line budgets, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

@@ -105,7 +105,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 575 Win32")) {
+                "\"phase_f_current_handoff\": \"Step 576 Win32")) {
     return 11;
   }
   return 0;
