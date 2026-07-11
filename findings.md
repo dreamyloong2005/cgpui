@@ -10479,3 +10479,11 @@
 - Win32 ownership belongs in a focused `ShellExecuteW` leaf with pure URL and
   return-code helpers; Wayland/default remain explicitly unsupported here.
 - Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.
+
+## 2026-07-12 Phase F Step 592 Quit And Reopen Lifecycle
+
+- Quit already has platform-specific event-loop behavior. Reopen lacks a
+  callback/result contract on Windows and Wayland.
+- A base-owned optional callback avoids duplicate storage; protected dispatch
+  lets each platform report its backend while preserving no-handler evidence.
+- Phase F Step 592 adds explicit reopen callback/result lifecycle behavior shared by Win32 and Wayland backends, reports missing callbacks without dispatch, supports callback replacement/clearing, and preserves existing platform quit paths. Step 593 platform-service result and unsupported-policy production behavior is next.

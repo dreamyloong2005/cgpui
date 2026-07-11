@@ -1083,10 +1083,14 @@ Windows/Linux core API is stable enough for parity work.
 - Completed: Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.
 - Step 591 evidence: focused Windows tests verify UTF-8 URL planning, empty/NUL
   rejection, and the documented ShellExecute success threshold.
-- In progress: Step 592 quit/reopen lifecycle production behavior.
-- Step 592 plan: audit existing quit semantics, add explicit reopen lifecycle
-  state/callback behavior without platform UI injection, and test Win32 and
-  Wayland event-loop conventions.
+- Completed: Phase F Step 592 adds explicit reopen callback/result lifecycle behavior shared by Win32 and Wayland backends, reports missing callbacks without dispatch, supports callback replacement/clearing, and preserves existing platform quit paths. Step 593 platform-service result and unsupported-policy production behavior is next.
+- Step 592 evidence: focused lifecycle coverage verifies missing, installed,
+  invoked, cleared callbacks and preserves Win32 PostQuitMessage plus Wayland
+  running-flag/wakeup quit semantics.
+- In progress: Step 593 platform-service result and unsupported-policy production behavior.
+- Step 593 plan: expose runtime/AppContext Result adapters and bounded
+  diagnostics for message dialog, open URL, and reopen while preserving last
+  successful results across unsupported attempts.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1104,6 +1108,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 592 final guard-count command returned 0 because it searched for unescaped JSON quotes inside C++ string literals | Step 592 pre-commit audit | Count the actual `\"phase_f_current_handoff` literal used by the architecture sources |
+| Step 592 structure guard assumed Wayland quit cancels a display read and exited 4 | Step 592 quit audit | Freeze the actual production path: clear `running_` and signal the wakeup pipe through `request_wakeup()` |
 | Step 588 combined cached-check/commit command could not create `.git/index.lock` after staging succeeded | Step 588 commit | Keep cached inspection and the approved `git commit` in separate commands |
 | Step 588 combined stage/check command again could not create `.git/index.lock` | Step 588 staging | Run the approved scoped `git add` as a standalone command, then inspect cached state separately |
 | Splitting Step 588 save coverage made the Step 587 open-dialog guard exit 5 because it had used the old save negative case as open evidence | Step 588 focused structure | Remove the cross-step save assertion and keep Step 587 frozen on file-must-exist, multi-select, and open filter mapping |

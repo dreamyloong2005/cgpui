@@ -83,5 +83,28 @@ PlatformOpenUrlResult PlatformApplication::open_url(std::string) {
   };
 }
 
+void PlatformApplication::set_reopen_callback(PlatformReopenCallback callback) {
+  reopen_callback_ = std::move(callback);
+}
+
+PlatformReopenResult PlatformApplication::request_reopen() {
+  return PlatformReopenResult{
+      .supported = false,
+      .backend = "unsupported",
+      .error_message = "reopen unsupported",
+  };
+}
+
+PlatformReopenResult PlatformApplication::dispatch_reopen(std::string backend) {
+  PlatformReopenResult result{.supported = true, .backend = std::move(backend)};
+  if (!reopen_callback_) {
+    result.error_message = "reopen callback not registered";
+    return result;
+  }
+  reopen_callback_();
+  result.requested = true;
+  return result;
+}
+
 void cgpui_platform_anchor() {}
 } // namespace cgpui

@@ -6,6 +6,7 @@
 #include "cgpui/platform/platform_file_dialog.hpp"
 #include "cgpui/platform/platform_message_dialog.hpp"
 #include "cgpui/platform/platform_open_url.hpp"
+#include "cgpui/platform/platform_lifecycle.hpp"
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_position.hpp"

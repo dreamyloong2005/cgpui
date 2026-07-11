@@ -98,6 +98,10 @@ class Win32Application final : public PlatformApplication {
     return win32_open_url(url);
   }
 
+  PlatformReopenResult request_reopen() override {
+    return dispatch_reopen("win32");
+  }
+
   void quit() override {
     running_ = false;
     PostQuitMessage(0);

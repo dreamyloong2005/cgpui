@@ -19,4 +19,8 @@ void WaylandApplication::quit() {
   request_wakeup();
 }
 
+PlatformReopenResult WaylandApplication::request_reopen() {
+  return dispatch_reopen("wayland");
+}
+
 } // namespace cgpui

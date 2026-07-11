@@ -7,6 +7,7 @@
 #include "cgpui/platform/platform_native_menu.hpp"
 #include "cgpui/platform/platform_message_dialog.hpp"
 #include "cgpui/platform/platform_open_url.hpp"
+#include "cgpui/platform/platform_lifecycle.hpp"
 #include "cgpui/platform/platform_window.hpp"
 
 #include <memory>
@@ -38,9 +39,17 @@ class PlatformApplication {
   virtual NativeMessageDialogResult show_native_message_dialog(
       NativeMessageDialogOptions options);
   virtual PlatformOpenUrlResult open_url(std::string url);
+  virtual void set_reopen_callback(PlatformReopenCallback callback);
+  virtual PlatformReopenResult request_reopen();
 
   virtual int run() = 0;
   virtual void quit() = 0;
+
+ protected:
+  [[nodiscard]] PlatformReopenResult dispatch_reopen(std::string backend);
+
+ private:
+  PlatformReopenCallback reopen_callback_;
 };
 
 Result<std::unique_ptr<PlatformApplication>> create_platform_application();

@@ -20942,6 +20942,28 @@
   guards, and `git diff --check` pass. `.vscode/` remains unrelated and
   untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 592 Quit And Reopen Lifecycle
+
+- Started from committed Step 591 at `68433f12`; only unrelated untracked
+  `.vscode/` remains.
+- Added a base-owned reopen callback/result contract, Win32/Wayland backend
+  dispatch, and focused missing/installed/cleared callback lifecycle coverage.
+- Reopen lifecycle and public-result compilation regressions pass 2/2. Added
+  the Step 592 cross-platform quit/reopen structure guard.
+- Its first run exited 4 because it assumed direct Wayland display-read
+  cancellation; update it to freeze the actual running-flag plus wakeup path.
+- The corrected Step 592 guard reached the intended five-document RED at
+  child exit 8.
+- Synchronized the exact Step 592 completion phrase across all five authority
+  documents and advanced forty historical dynamic handoff guards to Step 593;
+  the new lifecycle guard brings the Step 593 structure total to forty-one.
+- Final Windows reopen/public-result/source/structure/ledger verification
+  passes 10/10. After the shared public-header rebuild, final WSL lifecycle,
+  source, header, result-convention, and ledger verification passes 9/9.
+- JSON parsing, five-document unique phrase, zero stale Step 592 dynamic
+  handoffs, forty-one Step 593 structure guards, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

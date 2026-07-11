@@ -2497,7 +2497,19 @@
       "xmake.lua"
     ],
     "phase_f_step_591_remaining_gap": "Step 592 quit/reopen lifecycle production behavior",
-    "phase_f_current_handoff": "Step 592 quit/reopen lifecycle production behavior"
+    "phase_f_step_592_surface": "Phase F Step 592 adds explicit reopen callback/result lifecycle behavior shared by Win32 and Wayland backends, reports missing callbacks without dispatch, supports callback replacement/clearing, and preserves existing platform quit paths. Step 593 platform-service result and unsupported-policy production behavior is next.",
+    "phase_f_step_592_sources": [
+      "include/cgpui/platform/platform_lifecycle.hpp",
+      "include/cgpui/platform/platform_application.hpp",
+      "src/platform/empty.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "src/platform/linux/wayland_application_lifecycle.cpp",
+      "tests/platform/platform_reopen_lifecycle_test.cpp",
+      "tests/architecture/phase_f_quit_reopen_lifecycle_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_592_remaining_gap": "Step 593 platform-service result and unsupported-policy production behavior",
+    "phase_f_current_handoff": "Step 593 platform-service result and unsupported-policy production behavior"
   },
   "categories": [
     "application_and_app_context",

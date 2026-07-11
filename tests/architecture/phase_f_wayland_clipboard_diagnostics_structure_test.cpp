@@ -101,7 +101,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 592 quit/reopen")) {
+                "\"phase_f_current_handoff\": \"Step 593 platform-service")) {
     return 10;
   }
   return 0;

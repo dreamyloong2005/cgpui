@@ -413,6 +413,13 @@ target("phase_f_native_open_url_structure_test")
     add_files("tests/architecture/phase_f_native_open_url_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_quit_reopen_lifecycle_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_quit_reopen_lifecycle_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -1206,6 +1213,13 @@ target("platform_service_result_conventions_test")
     set_kind("binary")
     add_files("tests/api_parity/platform_service_result_conventions_test.cpp")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("platform_reopen_lifecycle_test")
+    set_kind("binary")
+    add_files("tests/platform/platform_reopen_lifecycle_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform")
     add_includedirs(public_includedirs)
     add_tests("default")
 
