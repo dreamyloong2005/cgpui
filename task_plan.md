@@ -955,7 +955,12 @@ Windows/Linux core API is stable enough for parity work.
   1.25x public state, 400x300 then 500x375 framebuffer sizes, integer buffer
   scale 2, and 320x240 then 400x300 viewport destinations while the historical
   integer output-scale behavior remains green.
-- In progress: Step 560 Wayland configure lifecycle production behavior.
+- Completed: Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.
+- Step 560 evidence: split real-compositor configure delivery proves pending
+  sizes stay invisible before surface acknowledgement, a newer zero-size
+  configure supersedes an older requested size, committed size changes publish
+  once, and duplicate sizes do not emit redundant resize events.
+- In progress: Step 561 Wayland cursor theme loading production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

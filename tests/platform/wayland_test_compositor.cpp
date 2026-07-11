@@ -635,13 +635,21 @@ struct WaylandTestCompositor::State {
       bool activated,
       bool maximized,
       bool fullscreen) {
-    resize_width.store(width);
-    resize_height.store(height);
-    resize_configure_activated.store(activated);
-    resize_configure_maximized.store(maximized);
-    resize_configure_fullscreen.store(fullscreen);
-    resize_configure_pending.store(true);
+    configure.request(
+        width, height, activated, maximized, fullscreen, true);
   }
+
+  void request_toplevel_configure_state(
+      std::int32_t width,
+      std::int32_t height,
+      bool activated,
+      bool maximized,
+      bool fullscreen) {
+    configure.request(
+        width, height, activated, maximized, fullscreen, false);
+  }
+
+  void request_surface_configure() { configure.request_surface(); }
 
   void request_output_scale(std::int32_t scale) {
     output_scale.store(std::max(scale, 1));
@@ -661,16 +669,7 @@ struct WaylandTestCompositor::State {
   }
 
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const {
-    return WaylandConfigureState{
-        .width = static_cast<std::int32_t>(resize_width.load()),
-        .height = static_cast<std::int32_t>(resize_height.load()),
-        .serial = last_resize_configure_serial.load(),
-        .acked_serial = last_resize_configure_acked_serial.load(),
-        .activated = resize_configure_activated.load(),
-        .maximized = resize_configure_maximized.load(),
-        .fullscreen = resize_configure_fullscreen.load(),
-        .acked = resize_configure_acked.load(),
-    };
+    return configure.snapshot();
   }
 
   void request_pointer_move(std::int32_t x, std::int32_t y) {
@@ -1565,12 +1564,6 @@ struct WaylandTestCompositor::State {
   std::atomic_bool client_side_decoration_requested{false};
   std::atomic_bool server_side_decoration_requested{false};
   std::atomic_bool parent_requested{false};
-  std::atomic_bool resize_configure_pending{false};
-  std::atomic_bool resize_configure_sent{false};
-  std::atomic_bool resize_configure_acked{false};
-  std::atomic_bool resize_configure_activated{false};
-  std::atomic_bool resize_configure_maximized{false};
-  std::atomic_bool resize_configure_fullscreen{false};
   std::atomic_bool output_scale_pending{false};
   std::atomic_bool output_scale_sent{false};
   std::atomic_bool fractional_scale_pending{false};
@@ -1626,8 +1619,6 @@ struct WaylandTestCompositor::State {
   std::atomic_bool clipboard_client_selection_set{false};
   std::atomic_bool clipboard_client_selection_request_pending{false};
   std::atomic_bool clipboard_client_selection_payload_received{false};
-  std::atomic_int resize_width{0};
-  std::atomic_int resize_height{0};
   std::atomic_int output_scale{1};
   std::atomic_uint32_t seat_capabilities{
       WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD};
@@ -1679,9 +1670,7 @@ struct WaylandTestCompositor::State {
   std::atomic_uint32_t last_drag_preferred_action_value{
       WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE};
   std::uint32_t next_configure_serial = 1;
-  std::uint32_t resize_configure_serial = 0;
-  std::atomic_uint32_t last_resize_configure_serial{0};
-  std::atomic_uint32_t last_resize_configure_acked_serial{0};
+  WaylandTestConfigureState configure;
   std::uint32_t next_pointer_serial = 1;
   std::uint32_t pointer_time = 1;
   bool pointer_entered = false;
@@ -1791,10 +1780,7 @@ void WaylandTestCompositor::State::ack_configure(
     }
   }
 
-  if (serial == state->compositor->resize_configure_serial) {
-    state->compositor->resize_configure_acked.store(true);
-    state->compositor->last_resize_configure_acked_serial.store(serial);
-  }
+  state->compositor->configure.acknowledge(serial);
 }
 
 void WaylandTestCompositor::State::surface_commit(
@@ -2217,52 +2203,49 @@ void WaylandTestCompositor::State::dispatch_pending_close() {
 }
 
 void WaylandTestCompositor::State::dispatch_pending_resize_configure() {
-  if (!resize_configure_pending.exchange(false)) {
-    return;
-  }
+  const bool send_toplevel = configure.take_toplevel_pending();
+  const bool send_surface = configure.take_surface_pending() ||
+      (send_toplevel && configure.include_surface());
+  if (!send_toplevel && !send_surface) return;
 
   for (const auto& surface : surfaces) {
     if (surface->xdg_surface == nullptr || surface->toplevel == nullptr) {
       continue;
     }
 
-    wl_array states{};
-    wl_array_init(&states);
-    const auto add_state = [&states](std::uint32_t state) {
-      auto* slot = static_cast<std::uint32_t*>(
-          wl_array_add(&states, sizeof(std::uint32_t)));
-      if (slot != nullptr) {
-        *slot = state;
-      }
-    };
-    if (resize_configure_maximized.load()) {
-      add_state(xdg_toplevel_state_maximized);
+    const WaylandConfigureState requested = configure.snapshot();
+    if (send_toplevel) {
+      wl_array states{};
+      wl_array_init(&states);
+      const auto add_state = [&states](std::uint32_t state) {
+        auto* slot = static_cast<std::uint32_t*>(
+            wl_array_add(&states, sizeof(std::uint32_t)));
+        if (slot != nullptr) *slot = state;
+      };
+      if (requested.maximized) add_state(xdg_toplevel_state_maximized);
+      if (requested.fullscreen) add_state(xdg_toplevel_state_fullscreen);
+      if (requested.activated) add_state(xdg_toplevel_state_activated);
+      wl_resource_post_event(
+          surface->toplevel,
+          xdg_toplevel_configure,
+          requested.width,
+          requested.height,
+          &states);
+      wl_array_release(&states);
+      configure.mark_toplevel_sent();
     }
-    if (resize_configure_fullscreen.load()) {
-      add_state(xdg_toplevel_state_fullscreen);
+    if (send_surface) {
+      const std::uint32_t serial = next_configure_serial++;
+      configure.mark_surface_sent(serial);
+      wl_resource_post_event(
+          surface->xdg_surface, xdg_surface_configure, serial);
     }
-    if (resize_configure_activated.load()) {
-      add_state(xdg_toplevel_state_activated);
-    }
-    resize_configure_serial = next_configure_serial++;
-    last_resize_configure_serial.store(resize_configure_serial);
-    resize_configure_sent.store(true);
-    wl_resource_post_event(
-        surface->toplevel,
-        xdg_toplevel_configure,
-        static_cast<std::int32_t>(resize_width.load()),
-        static_cast<std::int32_t>(resize_height.load()),
-        &states);
-    wl_resource_post_event(
-        surface->xdg_surface,
-        xdg_surface_configure,
-        resize_configure_serial);
-    wl_array_release(&states);
     wl_display_flush_clients(display);
     return;
   }
 
-  resize_configure_pending.store(true);
+  if (send_toplevel) configure.requeue_toplevel();
+  if (send_surface) configure.requeue_surface();
 }
 
 void WaylandTestCompositor::State::dispatch_pending_seat_capabilities() {
@@ -3290,6 +3273,20 @@ void WaylandTestCompositor::request_resize_configure_state(
       fullscreen);
 }
 
+void WaylandTestCompositor::request_toplevel_configure_state(
+    std::int32_t width,
+    std::int32_t height,
+    bool activated,
+    bool maximized,
+    bool fullscreen) {
+  state_->request_toplevel_configure_state(
+      width, height, activated, maximized, fullscreen);
+}
+
+void WaylandTestCompositor::request_surface_configure() {
+  state_->request_surface_configure();
+}
+
 void WaylandTestCompositor::request_output_scale(std::int32_t scale) {
   state_->request_output_scale(scale);
 }
@@ -3490,11 +3487,16 @@ bool WaylandTestCompositor::wait_for_parent_requested() const {
 }
 
 bool WaylandTestCompositor::wait_for_resize_configure_sent() const {
-  return state_->wait_for_flag(state_->resize_configure_sent);
+  return state_->configure.wait_for_surface_sent();
 }
 
 bool WaylandTestCompositor::wait_for_resize_configure_acked() const {
-  return state_->wait_for_flag(state_->resize_configure_acked);
+  return state_->configure.wait_for_ack();
+}
+
+bool WaylandTestCompositor::wait_for_toplevel_configure_sent_count(
+    std::uint32_t count) const {
+  return state_->configure.wait_for_toplevel_sent_count(count);
 }
 
 WaylandConfigureState WaylandTestCompositor::last_resize_configure_state()

@@ -9935,3 +9935,40 @@
   withholding preferred scale until explicitly requested correctly exercises
   the production integer fallback and the dynamic fractional transition.
 - Phase F Step 559 adds production Wayland fractional scaling with preferred 120-based scale, integer-ceiling buffer scale, viewporter logical destinations, and integer output fallback. Step 560 Wayland configure lifecycle production behavior is next.
+
+## 2026-07-11 Phase F Step 560 Wayland Configure Lifecycle Audit
+
+- The roadmap names configure lifecycle as the next production slice without
+  prescribing a specific API expansion. Existing ownership is already focused
+  in `wayland_window_configure.cpp`, its private configure state, and the real
+  test compositor.
+- Production already records pending toplevel size/state, acknowledges the
+  following xdg-surface serial, and gates resize publication until the surface
+  configure arrives. Step 560 should identify ordering, stale-state, or
+  repeated-configure behavior gaps through real compositor sequences rather
+  than moving logic into the broad window/application files.
+- The concrete lifecycle violation is that `record_toplevel_configure_state`
+  immediately mutates `logical_size_` and public framebuffer state before the
+  matching `xdg_surface.configure` arrives. XDG toplevel size/state is pending
+  configure data and must become current only when the surface configure is
+  acknowledged.
+- A split real-compositor sequence should prove that toplevel-only delivery
+  changes neither `WindowState` nor resize events, then surface configure ack
+  atomically applies the latest pending size. It should also replace an older
+  pending non-zero size with a newer zero-size configure so stale dimensions
+  cannot leak through the eventual surface configure.
+- The shared test compositor is already 3682 lines, so Step 560 should not add
+  another configure-state cluster directly to it. A focused test configure
+  request/state module can own current request fields, split-phase flags,
+  serial/ack observations, and snapshots; the broad compositor should retain
+  only Wayland resource dispatch.
+- Production can remove the separate resize-pending boolean: surface configure
+  applies the latest pending non-zero size, compares the resulting framebuffer
+  size with the prior public state, clears the consumed size marker, and emits
+  `WindowResized` only when the committed size actually changed.
+- The production change validates on the real compositor: pending toplevel-only
+  sizes remain invisible, a newer zero-size configure cancels an older pending
+  size, the later surface configure preserves the client-selected size, a
+  committed non-zero size applies at ack, and a duplicate size does not emit a
+  redundant resize event.
+- Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.

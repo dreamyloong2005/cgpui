@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 560 Wayland configure")) {
+                "\"phase_f_current_handoff\": \"Step 561 Wayland cursor theme")) {
     return 11;
   }
   return 0;

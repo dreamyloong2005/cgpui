@@ -4,7 +4,7 @@ void record_toplevel_configure_state(
     std::int32_t width,
     std::int32_t height,
     wl_array* states);
-void acknowledge_configure(std::uint32_t serial);
+[[nodiscard]] bool acknowledge_configure(std::uint32_t serial);
 void dispatch_configure_lifecycle_events(
     WaylandXdgToplevelState previous,
     WaylandXdgToplevelState current);

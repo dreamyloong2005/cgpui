@@ -21232,3 +21232,33 @@
   fallback, source inventories, historical handoff guards, and the parity
   ledger. Final JSON, five-document phrase, line-cap, and diff-hygiene audits
   pass; only expected CRLF conversion warnings remain.
+
+## 2026-07-11 Phase F Step 560 Wayland Configure Lifecycle
+
+- Started from committed Step 559 at `95457e1e`; only unrelated untracked
+  `.vscode/` remains.
+- Added a focused test configure-state helper, split toplevel/surface configure
+  controls in the real compositor, and a lifecycle behavior target before
+  changing production.
+- The new WSL target builds and reaches RED as expected when toplevel-only
+  delivery exposes its size before surface configure. A direct exit-code run
+  first hit a transient `WSL_E_DISTRO_NOT_FOUND`; retry follows the established
+  lightweight distro probe rather than treating it as test evidence.
+- Moved logical/framebuffer size application into surface-configure
+  acknowledgement, cleared consumed pending size, removed the redundant
+  resize-pending field, and suppressed duplicate-size resize publication.
+- The new configure lifecycle test plus existing compositor resize,
+  display-state, and activation/focus regressions pass 4/4 on WSL.
+- Added the Step 560 structure guard and advanced eight historical Phase F
+  handoff guards. Its Windows execution reached the intended five-document RED
+  at exit 8 before authority synchronization.
+- Synchronized the exact completion phrase across all five authority documents
+  and advanced the authoritative handoff to Step 561 Wayland cursor theme
+  loading. The Windows structure/ledger group passes 14/14.
+- Final WSL verification reuses the established D-drive caches plus
+  `/dev/shm/cgpui` temp and passes 18/18 across four real configure/lifecycle
+  behaviors and fourteen structure, historical handoff, source, and ledger
+  gates.
+- Final JSON parsing, five-document unique phrase, configure/helper/test line
+  caps, handoff inventory, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.

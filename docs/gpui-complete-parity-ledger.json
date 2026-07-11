@@ -2058,7 +2058,20 @@
       "xmake.lua"
     ],
     "phase_f_step_559_remaining_gap": "Step 560 Wayland configure lifecycle production behavior",
-    "phase_f_current_handoff": "Step 560 Wayland configure lifecycle production behavior"
+    "phase_f_step_560_surface": "Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.",
+    "phase_f_step_560_sources": [
+      "src/platform/linux/wayland_window_configure_internal.hpp",
+      "src/platform/linux/wayland_window_configure.cpp",
+      "src/platform/linux/wayland_window_internal.hpp",
+      "tests/platform/wayland_test_configure_state.hpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_configure_lifecycle_test.cpp",
+      "tests/architecture/phase_f_wayland_configure_lifecycle_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_560_remaining_gap": "Step 561 Wayland cursor theme loading production behavior",
+    "phase_f_current_handoff": "Step 561 Wayland cursor theme loading production behavior"
   },
   "categories": [
     "application_and_app_context",

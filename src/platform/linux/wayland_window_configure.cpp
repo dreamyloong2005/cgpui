@@ -11,23 +11,24 @@ void WaylandWindow::record_toplevel_configure_state(
   pending_configure_.pending_size = width > 0 && height > 0;
   pending_configure_.pending_toplevel_state =
       parse_xdg_toplevel_states(states);
-  if (pending_configure_.pending_size) {
-    logical_size_ = Size{
-        static_cast<float>(width),
-        static_cast<float>(height)};
-    update_framebuffer_size();
-    if (configured_) {
-      resize_pending_surface_configure_ = true;
-    }
-  }
 }
 
-void WaylandWindow::acknowledge_configure(std::uint32_t serial) {
+bool WaylandWindow::acknowledge_configure(std::uint32_t serial) {
+  const Size previous_framebuffer_size = state_.framebuffer_size;
   pending_configure_.pending_serial = serial;
   pending_configure_.last_acked_configure_serial = serial;
   pending_configure_.configured = true;
   pending_configure_.current_toplevel_state =
       pending_configure_.pending_toplevel_state;
+  if (pending_configure_.pending_size) {
+    logical_size_ = Size{
+        static_cast<float>(pending_configure_.pending_width),
+        static_cast<float>(pending_configure_.pending_height)};
+    update_framebuffer_size();
+  }
+  pending_configure_.pending_size = false;
+  return previous_framebuffer_size.width != state_.framebuffer_size.width ||
+      previous_framebuffer_size.height != state_.framebuffer_size.height;
 }
 
 void WaylandWindow::dispatch_configure_lifecycle_events(
@@ -52,13 +53,12 @@ void WaylandWindow::handle_surface_configure(
       window->pending_configure_.current_toplevel_state;
   xdg_surface_ack_configure(surface, serial);
   (void)wl_display_flush(window->display_);
-  window->acknowledge_configure(serial);
+  const bool resized = window->acknowledge_configure(serial);
   window->configured_ = true;
   window->dispatch_configure_lifecycle_events(
       previous_state,
       window->pending_configure_.current_toplevel_state);
-  if (was_configured && window->resize_pending_surface_configure_) {
-    window->resize_pending_surface_configure_ = false;
+  if (was_configured && resized) {
     window->callback_(WindowResized{
         .size = window->state_.framebuffer_size,
         .scale = window->state_.scale});

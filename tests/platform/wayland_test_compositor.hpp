@@ -1,5 +1,7 @@
 #pragma once
 
+#include "wayland_test_configure_state.hpp"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -45,17 +47,6 @@ struct WaylandPointerAxisFrame {
   bool stop_y = false;
 };
 
-struct WaylandConfigureState {
-  std::int32_t width = 0;
-  std::int32_t height = 0;
-  std::uint32_t serial = 0;
-  std::uint32_t acked_serial = 0;
-  bool activated = false;
-  bool maximized = false;
-  bool fullscreen = false;
-  bool acked = false;
-};
-
 class WaylandTestCompositor {
  public:
   explicit WaylandTestCompositor(std::string name);
@@ -78,6 +69,13 @@ class WaylandTestCompositor {
       bool activated,
       bool maximized,
       bool fullscreen);
+  void request_toplevel_configure_state(
+      std::int32_t width,
+      std::int32_t height,
+      bool activated,
+      bool maximized,
+      bool fullscreen);
+  void request_surface_configure();
   void request_output_scale(std::int32_t scale);
   void request_fractional_scale(std::uint32_t scale);
   void request_seat_capabilities(std::uint32_t capabilities);
@@ -142,6 +140,8 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_parent_requested() const;
   [[nodiscard]] bool wait_for_resize_configure_sent() const;
   [[nodiscard]] bool wait_for_resize_configure_acked() const;
+  [[nodiscard]] bool wait_for_toplevel_configure_sent_count(
+      std::uint32_t count) const;
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const;
   [[nodiscard]] bool wait_for_output_scale_sent() const;
   [[nodiscard]] std::int32_t last_surface_buffer_scale() const;
