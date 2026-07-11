@@ -885,7 +885,12 @@ struct WaylandTestCompositor::State {
   void request_clipboard_client_selection_nonblocking(
       std::string_view mime_type,
       std::chrono::milliseconds read_delay) {
-    clipboard_source.request_payload(mime_type, true, read_delay);
+    clipboard_source.request_payload(mime_type, true, false, read_delay);
+  }
+
+  void request_clipboard_client_selection_abandoned(std::string_view mime_type) {
+    clipboard_abandoned_request_sent.store(false);
+    clipboard_source.request_payload(mime_type, false, true);
   }
 
   [[nodiscard]] std::vector<std::string>
@@ -1610,6 +1615,7 @@ struct WaylandTestCompositor::State {
   mutable std::mutex clipboard_receive_mutex;
   std::string last_clipboard_receive_mime;
   WaylandTestClipboardSourceState clipboard_source;
+  std::atomic_bool clipboard_abandoned_request_sent{false};
   std::mutex drag_payload_mutex;
   std::vector<WaylandMimePayload> drag_payloads;
   mutable std::mutex drag_receive_mutex;
@@ -2545,6 +2551,10 @@ void WaylandTestCompositor::State::
   if (pipe2(pipe_fds, pipe_flags) == -1) {
     return;
   }
+  if (mime_type->abandoned) {
+    close(pipe_fds[0]);
+    pipe_fds[0] = -1;
+  }
   const std::size_t preloaded = mime_type->nonblocking
       ? fill_wayland_test_clipboard_pipe(pipe_fds[1])
       : 0;
@@ -2554,6 +2564,10 @@ void WaylandTestCompositor::State::
   wl_display_flush_clients(display);
   close(pipe_fds[1]);
   pipe_fds[1] = -1;
+  if (mime_type->abandoned) {
+    clipboard_abandoned_request_sent.store(true);
+    return;
+  }
   if (mime_type->read_delay.count() > 0) {
     std::this_thread::sleep_for(mime_type->read_delay);
   }
@@ -3419,6 +3433,11 @@ void WaylandTestCompositor::request_clipboard_client_selection_nonblocking(
   state_->request_clipboard_client_selection_nonblocking(mime_type, read_delay);
 }
 
+void WaylandTestCompositor::request_clipboard_client_selection_abandoned(
+    std::string_view mime_type) {
+  state_->request_clipboard_client_selection_abandoned(mime_type);
+}
+
 bool WaylandTestCompositor::wait_for_close_sent() const {
   return state_->wait_for_flag(state_->close_sent);
 }
@@ -3660,6 +3679,11 @@ WaylandTestCompositor::clipboard_client_selection_mime_types() const {
 bool WaylandTestCompositor::
     wait_for_clipboard_client_selection_payload_received() const {
   return state_->clipboard_source.wait_for_payload();
+}
+
+bool WaylandTestCompositor::
+    wait_for_clipboard_client_selection_abandoned() const {
+  return state_->wait_for_flag(state_->clipboard_abandoned_request_sent);
 }
 
 std::string WaylandTestCompositor::last_clipboard_client_selection_payload()

@@ -21501,3 +21501,37 @@
 - Final JSON parsing, five-document unique phrase, stale-handoff audit, focused
   line caps, warning-free Linux rebuild, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
+
+- Started from committed Step 568 at `796dd6e5`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit identifies unsuppressed `SIGPIPE` on an abandoned clipboard
+  receive pipe as the concrete host-termination failure boundary.
+- Planned a thread-scoped signal-safe write helper plus a real compositor test
+  that abandons one request and then proves the same ownership still serves a
+  subsequent request.
+- The first abandoned-request run inherited a process environment where
+  `SIGPIPE` did not terminate the test and passed. The behavior test now
+  explicitly restores `SIG_DFL` before starting so it covers default host
+  semantics instead of the runner's inherited disposition.
+- With `SIG_DFL`, the focused test reached precise RED in 0.073 seconds and
+  `xmake run` reported the child terminated before returning an exit code.
+- Added a focused Linux signal-safe write helper that blocks `SIGPIPE` only on
+  the writer thread, preserves pre-existing pending state, consumes the new
+  signal generated with `EPIPE`, restores the caller mask, and preserves errno.
+- The failure test plus incremental transfer, ownership, Step 568 structure,
+  and platform source structure pass 5/5 after the production fix.
+- Added the Step 569 structure guard; it reached the intended five-document
+  RED at exit 8 while platform source structure remained green.
+- The first historical-handoff patch partially applied before encountering an
+  already-advanced Step 568 guard; `rg` enumerated the remaining ten Step 569
+  guards and a focused follow-up advanced them without duplicating edits.
+- Synchronized the exact Step 569 completion phrase across all five authority
+  documents and advanced eighteen dynamic handoff guards to Step 570.
+- Final Windows shared structure/ledger verification passes 20/20. Final WSL
+  verification passes 26/26 across six clipboard behaviors, eighteen Phase F
+  structure guards, platform source structure, and the parity ledger.
+- Final JSON parsing, five-document unique phrase, stale-handoff audit, focused
+  line caps, warning-free Linux rebuild, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

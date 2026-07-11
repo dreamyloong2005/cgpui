@@ -992,7 +992,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 568 evidence: a real compositor sends delayed 4 KiB selection chunks
   and requests a 256 KiB owned payload through a prefilled nonblocking pipe;
   both complete without truncation while existing clipboard paths stay green.
-- In progress: Step 569 Wayland clipboard failure handling production behavior.
+- Completed: Phase F Step 569 prevents abandoned Wayland clipboard receivers from terminating the host with SIGPIPE, scopes signal masking to the writer thread, preserves caller signal state, and keeps selection ownership usable after EPIPE. Step 570 Wayland clipboard diagnostics production behavior is next.
+- Step 569 evidence: with `SIGPIPE` explicitly restored to `SIG_DFL`, a real
+  compositor abandons one receive pipe and the same clipboard process survives
+  to serve the next UTF-8 request from unchanged ownership.
+- In progress: Step 570 Wayland clipboard diagnostics production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

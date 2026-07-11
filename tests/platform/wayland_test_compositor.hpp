@@ -136,6 +136,7 @@ class WaylandTestCompositor {
   void request_clipboard_client_selection_nonblocking(
       std::string_view mime_type,
       std::chrono::milliseconds read_delay);
+  void request_clipboard_client_selection_abandoned(std::string_view mime_type);
 
   [[nodiscard]] bool wait_for_close_sent() const;
   [[nodiscard]] bool wait_for_minimize_requested() const;
@@ -200,6 +201,7 @@ class WaylandTestCompositor {
       const;
   [[nodiscard]] bool wait_for_clipboard_client_selection_payload_received()
       const;
+  [[nodiscard]] bool wait_for_clipboard_client_selection_abandoned() const;
   [[nodiscard]] std::string last_clipboard_client_selection_payload() const;
 
  private:

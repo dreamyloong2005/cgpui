@@ -23,6 +23,7 @@ struct WaylandTestClipboardClientSource {
 struct WaylandTestClipboardPayloadRequest {
   std::string mime_type;
   bool nonblocking = false;
+  bool abandoned = false;
   std::chrono::milliseconds read_delay{0};
 };
 
@@ -75,12 +76,14 @@ class WaylandTestClipboardSourceState {
   void request_payload(
       std::string_view mime_type,
       bool nonblocking = false,
+      bool abandoned = false,
       std::chrono::milliseconds read_delay = std::chrono::milliseconds{0}) {
     {
       std::lock_guard lock(request_mutex_);
       pending_request_ = WaylandTestClipboardPayloadRequest{
           .mime_type = std::string(mime_type),
           .nonblocking = nonblocking,
+          .abandoned = abandoned,
           .read_delay = read_delay,
       };
     }

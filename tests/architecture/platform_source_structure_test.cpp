@@ -279,6 +279,7 @@ int main(int argc, char** argv) {
       "src/platform/clipboard_wayland_source.cpp",
       "src/platform/clipboard_wayland_source_events.cpp",
       "src/platform/clipboard_wayland_source_io.cpp",
+      "src/platform/clipboard_wayland_signal.cpp",
       "src/platform/clipboard_wayland_transfer.cpp",
       "src/platform/clipboard_wayland.cpp",
       "src/platform/clipboard.cpp",
@@ -332,6 +333,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/clipboard_wayland_source_events.cpp");
   const std::string clipboard_wayland_source_io =
       read_source("src/platform/clipboard_wayland_source_io.cpp");
+  const std::string clipboard_wayland_signal =
+      read_source("src/platform/clipboard_wayland_signal.cpp");
   const std::string clipboard_wayland_transfer =
       read_source("src/platform/clipboard_wayland_transfer.cpp");
   const std::string clipboard_wayland =
@@ -382,6 +385,8 @@ int main(int argc, char** argv) {
                 "void WaylandClipboard::Connection::handle_source_send(") ||
       !contains(clipboard_wayland_source_io,
                 "void WaylandClipboard::Connection::write_payload_to_fd(") ||
+      !contains(clipboard_wayland_signal,
+                "wayland_clipboard_write_without_sigpipe(") ||
       !contains(clipboard_wayland_transfer,
                 "wayland_clipboard_write_payload_incrementally(") ||
       !contains(clipboard_wayland, "create_wayland_clipboard")) {
@@ -425,6 +430,8 @@ int main(int argc, char** argv) {
       contains(clipboard_wayland_source_io, "handle_source_send(") ||
       contains(clipboard_wayland_source_io,
                "dispatch_owned_selection_events(") ||
+      line_count(clipboard_wayland_signal) > 80 ||
+      contains(clipboard_wayland_signal, "WaylandClipboard::Connection::") ||
       line_count(clipboard_wayland_transfer) > 80 ||
       contains(clipboard_wayland_transfer,
                "WaylandClipboard::Connection::")) {

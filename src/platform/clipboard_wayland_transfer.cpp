@@ -9,8 +9,8 @@ bool wayland_clipboard_write_payload_incrementally(
   std::size_t written = 0;
   auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
   while (written < payload.size()) {
-    const auto count =
-        write(fd, payload.data() + written, payload.size() - written);
+    const auto count = wayland_clipboard_write_without_sigpipe(
+        fd, payload.data() + written, payload.size() - written);
     if (count > 0) {
       written += static_cast<std::size_t>(count);
       deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);

@@ -31,6 +31,10 @@ namespace cgpui {
 [[nodiscard]] bool wayland_clipboard_write_payload_incrementally(
     int fd,
     std::string_view payload);
+[[nodiscard]] ssize_t wayland_clipboard_write_without_sigpipe(
+    int fd,
+    const void* data,
+    std::size_t size);
 
 struct WaylandClipboard::Connection {
   struct Offer {

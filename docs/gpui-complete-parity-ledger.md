@@ -695,6 +695,7 @@ consume C: drive space again.
 - Phase F Step 566 makes Wayland selection reads dispatch-safe, processes replacement offers and payload transfer in one display transaction, and resumes source dispatch only when ownership remains. Step 567 Wayland clipboard MIME negotiation production behavior is next.
 - Phase F Step 567 adds case-insensitive Wayland text MIME parsing and ranking, accepts normalized UTF-8 charset parameters, preserves original offer strings for receive, and rejects unsupported charsets. Step 568 Wayland clipboard incremental transfer production behavior is next.
 - Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.
+- Phase F Step 569 prevents abandoned Wayland clipboard receivers from terminating the host with SIGPIPE, scopes signal masking to the writer thread, preserves caller signal state, and keeps selection ownership usable after EPIPE. Step 570 Wayland clipboard diagnostics production behavior is next.
 
 ## Categories
 

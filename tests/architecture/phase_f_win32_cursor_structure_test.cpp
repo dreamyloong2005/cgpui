@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 569 Wayland clipboard")) {
+                "\"phase_f_current_handoff\": \"Step 570 Wayland clipboard")) {
     return 8;
   }
   return 0;

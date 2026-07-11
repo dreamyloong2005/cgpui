@@ -10147,3 +10147,18 @@
   the actual owners in `clipboard_wayland_source_io.cpp` and the main test
   compositor plus its focused clipboard source-state header.
 - Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.
+
+## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling Audit
+
+- The incremental transfer test ignores `SIGPIPE` so it can inspect deliberate
+  early-close behavior, but production itself does not suppress the signal.
+  A clipboard receiver that closes its pipe before an owned selection writes
+  can therefore terminate the entire host process instead of returning `EPIPE`.
+- Failure handling should be scoped to the write syscall's thread rather than
+  installing a process-global signal disposition. A focused Linux helper can
+  temporarily block `SIGPIPE`, consume only a newly generated pending signal,
+  restore the caller's mask, and return the original write result.
+- A real compositor failure test should abandon one request, prove the process
+  survives, then request the same owned selection normally to prove ownership
+  and dispatch remain usable after the peer failure.
+- Phase F Step 569 prevents abandoned Wayland clipboard receivers from terminating the host with SIGPIPE, scopes signal masking to the writer thread, preserves caller signal state, and keeps selection ownership usable after EPIPE. Step 570 Wayland clipboard diagnostics production behavior is next.
