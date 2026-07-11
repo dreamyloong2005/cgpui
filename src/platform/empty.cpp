@@ -43,12 +43,15 @@ void PlatformApplication::request_wakeup() {}
 
 PlatformMenuInstallationResult PlatformApplication::install_native_menu(
     NativeMenuModel menu) {
+  const std::size_t accelerator_count = native_menu_accelerator_count(menu);
   return PlatformMenuInstallationResult{
       .supported = false,
       .backend = "unsupported",
       .menu_count = menu.items.size(),
       .item_count = native_menu_item_count(menu),
-      .accelerator_count = native_menu_accelerator_count(menu),
+      .accelerator_count = accelerator_count,
+      .registered_accelerator_count = 0,
+      .skipped_accelerator_count = accelerator_count,
   };
 }
 

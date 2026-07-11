@@ -21905,6 +21905,35 @@
   pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
   batched.
 
+## 2026-07-12 Phase F Step 585 Native Menu Dispatch Diagnostics
+
+- Started from committed Step 584 at `7edfcf1b`; only unrelated untracked
+  `.vscode/` remains.
+- Planned public accelerator registration/skip counts plus bounded runtime
+  diagnostics for handled and unhandled menu/accelerator command events.
+- The Win32 test reached compile RED on missing registered/skipped fields.
+  Added public result counts for Win32, Wayland, and default backends plus
+  bounded runtime dispatch diagnostics; focused behavior/regressions pass 5/5.
+- The first direct structure launch stopped before the test with the recurring
+  transient `cannot create filelock for package(ninja)` error; use the
+  registered `/default` test path for the RED run.
+- The registered structure target built successfully and its direct executable
+  returned the intended five-document RED at exit 8.
+- The first WSL gate tool yield ended during the shared UI rebuild; sandboxed
+  process command-line inspection was denied, so use ordinary process state
+  before a serialized registered-test rerun.
+- A later WSL process poll returned `WSL_E_DISTRO_NOT_FOUND`; confirm the
+  original process has exited before restarting one captured focused gate.
+- Synchronized the exact Step 585 completion phrase across all five authority
+  documents and advanced thirty-three historical dynamic handoff guards to
+  Step 586; the new guard brings the Step 586 structure total to thirty-four.
+- Final Windows behavior/public-result/structure/ledger verification passes
+  12/12. After the shared public-header/UI rebuild, final WSL shared behavior,
+  public-result, structure, and ledger verification passes 13/13.
+- JSON parsing, five-document unique phrase, zero stale Step 585 dynamic
+  handoffs, focused 60/69/27/113/52 line budgets, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

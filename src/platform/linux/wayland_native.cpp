@@ -6,12 +6,15 @@ class WaylandNativeMenuState {
  public:
   PlatformMenuInstallationResult install_native_menu(NativeMenuModel menu) {
     model_ = std::move(menu);
+    const std::size_t accelerator_count = native_menu_accelerator_count(model_);
     last_menu_installation_ = PlatformMenuInstallationResult{
         .supported = false,
         .backend = "wayland",
         .menu_count = model_.items.size(),
         .item_count = native_menu_item_count(model_),
-        .accelerator_count = native_menu_accelerator_count(model_),
+        .accelerator_count = accelerator_count,
+        .registered_accelerator_count = 0,
+        .skipped_accelerator_count = accelerator_count,
     };
     return last_menu_installation_;
   }

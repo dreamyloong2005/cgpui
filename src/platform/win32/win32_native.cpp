@@ -9,12 +9,19 @@ PlatformMenuInstallationResult Win32NativeMenuState::install_native_menu(
   auto menu_tree = Win32NativeMenuTree::build(menu);
   auto accelerator_table = Win32NativeMenuAcceleratorTable::build(menu);
   auto command_map = Win32NativeMenuCommandMap::build(menu);
+  const std::size_t accelerator_count = native_menu_accelerator_count(menu);
+  const std::size_t registered_accelerator_count = accelerator_table.has_value()
+      ? accelerator_table->registered_count()
+      : 0U;
   last_menu_installation_ = PlatformMenuInstallationResult{
       .supported = menu_tree.has_value() && accelerator_table.has_value(),
       .backend = "win32",
       .menu_count = menu.items.size(),
       .item_count = native_menu_item_count(menu),
-      .accelerator_count = native_menu_accelerator_count(menu),
+      .accelerator_count = accelerator_count,
+      .registered_accelerator_count = registered_accelerator_count,
+      .skipped_accelerator_count =
+          accelerator_count - registered_accelerator_count,
   };
   if (menu_tree.has_value() && accelerator_table.has_value()) {
     model_ = std::move(menu);

@@ -57,10 +57,26 @@ int main() {
                   .key_code = 'O',
                   .modifiers = {.control = true},
               },
+          }, cgpui::NativeMenuItem{
+              .title = "Workspace 1",
+              .action_name = "workspace.one",
+              .accelerator = cgpui::NativeMenuAccelerator{
+                  .key_code = '1',
+                  .modifiers = {.super = true},
+              },
+          }, cgpui::NativeMenuItem{
+              .title = "Release",
+              .action_name = "file.release",
+              .accelerator = cgpui::NativeMenuAccelerator{
+                  .key_code = 'R',
+                  .action = cgpui::KeyAction::released,
+              },
           }},
       }},
   });
-  if (!installed.supported || installed.accelerator_count != 1) return 3;
+  if (!installed.supported || installed.accelerator_count != 3 ||
+      installed.registered_accelerator_count != 1 ||
+      installed.skipped_accelerator_count != 2) return 3;
 
   const auto native = (*window)->native_surface();
   const auto* surface = std::get_if<cgpui::Win32SurfaceHandle>(&native);

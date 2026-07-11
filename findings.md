@@ -10411,3 +10411,18 @@
   runtime action bridge are present. Registration and menu-tree regressions
   remain green.
 - Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.
+
+## 2026-07-12 Phase F Step 585 Native Menu Dispatch Diagnostics
+
+- `Win32NativeMenuAcceleratorTable` already tracks its registered entry count,
+  while `PlatformMenuInstallationResult` only exposes declared accelerator
+  count. Public registered/skipped counts can report unsupported Win-key and
+  key-up descriptors without strings or hidden allocations.
+- Runtime already owns a bounded `PlatformDiagnosticEvent` stream with menu
+  kind, event kind, operation, success, and value count fields. Command source,
+  handler success, and command id fit this existing record without widening it.
+- The Win32 registration test reaches compile RED on the missing public counts,
+  then passes with three declared accelerators, one registered accelerator, and
+  two skipped Win-key/key-up descriptors. Runtime diagnostics record handled
+  accelerator and unhandled menu-command dispatches separately.
+- Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.

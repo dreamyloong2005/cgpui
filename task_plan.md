@@ -1057,7 +1057,15 @@ Windows/Linux core API is stable enough for parity work.
 - Step 584 evidence: real Win32 menu and accelerator `WM_COMMAND` sources emit
   `file.open` with command id `0x1000`, and a focused runtime test dispatches
   the event to the registered window-scoped action handler.
-- In progress: Step 585 native menu dispatch diagnostics production behavior.
+- Completed: Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.
+- Step 585 evidence: the real Win32 registration test reports one registered
+  and two skipped descriptors, unsupported backends report all declared
+  accelerators skipped, and focused runtime coverage records handled and
+  unhandled accelerator/menu command diagnostics.
+- In progress: Step 586 native menu and accelerator closeout audit.
+- Step 586 plan: freeze the Steps 579-585 native-menu tree, item state,
+  replacement, accelerator display/registration, command dispatch, and
+  diagnostics evidence in one focused audit guard before dialogs/services.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1075,6 +1083,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 585 WSL process poll returned `WSL_E_DISTRO_NOT_FOUND` while the original focused gate had been linking | Step 585 WSL focused verification | Confirm the original Windows-side WSL process exited, then restart one serialized Arch Linux registered-test gate with captured completion output |
+| Sandboxed `Get-CimInstance Win32_Process` returned access denied while checking whether the long Step 585 WSL gate still ran | Step 585 WSL process audit | Use ordinary `Get-Process` state and a serialized registered-test rerun after the first process exits |
+| The first Step 585 structure launch stopped before the test with a transient `cannot create filelock for package(ninja)` error | Step 585 structure RED | Use the registered `/default` test path, matching the successful Step 583 workaround, instead of repeating the direct-run invocation |
 | After fixing the private runtime-header cap, Step 584 UI structure advanced to exit 77 because the event-kind leaf grew from 120 to 123 lines | Step 584 event-kind structure | Compact the adjacent DragExited/native-menu variant checks and keep the 120-line cap |
 | Step 584 first structure group returned `ui_source_structure_test` exit 100 because the new private declaration crossed the 260-line internal-header cap; a standalone one-line form still totaled 261 | Step 584 runtime structure | Co-locate the two adjacent event-entry declarations on one line and preserve the existing cap |
 | A Step 584 Win32-proc search again passed wildcard paths directly to `rg` and returned OS error 123 | Step 584 message-proc audit | Use `rg` directory roots with `-g "*.cpp" -g "*.hpp"` filters |

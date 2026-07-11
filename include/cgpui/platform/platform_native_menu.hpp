@@ -43,6 +43,8 @@ struct PlatformMenuInstallationResult {
   std::size_t menu_count = 0;
   std::size_t item_count = 0;
   std::size_t accelerator_count = 0;
+  std::size_t registered_accelerator_count = 0;
+  std::size_t skipped_accelerator_count = 0;
 };
 
 struct NativeMenuInstallation {

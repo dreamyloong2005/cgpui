@@ -2407,7 +2407,20 @@
       "xmake.lua"
     ],
     "phase_f_step_584_remaining_gap": "Step 585 native menu dispatch diagnostics production behavior",
-    "phase_f_current_handoff": "Step 585 native menu dispatch diagnostics production behavior"
+    "phase_f_step_585_surface": "Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.",
+    "phase_f_step_585_sources": [
+      "include/cgpui/platform/platform_native_menu.hpp",
+      "src/platform/empty.cpp",
+      "src/platform/linux/wayland_native.cpp",
+      "src/platform/win32/win32_native.cpp",
+      "src/ui/runtime_event_native_menu.cpp",
+      "tests/platform/win32_native_menu_accelerator_registration_test.cpp",
+      "tests/ui/native_menu_dispatch_diagnostics_test.cpp",
+      "tests/architecture/phase_f_native_menu_dispatch_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_585_remaining_gap": "Step 586 native menu and accelerator closeout audit",
+    "phase_f_current_handoff": "Step 586 native menu and accelerator closeout audit"
   },
   "categories": [
     "application_and_app_context",
