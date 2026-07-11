@@ -976,7 +976,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 564 evidence: real system clipboard tests round-trip ordered Unicode file
   paths, inspect the native wide DROPFILES payload, reject empty/invalid paths
   before opening the clipboard, and preserve baseline text on rejection.
-- In progress: Step 565 Wayland selection ownership and write production behavior.
+- Completed: Phase F Step 565 makes Wayland selection writes transactional, prevents display-lock starvation during replacement, preserves continuous ownership, and serves the newest payload across UTF-8 and plain-text MIME requests. Step 566 Wayland selection read production behavior is next.
+- Step 565 evidence: a real compositor observes two continuous selection
+  generations and receives first then replacement payloads through both
+  UTF-8 and plain-text MIME requests without writer starvation.
+- In progress: Step 566 Wayland selection read production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1062,6 +1066,10 @@ Windows/Linux core API is stable enough for parity work.
 | The first Step 564 GREEN compile hit the Windows `max` macro and a missing `DROPFILES` declaration | Step 564 production GREEN | Use the macro-safe `(std::numeric_limits<std::size_t>::max)()` form and include `ShlObj_core.h` only in the focused Win32 files source |
 | The first system-link propagation edit matched a later `user32` line instead of the platform target, so `DragQueryFileW` remained unresolved | Step 564 aggregate Windows link | Inspect `xmake show -t` metadata, restore the unrelated lifecycle test, and anchor public `shell32` propagation on `cgpui_platform` |
 | A Step 564 xmake audit used an over-escaped `rg` regular expression and reported an unclosed group | Step 564 link diagnosis | Use fixed-string `rg -F` for literal xmake declarations |
+
+| Two Step 565 audits passed Windows wildcard paths directly to rg | Step 565 ownership audit | Use directory roots with --glob or explicit compositor files; the failed searches did not change the worktree |
+| The first Step 565 RED path stopped the compositor before destroying the clipboard client and hung in teardown | Step 565 behavior RED | Terminate only the task-owned test process and scope the clipboard so its dispatch thread and Wayland connection are destroyed before compositor stop |
+| Detailed Step 565 tracing showed the second write_text blocked indefinitely behind the dispatch thread's display mutex | Step 565 production GREEN | Pause dispatch around replacement, flush the new selection transactionally, commit and destroy the old source only on success, and restart dispatch |
 
 ## Errors Encountered During Phase E Resume
 

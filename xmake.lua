@@ -224,6 +224,13 @@ target("phase_f_win32_clipboard_files_structure_test")
     add_files("tests/architecture/phase_f_win32_clipboard_files_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_wayland_clipboard_ownership_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_wayland_clipboard_ownership_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -888,6 +895,18 @@ target("platform_service_result_conventions_test")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
     add_includedirs(public_includedirs)
     add_tests("default")
+
+if is_plat("linux") then
+    target("wayland_clipboard_ownership_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_clipboard_ownership_test.cpp")
+        add_files("tests/platform/wayland_test_compositor.cpp")
+        add_deps("cgpui_core", "cgpui_platform")
+        add_packages("wayland")
+        add_syslinks("wayland-server")
+        add_includedirs(public_includedirs, "tests/platform")
+        add_tests("default")
+end
 
 target("platform_font_discovery_test")
     set_kind("binary")

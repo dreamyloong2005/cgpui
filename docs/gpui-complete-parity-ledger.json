@@ -2139,7 +2139,21 @@
       "xmake.lua"
     ],
     "phase_f_step_564_remaining_gap": "Step 565 Wayland selection ownership and write production behavior",
-    "phase_f_current_handoff": "Step 565 Wayland selection ownership and write production behavior"
+    "phase_f_step_565_surface": "Phase F Step 565 makes Wayland selection writes transactional, prevents display-lock starvation during replacement, preserves continuous ownership, and serves the newest payload across UTF-8 and plain-text MIME requests. Step 566 Wayland selection read production behavior is next.",
+    "phase_f_step_565_sources": [
+      "src/platform/clipboard_wayland_internal.hpp",
+      "src/platform/clipboard_wayland_source.cpp",
+      "src/platform/clipboard_wayland_dispatch.cpp",
+      "tests/platform/wayland_test_clipboard_source_state.hpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_clipboard_ownership_test.cpp",
+      "tests/architecture/phase_f_wayland_clipboard_ownership_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_565_remaining_gap": "Step 566 Wayland selection read production behavior",
+    "phase_f_current_handoff": "Step 566 Wayland selection read production behavior"
   },
   "categories": [
     "application_and_app_context",

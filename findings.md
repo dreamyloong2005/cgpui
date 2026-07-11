@@ -10079,3 +10079,22 @@
   clipboard tests. A focused named-mutex test support header serializes only
   those processes, preserving normal parallelism for the rest of the suite.
 - Phase F Step 564 adds Win32 CF_HDROP file clipboard read and write with strict UTF-8 paths, wide DROPFILES payloads, multi-file ordering, and rejection-safe system content preservation. Step 565 Wayland selection ownership and write production behavior is next.
+
+## 2026-07-11 Phase F Step 565 Wayland Selection Ownership Audit
+
+- The existing Wayland clipboard already creates a real `wl_data_source`,
+  offers UTF-8/plain text MIME types, sets selection, dispatches source events,
+  and writes the owned payload to compositor-provided file descriptors.
+- The ownership replacement is not transactional: `write_text` destroys the
+  prior source and overwrites `owned_text_` before the new selection flush has
+  succeeded. A failed replacement therefore discards the previous valid
+  ownership and payload.
+- Existing real compositor coverage proves only one write/send cycle. Step 565
+  should add replacement and cancellation controls, prove the newest source
+  serves the newest payload, prove stale-source cancellation cannot clear the
+  replacement, and keep source lifecycle logic in focused clipboard modules.
+- The concrete production failure was display-lock starvation on the second
+  write. Pausing dispatch around replacement both removes that starvation and
+  creates a transactional point where the new selection is flushed before the
+  old source is destroyed.
+- Phase F Step 565 makes Wayland selection writes transactional, prevents display-lock starvation during replacement, preserves continuous ownership, and serves the newest payload across UTF-8 and plain-text MIME requests. Step 566 Wayland selection read production behavior is next.

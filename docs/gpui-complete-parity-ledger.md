@@ -691,6 +691,7 @@ consume C: drive space again.
 - Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.
 - Phase F Step 563 makes Win32 Unicode clipboard conversion strict, preserves emoji, CRLF, and empty text, rejects invalid UTF-8 and embedded NUL, and leaves existing system content intact on rejection. Step 564 Win32 file clipboard production behavior is next.
 - Phase F Step 564 adds Win32 CF_HDROP file clipboard read and write with strict UTF-8 paths, wide DROPFILES payloads, multi-file ordering, and rejection-safe system content preservation. Step 565 Wayland selection ownership and write production behavior is next.
+- Phase F Step 565 makes Wayland selection writes transactional, prevents display-lock starvation during replacement, preserves continuous ownership, and serves the newest payload across UTF-8 and plain-text MIME requests. Step 566 Wayland selection read production behavior is next.
 
 ## Categories
 

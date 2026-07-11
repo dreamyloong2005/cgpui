@@ -9,10 +9,19 @@ bool WaylandClipboard::Connection::write_text(std::string_view text) {
     return false;
   }
 
+  stop_dispatch_thread();
+  wl_data_source* previous_source = nullptr;
+  {
+    std::lock_guard selection_lock(owned_selection_mutex_);
+    previous_source = owned_source_;
+  }
+
+  bool installed = false;
   {
     std::lock_guard display_lock(display_mutex_);
     auto* source = wl_data_device_manager_create_data_source(manager_);
     if (source == nullptr) {
+      if (previous_source != nullptr) start_dispatch_thread();
       return false;
     }
 
@@ -28,29 +37,24 @@ bool WaylandClipboard::Connection::write_text(std::string_view text) {
     wl_data_source_offer(source, "text/plain;charset=utf-8");
     wl_data_source_offer(source, "text/plain");
 
-    {
-      std::lock_guard selection_lock(owned_selection_mutex_);
-      if (owned_source_ != nullptr) {
-        wl_data_source_destroy(owned_source_);
-      }
-      owned_source_ = source;
-      owned_text_ = std::string(text);
-    }
-
     wl_data_device_set_selection(data_device_, source, 0);
     if (wl_display_flush(display_) == -1) {
-      std::lock_guard selection_lock(owned_selection_mutex_);
-      if (owned_source_ == source) {
-        wl_data_source_destroy(owned_source_);
-        owned_source_ = nullptr;
-        owned_text_.clear();
+      wl_data_source_destroy(source);
+    } else {
+      {
+        std::lock_guard selection_lock(owned_selection_mutex_);
+        owned_source_ = source;
+        owned_text_ = std::string(text);
       }
-      return false;
+      if (previous_source != nullptr) {
+        wl_data_source_destroy(previous_source);
+      }
+      installed = true;
     }
   }
 
-  start_dispatch_thread();
-  return true;
+  if (installed || previous_source != nullptr) start_dispatch_thread();
+  return installed;
 }
 
 void WaylandClipboard::Connection::clear_owned_source() {

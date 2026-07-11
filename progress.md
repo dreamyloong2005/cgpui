@@ -21380,3 +21380,34 @@
 - Final JSON parsing, five-document unique phrase, public/private/test line
   caps, thirteen Step 565 handoff guards, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 565 Wayland Selection Ownership And Write
+
+- Started from committed Step 564 at `4931ac78`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit confirms real single-source selection write/send behavior is
+  already present. This slice targets transactional source replacement and
+  cancellation lifecycle with real compositor coverage.
+- The first ownership RED failure stopped the compositor before the clipboard
+  dispatch thread was destroyed and hung during teardown. Terminated only the
+  task-owned test process and changed the test to destroy the clipboard before
+  stopping its compositor so behavioral exit codes remain observable.
+- Stage tracing then isolated the production stall at the second `write_text`:
+  the background display poll repeatedly reacquired `display_mutex_` and could
+  starve the writer indefinitely. Replacement now pauses dispatch, flushes the
+  new source before committing it, destroys the prior source only on success,
+  and restarts dispatch for either the replacement or preserved old ownership.
+- The real replacement test now passes in 0.20 seconds, proving two selection
+  generations remain continuous and serve first then second payloads through
+  UTF-8 and plain-text MIME requests.
+- Added the Step 565 structure guard; platform source structure remains green
+  while the new guard reaches the intended five-document RED at exit 9.
+- Synchronized the exact Step 565 completion phrase across all five authority
+  documents, advanced the handoff to Step 566 Wayland selection read, and
+  passed the Windows shared structure/ledger group 16/16.
+- Final WSL verification passes 18/18 across transactional ownership,
+  existing clipboard behavior, fourteen Phase F structure guards, platform
+  source structure, and the parity ledger.
+- Final JSON parsing, five-document unique phrase, production/test/compositor
+  line caps, fourteen Step 566 handoff guards, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

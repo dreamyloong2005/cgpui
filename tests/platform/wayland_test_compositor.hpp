@@ -185,6 +185,10 @@ class WaylandTestCompositor {
   [[nodiscard]] bool wait_for_clipboard_selection_sent() const;
   [[nodiscard]] std::string last_clipboard_receive_mime_type() const;
   [[nodiscard]] bool wait_for_clipboard_client_selection_set() const;
+  [[nodiscard]] bool wait_for_clipboard_client_selection_set_count(
+      std::uint32_t count) const;
+  [[nodiscard]] bool
+  clipboard_client_selection_replacement_was_continuous() const;
   [[nodiscard]] std::vector<std::string> clipboard_client_selection_mime_types()
       const;
   [[nodiscard]] bool wait_for_clipboard_client_selection_payload_received()
