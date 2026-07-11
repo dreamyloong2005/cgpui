@@ -20985,3 +20985,45 @@
 - Ledger JSON parsing, the exact Step 553 phrase appearing once in each of the
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 554 Win32 Input DPI
+
+- Started from committed Step 553 at `abdfcba6`; only `.vscode/` remains
+  unrelated and untracked.
+- Audited live DPI state, mouse move/button/wheel publication, synthetic and OLE
+  drag paths, existing real Win32 input tests, and geometry helpers.
+- Chose a focused Win32 physical-to-logical coordinate module shared by client
+  LPARAM, screen LPARAM, and OLE POINTL paths. Wheel deltas and synthetic test
+  payload coordinates remain unchanged.
+- Added a real DPI-transition RED covering move, button, and wheel positions;
+  it exited 5 because the first pointer move still exposed device pixels.
+- Added `win32_input_coordinates_internal.hpp/.cpp` as the focused native
+  physical-to-logical conversion owner and extracted pointer publication into
+  `win32_window_pointer_events.cpp`.
+- Routed client pointer/button coordinates, screen wheel coordinates, and OLE
+  drag POINTL coordinates through the current `WindowState::scale`; preserved
+  wheel deltas and synthetic logical drag payloads without conversion.
+- Added the Step 554 behavior and structure targets, updated historical
+  pointer-button, pointer-scroll, and Win32 source guards for the extracted
+  ownership, and confirmed all three revised guards build successfully.
+- The first combined xmake build invocation repeated the known single-target
+  limitation, and `xmake test <target>` confirmed these architecture targets
+  are executable guards rather than registered test ids; final verification
+  uses `xmake run`/direct execution.
+- The first complete Windows gate passed 22/24; only the Step 552 cursor and
+  Step 553 capture guards still froze the dynamic global handoff at Step 554.
+  Their own historical evidence remains unchanged while the global assertion
+  advances to Step 555.
+- Final Windows focused verification passes 24/24 across all Win32 input
+  behavior, live-DPI pointer coordinates, shared runtime consumers, all eight
+  input structure guards, source inventories, public headers, UI structure,
+  and the parity ledger.
+- Final WSL Arch Linux focused verification reuses `.build-wsl/master` on D:
+  plus `/dev/shm/cgpui` transient temp and passes 17/17 across real Wayland
+  pointer button/scroll behavior, shared runtime consumers, all eight Win32
+  cross-platform structure guards, platform/Wayland/UI inventories, public
+  headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 554 phrase appearing once in each of the
+  five authority documents, focused source line caps, and `git diff --check`
+  pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
+  batched until the next platform milestone or Phase F closeout.

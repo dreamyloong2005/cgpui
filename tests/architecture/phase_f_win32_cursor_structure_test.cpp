@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 554 Win32 input DPI-change")) {
+                "\"phase_f_current_handoff\": \"Step 555 Wayland seat capability")) {
     return 8;
   }
   return 0;

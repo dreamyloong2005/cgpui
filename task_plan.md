@@ -926,7 +926,12 @@ Windows/Linux core API is stable enough for parity work.
   coordinates; runtime coverage freezes native synchronization and loss-time
   cancellation before event consumers observe state. Final focused gates pass
   23/23 on Windows and 16/16 on WSL Arch Linux.
-- In progress: Step 554 Win32 input DPI-change production behavior.
+- Completed: Phase F Step 554 makes Win32 pointer, button, wheel, and native drag coordinates DPI-aware through focused physical-to-logical conversion after live scale changes, closing the Win32 input band. Step 555 Wayland seat capability production behavior is next.
+- Step 554 evidence: client and screen LPARAM plus OLE POINTL coordinates share
+  a focused allocation-free conversion boundary; wheel deltas and synthetic
+  logical drag payloads remain unchanged. Focused behavior and structure gates
+  cover live scale changes and the extracted pointer-event ownership.
+- In progress: Step 555 Wayland seat capability production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -999,6 +1004,8 @@ Windows/Linux core API is stable enough for parity work.
 | The first complete Step 553 Win32 input gate passed all behavior but 3/7 historical input guards retained the pre-capture 110-line `Win32Window` private declaration cap | Step 553 expanded Windows verification | Align the Step 550-552 guards with the Step 553 120-line cap; the declaration-only header remains 115 lines and production bodies stay in focused sources |
 | The second complete Step 553 Win32 input gate passed 22/23 because the Step 552 cursor guard froze the global current handoff at Step 553 | Step 553 expanded Windows verification | Preserve Step 552's own surface/remaining-gap assertions but advance its dynamic global handoff assertion to Step 554 |
 | The first no-diff line-ending cleanup could not create `.git/index.lock` inside the workspace sandbox | Step 553 worktree cleanup | Rerun the narrowly scoped `git restore --worktree` with the approved git escalation; only the two files edited and fully reverted in this slice were targeted |
+| `xmake test <target>` printed `nothing to test` for the Step 554 structure executables | Step 554 focused structure verification | Build each target separately and execute it with `xmake run <target>` or run its binary directly; these architecture targets are not registered test ids |
+| The first complete Step 554 Windows input gate passed 22/24 because the Step 552 cursor and Step 553 capture guards froze the global handoff at Step 554 | Step 554 expanded Windows verification | Preserve each historical step's surface and remaining-gap fields while advancing only their dynamic global handoff assertion to Step 555 |
 
 ## Errors Encountered During Phase E Resume
 

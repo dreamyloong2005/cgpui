@@ -9737,3 +9737,29 @@
   `WM_CAPTURECHANGED` callback to avoid nested event dispatch; external owner
   replacement and `WM_CANCELMODE` remain observable loss events.
 - Phase F Step 553 adds native Win32 pointer capture with compatible platform control, owner-matched release, capture-loss cancellation, and continuous outside-window drag movement. Step 554 Win32 input DPI-change production behavior is next.
+
+## 2026-07-11 Phase F Step 554 Win32 Input DPI Audit
+
+- Win32 `WM_DPICHANGED` already updates `WindowState::scale`, and runtime viewport
+  dimensions are derived in logical pixels from framebuffer size and scale.
+- Pointer move/button handlers still publish `GET_X/Y_LPARAM` client device
+  pixels directly; wheel and OLE drag paths convert screen to client pixels but
+  likewise omit division by the current scale.
+- After a live DPI change, those physical coordinates no longer align with
+  runtime layout, hit testing, pointer capture routing, or drag positions.
+- Native client and screen positions should share one focused, allocation-free
+  physical-to-logical Win32 helper. Scroll deltas remain dimensionless wheel
+  units and must not be scaled.
+- Synthetic drag test-hook payloads already express public logical positions
+  and should not be transformed a second time.
+- A focused `win32_input_coordinates` module can serve client LPARAM, screen
+  LPARAM, and OLE POINTL inputs without making the general event or drag/drop
+  files own DPI math.
+- Moving pointer move/button/wheel publication into
+  `win32_window_pointer_events.cpp` keeps the aggregate events file focused on
+  keyboard, activation/focus, and synthetic drag orchestration.
+- The live-DPI behavior test now passes for pointer move, button, and wheel;
+  existing input/button/scroll behavior remains green, and native OLE drag
+  reuses the same current-scale conversion while synthetic logical drag stays
+  untouched.
+- Phase F Step 554 makes Win32 pointer, button, wheel, and native drag coordinates DPI-aware through focused physical-to-logical conversion after live scale changes, closing the Win32 input band. Step 555 Wayland seat capability production behavior is next.

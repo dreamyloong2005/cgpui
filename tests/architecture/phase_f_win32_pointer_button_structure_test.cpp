@@ -38,6 +38,8 @@ int main() {
       "src/platform/win32/win32_pointer_button_internal.hpp");
   const std::string proc = read_source(
       "src/platform/win32/win32_window_proc_pointer.cpp");
+  const std::string pointer_events =
+      read_source("src/platform/win32/win32_window_pointer_events.cpp");
   const std::string events =
       read_source("src/platform/win32/win32_window_events.cpp");
   const std::string factory =
@@ -54,9 +56,9 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &pointer_header, &decoder, &decoder_header, &proc, &events, &factory,
-      &behavior, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &pointer_header, &decoder, &decoder_header, &proc, &pointer_events,
+      &events, &factory, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -70,7 +72,8 @@ int main() {
       !contains(decoder, "MouseButton::back") ||
       !contains(decoder, "MouseButton::forward") ||
       !contains(proc, "decode_win32_pointer_button(") ||
-      !contains(events, ".click_count = click_count") ||
+      !contains(pointer_events, ".click_count = click_count") ||
+      contains(events, "Win32Window::pointer_button(") ||
       !contains(factory, "CS_DBLCLKS")) {
     return 2;
   }
@@ -83,7 +86,8 @@ int main() {
     return 3;
   }
   if (line_count(decoder_header) > 25 || line_count(decoder) > 60 ||
-      line_count(proc) > 60 || line_count(events) > 105 ||
+      line_count(proc) > 60 || line_count(pointer_events) > 55 ||
+      line_count(events) > 105 ||
       line_count(behavior) > 70) {
     return 4;
   }

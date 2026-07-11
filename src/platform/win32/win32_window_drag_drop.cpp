@@ -1,5 +1,7 @@
 #include "win32_window_internal.hpp"
 
+#include "win32_input_coordinates_internal.hpp"
+
 namespace cgpui {
 
 void Win32Window::ole_drag_entered(
@@ -93,16 +95,7 @@ void Win32Window::revoke_drop_target() {
 }
 
 Point Win32Window::client_position_from_screen(POINTL point) const {
-  POINT screen_point{
-      .x = static_cast<LONG>(point.x),
-      .y = static_cast<LONG>(point.y),
-  };
-  if (hwnd_ != nullptr) {
-    ScreenToClient(hwnd_, &screen_point);
-  }
-  return Point{
-      .x = static_cast<float>(screen_point.x),
-      .y = static_cast<float>(screen_point.y)};
+  return win32_logical_client_point_from_screen(hwnd_, point, state_.scale);
 }
 
 } // namespace cgpui

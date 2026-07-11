@@ -38,6 +38,8 @@ int main() {
       "src/platform/win32/win32_pointer_scroll_internal.hpp");
   const std::string proc = read_source(
       "src/platform/win32/win32_window_proc_pointer.cpp");
+  const std::string pointer_events =
+      read_source("src/platform/win32/win32_window_pointer_events.cpp");
   const std::string events =
       read_source("src/platform/win32/win32_window_events.cpp");
   const std::string behavior =
@@ -52,8 +54,9 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &pointer_header, &decoder, &decoder_header, &proc, &events, &behavior,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &pointer_header, &decoder, &decoder_header, &proc, &pointer_events,
+      &events, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -65,7 +68,8 @@ int main() {
       !contains(decoder, "WM_MOUSEHWHEEL") ||
       !contains(decoder, "raw_delta % WHEEL_DELTA") ||
       !contains(proc, "decode_win32_pointer_scroll(") ||
-      !contains(events, ".precise = precise")) {
+      !contains(pointer_events, ".precise = precise") ||
+      contains(events, "Win32Window::pointer_scrolled(")) {
     return 2;
   }
   if (!contains(behavior, "WM_MOUSEHWHEEL") ||
@@ -78,7 +82,8 @@ int main() {
   }
   if (line_count(pointer_header) > 60 || line_count(decoder_header) > 20 ||
       line_count(decoder) > 30 || line_count(proc) > 60 ||
-      line_count(events) > 105 || line_count(behavior) > 90) {
+      line_count(pointer_events) > 55 || line_count(events) > 105 ||
+      line_count(behavior) > 90) {
     return 4;
   }
   constexpr const char* completion =

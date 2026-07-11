@@ -4,43 +4,6 @@
 
 namespace cgpui {
 
-void Win32Window::pointer_moved(LPARAM lparam) {
-  callback_(PointerMoved{.position = Point{
-      static_cast<float>(GET_X_LPARAM(lparam)),
-      static_cast<float>(GET_Y_LPARAM(lparam))}});
-}
-
-void Win32Window::pointer_button(
-    MouseButton button,
-    bool pressed,
-    std::uint8_t click_count,
-    LPARAM lparam) {
-  callback_(PointerButton{
-      .button = button,
-      .pressed = pressed,
-      .click_count = click_count,
-      .position = Point{
-          static_cast<float>(GET_X_LPARAM(lparam)),
-          static_cast<float>(GET_Y_LPARAM(lparam))}});
-}
-
-void Win32Window::pointer_scrolled(
-    Point delta,
-    bool precise,
-    LPARAM lparam) {
-  POINT point{
-      .x = GET_X_LPARAM(lparam),
-      .y = GET_Y_LPARAM(lparam),
-  };
-  ScreenToClient(hwnd_, &point);
-  callback_(PointerScrolled{
-      .delta = delta,
-      .position = Point{
-          static_cast<float>(point.x),
-          static_cast<float>(point.y)},
-      .precise = precise});
-}
-
 void Win32Window::key_event(KeyboardKey event) {
   callback_(std::move(event));
 }

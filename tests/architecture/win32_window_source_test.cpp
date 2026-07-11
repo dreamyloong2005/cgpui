@@ -45,6 +45,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_input_coordinates_internal.hpp",
+      "src/platform/win32/win32_input_coordinates.cpp",
       "src/platform/win32/win32_cursor_internal.hpp",
       "src/platform/win32/win32_cursor.cpp",
       "src/platform/win32/win32_dead_key_internal.hpp",
@@ -69,6 +71,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_display.cpp",
       "src/platform/win32/win32_window_position.cpp",
       "src/platform/win32/win32_window_pointer_capture.cpp",
+      "src/platform/win32/win32_window_pointer_events.cpp",
       "src/platform/win32/win32_window_size.cpp",
       "src/platform/win32/win32_window_cursor.cpp",
       "src/platform/win32/win32_window_drag_drop.cpp",
@@ -364,6 +367,8 @@ int main() {
       read_source("src/platform/win32/win32_window_cursor.cpp");
   const std::string win32_window_drag_drop =
       read_source("src/platform/win32/win32_window_drag_drop.cpp");
+  const std::string win32_window_pointer_events =
+      read_source("src/platform/win32/win32_window_pointer_events.cpp");
   const std::string win32_window_events =
       read_source("src/platform/win32/win32_window_events.cpp");
   const std::string win32_window_text =
@@ -411,8 +416,8 @@ int main() {
       win32_ole_drop_target.empty() || win32_window.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
       win32_window_cursor.empty() ||
-      win32_window_drag_drop.empty() || win32_window_events.empty() ||
-      win32_window_text.empty() ||
+      win32_window_drag_drop.empty() || win32_window_pointer_events.empty() ||
+      win32_window_events.empty() || win32_window_text.empty() ||
       win32_window_ime.empty() || win32_window_ime_placement.empty() ||
       win32_window_proc.empty() ||
       win32_window_proc_drag.empty() ||
@@ -572,9 +577,12 @@ int main() {
       contains(win32_window_size, "Win32Window::pointer_moved(")) {
     return 91;
   }
-  if (!contains(win32_window_events, "Win32Window::pointer_moved(") ||
-      !contains(win32_window_events, "Win32Window::pointer_button(") ||
-      !contains(win32_window_events, "Win32Window::pointer_scrolled(") ||
+  if (!contains(win32_window_pointer_events, "Win32Window::pointer_moved(") ||
+      !contains(win32_window_pointer_events, "Win32Window::pointer_button(") ||
+      !contains(win32_window_pointer_events, "Win32Window::pointer_scrolled(") ||
+      contains(win32_window_events, "Win32Window::pointer_moved(") ||
+      contains(win32_window_events, "Win32Window::pointer_button(") ||
+      contains(win32_window_events, "Win32Window::pointer_scrolled(") ||
       !contains(win32_window_events, "Win32Window::key_event(") ||
       contains(win32_window_events, "Win32Window::text_input(") ||
       !contains(win32_window_events, "Win32Window::drag_dropped(")) {
@@ -608,6 +616,7 @@ int main() {
   if (line_count(win32_window) > 130 ||
       line_count(win32_window_chrome) > 90 ||
       line_count(win32_window_size) > 80 ||
+      line_count(win32_window_pointer_events) > 55 ||
       line_count(win32_window_events) > 180 ||
       line_count(win32_window_text) > 45 ||
       line_count(win32_window_ime) > 90 ||
