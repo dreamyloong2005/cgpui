@@ -66,5 +66,14 @@ NativeFileDialogResult PlatformApplication::show_native_file_dialog(
   };
 }
 
+NativeMessageDialogResult PlatformApplication::show_native_message_dialog(
+    NativeMessageDialogOptions) {
+  return NativeMessageDialogResult{
+      .supported = false,
+      .backend = "unsupported",
+      .error_message = "native message dialog unsupported",
+  };
+}
+
 void cgpui_platform_anchor() {}
 } // namespace cgpui

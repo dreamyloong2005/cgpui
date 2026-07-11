@@ -1,4 +1,5 @@
 #include "win32_window_factory_internal.hpp"
+#include "win32_message_dialog_internal.hpp"
 
 #include <memory>
 #include <utility>
@@ -85,6 +86,11 @@ class Win32Application final : public PlatformApplication {
     last_file_dialog_result_ =
         native_file_dialog_state_.show_native_file_dialog(std::move(options));
     return last_file_dialog_result_;
+  }
+
+  NativeMessageDialogResult show_native_message_dialog(
+      NativeMessageDialogOptions options) override {
+    return show_win32_native_message_dialog(options);
   }
 
   void quit() override {

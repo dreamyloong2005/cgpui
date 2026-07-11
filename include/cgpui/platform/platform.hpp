@@ -4,6 +4,7 @@
 #include "cgpui/platform/platform_accessibility.hpp"
 #include "cgpui/platform/platform_native_menu.hpp"
 #include "cgpui/platform/platform_file_dialog.hpp"
+#include "cgpui/platform/platform_message_dialog.hpp"
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_position.hpp"

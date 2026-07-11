@@ -25,6 +25,8 @@ class WaylandApplication final : public PlatformApplication {
       NativeMenuModel menu) override;
   NativeFileDialogResult show_native_file_dialog(
       NativeFileDialogOptions options) override;
+  NativeMessageDialogResult show_native_message_dialog(
+      NativeMessageDialogOptions options) override;
   [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
       const override;
 

@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 590 native message-dialog")) {
+                "\"phase_f_current_handoff\": \"Step 591 native open-URL")) {
     return 11;
   }
   return 0;

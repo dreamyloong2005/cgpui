@@ -20908,6 +20908,23 @@
   pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
   batched.
 
+## 2026-07-12 Phase F Step 590 Native Message Dialog
+
+- Started from committed Step 589 at `d2883b32`; only unrelated untracked
+  `.vscode/` remains.
+- Added a public platform message-dialog model, focused Win32 plan/response
+  mapping and presentation, plus explicit Wayland/default unsupported results.
+- Win32 plan/response and public-result compilation regressions pass 2/2.
+- Added the Step 590 platform/message/structure/ledger guard and Win32 source
+  inventory entries for the focused leaf.
+- The Step 590 structure guard reached the intended five-document RED at child
+  exit 8 with focused 26/24/52/23/30/166 line counts.
+- Final Windows message/public-header/source/structure/ledger verification
+  passes 10/10. Final WSL shared rebuild and gate passes 9/9.
+- JSON parsing, five-document unique phrase, thirty-nine Step 591 structure
+  handoff guards, and `git diff --check` pass. `.vscode/` remains unrelated
+  and untracked; WSL full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

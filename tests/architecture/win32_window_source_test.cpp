@@ -57,6 +57,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_dead_key.cpp",
       "src/platform/win32/win32_keyboard_key_internal.hpp",
       "src/platform/win32/win32_keyboard_key.cpp",
+      "src/platform/win32/win32_message_dialog_internal.hpp",
+      "src/platform/win32/win32_message_dialog.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_file_dialog_internal.hpp",
       "src/platform/win32/win32_file_dialog.cpp",

@@ -2469,7 +2469,21 @@
       "xmake.lua"
     ],
     "phase_f_step_589_remaining_gap": "Step 590 native message-dialog production behavior",
-    "phase_f_current_handoff": "Step 590 native message-dialog production behavior"
+    "phase_f_step_590_surface": "Phase F Step 590 adds a public native message-dialog platform service, maps Win32 kinds/buttons/responses through a focused MessageBoxW leaf, and reports explicit unsupported results on Wayland and default backends. Step 591 native open-URL production behavior is next.",
+    "phase_f_step_590_sources": [
+      "include/cgpui/platform/platform_message_dialog.hpp",
+      "include/cgpui/platform/platform_application.hpp",
+      "src/platform/empty.cpp",
+      "src/platform/linux/wayland_application_services.cpp",
+      "src/platform/win32/win32_message_dialog_internal.hpp",
+      "src/platform/win32/win32_message_dialog.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "tests/platform/win32_message_dialog_plan_test.cpp",
+      "tests/architecture/phase_f_native_message_dialog_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_590_remaining_gap": "Step 591 native open-URL production behavior",
+    "phase_f_current_handoff": "Step 591 native open-URL production behavior"
   },
   "categories": [
     "application_and_app_context",

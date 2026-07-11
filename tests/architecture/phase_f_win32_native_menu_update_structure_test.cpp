@@ -64,6 +64,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 7;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 590 native message-dialog")) return 8;
+                "\"phase_f_current_handoff\": \"Step 591 native open-URL")) return 8;
   return 0;
 }

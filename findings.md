@@ -10462,3 +10462,12 @@
 - Directory planning should add `FOS_PICKFOLDERS | FOS_PATHMUSTEXIST`, omit
   file-must-exist/multi-select, and ignore file-extension filters.
 - Phase F Step 589 adds an explicit native directory-picker request kind, maps Win32 folder selection to FOS_PICKFOLDERS and existing-path requirements, ignores file filters, and preserves the shared single-path result contract. Step 590 native message-dialog production behavior is next.
+
+## 2026-07-12 Phase F Step 590 Native Message Dialog
+
+- No message-dialog model exists. The platform boundary needs explicit kind,
+  button, response, supported/accepted, backend, and error fields before UI
+  result adapters can be added later.
+- Win32 presentation belongs in a focused `MessageBoxW` leaf with pure flag
+  and response mapping; Wayland/default remain explicit unsupported backends.
+- Phase F Step 590 adds a public native message-dialog platform service, maps Win32 kinds/buttons/responses through a focused MessageBoxW leaf, and reports explicit unsupported results on Wayland and default backends. Step 591 native open-URL production behavior is next.

@@ -18,4 +18,13 @@ NativeFileDialogResult WaylandApplication::show_native_file_dialog(
   return last_file_dialog_result_;
 }
 
+NativeMessageDialogResult WaylandApplication::show_native_message_dialog(
+    NativeMessageDialogOptions) {
+  return NativeMessageDialogResult{
+      .supported = false,
+      .backend = "wayland",
+      .error_message = "native message dialog unsupported by wayland",
+  };
+}
+
 } // namespace cgpui
