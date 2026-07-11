@@ -109,7 +109,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 588 Win32 save-file")) {
+                "\"phase_f_current_handoff\": \"Step 589 native directory-picker")) {
     return 8;
   }
   return 0;

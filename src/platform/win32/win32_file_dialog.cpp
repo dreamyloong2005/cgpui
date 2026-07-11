@@ -10,18 +10,6 @@
 namespace cgpui {
 namespace {
 
-template <typename T>
-class ComPtr {
- public:
-  ~ComPtr() { if (value_ != nullptr) value_->Release(); }
-  T** put() { return &value_; }
-  T* operator->() const { return value_; }
-  explicit operator bool() const { return value_ != nullptr; }
-
- private:
-  T* value_ = nullptr;
-};
-
 std::wstring extension_pattern(std::string extension) {
   if (extension.empty()) return {};
   if (extension == "*") return L"*.*";
@@ -30,12 +18,18 @@ std::wstring extension_pattern(std::string extension) {
   return L"*." + widen(extension);
 }
 
-std::string hresult_message(const char* operation, HRESULT result) {
+} // namespace
+
+std::string win32_file_dialog_hresult_message(
+    const char* operation,
+    HRESULT result) {
   return std::string(operation) + " failed with HRESULT " +
       std::to_string(static_cast<unsigned long>(result));
 }
 
-bool append_shell_item_path(IShellItem& item, NativeFileDialogResult& result) {
+bool win32_file_dialog_append_shell_item_path(
+    IShellItem& item,
+    NativeFileDialogResult& result) {
   PWSTR path = nullptr;
   const HRESULT status = item.GetDisplayName(SIGDN_FILESYSPATH, &path);
   if (FAILED(status) || path == nullptr) return false;
@@ -44,17 +38,22 @@ bool append_shell_item_path(IShellItem& item, NativeFileDialogResult& result) {
   return !result.paths.back().empty();
 }
 
-} // namespace
-
 std::optional<Win32FileDialogPlan> win32_file_dialog_plan(
     const NativeFileDialogOptions& options) {
-  if (options.kind == NativeFileDialogKind::save_file) return std::nullopt;
+  FILEOPENDIALOGOPTIONS dialog_options = FOS_FORCEFILESYSTEM;
+  if (options.kind == NativeFileDialogKind::save_file) {
+    dialog_options |= FOS_OVERWRITEPROMPT;
+  } else {
+    dialog_options |= FOS_FILEMUSTEXIST;
+    if (options.kind == NativeFileDialogKind::open_files) {
+      dialog_options |= FOS_ALLOWMULTISELECT;
+    }
+  }
   Win32FileDialogPlan plan{
-      .options = FOS_FORCEFILESYSTEM | FOS_FILEMUSTEXIST |
-          (options.kind == NativeFileDialogKind::open_files
-              ? FOS_ALLOWMULTISELECT : 0U),
+      .options = dialog_options,
       .title = widen(options.title),
       .default_directory = widen(options.default_directory),
+      .suggested_name = widen(options.suggested_name),
   };
   for (const auto& filter : options.filters) {
     std::wstring pattern;
@@ -75,17 +74,20 @@ NativeFileDialogResult show_win32_native_file_dialog(
                                 .filter_count = options.filters.size()};
   auto plan = win32_file_dialog_plan(options);
   if (!plan.has_value()) return result;
+  if (options.kind == NativeFileDialogKind::save_file) {
+    return show_win32_native_save_file_dialog(options, *plan);
+  }
   result.supported = true;
 
   const HRESULT initialized = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
   const bool uninitialize = SUCCEEDED(initialized);
   if (FAILED(initialized) && initialized != RPC_E_CHANGED_MODE) {
     result.supported = false;
-    result.error_message = hresult_message("CoInitializeEx", initialized);
+    result.error_message = win32_file_dialog_hresult_message("CoInitializeEx", initialized);
     return result;
   }
 
-  ComPtr<IFileOpenDialog> dialog;
+  Win32FileDialogComPtr<IFileOpenDialog> dialog;
   HRESULT status = CoCreateInstance(
       CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER,
       IID_PPV_ARGS(dialog.put()));
@@ -102,11 +104,11 @@ NativeFileDialogResult show_win32_native_file_dialog(
     status = dialog->SetFileTypes(static_cast<UINT>(specs.size()), specs.data());
   }
 
-  ComPtr<IShellItem> directory;
+  Win32FileDialogComPtr<IShellItem> directory;
   if (SUCCEEDED(status) && !plan->default_directory.empty() &&
       SUCCEEDED(SHCreateItemFromParsingName(
           plan->default_directory.c_str(), nullptr, IID_PPV_ARGS(directory.put())))) {
-    status = dialog->SetDefaultFolder(directory.operator->());
+    status = dialog->SetDefaultFolder(directory.get());
   }
   if (SUCCEEDED(status)) status = dialog->Show(nullptr);
   if (status == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
@@ -114,28 +116,28 @@ NativeFileDialogResult show_win32_native_file_dialog(
     return result;
   }
   if (FAILED(status)) {
-    result.error_message = hresult_message("IFileOpenDialog", status);
+    result.error_message = win32_file_dialog_hresult_message("IFileOpenDialog", status);
     if (uninitialize) CoUninitialize();
     return result;
   }
 
   if (options.kind == NativeFileDialogKind::open_files) {
-    ComPtr<IShellItemArray> items;
+    Win32FileDialogComPtr<IShellItemArray> items;
     status = dialog->GetResults(items.put());
     DWORD count = 0;
     if (SUCCEEDED(status)) status = items->GetCount(&count);
     for (DWORD index = 0; SUCCEEDED(status) && index < count; ++index) {
-      ComPtr<IShellItem> item;
+      Win32FileDialogComPtr<IShellItem> item;
       status = items->GetItemAt(index, item.put());
-      if (SUCCEEDED(status) && !append_shell_item_path(*item.operator->(), result)) status = E_FAIL;
+      if (SUCCEEDED(status) && !win32_file_dialog_append_shell_item_path(*item.get(), result)) status = E_FAIL;
     }
   } else {
-    ComPtr<IShellItem> item;
+    Win32FileDialogComPtr<IShellItem> item;
     status = dialog->GetResult(item.put());
-    if (SUCCEEDED(status) && !append_shell_item_path(*item.operator->(), result)) status = E_FAIL;
+    if (SUCCEEDED(status) && !win32_file_dialog_append_shell_item_path(*item.get(), result)) status = E_FAIL;
   }
   result.accepted = SUCCEEDED(status) && !result.paths.empty();
-  if (FAILED(status)) result.error_message = hresult_message("IFileOpenDialog result", status);
+  if (FAILED(status)) result.error_message = win32_file_dialog_hresult_message("IFileOpenDialog result", status);
   if (uninitialize) CoUninitialize();
   return result;
 }

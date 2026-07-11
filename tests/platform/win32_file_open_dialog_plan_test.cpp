@@ -22,7 +22,5 @@ int main() {
       cgpui::NativeFileDialogOptions{.kind = cgpui::NativeFileDialogKind::open_files});
   if (!multiple.has_value() ||
       (multiple->options & FOS_ALLOWMULTISELECT) == 0) return 2;
-  if (cgpui::win32_file_dialog_plan(cgpui::NativeFileDialogOptions{
-          .kind = cgpui::NativeFileDialogKind::save_file}).has_value()) return 3;
   return 0;
 }

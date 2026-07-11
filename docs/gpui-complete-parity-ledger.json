@@ -2446,7 +2446,19 @@
       "xmake.lua"
     ],
     "phase_f_step_587_remaining_gap": "Step 588 Win32 save-file dialog production behavior",
-    "phase_f_current_handoff": "Step 588 Win32 save-file dialog production behavior"
+    "phase_f_step_588_surface": "Phase F Step 588 implements Win32 save-file dialogs in a focused IFileSaveDialog leaf, preserves suggested names and filters, requests overwrite confirmation without file-must-exist, and returns one filesystem path on acceptance. Step 589 native directory-picker production behavior is next.",
+    "phase_f_step_588_sources": [
+      "src/platform/win32/win32_file_dialog_internal.hpp",
+      "src/platform/win32/win32_file_dialog.cpp",
+      "src/platform/win32/win32_file_dialog_save.cpp",
+      "tests/platform/win32_file_save_dialog_plan_test.cpp",
+      "tests/architecture/phase_f_win32_file_open_dialog_structure_test.cpp",
+      "tests/architecture/phase_f_win32_file_save_dialog_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_588_remaining_gap": "Step 589 native directory-picker production behavior",
+    "phase_f_current_handoff": "Step 589 native directory-picker production behavior"
   },
   "categories": [
     "application_and_app_context",

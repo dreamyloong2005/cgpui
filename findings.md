@@ -10445,3 +10445,11 @@
   multi-select flags and extension filters without showing UI; the execution
   path owns COM initialization, `IFileOpenDialog`, cancellation, and paths.
 - Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.
+
+## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
+
+- Save behavior can reuse the Step 587 plan/filter/path helpers while keeping
+  `IFileSaveDialog` execution in its own source leaf.
+- The save plan must use overwrite prompting without file-must-exist, preserve
+  the suggested name, and return exactly one filesystem path on acceptance.
+- Phase F Step 588 implements Win32 save-file dialogs in a focused IFileSaveDialog leaf, preserves suggested names and filters, requests overwrite confirmation without file-must-exist, and returns one filesystem path on acceptance. Step 589 native directory-picker production behavior is next.

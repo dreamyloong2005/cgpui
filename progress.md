@@ -20891,6 +20891,29 @@
   `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
   full debug remains batched.
 
+## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
+
+- Started from committed Step 587 at `246bb4a1`; only unrelated untracked
+  `.vscode/` remains.
+- Added a focused `IFileSaveDialog` execution leaf and extended the pure plan
+  with overwrite prompting and suggested-name metadata.
+- Split save planning coverage into its own non-interactive test and advanced
+  the shared private-header cap from 45 to 55 for the save declarations.
+- The split exposed one Step 587 cross-step assertion on the old save negative
+  case; remove it so the open guard tracks only open/open-files evidence.
+- The Step 588 structure guard then reached the intended five-document RED at
+  exit 8 while the corrected Step 587 guard remained green.
+- Final Windows open/save behavior and structure verification passes 7/7.
+  Final WSL shared dialog structure/ledger verification passes 5/5.
+- JSON parsing, five-document unique phrase, thirty-seven Step 589 structure
+  handoff guards, focused 52/145/66/20/61 line budgets, and
+  `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
+  full debug remains batched.
+- The first combined stage/check command was denied at `.git/index.lock`;
+  rerun the approved scoped `git add` separately.
+- Staging succeeded, but a combined cached-check/commit command hit the same
+  index permission boundary; run inspection and commit separately.
+
 ## 2026-07-12 Phase F Step 586 Native Menu And Accelerator Closeout
 
 - Started from committed Step 585 at `d337d532`; only unrelated untracked

@@ -1791,6 +1791,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.
 - [x] Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.
 - [x] Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.
+- [x] Phase F Step 588 implements Win32 save-file dialogs in a focused IFileSaveDialog leaf, preserves suggested names and filters, requests overwrite confirmation without file-must-exist, and returns one filesystem path on acceptance. Step 589 native directory-picker production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

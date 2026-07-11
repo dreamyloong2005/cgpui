@@ -53,9 +53,8 @@ int main() {
       contains(state, ".supported = false,\n      .accepted = false,\n      .backend = \"win32\"")) return 4;
   if (!contains(behavior, "FOS_FILEMUSTEXIST") ||
       !contains(behavior, "FOS_ALLOWMULTISELECT") ||
-      !contains(behavior, "L\"*.cpp;*.hpp;*.cxx\"") ||
-      !contains(behavior, "NativeFileDialogKind::save_file")) return 5;
-  if (line_count(header) > 45 || line_count(source) > 180 ||
+      !contains(behavior, "L\"*.cpp;*.hpp;*.cxx\"")) return 5;
+  if (line_count(header) > 55 || line_count(source) > 180 ||
       line_count(state) > 80 || line_count(behavior) > 45) return 6;
   if (!contains(previous, "Phase F Step 586") ||
       !contains(xmake, "target(\"win32_file_open_dialog_plan_test\")") ||
@@ -65,6 +64,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 588 Win32 save-file")) return 9;
+                "\"phase_f_current_handoff\": \"Step 589 native directory-picker")) return 9;
   return 0;
 }

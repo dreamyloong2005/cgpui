@@ -1070,9 +1070,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 587 evidence: a non-interactive Windows test verifies single/multiple
   selection flags and normalized filter patterns while the compiled COM leaf
   owns initialization, cancellation, and filesystem path extraction.
-- In progress: Step 588 Win32 save-file dialog production behavior.
-- Step 588 plan: extend the focused COM leaf with `IFileSaveDialog`, suggested
-  names, overwrite prompting, and deterministic plan/result coverage.
+- Completed: Phase F Step 588 implements Win32 save-file dialogs in a focused IFileSaveDialog leaf, preserves suggested names and filters, requests overwrite confirmation without file-must-exist, and returns one filesystem path on acceptance. Step 589 native directory-picker production behavior is next.
+- Step 588 evidence: a non-interactive save-plan test verifies overwrite,
+  suggested-name, directory, and filter mapping while the focused COM leaf
+  owns cancellation and accepted-path extraction.
+- In progress: Step 589 native directory-picker production behavior.
+- Step 589 plan: add an explicit directory-picker request kind and map it to
+  Win32 `FOS_PICKFOLDERS` while preserving unsupported Wayland/default results.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1090,6 +1094,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 588 combined cached-check/commit command could not create `.git/index.lock` after staging succeeded | Step 588 commit | Keep cached inspection and the approved `git commit` in separate commands |
+| Step 588 combined stage/check command again could not create `.git/index.lock` | Step 588 staging | Run the approved scoped `git add` as a standalone command, then inspect cached state separately |
+| Splitting Step 588 save coverage made the Step 587 open-dialog guard exit 5 because it had used the old save negative case as open evidence | Step 588 focused structure | Remove the cross-step save assertion and keep Step 587 frozen on file-must-exist, multi-select, and open filter mapping |
 | Step 587 Windows gate failed `win32_window_source_test` at exit 64 because its explicit source inventory omitted the new dialog leaf | Step 587 expanded structure gate | Add the focused header/source to the inventory so existing backend/filter assertions follow their new owner |
 | Step 587 first compile could not resolve `FILEOPENDIALOGOPTIONS` and `FOS_*` from `windows.h` | Step 587 Win32 dialog plan | Include the owning private Shell dialog header `shobjidl.h` in the focused internal leaf |
 | The first Step 586 combined final-check/stage command could not create `.git/index.lock` inside the workspace sandbox | Step 586 staging | Keep checks separate and rerun the narrowly scoped approved `git add` command on its own |
