@@ -45,6 +45,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_keyboard_key_internal.hpp",
+      "src/platform/win32/win32_keyboard_key.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
       "src/platform/win32/win32_native.cpp",
@@ -360,6 +362,8 @@ int main() {
       read_source("src/platform/win32/win32_pointer_button.cpp");
   const std::string win32_pointer_scroll =
       read_source("src/platform/win32/win32_pointer_scroll.cpp");
+  const std::string win32_keyboard_key =
+      read_source("src/platform/win32/win32_keyboard_key.cpp");
   const std::string win32_window_proc_keyboard =
       read_source("src/platform/win32/win32_window_proc_keyboard.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
@@ -382,6 +386,7 @@ int main() {
       win32_window_proc_lifecycle.empty() ||
       win32_window_proc_pointer.empty() ||
       win32_pointer_button.empty() || win32_pointer_scroll.empty() ||
+      win32_keyboard_key.empty() ||
       win32_window_proc_keyboard.empty()) {
     return 68;
   }
@@ -614,7 +619,9 @@ int main() {
       !contains(win32_pointer_button, "WM_LBUTTONDBLCLK") ||
       !contains(win32_pointer_scroll, "WM_MOUSEWHEEL") ||
       !contains(win32_pointer_scroll, "WM_MOUSEHWHEEL") ||
-      !contains(win32_window_proc_keyboard, "WM_KEYDOWN") ||
+      !contains(win32_window_proc_keyboard, "decode_win32_keyboard_key(") ||
+      !contains(win32_keyboard_key, "WM_KEYDOWN") ||
+      !contains(win32_keyboard_key, "WM_SYSKEYDOWN") ||
       !contains(win32_window_proc_keyboard, "WM_CHAR")) {
     return 93;
   }

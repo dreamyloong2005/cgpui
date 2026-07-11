@@ -112,6 +112,13 @@ target("phase_f_win32_pointer_scroll_structure_test")
     add_files("tests/architecture/phase_f_win32_pointer_scroll_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_win32_keyboard_key_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_win32_keyboard_key_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -179,6 +186,14 @@ if is_plat("windows") then
     target("win32_pointer_scroll_test")
         set_kind("binary")
         add_files("tests/platform/win32_pointer_scroll_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
+        add_tests("default")
+
+    target("win32_keyboard_key_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_keyboard_key_test.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs)
         add_syslinks("user32")

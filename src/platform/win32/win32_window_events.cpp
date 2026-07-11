@@ -41,11 +41,8 @@ void Win32Window::pointer_scrolled(
       .precise = precise});
 }
 
-void Win32Window::key_event(WPARAM wparam, KeyAction action) {
-  callback_(KeyboardKey{
-      .key_code = static_cast<std::uint32_t>(wparam),
-      .action = action,
-      .modifiers = current_modifiers()});
+void Win32Window::key_event(KeyboardKey event) {
+  callback_(std::move(event));
 }
 
 void Win32Window::text_input(WPARAM wparam) {

@@ -215,6 +215,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_keyboard_key_internal.hpp",
+      "src/platform/win32/win32_keyboard_key.cpp",
       "src/platform/win32/win32_pointer_button_internal.hpp",
       "src/platform/win32/win32_pointer_button.cpp",
       "src/platform/win32/win32_pointer_scroll_internal.hpp",

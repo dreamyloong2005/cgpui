@@ -675,6 +675,7 @@ consume C: drive space again.
 - Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.
 - Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.
 - Phase F Step 548 adds real Win32 vertical and horizontal wheel routing with fractional high-precision deltas and explicit precision metadata through a focused pointer-scroll decoder. Step 549 Win32 keyboard production behavior is next.
+- Phase F Step 549 adds real Win32 key and system-key decoding with scan-code, repeat, extended-key, and system-message metadata through a focused keyboard-key decoder. Step 550 Win32 dead-key production behavior is next.
 
 ## Categories
 

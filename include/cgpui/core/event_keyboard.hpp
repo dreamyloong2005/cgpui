@@ -20,6 +20,11 @@ struct KeyboardKey {
   std::uint32_t key_code = 0;
   KeyAction action = KeyAction::pressed;
   KeyboardModifiers modifiers;
+  std::uint32_t scan_code = 0;
+  std::uint16_t repeat_count = 1;
+  bool repeated = false;
+  bool extended = false;
+  bool system = false;
 };
 
 } // namespace cgpui

@@ -9661,3 +9661,17 @@
   interpretation. The window event module retains HWND-specific screen-to-
   client coordinate conversion and public event publication.
 - Phase F Step 548 adds real Win32 vertical and horizontal wheel routing with fractional high-precision deltas and explicit precision metadata through a focused pointer-scroll decoder. Step 549 Win32 keyboard production behavior is next.
+
+## 2026-07-11 Phase F Step 549 Win32 Keyboard Key Audit
+
+- The old procedure handled only `WM_KEYDOWN` and `WM_KEYUP`; system-key
+  messages fell through and native scan/repeat/extended/context bits were lost.
+- `KeyboardKey` can preserve this metadata with defaulted scalar fields without
+  changing existing key-binding consumers that depend only on key code,
+  action, and modifiers.
+- The decoder owns native message interpretation and modifier snapshots. The
+  main window procedure must carry `lParam`, while `Win32Window` only publishes
+  the already-decoded public event.
+- System-key events must still reach `DefWindowProc` after publication so
+  native behaviors such as Alt+F4 remain available despite the new metadata.
+- Phase F Step 549 adds real Win32 key and system-key decoding with scan-code, repeat, extended-key, and system-message metadata through a focused keyboard-key decoder. Step 550 Win32 dead-key production behavior is next.

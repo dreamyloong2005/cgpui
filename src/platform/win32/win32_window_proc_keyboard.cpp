@@ -1,25 +1,26 @@
 #include "win32_internal.hpp"
+#include "win32_keyboard_key_internal.hpp"
 
 namespace cgpui {
 
 bool win32_window_proc_handle_keyboard(
     UINT message,
     WPARAM wparam,
+    LPARAM lparam,
     Win32WindowMessageTarget* window,
     LRESULT& result) {
+  const auto key = decode_win32_keyboard_key(message, wparam, lparam);
+  if (key.has_value()) {
+    if (window != nullptr) {
+      window->key_event(*key);
+    }
+    if (key->system) {
+      return false;
+    }
+    result = 0;
+    return true;
+  }
   switch (message) {
-    case WM_KEYDOWN:
-      if (window != nullptr) {
-        window->key_event(wparam, KeyAction::pressed);
-      }
-      result = 0;
-      return true;
-    case WM_KEYUP:
-      if (window != nullptr) {
-        window->key_event(wparam, KeyAction::released);
-      }
-      result = 0;
-      return true;
     case WM_CHAR:
       if (window != nullptr) {
         window->text_input(wparam);

@@ -61,7 +61,7 @@ class Win32Window final
       std::uint8_t click_count,
       LPARAM lparam) override;
   void pointer_scrolled(Point delta, bool precise, LPARAM lparam) override;
-  void key_event(WPARAM wparam, KeyAction action) override;
+  void key_event(KeyboardKey event) override;
   void text_input(WPARAM wparam) override;
   void drag_entered(const Win32TestDragDropPayload* payload) override;
   void drag_updated(const Win32TestDragDropPayload* payload) override;

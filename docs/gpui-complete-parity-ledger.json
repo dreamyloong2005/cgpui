@@ -1834,7 +1834,24 @@
       "xmake.lua"
     ],
     "phase_f_step_548_remaining_gap": "Step 549 Win32 keyboard production behavior",
-    "phase_f_current_handoff": "Step 549 Win32 keyboard production behavior"
+    "phase_f_step_549_surface": "Phase F Step 549 adds real Win32 key and system-key decoding with scan-code, repeat, extended-key, and system-message metadata through a focused keyboard-key decoder. Step 550 Win32 dead-key production behavior is next.",
+    "phase_f_step_549_sources": [
+      "include/cgpui/core/event_keyboard.hpp",
+      "src/platform/win32/win32_keyboard_key_internal.hpp",
+      "src/platform/win32/win32_keyboard_key.cpp",
+      "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_internal.hpp",
+      "src/platform/win32/win32_window_proc.cpp",
+      "src/platform/win32/win32_window_proc_keyboard.cpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_window_events.cpp",
+      "tests/platform/win32_keyboard_key_test.cpp",
+      "tests/architecture/phase_f_win32_keyboard_key_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_549_remaining_gap": "Step 550 Win32 dead-key production behavior",
+    "phase_f_current_handoff": "Step 550 Win32 dead-key production behavior"
   },
   "categories": [
     "application_and_app_context",

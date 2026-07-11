@@ -20793,3 +20793,42 @@
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug stays batched for
   the Phase F milestone/closeout cadence.
+
+## 2026-07-11 Phase F Step 549 Win32 Keyboard Keys
+
+- Added a real Win32 key-message test covering ordinary press/repeat/release,
+  system-key press/release, scan codes, repeat counts, previous-state repeat,
+  extended-key, and system-message metadata. RED failed on the five expected
+  missing `KeyboardKey` fields.
+- Added compatible public metadata and the focused `win32_keyboard_key.cpp`
+  decoder. The main window procedure now forwards `lParam`; the keyboard
+  procedure decodes `WM_KEY*`/`WM_SYSKEY*` and keeps `WM_CHAR` separate.
+- Submission review caught that consuming every `WM_SYSKEY*` message would
+  suppress native Alt+F4. System keys now publish metadata and then continue to
+  `DefWindowProc`; the structure guard freezes that fallthrough while the real
+  test uses extended `VK_INSERT` system messages to avoid native close/menu
+  loops in the synchronous test process.
+- Initial Windows behavior verification passes 2/2 for the new keyboard target
+  and the existing aggregate Win32 input regression.
+- Added both keyboard decoder files to the Win32/platform source inventories,
+  added the dedicated Step 549 structure guard, and decoupled the historical
+  Step 548 guard from the advancing global handoff.
+- The Step 549 guard built successfully and reached the intended five-document
+  RED gate at child exit 5. The completion surface is now synchronized, with
+  Step 550 Win32 dead-key production behavior as the active handoff.
+- The first Alt+F4 and later `VK_MENU` default-fallthrough assertions entered
+  native close/menu flows in the synchronous test process. The task-owned test
+  and xmake processes were terminated, and extended `VK_INSERT` messages now
+  provide side-effect-free system-key publication coverage.
+- Final Windows focused verification passes 11/11 across real key/system-key
+  metadata, existing aggregate input, runtime key routing, platform modifier
+  behavior, all three Win32 input structure guards, source inventories, core
+  headers, and the parity ledger.
+- The first WSL aggregate returned partial build output, so the new Step 549
+  guard was built explicitly and all ten targets were executed sequentially.
+  Final WSL focused verification passes 10/10 across real Wayland keyboard,
+  runtime/key-binding regressions, all three Win32 input guards, Wayland and
+  platform source inventories, core headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 549 phrase appearing once in each of the
+  five authority documents, focused line caps, public metadata-consumer review,
+  and `git diff --check` pass. `.vscode/` remains unrelated and untracked.

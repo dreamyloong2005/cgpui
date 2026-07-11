@@ -97,9 +97,5 @@ int main() {
                 "\"phase_f_step_548_remaining_gap\": \"Step 549 Win32")) {
     return 6;
   }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 549 Win32")) {
-    return 7;
-  }
   return 0;
 }

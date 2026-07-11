@@ -903,7 +903,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 548 evidence: the focused Win32 decoder handles `WM_MOUSEWHEEL` and
   `WM_MOUSEHWHEEL`, preserves sub-`WHEEL_DELTA` fractions, and marks those
   events precise while the window event boundary converts screen coordinates.
-- In progress: Step 549 Win32 keyboard production behavior.
+- Completed: Phase F Step 549 adds real Win32 key and system-key decoding with scan-code, repeat, extended-key, and system-message metadata through a focused keyboard-key decoder. Step 550 Win32 dead-key production behavior is next.
+- Step 549 evidence: the focused decoder owns key/system-key classification,
+  scan code, repeat count/state, extended-key, system-message, and modifier
+  snapshots; the window procedure now forwards `lParam` explicitly.
+- In progress: Step 550 Win32 dead-key production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -951,6 +955,13 @@ Windows/Linux core API is stable enough for parity work.
 | The expanded Step 548 gate passed 8/9 because the Step 547 guard still required the global handoff to remain Step 548 | Step 548 historical structure regression | Keep Step 547 frozen on `phase_f_step_547_remaining_gap` and let the Step 548 guard own the advancing global handoff |
 | A direct WSL binary loop lost Bash `$variables` through the PowerShell/WSL quoting boundary | Step 548 WSL result confirmation | Replace the interpolated loop with explicit executable paths and inspect each exit code |
 | Parallel explicit WSL confirmations produced ZLocation/oh-my-posh profile file-contention warnings | Step 548 WSL result confirmation | Treat the shell-profile warnings separately from the eight zero test exits and avoid concurrent login shells for future WSL gates |
+| The Step 549 audit passed PowerShell wildcard paths directly to `rg` | Step 549 source audit | Use directory roots plus `--glob` or explicit files; the failed search did not change the working tree |
+| The Step 549 behavior RED failed because `KeyboardKey` lacked scan/repeat/extended/system metadata | Step 549 behavior RED | Add compatible default fields and populate them in a focused Win32 keyboard-key decoder |
+| The old keyboard handler signature did not carry `lParam` | Step 549 production wiring | Thread `lParam` through the main window procedure so the decoder can read native key-message metadata |
+| The Step 549 structure executable returned the intended documentation exit 5 through xmake `failed(5)` | Step 549 documentation RED | Synchronize the five authority documents before rerunning the registered guard |
+| A combined Step 549 system-key preservation patch used stale structure-test context and was rejected atomically | Step 549 submission review | Read the exact guard/test snippets and reapply the system-key, behavior, and documentation changes with smaller contexts |
+| Synchronous Alt+F4 and `VK_MENU` system-key regressions entered native close/menu flows and blocked the no-message-loop test process | Step 549 system-key default behavior | Terminate only the task-owned test/xmake processes, keep production `DefWindowProc` fallthrough, and use extended `VK_INSERT` system messages for side-effect-free publication coverage |
+| The first Step 549 WSL aggregate returned only partial build output; direct confirmation found the new guard missing and the prior guard stale | Step 549 WSL verification | Build the Step 549 guard explicitly, then execute all ten built targets sequentially with explicit paths and source-root environment |
 
 ## Errors Encountered During Phase E Resume
 

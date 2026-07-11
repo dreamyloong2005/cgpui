@@ -65,6 +65,7 @@ bool win32_window_proc_handle_pointer(
 bool win32_window_proc_handle_keyboard(
     UINT message,
     WPARAM wparam,
+    LPARAM lparam,
     Win32WindowMessageTarget* window,
     LRESULT& result);
 
