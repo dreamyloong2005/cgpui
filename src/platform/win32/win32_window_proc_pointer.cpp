@@ -1,5 +1,6 @@
 #include "win32_internal.hpp"
 #include "win32_pointer_button_internal.hpp"
+#include "win32_pointer_scroll_internal.hpp"
 
 namespace cgpui {
 
@@ -16,14 +17,16 @@ bool win32_window_proc_handle_pointer(
       }
       result = 0;
       return true;
-    case WM_MOUSEWHEEL:
-      if (window != nullptr) {
-        window->pointer_scrolled(wparam, lparam);
-      }
-      result = 0;
-      return true;
     default:
       break;
+  }
+  const auto scroll = decode_win32_pointer_scroll(message, wparam);
+  if (scroll.has_value()) {
+    if (window != nullptr) {
+      window->pointer_scrolled(scroll->delta, scroll->precise, lparam);
+    }
+    result = 0;
+    return true;
   }
   const auto button = decode_win32_pointer_button(message, wparam);
   if (!button.has_value()) {

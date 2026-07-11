@@ -899,7 +899,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 547 evidence: the Win32 window class opts into `CS_DBLCLKS`; the focused
   decoder maps left/right/middle single and double-click messages plus XBUTTON1
   and XBUTTON2, while production callbacks preserve the native click count.
-- In progress: Step 548 Win32 wheel and high-precision scroll production behavior.
+- Completed: Phase F Step 548 adds real Win32 vertical and horizontal wheel routing with fractional high-precision deltas and explicit precision metadata through a focused pointer-scroll decoder. Step 549 Win32 keyboard production behavior is next.
+- Step 548 evidence: the focused Win32 decoder handles `WM_MOUSEWHEEL` and
+  `WM_MOUSEHWHEEL`, preserves sub-`WHEEL_DELTA` fractions, and marks those
+  events precise while the window event boundary converts screen coordinates.
+- In progress: Step 549 Win32 keyboard production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -940,6 +944,13 @@ Windows/Linux core API is stable enough for parity work.
 | The first public compatibility gate failed `public_result_conventions_test` because its direct pre-run calls expected immediate native child errors | Step 546 Result compatibility | Test pending publication before root activation separately, then invoke `try_open_window` during the active event loop to preserve synchronous platform/renderer error propagation |
 | The first Step 547 source-inventory patch assumed the platform Win32 list matched the dedicated Win32 list and was rejected atomically | Step 547 structure wiring | Patch the dedicated list near `win32_ole_drop_target.cpp` and the platform list near `win32_input_helpers.cpp` independently |
 | The first resumed Step 547 structure run hit `cannot create filelock for package(ninja)` | Step 547 structure RED | Confirm no `xmake`/`ninja` process remains, then use a detailed focused rerun; xmake reacquired the lock and passed |
+| The Step 548 audit passed a Windows wildcard path (`wayland_test_compositor.*`) directly to `rg` | Step 548 source audit | Use `rg --files` or explicit files on Windows; the failed search did not change the working tree |
+| The Step 548 behavior RED failed because `PointerScrolled` had no `precise` member | Step 548 behavior RED | Add compatible default precision metadata and populate it from the focused Win32 wheel decoder |
+| The first Step 548 structure build hit the recurring xmake `package(ninja)` file lock | Step 548 structure RED | Switch to the detailed build path, which reacquired the tool/package state and built the guard |
+| `xmake run` reported the expected structure exit 5 as `failed(5)` while PowerShell observed xmake exit `-1` | Step 548 documentation RED | Treat the embedded child exit 5 as the semantic gate result; synchronize the five authority documents before the GREEN rerun |
+| The expanded Step 548 gate passed 8/9 because the Step 547 guard still required the global handoff to remain Step 548 | Step 548 historical structure regression | Keep Step 547 frozen on `phase_f_step_547_remaining_gap` and let the Step 548 guard own the advancing global handoff |
+| A direct WSL binary loop lost Bash `$variables` through the PowerShell/WSL quoting boundary | Step 548 WSL result confirmation | Replace the interpolated loop with explicit executable paths and inspect each exit code |
+| Parallel explicit WSL confirmations produced ZLocation/oh-my-posh profile file-contention warnings | Step 548 WSL result confirmation | Treat the shell-profile warnings separately from the eight zero test exits and avoid concurrent login shells for future WSL gates |
 
 ## Errors Encountered During Phase E Resume
 

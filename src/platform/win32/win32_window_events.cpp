@@ -24,20 +24,21 @@ void Win32Window::pointer_button(
           static_cast<float>(GET_Y_LPARAM(lparam))}});
 }
 
-void Win32Window::pointer_scrolled(WPARAM wparam, LPARAM lparam) {
+void Win32Window::pointer_scrolled(
+    Point delta,
+    bool precise,
+    LPARAM lparam) {
   POINT point{
       .x = GET_X_LPARAM(lparam),
       .y = GET_Y_LPARAM(lparam),
   };
   ScreenToClient(hwnd_, &point);
   callback_(PointerScrolled{
-      .delta = Point{
-          0.0F,
-          static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) /
-              static_cast<float>(WHEEL_DELTA)},
+      .delta = delta,
       .position = Point{
           static_cast<float>(point.x),
-          static_cast<float>(point.y)}});
+          static_cast<float>(point.y)},
+      .precise = precise});
 }
 
 void Win32Window::key_event(WPARAM wparam, KeyAction action) {

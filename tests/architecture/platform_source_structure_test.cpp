@@ -217,6 +217,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_input_helpers.cpp",
       "src/platform/win32/win32_pointer_button_internal.hpp",
       "src/platform/win32/win32_pointer_button.cpp",
+      "src/platform/win32/win32_pointer_scroll_internal.hpp",
+      "src/platform/win32/win32_pointer_scroll.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
       "src/platform/win32/win32_window_factory_internal.hpp",

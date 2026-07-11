@@ -20755,3 +20755,41 @@
 - Ledger JSON parsing, the exact Step 547 phrase appearing once in each of the
   five authority documents, focused line caps, public enum-consumer review,
   and `git diff --check` pass. `.vscode/` remains unrelated and untracked.
+
+## 2026-07-11 Phase F Step 548 Win32 Pointer Scroll
+
+- Added a focused real-backend test covering vertical `WM_MOUSEWHEEL`,
+  horizontal `WM_MOUSEHWHEEL`, client-coordinate conversion, and a fractional
+  quarter-notch wheel delta. Its RED compile failed on the expected missing
+  `PointerScrolled::precise` field.
+- Added compatible public precision metadata and the focused
+  `win32_pointer_scroll.cpp` decoder. It normalizes both axes by `WHEEL_DELTA`
+  without discarding fractions and marks non-integral notches precise.
+- The initial Windows behavior gate passes 3/3 across the new wheel test, the
+  existing Win32 input regression, and Step 547 pointer buttons.
+- Registered the new decoder in both source inventories and added a dedicated
+  Step 548 structure/documentation guard. A recurring xmake package lock was
+  resolved through the detailed build path; the guard then reached the
+  intended five-document RED gate at child exit 5.
+- Synchronized the Step 548 completion surface across the roadmap,
+  Markdown/JSON ledger, task plan, and findings. Step 549 Win32 keyboard
+  production behavior is now the active handoff.
+- The first expanded Windows gate passed 8/9: the historical Step 547 guard
+  still required the global handoff to remain Step 548. It now freezes its own
+  remaining-gap field while the Step 548 guard owns the current handoff.
+- Final Windows focused verification passes 9/9 across real vertical,
+  horizontal, and fractional wheel behavior; existing pointer input/buttons;
+  both Step 547/548 guards; source inventories; core headers; and the parity
+  ledger.
+- Final WSL focused verification passes 8/8 across real Wayland pointer scroll,
+  runtime input, both Step 547/548 guards, Wayland/platform source inventories,
+  core headers, and the parity ledger. Each built executable was independently
+  confirmed with exit code 0 after the aggregated output was not returned.
+- A first direct-binary confirmation loop lost Bash variables through the
+  PowerShell/WSL quoting boundary. Explicit paths resolved that issue; parallel
+  shells then emitted unrelated ZLocation/oh-my-posh profile contention
+  warnings while all eight test processes still returned 0.
+- Ledger JSON parsing, the exact Step 548 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug stays batched for
+  the Phase F milestone/closeout cadence.

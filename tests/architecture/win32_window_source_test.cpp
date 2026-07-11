@@ -51,6 +51,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_ole_drop_target.cpp",
       "src/platform/win32/win32_pointer_button_internal.hpp",
       "src/platform/win32/win32_pointer_button.cpp",
+      "src/platform/win32/win32_pointer_scroll_internal.hpp",
+      "src/platform/win32/win32_pointer_scroll.cpp",
       "src/platform/win32/win32_window.cpp",
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/win32/win32_window_close.cpp",
@@ -356,6 +358,8 @@ int main() {
       read_source("src/platform/win32/win32_window_proc_pointer.cpp");
   const std::string win32_pointer_button =
       read_source("src/platform/win32/win32_pointer_button.cpp");
+  const std::string win32_pointer_scroll =
+      read_source("src/platform/win32/win32_pointer_scroll.cpp");
   const std::string win32_window_proc_keyboard =
       read_source("src/platform/win32/win32_window_proc_keyboard.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
@@ -377,6 +381,7 @@ int main() {
       win32_window_proc_drag.empty() ||
       win32_window_proc_lifecycle.empty() ||
       win32_window_proc_pointer.empty() ||
+      win32_pointer_button.empty() || win32_pointer_scroll.empty() ||
       win32_window_proc_keyboard.empty()) {
     return 68;
   }
@@ -603,10 +608,12 @@ int main() {
       !contains(win32_window_proc_lifecycle, "WM_NCCREATE") ||
       !contains(win32_window_proc_lifecycle, "WM_PAINT") ||
       !contains(win32_window_proc_lifecycle, "WM_NCDESTROY") ||
-      !contains(win32_window_proc_pointer, "WM_MOUSEWHEEL") ||
+      !contains(win32_window_proc_pointer, "decode_win32_pointer_scroll(") ||
       !contains(win32_pointer_button, "WM_LBUTTONDOWN") ||
       !contains(win32_pointer_button, "WM_XBUTTONDOWN") ||
       !contains(win32_pointer_button, "WM_LBUTTONDBLCLK") ||
+      !contains(win32_pointer_scroll, "WM_MOUSEWHEEL") ||
+      !contains(win32_pointer_scroll, "WM_MOUSEHWHEEL") ||
       !contains(win32_window_proc_keyboard, "WM_KEYDOWN") ||
       !contains(win32_window_proc_keyboard, "WM_CHAR")) {
     return 93;

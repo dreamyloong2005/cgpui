@@ -1751,6 +1751,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 545 adds real Win32 decorated/frameless/layered chrome transitions, Wayland xdg-decoration server/client-side negotiation with non-resizable size constraints, and transparent-aware Vulkan composite-alpha selection. Step 546 child-window ownership production behavior is next.
 - [x] Phase F Step 546 adds root-owned runtime child windows with deferred activation after root creation, real Win32 owner HWNDs, and Wayland xdg-toplevel parent requests before first commit. Step 547 Win32 pointer input production behavior is next.
 - [x] Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.
+- [x] Phase F Step 548 adds real Win32 vertical and horizontal wheel routing with fractional high-precision deltas and explicit precision metadata through a focused pointer-scroll decoder. Step 549 Win32 keyboard production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

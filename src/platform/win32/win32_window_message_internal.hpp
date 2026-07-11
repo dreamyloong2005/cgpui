@@ -37,7 +37,10 @@ class Win32WindowMessageTarget {
       bool pressed,
       std::uint8_t click_count,
       LPARAM lparam) = 0;
-  virtual void pointer_scrolled(WPARAM wparam, LPARAM lparam) = 0;
+  virtual void pointer_scrolled(
+      Point delta,
+      bool precise,
+      LPARAM lparam) = 0;
   virtual void key_event(WPARAM wparam, KeyAction action) = 0;
   virtual void text_input(WPARAM wparam) = 0;
   virtual void drag_entered(const Win32TestDragDropPayload* payload) = 0;

@@ -9649,3 +9649,15 @@
   belongs in a focused Win32 pointer-button module rather than expanding the
   window procedure.
 - Phase F Step 547 adds real Win32 double-click counts and back/forward XBUTTON mapping through a focused pointer-button decoder. Step 548 Win32 wheel and high-precision scroll production behavior is next.
+
+## 2026-07-11 Phase F Step 548 Win32 Pointer Scroll Audit
+
+- The old Win32 path handled only `WM_MOUSEWHEEL`; horizontal wheel messages
+  fell through to the default window procedure.
+- Floating-point division already avoided integer truncation, but callers had
+  no way to distinguish full `WHEEL_DELTA` notches from fractional deltas
+  emitted by high-resolution devices.
+- The modular boundary is a focused decoder that owns message/axis/raw-delta
+  interpretation. The window event module retains HWND-specific screen-to-
+  client coordinate conversion and public event publication.
+- Phase F Step 548 adds real Win32 vertical and horizontal wheel routing with fractional high-precision deltas and explicit precision metadata through a focused pointer-scroll decoder. Step 549 Win32 keyboard production behavior is next.

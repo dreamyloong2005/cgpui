@@ -39,6 +39,7 @@ struct PointerButton {
 struct PointerScrolled {
   Point delta;
   Point position;
+  bool precise = false;
 };
 
 } // namespace cgpui
