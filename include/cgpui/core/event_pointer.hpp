@@ -49,4 +49,8 @@ struct PointerScrolled {
   bool precise = false;
 };
 
+struct PointerCaptureChanged {
+  bool captured = false;
+};
+
 } // namespace cgpui

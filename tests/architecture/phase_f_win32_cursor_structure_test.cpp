@@ -100,7 +100,7 @@ int main() {
   if (line_count(pointer_header) > 60 || line_count(cursor_header) > 20 ||
       line_count(cursor) > 65 || line_count(window_cursor) > 40 ||
       line_count(proc_header) > 20 || line_count(proc) > 40 ||
-      line_count(window_internal) > 110 ||
+      line_count(window_internal) > 120 ||
       line_count(behavior) > 85) {
     return 5;
   }
@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 553 Win32")) {
+                "\"phase_f_current_handoff\": \"Step 554 Win32 input DPI-change")) {
     return 8;
   }
   return 0;

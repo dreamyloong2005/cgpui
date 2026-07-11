@@ -20932,3 +20932,56 @@
 - Ledger JSON parsing, the exact Step 552 phrase appearing once in each of the
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 553 Win32 Pointer Capture
+
+- Restored the Step 553 handoff with the planning catchup script and confirmed
+  the worktree contains only the unrelated untracked `.vscode/` directory.
+- Audited the public platform window, Win32 pointer procedure/window target,
+  runtime owner changes, disabled-interaction cleanup, event variant, and the
+  existing logical pointer-capture tests.
+- Chose a focused compatible platform capture state/control boundary, real
+  owner-matched Win32 capture, explicit native-loss delivery, and runtime
+  cancellation of stale press/drag state. OLE drag/drop remains deferred.
+- Added the real Win32 behavior RED, runtime platform-sync/loss RED, Step 553
+  structure guard, and xmake target registrations. The first build invocation
+  was rejected only because `-P` followed the target; code compilation is next.
+- Added the compatible public capture leaf/defaults, focused Win32 native,
+  window, and procedure modules, explicit capture-loss event, and focused
+  runtime capture owner. Both real HWND and runtime behavior tests pass.
+- Intentional runtime release suppresses the synchronous Win32 loss callback,
+  while external capture replacement and `WM_CANCELMODE` cancel stale logical
+  owner, pressed-element, active, and dragging state before event delivery.
+- The corrected structure guard reached the intended five-document RED gate at
+  exit 9 after behavior, source ownership, source inventory, and line caps.
+- Synchronized the exact Step 553 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; Step 554 Win32 input DPI-change
+  production behavior is now the active handoff.
+- The first expanded Windows gate passed 7/8; only the historical UI line-cap
+  guard failed because the initial runtime test placement expanded two broad
+  files. Moved the new behavior into a dedicated focused runtime test target.
+- The focused runtime target passes. The next 8/9 gate exposed only a one-line
+  private runtime-header overflow; kept the 260-line cap by compacting the two
+  adjacent input-state declarations using the header's existing style.
+- The following 8/9 gate found the event-kind header at 121 lines; compacted the
+  short capture-change branch and retained its 120-line structure cap.
+- The next structure exit 45 identified a stale ownership assertion. Updated it
+  to freeze pointer-capture behavior in the new focused runtime source and keep
+  the element-tree source limited to tree ownership.
+- The first complete 23-test Win32 input gate kept every behavior green; three
+  historical structure guards only retained the pre-capture 110-line private
+  window declaration cap. Aligned them to Step 553's 120-line limit (actual 115).
+- The next complete gate passed 22/23; the remaining historical cursor guard
+  only froze the global handoff at Step 553. Advanced that dynamic assertion to
+  Step 554 while retaining the Step 552-specific completion evidence.
+- Final Windows focused verification passes 23/23 across all Win32 input
+  behavior, dedicated runtime capture synchronization/loss, seven input
+  structure guards, source inventories, public headers, UI structure, and the
+  parity ledger.
+- Final WSL Arch Linux focused verification passes 16/16 across real Wayland
+  pointer button/scroll behavior, shared runtime consumers, all seven Win32
+  cross-platform structure guards, platform/Wayland/UI source inventories,
+  public headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 553 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

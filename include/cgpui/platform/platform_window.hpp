@@ -7,6 +7,7 @@
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_lifecycle.hpp"
+#include "cgpui/platform/platform_window_pointer_capture.hpp"
 #include "cgpui/platform/platform_window_position.hpp"
 
 #include <functional>
@@ -31,6 +32,9 @@ class PlatformWindow {
   virtual void request_close() = 0;
   virtual void set_title(std::string_view title) = 0;
   virtual void set_cursor(CursorShape cursor_shape) = 0;
+  [[nodiscard]] virtual PlatformPointerCaptureState
+  pointer_capture_state() const;
+  virtual void set_pointer_capture(bool captured);
   virtual void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) = 0;
   virtual PlatformWindowChromeState apply_window_chrome(

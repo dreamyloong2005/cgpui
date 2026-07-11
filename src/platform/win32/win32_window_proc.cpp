@@ -1,5 +1,6 @@
 #include "win32_internal.hpp"
 #include "win32_window_proc_cursor_internal.hpp"
+#include "win32_window_proc_pointer_capture_internal.hpp"
 
 namespace cgpui {
 
@@ -19,6 +20,8 @@ LRESULT CALLBACK win32_window_proc(
           lparam,
           window,
           result) ||
+      win32_window_proc_handle_pointer_capture(
+          hwnd, message, window, result) ||
       win32_window_proc_handle_pointer(
           message,
           wparam,

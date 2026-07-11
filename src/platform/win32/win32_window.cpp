@@ -15,6 +15,7 @@ Win32Window::Win32Window(
 
 Win32Window::~Win32Window() {
   if (hwnd_ != nullptr) {
+    set_pointer_capture(false);
     revoke_drop_target();
     SetWindowLongPtrW(hwnd_, GWLP_USERDATA, 0);
     DestroyWindow(hwnd_);
@@ -29,6 +30,7 @@ void Win32Window::attach(HWND hwnd) {
 }
 
 void Win32Window::detach() {
+  set_pointer_capture(false);
   revoke_drop_target();
   hwnd_ = nullptr;
 }

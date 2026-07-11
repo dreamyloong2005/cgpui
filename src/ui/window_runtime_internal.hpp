@@ -3,6 +3,7 @@ struct RuntimeTaskDiagnostics;
 void handle_event(const PlatformEvent& event);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);
 void update_input_state_for_event(const PlatformEvent& event);
+void handle_pointer_capture_changed(const PointerCaptureChanged& changed);
 [[nodiscard]] std::optional<ElementId> hit_test_target_for_event(
     const PlatformEvent& event);
 void update_hover_cursor_for_event(
@@ -133,7 +134,6 @@ struct RuntimeAnimation {
   std::uint64_t last_tick_ms = 0;
   bool complete = false;
 };
-
 struct RuntimeTask {
   TaskId id;
   TaskCompletionCallback callback;

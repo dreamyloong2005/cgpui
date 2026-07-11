@@ -6,6 +6,9 @@ void WindowRuntime::update_input_state_for_event(const PlatformEvent& event) {
   if (const auto* focused = std::get_if<WindowFocused>(&event);
       focused != nullptr) {
     input_.focused = focused->focused;
+  } else if (const auto* capture = std::get_if<PointerCaptureChanged>(&event);
+             capture != nullptr) {
+    handle_pointer_capture_changed(*capture);
   } else if (const auto* moved = std::get_if<PointerMoved>(&event);
              moved != nullptr) {
     input_.pointer_position = moved->position;

@@ -27,16 +27,4 @@ const Element* WindowRuntime::element_root() const {
   return element_root_;
 }
 
-void WindowRuntime::capture_pointer(PointerCaptureOwner owner) {
-  if (is_valid_pointer_capture_owner(owner)) {
-    pointer_capture_owner_ = owner;
-  }
-}
-
-void WindowRuntime::release_pointer(PointerCaptureOwner owner) {
-  if (pointer_capture_owner_ == owner) {
-    pointer_capture_owner_.reset();
-  }
-}
-
 } // namespace cgpui

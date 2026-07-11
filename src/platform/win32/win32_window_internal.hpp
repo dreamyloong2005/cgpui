@@ -32,6 +32,9 @@ class Win32Window final
   void request_close() override;
   void set_title(std::string_view title) override;
   void set_cursor(CursorShape cursor_shape) override;
+  [[nodiscard]] PlatformPointerCaptureState
+  pointer_capture_state() const override;
+  void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
@@ -58,6 +61,7 @@ class Win32Window final
       std::uint8_t click_count,
       LPARAM lparam) override;
   void pointer_scrolled(Point delta, bool precise, LPARAM lparam) override;
+  void pointer_capture_lost() override;
   void refresh_cursor(bool reload_system_cursor) override;
   void key_event(KeyboardKey event) override;
   void dead_key(wchar_t character) override;
@@ -99,6 +103,7 @@ class Win32Window final
   Win32WindowChromeState chrome_state_;
   bool active_ = false;
   bool focused_ = false;
+  bool suppress_pointer_capture_lost_ = false;
   Win32UiaAccessibilityAdapter uia_accessibility_;
   std::unique_ptr<Win32OleDropTarget> ole_drop_target_;
   Win32OleDropTargetRegistrationState ole_drop_target_registration_;

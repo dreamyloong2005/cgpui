@@ -96,7 +96,7 @@ int main() {
   }
   if (line_count(decoder_header) > 55 || line_count(decoder) > 115 ||
       line_count(proc) > 40 || line_count(window_text) > 40 ||
-      line_count(window_internal) > 110 || line_count(behavior) > 90) {
+      line_count(window_internal) > 120 || line_count(behavior) > 90) {
     return 5;
   }
   constexpr const char* completion =

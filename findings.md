@@ -9716,3 +9716,24 @@
 - System cursor/theme changes must reload the active shared system cursor and
   update both the class cursor and current client cursor.
 - Phase F Step 552 adds production Win32 system cursors with expanded public shapes, focused system-resource mapping, client WM_SETCURSOR reapplication, and settings/theme refresh. Step 553 Win32 pointer capture and drag production behavior is next.
+
+## 2026-07-11 Phase F Step 553 Win32 Pointer-Capture Audit
+
+- Runtime pointer capture currently changes only `pointer_capture_owner_`; it
+  never asks the active `PlatformWindow` to capture native pointer messages.
+- `PlatformWindow` has no pointer-capture contract, and the Win32 procedure has
+  no `SetCapture`, owner-matched `ReleaseCapture`, `WM_CAPTURECHANGED`, or
+  `WM_CANCELMODE` handling.
+- Step 553's drag scope is in-window press/move/release continuity through
+  native capture. OLE external drag/drop remains owned by Steps 571-578.
+- The public platform boundary should use a focused leaf with compatible
+  defaults so existing fake and fallback windows keep their logical behavior.
+- Native capture loss needs an explicit platform event. Runtime must clear the
+  logical capture owner and cancel pointer-down/drag state before consumers
+  observe that event.
+- Win32 capture ownership belongs in focused pointer-capture helpers and a
+  dedicated window-procedure module, not the broad pointer or window sources.
+- Intentional runtime release must suppress its synchronous
+  `WM_CAPTURECHANGED` callback to avoid nested event dispatch; external owner
+  replacement and `WM_CANCELMODE` remain observable loss events.
+- Phase F Step 553 adds native Win32 pointer capture with compatible platform control, owner-matched release, capture-loss cancellation, and continuous outside-window drag movement. Step 554 Win32 input DPI-change production behavior is next.

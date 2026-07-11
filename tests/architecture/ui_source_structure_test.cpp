@@ -335,6 +335,7 @@ int main() {
   const std::vector<const char*> runtime_test_files{
       "tests/ui/window_runtime_test_support.hpp",
       "tests/ui/window_runtime_input_test.cpp",
+      "tests/ui/window_runtime_pointer_capture_platform_test.cpp",
       "tests/ui/window_runtime_focus_test.cpp",
       "tests/ui/window_runtime_actions_test.cpp",
       "tests/ui/window_runtime_text_test.cpp",
@@ -363,6 +364,8 @@ int main() {
           1800 ||
       line_count(read_source("tests/ui/window_runtime_input_test.cpp")) >
           2600 ||
+      line_count(read_source(
+          "tests/ui/window_runtime_pointer_capture_platform_test.cpp")) > 180 ||
       line_count(read_source("tests/ui/window_runtime_focus_test.cpp")) >
           1200 ||
       line_count(read_source("tests/ui/window_runtime_actions_test.cpp")) >
@@ -2255,12 +2258,21 @@ int main() {
 
   const std::string runtime_element_tree_source =
       read_source("src/ui/runtime_element_tree.cpp");
+  const std::string runtime_pointer_capture_source =
+      read_source("src/ui/runtime_pointer_capture.cpp");
   if (!contains(runtime_element_tree_source,
                 "void WindowRuntime::set_element_tree(") ||
       !contains(runtime_element_tree_source,
                 "const Element* WindowRuntime::element_root(") ||
-      !contains(runtime_element_tree_source,
-                "void WindowRuntime::capture_pointer(")) {
+      contains(runtime_element_tree_source,
+               "void WindowRuntime::capture_pointer(") ||
+      line_count(runtime_pointer_capture_source) > 50 ||
+      !contains(runtime_pointer_capture_source,
+                "void WindowRuntime::capture_pointer(") ||
+      !contains(runtime_pointer_capture_source,
+                "void WindowRuntime::release_pointer(") ||
+      !contains(runtime_pointer_capture_source,
+                "WindowRuntime::handle_pointer_capture_changed(")) {
     return 45;
   }
 

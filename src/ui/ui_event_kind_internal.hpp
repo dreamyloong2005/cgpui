@@ -37,6 +37,9 @@ inline EventKind event_kind_for(const PlatformEvent& event) {
   if (std::holds_alternative<PointerScrolled>(event)) {
     return EventKind::pointer_scrolled;
   }
+  if (std::holds_alternative<PointerCaptureChanged>(event)) {
+    return EventKind::pointer_capture_changed;
+  }
   if (std::holds_alternative<DragEntered>(event)) {
     return EventKind::drag_entered;
   }
@@ -63,7 +66,6 @@ inline EventKind event_kind_for(const PlatformEvent& event) {
   }
   return EventKind::unknown;
 }
-
 inline std::size_t drag_drop_payload_value_count(
     const DragDropPayload& payload) {
   switch (payload.kind) {

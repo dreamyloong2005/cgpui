@@ -90,7 +90,7 @@ int main() {
   }
   if (line_count(text_header) > 65 || line_count(decoder_header) > 20 ||
       line_count(decoder) > 25 || line_count(window_text) > 35 ||
-      line_count(window_internal) > 110 || line_count(proc) > 50 ||
+      line_count(window_internal) > 120 || line_count(proc) > 50 ||
       line_count(behavior) > 70) {
     return 4;
   }

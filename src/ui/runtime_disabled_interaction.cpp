@@ -97,7 +97,7 @@ void WindowRuntime::refresh_disabled_interaction_state() {
   if (pointer_capture_owner_.has_value() &&
       pointer_capture_owner_->is_element() &&
       disabled_or_missing(*this, *pointer_capture_owner_->element_id())) {
-    pointer_capture_owner_.reset();
+    release_pointer(*pointer_capture_owner_);
   }
 
   if (input_.pointer_down_element_id.has_value() &&
