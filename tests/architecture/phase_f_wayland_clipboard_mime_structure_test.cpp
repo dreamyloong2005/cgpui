@@ -65,7 +65,7 @@ int main() {
                 "target(\"phase_f_wayland_clipboard_mime_structure_test\")")) {
     return 5;
   }
-  if (line_count(internal) > 135 || line_count(mime) > 90 ||
+  if (line_count(internal) > 150 || line_count(mime) > 90 ||
       line_count(read) > 70 || line_count(behavior) > 90) return 6;
   constexpr const char* completion =
       "Phase F Step 567 adds case-insensitive Wayland text MIME parsing and "
@@ -83,7 +83,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 570 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 571 Win32")) {
     return 9;
   }
   return 0;

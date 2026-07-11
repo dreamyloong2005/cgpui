@@ -1,6 +1,7 @@
 #pragma once
 
 #include "clipboard_internal.hpp"
+#include "clipboard_wayland_diagnostics_internal.hpp"
 
 #if defined(__linux__)
 #include <wayland-client.h>
@@ -46,6 +47,11 @@ struct WaylandClipboard::Connection {
   ~Connection();
 
   [[nodiscard]] WaylandClipboardSupport support() const;
+  [[nodiscard]] WaylandClipboardDiagnostics diagnostics() const;
+  void record_diagnostics(
+      WaylandClipboardOperation operation,
+      WaylandClipboardFailure failure,
+      std::size_t bytes_transferred);
   [[nodiscard]] std::optional<std::string> read_text();
   [[nodiscard]] bool write_text(std::string_view text);
 
@@ -105,7 +111,7 @@ struct WaylandClipboard::Connection {
   static void handle_source_drop_performed(void*, wl_data_source*);
   static void handle_source_dnd_finished(void*, wl_data_source*);
   static void handle_source_action(void*, wl_data_source*, std::uint32_t);
-  static void write_payload_to_fd(const std::string& payload, int fd);
+  void write_payload_to_fd(const std::string& payload, int fd);
 
   void start_dispatch_thread();
   void stop_dispatch_thread();
@@ -129,6 +135,7 @@ struct WaylandClipboard::Connection {
   std::atomic_bool dispatch_running_{false};
   std::thread dispatch_thread_;
   WaylandClipboardSupport support_ = WaylandClipboardSupport::unsupported;
+  WaylandClipboardDiagnosticState diagnostics_;
 };
 #endif
 

@@ -10162,3 +10162,18 @@
   survives, then request the same owned selection normally to prove ownership
   and dispatch remain usable after the peer failure.
 - Phase F Step 569 prevents abandoned Wayland clipboard receivers from terminating the host with SIGPIPE, scopes signal masking to the writer thread, preserves caller signal state, and keeps selection ownership usable after EPIPE. Step 570 Wayland clipboard diagnostics production behavior is next.
+
+## 2026-07-11 Phase F Step 570 Wayland Clipboard Diagnostics Audit
+
+- Existing clipboard APIs expose only coarse support and return values; async
+  owned-selection send failures are invisible even though they occur on the
+  dispatch thread after `write_text()` succeeds.
+- Diagnostics should remain allocation-free and string-free: operation kind,
+  failure reason, transferred bytes, and revision are sufficient for callers
+  to distinguish installation, receiver-close, timeout, and recovery.
+- The connection needs a focused atomic snapshot state because diagnostics are
+  written by both the caller thread and Wayland source dispatch thread.
+- A real test can reuse the abandoned receiver boundary from Step 569, observe
+  the async `receiver_closed` snapshot, then prove a normal request advances to
+  a successful send snapshot without losing ownership.
+- Phase F Step 570 adds allocation-free Wayland clipboard diagnostic snapshots for write and async send operations, reports receiver-close and timeout failures with byte counts and revisions, and records recovery after failure. Step 571 Win32 OLE drop target production behavior is next.

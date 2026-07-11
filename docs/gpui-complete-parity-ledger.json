@@ -2207,7 +2207,25 @@
       "xmake.lua"
     ],
     "phase_f_step_569_remaining_gap": "Step 570 Wayland clipboard diagnostics production behavior",
-    "phase_f_current_handoff": "Step 570 Wayland clipboard diagnostics production behavior"
+    "phase_f_step_570_surface": "Phase F Step 570 adds allocation-free Wayland clipboard diagnostic snapshots for write and async send operations, reports receiver-close and timeout failures with byte counts and revisions, and records recovery after failure. Step 571 Win32 OLE drop target production behavior is next.",
+    "phase_f_step_570_sources": [
+      "include/cgpui/platform/clipboard.hpp",
+      "src/platform/clipboard_wayland_diagnostics_internal.hpp",
+      "src/platform/clipboard_wayland_diagnostics.cpp",
+      "src/platform/clipboard_wayland_internal.hpp",
+      "src/platform/clipboard_wayland_connection.cpp",
+      "src/platform/clipboard_wayland.cpp",
+      "src/platform/clipboard_wayland_source.cpp",
+      "src/platform/clipboard_wayland_source_events.cpp",
+      "src/platform/clipboard_wayland_source_io.cpp",
+      "src/platform/clipboard_wayland_transfer.cpp",
+      "tests/platform/wayland_clipboard_diagnostics_test.cpp",
+      "tests/architecture/phase_f_wayland_clipboard_diagnostics_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_570_remaining_gap": "Step 571 Win32 OLE drop target production behavior",
+    "phase_f_current_handoff": "Step 571 Win32 OLE drop target production behavior"
   },
   "categories": [
     "application_and_app_context",

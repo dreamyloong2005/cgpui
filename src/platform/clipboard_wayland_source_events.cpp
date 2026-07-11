@@ -50,7 +50,7 @@ void WaylandClipboard::Connection::handle_source_send(
     payload = connection->owned_text_;
   }
 
-  write_payload_to_fd(payload, fd);
+  connection->write_payload_to_fd(payload, fd);
 }
 
 void WaylandClipboard::Connection::handle_source_cancelled(

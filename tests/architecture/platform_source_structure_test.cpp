@@ -271,6 +271,8 @@ int main(int argc, char** argv) {
       "src/platform/clipboard_win32.cpp",
       "src/platform/clipboard_wayland_internal.hpp",
       "src/platform/clipboard_wayland_connection.cpp",
+      "src/platform/clipboard_wayland_diagnostics_internal.hpp",
+      "src/platform/clipboard_wayland_diagnostics.cpp",
       "src/platform/clipboard_wayland_dispatch.cpp",
       "src/platform/clipboard_wayland_offer.cpp",
       "src/platform/clipboard_wayland_mime.cpp",
@@ -317,6 +319,10 @@ int main(int argc, char** argv) {
       read_source("src/platform/clipboard_wayland_internal.hpp");
   const std::string clipboard_wayland_connection =
       read_source("src/platform/clipboard_wayland_connection.cpp");
+  const std::string clipboard_wayland_diagnostics_internal =
+      read_source("src/platform/clipboard_wayland_diagnostics_internal.hpp");
+  const std::string clipboard_wayland_diagnostics =
+      read_source("src/platform/clipboard_wayland_diagnostics.cpp");
   const std::string clipboard_wayland_offer =
       read_source("src/platform/clipboard_wayland_offer.cpp");
   const std::string clipboard_wayland_mime =
@@ -358,6 +364,10 @@ int main(int argc, char** argv) {
                 "Connection::create(std::string_view display_name)") ||
       !contains(clipboard_wayland_connection,
                 "void WaylandClipboard::Connection::initialize()") ||
+      !contains(clipboard_wayland_diagnostics_internal,
+                "WaylandClipboardDiagnosticState") ||
+      !contains(clipboard_wayland_diagnostics,
+                "WaylandClipboardDiagnosticState::snapshot()") ||
       !contains(clipboard_wayland_offer,
                 "void WaylandClipboard::Connection::handle_data_offer(") ||
       !contains(clipboard_wayland_offer,
@@ -436,6 +446,11 @@ int main(int argc, char** argv) {
       contains(clipboard_wayland_transfer,
                "WaylandClipboard::Connection::")) {
     return 22;
+  }
+  if (line_count(clipboard_wayland_diagnostics_internal) > 60 ||
+      line_count(clipboard_wayland_diagnostics) > 80 ||
+      contains(clipboard_wayland_diagnostics, "wl_display_")) {
+    return 32;
   }
   if (line_count(clipboard_wayland) > 120 ||
       contains(clipboard_wayland, "struct WaylandClipboard::Connection") ||

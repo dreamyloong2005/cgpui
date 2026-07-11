@@ -42,6 +42,17 @@ WaylandClipboardSupport WaylandClipboard::Connection::support() const {
   return support_;
 }
 
+WaylandClipboardDiagnostics WaylandClipboard::Connection::diagnostics() const {
+  return diagnostics_.snapshot();
+}
+
+void WaylandClipboard::Connection::record_diagnostics(
+    WaylandClipboardOperation operation,
+    WaylandClipboardFailure failure,
+    std::size_t bytes_transferred) {
+  diagnostics_.record(operation, failure, bytes_transferred);
+}
+
 void WaylandClipboard::Connection::initialize() {
   display_ =
       wl_display_connect(display_name_.empty() ? nullptr : display_name_.c_str());

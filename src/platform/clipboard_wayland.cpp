@@ -42,6 +42,11 @@ WaylandClipboardSupport WaylandClipboard::support() const {
   return support_;
 }
 
+WaylandClipboardDiagnostics WaylandClipboard::diagnostics() const {
+  return connection_ == nullptr ? WaylandClipboardDiagnostics{}
+                                : connection_->diagnostics();
+}
+
 std::unique_ptr<Clipboard> create_wayland_clipboard() {
   return std::make_unique<WaylandClipboard>();
 }

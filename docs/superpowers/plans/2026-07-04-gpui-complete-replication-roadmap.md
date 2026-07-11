@@ -1773,6 +1773,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 567 adds case-insensitive Wayland text MIME parsing and ranking, accepts normalized UTF-8 charset parameters, preserves original offer strings for receive, and rejects unsupported charsets. Step 568 Wayland clipboard incremental transfer production behavior is next.
 - [x] Phase F Step 568 keeps active Wayland clipboard reads alive across incremental chunks, retries nonblocking owned-selection writes after EAGAIN, preserves large payloads, and bounds stalled transfers with idle deadlines. Step 569 Wayland clipboard failure handling production behavior is next.
 - [x] Phase F Step 569 prevents abandoned Wayland clipboard receivers from terminating the host with SIGPIPE, scopes signal masking to the writer thread, preserves caller signal state, and keeps selection ownership usable after EPIPE. Step 570 Wayland clipboard diagnostics production behavior is next.
+- [x] Phase F Step 570 adds allocation-free Wayland clipboard diagnostic snapshots for write and async send operations, reports receiver-close and timeout failures with byte counts and revisions, and records recovery after failure. Step 571 Win32 OLE drop target production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
@@ -1782,7 +1783,7 @@ not protocol/test skeletons.
 - [x] Steps 555-562: Complete Wayland input: seat capability changes,
   keyboard layout/modifiers, pointer enter/leave/motion/buttons/axis,
   fractional scale, configure lifecycle, cursor theme loading, and wakeups.
-- [ ] Steps 563-570: Complete clipboard: Win32 Unicode/text/files where
+- [x] Steps 563-570: Complete clipboard: Win32 Unicode/text/files where
   applicable, Wayland selection ownership/write/read, MIME negotiation,
   incremental transfer, failure handling, and diagnostics.
 - [ ] Steps 571-578: Complete drag/drop: Win32 OLE drop target/source,

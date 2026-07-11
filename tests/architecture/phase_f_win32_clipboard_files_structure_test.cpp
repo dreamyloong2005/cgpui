@@ -87,7 +87,7 @@ int main() {
                 "add_syslinks(\"shell32\", \"user32\", {public = true})")) {
     return 7;
   }
-  if (line_count(public_header) > 75 || line_count(defaults) > 80 ||
+  if (line_count(public_header) > 110 || line_count(defaults) > 80 ||
       line_count(internal) > 55 || line_count(files) > 130 ||
       line_count(behavior) > 140 || line_count(test_lock) > 50) return 8;
   constexpr const char* completion =
@@ -105,7 +105,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 570 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 571 Win32")) {
     return 11;
   }
   return 0;

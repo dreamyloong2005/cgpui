@@ -6,6 +6,10 @@ namespace cgpui {
 bool WaylandClipboard::Connection::write_text(std::string_view text) {
   if (support_ != WaylandClipboardSupport::available || display_ == nullptr ||
       manager_ == nullptr || data_device_ == nullptr) {
+    record_diagnostics(
+        WaylandClipboardOperation::write,
+        WaylandClipboardFailure::unavailable,
+        0);
     return false;
   }
 
@@ -21,6 +25,10 @@ bool WaylandClipboard::Connection::write_text(std::string_view text) {
     std::lock_guard display_lock(display_mutex_);
     auto* source = wl_data_device_manager_create_data_source(manager_);
     if (source == nullptr) {
+      record_diagnostics(
+          WaylandClipboardOperation::write,
+          WaylandClipboardFailure::io_error,
+          0);
       if (previous_source != nullptr) start_dispatch_thread();
       return false;
     }
@@ -40,6 +48,10 @@ bool WaylandClipboard::Connection::write_text(std::string_view text) {
     wl_data_device_set_selection(data_device_, source, 0);
     if (wl_display_flush(display_) == -1) {
       wl_data_source_destroy(source);
+      record_diagnostics(
+          WaylandClipboardOperation::write,
+          WaylandClipboardFailure::display_error,
+          0);
     } else {
       {
         std::lock_guard selection_lock(owned_selection_mutex_);
@@ -50,6 +62,10 @@ bool WaylandClipboard::Connection::write_text(std::string_view text) {
         wl_data_source_destroy(previous_source);
       }
       installed = true;
+      record_diagnostics(
+          WaylandClipboardOperation::write,
+          WaylandClipboardFailure::none,
+          text.size());
     }
   }
 

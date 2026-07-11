@@ -21502,6 +21502,37 @@
   line caps, warning-free Linux rebuild, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-11 Phase F Step 570 Wayland Clipboard Diagnostics
+
+- Started from committed Step 569 at `498c3ec3`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit assigns allocation-free diagnostic snapshots to a public
+  Wayland clipboard record and a focused private atomic state module.
+- Planned real transitions for selection write success, asynchronous abandoned
+  receiver failure, and subsequent successful send recovery.
+- The public diagnostics test reached precise compile-time RED because the
+  Wayland clipboard exposed neither snapshot types nor `diagnostics()`.
+- Added allocation-free public diagnostic records and a focused private atomic
+  sequence snapshot state. Write installation and async send now record success,
+  receiver-close, timeout, generic I/O failure, byte counts, and revisions.
+- The diagnostics, failure, incremental transfer, and platform source tests
+  pass 4/4 on WSL after implementation.
+- Added the Step 570 structure guard; it reached the intended five-document
+  RED at exit 8 while platform source structure remained green.
+- Synchronized the exact Step 570 completion phrase across all five authority
+  documents, closed the clipboard 563-570 band, and advanced nineteen dynamic
+  handoff guards to Step 571.
+- The first Windows structure group passed 20/21; the sole failure was Step
+  564's 75-line public clipboard cap. The diagnostics records make the leaf 92
+  lines, so that historical cap now matches Step 570's 110-line boundary.
+- Final Windows shared structure/ledger verification passes 21/21. Final WSL
+  clipboard-band closeout passes 28/28 across seven clipboard behaviors,
+  nineteen Phase F structure guards, platform source structure, and the ledger.
+- Final JSON parsing, five-document unique phrase, nineteen Step 571 handoff
+  guards, focused line caps, warning-free Linux rebuild, and `git diff --check`
+  pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
+  batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

@@ -77,7 +77,7 @@ int main() {
                 "target(\"phase_f_wayland_clipboard_failure_structure_test\")")) {
     return 6;
   }
-  if (line_count(internal) > 135 || line_count(signal) > 80 ||
+  if (line_count(internal) > 150 || line_count(signal) > 80 ||
       line_count(transfer) > 80 || line_count(source_state) > 160 ||
       line_count(compositor) > 3700 || line_count(compositor_header) > 220 ||
       line_count(behavior) > 70) return 7;
@@ -97,7 +97,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 570 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 571 Win32")) {
     return 10;
   }
   return 0;

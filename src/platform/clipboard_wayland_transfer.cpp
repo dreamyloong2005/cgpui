@@ -28,7 +28,10 @@ bool wayland_clipboard_write_payload_incrementally(
         return false;
       }
     }
-    if (std::chrono::steady_clock::now() >= deadline) return false;
+    if (std::chrono::steady_clock::now() >= deadline) {
+      errno = ETIMEDOUT;
+      return false;
+    }
   }
   return true;
 }

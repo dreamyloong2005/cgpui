@@ -996,7 +996,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 569 evidence: with `SIGPIPE` explicitly restored to `SIG_DFL`, a real
   compositor abandons one receive pipe and the same clipboard process survives
   to serve the next UTF-8 request from unchanged ownership.
-- In progress: Step 570 Wayland clipboard diagnostics production behavior.
+- Completed: Phase F Step 570 adds allocation-free Wayland clipboard diagnostic snapshots for write and async send operations, reports receiver-close and timeout failures with byte counts and revisions, and records recovery after failure. Step 571 Win32 OLE drop target production behavior is next.
+- Step 570 evidence: a real compositor observes diagnostic revisions for
+  selection installation, abandoned-receiver failure, and successful send
+  recovery without strings, allocation, or process-global signal state.
+- In progress: Step 571 Win32 OLE drop target production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
