@@ -550,6 +550,19 @@ struct WaylandTestCompositor::State {
     return flag.load();
   }
 
+  [[nodiscard]] bool wait_for_flag_value(
+      const std::atomic_bool& flag,
+      bool value) const {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+    while (std::chrono::steady_clock::now() < deadline) {
+      if (flag.load() == value) {
+        return true;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    return flag.load() == value;
+  }
+
   [[nodiscard]] bool wait_for_cursor_count(std::uint32_t count) const {
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
     while (std::chrono::steady_clock::now() < deadline) {
@@ -583,6 +596,11 @@ struct WaylandTestCompositor::State {
     output_scale.store(std::max(scale, 1));
     output_scale_sent.store(false);
     output_scale_pending.store(true);
+  }
+
+  void request_seat_capabilities(std::uint32_t capabilities) {
+    seat_capabilities.store(capabilities);
+    seat_capabilities_pending.store(true);
   }
 
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const {
@@ -898,9 +916,7 @@ struct WaylandTestCompositor::State {
         &seat_implementation,
         compositor,
         &State::handle_seat_destroyed);
-    wl_seat_send_capabilities(
-        resource,
-        WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD);
+    wl_seat_send_capabilities(resource, compositor->seat_capabilities.load());
     if (wl_resource_get_version(resource) >= WL_SEAT_NAME_SINCE_VERSION) {
       wl_seat_send_name(resource, "test-seat");
     }
@@ -1200,6 +1216,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_close();
   void dispatch_pending_resize_configure();
   void dispatch_pending_output_scale();
+  void dispatch_pending_seat_capabilities();
   void dispatch_pending_pointer_move();
   void dispatch_pending_pointer_button();
   void dispatch_pending_pointer_scroll();
@@ -1227,6 +1244,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_close();
       dispatch_pending_resize_configure();
       dispatch_pending_output_scale();
+      dispatch_pending_seat_capabilities();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
@@ -1252,6 +1270,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_close();
       dispatch_pending_resize_configure();
       dispatch_pending_output_scale();
+      dispatch_pending_seat_capabilities();
       dispatch_pending_pointer_move();
       dispatch_pending_pointer_button();
       dispatch_pending_pointer_scroll();
@@ -1367,6 +1386,9 @@ struct WaylandTestCompositor::State {
   std::atomic_bool resize_configure_fullscreen{false};
   std::atomic_bool output_scale_pending{false};
   std::atomic_bool output_scale_sent{false};
+  std::atomic_bool seat_capabilities_pending{false};
+  std::atomic_bool pointer_bound{false};
+  std::atomic_bool keyboard_bound{false};
   std::atomic_bool pointer_move_pending{false};
   std::atomic_bool pointer_move_sent{false};
   std::atomic_bool pointer_button_pending{false};
@@ -1412,6 +1434,8 @@ struct WaylandTestCompositor::State {
   std::atomic_int resize_width{0};
   std::atomic_int resize_height{0};
   std::atomic_int output_scale{1};
+  std::atomic_uint32_t seat_capabilities{
+      WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD};
   std::atomic_int surface_buffer_scale{1};
   std::atomic_int pointer_x{0};
   std::atomic_int pointer_y{0};
@@ -1649,6 +1673,7 @@ void WaylandTestCompositor::State::seat_get_pointer(
       std::min<std::uint32_t>(wl_resource_get_version(resource), 5),
       id);
   compositor->pointer_resource = pointer;
+  compositor->pointer_bound.store(true);
   wl_resource_set_implementation(
       pointer,
       &pointer_implementation,
@@ -1668,6 +1693,7 @@ void WaylandTestCompositor::State::seat_get_keyboard(
       std::min<std::uint32_t>(wl_resource_get_version(resource), 5),
       id);
   compositor->keyboard_resource = keyboard;
+  compositor->keyboard_bound.store(true);
   wl_resource_set_implementation(
       keyboard,
       &keyboard_implementation,
@@ -1727,6 +1753,7 @@ void WaylandTestCompositor::State::handle_pointer_destroyed(wl_resource* resourc
       static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
   if (compositor != nullptr && compositor->pointer_resource == resource) {
     compositor->pointer_resource = nullptr;
+    compositor->pointer_bound.store(false);
     compositor->pointer_entered = false;
   }
 }
@@ -1966,6 +1993,7 @@ void WaylandTestCompositor::State::handle_keyboard_destroyed(wl_resource* resour
       static_cast<WaylandTestCompositor::State*>(wl_resource_get_user_data(resource));
   if (compositor != nullptr && compositor->keyboard_resource == resource) {
     compositor->keyboard_resource = nullptr;
+    compositor->keyboard_bound.store(false);
     compositor->keyboard_entered = false;
   }
 }
@@ -2036,6 +2064,18 @@ void WaylandTestCompositor::State::dispatch_pending_resize_configure() {
   }
 
   resize_configure_pending.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_seat_capabilities() {
+  if (!seat_capabilities_pending.exchange(false)) {
+    return;
+  }
+  if (seat_resource == nullptr) {
+    seat_capabilities_pending.store(true);
+    return;
+  }
+  wl_seat_send_capabilities(seat_resource, seat_capabilities.load());
+  wl_display_flush_clients(display);
 }
 
 void WaylandTestCompositor::State::dispatch_pending_output_scale() {
@@ -2717,11 +2757,11 @@ const struct wl_seat_interface WaylandTestCompositor::State::seat_implementation
 
 const struct wl_pointer_interface WaylandTestCompositor::State::pointer_implementation{
     .set_cursor = &WaylandTestCompositor::State::pointer_set_cursor,
-    .release = noop_resource,
+    .release = destroy_resource,
 };
 
 const struct wl_keyboard_interface WaylandTestCompositor::State::keyboard_implementation{
-    .release = noop_resource,
+    .release = destroy_resource,
 };
 
 const struct wl_data_device_manager_interface
@@ -2946,6 +2986,11 @@ void WaylandTestCompositor::request_output_scale(std::int32_t scale) {
   state_->request_output_scale(scale);
 }
 
+void WaylandTestCompositor::request_seat_capabilities(
+    std::uint32_t capabilities) {
+  state_->request_seat_capabilities(capabilities);
+}
+
 void WaylandTestCompositor::request_pointer_move(std::int32_t x, std::int32_t y) {
   state_->request_pointer_move(x, y);
 }
@@ -3120,6 +3165,14 @@ bool WaylandTestCompositor::wait_for_output_scale_sent() const {
 
 std::int32_t WaylandTestCompositor::last_surface_buffer_scale() const {
   return state_->surface_buffer_scale.load();
+}
+
+bool WaylandTestCompositor::wait_for_pointer_bound(bool bound) const {
+  return state_->wait_for_flag_value(state_->pointer_bound, bound);
+}
+
+bool WaylandTestCompositor::wait_for_keyboard_bound(bool bound) const {
+  return state_->wait_for_flag_value(state_->keyboard_bound, bound);
 }
 
 bool WaylandTestCompositor::wait_for_pointer_move_sent() const {

@@ -67,6 +67,7 @@ class WaylandTestCompositor {
       bool maximized,
       bool fullscreen);
   void request_output_scale(std::int32_t scale);
+  void request_seat_capabilities(std::uint32_t capabilities);
   void request_pointer_move(std::int32_t x, std::int32_t y);
   void request_pointer_button(std::uint32_t button, bool pressed);
   void request_pointer_scroll(float delta_x, float delta_y);
@@ -122,6 +123,8 @@ class WaylandTestCompositor {
   [[nodiscard]] WaylandConfigureState last_resize_configure_state() const;
   [[nodiscard]] bool wait_for_output_scale_sent() const;
   [[nodiscard]] std::int32_t last_surface_buffer_scale() const;
+  [[nodiscard]] bool wait_for_pointer_bound(bool bound) const;
+  [[nodiscard]] bool wait_for_keyboard_bound(bool bound) const;
   [[nodiscard]] bool wait_for_pointer_move_sent() const;
   [[nodiscard]] bool wait_for_pointer_button_sent() const;
   [[nodiscard]] bool wait_for_pointer_scroll_sent() const;

@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 555 Wayland seat capability")) {
+                "\"phase_f_current_handoff\": \"Step 556 Wayland keyboard layout")) {
     return 11;
   }
   return 0;

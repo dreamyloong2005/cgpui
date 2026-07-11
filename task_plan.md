@@ -931,7 +931,12 @@ Windows/Linux core API is stable enough for parity work.
   a focused allocation-free conversion boundary; wheel deltas and synthetic
   logical drag payloads remain unchanged. Focused behavior and structure gates
   cover live scale changes and the extracted pointer-event ownership.
-- In progress: Step 555 Wayland seat capability production behavior.
+- Completed: Phase F Step 555 adds live Wayland seat capability transitions with version-aware pointer and keyboard release, removal-time focus loss, stale input-state cleanup, and proxy reacquisition. Step 556 Wayland keyboard layout and modifier production behavior is next.
+- Step 555 evidence: the real test compositor drives keyboard-only, no-input,
+  pointer-only, and combined capabilities; client resource release, focus
+  transitions, independent proxy reacquisition, and renewed input delivery are
+  observed through the production event loop.
+- In progress: Step 556 Wayland keyboard layout and modifier production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1006,6 +1011,8 @@ Windows/Linux core API is stable enough for parity work.
 | The first no-diff line-ending cleanup could not create `.git/index.lock` inside the workspace sandbox | Step 553 worktree cleanup | Rerun the narrowly scoped `git restore --worktree` with the approved git escalation; only the two files edited and fully reverted in this slice were targeted |
 | `xmake test <target>` printed `nothing to test` for the Step 554 structure executables | Step 554 focused structure verification | Build each target separately and execute it with `xmake run <target>` or run its binary directly; these architecture targets are not registered test ids |
 | The first complete Step 554 Windows input gate passed 22/24 because the Step 552 cursor and Step 553 capture guards froze the global handoff at Step 554 | Step 554 expanded Windows verification | Preserve each historical step's surface and remaining-gap fields while advancing only their dynamic global handoff assertion to Step 555 |
+| A direct Step 555 WSL test binary launch lacked xmake's registered run environment and exited during compositor startup | Step 555 behavior RED confirmation | Use the registered `wayland_seat_capability_test/default` or `xmake run -vD` target so package/runtime environment and child exit diagnostics are preserved |
+| The first Step 555 GREEN attempt still exited 6 because local proxy destroy did not release the server resource | Step 555 capability teardown | Use version-gated Wayland pointer/keyboard `release` requests and reserve local destroy for protocol versions predating release support |
 
 ## Errors Encountered During Phase E Resume
 

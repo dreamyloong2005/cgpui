@@ -1948,7 +1948,21 @@
       "xmake.lua"
     ],
     "phase_f_step_554_remaining_gap": "Step 555 Wayland seat capability production behavior",
-    "phase_f_current_handoff": "Step 555 Wayland seat capability production behavior"
+    "phase_f_step_555_surface": "Phase F Step 555 adds live Wayland seat capability transitions with version-aware pointer and keyboard release, removal-time focus loss, stale input-state cleanup, and proxy reacquisition. Step 556 Wayland keyboard layout and modifier production behavior is next.",
+    "phase_f_step_555_sources": [
+      "src/platform/linux/wayland_application_seat.cpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_seat_capability_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "tests/architecture/phase_f_wayland_seat_capability_structure_test.cpp",
+      "tests/architecture/phase_f_win32_cursor_structure_test.cpp",
+      "tests/architecture/phase_f_win32_pointer_capture_structure_test.cpp",
+      "tests/architecture/phase_f_win32_input_dpi_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_555_remaining_gap": "Step 556 Wayland keyboard layout and modifier production behavior",
+    "phase_f_current_handoff": "Step 556 Wayland keyboard layout and modifier production behavior"
   },
   "categories": [
     "application_and_app_context",

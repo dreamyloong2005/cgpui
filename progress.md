@@ -21027,3 +21027,35 @@
   five authority documents, focused source line caps, and `git diff --check`
   pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
   batched until the next platform milestone or Phase F closeout.
+
+## 2026-07-11 Phase F Step 555 Wayland Seat Capabilities
+
+- Started from committed Step 554 at `1151346f`; only `.vscode/` remains
+  unrelated and untracked.
+- Audited the focused Wayland seat, pointer, keyboard, scroll, text-input, and
+  test-compositor paths. Existing acquisition/destruction logic lacked
+  removal-time blur and used local proxy destroy without protocol release.
+- Extended the real test compositor with runtime seat capability requests and
+  atomic pointer/keyboard bound observations. Added a dedicated behavior test
+  for combined -> keyboard-only -> none -> pointer-only -> combined changes.
+- The registered RED failed as expected; the first GREEN attempt then exposed
+  the server-resource leak at child exit 6. Version-aware pointer/keyboard
+  release requests fixed the teardown while preserving low-version fallback.
+- Production removal now publishes keyboard focus loss before target cleanup,
+  resets keyboard and text-input state, clears pointer target/position/serial/
+  scroll state, and reacquires independent proxies when capabilities return.
+- The real WSL behavior test passes 1/1. The total Wayland source guard passes,
+  and the Step 555 structure guard reaches the intended five-document RED at
+  exit 6 before authority synchronization.
+- After synchronization, Windows cross-platform structure verification passes
+  7/7 across the Step 555 guard, Wayland/platform inventories, three advancing
+  historical handoff guards, and the parity ledger.
+- The first combined WSL report stream ended during a transient
+  `WSL_E_DISTRO_NOT_FOUND` interval with no owned test process left behind.
+  The standard `wsl.exe -d archlinux -- bash -lc` probe recovered immediately.
+- Final WSL focused verification passes 11/11 in two stable groups: 4/4 real
+  seat/pointer/scroll/keyboard behavior and 7/7 structure/source/ledger gates,
+  reusing `.build-wsl/master` on D: plus `/dev/shm/cgpui` transient temp.
+- Ledger JSON parsing, the exact Step 555 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

@@ -1,6 +1,29 @@
 #include "wayland_application_internal.hpp"
 
 namespace cgpui {
+namespace {
+
+void release_pointer(wl_pointer* pointer) {
+  const auto version =
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(pointer));
+  if (version >= WL_POINTER_RELEASE_SINCE_VERSION) {
+    wl_pointer_release(pointer);
+  } else {
+    wl_pointer_destroy(pointer);
+  }
+}
+
+void release_keyboard(wl_keyboard* keyboard) {
+  const auto version =
+      wl_proxy_get_version(reinterpret_cast<wl_proxy*>(keyboard));
+  if (version >= WL_KEYBOARD_RELEASE_SINCE_VERSION) {
+    wl_keyboard_release(keyboard);
+  } else {
+    wl_keyboard_destroy(keyboard);
+  }
+}
+
+} // namespace
 
 void WaylandApplication::handle_seat_capabilities(
     void* data,
@@ -30,18 +53,23 @@ void WaylandApplication::handle_seat_capabilities(
       wl_pointer_add_listener(app->pointer_, &pointer_listener, app);
     }
   } else if (app->pointer_ != nullptr) {
-    wl_pointer_destroy(app->pointer_);
+    release_pointer(app->pointer_);
     app->pointer_ = nullptr;
     app->pointer_window_ = nullptr;
+    app->pointer_position_ = {};
+    app->pointer_enter_serial_ = 0;
     app->pending_scroll_delta_ = {};
     app->pointer_scroll_pending_ = false;
   }
 
   if (capabilities != 0U) {
     wayland_data_device_bind_to_seat(*app->data_device_, seat);
-    wayland_text_input_bind_to_seat(*app->text_input_, seat);
   } else {
     wayland_data_device_reset(*app->data_device_);
+  }
+  if (has_keyboard) {
+    wayland_text_input_bind_to_seat(*app->text_input_, seat);
+  } else {
     wayland_text_input_reset(*app->text_input_);
   }
 
@@ -59,9 +87,12 @@ void WaylandApplication::handle_seat_capabilities(
       wl_keyboard_add_listener(app->keyboard_, &keyboard_listener, app);
     }
   } else if (app->keyboard_ != nullptr) {
-    wl_keyboard_destroy(app->keyboard_);
+    if (app->keyboard_window_ != nullptr) {
+      wayland_window_focus_changed(*app->keyboard_window_, false);
+      app->keyboard_window_ = nullptr;
+    }
+    release_keyboard(app->keyboard_);
     app->keyboard_ = nullptr;
-    app->keyboard_window_ = nullptr;
     wayland_keyboard_reset(app->keyboard_state_);
   }
 }

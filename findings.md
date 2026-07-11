@@ -9763,3 +9763,48 @@
   reuses the same current-scale conversion while synthetic logical drag stays
   untouched.
 - Phase F Step 554 makes Win32 pointer, button, wheel, and native drag coordinates DPI-aware through focused physical-to-logical conversion after live scale changes, closing the Win32 input band. Step 555 Wayland seat capability production behavior is next.
+
+## 2026-07-11 Phase F Step 555 Wayland Seat Capability Audit
+
+- Wayland production ownership lives under `src/platform/linux`, with the
+  existing seat callback already extracted from the broad application source.
+- Step 555 should audit capability removal and dependent input-state cleanup in
+  addition to the already-present pointer/keyboard acquisition path; the
+  public seat lifecycle should remain private to the Wayland backend.
+- `handle_seat_capabilities` already acquires pointer/keyboard proxies and
+  destroys them on removal, but keyboard removal nulls `keyboard_window_`
+  without publishing the corresponding focus loss first. A window focused by
+  keyboard enter can therefore retain stale lifecycle focus.
+- Pointer removal already clears its target and pending scroll accumulator;
+  Step 555 coverage should prove resource destruction, no delivery while the
+  capability is absent, and clean proxy reacquisition when it returns.
+- The test compositor currently sends pointer+keyboard capabilities only once
+  during seat bind. It needs a focused runtime capability-change request and
+  observable pointer/keyboard resource state for production behavior coverage.
+- The focused `wayland_application_seat.cpp` owner and the core's single
+  pointer/keyboard proxy fields are already the right module boundary; no
+  public API or broad application-file change is needed.
+- Server-side resource destruction callbacks already null the compositor's
+  pointer/keyboard resource handles, so a test-facing wait predicate can
+  observe client proxy teardown without adding production instrumentation.
+- Step 555 behavior coverage should drive the live sequence
+  pointer+keyboard -> none -> pointer+keyboard, requiring initial focus/input,
+  removal-time blur and proxy release, then proxy reacquisition with renewed
+  focus/pointer/key delivery.
+- Test-side resource availability must be atomic because the compositor server
+  thread owns Wayland resources while the test thread waits; server release
+  handlers should destroy the resource so the bound state reflects protocol
+  teardown rather than client disconnect only.
+- The failed keyboard-only transition exposed a production leak: generated
+  `wl_pointer_destroy` and `wl_keyboard_destroy` only destroy local proxies;
+  they do not send protocol `release`. Capability removal must call the
+  version-gated `wl_pointer_release`/`wl_keyboard_release`, falling back to
+  local destroy only for protocol versions predating release requests.
+- The final behavior path cleanly handles keyboard-only, no-input,
+  pointer-only, and combined capability sets. Keyboard loss publishes blur
+  before clearing the target, pointer loss clears target/position/serial/scroll
+  state, and both proxies reacquire without stale server resources.
+- Data-device binding remains available for any non-empty seat capability set,
+  while text-input binding now follows keyboard availability so IME state is
+  reset when keyboard capability disappears.
+- Phase F Step 555 adds live Wayland seat capability transitions with version-aware pointer and keyboard release, removal-time focus loss, stale input-state cleanup, and proxy reacquisition. Step 556 Wayland keyboard layout and modifier production behavior is next.

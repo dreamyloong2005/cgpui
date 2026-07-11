@@ -1758,6 +1758,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 552 adds production Win32 system cursors with expanded public shapes, focused system-resource mapping, client WM_SETCURSOR reapplication, and settings/theme refresh. Step 553 Win32 pointer capture and drag production behavior is next.
 - [x] Phase F Step 553 adds native Win32 pointer capture with compatible platform control, owner-matched release, capture-loss cancellation, and continuous outside-window drag movement. Step 554 Win32 input DPI-change production behavior is next.
 - [x] Phase F Step 554 makes Win32 pointer, button, wheel, and native drag coordinates DPI-aware through focused physical-to-logical conversion after live scale changes, closing the Win32 input band. Step 555 Wayland seat capability production behavior is next.
+- [x] Phase F Step 555 adds live Wayland seat capability transitions with version-aware pointer and keyboard release, removal-time focus loss, stale input-state cleanup, and proxy reacquisition. Step 556 Wayland keyboard layout and modifier production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

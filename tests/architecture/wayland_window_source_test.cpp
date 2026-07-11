@@ -1019,7 +1019,14 @@ int main(int argc, char** argv) {
       !contains(wayland_application_seat,
                 "wl_seat_get_pointer") ||
       !contains(wayland_application_seat,
-                "wl_seat_get_keyboard")) {
+                "wl_seat_get_keyboard") ||
+      !contains(wayland_application_seat,
+                "wl_pointer_release(") ||
+      !contains(wayland_application_seat,
+                "wl_keyboard_release(") ||
+      !contains(wayland_application_seat,
+                "wayland_window_focus_changed(") ||
+      line_count(wayland_application_seat) > 120) {
     return 94;
   }
   if (!contains(wayland_application_keyboard,
