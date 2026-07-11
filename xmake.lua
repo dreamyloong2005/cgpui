@@ -378,13 +378,20 @@ target("phase_f_native_menu_closeout_structure_test")
     add_files("tests/architecture/phase_f_native_menu_closeout_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_win32_file_open_dialog_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_win32_file_open_dialog_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
         add_files("src/platform/win32/*.cpp")
         add_deps("cgpui_core", "cgpui_platform")
         add_includedirs(public_includedirs, {public = true})
-        add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32", "dwrite")
+        add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32", "dwrite", "uuid")
 
     target("win32_input_event_test")
         set_kind("binary")
@@ -624,6 +631,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs)
         add_syslinks("user32")
+        add_tests("default")
+
+    target("win32_file_open_dialog_plan_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_file_open_dialog_plan_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs, "src/platform/win32")
+        add_syslinks("ole32", "shell32", "uuid")
         add_tests("default")
 
     target("win32_ole_text_data_object_test")

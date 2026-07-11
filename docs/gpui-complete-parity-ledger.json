@@ -2434,7 +2434,19 @@
       "xmake.lua"
     ],
     "phase_f_step_586_remaining_gap": "Step 587 open-file dialog production behavior",
-    "phase_f_current_handoff": "Step 587 open-file dialog production behavior"
+    "phase_f_step_587_surface": "Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.",
+    "phase_f_step_587_sources": [
+      "src/platform/win32/win32_file_dialog_internal.hpp",
+      "src/platform/win32/win32_file_dialog.cpp",
+      "src/platform/win32/win32_native.cpp",
+      "tests/platform/win32_file_open_dialog_plan_test.cpp",
+      "tests/architecture/phase_f_win32_file_open_dialog_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_587_remaining_gap": "Step 588 Win32 save-file dialog production behavior",
+    "phase_f_current_handoff": "Step 588 Win32 save-file dialog production behavior"
   },
   "categories": [
     "application_and_app_context",

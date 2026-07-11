@@ -713,6 +713,7 @@ consume C: drive space again.
 - Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.
 - Phase F Step 585 reports declared, registered, and skipped native-menu accelerators across platform results, and records handled/unhandled menu command diagnostics with source, event kind, and command id. Step 586 native menu and accelerator closeout audit is next.
 - Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.
+- Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.
 
 ## Categories
 

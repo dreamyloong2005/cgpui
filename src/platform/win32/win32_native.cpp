@@ -1,4 +1,5 @@
 #include "win32_internal.hpp"
+#include "win32_file_dialog_internal.hpp"
 
 #include <utility>
 
@@ -51,13 +52,7 @@ Win32NativeMenuState::command_map() const {
 NativeFileDialogResult Win32NativeFileDialogState::show_native_file_dialog(
     NativeFileDialogOptions options) {
   options_ = std::move(options);
-  last_file_dialog_result_ = NativeFileDialogResult{
-      .supported = false,
-      .accepted = false,
-      .backend = "win32",
-      .kind = options_.kind,
-      .filter_count = options_.filters.size(),
-  };
+  last_file_dialog_result_ = show_win32_native_file_dialog(options_);
   return last_file_dialog_result_;
 }
 

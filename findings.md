@@ -10436,3 +10436,12 @@
   explicit Wayland unsupported/skipped result, and hand off to dialogs without
   widening any production module.
 - Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.
+
+## 2026-07-12 Phase F Step 587 Win32 Open-File Dialog
+
+- The public file-dialog request/result and runtime diagnostic/result plumbing
+  already exist, but Win32 always reports unsupported from `win32_native.cpp`.
+- Native ownership belongs in a focused COM leaf. A pure plan maps single vs.
+  multi-select flags and extension filters without showing UI; the execution
+  path owns COM initialization, `IFileOpenDialog`, cancellation, and paths.
+- Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.

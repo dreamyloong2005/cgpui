@@ -20868,6 +20868,29 @@
   five authority documents, focused line caps, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 587 Win32 Open-File Dialog
+
+- Started from committed Step 586 at `0a7cbeb3`; only unrelated untracked
+  `.vscode/` remains.
+- Moved native open-file ownership into a focused Win32 COM leaf with a pure
+  plan for filters and single/multiple selection plus a non-interactive test.
+- The first compile showed `FILEOPENDIALOGOPTIONS`/`FOS_*` are owned by the
+  Shell dialog header, not `windows.h`; fix the focused private include.
+- The corrected focused plan test passes 1/1 and compiles the real COM leaf.
+- Added a Step 587 structure guard for focused ownership, delegation, COM
+  behavior evidence, line budgets, Xmake registration, and five documents.
+- The Step 587 structure guard returned the intended five-document RED at
+  child exit 8 after all implementation and structure checks passed.
+- The first expanded Windows gate passed 5/6; `win32_window_source_test` exit
+  64 showed its explicit inventory omitted the new dialog leaf. Add the leaf
+  so the existing backend/filter assertions track the moved implementation.
+- Final Windows behavior/result/structure/ledger verification passes 6/6.
+  Final WSL shared result/structure/ledger verification passes 5/5.
+- JSON parsing, five-document unique phrase, thirty-six Step 588 structure
+  handoff guards, focused 30/143/64/28/70 line budgets, and
+  `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
+  full debug remains batched.
+
 ## 2026-07-12 Phase F Step 586 Native Menu And Accelerator Closeout
 
 - Started from committed Step 585 at `d337d532`; only unrelated untracked

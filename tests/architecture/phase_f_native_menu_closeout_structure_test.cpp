@@ -60,6 +60,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 5;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 587 open-file")) return 6;
+                "\"phase_f_current_handoff\": \"Step 588 Win32 save-file")) return 6;
   return 0;
 }

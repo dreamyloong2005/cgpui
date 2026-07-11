@@ -99,7 +99,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 587 open-file")) {
+                "\"phase_f_current_handoff\": \"Step 588 Win32 save-file")) {
     return 11;
   }
   return 0;

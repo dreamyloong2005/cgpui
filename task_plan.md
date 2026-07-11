@@ -1066,10 +1066,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 586 evidence: one audit-only structure guard aggregates all seven prior
   native-menu guards, preserves Wayland's unsupported/skipped result, and
   closes the band without widening production modules.
-- In progress: Step 587 open-file dialog production behavior.
-- Step 587 plan: audit the existing platform dialog result/service boundary,
-  then add focused native and unsupported behavior without placing dialog
-  implementation in broad application or platform entry files.
+- Completed: Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.
+- Step 587 evidence: a non-interactive Windows test verifies single/multiple
+  selection flags and normalized filter patterns while the compiled COM leaf
+  owns initialization, cancellation, and filesystem path extraction.
+- In progress: Step 588 Win32 save-file dialog production behavior.
+- Step 588 plan: extend the focused COM leaf with `IFileSaveDialog`, suggested
+  names, overwrite prompting, and deterministic plan/result coverage.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1087,6 +1090,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 587 Windows gate failed `win32_window_source_test` at exit 64 because its explicit source inventory omitted the new dialog leaf | Step 587 expanded structure gate | Add the focused header/source to the inventory so existing backend/filter assertions follow their new owner |
+| Step 587 first compile could not resolve `FILEOPENDIALOGOPTIONS` and `FOS_*` from `windows.h` | Step 587 Win32 dialog plan | Include the owning private Shell dialog header `shobjidl.h` in the focused internal leaf |
 | The first Step 586 combined final-check/stage command could not create `.git/index.lock` inside the workspace sandbox | Step 586 staging | Keep checks separate and rerun the narrowly scoped approved `git add` command on its own |
 | A Step 585 WSL process poll returned `WSL_E_DISTRO_NOT_FOUND` while the original focused gate had been linking | Step 585 WSL focused verification | Confirm the original Windows-side WSL process exited, then restart one serialized Arch Linux registered-test gate with captured completion output |
 | Sandboxed `Get-CimInstance Win32_Process` returned access denied while checking whether the long Step 585 WSL gate still ran | Step 585 WSL process audit | Use ordinary `Get-Process` state and a serialized registered-test rerun after the first process exits |
