@@ -27,6 +27,7 @@ class WaylandApplication final : public PlatformApplication {
       NativeFileDialogOptions options) override;
   NativeMessageDialogResult show_native_message_dialog(
       NativeMessageDialogOptions options) override;
+  PlatformOpenUrlResult open_url(std::string url) override;
   [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
       const override;
 

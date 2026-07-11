@@ -75,5 +75,13 @@ NativeMessageDialogResult PlatformApplication::show_native_message_dialog(
   };
 }
 
+PlatformOpenUrlResult PlatformApplication::open_url(std::string) {
+  return PlatformOpenUrlResult{
+      .supported = false,
+      .backend = "unsupported",
+      .error_message = "open URL unsupported",
+  };
+}
+
 void cgpui_platform_anchor() {}
 } // namespace cgpui

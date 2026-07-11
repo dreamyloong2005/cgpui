@@ -406,6 +406,13 @@ target("phase_f_native_message_dialog_structure_test")
     add_files("tests/architecture/phase_f_native_message_dialog_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_native_open_url_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_native_open_url_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -684,6 +691,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs, "src/platform/win32")
         add_syslinks("user32")
+        add_tests("default")
+
+    target("win32_open_url_plan_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_open_url_plan_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs, "src/platform/win32")
+        add_syslinks("shell32")
         add_tests("default")
 
     target("win32_ole_text_data_object_test")

@@ -1080,10 +1080,13 @@ Windows/Linux core API is stable enough for parity work.
 - Completed: Phase F Step 590 adds a public native message-dialog platform service, maps Win32 kinds/buttons/responses through a focused MessageBoxW leaf, and reports explicit unsupported results on Wayland and default backends. Step 591 native open-URL production behavior is next.
 - Step 590 evidence: non-interactive Win32 tests verify question/yes-no flags
   and native response mapping while focused platform sources own presentation.
-- In progress: Step 591 native open-URL production behavior.
-- Step 591 plan: add a result-bearing platform open-URL service, implement
-  Win32 ShellExecuteW in a focused leaf, and define explicit Wayland/default
-  unsupported behavior before runtime adapters.
+- Completed: Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.
+- Step 591 evidence: focused Windows tests verify UTF-8 URL planning, empty/NUL
+  rejection, and the documented ShellExecute success threshold.
+- In progress: Step 592 quit/reopen lifecycle production behavior.
+- Step 592 plan: audit existing quit semantics, add explicit reopen lifecycle
+  state/callback behavior without platform UI injection, and test Win32 and
+  Wayland event-loop conventions.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

@@ -1,5 +1,6 @@
 #include "win32_window_factory_internal.hpp"
 #include "win32_message_dialog_internal.hpp"
+#include "win32_open_url_internal.hpp"
 
 #include <memory>
 #include <utility>
@@ -91,6 +92,10 @@ class Win32Application final : public PlatformApplication {
   NativeMessageDialogResult show_native_message_dialog(
       NativeMessageDialogOptions options) override {
     return show_win32_native_message_dialog(options);
+  }
+
+  PlatformOpenUrlResult open_url(std::string url) override {
+    return win32_open_url(url);
   }
 
   void quit() override {

@@ -20925,6 +20925,23 @@
   handoff guards, and `git diff --check` pass. `.vscode/` remains unrelated
   and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 591 Native Open URL
+
+- Started from committed Step 590 at `3f26efe1`; only unrelated untracked
+  `.vscode/` remains.
+- Added a result-bearing platform open-URL service, focused Win32
+  `ShellExecuteW` implementation, and explicit Wayland/default unsupported
+  results with non-interactive plan/return-code coverage.
+- Win32 URL plan/return-code and public-result compilation regressions pass
+  2/2. Added the Step 591 source/behavior/structure/ledger guard.
+- The Step 591 structure guard reached the intended five-document RED at
+  child exit 8.
+- Final Windows open-URL/public-header/source/structure/ledger verification
+  passes 10/10. Final WSL shared rebuild and gate passes 9/9.
+- JSON parsing, five-document unique phrase, forty Step 592 structure handoff
+  guards, and `git diff --check` pass. `.vscode/` remains unrelated and
+  untracked; WSL full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

@@ -69,6 +69,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_native_menu_command.cpp",
       "src/platform/win32/win32_native.cpp",
       "src/platform/win32/win32_native_menu_tree.cpp",
+      "src/platform/win32/win32_open_url_internal.hpp",
+      "src/platform/win32/win32_open_url.cpp",
       "src/platform/win32/win32_ole_drop_target.cpp",
       "src/platform/win32/win32_ole_drop_source.cpp",
       "src/platform/win32/win32_pointer_button_internal.hpp",

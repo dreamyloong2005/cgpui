@@ -6,6 +6,7 @@
 #include "cgpui/platform/platform_font_discovery.hpp"
 #include "cgpui/platform/platform_native_menu.hpp"
 #include "cgpui/platform/platform_message_dialog.hpp"
+#include "cgpui/platform/platform_open_url.hpp"
 #include "cgpui/platform/platform_window.hpp"
 
 #include <memory>
@@ -36,6 +37,7 @@ class PlatformApplication {
       NativeFileDialogOptions options);
   virtual NativeMessageDialogResult show_native_message_dialog(
       NativeMessageDialogOptions options);
+  virtual PlatformOpenUrlResult open_url(std::string url);
 
   virtual int run() = 0;
   virtual void quit() = 0;

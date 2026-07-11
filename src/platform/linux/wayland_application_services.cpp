@@ -27,4 +27,12 @@ NativeMessageDialogResult WaylandApplication::show_native_message_dialog(
   };
 }
 
+PlatformOpenUrlResult WaylandApplication::open_url(std::string) {
+  return PlatformOpenUrlResult{
+      .supported = false,
+      .backend = "wayland",
+      .error_message = "open URL unsupported by wayland",
+  };
+}
+
 } // namespace cgpui

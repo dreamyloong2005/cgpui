@@ -2483,7 +2483,21 @@
       "xmake.lua"
     ],
     "phase_f_step_590_remaining_gap": "Step 591 native open-URL production behavior",
-    "phase_f_current_handoff": "Step 591 native open-URL production behavior"
+    "phase_f_step_591_surface": "Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.",
+    "phase_f_step_591_sources": [
+      "include/cgpui/platform/platform_open_url.hpp",
+      "include/cgpui/platform/platform_application.hpp",
+      "src/platform/empty.cpp",
+      "src/platform/linux/wayland_application_services.cpp",
+      "src/platform/win32/win32_open_url_internal.hpp",
+      "src/platform/win32/win32_open_url.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "tests/platform/win32_open_url_plan_test.cpp",
+      "tests/architecture/phase_f_native_open_url_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_591_remaining_gap": "Step 592 quit/reopen lifecycle production behavior",
+    "phase_f_current_handoff": "Step 592 quit/reopen lifecycle production behavior"
   },
   "categories": [
     "application_and_app_context",

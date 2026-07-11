@@ -10471,3 +10471,11 @@
 - Win32 presentation belongs in a focused `MessageBoxW` leaf with pure flag
   and response mapping; Wayland/default remain explicit unsupported backends.
 - Phase F Step 590 adds a public native message-dialog platform service, maps Win32 kinds/buttons/responses through a focused MessageBoxW leaf, and reports explicit unsupported results on Wayland and default backends. Step 591 native open-URL production behavior is next.
+
+## 2026-07-12 Phase F Step 591 Native Open URL
+
+- No open-URL result surface exists. A small platform result should distinguish
+  backend support from successful launch and preserve an error message.
+- Win32 ownership belongs in a focused `ShellExecuteW` leaf with pure URL and
+  return-code helpers; Wayland/default remain explicitly unsupported here.
+- Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.
