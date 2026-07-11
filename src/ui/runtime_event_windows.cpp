@@ -50,7 +50,7 @@ void WindowRuntime::handle_native_additional_window_event(
     WindowRuntimeId runtime_id,
     const PlatformEvent& event) {
   WindowRuntimeRecord* record = find_window_runtime_record(runtime_id);
-  if (record == nullptr) {
+  if (record == nullptr || !record->active) {
     return;
   }
   if (handle_native_menu_command_event(event, record->root_view_id)) {

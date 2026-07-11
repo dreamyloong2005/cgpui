@@ -1095,10 +1095,14 @@ Windows/Linux core API is stable enough for parity work.
 - Step 594 evidence: the audit-only closeout aggregates all seven focused
   structure guards, default/Wayland unsupported behavior, Result state, the
   bounded diagnostic stream, and registered build ownership.
-- In progress: Step 595 multi-window event-loop ownership production behavior.
-- Step 595 plan: audit root/additional window event-loop ownership and make
-  native event routing and cleanup explicit without duplicating per-backend
-  orchestration in broad runtime or platform entry files.
+- Completed: Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.
+- Step 595 evidence: the focused callback-lifetime test proves close detaches
+  the record immediately, requests wakeup, avoids callback-stack destruction,
+  and reclaims the wrapper on the later root wakeup.
+- In progress: Step 596 multi-window redraw and resize isolation production behavior.
+- Step 596 plan: isolate per-window framebuffer, viewport, scale, redraw, and
+  renderer resize state so additional-window events cannot mutate root-window
+  runtime geometry or scheduling state.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1116,6 +1120,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 595 `rg` command passed a PowerShell wildcard path directly and Windows rejected it | Step 595 multi-window test inventory | Search the concrete `tests/ui` directory and filter filenames/results with `rg` instead of shell glob syntax |
 | Step 594 final audit treated silent `rg -q` output as a PowerShell boolean and falsely reported the completed band missing | Step 594 pre-commit audit | Evaluate `rg -q` through `$LASTEXITCODE` instead of its intentionally empty stdout |
 | Step 594 audit guard exited 3 because it assumed the default file-dialog result carried an error string | Step 594 audit RED | Freeze the actual default contract: unsupported result/backend for file dialogs, explicit error strings for message, URL, and reopen |
 | Step 594 audit RED configure/test chain hit the recurring Ninja package filelock | Step 594 audit RED | Keep configure and registered target runs separated for subsequent new audit targets |

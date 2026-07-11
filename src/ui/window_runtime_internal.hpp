@@ -44,6 +44,7 @@ void apply_focused_text_ime_placement();
 void record_platform_diagnostic(PlatformDiagnosticEvent event);
 void fail_and_quit(Error error);
 void activate_native_window_for_record(WindowRuntimeRecord& record), activate_pending_native_windows();
+void collect_retired_native_windows();
 [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor, std::string_view empty_renderer_message);
 [[nodiscard]] Result<void> try_draw_frame_for_record(WindowRuntimeRecord& record, View& view);
 #include "runtime_static_rendering_internal.hpp"
@@ -245,7 +246,7 @@ std::vector<AppOpenedWindow> app_opened_windows_;
 WindowRuntimeId root_window_runtime_id_{1};
 std::uint64_t next_window_runtime_id_ = 2;
 std::vector<WindowRuntimeRecord> window_runtime_records_;
-std::vector<std::unique_ptr<PlatformWindow>> native_additional_windows_;
+#include "runtime_window_ownership_state_internal.hpp"
 #include "runtime_platform_service_state_internal.hpp"
 Theme app_theme_;
 std::unordered_map<std::uint64_t, Theme> window_themes_;

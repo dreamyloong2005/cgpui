@@ -99,6 +99,7 @@ int WindowRuntime::run(
   }
 
   const int run_result = application_.run();
+  collect_retired_native_windows();
   deactivate_native_additional_windows();
   if (WindowRuntimeRecord* root_record =
           find_window_runtime_record(root_window_runtime_id_);

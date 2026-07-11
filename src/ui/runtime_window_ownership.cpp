@@ -12,4 +12,8 @@ void WindowRuntime::activate_pending_native_windows() {
   }
 }
 
+void WindowRuntime::collect_retired_native_windows() {
+  retired_native_windows_.clear();
+}
+
 } // namespace cgpui

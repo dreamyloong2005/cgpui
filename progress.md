@@ -21014,6 +21014,32 @@
   pass. `.vscode/` remains unrelated and untracked; WSL full debug remains
   batched.
 
+## 2026-07-12 Phase F Step 595 Multi-Window Event-Loop Ownership
+
+- Started from committed Step 594 at `6113f153`; only unrelated untracked
+  `.vscode/` remains.
+- A focused RED proved additional native wrappers were destroyed while their
+  close callback was still active.
+- Added a two-entry private ownership-state leaf, moved closed wrappers to a
+  retired queue, requested a platform wakeup, reclaimed on the later root
+  wakeup or `application_.run()` return, and ignored inactive late events
+  before menu routing.
+- The new callback-lifetime test plus `app_runner_test`, child ownership, and
+  UI source structure pass 4/4.
+- Added a focused structure guard for retired ownership, safe collection
+  points, inactive-event ordering, line budgets, and build inventory; it
+  reached the intended five-document RED at child exit 9.
+- Synchronized the exact Step 595 completion phrase across all five authority
+  documents and advanced forty-three historical handoff guards to Step 596;
+  the new ownership guard brings the total to forty-four.
+- Final Windows callback-lifetime/app-runner/child-ownership/structure/ledger
+  verification passes 7/7. After the shared UI rebuild, final WSL focused
+  verification passes the same 7/7 targets.
+- JSON parsing, five-document unique phrase, zero stale Step 595 dynamic
+  handoffs, forty-four Step 596 structure guards, focused line budgets, and
+  `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
+  full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

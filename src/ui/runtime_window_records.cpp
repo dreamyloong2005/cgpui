@@ -48,14 +48,16 @@ void WindowRuntime::cleanup_closed_additional_window(
   const PlatformWindow* window = record.window;
 
   if (window != nullptr) {
-    native_additional_windows_.erase(
-        std::remove_if(
-            native_additional_windows_.begin(),
-            native_additional_windows_.end(),
-            [window](const std::unique_ptr<PlatformWindow>& owned_window) {
-              return owned_window.get() == window;
-            }),
-        native_additional_windows_.end());
+    const auto owned_window = std::find_if(
+        native_additional_windows_.begin(),
+        native_additional_windows_.end(),
+        [window](const std::unique_ptr<PlatformWindow>& owned) {
+          return owned.get() == window;
+        });
+    if (owned_window != native_additional_windows_.end()) {
+      retired_native_windows_.push_back(std::move(*owned_window));
+      native_additional_windows_.erase(owned_window);
+    }
   }
 
   if (record.owns_root_view && root_view_id.value != 0) {
@@ -70,6 +72,7 @@ void WindowRuntime::cleanup_closed_additional_window(
   record.owns_window = false;
   record.owns_renderer = false;
   record.owns_root_view = false;
+  request_platform_wakeup();
 }
 
 void WindowRuntime::remove_subscriptions_for_view(ViewId view_id) {
@@ -97,6 +100,7 @@ void WindowRuntime::deactivate_native_additional_windows() {
     record.active = false;
   }
   native_additional_windows_.clear();
+  retired_native_windows_.clear();
 }
 
 WindowRuntimeId WindowRuntime::allocate_window_runtime_id() {

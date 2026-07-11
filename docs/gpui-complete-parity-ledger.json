@@ -2537,7 +2537,22 @@
       "xmake.lua"
     ],
     "phase_f_step_594_remaining_gap": "Step 595 multi-window event-loop ownership production behavior",
-    "phase_f_current_handoff": "Step 595 multi-window event-loop ownership production behavior"
+    "phase_f_step_595_surface": "Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.",
+    "phase_f_step_595_sources": [
+      "src/ui/runtime_window_ownership_state_internal.hpp",
+      "src/ui/window_runtime_internal.hpp",
+      "src/ui/runtime_window_ownership.cpp",
+      "src/ui/runtime_window_records.cpp",
+      "src/ui/runtime_event_windows.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "src/ui/runtime_run.cpp",
+      "tests/ui/window_runtime_event_loop_ownership_test.cpp",
+      "tests/architecture/phase_f_multi_window_event_loop_ownership_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_595_remaining_gap": "Step 596 multi-window redraw and resize isolation production behavior",
+    "phase_f_current_handoff": "Step 596 multi-window redraw and resize isolation production behavior"
   },
   "categories": [
     "application_and_app_context",

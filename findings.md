@@ -10527,3 +10527,21 @@
   open/save, directory selection, message dialogs, URL opening, reopen, and
   runtime Result/diagnostic policy. The closeout remains audit-only.
 - Phase F Step 594 audits and closes the Steps 587-593 dialogs and platform-services band, freezing Win32 file/directory/message/URL behavior, shared reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior. Step 595 multi-window event-loop ownership production behavior is next.
+
+## 2026-07-12 Phase F Step 595 Multi-Window Event-Loop Ownership
+
+- Additional native-window close currently calls
+  `cleanup_closed_additional_window` from the window's own platform callback,
+  and that function immediately erases the owning `unique_ptr`. A real backend
+  can therefore destroy the window object while its callback/member stack is
+  still unwinding.
+- Closed additional windows need a retired ownership queue: detach their
+  runtime record immediately, but defer actual destruction until a later
+  active root/additional event or until `application_.run()` returns.
+- Additional callbacks must reject inactive records before menu or ordinary
+  event routing so late events from a retired native window cannot dispatch.
+- The existing platform wakeup is the correct reclamation boundary: move the
+  closed native wrapper to retired storage, request a wakeup, and collect at
+  the beginning of the later root event after the close callback has returned.
+  `run()` return remains the fallback collection point.
+- Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.

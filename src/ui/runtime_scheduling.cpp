@@ -96,6 +96,7 @@ void WindowRuntime::request_platform_wakeup() {
 }
 
 void WindowRuntime::handle_wakeup() {
+  collect_retired_native_windows();
   if (window_ == nullptr || renderer_ == nullptr || should_quit_) {
     return;
   }

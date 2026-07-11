@@ -109,7 +109,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 595 multi-window event-loop ownership")) {
+                "\"phase_f_current_handoff\": \"Step 596 multi-window redraw and resize isolation")) {
     return 8;
   }
   return 0;
