@@ -33,8 +33,7 @@ void WaylandApplication::handle_pointer_leave(
     WaylandWindow* window = app->pointer_window_;
     app->pointer_window_ = nullptr;
     app->pointer_enter_serial_ = 0;
-    app->pending_scroll_delta_ = {};
-    app->pointer_scroll_pending_ = false;
+    app->pointer_scroll_frame_ = {};
     wayland_window_pointer_exited(*window, app->pointer_position_);
   }
 }

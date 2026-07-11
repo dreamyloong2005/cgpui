@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 558 Wayland pointer axis")) {
+                "\"phase_f_current_handoff\": \"Step 559 Wayland fractional")) {
     return 11;
   }
   return 0;

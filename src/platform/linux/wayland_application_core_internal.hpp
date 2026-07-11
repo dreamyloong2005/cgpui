@@ -1,6 +1,7 @@
 #pragma once
 
 #include "wayland_internal.hpp"
+#include "wayland_pointer_scroll_frame_internal.hpp"
 
 namespace cgpui {
 
@@ -55,10 +56,9 @@ class WaylandApplication final : public PlatformApplication {
   WaylandWindow* keyboard_window_ = nullptr;
   int wakeup_pipe_[2] = {-1, -1};
   Point pointer_position_{};
-  Point pending_scroll_delta_{};
+  WaylandPointerScrollFrameState pointer_scroll_frame_;
   std::string initialization_error_;
   bool running_ = true;
-  bool pointer_scroll_pending_ = false;
   WaylandCursorThemeLoadStatus cursor_theme_status_ =
       WaylandCursorThemeLoadStatus::unavailable;
   WaylandCursorThemeState cursor_theme_state_;

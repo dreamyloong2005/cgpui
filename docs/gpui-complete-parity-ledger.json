@@ -2003,7 +2003,30 @@
       "xmake.lua"
     ],
     "phase_f_step_557_remaining_gap": "Step 558 Wayland pointer axis and frame production behavior",
-    "phase_f_current_handoff": "Step 558 Wayland pointer axis and frame production behavior"
+    "phase_f_step_558_surface": "Phase F Step 558 aggregates Wayland axis frames with source-aware precision, high-resolution value120 metadata, stop-only cleanup, and v9 pointer negotiation. Step 559 Wayland fractional scale production behavior is next.",
+    "phase_f_step_558_sources": [
+      "src/platform/linux/wayland_pointer_scroll_frame_internal.hpp",
+      "src/platform/linux/wayland_pointer_scroll_frame.cpp",
+      "src/platform/linux/wayland_application_core_internal.hpp",
+      "src/platform/linux/wayland_application_pointer_scroll.cpp",
+      "src/platform/linux/wayland_registry.cpp",
+      "src/platform/linux/wayland_application_pointer.cpp",
+      "src/platform/linux/wayland_application_seat.cpp",
+      "src/platform/linux/wayland_application_window_registry.cpp",
+      "src/platform/linux/wayland_window_api.hpp",
+      "src/platform/linux/wayland_window_bridge.cpp",
+      "src/platform/linux/wayland_window_internal.hpp",
+      "src/platform/linux/wayland_window_input_events.cpp",
+      "tests/platform/wayland_test_compositor.hpp",
+      "tests/platform/wayland_test_compositor.cpp",
+      "tests/platform/wayland_pointer_axis_frame_test.cpp",
+      "tests/architecture/phase_f_wayland_pointer_axis_frame_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_558_remaining_gap": "Step 559 Wayland fractional scale production behavior",
+    "phase_f_current_handoff": "Step 559 Wayland fractional scale production behavior"
   },
   "categories": [
     "application_and_app_context",

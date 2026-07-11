@@ -33,6 +33,18 @@ struct WaylandTextInputClientState {
   bool enabled = false;
 };
 
+struct WaylandPointerAxisFrame {
+  float delta_x = 0.0F;
+  float delta_y = 0.0F;
+  std::int32_t source = -1;
+  std::int32_t value120_x = 0;
+  std::int32_t value120_y = 0;
+  std::int32_t discrete_x = 0;
+  std::int32_t discrete_y = 0;
+  bool stop_x = false;
+  bool stop_y = false;
+};
+
 struct WaylandConfigureState {
   std::int32_t width = 0;
   std::int32_t height = 0;
@@ -73,6 +85,7 @@ class WaylandTestCompositor {
   void request_pointer_leave();
   void request_pointer_button(std::uint32_t button, bool pressed);
   void request_pointer_scroll(float delta_x, float delta_y);
+  void request_pointer_axis_frame(WaylandPointerAxisFrame frame);
   void request_drag_enter(std::int32_t x, std::int32_t y);
   void request_drag_motion(std::int32_t x, std::int32_t y);
   void request_drag_drop();

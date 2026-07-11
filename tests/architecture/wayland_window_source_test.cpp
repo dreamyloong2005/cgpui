@@ -160,6 +160,8 @@ std::string read_wayland_source() {
       "src/platform/linux/wayland_application_keyboard.cpp",
       "src/platform/linux/wayland_application_pointer.cpp",
       "src/platform/linux/wayland_application_pointer_scroll.cpp",
+      "src/platform/linux/wayland_pointer_scroll_frame_internal.hpp",
+      "src/platform/linux/wayland_pointer_scroll_frame.cpp",
       "src/platform/linux/wayland_application_cursor.cpp",
       "src/platform/linux/wayland_application_windows.cpp",
       "src/platform/linux/wayland_application_window_registry.cpp",
@@ -1064,7 +1066,7 @@ int main(int argc, char** argv) {
       !contains(wayland_application_pointer,
                 "wayland_window_pointer_exited(") ||
       !contains(wayland_application_pointer, "pointer_enter_serial_ = 0") ||
-      !contains(wayland_application_pointer, "pending_scroll_delta_ = {}") ||
+      !contains(wayland_application_pointer, "pointer_scroll_frame_ = {}") ||
       contains(wayland_application_pointer,
                "WaylandApplication::handle_pointer_axis(") ||
       contains(wayland_application_pointer,
@@ -1080,6 +1082,7 @@ int main(int argc, char** argv) {
                 "WaylandApplication::dispatch_pointer_scroll(") ||
       !contains(wayland_application_pointer_scroll,
                 "wayland_window_pointer_scrolled(") ||
+      !contains(wayland_application_pointer_scroll, "frame.precise") ||
       contains(wayland_application_pointer_scroll,
                "WaylandApplication::handle_pointer_button(")) {
     return 112;

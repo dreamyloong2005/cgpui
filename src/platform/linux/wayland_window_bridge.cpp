@@ -43,8 +43,9 @@ void wayland_window_pointer_button(
 void wayland_window_pointer_scrolled(
     WaylandWindow& window,
     Point delta,
-    Point position) {
-  window.pointer_scrolled(delta, position);
+    Point position,
+    bool precise) {
+  window.pointer_scrolled(delta, position, precise);
 }
 
 void wayland_window_drag_entered(

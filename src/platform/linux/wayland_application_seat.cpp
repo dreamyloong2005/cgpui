@@ -58,8 +58,7 @@ void WaylandApplication::handle_seat_capabilities(
     app->pointer_window_ = nullptr;
     app->pointer_position_ = {};
     app->pointer_enter_serial_ = 0;
-    app->pending_scroll_delta_ = {};
-    app->pointer_scroll_pending_ = false;
+    app->pointer_scroll_frame_ = {};
   }
 
   if (capabilities != 0U) {

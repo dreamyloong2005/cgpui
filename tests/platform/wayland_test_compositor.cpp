@@ -392,8 +392,7 @@ struct WaylandTestCompositor::State {
   };
 
   struct PointerScrollRequest {
-    float delta_x = 0.0F;
-    float delta_y = 0.0F;
+    WaylandPointerAxisFrame frame;
   };
 
   struct KeyboardKeyRequest {
@@ -501,7 +500,7 @@ struct WaylandTestCompositor::State {
     seat_global = wl_global_create(
         display,
         &wl_seat_interface,
-        5,
+        9,
         this,
         &State::bind_seat);
     output_global = wl_global_create(
@@ -649,12 +648,16 @@ struct WaylandTestCompositor::State {
   }
 
   void request_pointer_scroll(float delta_x, float delta_y) {
+    request_pointer_axis_frame(WaylandPointerAxisFrame{
+        .delta_x = delta_x,
+        .delta_y = delta_y,
+    });
+  }
+
+  void request_pointer_axis_frame(WaylandPointerAxisFrame frame) {
     {
       std::lock_guard lock(pointer_scroll_mutex);
-      pointer_scrolls.push_back(PointerScrollRequest{
-          .delta_x = delta_x,
-          .delta_y = delta_y,
-      });
+      pointer_scrolls.push_back(PointerScrollRequest{.frame = frame});
     }
     pointer_scroll_pending.store(true);
   }
@@ -948,7 +951,7 @@ struct WaylandTestCompositor::State {
     auto* resource = wl_resource_create(
         client,
         &wl_seat_interface,
-        std::min<std::uint32_t>(version, 5),
+        std::min<std::uint32_t>(version, 9),
         id);
     compositor->seat_resource = resource;
     wl_resource_set_implementation(
@@ -1725,7 +1728,7 @@ void WaylandTestCompositor::State::seat_get_pointer(
   auto* pointer = wl_resource_create(
       client,
       &wl_pointer_interface,
-      std::min<std::uint32_t>(wl_resource_get_version(resource), 5),
+      std::min<std::uint32_t>(wl_resource_get_version(resource), 9),
       id);
   compositor->pointer_resource = pointer;
   compositor->pointer_bound.store(true);
@@ -2259,21 +2262,57 @@ void WaylandTestCompositor::State::dispatch_pending_pointer_scroll() {
         wl_fixed_from_int(pointer_y.load()));
     pointer_entered = true;
   }
-  if (request.delta_y != 0.0F) {
+  const WaylandPointerAxisFrame& frame = request.frame;
+  const std::uint32_t version = wl_resource_get_version(pointer_resource);
+  if (frame.source >= 0 && version >= WL_POINTER_AXIS_SOURCE_SINCE_VERSION) {
+    wl_pointer_send_axis_source(
+        pointer_resource, static_cast<std::uint32_t>(frame.source));
+  }
+  if (frame.delta_y != 0.0F) {
     wl_pointer_send_axis(
         pointer_resource,
         pointer_time,
         WL_POINTER_AXIS_VERTICAL_SCROLL,
-        wl_fixed_from_double(static_cast<double>(request.delta_y)));
+        wl_fixed_from_double(static_cast<double>(frame.delta_y)));
   }
-  if (request.delta_x != 0.0F) {
+  if (frame.delta_x != 0.0F) {
     wl_pointer_send_axis(
         pointer_resource,
         pointer_time,
         WL_POINTER_AXIS_HORIZONTAL_SCROLL,
-        wl_fixed_from_double(static_cast<double>(request.delta_x)));
+        wl_fixed_from_double(static_cast<double>(frame.delta_x)));
   }
-  if (wl_resource_get_version(pointer_resource) >= WL_POINTER_FRAME_SINCE_VERSION) {
+  if (version >= WL_POINTER_AXIS_DISCRETE_SINCE_VERSION) {
+    if (frame.discrete_y != 0) {
+      wl_pointer_send_axis_discrete(
+          pointer_resource, WL_POINTER_AXIS_VERTICAL_SCROLL, frame.discrete_y);
+    }
+    if (frame.discrete_x != 0) {
+      wl_pointer_send_axis_discrete(
+          pointer_resource, WL_POINTER_AXIS_HORIZONTAL_SCROLL, frame.discrete_x);
+    }
+  }
+  if (version >= WL_POINTER_AXIS_VALUE120_SINCE_VERSION) {
+    if (frame.value120_y != 0) {
+      wl_pointer_send_axis_value120(
+          pointer_resource, WL_POINTER_AXIS_VERTICAL_SCROLL, frame.value120_y);
+    }
+    if (frame.value120_x != 0) {
+      wl_pointer_send_axis_value120(
+          pointer_resource, WL_POINTER_AXIS_HORIZONTAL_SCROLL, frame.value120_x);
+    }
+  }
+  if (version >= WL_POINTER_AXIS_STOP_SINCE_VERSION) {
+    if (frame.stop_y) {
+      wl_pointer_send_axis_stop(
+          pointer_resource, pointer_time, WL_POINTER_AXIS_VERTICAL_SCROLL);
+    }
+    if (frame.stop_x) {
+      wl_pointer_send_axis_stop(
+          pointer_resource, pointer_time, WL_POINTER_AXIS_HORIZONTAL_SCROLL);
+    }
+  }
+  if (version >= WL_POINTER_FRAME_SINCE_VERSION) {
     wl_pointer_send_frame(pointer_resource);
   }
   ++pointer_time;
@@ -3104,6 +3143,11 @@ void WaylandTestCompositor::request_pointer_button(
 
 void WaylandTestCompositor::request_pointer_scroll(float delta_x, float delta_y) {
   state_->request_pointer_scroll(delta_x, delta_y);
+}
+
+void WaylandTestCompositor::request_pointer_axis_frame(
+    WaylandPointerAxisFrame frame) {
+  state_->request_pointer_axis_frame(frame);
 }
 
 void WaylandTestCompositor::request_drag_enter(std::int32_t x, std::int32_t y) {

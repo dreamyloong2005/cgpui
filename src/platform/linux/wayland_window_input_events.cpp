@@ -21,8 +21,9 @@ void WaylandWindow::pointer_button(
   });
 }
 
-void WaylandWindow::pointer_scrolled(Point delta, Point position) {
-  callback_(PointerScrolled{.delta = delta, .position = position});
+void WaylandWindow::pointer_scrolled(Point delta, Point position, bool precise) {
+  callback_(PointerScrolled{
+      .delta = delta, .position = position, .precise = precise});
 }
 
 void WaylandWindow::keyboard_key(

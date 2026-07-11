@@ -946,7 +946,11 @@ Windows/Linux core API is stable enough for parity work.
   focused runtime test prove initial coordinate publication, last-position exit
   records, hover clearing, and default-cursor restoration through the public
   event surface.
-- In progress: Step 558 Wayland pointer axis and frame production behavior.
+- Completed: Phase F Step 558 aggregates Wayland axis frames with source-aware precision, high-resolution value120 metadata, stop-only cleanup, and v9 pointer negotiation. Step 559 Wayland fractional scale production behavior is next.
+- Step 558 evidence: a real v9 compositor sequence verifies legacy axis-only,
+  fractional wheel value120, finger precision, whole-detent wheel, diagonal
+  aggregation, and stop-only cleanup without synthetic zero-delta events.
+- In progress: Step 559 Wayland fractional scale production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

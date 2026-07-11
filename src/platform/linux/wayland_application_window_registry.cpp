@@ -77,8 +77,7 @@ void WaylandApplication::unregister_window(WaylandWindow* window) {
   std::erase(windows_, window);
   if (pointer_window_ == window) {
     pointer_window_ = nullptr;
-    pending_scroll_delta_ = {};
-    pointer_scroll_pending_ = false;
+    pointer_scroll_frame_ = {};
   }
   if (keyboard_window_ == window) {
     keyboard_window_ = nullptr;

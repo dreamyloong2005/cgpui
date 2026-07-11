@@ -21141,3 +21141,49 @@
 - Final readability cleanup keeps the two pointer declarations on separate
   lines while removing one unnecessary include separator; both affected source
   guards pass again on Windows 2/2 and WSL 2/2 at exactly 120/120 lines.
+
+## 2026-07-11 Phase F Step 558 Wayland Pointer Axis/Frame
+
+- Started from committed Step 557 at `6f2e53d6`; only unrelated untracked
+  `.vscode/` remains.
+- Audited the focused Wayland scroll callback owner, public precise flag,
+  existing compositor behavior, Win32 logical-step convention, and Wayland
+  protocol comments for source, stop, discrete, value120, and frame semantics.
+- The first Win32 comparison lookup used the obsolete `src/platform/windows`
+  path; `rg --files` located the established owner under `src/platform/win32`.
+- Chose same-frame private metadata over a public event expansion: preserve
+  axis distance, derive precision from source/value120, consume deprecated
+  discrete only as fallback metadata, and treat stop-only frames as cleanup
+  without emitting zero-delta scroll events.
+- Added the focused private frame-state leaf/implementation, routed all axis
+  metadata callbacks through it, reset the state on pointer lifecycle loss,
+  propagated precise through the Wayland window bridge, and added a real
+  multi-frame compositor test.
+- The existing axis/frame regression passed, while the new test exited 7 on
+  fractional wheel precision. Root cause was the production and compositor
+  `wl_seat` v5 cap, which made the registered v8 value120 callback unreachable;
+  raised compatible negotiation to `min(server_version, 9)`.
+- Diagnostic event output showed only the fractional wheel frame was still
+  non-precise after the seat change. The compositor's `seat_get_pointer` child
+  resource had a second v5 cap; raised only that pointer cap to v9.
+- The complete real Wayland axis/frame test and the existing scroll regression
+  now pass 2/2. Removed the temporary per-event diagnostic output before
+  structure and authority synchronization.
+- Added the Step 558 structure guard and advanced the Wayland/platform source
+  inventories for the focused frame-state module. The guard reached its
+  intended five-document RED at child exit 7.
+- Synchronized the exact Step 558 completion sentence across roadmap,
+  Markdown/JSON ledger, task plan, and findings; Step 559 Wayland fractional
+  scale production behavior is now the active handoff.
+- Final Windows cross-platform verification passes 10/10; final WSL focused
+  verification passes 12/12 across both real scroll behaviors, the new frame
+  guard, source inventories, advancing historical handoffs, and the ledger.
+- Preserved the prior unknown-axis behavior by refusing to mark unsupported
+  axis ids publishable, preventing a synthetic zero-delta frame.
+- The final helper change passes the real axis/frame behavior and Step 558
+  structure guard again on WSL 2/2. JSON parsing, five-document unique phrase,
+  line caps, and `git diff --check` pass.
+- One final stale-field search used Bash `|| exit 0` syntax in PowerShell;
+  reran it with PowerShell exit-code handling before staging.
+- One registry search used a PowerShell-escaped alternation that `rg` parsed as
+  an unclosed group; subsequent searches used fixed-string queries.

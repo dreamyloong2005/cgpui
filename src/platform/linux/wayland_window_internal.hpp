@@ -43,7 +43,7 @@ class WaylandWindow final : public PlatformWindow {
   void pointer_moved(Point position);
   void pointer_exited(Point position);
   void pointer_button(MouseButton button, bool pressed, Point position);
-  void pointer_scrolled(Point delta, Point position);
+  void pointer_scrolled(Point delta, Point position, bool precise);
   void drag_entered(
       Point position,
       DragDropPayload payload,

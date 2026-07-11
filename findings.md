@@ -9872,3 +9872,41 @@
   include retains the 120-line cap and keeps both declarations readable in the
   same focused private window boundary.
 - Phase F Step 557 publishes Wayland pointer enter coordinates immediately, delivers explicit leave with the last position, and clears runtime hover and cursor state. Step 558 Wayland pointer axis and frame production behavior is next.
+
+## 2026-07-11 Phase F Step 558 Wayland Pointer Axis/Frame Audit
+
+- Production currently accumulates vertical/horizontal `wl_pointer.axis`
+  values and publishes once at `wl_pointer.frame`, with an immediate fallback
+  for pointer protocol versions before frame support.
+- `axis_source`, `axis_stop`, `axis_discrete`, `axis_value120`, and relative
+  direction callbacks are currently no-ops. Consequently Wayland scroll events
+  never expose the existing public `PointerScrolled::precise` distinction and
+  high-resolution wheel metadata cannot affect frame output.
+- The existing compositor test sends only paired axis values plus frame and
+  verifies raw delta aggregation. Step 558 coverage must retain that compatible
+  path while adding source/value120/stop and multi-axis frame behavior.
+- Ownership should stay in the focused private
+  `wayland_application_pointer_scroll.cpp` module and compact application input
+  state; no broad Wayland application or runtime source needs to own protocol
+  scroll bookkeeping.
+- Wayland protocol defines `axis` as the scroll distance and `axis_value120` as
+  high-resolution wheel metadata sent in the same frame; value120 must not
+  replace or double-add the axis distance. One detent is 120, matching Win32's
+  public normalization to one logical step.
+- Precision mapping can therefore stay allocation-free and compatible:
+  finger/continuous sources are precise, wheel/wheel-tilt are precise only when
+  a same-frame value120 is not an integer multiple of 120, and legacy source-
+  absent axis-only frames retain the current non-precise behavior.
+- `axis_stop` is frame lifecycle metadata rather than a zero-delta scroll. It
+  should clear per-axis pending metadata at frame completion without publishing
+  a synthetic `PointerScrolled` event when no axis distance exists.
+- The first real frame test failed on the fractional wheel case because both
+  production registry binding and the test compositor capped `wl_seat` at v5.
+  That made v8 `axis_value120` unreachable despite the listener callback being
+  present. Step 558 must negotiate up to the generated protocol's v9 while
+  retaining `min(server_version, 9)` compatibility.
+- The v9 seat rerun still failed because the compositor's `seat_get_pointer`
+  independently capped the child `wl_pointer` resource at v5. Source events
+  (v5) arrived, but value120 (v8) did not. Raising that child-resource cap to
+  v9 completes the test protocol path; keyboard remains independently capped.
+- Phase F Step 558 aggregates Wayland axis frames with source-aware precision, high-resolution value120 metadata, stop-only cleanup, and v9 pointer negotiation. Step 559 Wayland fractional scale production behavior is next.

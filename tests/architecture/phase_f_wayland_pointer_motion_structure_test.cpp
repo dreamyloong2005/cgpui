@@ -81,7 +81,7 @@ int main() {
   if (!contains(application_pointer, "handle_pointer_enter(") ||
       !contains(application_pointer, "wayland_window_pointer_moved(") ||
       !contains(application_pointer, "pointer_enter_serial_ = 0") ||
-      !contains(application_pointer, "pending_scroll_delta_ = {}") ||
+      !contains(application_pointer, "pointer_scroll_frame_ = {}") ||
       !contains(application_pointer, "wayland_window_pointer_exited(")) {
     return 3;
   }
@@ -131,7 +131,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 558 Wayland")) {
+                "\"phase_f_current_handoff\": \"Step 559 Wayland")) {
     return 10;
   }
   return 0;

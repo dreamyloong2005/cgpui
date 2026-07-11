@@ -30,7 +30,7 @@ void wayland_bind_registry_global(
         registry,
         name,
         &wl_seat_interface,
-        std::min<std::uint32_t>(version, 5)));
+        std::min<std::uint32_t>(version, 9)));
     return;
   }
   if (interface_name == zxdg_decoration_manager_v1_interface.name) {
