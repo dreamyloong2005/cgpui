@@ -81,7 +81,7 @@ int main() {
     return 3;
   }
   if (line_count(keyboard_header) > 35 || line_count(decoder_header) > 20 ||
-      line_count(decoder) > 45 || line_count(proc) > 40 ||
+      line_count(decoder) > 45 || line_count(proc) > 50 ||
       line_count(behavior) > 95) {
     return 4;
   }
@@ -100,10 +100,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_549_remaining_gap\": \"Step 550 Win32")) {
     return 6;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 550 Win32")) {
-    return 7;
   }
   return 0;
 }

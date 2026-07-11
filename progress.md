@@ -20832,3 +20832,38 @@
 - Ledger JSON parsing, the exact Step 549 phrase appearing once in each of the
   five authority documents, focused line caps, public metadata-consumer review,
   and `git diff --check` pass. `.vscode/` remains unrelated and untracked.
+
+## 2026-07-11 Phase F Step 550 Win32 Dead Keys
+
+- Added RED behavior coverage for ordinary and system dead characters,
+  composed/direct committed characters, and focus-loss pending-state reset.
+- Added defaulted `TextInput::composed` metadata, a focused dead-key decoder,
+  pending state on `Win32Window`, and a focused window-text publication module.
+- Moved `Win32Window::text_input(...)` out of the broad window-events source.
+- Initial Windows behavior verification passes 3/3 across the new dead-key
+  target plus existing text-input and keyboard-key regressions.
+- Registered the focused modules in both source inventories and added the
+  Step 550 structure/documentation guard. Direct execution reached the intended
+  five-document RED gate at exit 5 before the completion surface was synced.
+- Synchronized the exact Step 550 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; Step 551 Win32 text-input
+  production behavior is now the active handoff.
+- The first expanded Windows gate passed 13/14: the historical Step 549 guard
+  retained a 40-line cap for the focused keyboard procedure after Step 550
+  added dead-key routing. Direct execution confirmed exit 4; its cap now
+  matches the Step 550 guard's 50-line boundary.
+- The first WSL xmake version probe omitted `--root` and was rejected by xmake's
+  root guard. Subsequent WSL commands retain the configured D-drive caches and
+  place `--root` after the xmake task as required.
+- Submission review aligned `WM_SYSDEADCHAR` with the existing system-key
+  policy: pending state is captured without publishing text, then the message
+  continues to `DefWindowProc` for native behavior.
+- Final Windows focused verification passes 14/14 across dead-key, text/key
+  input, runtime/modifier regressions, all four Win32 input structure guards,
+  source inventories, core headers, and the parity ledger.
+- Final WSL focused verification passes 11/11 across real Wayland keyboard,
+  runtime/modifier regressions, all four cross-platform Win32 input guards,
+  Wayland/platform source inventories, core headers, and the parity ledger.
+- Ledger JSON parsing, the exact Step 550 phrase appearing once in each of the
+  five authority documents, focused line caps, and `git diff --check` pass.
+  `.vscode/` remains unrelated and untracked; WSL full debug remains batched.

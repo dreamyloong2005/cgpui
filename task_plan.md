@@ -907,7 +907,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 549 evidence: the focused decoder owns key/system-key classification,
   scan code, repeat count/state, extended-key, system-message, and modifier
   snapshots; the window procedure now forwards `lParam` explicitly.
-- In progress: Step 550 Win32 dead-key production behavior.
+- Completed: Phase F Step 550 adds explicit Win32 dead/system-dead character suppression with pending composition state, composed TextInput metadata, and focus-loss reset through focused dead-key and window-text modules. Step 551 Win32 text-input production behavior is next.
+- Step 550 evidence: dead/system-dead messages update per-window pending state
+  without publishing text; the next committed character exposes defaulted
+  `TextInput::composed` metadata, and focus loss clears stale state.
+- In progress: Step 551 Win32 text-input production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -962,6 +966,8 @@ Windows/Linux core API is stable enough for parity work.
 | A combined Step 549 system-key preservation patch used stale structure-test context and was rejected atomically | Step 549 submission review | Read the exact guard/test snippets and reapply the system-key, behavior, and documentation changes with smaller contexts |
 | Synchronous Alt+F4 and `VK_MENU` system-key regressions entered native close/menu flows and blocked the no-message-loop test process | Step 549 system-key default behavior | Terminate only the task-owned test/xmake processes, keep production `DefWindowProc` fallthrough, and use extended `VK_INSERT` system messages for side-effect-free publication coverage |
 | The first Step 549 WSL aggregate returned only partial build output; direct confirmation found the new guard missing and the prior guard stale | Step 549 WSL verification | Build the Step 549 guard explicitly, then execute all ten built targets sequentially with explicit paths and source-root environment |
+| The first Step 550 Windows expanded gate passed 13/14 because the historical Step 549 guard still capped the focused keyboard procedure at 40 lines | Step 550 Windows expanded verification | Confirm child exit 4 and align the historical procedure cap to the Step 550 guard's still-focused 50-line limit |
+| The first Step 550 WSL xmake probe omitted the required root opt-in | Step 550 WSL environment probe | Keep the D-drive cache environment and pass `--root` after the xmake task for every WSL invocation |
 
 ## Errors Encountered During Phase E Resume
 

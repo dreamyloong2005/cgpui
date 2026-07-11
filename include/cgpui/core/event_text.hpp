@@ -12,6 +12,7 @@ namespace cgpui {
 struct TextInput {
   std::string text;
   KeyboardModifiers modifiers;
+  bool composed = false;
 };
 
 enum class ImeCompositionPhase {

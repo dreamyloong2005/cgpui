@@ -45,6 +45,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_drag_drop_payload.cpp",
       "src/platform/win32/win32_drag_drop_ole_payload.cpp",
       "src/platform/win32/win32_input_helpers.cpp",
+      "src/platform/win32/win32_dead_key_internal.hpp",
+      "src/platform/win32/win32_dead_key.cpp",
       "src/platform/win32/win32_keyboard_key_internal.hpp",
       "src/platform/win32/win32_keyboard_key.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
@@ -63,6 +65,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_size.cpp",
       "src/platform/win32/win32_window_drag_drop.cpp",
       "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_text.cpp",
       "src/platform/win32/win32_window_factory_internal.hpp",
       "src/platform/win32/win32_window_factory.cpp",
       "src/platform/win32/win32_window_ime.cpp",
@@ -346,6 +349,8 @@ int main() {
       read_source("src/platform/win32/win32_window_drag_drop.cpp");
   const std::string win32_window_events =
       read_source("src/platform/win32/win32_window_events.cpp");
+  const std::string win32_window_text =
+      read_source("src/platform/win32/win32_window_text.cpp");
   const std::string win32_window_ime =
       read_source("src/platform/win32/win32_window_ime.cpp");
   const std::string win32_window_ime_placement =
@@ -364,6 +369,8 @@ int main() {
       read_source("src/platform/win32/win32_pointer_scroll.cpp");
   const std::string win32_keyboard_key =
       read_source("src/platform/win32/win32_keyboard_key.cpp");
+  const std::string win32_dead_key =
+      read_source("src/platform/win32/win32_dead_key.cpp");
   const std::string win32_window_proc_keyboard =
       read_source("src/platform/win32/win32_window_proc_keyboard.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
@@ -380,13 +387,14 @@ int main() {
       win32_ole_drop_target.empty() || win32_window.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
       win32_window_drag_drop.empty() || win32_window_events.empty() ||
+      win32_window_text.empty() ||
       win32_window_ime.empty() || win32_window_ime_placement.empty() ||
       win32_window_proc.empty() ||
       win32_window_proc_drag.empty() ||
       win32_window_proc_lifecycle.empty() ||
       win32_window_proc_pointer.empty() ||
       win32_pointer_button.empty() || win32_pointer_scroll.empty() ||
-      win32_keyboard_key.empty() ||
+      win32_keyboard_key.empty() || win32_dead_key.empty() ||
       win32_window_proc_keyboard.empty()) {
     return 68;
   }
@@ -541,9 +549,13 @@ int main() {
       !contains(win32_window_events, "Win32Window::pointer_button(") ||
       !contains(win32_window_events, "Win32Window::pointer_scrolled(") ||
       !contains(win32_window_events, "Win32Window::key_event(") ||
-      !contains(win32_window_events, "Win32Window::text_input(") ||
+      contains(win32_window_events, "Win32Window::text_input(") ||
       !contains(win32_window_events, "Win32Window::drag_dropped(")) {
     return 77;
+  }
+  if (!contains(win32_window_text, "Win32Window::dead_key(") ||
+      !contains(win32_window_text, "Win32Window::text_input(")) {
+    return 94;
   }
   if (!contains(win32_window_ime, "Win32Window::ime_start_composition()") ||
       !contains(win32_window_ime, "Win32Window::ime_composition(") ||
@@ -570,6 +582,7 @@ int main() {
       line_count(win32_window_chrome) > 90 ||
       line_count(win32_window_size) > 80 ||
       line_count(win32_window_events) > 180 ||
+      line_count(win32_window_text) > 45 ||
       line_count(win32_window_ime) > 90 ||
       line_count(win32_window_ime_placement) > 90 ||
       line_count(win32_window_drag_drop) > 170) {
@@ -620,8 +633,11 @@ int main() {
       !contains(win32_pointer_scroll, "WM_MOUSEWHEEL") ||
       !contains(win32_pointer_scroll, "WM_MOUSEHWHEEL") ||
       !contains(win32_window_proc_keyboard, "decode_win32_keyboard_key(") ||
+      !contains(win32_window_proc_keyboard, "decode_win32_dead_key(") ||
       !contains(win32_keyboard_key, "WM_KEYDOWN") ||
       !contains(win32_keyboard_key, "WM_SYSKEYDOWN") ||
+      !contains(win32_dead_key, "WM_DEADCHAR") ||
+      !contains(win32_dead_key, "WM_SYSDEADCHAR") ||
       !contains(win32_window_proc_keyboard, "WM_CHAR")) {
     return 93;
   }

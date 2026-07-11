@@ -45,16 +45,6 @@ void Win32Window::key_event(KeyboardKey event) {
   callback_(std::move(event));
 }
 
-void Win32Window::text_input(WPARAM wparam) {
-  const wchar_t character = static_cast<wchar_t>(wparam);
-  auto text = utf8_from_utf16(std::wstring_view(&character, 1));
-  if (!text.empty()) {
-    callback_(TextInput{
-        .text = std::move(text),
-        .modifiers = current_modifiers()});
-  }
-}
-
 void Win32Window::activation_changed(bool active) {
   active_ = active;
   callback_(WindowActivated{.active = active});
@@ -62,6 +52,9 @@ void Win32Window::activation_changed(bool active) {
 
 void Win32Window::focus_changed(bool focused) {
   focused_ = focused;
+  if (!focused) {
+    pending_dead_key_ = 0;
+  }
   callback_(WindowFocused{.focused = focused});
 }
 

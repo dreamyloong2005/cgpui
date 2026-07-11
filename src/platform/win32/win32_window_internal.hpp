@@ -3,11 +3,9 @@
 #include "win32_internal.hpp"
 #include "win32_window_display_internal.hpp"
 #include "../platform_window_close_internal.hpp"
-
 #include <memory>
 #include <optional>
 #include <string_view>
-
 namespace cgpui {
 
 class Win32Window final
@@ -62,6 +60,7 @@ class Win32Window final
       LPARAM lparam) override;
   void pointer_scrolled(Point delta, bool precise, LPARAM lparam) override;
   void key_event(KeyboardKey event) override;
+  void dead_key(wchar_t character) override;
   void text_input(WPARAM wparam) override;
   void drag_entered(const Win32TestDragDropPayload* payload) override;
   void drag_updated(const Win32TestDragDropPayload* payload) override;
@@ -105,6 +104,7 @@ class Win32Window final
   Win32OleDropTargetRegistrationState ole_drop_target_registration_;
   Point last_ole_drag_position_{};
   DragDropPayload last_ole_drag_payload_;
+  wchar_t pending_dead_key_ = 0;
 };
 
 } // namespace cgpui

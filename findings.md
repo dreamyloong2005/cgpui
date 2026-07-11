@@ -9675,3 +9675,17 @@
 - System-key events must still reach `DefWindowProc` after publication so
   native behaviors such as Alt+F4 remain available despite the new metadata.
 - Phase F Step 549 adds real Win32 key and system-key decoding with scan-code, repeat, extended-key, and system-message metadata through a focused keyboard-key decoder. Step 550 Win32 dead-key production behavior is next.
+
+## 2026-07-11 Phase F Step 550 Win32 Dead-Key Audit
+
+- `WM_DEADCHAR` and `WM_SYSDEADCHAR` must update pending composition state
+  without publishing a committed `TextInput` event.
+- `WM_SYSDEADCHAR` still falls through to `DefWindowProc` after pending state is
+  captured, preserving native system-character behavior.
+- The next committed `WM_CHAR` can expose that it resulted from pending dead-key
+  composition through compatible defaulted `TextInput::composed` metadata.
+- Pending dead-key state belongs to the window text boundary and must be cleared
+  on focus loss so a later unrelated character is not mislabeled as composed.
+- The first Windows behavior verification passes 3/3 for dead-key behavior,
+  existing Win32 text input, and ordinary/system keyboard-key regression.
+- Phase F Step 550 adds explicit Win32 dead/system-dead character suppression with pending composition state, composed TextInput metadata, and focus-loss reset through focused dead-key and window-text modules. Step 551 Win32 text-input production behavior is next.

@@ -1851,7 +1851,24 @@
       "xmake.lua"
     ],
     "phase_f_step_549_remaining_gap": "Step 550 Win32 dead-key production behavior",
-    "phase_f_current_handoff": "Step 550 Win32 dead-key production behavior"
+    "phase_f_step_550_surface": "Phase F Step 550 adds explicit Win32 dead/system-dead character suppression with pending composition state, composed TextInput metadata, and focus-loss reset through focused dead-key and window-text modules. Step 551 Win32 text-input production behavior is next.",
+    "phase_f_step_550_sources": [
+      "include/cgpui/core/event_text.hpp",
+      "src/platform/win32/win32_dead_key_internal.hpp",
+      "src/platform/win32/win32_dead_key.cpp",
+      "src/platform/win32/win32_window_message_internal.hpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_window_proc_keyboard.cpp",
+      "src/platform/win32/win32_window_events.cpp",
+      "src/platform/win32/win32_window_text.cpp",
+      "tests/platform/win32_dead_key_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/phase_f_win32_dead_key_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_550_remaining_gap": "Step 551 Win32 text-input production behavior",
+    "phase_f_current_handoff": "Step 551 Win32 text-input production behavior"
   },
   "categories": [
     "application_and_app_context",
