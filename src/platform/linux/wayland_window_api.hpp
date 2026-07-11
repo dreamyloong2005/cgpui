@@ -28,12 +28,17 @@ using WaylandWindowImePlacementCallback = std::function<void(
     std::optional<ImeTextInputPlacement>)>;
 using WaylandOutputScaleLookup =
     std::function<std::int32_t(wl_output*)>;
+struct WaylandFractionalScaleGlobals {
+  wp_fractional_scale_manager_v1* manager = nullptr;
+  wp_viewporter* viewporter = nullptr;
+};
 
 Result<WaylandWindowPtr> create_wayland_window(
     wl_display* display,
     wl_compositor* compositor,
     xdg_wm_base* shell,
     zxdg_decoration_manager_v1* decoration_manager,
+    WaylandFractionalScaleGlobals fractional_scale,
     xdg_toplevel* parent,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,

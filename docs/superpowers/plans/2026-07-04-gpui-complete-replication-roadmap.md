@@ -1762,6 +1762,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 556 preserves depressed, latched, and locked Wayland modifiers plus the active layout group across XKB keymap reloads, with real multi-layout text and modifier coverage. Step 557 Wayland pointer enter, leave, and motion production behavior is next.
 - [x] Phase F Step 557 publishes Wayland pointer enter coordinates immediately, delivers explicit leave with the last position, and clears runtime hover and cursor state. Step 558 Wayland pointer axis and frame production behavior is next.
 - [x] Phase F Step 558 aggregates Wayland axis frames with source-aware precision, high-resolution value120 metadata, stop-only cleanup, and v9 pointer negotiation. Step 559 Wayland fractional scale production behavior is next.
+- [x] Phase F Step 559 adds production Wayland fractional scaling with preferred 120-based scale, integer-ceiling buffer scale, viewporter logical destinations, and integer output fallback. Step 560 Wayland configure lifecycle production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

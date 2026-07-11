@@ -1,5 +1,7 @@
 #pragma once
 
+#include "wayland_window_fractional_scale_internal.hpp"
+
 void refresh_output_scale();
 void update_framebuffer_size();
 static void handle_surface_enter(

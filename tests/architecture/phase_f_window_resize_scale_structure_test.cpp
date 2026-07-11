@@ -107,7 +107,8 @@ int main() {
       !contains(scale_internal, "handle_surface_leave")) {
     return 4;
   }
-  if (!contains(scale_source, "wl_surface_set_buffer_scale(surface_, scale)") ||
+  if (!contains(scale_source, "wl_surface_set_buffer_scale(") ||
+      !contains(scale_source, "std::ceil(scale)") ||
       !contains(scale_source, "wl_surface_commit(surface_)") ||
       !contains(scale_source, "logical_size_.width * state_.scale.value") ||
       !contains(scale_source, "if (!present)") ||

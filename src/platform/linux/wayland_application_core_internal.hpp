@@ -42,6 +42,8 @@ class WaylandApplication final : public PlatformApplication {
   WaylandOutputScaleRegistry output_scales_;
   wl_data_device_manager* data_device_manager_ = nullptr;
   zwp_text_input_manager_v3* text_input_manager_ = nullptr;
+  wp_fractional_scale_manager_v1* fractional_scale_manager_ = nullptr;
+  wp_viewporter* viewporter_ = nullptr;
   wl_pointer* pointer_ = nullptr;
   wl_keyboard* keyboard_ = nullptr;
   WaylandDataDevicePtr data_device_;

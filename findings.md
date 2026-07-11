@@ -9910,3 +9910,28 @@
   (v5) arrived, but value120 (v8) did not. Raising that child-resource cap to
   v9 completes the test protocol path; keyboard remains independently capped.
 - Phase F Step 558 aggregates Wayland axis frames with source-aware precision, high-resolution value120 metadata, stop-only cleanup, and v9 pointer negotiation. Step 559 Wayland fractional scale production behavior is next.
+
+## 2026-07-11 Phase F Step 559 Wayland Fractional Scale Audit
+
+- Current production binds only `wl_output` v2 integer scale, chooses the
+  maximum entered-output integer factor, sets that as surface buffer scale,
+  and multiplies logical size directly into framebuffer size.
+- No fractional-scale or viewporter protocol interface, registry binding,
+  application ownership, window object, or compositor coverage exists.
+- Production fractional scaling requires both protocols: preferred scale is
+  expressed in 120ths by `wp_fractional_scale_v1`, while `wp_viewporter` keeps
+  the surface destination at logical size when the integer buffer scale is
+  `ceil(preferred_scale / 120)`.
+- `WindowState::scale` should expose the preferred float scale and framebuffer
+  sizing should follow that scale; the native surface buffer scale remains the
+  required integer ceiling. Integer output scale remains the compatibility
+  fallback when either fractional protocol is unavailable.
+- Ownership boundaries should be separate manual protocol interface/request
+  modules matching the existing xdg/text-input pattern, application registry
+  manager fields, and a focused per-window fractional-scale lifecycle module.
+- The first combined behavior run proved fractional scale but regressed the
+  historical integer-output test because the test compositor sent a default
+  preferred-scale 120 immediately. Keeping the protocol advertised while
+  withholding preferred scale until explicitly requested correctly exercises
+  the production integer fallback and the dynamic fractional transition.
+- Phase F Step 559 adds production Wayland fractional scaling with preferred 120-based scale, integer-ceiling buffer scale, viewporter logical destinations, and integer output fallback. Step 560 Wayland configure lifecycle production behavior is next.

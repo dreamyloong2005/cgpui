@@ -39,6 +39,8 @@ WaylandApplication::create_window_with_parent(
       compositor_,
       shell_,
       decoration_manager_,
+      WaylandFractionalScaleGlobals{
+          .manager = fractional_scale_manager_, .viewporter = viewporter_},
       parent,
       descriptor,
       std::move(callback),

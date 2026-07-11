@@ -39,6 +39,17 @@ void wayland_bind_registry_global(
             registry, name, &zxdg_decoration_manager_v1_interface, 1));
     return;
   }
+  if (interface_name == wp_fractional_scale_manager_v1_interface.name) {
+    *bindings.fractional_scale_manager =
+        static_cast<wp_fractional_scale_manager_v1*>(wl_registry_bind(
+            registry, name, &wp_fractional_scale_manager_v1_interface, 1));
+    return;
+  }
+  if (interface_name == wp_viewporter_interface.name) {
+    *bindings.viewporter = static_cast<wp_viewporter*>(wl_registry_bind(
+        registry, name, &wp_viewporter_interface, 1));
+    return;
+  }
   if (interface_name == wl_output_interface.name) {
     bindings.output_scales->bind(registry, name, version);
     return;

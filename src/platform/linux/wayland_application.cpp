@@ -77,6 +77,12 @@ WaylandApplication::~WaylandApplication() {
   if (text_input_manager_ != nullptr) {
     zwp_text_input_manager_v3_destroy(text_input_manager_);
   }
+  if (fractional_scale_manager_ != nullptr) {
+    wp_fractional_scale_manager_v1_destroy(fractional_scale_manager_);
+  }
+  if (viewporter_ != nullptr) {
+    wp_viewporter_destroy(viewporter_);
+  }
   if (decoration_manager_ != nullptr) {
     zxdg_decoration_manager_v1_destroy(decoration_manager_);
   }

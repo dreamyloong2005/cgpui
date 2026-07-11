@@ -21185,5 +21185,50 @@
   line caps, and `git diff --check` pass.
 - One final stale-field search used Bash `|| exit 0` syntax in PowerShell;
   reran it with PowerShell exit-code handling before staging.
+
+## 2026-07-11 Phase F Step 559 Wayland Fractional Scale
+
+- Started from committed Step 558 at `240a9398`; only unrelated untracked
+  `.vscode/` remains.
+- Audited integer output-scale registry, window buffer/framebuffer conversion,
+  surface creation lifecycle, current manual protocol modules, and real resize/
+  scale compositor coverage.
+- Confirmed fractional scale is entirely absent. Planned real
+  `wp_fractional_scale_v1` plus `wp_viewporter` integration with focused
+  protocol, registry, window lifecycle, and compositor test ownership; integer
+  `wl_output.scale` remains the compatibility fallback.
+- Added focused manual fractional-scale and viewporter protocol modules,
+  registry/application ownership, per-window object lifecycle, preferred-scale
+  handling, integer-ceiling buffer scale, viewport destination updates, and a
+  real 1.25x compositor test.
+- The new fractional test passed on its first behavior run; the existing
+  integer scale test timed out because the compositor sent default preferred
+  scale 120. Changed the harness to send preferred scale only on explicit
+  request so the advertised-protocol/no-preference fallback stays testable.
+- The first new-target build paused for package confirmation; reran with the
+  established non-interactive `-y` flag and existing package caches.
+- Split fractional protocol declarations and window lifecycle into focused
+  leaves after structure preflight, restoring the protocol aggregate to 162
+  lines, scale source to 75/80, scale internal to 18/20, and private window
+  header to 120/120.
+- Added the Step 559 structure guard and updated the historical Step 541 guard
+  for integer fallback plus buffer-ceiling behavior. The new guard reached its
+  intended five-document RED at child exit 7.
+- Synchronized the exact Step 559 completion sentence across all five authority
+  documents; Step 560 Wayland configure lifecycle is now active.
 - One registry search used a PowerShell-escaped alternation that `rg` parsed as
   an unclosed group; subsequent searches used fixed-string queries.
+- Session recovery first attempted to execute `session-catchup.py` directly on
+  Windows and failed with access denied; invoking the same script through
+  `python` succeeded and confirmed the Step 559 handoff plus the still-running
+  WSL verification session.
+- The inherited final WSL command omitted `XMAKE_PKG_CACHEDIR` and
+  `XMAKE_PKG_INSTALLDIR`, installed host tools into the global tree, then
+  stalled after a failed lunasvg download. Terminated only that xmake process
+  tree and confirmed no build/download child remained before retrying with the
+  complete established environment.
+- The corrected final WSL group reuses the D-drive global/package caches plus
+  `/dev/shm/cgpui` temp and passes 14/14 across fractional behavior, integer
+  fallback, source inventories, historical handoff guards, and the parity
+  ledger. Final JSON, five-document phrase, line-cap, and diff-hygiene audits
+  pass; only expected CRLF conversion warnings remain.

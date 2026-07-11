@@ -950,7 +950,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 558 evidence: a real v9 compositor sequence verifies legacy axis-only,
   fractional wheel value120, finger precision, whole-detent wheel, diagonal
   aggregation, and stop-only cleanup without synthetic zero-delta events.
-- In progress: Step 559 Wayland fractional scale production behavior.
+- Completed: Phase F Step 559 adds production Wayland fractional scaling with preferred 120-based scale, integer-ceiling buffer scale, viewporter logical destinations, and integer output fallback. Step 560 Wayland configure lifecycle production behavior is next.
+- Step 559 evidence: a real compositor preferred-scale 150 event produces
+  1.25x public state, 400x300 then 500x375 framebuffer sizes, integer buffer
+  scale 2, and 320x240 then 400x300 viewport destinations while the historical
+  integer output-scale behavior remains green.
+- In progress: Step 560 Wayland configure lifecycle production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

@@ -7,6 +7,7 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
     wl_compositor* compositor,
     xdg_wm_base* shell,
     zxdg_decoration_manager_v1* decoration_manager,
+    WaylandFractionalScaleGlobals fractional_scale,
     xdg_toplevel* parent,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
@@ -22,7 +23,8 @@ Result<std::unique_ptr<WaylandWindow>> WaylandWindow::create(
 
   auto initialized =
       window->initialize(
-          compositor, shell, decoration_manager, parent, descriptor);
+          compositor, shell, decoration_manager, fractional_scale,
+          parent, descriptor);
   if (!initialized) {
     return std::unexpected(initialized.error());
   }
@@ -42,6 +44,12 @@ WaylandWindow::WaylandWindow(
       output_scale_lookup_(std::move(output_scale_lookup)) {}
 
 WaylandWindow::~WaylandWindow() {
+  if (viewport_ != nullptr) {
+    wp_viewport_destroy(viewport_);
+  }
+  if (fractional_scale_ != nullptr) {
+    wp_fractional_scale_v1_destroy(fractional_scale_);
+  }
   if (decoration_ != nullptr) {
     zxdg_toplevel_decoration_v1_destroy(decoration_);
   }
@@ -90,6 +98,7 @@ Result<void> WaylandWindow::initialize(
     wl_compositor* compositor,
     xdg_wm_base* shell,
     zxdg_decoration_manager_v1* decoration_manager,
+    WaylandFractionalScaleGlobals fractional_scale,
     xdg_toplevel* parent,
     const WindowDescriptor& descriptor) {
   surface_ = wl_compositor_create_surface(compositor);
@@ -105,6 +114,7 @@ Result<void> WaylandWindow::initialize(
       .preferred_buffer_transform = nullptr,
   };
   wl_surface_add_listener(surface_, &output_listener, this);
+  initialize_fractional_scale(fractional_scale.manager, fractional_scale.viewporter);
 
   xdg_surface_ = xdg_wm_base_get_xdg_surface(shell, surface_);
   if (xdg_surface_ == nullptr) {

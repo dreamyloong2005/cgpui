@@ -32,6 +32,8 @@ struct WaylandRegistryBindings {
   WaylandOutputScaleRegistry* output_scales = nullptr;
   wl_data_device_manager** data_device_manager = nullptr;
   zwp_text_input_manager_v3** text_input_manager = nullptr;
+  wp_fractional_scale_manager_v1** fractional_scale_manager = nullptr;
+  wp_viewporter** viewporter = nullptr;
   WaylandDataDevice* data_device = nullptr;
   WaylandTextInput* text_input = nullptr;
 };

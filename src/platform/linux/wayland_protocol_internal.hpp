@@ -3,6 +3,7 @@
 #include <wayland-client.h>
 
 #include <cstdint>
+#include "wayland_protocol_fractional_scale_internal.hpp"
 
 struct xdg_positioner;
 struct xdg_wm_base;
@@ -76,6 +77,7 @@ struct zwp_text_input_v3_listener {
       zwp_text_input_v3* text_input,
       std::uint32_t serial);
 };
+
 
 int xdg_wm_base_add_listener(
     xdg_wm_base* shell,

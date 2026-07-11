@@ -1,6 +1,7 @@
 #include "wayland_window_internal.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 namespace cgpui {
 
@@ -19,15 +20,21 @@ void WaylandWindow::output_scale_changed(
 }
 
 void WaylandWindow::refresh_output_scale() {
-  std::int32_t scale = 1;
-  for (wl_output* output : entered_outputs_) {
-    scale = std::max(scale, output_scale_lookup_(output));
+  float scale = 1.0F;
+  if (preferred_fractional_scale_.has_value()) {
+    scale = *preferred_fractional_scale_;
+  } else {
+    for (wl_output* output : entered_outputs_) {
+      scale = std::max(
+          scale, static_cast<float>(output_scale_lookup_(output)));
+    }
   }
-  if (state_.scale.value == static_cast<float>(scale)) {
+  if (state_.scale.value == scale) {
     return;
   }
-  state_.scale = DpiScale{static_cast<float>(scale)};
-  wl_surface_set_buffer_scale(surface_, scale);
+  state_.scale = DpiScale{scale};
+  wl_surface_set_buffer_scale(
+      surface_, static_cast<std::int32_t>(std::ceil(scale)));
   wl_surface_commit(surface_);
   update_framebuffer_size();
   if (configured_) {
@@ -41,6 +48,7 @@ void WaylandWindow::update_framebuffer_size() {
   state_.framebuffer_size = Size{
       logical_size_.width * state_.scale.value,
       logical_size_.height * state_.scale.value};
+  update_fractional_viewport_destination();
 }
 
 void WaylandWindow::handle_surface_enter(

@@ -47,6 +47,8 @@ void WaylandApplication::handle_global(
           .output_scales = &app->output_scales_,
           .data_device_manager = &app->data_device_manager_,
           .text_input_manager = &app->text_input_manager_,
+          .fractional_scale_manager = &app->fractional_scale_manager_,
+          .viewporter = &app->viewporter_,
           .data_device = app->data_device_.get(),
           .text_input = app->text_input_.get(),
       });

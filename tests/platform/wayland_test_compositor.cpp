@@ -43,9 +43,43 @@ extern const wl_interface zxdg_decoration_manager_v1_interface;
 extern const wl_interface zxdg_toplevel_decoration_v1_interface;
 extern const wl_interface zwp_text_input_manager_v3_interface;
 extern const wl_interface zwp_text_input_v3_interface;
+extern const wl_interface wp_fractional_scale_manager_v1_interface;
+extern const wl_interface wp_fractional_scale_v1_interface;
+extern const wl_interface wp_viewporter_interface;
+extern const wl_interface wp_viewport_interface;
 
 const wl_interface xdg_positioner_interface{
     "xdg_positioner", 1, 0, nullptr, 0, nullptr};
+
+const wl_interface* fractional_scale_manager_get_types[]{
+    &wp_fractional_scale_v1_interface, &wl_surface_interface};
+const wl_message fractional_scale_manager_requests[]{
+    {"destroy", "", nullptr},
+    {"get_fractional_scale", "no", fractional_scale_manager_get_types},
+};
+const wl_interface wp_fractional_scale_manager_v1_interface{
+    "wp_fractional_scale_manager_v1", 1, 2,
+    fractional_scale_manager_requests, 0, nullptr};
+const wl_message fractional_scale_requests[]{{"destroy", "", nullptr}};
+const wl_message fractional_scale_events[]{{"preferred_scale", "u", nullptr}};
+const wl_interface wp_fractional_scale_v1_interface{
+    "wp_fractional_scale_v1", 1, 1, fractional_scale_requests, 1,
+    fractional_scale_events};
+const wl_interface* viewporter_get_types[]{
+    &wp_viewport_interface, &wl_surface_interface};
+const wl_message viewporter_requests[]{
+    {"destroy", "", nullptr},
+    {"get_viewport", "no", viewporter_get_types},
+};
+const wl_interface wp_viewporter_interface{
+    "wp_viewporter", 1, 2, viewporter_requests, 0, nullptr};
+const wl_message viewport_requests[]{
+    {"destroy", "", nullptr},
+    {"set_source", "ffff", nullptr},
+    {"set_destination", "ii", nullptr},
+};
+const wl_interface wp_viewport_interface{
+    "wp_viewport", 1, 3, viewport_requests, 0, nullptr};
 
 const wl_interface* zxdg_decoration_get_toplevel_types[]{
     &zxdg_toplevel_decoration_v1_interface,
@@ -446,6 +480,12 @@ struct WaylandTestCompositor::State {
     if (decoration_manager_global != nullptr) {
       wl_global_destroy(decoration_manager_global);
     }
+    if (fractional_scale_manager_global != nullptr) {
+      wl_global_destroy(fractional_scale_manager_global);
+    }
+    if (viewporter_global != nullptr) {
+      wl_global_destroy(viewporter_global);
+    }
     if (seat_global != nullptr) {
       wl_global_destroy(seat_global);
     }
@@ -497,6 +537,11 @@ struct WaylandTestCompositor::State {
         1,
         this,
         &State::bind_decoration_manager);
+    fractional_scale_manager_global = wl_global_create(
+        display, &wp_fractional_scale_manager_v1_interface, 1, this,
+        &State::bind_fractional_scale_manager);
+    viewporter_global = wl_global_create(
+        display, &wp_viewporter_interface, 1, this, &State::bind_viewporter);
     seat_global = wl_global_create(
         display,
         &wl_seat_interface,
@@ -523,6 +568,8 @@ struct WaylandTestCompositor::State {
         &State::bind_text_input_manager);
     if (compositor_global == nullptr || shell_global == nullptr ||
         decoration_manager_global == nullptr ||
+        fractional_scale_manager_global == nullptr ||
+        viewporter_global == nullptr ||
         seat_global == nullptr || output_global == nullptr ||
         data_device_manager_global == nullptr ||
         text_input_manager_global == nullptr) {
@@ -600,6 +647,12 @@ struct WaylandTestCompositor::State {
     output_scale.store(std::max(scale, 1));
     output_scale_sent.store(false);
     output_scale_pending.store(true);
+  }
+
+  void request_fractional_scale(std::uint32_t scale) {
+    preferred_fractional_scale.store(std::max(scale, 120U));
+    fractional_scale_sent.store(false);
+    fractional_scale_pending.store(true);
   }
 
   void request_seat_capabilities(std::uint32_t capabilities) {
@@ -917,6 +970,56 @@ struct WaylandTestCompositor::State {
         std::min<std::uint32_t>(version, 1), id);
     wl_resource_set_implementation(
         resource, &decoration_manager_implementation, data, nullptr);
+  }
+
+  static void bind_fractional_scale_manager(
+      wl_client* client, void* data, std::uint32_t version, std::uint32_t id) {
+    auto* resource = wl_resource_create(
+        client, &wp_fractional_scale_manager_v1_interface,
+        std::min<std::uint32_t>(version, 1), id);
+    wl_resource_set_implementation(
+        resource, &fractional_scale_manager_implementation, data, nullptr);
+  }
+
+  static void get_fractional_scale(
+      wl_client* client,
+      wl_resource* resource,
+      std::uint32_t id,
+      wl_resource*) {
+    auto* state = static_cast<State*>(wl_resource_get_user_data(resource));
+    state->fractional_scale_resource = wl_resource_create(
+        client, &wp_fractional_scale_v1_interface, 1, id);
+    wl_resource_set_implementation(
+        state->fractional_scale_resource, &fractional_scale_implementation,
+        state, nullptr);
+  }
+
+  static void bind_viewporter(
+      wl_client* client, void* data, std::uint32_t version, std::uint32_t id) {
+    auto* resource = wl_resource_create(
+        client, &wp_viewporter_interface,
+        std::min<std::uint32_t>(version, 1), id);
+    wl_resource_set_implementation(
+        resource, &viewporter_implementation, data, nullptr);
+  }
+
+  static void get_viewport(
+      wl_client* client,
+      wl_resource* resource,
+      std::uint32_t id,
+      wl_resource*) {
+    auto* state = static_cast<State*>(wl_resource_get_user_data(resource));
+    state->viewport_resource =
+        wl_resource_create(client, &wp_viewport_interface, 1, id);
+    wl_resource_set_implementation(
+        state->viewport_resource, &viewport_implementation, state, nullptr);
+  }
+
+  static void set_viewport_destination(
+      wl_client*, wl_resource* resource, std::int32_t width, std::int32_t height) {
+    auto* state = static_cast<State*>(wl_resource_get_user_data(resource));
+    state->viewport_width.store(width);
+    state->viewport_height.store(height);
   }
 
   static void get_toplevel_decoration(
@@ -1259,6 +1362,7 @@ struct WaylandTestCompositor::State {
   void dispatch_pending_close();
   void dispatch_pending_resize_configure();
   void dispatch_pending_output_scale();
+  void dispatch_pending_fractional_scale();
   void dispatch_pending_seat_capabilities();
   void dispatch_pending_pointer_enter();
   void dispatch_pending_pointer_move();
@@ -1290,6 +1394,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_close();
       dispatch_pending_resize_configure();
       dispatch_pending_output_scale();
+      dispatch_pending_fractional_scale();
       dispatch_pending_seat_capabilities();
       dispatch_pending_pointer_enter();
       dispatch_pending_pointer_move();
@@ -1319,6 +1424,7 @@ struct WaylandTestCompositor::State {
       dispatch_pending_close();
       dispatch_pending_resize_configure();
       dispatch_pending_output_scale();
+      dispatch_pending_fractional_scale();
       dispatch_pending_seat_capabilities();
       dispatch_pending_pointer_enter();
       dispatch_pending_pointer_move();
@@ -1382,9 +1488,34 @@ struct WaylandTestCompositor::State {
         std::int32_t);
     void (*commit)(wl_client*, wl_resource*);
   };
+  struct FractionalScaleManagerImplementation {
+    void (*destroy)(wl_client*, wl_resource*);
+    void (*get_fractional_scale)(
+        wl_client*, wl_resource*, std::uint32_t, wl_resource*);
+  };
+  struct FractionalScaleImplementation {
+    void (*destroy)(wl_client*, wl_resource*);
+  };
+  struct ViewporterImplementation {
+    void (*destroy)(wl_client*, wl_resource*);
+    void (*get_viewport)(
+        wl_client*, wl_resource*, std::uint32_t, wl_resource*);
+  };
+  struct ViewportImplementation {
+    void (*destroy)(wl_client*, wl_resource*);
+    void (*set_source)(
+        wl_client*, wl_resource*, wl_fixed_t, wl_fixed_t, wl_fixed_t, wl_fixed_t);
+    void (*set_destination)(
+        wl_client*, wl_resource*, std::int32_t, std::int32_t);
+  };
   static const ZwpTextInputManagerV3Implementation
       text_input_manager_implementation;
   static const ZwpTextInputV3Implementation text_input_implementation;
+  static const FractionalScaleManagerImplementation
+      fractional_scale_manager_implementation;
+  static const FractionalScaleImplementation fractional_scale_implementation;
+  static const ViewporterImplementation viewporter_implementation;
+  static const ViewportImplementation viewport_implementation;
   static const XdgWmBaseImplementation shell_implementation;
   static const XdgSurfaceImplementation xdg_surface_implementation;
   static const XdgToplevelImplementation toplevel_implementation;
@@ -1401,6 +1532,8 @@ struct WaylandTestCompositor::State {
   wl_global* compositor_global = nullptr;
   wl_global* shell_global = nullptr;
   wl_global* decoration_manager_global = nullptr;
+  wl_global* fractional_scale_manager_global = nullptr;
+  wl_global* viewporter_global = nullptr;
   wl_global* seat_global = nullptr;
   wl_global* output_global = nullptr;
   wl_global* data_device_manager_global = nullptr;
@@ -1411,6 +1544,8 @@ struct WaylandTestCompositor::State {
   wl_resource* output_resource = nullptr;
   wl_resource* data_device_resource = nullptr;
   wl_resource* text_input_resource = nullptr;
+  wl_resource* fractional_scale_resource = nullptr;
+  wl_resource* viewport_resource = nullptr;
   wl_resource* clipboard_offer_resource = nullptr;
   wl_resource* drag_offer_resource = nullptr;
   std::filesystem::path runtime_dir;
@@ -1438,6 +1573,8 @@ struct WaylandTestCompositor::State {
   std::atomic_bool resize_configure_fullscreen{false};
   std::atomic_bool output_scale_pending{false};
   std::atomic_bool output_scale_sent{false};
+  std::atomic_bool fractional_scale_pending{false};
+  std::atomic_bool fractional_scale_sent{false};
   std::atomic_bool seat_capabilities_pending{false};
   std::atomic_bool pointer_bound{false};
   std::atomic_bool keyboard_bound{false};
@@ -1495,6 +1632,9 @@ struct WaylandTestCompositor::State {
   std::atomic_uint32_t seat_capabilities{
       WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD};
   std::atomic_int surface_buffer_scale{1};
+  std::atomic_uint preferred_fractional_scale{120};
+  std::atomic_int viewport_width{-1};
+  std::atomic_int viewport_height{-1};
   std::atomic_int pointer_x{0};
   std::atomic_int pointer_y{0};
   std::atomic_int drag_x{0};
@@ -2149,6 +2289,20 @@ void WaylandTestCompositor::State::dispatch_pending_output_scale() {
   wl_output_send_done(output_resource);
   wl_display_flush_clients(display);
   output_scale_sent.store(true);
+}
+
+void WaylandTestCompositor::State::dispatch_pending_fractional_scale() {
+  if (!fractional_scale_pending.exchange(false)) {
+    return;
+  }
+  if (fractional_scale_resource == nullptr) {
+    fractional_scale_pending.store(true);
+    return;
+  }
+  wl_resource_post_event(
+      fractional_scale_resource, 0, preferred_fractional_scale.load());
+  wl_display_flush_clients(display);
+  fractional_scale_sent.store(true);
 }
 
 void WaylandTestCompositor::State::dispatch_pending_pointer_move() {
@@ -3067,6 +3221,30 @@ const WaylandTestCompositor::State::ZxdgToplevelDecorationImplementation
         .unset_mode = [](wl_client*, wl_resource*) {},
 };
 
+const WaylandTestCompositor::State::FractionalScaleManagerImplementation
+    WaylandTestCompositor::State::fractional_scale_manager_implementation{
+        .destroy = destroy_resource,
+        .get_fractional_scale =
+            &WaylandTestCompositor::State::get_fractional_scale,
+};
+const WaylandTestCompositor::State::FractionalScaleImplementation
+    WaylandTestCompositor::State::fractional_scale_implementation{
+        .destroy = destroy_resource,
+};
+const WaylandTestCompositor::State::ViewporterImplementation
+    WaylandTestCompositor::State::viewporter_implementation{
+        .destroy = destroy_resource,
+        .get_viewport = &WaylandTestCompositor::State::get_viewport,
+};
+const WaylandTestCompositor::State::ViewportImplementation
+    WaylandTestCompositor::State::viewport_implementation{
+        .destroy = destroy_resource,
+        .set_source = [](
+            wl_client*, wl_resource*, wl_fixed_t, wl_fixed_t, wl_fixed_t,
+            wl_fixed_t) {},
+        .set_destination = &WaylandTestCompositor::State::set_viewport_destination,
+};
+
 WaylandTestCompositor::WaylandTestCompositor(std::string name)
     : state_(std::make_unique<State>(std::move(name))) {}
 
@@ -3114,6 +3292,10 @@ void WaylandTestCompositor::request_resize_configure_state(
 
 void WaylandTestCompositor::request_output_scale(std::int32_t scale) {
   state_->request_output_scale(scale);
+}
+
+void WaylandTestCompositor::request_fractional_scale(std::uint32_t scale) {
+  state_->request_fractional_scale(scale);
 }
 
 void WaylandTestCompositor::request_seat_capabilities(
@@ -3326,6 +3508,17 @@ bool WaylandTestCompositor::wait_for_output_scale_sent() const {
 
 std::int32_t WaylandTestCompositor::last_surface_buffer_scale() const {
   return state_->surface_buffer_scale.load();
+}
+
+bool WaylandTestCompositor::wait_for_fractional_scale_sent() const {
+  return state_->wait_for_flag(state_->fractional_scale_sent);
+}
+
+WaylandTextInputRect WaylandTestCompositor::last_viewport_destination() const {
+  return WaylandTextInputRect{
+      .width = state_->viewport_width.load(),
+      .height = state_->viewport_height.load(),
+  };
 }
 
 bool WaylandTestCompositor::wait_for_pointer_bound(bool bound) const {

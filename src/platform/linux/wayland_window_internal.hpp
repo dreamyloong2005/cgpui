@@ -3,7 +3,6 @@
 #include "wayland_internal.hpp"
 #include "wayland_window_state.hpp"
 #include "../platform_window_close_internal.hpp"
-
 namespace cgpui {
 
 class WaylandWindow final : public PlatformWindow {
@@ -13,6 +12,7 @@ class WaylandWindow final : public PlatformWindow {
       wl_compositor* compositor,
       xdg_wm_base* shell,
       zxdg_decoration_manager_v1* decoration_manager,
+      WaylandFractionalScaleGlobals fractional_scale,
       xdg_toplevel* parent,
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback,
