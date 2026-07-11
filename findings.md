@@ -10033,3 +10033,27 @@
   close, window lifecycle, and cursor theme paths remain green under the
   prepare-read loop.
 - Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.
+
+## 2026-07-11 Phase F Step 563 Win32 Unicode Clipboard Audit
+
+- The repository already has focused Win32 clipboard text/read/write modules,
+  `CF_UNICODETEXT` system integration, and Windows tests that read and write
+  non-ASCII UTF-8 through the real clipboard.
+- Step 563 should deepen production semantics and failure coverage rather than
+  adding a duplicate clipboard API. Audit targets are UTF-8/UTF-16 conversion,
+  embedded NUL handling, CRLF conventions, clipboard-open contention,
+  GlobalAlloc ownership transfer, and cleanup on every Win32 failure path.
+- The concrete Unicode defect is permissive conversion: both Win32 conversion
+  calls use flags 0, so invalid UTF-8/UTF-16 can be replacement-decoded and
+  reported as success. Embedded NUL in the public `string_view` is also accepted
+  even though `CF_UNICODETEXT` readers terminate there, causing silent data
+  truncation.
+- A focused Windows-only system test should preserve the original clipboard,
+  prove emoji/CRLF/empty round trips, reject invalid UTF-8 and embedded NUL, and
+  verify rejected writes leave the prior clipboard content untouched.
+- Strict optional conversion now passes the real system test: emoji, CRLF, and
+  empty text round-trip through `CF_UNICODETEXT`; malformed UTF-8 and embedded
+  NUL are rejected before `OpenClipboard`, leaving the baseline clipboard
+  unchanged. Existing cross-platform clipboard and structure coverage remains
+  green.
+- Phase F Step 563 makes Win32 Unicode clipboard conversion strict, preserves emoji, CRLF, and empty text, rejects invalid UTF-8 and embedded NUL, and leaves existing system content intact on rejection. Step 564 Win32 file clipboard production behavior is next.

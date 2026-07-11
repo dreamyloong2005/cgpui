@@ -1,43 +1,54 @@
 #include "clipboard_win32_internal.hpp"
 
 #if defined(_WIN32)
+#include <climits>
+#include <utility>
+
 namespace cgpui {
 
-std::wstring widen_clipboard_text(std::string_view value) {
+std::optional<std::wstring> widen_clipboard_text(std::string_view value) {
+  if (value.find('\0') != std::string_view::npos || value.size() > INT_MAX) {
+    return std::nullopt;
+  }
   if (value.empty()) {
-    return {};
+    return std::wstring{};
   }
 
   const auto required = MultiByteToWideChar(
       CP_UTF8,
-      0,
+      MB_ERR_INVALID_CHARS,
       value.data(),
       static_cast<int>(value.size()),
       nullptr,
       0);
   if (required <= 0) {
-    return {};
+    return std::nullopt;
   }
 
   std::wstring result(static_cast<std::size_t>(required), L'\0');
-  MultiByteToWideChar(
+  const int written = MultiByteToWideChar(
       CP_UTF8,
-      0,
+      MB_ERR_INVALID_CHARS,
       value.data(),
       static_cast<int>(value.size()),
       result.data(),
       required);
-  return result;
+  return written == required
+      ? std::optional<std::wstring>{std::move(result)}
+      : std::nullopt;
 }
 
-std::string narrow_clipboard_text(std::wstring_view value) {
+std::optional<std::string> narrow_clipboard_text(std::wstring_view value) {
+  if (value.find(L'\0') != std::wstring_view::npos || value.size() > INT_MAX) {
+    return std::nullopt;
+  }
   if (value.empty()) {
-    return {};
+    return std::string{};
   }
 
   const auto required = WideCharToMultiByte(
       CP_UTF8,
-      0,
+      WC_ERR_INVALID_CHARS,
       value.data(),
       static_cast<int>(value.size()),
       nullptr,
@@ -45,20 +56,22 @@ std::string narrow_clipboard_text(std::wstring_view value) {
       nullptr,
       nullptr);
   if (required <= 0) {
-    return {};
+    return std::nullopt;
   }
 
   std::string result(static_cast<std::size_t>(required), '\0');
-  WideCharToMultiByte(
+  const int written = WideCharToMultiByte(
       CP_UTF8,
-      0,
+      WC_ERR_INVALID_CHARS,
       value.data(),
       static_cast<int>(value.size()),
       result.data(),
       required,
       nullptr,
       nullptr);
-  return result;
+  return written == required
+      ? std::optional<std::string>{std::move(result)}
+      : std::nullopt;
 }
 
 } // namespace cgpui

@@ -689,6 +689,7 @@ consume C: drive space again.
 - Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.
 - Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.
 - Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.
+- Phase F Step 563 makes Win32 Unicode clipboard conversion strict, preserves emoji, CRLF, and empty text, rejects invalid UTF-8 and embedded NUL, and leaves existing system content intact on rejection. Step 564 Win32 file clipboard production behavior is next.
 
 ## Categories
 

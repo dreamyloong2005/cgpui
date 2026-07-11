@@ -2113,7 +2113,19 @@
       "xmake.lua"
     ],
     "phase_f_step_562_remaining_gap": "Step 563 Win32 Unicode clipboard production behavior",
-    "phase_f_current_handoff": "Step 563 Win32 Unicode clipboard production behavior"
+    "phase_f_step_563_surface": "Phase F Step 563 makes Win32 Unicode clipboard conversion strict, preserves emoji, CRLF, and empty text, rejects invalid UTF-8 and embedded NUL, and leaves existing system content intact on rejection. Step 564 Win32 file clipboard production behavior is next.",
+    "phase_f_step_563_sources": [
+      "src/platform/clipboard_win32_internal.hpp",
+      "src/platform/clipboard_win32_text.cpp",
+      "src/platform/clipboard_win32_read.cpp",
+      "src/platform/clipboard_win32_write.cpp",
+      "tests/platform/win32_clipboard_unicode_test.cpp",
+      "tests/architecture/phase_f_win32_clipboard_unicode_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_563_remaining_gap": "Step 564 Win32 file clipboard production behavior",
+    "phase_f_current_handoff": "Step 564 Win32 file clipboard production behavior"
   },
   "categories": [
     "application_and_app_context",

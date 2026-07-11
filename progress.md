@@ -21317,3 +21317,27 @@
 - Final JSON parsing, five-document unique phrase, event-loop/test line caps,
   handoff inventory, and `git diff --check` pass. `.vscode/` remains unrelated
   and untracked; WSL full debug remains batched.
+
+## 2026-07-11 Phase F Step 563 Win32 Unicode Clipboard
+
+- Started from committed Step 562 at `699dc9d4`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit confirms real `CF_UNICODETEXT` read/write and system tests are
+  already present, so this slice focuses on production edge cases and
+  contention/failure behavior.
+- Added the focused Windows Unicode system test; it reached precise RED at exit
+  7 because malformed UTF-8 was accepted by permissive conversion.
+- Changed internal conversion helpers to strict optional results with invalid-
+  sequence flags, embedded-NUL/INT_MAX rejection, and exact second-pass length
+  checks. New Unicode, existing clipboard, and platform structure tests pass
+  3/3 on Windows.
+- Added the Step 563 structure guard; it reached the intended five-document RED
+  at exit 8 while the total platform source guard remained green.
+- Synchronized the exact Step 563 completion phrase across all five authority
+  documents, advanced the handoff to Step 564 Win32 file clipboard, and passed
+  the Windows behavior/structure/ledger group 16/16.
+- Final WSL shared structure/ledger verification reused the established D-drive
+  caches plus `/dev/shm/cgpui` transient temp and passed 14/14.
+- Final JSON parsing, five-document unique phrase, clipboard/test line caps,
+  historical handoff diff inventory, and `git diff --check` pass. `.vscode/`
+  remains unrelated and untracked; WSL full debug remains batched.

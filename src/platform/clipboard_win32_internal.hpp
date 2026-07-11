@@ -14,8 +14,8 @@
 
 namespace cgpui {
 
-std::wstring widen_clipboard_text(std::string_view value);
-std::string narrow_clipboard_text(std::wstring_view value);
+std::optional<std::wstring> widen_clipboard_text(std::string_view value);
+std::optional<std::string> narrow_clipboard_text(std::wstring_view value);
 
 class Win32Clipboard final : public Clipboard {
  public:

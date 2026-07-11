@@ -6,13 +6,11 @@
 namespace cgpui {
 
 bool Win32Clipboard::write_text(std::string_view text) {
-  const std::wstring wide_text = widen_clipboard_text(text);
-  if (!text.empty() && wide_text.empty()) {
-    return false;
-  }
+  const auto wide_text = widen_clipboard_text(text);
+  if (!wide_text) return false;
 
   const std::size_t byte_size =
-      (wide_text.size() + 1U) * sizeof(wchar_t);
+      (wide_text->size() + 1U) * sizeof(wchar_t);
   HGLOBAL handle = GlobalAlloc(GMEM_MOVEABLE, byte_size);
   if (handle == nullptr) {
     return false;
@@ -24,7 +22,7 @@ bool Win32Clipboard::write_text(std::string_view text) {
     return false;
   }
 
-  std::memcpy(locked, wide_text.c_str(), byte_size);
+  std::memcpy(locked, wide_text->c_str(), byte_size);
   GlobalUnlock(handle);
 
   if (OpenClipboard(nullptr) == FALSE) {

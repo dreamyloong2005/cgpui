@@ -968,7 +968,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 562 evidence: a real idle compositor sequence coalesces 32 queued writes
   into one window wakeup, delivers one later cross-thread wakeup, and lets
   cross-thread quit terminate without a spurious third event.
-- In progress: Step 563 Win32 Unicode clipboard production behavior.
+- Completed: Phase F Step 563 makes Win32 Unicode clipboard conversion strict, preserves emoji, CRLF, and empty text, rejects invalid UTF-8 and embedded NUL, and leaves existing system content intact on rejection. Step 564 Win32 file clipboard production behavior is next.
+- Step 563 evidence: real CF_UNICODETEXT tests preserve emoji, CRLF, and empty
+  text, reject malformed UTF-8 and embedded NUL before opening the clipboard,
+  and prove rejected writes do not replace existing system content.
+- In progress: Step 564 Win32 file clipboard production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1047,6 +1051,8 @@ Windows/Linux core API is stable enough for parity work.
 | A direct Step 555 WSL test binary launch lacked xmake's registered run environment and exited during compositor startup | Step 555 behavior RED confirmation | Use the registered `wayland_seat_capability_test/default` or `xmake run -vD` target so package/runtime environment and child exit diagnostics are preserved |
 | The first Step 555 GREEN attempt still exited 6 because local proxy destroy did not release the server resource | Step 555 capability teardown | Use version-gated Wayland pointer/keyboard `release` requests and reserve local destroy for protocol versions predating release support |
 | The first Step 556 multi-layout assertion expected printable `Q` while effective Control correctly produced byte `0x11` | Step 556 behavior RED refinement | Verify readable Group 1 text under Shift alone, then compare the combined-mask text byte-for-byte across keymap reload while asserting effective modifiers separately |
+| A Step 563 two-file cleanup patch contained a malformed file-boundary hunk | Step 563 final audit polish | The patch was rejected atomically; reapply with valid per-file contexts and keep the implementation and progress edits narrowly scoped |
+| The first Step 563 handoff inventory pattern omitted the escaped quotes present in C++ string literals | Step 563 final audit | Search for the literal `\"phase_f_current_handoff` prefix; the corrected inventory finds all twelve Step 564 guards |
 
 ## Errors Encountered During Phase E Resume
 
