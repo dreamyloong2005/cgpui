@@ -57,6 +57,7 @@ void WindowRuntime::activate_native_window_for_record(
   record.scale = window_state.scale;
   record.redraw_scheduled = false;
   record.input = {};
+  reset_event_state_for_record(record);
   record.active = true;
   native_additional_windows_.push_back(std::move(window));
 }

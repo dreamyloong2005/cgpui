@@ -33,9 +33,9 @@ WindowRuntimeContext WindowRuntime::context_for_record(
       .viewport_size = record.viewport_size,
       .scale = record.scale,
       .input = record.input,
-      .event_route = current_event_route_,
-      .last_event_result = last_event_result_,
-      .last_event_dispatch = last_event_dispatch_,
+      .event_route = record.event_route,
+      .last_event_result = record.last_event_result,
+      .last_event_dispatch = record.last_event_dispatch,
       .frame_index = frame_index_};
 }
 
@@ -71,6 +71,7 @@ void WindowRuntime::cleanup_closed_additional_window(
   record.owns_root_view = false;
   record.redraw_scheduled = false;
   record.input = {};
+  reset_event_state_for_record(record);
   request_platform_wakeup();
 }
 
@@ -99,6 +100,7 @@ void WindowRuntime::deactivate_native_additional_windows() {
     record.active = false;
     record.redraw_scheduled = false;
     record.input = {};
+    reset_event_state_for_record(record);
   }
   native_additional_windows_.clear();
   retired_native_windows_.clear();

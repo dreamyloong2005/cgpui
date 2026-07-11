@@ -1801,6 +1801,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.
 - [x] Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.
 - [x] Phase F Step 597 stores input state per runtime window, routes context focus and pointer capture to the originating window, and keeps root input accessors synchronized without child contamination. Step 598 multi-window event routing isolation production behavior is next.
+- [x] Phase F Step 598 stores event route, result, and dispatch state per runtime window, keeps callback contexts bound to the originating record, and preserves root dispatch state across child events. Step 599 per-window theme isolation production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

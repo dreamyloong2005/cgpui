@@ -70,6 +70,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 6;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 598 multi-window event routing isolation")) return 7;
+                "\"phase_f_current_handoff\": \"Step 599 per-window theme isolation")) return 7;
   return 0;
 }

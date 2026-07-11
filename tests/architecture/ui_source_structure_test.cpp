@@ -2659,6 +2659,10 @@ int main() {
       read_source("src/ui/runtime_window_input_state.cpp");
   const std::string runtime_window_input_state_header =
       read_source("src/ui/runtime_window_input_state_internal.hpp");
+  const std::string runtime_window_event_state_source =
+      read_source("src/ui/runtime_window_event_state.cpp");
+  const std::string runtime_window_event_state_header =
+      read_source("src/ui/runtime_window_event_state_internal.hpp");
   if (!contains(runtime_event_windows_source,
                 "void WindowRuntime::dispatch_view_event_for_record(") ||
       !contains(runtime_event_windows_source,
@@ -2676,6 +2680,18 @@ int main() {
                 "WindowRuntime::capture_pointer_for_window(") ||
       !contains(runtime_window_input_state_source,
                 "WindowRuntime::request_keyboard_focus_for_window(")) {
+    return 35;
+  }
+  if (runtime_window_event_state_source.empty() ||
+      runtime_window_event_state_header.empty() ||
+      line_count(runtime_window_event_state_source) > 60 ||
+      line_count(runtime_window_event_state_header) > 20 ||
+      !contains(runtime_window_event_state_source,
+                "WindowRuntime::begin_event_route_for_record(") ||
+      !contains(runtime_window_event_state_source,
+                "WindowRuntime::finish_event_dispatch_for_record(") ||
+      !contains(runtime_window_event_state_source,
+                "WindowRuntime::sync_root_event_record(")) {
     return 35;
   }
 

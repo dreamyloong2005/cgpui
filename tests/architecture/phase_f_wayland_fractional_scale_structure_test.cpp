@@ -102,7 +102,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 598 multi-window event routing isolation")) {
+                "\"phase_f_current_handoff\": \"Step 599 per-window theme isolation")) {
     return 9;
   }
   return 0;

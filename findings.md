@@ -10569,3 +10569,14 @@
   while root APIs retain their existing semantics and mirror into the root
   runtime record for observable consistency.
 - Phase F Step 597 stores input state per runtime window, routes context focus and pointer capture to the originating window, and keeps root input accessors synchronized without child contamination. Step 598 multi-window event routing isolation production behavior is next.
+
+## 2026-07-12 Phase F Step 598 Multi-Window Event Routing Isolation
+
+- Additional-window dispatch currently stores `current_event_route_`,
+  `last_event_result_`, and `last_event_dispatch_` in root-global fields.
+- Child callbacks receive `context_for_record`, but that context reads the same
+  root-global event fields, and a child event replaces root dispatch history.
+- Per-record begin/finish helpers can share child ordinary/lifecycle routing,
+  retain a global sequence for cross-window ordering, and mirror root state at
+  existing root completion points.
+- Phase F Step 598 stores event route, result, and dispatch state per runtime window, keeps callback contexts bound to the originating record, and preserves root dispatch state across child events. Step 599 per-window theme isolation production behavior is next.

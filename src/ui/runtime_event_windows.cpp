@@ -12,23 +12,11 @@ void WindowRuntime::dispatch_view_event_for_record(
 
   update_input_state_for_record(record, event);
 
-  current_event_route_ = EventRouter::route_to_root(event, record.root_view_id);
-  refresh_route_ancestry(*current_event_route_);
+  begin_event_route_for_record(record, event);
   dispatching_view_event_ = true;
   EventResult result = view.handle_event(event, context_for_record(record));
   dispatching_view_event_ = false;
-  last_event_result_ = result;
-  last_event_dispatch_ = EventDispatchRecord{
-      .sequence = ++event_dispatch_sequence_,
-      .view_id = current_event_route_->target_view_id,
-      .event_kind = current_event_route_->event_kind,
-      .route = *current_event_route_,
-      .result = last_event_result_};
-  if (after_event_callback_) {
-    after_event_callback_(context_for_record(record), *last_event_dispatch_);
-  }
-  drain_deferred_callbacks();
-  flush_deferred_redraw_request();
+  finish_event_dispatch_for_record(record, result);
 }
 
 void WindowRuntime::handle_native_additional_window_event(

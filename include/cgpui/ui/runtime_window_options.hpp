@@ -44,6 +44,9 @@ struct WindowRuntimeRecord {
   DpiScale scale{};
   bool redraw_scheduled = false;
   ViewInputState input{};
+  std::optional<EventRoute> event_route;
+  EventResult last_event_result{};
+  std::optional<EventDispatchRecord> last_event_dispatch;
   PlatformWindow* window = nullptr;
   Renderer* renderer = nullptr;
   bool owns_window = false;

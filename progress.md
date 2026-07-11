@@ -21092,6 +21092,35 @@
   43/135/183 line budgets, and `git diff --check` pass. `.vscode/` remains
   unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 598 Multi-Window Event Routing Isolation
+
+- Started from committed Step 597 at `e8b136df`; only unrelated untracked
+  `.vscode/` remains.
+- Focused RED failed to compile because `WindowRuntimeRecord` lacked route,
+  result, and dispatch state.
+- Added a focused private event-state leaf with record begin/finish/reset
+  helpers and root-state synchronization at existing completion points.
+- Interleaved root/child keyboard events now retain independent routes,
+  consumed/cancelled results, dispatch records, and callback contexts.
+- The first GREEN assertion expected cancelled events to be unconsumed; the
+  public `EventResult::cancelled_event()` contract is consumed plus cancelled,
+  and the focused test was corrected to that established semantics.
+- Existing event, scheduling, multi-window, header, and UI structure behavior
+  passes 9/9 after moving duplicate resets into the focused leaf to retain the
+  140-line runtime-run cap.
+- Added a structure guard for record fields, event-state ownership, child/root
+  flow, resets, line budgets, xmake, and five-document handoff; it reached the
+  intended RED at child exit 10.
+- Synchronized the exact Step 598 completion phrase across all five authority
+  documents and advanced forty-seven historical dynamic handoff guards to Step
+  599 with zero stale Step 598 handoffs.
+- Final Windows focused behavior/header/structure/ledger verification passes
+  13/13. After the shared UI rebuild, final WSL focused verification also
+  passes 13/13.
+- JSON parsing, five-document phrase count, focused 59/48/11/258/91/52/58/
+  137/65/140/191 line budgets, and `git diff --check` pass. `.vscode/` remains
+  unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

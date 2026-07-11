@@ -1107,9 +1107,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 597 evidence: focused root/child coverage verifies independent focus,
   pointer position, pointer capture, and keyboard ownership in public records,
   callback contexts, compatibility accessors, and native windows.
-- In progress: Step 598 multi-window event routing isolation production behavior.
-- Step 598 plan: isolate route, dispatch result, callback context, and deferred
-  event state per runtime window without regressing root element routing.
+- Completed: Phase F Step 598 stores event route, result, and dispatch state per runtime window, keeps callback contexts bound to the originating record, and preserves root dispatch state across child events. Step 599 per-window theme isolation production behavior is next.
+- Step 598 evidence: focused root/child keyboard dispatch verifies independent
+  routes, consumed/cancelled results, sequence-bearing dispatch records, and
+  callback contexts after interleaved native events.
+- In progress: Step 599 per-window theme isolation production behavior.
+- Step 599 plan: make child render/context theme lookup use its runtime id and
+  preserve root/app fallback semantics across independent windows.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

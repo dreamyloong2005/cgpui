@@ -19,6 +19,7 @@ int WindowRuntime::run(
     root_record->scale = {};
     root_record->redraw_scheduled = false;
     root_record->input = {};
+    reset_event_state_for_record(*root_record);
     root_record->window = nullptr;
     root_record->renderer = nullptr;
     root_record->active = false;
@@ -40,6 +41,7 @@ int WindowRuntime::run(
   last_event_dispatch_.reset();
   last_action_dispatch_.reset();
   current_event_route_.reset();
+  sync_root_event_record();
   invalidation_state_ = {};
   subscription_query_buffer_.clear();
   entity_count_ = 0;
@@ -60,7 +62,6 @@ int WindowRuntime::run(
   platform_diagnostics_.clear();
   platform_diagnostic_sequence_ = 0;
   sync_root_input_record();
-
   auto window_result = application_.create_window(
       descriptor,
       [this](const PlatformEvent& event) { handle_event(event); });
@@ -77,7 +78,6 @@ int WindowRuntime::run(
   framebuffer_size_ = window_state.framebuffer_size;
   scale_ = window_state.scale;
   viewport_size_ = to_logical_pixels(framebuffer_size_, scale_);
-
   auto renderer_result = try_create_renderer(RenderSurfaceDescriptor{
       .native_surface = window_->native_surface(),
       .framebuffer_size = window_state.framebuffer_size,
