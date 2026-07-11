@@ -246,8 +246,7 @@ WindowRuntimeId root_window_runtime_id_{1};
 std::uint64_t next_window_runtime_id_ = 2;
 std::vector<WindowRuntimeRecord> window_runtime_records_;
 std::vector<std::unique_ptr<PlatformWindow>> native_additional_windows_;
-NativeMenuInstallation native_menu_installation_;
-NativeFileDialogResult native_file_dialog_result_;
+#include "runtime_platform_service_state_internal.hpp"
 Theme app_theme_;
 std::unordered_map<std::uint64_t, Theme> window_themes_;
 mutable std::vector<EntitySubscription> subscription_query_buffer_;

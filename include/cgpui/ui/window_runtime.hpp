@@ -165,6 +165,14 @@ class WindowRuntime {
       NativeFileDialogOptions options);
   [[nodiscard]] Result<NativeFileDialogResult> try_show_native_file_dialog(NativeFileDialogOptions options);
   [[nodiscard]] const NativeFileDialogResult& native_file_dialog_result() const;
+  [[nodiscard]] Result<NativeMessageDialogResult>
+  try_show_native_message_dialog(NativeMessageDialogOptions options);
+  [[nodiscard]] const NativeMessageDialogResult&
+  native_message_dialog_result() const;
+  [[nodiscard]] Result<PlatformOpenUrlResult> try_open_url(std::string url);
+  [[nodiscard]] const PlatformOpenUrlResult& open_url_result() const;
+  [[nodiscard]] Result<PlatformReopenResult> try_request_reopen();
+  [[nodiscard]] const PlatformReopenResult& reopen_result() const;
   void set_app_theme(Theme theme);
   [[nodiscard]] const Theme& app_theme() const;
   void set_window_theme(WindowRuntimeId runtime_id, Theme theme);

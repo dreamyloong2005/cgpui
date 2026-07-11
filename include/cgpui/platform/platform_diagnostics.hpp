@@ -16,6 +16,9 @@ enum class PlatformDiagnosticKind {
   window_lifecycle,
   menu,
   file_dialog,
+  message_dialog,
+  open_url,
+  reopen,
   window_chrome,
 };
 

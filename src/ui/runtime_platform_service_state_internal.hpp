@@ -1,0 +1,5 @@
+NativeMenuInstallation native_menu_installation_;
+NativeFileDialogResult native_file_dialog_result_;
+NativeMessageDialogResult native_message_dialog_result_;
+PlatformOpenUrlResult open_url_result_;
+PlatformReopenResult reopen_result_;

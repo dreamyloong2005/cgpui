@@ -35,6 +35,11 @@ struct AppContext {
       NativeFileDialogOptions options) const;
   [[nodiscard]] Result<NativeFileDialogResult> try_show_native_file_dialog(
       NativeFileDialogOptions options) const;
+  [[nodiscard]] Result<NativeMessageDialogResult>
+  try_show_native_message_dialog(NativeMessageDialogOptions options) const;
+  [[nodiscard]] Result<PlatformOpenUrlResult> try_open_url(
+      std::string url) const;
+  [[nodiscard]] Result<PlatformReopenResult> try_request_reopen() const;
   void register_command_palette_entry(CommandPaletteEntry entry) const;
   template <Action T>
   void register_command_palette_entry(CommandPaletteEntry entry) const;

@@ -20964,6 +20964,34 @@
   handoffs, forty-one Step 593 structure guards, and `git diff --check` pass.
   `.vscode/` remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 593 Platform Service Results And Unsupported Policy
+
+- Started from committed Step 592 at `11994869`; only unrelated untracked
+  `.vscode/` remains.
+- Added focused Runtime/AppContext Result adapters for native message dialogs,
+  URL opening, and reopen requests, with typed diagnostics and last-supported
+  result state in a five-line private service-state leaf.
+- The focused behavior target reached compile RED on all missing Runtime and
+  AppContext methods plus diagnostic kinds, then passed after implementation.
+- Supported incomplete results remain typed values; only unsupported backends
+  return `ErrorCode::unsupported_platform`, and those attempts do not replace
+  the last supported message, URL, or reopen result.
+- New behavior plus existing service-result conventions, public result/header
+  checks, and UI source structure pass 6/6.
+- The Step 593 structure guard freezes focused ownership, platform-symbol
+  isolation, line budgets, the 32-event diagnostic bound, and state retention;
+  it reached the intended five-document RED at child exit 10.
+- Synchronized the exact Step 593 completion phrase across all five authority
+  documents and advanced forty-one historical dynamic handoff guards to Step
+  594; the new policy guard brings the Step 594 structure total to forty-two.
+- Final Windows behavior/result/header/source/structure/ledger verification
+  passes 11/11. After the shared UI/platform-header rebuild, final WSL focused
+  verification passes the same 11/11 targets.
+- JSON parsing, five-document unique phrase, zero stale Step 593 dynamic
+  handoffs, forty-two Step 594 structure guards, focused line budgets, and
+  `git diff --check` pass. `.vscode/` remains unrelated and untracked; WSL
+  full debug remains batched.
+
 ## 2026-07-12 Phase F Step 588 Win32 Save-File Dialog
 
 - Started from committed Step 587 at `246bb4a1`; only unrelated untracked

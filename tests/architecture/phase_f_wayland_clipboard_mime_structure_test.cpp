@@ -83,7 +83,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 593 platform-service")) {
+                "\"phase_f_current_handoff\": \"Step 594 dialogs and platform-services")) {
     return 9;
   }
   return 0;

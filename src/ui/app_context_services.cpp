@@ -43,4 +43,19 @@ Result<NativeFileDialogResult> AppContext::try_show_native_file_dialog(
   return runtime.try_show_native_file_dialog(std::move(options));
 }
 
+Result<NativeMessageDialogResult>
+AppContext::try_show_native_message_dialog(
+    NativeMessageDialogOptions options) const {
+  return runtime.try_show_native_message_dialog(std::move(options));
+}
+
+Result<PlatformOpenUrlResult> AppContext::try_open_url(
+    std::string url) const {
+  return runtime.try_open_url(std::move(url));
+}
+
+Result<PlatformReopenResult> AppContext::try_request_reopen() const {
+  return runtime.try_request_reopen();
+}
+
 } // namespace cgpui

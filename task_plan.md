@@ -1087,10 +1087,14 @@ Windows/Linux core API is stable enough for parity work.
 - Step 592 evidence: focused lifecycle coverage verifies missing, installed,
   invoked, cleared callbacks and preserves Win32 PostQuitMessage plus Wayland
   running-flag/wakeup quit semantics.
-- In progress: Step 593 platform-service result and unsupported-policy production behavior.
-- Step 593 plan: expose runtime/AppContext Result adapters and bounded
-  diagnostics for message dialog, open URL, and reopen while preserving last
-  successful results across unsupported attempts.
+- Completed: Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.
+- Step 593 evidence: focused API/behavior coverage verifies typed adapters,
+  AppContext forwarding, supported incomplete values, unsupported errors,
+  retained supported state, and the existing 32-event diagnostic bound.
+- In progress: Step 594 dialogs and platform-services closeout audit.
+- Step 594 plan: audit and freeze the Steps 587-593 file, directory, message,
+  URL, reopen, Result-policy, diagnostics, and explicit unsupported behavior
+  without adding another production path.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1108,6 +1112,13 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| First Step 593 structure RED configure stopped on transient Ninja package filelock | Step 593 structure RED | Rerun the newly registered `/default` target after the configure process exits |
+| First Step 593 implementation patch was atomically rejected on the UI structure-cap hunk | Step 593 GREEN implementation | Split production/state edits from exact structure-inventory and line-cap edits |
+| First Step 593 RED launch stopped before compilation with transient `cannot create filelock for package(ninja)` | Step 593 focused RED | Let the configure process exit, then rerun the registered `/default` target separately |
+| Step 593 looked for a nonexistent `include/cgpui/core/result.hpp` | Step 593 error-policy audit | Use the actual owner `include/cgpui/core/error.hpp`, where `Result<T>` and `ErrorCode` are defined |
+| A Step 593 `rg` target lookup used an over-escaped regex and failed with an unclosed group | Step 593 registered-test lookup | Use fixed-string lookup or search the target name without regex punctuation |
+| Step 593 guessed `tests/ui/platform_service_result_conventions_test.cpp`, which does not exist | Step 593 reference test read | Resolve the registered target source through `rg`/`xmake.lua` before reading it |
+| Initial Step 593 file inventory included nonexistent `tests/app` and `rg` reported an OS path error | Step 593 ownership audit | Restrict the inventory to existing `tests/ui`, `tests/api_parity`, `src/app`, and UI runtime paths |
 | Step 592 final guard-count command returned 0 because it searched for unescaped JSON quotes inside C++ string literals | Step 592 pre-commit audit | Count the actual `\"phase_f_current_handoff` literal used by the architecture sources |
 | Step 592 structure guard assumed Wayland quit cancels a display read and exited 4 | Step 592 quit audit | Freeze the actual production path: clear `running_` and signal the wakeup pipe through `request_wakeup()` |
 | Step 588 combined cached-check/commit command could not create `.git/index.lock` after staging succeeded | Step 588 commit | Keep cached inspection and the approved `git commit` in separate commands |

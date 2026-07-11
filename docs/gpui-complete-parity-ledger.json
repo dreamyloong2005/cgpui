@@ -2509,7 +2509,22 @@
       "xmake.lua"
     ],
     "phase_f_step_592_remaining_gap": "Step 593 platform-service result and unsupported-policy production behavior",
-    "phase_f_current_handoff": "Step 593 platform-service result and unsupported-policy production behavior"
+    "phase_f_step_593_surface": "Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.",
+    "phase_f_step_593_sources": [
+      "include/cgpui/platform/platform_diagnostics.hpp",
+      "include/cgpui/ui/window_runtime.hpp",
+      "include/cgpui/ui/runtime_app_context.hpp",
+      "src/ui/runtime_platform_service_system_results.cpp",
+      "src/ui/runtime_platform_service_state_internal.hpp",
+      "src/ui/window_runtime_internal.hpp",
+      "src/ui/app_context_services.cpp",
+      "tests/api_parity/phase_f_platform_service_result_policy_test.cpp",
+      "tests/architecture/phase_f_platform_service_result_policy_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_593_remaining_gap": "Step 594 dialogs and platform-services closeout audit",
+    "phase_f_current_handoff": "Step 594 dialogs and platform-services closeout audit"
   },
   "categories": [
     "application_and_app_context",

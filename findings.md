@@ -10487,3 +10487,36 @@
 - A base-owned optional callback avoids duplicate storage; protected dispatch
   lets each platform report its backend while preserving no-handler evidence.
 - Phase F Step 592 adds explicit reopen callback/result lifecycle behavior shared by Win32 and Wayland backends, reports missing callbacks without dispatch, supports callback replacement/clearing, and preserves existing platform quit paths. Step 593 platform-service result and unsupported-policy production behavior is next.
+
+## 2026-07-12 Phase F Step 593 Platform Service Results And Unsupported Policy
+
+- Phase B Step 302 already established the intended boundary in
+  `src/ui/runtime_platform_service_results.cpp`: runtime `try_*` adapters
+  convert platform service support/failure into `Result<T>` and unsupported
+  attempts do not overwrite the last successful service state.
+- Step 593 should extend that focused result-adapter leaf plus
+  `src/ui/app_context_services.cpp` for message-dialog, open-URL, and reopen
+  access. Broad runtime/application files should remain declaration or
+  forwarding owners only.
+- The existing bounded `PlatformDiagnosticEvent` stream is the compatible
+  diagnostic surface to reuse for service success, unsupported, and failure
+  attempts instead of adding an unrelated logging channel.
+- `PlatformDiagnosticKind` currently distinguishes menu and file-dialog
+  services but has no message-dialog, open-URL, or reopen values. Step 593
+  needs explicit kinds so the shared bounded stream can identify each new
+  adapter without encoding the service only in free-form operation text.
+- Existing service Result policy treats any supported backend response as a
+  value, including a cancelled file dialog. The new adapters should therefore
+  return `unsupported_platform` only for `supported == false`; supported
+  message cancellation, URL failure, or missing reopen callback remain typed
+  values with `accepted`, `opened`, or `requested` left false.
+- To preserve the modular boundary and existing 110-line cap on
+  `runtime_platform_service_results.cpp`, the three new adapters should live
+  in a separate focused UI source with state declarations isolated in a small
+  private include. `app_context_services.cpp` remains forwarding-only.
+- `window_runtime.hpp` and `window_runtime_internal.hpp` are exactly at their
+  240/260-line structure caps before Step 593. Move all five platform-service
+  result state members into a focused private state include, and keep the new
+  public runtime surface declaration-only with a narrowly raised cap backed by
+  the Step 593 structure guard.
+- Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.
