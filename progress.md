@@ -21727,6 +21727,31 @@
   11/86/61/24/353/61 line budgets, and `git diff --check` pass. `.vscode/`
   remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 578 Drag/Drop Cancellation Closeout
+
+- Started from committed Step 577 at `04ed3c06`; only unrelated untracked
+  `.vscode/` remains.
+- Added focused Win32 cancellation coverage and a real Wayland compositor
+  cancellation test for leave, duplicate leave, late drop, destroy-without-
+  finish, and exactly-once exit delivery.
+- The Win32 test reached behavior RED because a cancelling runner could leave a
+  non-none final effect. Production now propagates an effect only for
+  `DRAGDROP_S_DROP` and clears cancellation/failure results to
+  `DROPEFFECT_NONE`.
+- The real Wayland cancellation behavior passes: leave destroys the offer
+  without finish, delivers one exit, and ignores duplicate leave plus a late
+  drop. The existing production leave/cleared-state path required no change.
+- Added `phase_f_drag_drop_closeout_structure_test`; it reached the intended
+  five-document RED at exit 8 before authority synchronization.
+- Synchronized the exact Step 578 completion phrase across all five authority
+  documents and advanced twenty-seven structure handoff guards to Step 579.
+- Final Windows behavior/structure/ledger verification passes 8/8. Final WSL
+  behavior/shared structure/ledger verification passes 7/7.
+- JSON parsing, five-document unique phrase, twenty-seven Step 579 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  53/56/93/86/3685 line budgets, and `git diff --check` pass. `.vscode/`
+  remains unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

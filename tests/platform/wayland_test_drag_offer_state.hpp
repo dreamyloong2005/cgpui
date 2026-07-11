@@ -58,6 +58,7 @@ class WaylandTestDragOfferState {
   [[nodiscard]] bool wait_for_accepted() const { return wait_for(accepted_); }
   [[nodiscard]] bool wait_for_actions() const { return wait_for(actions_set_); }
   [[nodiscard]] bool wait_for_finished() const { return wait_for(finished_); }
+  [[nodiscard]] bool finished() const { return finished_.load(); }
   [[nodiscard]] bool wait_for_destroyed() const {
     return wait_for(destroyed_, std::chrono::milliseconds{500});
   }

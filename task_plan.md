@@ -1029,7 +1029,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 577 evidence: the pure parser and real compositor keep valid local file
   entries while filtering remote authorities/schemes, malformed percent escapes,
   queries/fragments, relative paths, and decoded NUL.
-- In progress: Step 578 drag/drop cancellation and band closeout.
+- Completed: Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.
+- Step 578 evidence: focused Win32 behavior clears non-drop effects, while the
+  real Wayland compositor observes exactly one exit, no late drop callback,
+  offer destruction, and no finish after leave cancellation.
+- In progress: Step 579 native menu tree production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1047,6 +1051,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first generated Step 579 historical-handoff patch over-escaped C++ string literals and was rejected atomically | Step 578 authority synchronization | Regenerate the patch with the exact single-backslash source spelling and explicit compact-line return values |
+| `xmake build win32_ole_drop_source_test -P .` treated `-P` as an invalid trailing build argument | Step 578 Win32 cancellation RED build | Put the project option before the target: `xmake build -P . win32_ole_drop_source_test` |
 | The first multi-file Phase F planning patch assumed a wrapped Phase E line that did not match the file exactly | Initial entry-plan write | The patch was rejected atomically; re-anchor the insertion on the stable `Errors Encountered During Phase E Resume` heading |
 | The first production patch assumed Win32 and Wayland declared `state()` in the same sequence | Step 539 production write | The patch was rejected atomically; read the exact Wayland class declaration and reapply with file-specific context |
 | `xmake build` was given three target names even though the build task accepts one target | Step 539 Windows focused build | Build each focused target with its own `xmake build <target>` invocation; `xmake test` still accepts multiple registered tests |

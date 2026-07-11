@@ -2309,7 +2309,22 @@
       "xmake.lua"
     ],
     "phase_f_step_577_remaining_gap": "Step 578 drag/drop cancellation and band closeout",
-    "phase_f_current_handoff": "Step 578 drag/drop cancellation and band closeout"
+    "phase_f_step_578_surface": "Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.",
+    "phase_f_step_578_sources": [
+      "src/platform/win32/win32_ole_drop_source.cpp",
+      "tests/platform/win32_ole_drop_source_test.cpp",
+      "src/platform/linux/wayland_data_device_drag_events.cpp",
+      "src/platform/linux/wayland_data_device_offer.cpp",
+      "tests/platform/wayland_drag_cancel_test.cpp",
+      "tests/platform/wayland_test_drag_offer_state.hpp",
+      "tests/architecture/phase_f_drag_drop_closeout_structure_test.cpp",
+      "tests/architecture/phase_f_win32_ole_drop_target_structure_test.cpp",
+      "tests/architecture/phase_f_wayland_drag_finish_structure_test.cpp",
+      "tests/architecture/phase_f_wayland_uri_policy_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_578_remaining_gap": "Step 579 native menu tree production behavior",
+    "phase_f_current_handoff": "Step 579 native menu tree production behavior"
   },
   "categories": [
     "application_and_app_context",

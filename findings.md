@@ -10271,3 +10271,26 @@
   mixed list, and reject remote authorities, other schemes, relative paths,
   malformed percent escapes, and decoded NUL.
 - Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.
+
+## 2026-07-12 Phase F Step 578 Drag/Drop Cancellation Closeout
+
+- Win32 `Win32OleDropSource::QueryContinueDrag(...)` already returns
+  `DRAGDROP_S_CANCEL` for Escape, but the drag runner result has no focused
+  cancellation classification or closeout coverage across the Step 571-577
+  source, target, and payload band.
+- Wayland `handle_leave(...)` already emits `DragExited` and destroys the
+  current offer without calling `finish`; the missing production-grade
+  evidence is cancellation before drop, exactly-once exit delivery, and
+  immunity to a later drop callback after the offer was cleared.
+- Step 578 should keep ownership in the existing focused Win32 drop-source and
+  Wayland data-device drag-event modules, add behavior coverage before any
+  production change, and close the Steps 571-578 band with a dedicated
+  structure/audit guard before handing off to Step 579 native menu trees.
+- The focused Win32 RED test confirmed that `run_win32_ole_drag(...)` trusted
+  an effect written by a runner that returned `DRAGDROP_S_CANCEL`; only a
+  successful `DRAGDROP_S_DROP` may expose a final effect, while cancellation
+  and failure must normalize it to `DROPEFFECT_NONE`.
+- The real Wayland compositor test confirms that leave cancellation destroys
+  the active offer without finish, emits one `DragExited`, and suppresses both
+  a duplicate leave exit and a late drop callback after state was cleared.
+- Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.

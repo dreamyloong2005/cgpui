@@ -18,6 +18,19 @@ HRESULT WINAPI run_drag(
   *effect = DROPEFFECT_MOVE;
   return DRAGDROP_S_DROP;
 }
+
+HRESULT WINAPI cancel_drag(
+    IDataObject*,
+    IDropSource* source,
+    DWORD,
+    DWORD* effect) {
+  if (source == nullptr || effect == nullptr) return E_POINTER;
+  if (source->QueryContinueDrag(TRUE, MK_LBUTTON) != DRAGDROP_S_CANCEL) {
+    return E_FAIL;
+  }
+  *effect = DROPEFFECT_MOVE;
+  return DRAGDROP_S_CANCEL;
+}
 } // namespace
 
 int main() {
@@ -35,5 +48,9 @@ int main() {
       *data, DROPEFFECT_COPY | DROPEFFECT_MOVE, &run_drag);
   if (result.result != DRAGDROP_S_DROP || result.effect != DROPEFFECT_MOVE ||
       observed_allowed != (DROPEFFECT_COPY | DROPEFFECT_MOVE)) return 4;
+  const auto cancelled = cgpui::run_win32_ole_drag(
+      *data, DROPEFFECT_COPY | DROPEFFECT_MOVE, &cancel_drag);
+  if (cancelled.result != DRAGDROP_S_CANCEL ||
+      cancelled.effect != DROPEFFECT_NONE) return 5;
   return 0;
 }

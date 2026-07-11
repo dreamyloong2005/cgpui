@@ -44,7 +44,10 @@ Win32OleDragResult run_win32_ole_drag(
   Win32OleDropSource source;
   DWORD effect = DROPEFFECT_NONE;
   const HRESULT result = runner(&data_object, &source, allowed_effects, &effect);
-  return Win32OleDragResult{.result = result, .effect = effect};
+  return Win32OleDragResult{
+      .result = result,
+      .effect = result == DRAGDROP_S_DROP ? effect : DROPEFFECT_NONE,
+  };
 }
 
 } // namespace cgpui

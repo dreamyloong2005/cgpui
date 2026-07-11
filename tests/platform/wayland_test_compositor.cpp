@@ -3551,6 +3551,10 @@ bool WaylandTestCompositor::wait_for_drag_offer_finished() const {
   return state_->drag_offer.wait_for_finished();
 }
 
+bool WaylandTestCompositor::drag_offer_finished() const {
+  return state_->drag_offer.finished();
+}
+
 bool WaylandTestCompositor::wait_for_drag_offer_destroyed() const {
   return state_->drag_offer.wait_for_destroyed();
 }

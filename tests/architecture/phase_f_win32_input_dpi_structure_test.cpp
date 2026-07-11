@@ -109,7 +109,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 578 drag/drop")) {
+                "\"phase_f_current_handoff\": \"Step 579 native menu")) {
     return 8;
   }
   return 0;
