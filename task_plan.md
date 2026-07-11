@@ -1033,7 +1033,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 578 evidence: focused Win32 behavior clears non-drop effects, while the
   real Wayland compositor observes exactly one exit, no late drop callback,
   offer destruction, and no finish after leave cancellation.
-- In progress: Step 579 native menu tree production behavior.
+- Completed: Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.
+- Step 579 evidence: a real Win32 window exposes the recursively installed
+  Unicode menu bar, nested popup, commands, and separator through `HMENU`,
+  while focused structure guards freeze RAII ownership and source inventory.
+- In progress: Step 580 native menu check/radio/enabled state production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1051,6 +1055,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 579 final WSL gate passed 4/5 and direct `win32_window_source_test` returned exit 2 while the same guard passed on Windows | Step 579 WSL shared structure gate | The test's four-level fallback could not escape the deep WSL build-root; set its xmake run directory explicitly to `os.projectdir()` like the other structure guards |
 | The first generated Step 579 historical-handoff patch over-escaped C++ string literals and was rejected atomically | Step 578 authority synchronization | Regenerate the patch with the exact single-backslash source spelling and explicit compact-line return values |
 | `xmake build win32_ole_drop_source_test -P .` treated `-P` as an invalid trailing build argument | Step 578 Win32 cancellation RED build | Put the project option before the target: `xmake build -P . win32_ole_drop_source_test` |
 | The first multi-file Phase F planning patch assumed a wrapped Phase E line that did not match the file exactly | Initial entry-plan write | The patch was rejected atomically; re-anchor the insertion on the stable `Errors Encountered During Phase E Resume` heading |

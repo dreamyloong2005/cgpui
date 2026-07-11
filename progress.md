@@ -21752,6 +21752,34 @@
   53/56/93/86/3685 line budgets, and `git diff --check` pass. `.vscode/`
   remains unrelated and untracked; WSL full debug remains batched.
 
+## 2026-07-12 Phase F Step 579 Win32 Native Menu Tree
+
+- Started from committed Step 578 at `feecf52b`; only unrelated untracked
+  `.vscode/` remains.
+- Added a real Win32 window test for a Unicode top-level menu, commands,
+  separator, and nested submenu. It reached behavior RED at exit 3 because the
+  platform retained the model but reported native menus unsupported.
+- Added focused `win32_native_menu_tree_internal.hpp/.cpp` ownership for
+  recursive HMENU construction, move-only RAII destruction, and window menu
+  application. Win32 state commits new trees transactionally and the
+  application attaches them to existing and future windows.
+- The real Win32 HMENU behavior test passes 1/1.
+- Added the Step 579 structure guard and source inventories; the guard reached
+  the intended five-document RED at exit 10 before authority synchronization.
+- Synchronized the exact Step 579 completion phrase across all five authority
+  documents, corrected the completed Steps 571-578 roadmap checkbox, and
+  advanced twenty-eight structure handoff guards to Step 580.
+- The initial WSL shared gate passed 4/5; direct execution identified
+  `win32_window_source_test` exit 2 because its relative fallback did not escape
+  the deep WSL build root. The target now runs from `os.projectdir()` and the
+  rerun passes 5/5.
+- Final Windows behavior/structure/ledger verification passes 6/6. Final WSL
+  shared structure/ledger verification passes 5/5.
+- JSON parsing, five-document unique phrase, twenty-eight Step 580 structure
+  handoff guards plus the JSON handoff, stale-current-handoff audit, focused
+  33/81/49/156/97/92 line budgets, and `git diff --check` pass. `.vscode/`
+  remains unrelated and untracked; WSL full debug remains batched.
+
 ## 2026-07-11 Phase F Step 569 Wayland Clipboard Failure Handling
 
 - Started from committed Step 568 at `796dd6e5`; only unrelated untracked

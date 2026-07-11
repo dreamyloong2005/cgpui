@@ -68,8 +68,14 @@ class Win32Application final : public PlatformApplication {
 
   PlatformMenuInstallationResult install_native_menu(
       NativeMenuModel menu) override {
+    for (Win32Window* window : windows_) {
+      (void)win32_apply_native_menu(window_handle(window), nullptr);
+    }
     last_menu_installation_ =
         native_menu_state_.install_native_menu(std::move(menu));
+    for (Win32Window* window : windows_) {
+      apply_native_menu(window);
+    }
     return last_menu_installation_;
   }
 
@@ -100,8 +106,25 @@ class Win32Application final : public PlatformApplication {
     if (!window) {
       return std::unexpected(window.error());
     }
+    apply_native_menu(window->get());
     windows_.push_back(window->get());
     return std::unique_ptr<PlatformWindow>(std::move(*window));
+  }
+
+  [[nodiscard]] static HWND window_handle(Win32Window* window) {
+    if (window == nullptr) return nullptr;
+    const NativeSurfaceHandle surface = window->native_surface();
+    const auto* win32_surface = std::get_if<Win32SurfaceHandle>(&surface);
+    return win32_surface == nullptr
+        ? nullptr
+        : static_cast<HWND>(win32_surface->hwnd);
+  }
+
+  void apply_native_menu(Win32Window* window) {
+    if (native_menu_state_.native_menu() == nullptr) return;
+    (void)win32_apply_native_menu(
+        window_handle(window),
+        native_menu_state_.native_menu());
   }
 
   void dispatch_wakeup() {

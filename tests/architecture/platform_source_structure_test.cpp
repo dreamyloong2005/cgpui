@@ -243,6 +243,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_text_input.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_native_menu_tree_internal.hpp",
+      "src/platform/win32/win32_native_menu_tree.cpp",
       "src/platform/win32/win32_window_factory_internal.hpp",
       "src/platform/win32/win32_window_factory.cpp",
       "src/platform/win32/win32_window_ime.cpp",

@@ -322,6 +322,13 @@ target("phase_f_drag_drop_closeout_structure_test")
     add_files("tests/architecture/phase_f_drag_drop_closeout_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_f_win32_native_menu_tree_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_f_win32_native_menu_tree_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -528,6 +535,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs, "src/platform/win32")
         add_syslinks("ole32", "user32")
+        add_tests("default")
+
+    target("win32_native_menu_tree_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_native_menu_tree_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32")
         add_tests("default")
 
     target("win32_ole_text_data_object_test")
@@ -2915,8 +2930,9 @@ target("wayland_window_source_test")
 
 target("win32_window_source_test")
     set_kind("binary")
+    set_rundir(os.projectdir())
     add_files("tests/architecture/win32_window_source_test.cpp")
-    add_tests("default")
+    add_tests("default", {rundir = os.projectdir()})
 
 target("desktop_target_readiness_test")
     set_kind("binary")

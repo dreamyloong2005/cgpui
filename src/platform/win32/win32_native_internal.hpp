@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "win32_native_menu_tree_internal.hpp"
 
 namespace cgpui {
 
@@ -10,9 +11,11 @@ class Win32NativeMenuState {
 
   [[nodiscard]] const PlatformMenuInstallationResult& last_menu_installation()
       const;
+  [[nodiscard]] HMENU native_menu() const;
 
  private:
   NativeMenuModel model_;
+  Win32NativeMenuTree menu_tree_;
   PlatformMenuInstallationResult last_menu_installation_;
 };
 

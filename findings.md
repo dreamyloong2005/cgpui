@@ -10294,3 +10294,31 @@
   the active offer without finish, emits one `DragExited`, and suppresses both
   a duplicate leave exit and a late drop callback after state was cleared.
 - Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.
+
+## 2026-07-12 Phase F Step 579 Win32 Native Menu Tree
+
+- The public `NativeMenuModel` and runtime installation chain already exist,
+  but both Win32 and Wayland platform states currently retain only the model
+  and report `supported = false`; no native menu tree is materialized.
+- Step 579 ownership belongs in a focused Win32 menu-tree leaf that recursively
+  creates and owns `HMENU` resources. `Win32NativeMenuState` should remain the
+  installation/model boundary, while `Win32Application` applies the installed
+  root menu to existing and subsequently created Win32 windows.
+- Wayland has no equivalent in-process native global-menu protocol in the
+  current target boundary, so its existing explicit unsupported result remains
+  correct for this Win32 production slice.
+- The roadmap summary checkbox for the completed Steps 571-578 drag/drop band
+  remained unchecked after Step 578 and must be corrected during the next
+  five-document authority synchronization.
+- The public integration test reached RED at exit 3 because Win32 still
+  reported the retained menu model as unsupported. The focused tree leaf now
+  recursively creates `CreateMenu`/`CreatePopupMenu` resources, appends command
+  and separator entries, and owns the full tree through one root `DestroyMenu`.
+- `Win32NativeMenuState` commits a newly built tree only on success, and
+  `Win32Application` detaches old handles before replacement then applies the
+  current root to existing and subsequently created windows.
+- The initial WSL shared gate exposed a historical test-runner path assumption:
+  `win32_window_source_test` returned exit 2 because its four-level fallback
+  could not escape the deeper WSL build root. Its xmake target now runs from
+  `os.projectdir()`, matching the repository's other source structure guards.
+- Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.

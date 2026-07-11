@@ -1782,6 +1782,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 576 adds a strict Win32 OLE file IDataObject, enumerates CF_HDROP through an owned wide DROPFILES HGLOBAL, preserves Unicode multi-file ordering, rejects invalid or empty paths before drag, and composes with the drag runner. Step 577 Wayland non-local URI-list drag policy production behavior is next.
 - [x] Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.
 - [x] Phase F Step 578 normalizes Win32 OLE cancellation to a none effect, proves Wayland leave destroys offers without finish, suppresses duplicate exit and late drop callbacks, and closes the Steps 571-578 drag/drop band. Step 579 native menu tree production behavior is next.
+- [x] Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
@@ -1794,7 +1795,7 @@ not protocol/test skeletons.
 - [x] Steps 563-570: Complete clipboard: Win32 Unicode/text/files where
   applicable, Wayland selection ownership/write/read, MIME negotiation,
   incremental transfer, failure handling, and diagnostics.
-- [ ] Steps 571-578: Complete drag/drop: Win32 OLE drop target/source,
+- [x] Steps 571-578: Complete drag/drop: Win32 OLE drop target/source,
   Wayland data-device accept/action/finish negotiation, text/files/URI-list,
   non-local URI policy, and cancellation.
 - [ ] Steps 579-586: Complete native menus and accelerators: menu tree,

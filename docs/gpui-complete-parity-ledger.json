@@ -2324,7 +2324,22 @@
       "xmake.lua"
     ],
     "phase_f_step_578_remaining_gap": "Step 579 native menu tree production behavior",
-    "phase_f_current_handoff": "Step 579 native menu tree production behavior"
+    "phase_f_step_579_surface": "Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.",
+    "phase_f_step_579_sources": [
+      "src/platform/win32/win32_native_menu_tree_internal.hpp",
+      "src/platform/win32/win32_native_menu_tree.cpp",
+      "src/platform/win32/win32_native_internal.hpp",
+      "src/platform/win32/win32_native.cpp",
+      "src/platform/win32/win32_application.cpp",
+      "src/platform/linux/wayland_native.cpp",
+      "tests/platform/win32_native_menu_tree_test.cpp",
+      "tests/architecture/phase_f_win32_native_menu_tree_structure_test.cpp",
+      "tests/architecture/win32_window_source_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_579_remaining_gap": "Step 580 native menu check/radio/enabled state production behavior",
+    "phase_f_current_handoff": "Step 580 native menu check/radio/enabled state production behavior"
   },
   "categories": [
     "application_and_app_context",
