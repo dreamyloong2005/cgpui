@@ -2639,7 +2639,21 @@
       "xmake.lua"
     ],
     "phase_f_step_600_remaining_gap": "Step 601 multi-window lifecycle integration and churn production behavior",
-    "phase_f_current_handoff": "Step 601 multi-window lifecycle integration and churn production behavior"
+    "phase_f_step_601_surface": "Phase F Step 601 reclaims closed child runtime records, opened-window entries, and per-window themes only after deferred native destruction, preserves close-callback observability, and keeps repeated child-window churn bounded. Step 602 multi-window event-loop closeout audit is next.",
+    "phase_f_step_601_sources": [
+      "src/ui/runtime_window_ownership.cpp",
+      "src/ui/runtime_window_reclamation_internal.hpp",
+      "src/ui/runtime_window_reclamation.cpp",
+      "src/ui/runtime_window_records.cpp",
+      "src/ui/window_runtime_internal.hpp",
+      "tests/ui/window_runtime_multi_window_churn_test.cpp",
+      "tests/architecture/phase_f_multi_window_lifecycle_churn_structure_test.cpp",
+      "tests/architecture/phase_f_multi_window_event_loop_ownership_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_601_remaining_gap": "Step 602 multi-window event-loop closeout audit",
+    "phase_f_current_handoff": "Step 602 multi-window event-loop closeout audit"
   },
   "categories": [
     "application_and_app_context",

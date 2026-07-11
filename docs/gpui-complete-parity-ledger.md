@@ -727,6 +727,7 @@ consume C: drive space again.
 - Phase F Step 598 stores event route, result, and dispatch state per runtime window, keeps callback contexts bound to the originating record, and preserves root dispatch state across child events. Step 599 per-window theme isolation production behavior is next.
 - Phase F Step 599 schedules app-theme redraws across all active windows, confines window-theme redraws to the target runtime record, and preserves per-window token fallback in child contexts. Step 600 per-window accessibility isolation production behavior is next.
 - Phase F Step 600 submits accessibility trees and live updates per runtime window, derives child snapshots from their own static render trees and focus state, and preserves root accessibility history across child frames. Step 601 multi-window lifecycle integration and churn production behavior is next.
+- Phase F Step 601 reclaims closed child runtime records, opened-window entries, and per-window themes only after deferred native destruction, preserves close-callback observability, and keeps repeated child-window churn bounded. Step 602 multi-window event-loop closeout audit is next.
 
 ## Categories
 

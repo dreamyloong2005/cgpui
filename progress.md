@@ -22325,3 +22325,39 @@
 - JSON parsing, five-document unique phrase, focused 260/158/40/239 line
   budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
   untracked; WSL full debug remains batched.
+
+## 2026-07-12 Phase F Step 601 Multi-Window Lifecycle Integration And Churn
+
+- Started from committed Step 600 at `15561f17`; only unrelated untracked
+  `.vscode/` remains.
+- Audited child close/deferred retirement, opened-window and runtime-record
+  storage, owned-view removal, app/window lookup semantics, theme storage, and
+  the monotonic removed-view tombstone set.
+- Planned repeated in-run open/close/wakeup coverage that requires immediate
+  close-callback observability followed by bounded post-collection state.
+- Added a twelve-cycle behavior test and confirmed precise RED at exit 2: the
+  native wrapper is collected after wakeup, but the closed runtime/opened/theme
+  state remains published.
+- An attempted removal of `removed_view_ids_` broke the explicit allocated-id
+  contract in `window_runtime_multiwindow_test` at exit 121; restored the
+  tombstone semantics and limited Step 601 to closed-window lifecycle state.
+- `renderer_result_conventions_test` independently exits 9 because it expects
+  immediate child renderer creation before the root parent is active, while
+  the committed child-ownership path defers activation. No Step 601 source
+  change participates in that path.
+- The Step 595 ownership structure guard rejected the first GREEN layout
+  because `runtime_window_ownership.cpp` grew past its 30-line cap; extracting
+  logical pruning into a dedicated reclamation leaf preserves that boundary.
+- Focused churn, ownership, App/Window lookup, view identity, result policy,
+  theme, accessibility, app runner, and UI structure regressions pass 10/10 on
+  Windows after restoring allocated-id semantics.
+- Added the Step 601 structure guard; it reached the intended five-document
+  RED at exit 9 while the Step 595 ownership structure guard remained green.
+- Synchronized the exact Step 601 completion phrase across all five authority
+  documents and advanced forty-nine historical dynamic handoff guards; the new
+  guard brings the Step 602 total to fifty with zero stale Step 601 handoffs.
+- Final Windows lifecycle/churn/structure/ledger verification passes 13/13.
+  Final WSL shared focused verification also passes 13/13.
+- JSON parsing, five-document unique phrase, focused 20/36/184/260 line
+  budgets, and `git diff --check` pass. `.vscode/` remains unrelated and
+  untracked; WSL full debug remains batched.

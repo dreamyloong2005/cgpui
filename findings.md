@@ -10608,3 +10608,22 @@
   matching record history so live-update comparison never crosses native
   window lifetimes.
 - Phase F Step 600 submits accessibility trees and live updates per runtime window, derives child snapshots from their own static render trees and focus state, and preserves root accessibility history across child frames. Step 601 multi-window lifecycle integration and churn production behavior is next.
+
+## 2026-07-12 Phase F Step 601 Multi-Window Lifecycle Integration And Churn
+
+- Close cleanup immediately releases an owned child view and moves the native
+  wrapper into deferred retirement, but closed entries remain forever in
+  `window_runtime_records_`, `app_opened_windows_`, and `window_themes_` after
+  the wrapper is safely destroyed.
+- `removed_view_ids_` accumulates one tombstone for every removed child view,
+  but it is currently required because `allocate_view_id()` creates an
+  immediately upgradeable identity before a view is registered. Bounding that
+  state requires a later generation-aware handle design, not a map-membership
+  substitution in this lifecycle slice.
+- Existing behavior depends on the inactive record remaining queryable during
+  the close callback/deferred-retirement window, not after the subsequent root
+  wakeup collects the native wrapper.
+- Step 601 should reclaim closed logical records only from
+  `collect_retired_native_windows()`, preserving pending/failed/reopenable
+  records while bounding repeated open-close churn.
+- Phase F Step 601 reclaims closed child runtime records, opened-window entries, and per-window themes only after deferred native destruction, preserves close-callback observability, and keeps repeated child-window churn bounded. Step 602 multi-window event-loop closeout audit is next.

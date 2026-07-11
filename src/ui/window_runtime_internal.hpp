@@ -46,6 +46,7 @@ void record_platform_diagnostic(PlatformDiagnosticEvent event);
 void fail_and_quit(Error error);
 void activate_native_window_for_record(WindowRuntimeRecord& record), activate_pending_native_windows();
 void collect_retired_native_windows();
+#include "runtime_window_reclamation_internal.hpp"
 [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor, std::string_view empty_renderer_message);
 [[nodiscard]] Result<void> try_draw_frame_for_record(WindowRuntimeRecord& record, View& view);
 #include "runtime_static_rendering_internal.hpp"
@@ -144,7 +145,6 @@ struct RuntimeTask {
   std::shared_ptr<std::atomic_bool> cancellation_requested;
   std::jthread worker;
 };
-
 struct RuntimeTaskDiagnostics {
   std::size_t task_count = 0;
   std::size_t active_task_count = 0;

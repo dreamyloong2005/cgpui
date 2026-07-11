@@ -105,7 +105,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 601 multi-window lifecycle integration and churn production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 602 multi-window event-loop closeout audit")) {
     return 11;
   }
   return 0;

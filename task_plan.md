@@ -1119,7 +1119,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 600 evidence: focused root/child static-tree coverage verifies native
   submission isolation, per-window focus, independent update history, and
   child-only text live updates after interleaved frames.
-- In progress: Step 601 multi-window lifecycle integration and churn production behavior.
+- Completed: Phase F Step 601 reclaims closed child runtime records, opened-window entries, and per-window themes only after deferred native destruction, preserves close-callback observability, and keeps repeated child-window churn bounded. Step 602 multi-window event-loop closeout audit is next.
+- Step 601 evidence: twelve repeated in-run open/close/wakeup cycles preserve
+  inactive record lookup until deferred native destruction, then return runtime
+  records/opened windows/themes/views to the root-only baseline.
+- In progress: Step 602 multi-window event-loop closeout audit.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

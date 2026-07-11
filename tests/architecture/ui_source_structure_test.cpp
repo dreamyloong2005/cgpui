@@ -1938,6 +1938,8 @@ int main() {
       "src/ui/runtime_window_activation.cpp",
       "src/ui/runtime_window_ownership.cpp",
       "src/ui/runtime_window_ownership_state_internal.hpp",
+      "src/ui/runtime_window_reclamation.cpp",
+      "src/ui/runtime_window_reclamation_internal.hpp",
       "src/ui/runtime_window_records.cpp",
       "src/ui/runtime_window_rendering.cpp",
       "src/ui/runtime_window_results.cpp",
