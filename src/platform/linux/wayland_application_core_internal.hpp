@@ -62,7 +62,7 @@ class WaylandApplication final : public PlatformApplication {
   Point pointer_position_{};
   WaylandPointerScrollFrameState pointer_scroll_frame_;
   std::string initialization_error_;
-  bool running_ = true;
+  std::atomic_bool running_{true};
   WaylandCursorThemeLoadStatus cursor_theme_status_ =
       WaylandCursorThemeLoadStatus::unavailable;
   WaylandCursorThemeState cursor_theme_state_;

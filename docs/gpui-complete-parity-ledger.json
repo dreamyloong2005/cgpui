@@ -2100,7 +2100,20 @@
       "xmake.lua"
     ],
     "phase_f_step_561_remaining_gap": "Step 562 Wayland event-loop wakeup production behavior",
-    "phase_f_current_handoff": "Step 562 Wayland event-loop wakeup production behavior"
+    "phase_f_step_562_surface": "Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.",
+    "phase_f_step_562_sources": [
+      "src/platform/linux/wayland_input_internal.hpp",
+      "src/platform/linux/wayland_application_core_internal.hpp",
+      "src/platform/linux/wayland_application_lifecycle.cpp",
+      "src/platform/linux/wayland_event_loop.cpp",
+      "tests/platform/wayland_event_loop_wakeup_test.cpp",
+      "tests/architecture/phase_f_wayland_event_loop_wakeup_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_562_remaining_gap": "Step 563 Win32 Unicode clipboard production behavior",
+    "phase_f_current_handoff": "Step 563 Win32 Unicode clipboard production behavior"
   },
   "categories": [
     "application_and_app_context",

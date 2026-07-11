@@ -21293,3 +21293,27 @@
 - The first dynamic staging command merged Git CRLF warnings into its path
   list and failed before staging anything. Filtering `warning:` output lines
   fixes the path list; the index is re-audited after retry.
+
+## 2026-07-11 Phase F Step 562 Wayland Event-Loop Wakeup
+
+- Started from committed Step 561 at `8ec6a9bf`; only unrelated untracked
+  `.vscode/` remains.
+- Initial audit finds an existing nonblocking pipe/poll implementation and
+  wakeup event bridge, but no real compositor coverage for cross-thread wakeup,
+  bursts, drain semantics, or idle quit.
+- The new real wakeup target reached precise RED at exit 9 because quit's
+  internal pipe byte was delivered as a third window event.
+- Converted run state to `atomic_bool`, adopted prepare/read/cancel display
+  polling with EAGAIN output readiness, made pipe read/write EINTR-safe, and
+  suppressed user wakeup publication once termination begins. New and existing
+  real wakeup/close/lifecycle/cursor behavior passes 4/4.
+- Added the Step 562 structure guard; it reached the intended five-document RED
+  at exit 7 while both total Wayland/platform source guards remained green.
+- Synchronized the exact Step 562 completion phrase across all five authority
+  documents, marked the Wayland 555-562 band complete, advanced the handoff to
+  Step 563 Win32 Unicode clipboard, and passed Windows structure/ledger 14/14.
+- Final WSL verification passes 18/18 across wakeup, compositor close, window
+  lifecycle, cursor theme, and fourteen structure/source/handoff/ledger gates.
+- Final JSON parsing, five-document unique phrase, event-loop/test line caps,
+  handoff inventory, and `git diff --check` pass. `.vscode/` remains unrelated
+  and untracked; WSL full debug remains batched.

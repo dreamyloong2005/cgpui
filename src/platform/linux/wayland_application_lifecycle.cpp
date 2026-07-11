@@ -15,7 +15,7 @@ void WaylandApplication::request_wakeup() {
 }
 
 void WaylandApplication::quit() {
-  running_ = false;
+  running_.store(false);
   request_wakeup();
 }
 

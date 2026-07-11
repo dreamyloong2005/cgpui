@@ -1765,13 +1765,14 @@ not protocol/test skeletons.
 - [x] Phase F Step 559 adds production Wayland fractional scaling with preferred 120-based scale, integer-ceiling buffer scale, viewporter logical destinations, and integer output fallback. Step 560 Wayland configure lifecycle production behavior is next.
 - [x] Phase F Step 560 commits Wayland toplevel size and state only at surface configure acknowledgement, discards superseded pending sizes, and suppresses duplicate resize events. Step 561 Wayland cursor theme loading production behavior is next.
 - [x] Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.
+- [x] Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
 - [x] Steps 547-554: Complete Win32 input: pointer, wheel, high precision
   scroll, keyboard, dead keys, text input, cursor theme/system cursors,
   capture, drag, and DPI changes.
-- [ ] Steps 555-562: Complete Wayland input: seat capability changes,
+- [x] Steps 555-562: Complete Wayland input: seat capability changes,
   keyboard layout/modifiers, pointer enter/leave/motion/buttons/axis,
   fractional scale, configure lifecycle, cursor theme loading, and wakeups.
 - [ ] Steps 563-570: Complete clipboard: Win32 Unicode/text/files where

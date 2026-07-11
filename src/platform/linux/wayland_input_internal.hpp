@@ -8,6 +8,7 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <cstdint>
+#include <atomic>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -82,7 +83,7 @@ struct WaylandCursorThemeState {
 int wayland_run_event_loop(
     wl_display* display,
     int wakeup_read_fd,
-    bool& running,
+    std::atomic_bool& running,
     std::vector<WaylandWindow*>& windows);
 void wayland_request_wakeup(int wakeup_write_fd);
 void wayland_bind_registry_global(

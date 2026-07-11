@@ -964,7 +964,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 561 evidence: a deterministic temporary Xcursor theme and real shm
   compositor prove non-null cursor surfaces, image-buffer attach/commit,
   shape changes, hotspot conversion, and ceiling-scale 2 at fractional 1.25x.
-- In progress: Step 562 Wayland event-loop wakeup production behavior.
+- Completed: Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.
+- Step 562 evidence: a real idle compositor sequence coalesces 32 queued writes
+  into one window wakeup, delivers one later cross-thread wakeup, and lets
+  cross-thread quit terminate without a spurious third event.
+- In progress: Step 563 Win32 Unicode clipboard production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

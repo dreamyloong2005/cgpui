@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 562 Wayland event-loop")) {
+                "\"phase_f_current_handoff\": \"Step 563 Win32 Unicode")) {
     return 8;
   }
   return 0;

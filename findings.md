@@ -10009,3 +10009,27 @@
   its viewport destination. Moving the flush after acknowledgement sends the
   ack and matching viewport state together before resize callbacks observe it.
 - Phase F Step 561 loads real Wayland cursor themes through wl_shm and libwayland-cursor, applies scaled cursor surfaces with image buffers and hotspots, and reloads on window scale changes. Step 562 Wayland event-loop wakeup production behavior is next.
+
+## 2026-07-11 Phase F Step 562 Wayland Event-Loop Wakeup Audit
+
+- Production already creates a nonblocking close-on-exec pipe, polls it beside
+  the Wayland display fd, drains readable bytes, publishes
+  `WindowWakeupRequested` to registered windows, and uses the same path to wake
+  `quit()`.
+- No real Wayland test currently proves cross-thread wakeup delivery, burst
+  coalescing/drain behavior, idle-loop quit latency, or correctness of the
+  Wayland prepare-read/cancel-read sequence under wakeup-only polls.
+- `running_` is a plain bool read by the event-loop thread and written by
+  cross-thread `quit()`, which is a data race. The current wakeup-only poll also
+  dispatches `WindowWakeupRequested` after `quit()` has already cleared the
+  running flag, exposing an extra user event for an internal termination wake.
+- The loop uses `dispatch_pending` followed by raw poll and `wl_display_dispatch`
+  rather than the standard `prepare_read` / `read_events` / `cancel_read`
+  sequence. Step 562 should make the display-read reservation explicit while
+  preserving wakeup-pipe responsiveness and EAGAIN flush handling.
+- The real behavior sequence now passes: 32 pre-run writes drain into one
+  window wakeup, a later cross-thread request produces exactly one more, and
+  idle `quit()` exits without publishing a third event. Existing compositor
+  close, window lifecycle, and cursor theme paths remain green under the
+  prepare-read loop.
+- Phase F Step 562 makes Wayland wakeups thread-safe with atomic run state, prepare-read polling, EINTR-safe pipe draining, burst coalescing, and quit-only wake suppression. Step 563 Win32 Unicode clipboard production behavior is next.
