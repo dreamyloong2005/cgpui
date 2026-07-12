@@ -107,7 +107,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 606 IME diagnostics and stress production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 607 scale-change diagnostics and stress production behavior")) {
     return 10;
   }
   return 0;

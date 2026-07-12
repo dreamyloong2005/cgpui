@@ -2696,7 +2696,16 @@
       "xmake.lua"
     ],
     "phase_f_step_605_remaining_gap": "Step 606 IME diagnostics and stress production behavior",
-    "phase_f_current_handoff": "Step 606 IME diagnostics and stress production behavior"
+    "phase_f_step_606_surface": "Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.",
+    "phase_f_step_606_sources": [
+      "include/cgpui/platform/platform_diagnostics.hpp",
+      "src/ui/runtime_event_text.cpp",
+      "tests/ui/window_runtime_ime_diagnostics_test.cpp",
+      "tests/architecture/phase_f_ime_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_606_remaining_gap": "Step 607 scale-change diagnostics and stress production behavior",
+    "phase_f_current_handoff": "Step 607 scale-change diagnostics and stress production behavior"
   },
   "categories": [
     "application_and_app_context",

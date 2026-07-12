@@ -10679,3 +10679,16 @@
   32-event tail is sequences 97-128 with sixteen successful entered events and
   sixteen unsuccessful cancelled exited events, each preserving one payload.
 - Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 606 IME Diagnostics And Stress
+
+- Runtime IME diagnostics previously covered candidate placement only; focused
+  composition update/commit/cancel and delete-surrounding mutations were not
+  represented in the bounded platform stream.
+- The focused text-event leaf already owns model mutation and can record the
+  matching event kind, operation, text/delete count, success, and cancellation
+  without adding state to platform backends or broad runtime files.
+- Direct coverage verifies update, commit, and successful delete-surrounding;
+  sixty-four update/cancel cycles retain sequences 97-128 with sixteen
+  successful updates and sixteen unsuccessful cancellations.
+- Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.

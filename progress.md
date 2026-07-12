@@ -22453,3 +22453,30 @@
 - JSON parsing, five-document completion phrase, 54 Step 606 handoffs, zero
   stale Step 605 handoffs, 37/155/60/69/260 line budgets, and
   `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 606 IME Diagnostics And Stress
+
+- Started from committed Step 605 at `df7c6907`; unrelated `.vscode/` remains
+  untracked.
+- Added focused behavior RED for missing composition diagnostics; the first run
+  exited 1 because only placement diagnostics existed.
+- Recorded IME update, commit, cancel, and delete-surrounding operations in the
+  focused runtime text-event leaf, including cancellation, request size, and
+  model deletion success.
+- The first GREEN stress assertion expected an initial placement diagnostic,
+  but the model-only fixture intentionally has no candidate element tree;
+  correcting the bounded tail from 98-129 to 97-128 made the test pass.
+- Added direct update/commit/delete coverage plus sixty-four update/cancel
+  cycles; the focused IME/text/scheduling behavior group passes 3/3.
+- Added the Step 606 structure guard; it reached the intended document RED at
+  exit 8 after behavior, operation, success/cancel, prior-step, Xmake, and line
+  budget checks passed.
+- Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.
+- Final Windows IME/text/runtime/structure/platform/ledger verification passes
+  10/10.
+- Final WSL shared runtime, real Wayland IME keyboard, source, structure, and
+  ledger verification reuses the D-drive caches and passes 11/11. WSL full
+  debug remains batched.
+- JSON parsing, five-document completion phrase, 55 Step 607 handoffs, zero
+  stale Step 606 handoffs, 73/122/71/260 line budgets, and
+  `git diff --check` pass.

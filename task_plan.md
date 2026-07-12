@@ -1138,7 +1138,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 605 evidence: the focused runtime stress injects sixty-four enter/exit
   pairs and retains sequences 97-128 with sixteen successful enters and
   sixteen unsuccessful cancellations in the bounded diagnostic history.
-- In progress: Step 606 IME diagnostics and stress production behavior.
+- Completed: Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.
+- Step 606 evidence: focused runtime coverage verifies update/commit/delete
+  operations directly, then retains sequences 97-128 across sixty-four
+  update/cancel cycles with explicit cancellation status.
+- In progress: Step 607 scale-change diagnostics and stress production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

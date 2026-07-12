@@ -23,11 +23,11 @@ std::size_t line_count(const std::string& text) {
 int main() {
   const std::string public_header =
       read_source("include/cgpui/platform/platform_diagnostics.hpp");
-  const std::string runtime = read_source("src/ui/runtime_event_input.cpp");
-  const std::string behavior = read_source(
-      "tests/ui/window_runtime_drag_drop_cancellation_diagnostics_test.cpp");
+  const std::string runtime = read_source("src/ui/runtime_event_text.cpp");
+  const std::string behavior =
+      read_source("tests/ui/window_runtime_ime_diagnostics_test.cpp");
   const std::string previous = read_source(
-      "tests/architecture/phase_f_clipboard_ownership_diagnostics_structure_test.cpp");
+      "tests/architecture/phase_f_drag_drop_cancellation_diagnostics_structure_test.cpp");
   const std::string xmake = read_source("xmake.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
@@ -41,29 +41,31 @@ int main() {
       &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "bool cancelled = false;")) return 2;
-  if (!contains(runtime,
-                "const bool cancelled = std::holds_alternative<DragExited>(event)") ||
-      !contains(runtime, ".succeeded = !cancelled") ||
-      !contains(runtime, ".cancelled = cancelled")) return 3;
+  const char* operations[]{"composition-update", "composition-commit",
+      "composition-cancel", "delete-surrounding"};
+  for (const char* operation : operations) {
+    if (!contains(runtime, operation) || !contains(behavior, operation)) return 3;
+  }
+  if (!contains(runtime, ".succeeded = !cancelled") ||
+      !contains(runtime, ".cancelled = cancelled") ||
+      !contains(runtime, "const bool deleted = model->delete_surrounding_text(") ||
+      !contains(runtime, ".succeeded = deleted")) return 4;
   if (!contains(behavior, "index < 64") ||
       !contains(behavior, "platform_diagnostics.size() != 32") ||
       !contains(behavior, "97 + index") ||
       !contains(behavior, "event.cancelled != cancellation") ||
-      !contains(behavior, "event.succeeded == cancellation") ||
-      !contains(behavior, "event.value_count != 1") ||
-      !contains(previous, "Phase F Step 604")) return 4;
-  if (line_count(public_header) > 45 || line_count(runtime) > 170 ||
-      line_count(behavior) > 75) return 5;
-  if (!contains(xmake,
-                "target(\"window_runtime_drag_drop_cancellation_diagnostics_test\")") ||
+      !contains(previous, "Phase F Step 605")) return 5;
+  if (line_count(public_header) > 45 || line_count(runtime) > 90 ||
+      line_count(behavior) > 135) return 6;
+  if (!contains(xmake, "target(\"window_runtime_ime_diagnostics_test\")") ||
       !contains(xmake,
-                "target(\"phase_f_drag_drop_cancellation_diagnostics_structure_test\")")) return 6;
+                "target(\"phase_f_ime_diagnostics_structure_test\")")) return 7;
   constexpr const char* completion =
-      "Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.";
+      "Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.";
   const std::string* documents[]{
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 7;
+  for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 607 scale-change diagnostics and stress production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 607 scale-change diagnostics and stress production behavior\"")) return 9;
   return 0;
 }

@@ -732,6 +732,7 @@ consume C: drive space again.
 - Phase F Step 603 exposes bounded window lifecycle diagnostics for runtime records, active windows, opened windows, active native children, and retired native children, and verifies 64 churn cycles return to the root-only baseline. Step 604 clipboard ownership diagnostics and stress production behavior is next.
 - Phase F Step 604 reports current Wayland selection ownership, owned payload bytes, and ownership revisions through writer-serialized diagnostics, and verifies 64 continuous replacements serve the newest payload. Step 605 drag-and-drop cancellation diagnostics and stress production behavior is next.
 - Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.
+- Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.
 
 ## Categories
 
