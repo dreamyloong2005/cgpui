@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/task_priority.hpp"
@@ -34,6 +35,11 @@ class AsyncContextCapability {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id) const;
   [[nodiscard]] TaskGroup create_task_group() const;
+  [[nodiscard]] AsyncIoHook create_async_io_hook(
+      AsyncIoCompletionCallback callback) const;
+  [[nodiscard]] AsyncIoHook create_async_io_hook(
+      TaskPriority priority,
+      AsyncIoCompletionCallback callback) const;
 
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_task(

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/action.hpp"
+#include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 #include "cgpui/ui/task_priority.hpp"
 #include "cgpui/ui/task_group.hpp"
@@ -151,6 +152,8 @@ class WindowRuntime {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id);
   [[nodiscard]] TaskGroup create_task_group();
+  [[nodiscard]] AsyncIoHook create_async_io_hook(AsyncIoCompletionCallback callback);
+  [[nodiscard]] AsyncIoHook create_async_io_hook(TaskPriority priority, AsyncIoCompletionCallback callback);
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
   [[nodiscard]] TaskHandle spawn_task(TaskPriority priority, TaskCompletionCallback callback);
   [[nodiscard]] Result<TaskHandle> try_spawn_task(TaskCompletionCallback callback);
@@ -161,6 +164,7 @@ class WindowRuntime {
   [[nodiscard]] Result<TaskHandle> try_spawn_background_task(TaskPriority priority, BackgroundTaskCallback work, TaskCompletionCallback completion);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
+  void drain_async_io_completions();
   void batch_updates(UpdateBatchCallback callback);
   void clear_invalidation();
   [[nodiscard]] InvalidationState invalidation_state() const;

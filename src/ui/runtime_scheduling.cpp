@@ -103,6 +103,7 @@ void WindowRuntime::handle_wakeup() {
     return;
   }
   handling_wakeup_ = true;
+  drain_async_io_completions();
   drain_task_completions();
   fire_due_timers();
   drain_deferred_callbacks();

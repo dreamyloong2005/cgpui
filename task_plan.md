@@ -1288,6 +1288,12 @@ Windows/Linux core API is stable enough for parity work.
   sibling isolation, ancestor explicit/destructor cancellation, deepest token
   signalling, callback suppression, and cancelled-ancestor rejection; focused
   structure coverage freezes the propagation leaf and parent/child records.
+- Completed: Phase G Step 639 adds one-shot async I/O hooks with thread-safe success/failure notification, priority-aware runtime-thread dispatch, explicit cancellation, duplicate suppression, and shutdown detachment. Step 640 async timer integration production behavior is next.
+- Step 639 evidence: focused behavior proves cross-thread success/failure
+  notification, strict priority dispatch on the runtime thread, byte-payload
+  delivery, cancellation, duplicate suppression, all three creation surfaces,
+  and post-shutdown detachment; dedicated structure coverage freezes public
+  and private ownership, wakeup/shutdown integration, inventory, and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

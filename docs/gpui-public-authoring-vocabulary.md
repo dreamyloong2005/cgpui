@@ -67,6 +67,12 @@ outside this freeze.
 - `TaskPriority::{low, normal, high}`
 - `TaskGroup`
 - `TaskGroup::create_child_group()`
+- `AsyncIoHook`
+- `AsyncIoPayload`
+- `AsyncIoResult`
+- `create_async_io_hook(...)`
+- `AsyncIoHook::notify(...)`
+- `AsyncIoHook::notify_error(...)`
 - `try_spawn_task(...) -> Result<TaskHandle>`
 - `try_spawn_background_task(...) -> Result<TaskHandle>`
 - `run_until_parked()`
@@ -74,8 +80,9 @@ outside this freeze.
 - `try_draw_frame() -> Result<void>`
 
 Phase B public examples may use Result-returning async and test helpers. Phase G
-adds prioritized spawning and move-only structured task groups; upstream test
-macro equivalents remain outside this freeze.
+adds prioritized spawning, move-only structured task groups, and one-shot
+cross-thread async-I/O completion hooks; upstream test macro equivalents
+remain outside this freeze.
 
 ## Platform service vocabulary
 

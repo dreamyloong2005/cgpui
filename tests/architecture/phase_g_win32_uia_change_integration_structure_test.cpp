@@ -92,6 +92,6 @@ int main() {
     if (!contains(*document, completion)) return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 639 async I/O hook production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 640 async timer integration production behavior\"")) return 8;
   return 0;
 }

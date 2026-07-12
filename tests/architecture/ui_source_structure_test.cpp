@@ -1968,6 +1968,10 @@ int main() {
       "src/ui/runtime_animation_state.cpp",
       "src/ui/runtime_animation_tick.cpp",
       "src/ui/runtime_animations.cpp",
+      "src/ui/async_io_hook.cpp",
+      "src/ui/runtime_async_io_internal.hpp",
+      "src/ui/runtime_async_io.cpp",
+      "src/ui/runtime_async_io_completion.cpp",
       "src/ui/runtime_tasks.cpp",
       "src/ui/runtime_task_pool_internal.hpp",
       "src/ui/runtime_task_pool.cpp",
@@ -1988,6 +1992,7 @@ int main() {
       "src/ui/runtime_context_scheduling.cpp",
       "src/ui/runtime_context_task_priority.cpp",
       "src/ui/runtime_context_task_group.cpp",
+      "src/ui/runtime_context_async_io.cpp",
       "src/ui/runtime_context_text.cpp",
       "src/ui/runtime_context_window_close.cpp",
       "src/ui/subscription.cpp",
@@ -2000,6 +2005,7 @@ int main() {
       "src/ui/app_context.cpp",
       "src/ui/async_context_task_priority.cpp",
       "src/ui/async_context_task_group.cpp",
+      "src/ui/async_context_async_io.cpp",
   };
   for (const char* source : source_files) {
     if (read_source(source).empty()) {
@@ -3492,6 +3498,24 @@ int main() {
 
   const std::string runtime_tasks_source =
       read_source("src/ui/runtime_tasks.cpp");
+  const std::string async_io_source =
+      read_source("src/ui/runtime_async_io.cpp");
+  const std::string async_io_completion_source =
+      read_source("src/ui/runtime_async_io_completion.cpp");
+  const std::string async_io_internal =
+      read_source("src/ui/runtime_async_io_internal.hpp");
+  if (line_count(async_io_source) > 140 ||
+      line_count(async_io_completion_source) > 40 ||
+      line_count(async_io_internal) > 80 ||
+      !contains(async_io_source,
+                "AsyncIoHook WindowRuntime::create_async_io_hook(") ||
+      !contains(async_io_completion_source,
+                "void WindowRuntime::drain_async_io_completions(") ||
+      !contains(async_io_internal, "class WindowRuntime::RuntimeAsyncIoRegistry") ||
+      contains(runtime_tasks_source, "create_async_io_hook(") ||
+      contains(runtime_tasks_source, "drain_async_io_completions(")) {
+    return 141;
+  }
   const std::string runtime_task_results_source =
       read_source("src/ui/runtime_task_results.cpp");
   const std::string runtime_task_priority_source =

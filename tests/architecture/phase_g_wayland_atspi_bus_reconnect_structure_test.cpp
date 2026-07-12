@@ -130,7 +130,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 639 async I/O hook production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 640 async timer integration production behavior\"")) {
     return 10;
   }
   return 0;

@@ -11181,3 +11181,23 @@
   The existing group source remains responsible for record creation and task
   membership/spawning; the public handle source only forwards child creation.
 - Phase G Step 638 adds parent/child task groups with recursive subtree observability, descendant cancellation and destructor propagation, child/sibling isolation, and cancelled-ancestor spawn rejection. Step 639 async I/O hook production behavior is next.
+
+## 2026-07-12 Phase G Step 639 Async I/O Hook Design
+
+- The runtime already has a thread-safe, priority-aware completion queue and
+  platform wakeup path, but it has no I/O-specific public lifecycle, result
+  carrier, duplicate-notification suppression, or runtime teardown boundary.
+- Step 639 owns a focused public `AsyncIoHook` leaf plus private registry and
+  completion leaves. External backends receive a copyable hook that can issue
+  exactly one success or failure notification from any thread; the callback is
+  dispatched on the runtime thread in task-priority order with FIFO ordering
+  inside a priority.
+- The public completion value carries a byte payload on success and the
+  existing `Error` vocabulary on failure. Explicit cancellation and duplicate
+  notifications suppress callback delivery, and runtime shutdown detaches
+  outstanding hook state before the runtime storage is destroyed.
+- Creation is available through `WindowRuntime`, `WindowRuntimeContext`, and
+  `AsyncContextCapability`, with normal-priority compatibility and an explicit
+  priority overload. OS-specific polling or readiness APIs remain outside this
+  cross-platform hook boundary.
+- Phase G Step 639 adds one-shot async I/O hooks with thread-safe success/failure notification, priority-aware runtime-thread dispatch, explicit cancellation, duplicate suppression, and shutdown detachment. Step 640 async timer integration production behavior is next.

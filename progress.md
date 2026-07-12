@@ -23272,3 +23272,59 @@
   propagation structure guard, and historical group guard are
   62/70/97/145/133/140/131/178 lines; and `git diff --check` succeeds.
 - Phase G Step 638 adds parent/child task groups with recursive subtree observability, descendant cancellation and destructor propagation, child/sibling isolation, and cancelled-ancestor spawn rejection. Step 639 async I/O hook production behavior is next.
+
+## 2026-07-12 Phase G Step 639 Async I/O Hook
+
+- Restored the persistent Phase G plan at committed Step 638
+  (`4deb4a59`) with only unrelated untracked `.vscode/` present.
+- Chosen ownership is a focused public async-I/O hook plus private registry and
+  completion leaves, with one-shot cross-thread notification, priority-aware
+  runtime-thread dispatch, payload/failure delivery, explicit cancellation,
+  duplicate suppression, and runtime teardown detachment.
+- Added the focused behavior target. Its first build reaches the expected RED
+  because the planned public `async_io_hook.hpp` leaf does not yet exist.
+- Added the public hook/result vocabulary, private thread-safe registry and
+  completion leaves, runtime/context/async-context creation surfaces, wakeup
+  drain integration, cancellation, duplicate suppression, and shutdown
+  detachment. The first Windows behavior run passes 1/1.
+- A bare `xmake test -P . phase_g_runtime_async_io_hook_test` reported
+  `nothing to test`; the repository's required selector includes `/default`,
+  and the corrected focused invocation passes.
+- The first six-target regression passes 5/6; only
+  `ui_source_structure_test` exits 100 because the new public declarations
+  temporarily pushed `window_runtime.hpp` over its 260-line cap. Compressed
+  the declarations without moving implementation into the aggregate header.
+- The corrected behavior, global source structure, header cleanliness,
+  historical cancellation-propagation behavior/structure, and scheduling
+  regression group passes 6/6.
+- The first dedicated structure run exited 8 because its historical handoff
+  assertion expected a source-level contiguous string that the prior guard
+  splits across adjacent C++ literals. Relaxed that assertion to the stable
+  first literal while retaining the exact authority-document assertion.
+- The corrected dedicated structure guard reaches the expected authority-
+  document RED at exit 10 after all API, runtime ownership, behavior, wakeup,
+  shutdown, inventory, Xmake, historical handoff, and line-cap checks pass.
+- The first post-ledger async regression passes 13/15. The Step 639 guard used
+  a historical literal fragment that did not match Step 638's split source
+  text, and the updated AsyncApp ledger row had dropped two established exact
+  Result-vocabulary phrases required by the global ledger test. Restored both
+  historical Result contracts and matched the stable Step 638 suffix.
+- Windows and Arch Linux WSL focused async-runtime/document groups both pass
+  15/15. The first complete dynamic handoff run passes 85/86; only the nested
+  Windows full-debug aggregate still inspected its child guard for the former
+  Step 639 handoff. Advanced that aggregate assertion to Step 640.
+- The next full-chain run moved to 85/86 with the WSL aggregate exposing the
+  next nested old-handoff assertion. A targeted search found the expected two
+  remaining nested assertions in the WSL and cross-platform aggregates;
+  advanced both to Step 640.
+- Final Step 639 verification passes Windows 15/15, Arch Linux WSL 15/15, the
+  three nested Windows/WSL/cross-platform aggregate guards 3/3, and the full
+  Windows dynamic handoff chain 86/86.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 86 handoff guards plus the JSON ledger point
+  to Step 640 with zero stale Step 639 current handoffs; JSON parses with 18
+  Step 639 source entries; public hook, hook implementation, private registry,
+  registry implementation, completion leaf, runtime-context leaf,
+  async-context leaf, behavior test, and structure guard are
+  50/41/57/121/20/16/16/151/133 lines; `window_runtime.hpp` and its private
+  class-body header remain at 259/260 lines; and `git diff --check` succeeds.

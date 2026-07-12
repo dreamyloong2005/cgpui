@@ -3104,7 +3104,29 @@
       "xmake.lua"
     ],
     "phase_g_step_638_remaining_gap": "Step 639 async I/O hook production behavior",
-    "phase_f_current_handoff": "Step 639 async I/O hook production behavior"
+    "phase_g_step_639_surface": "Phase G Step 639 adds one-shot async I/O hooks with thread-safe success/failure notification, priority-aware runtime-thread dispatch, explicit cancellation, duplicate suppression, and shutdown detachment. Step 640 async timer integration production behavior is next.",
+    "phase_g_step_639_sources": [
+      "include/cgpui/ui/async_io_hook.hpp",
+      "include/cgpui/ui/runtime_ids.hpp",
+      "include/cgpui/ui/window_runtime.hpp",
+      "include/cgpui/ui/runtime_context.hpp",
+      "include/cgpui/ui/async_context.hpp",
+      "src/ui/async_io_hook.cpp",
+      "src/ui/runtime_async_io_internal.hpp",
+      "src/ui/runtime_async_io.cpp",
+      "src/ui/runtime_async_io_completion.cpp",
+      "src/ui/runtime_context_async_io.cpp",
+      "src/ui/async_context_async_io.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "src/ui/runtime_shutdown.cpp",
+      "tests/async/runtime_async_io_hook_test.cpp",
+      "tests/architecture/phase_g_runtime_async_io_hook_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_639_remaining_gap": "Step 640 async timer integration production behavior",
+    "phase_f_current_handoff": "Step 640 async timer integration production behavior"
   },
   "categories": [
     "application_and_app_context",

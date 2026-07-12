@@ -36,6 +36,12 @@ struct TaskGroupId {
   friend bool operator==(const TaskGroupId&, const TaskGroupId&) = default;
 };
 
+struct AsyncIoId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(const AsyncIoId&, const AsyncIoId&) = default;
+};
+
 struct WindowRuntimeId {
   std::uint64_t value = 0;
 

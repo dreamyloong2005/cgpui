@@ -1,5 +1,5 @@
-friend class AnimationHandle; friend class TaskGroup; friend class TestContextCapability; friend class TaskHandle; friend struct WindowRuntimeContext;
-class RuntimeTaskPool; class RuntimeTaskGroupStore; struct RuntimeTaskDiagnostics;
+friend class AnimationHandle; friend class AsyncIoHook; friend class TaskGroup; friend class TestContextCapability; friend class TaskHandle; friend struct WindowRuntimeContext;
+class RuntimeAsyncIoRegistry; class RuntimeTaskPool; class RuntimeTaskGroupStore; struct RuntimeTaskDiagnostics;
 void handle_event(const PlatformEvent& event); [[nodiscard]] bool handle_native_menu_command_event(const PlatformEvent& event, ViewId target_view_id);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);
 #include "runtime_window_input_state_internal.hpp"
@@ -27,6 +27,7 @@ void handle_redraw(), schedule_redraw(), flush_deferred_redraw_request();
 #include "runtime_frame_scheduling_internal.hpp"
 void request_platform_wakeup();
 void handle_wakeup();
+[[nodiscard]] bool notify_async_io(AsyncIoId id, AsyncIoResult result); [[nodiscard]] bool cancel_async_io(AsyncIoId id);
 void drain_deferred_callbacks();
 void fire_due_timers();
 void tick_animation(AnimationId id);
@@ -233,8 +234,7 @@ std::uint64_t current_time_ms_ = 0;
 bool firing_timers_ = false;
 std::vector<RuntimeAnimation> animations_;
 std::uint64_t next_animation_id_ = 1;
-mutable std::mutex tasks_mutex_;
-std::unique_ptr<RuntimeTaskPool> task_pool_; std::unique_ptr<RuntimeTaskGroupStore> task_group_store_;
+mutable std::mutex tasks_mutex_; std::unique_ptr<RuntimeAsyncIoRegistry> async_io_registry_; std::unique_ptr<RuntimeTaskPool> task_pool_; std::unique_ptr<RuntimeTaskGroupStore> task_group_store_;
 std::vector<RuntimeTask> tasks_;
 std::vector<RuntimeTaskCompletion> task_completion_queue_;
 std::uint64_t next_task_id_ = 1; [[nodiscard]] TaskHandle make_task_handle(TaskId id); [[nodiscard]] TaskCancellationToken make_task_cancellation_token(std::shared_ptr<std::atomic_bool> state);

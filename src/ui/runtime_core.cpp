@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_async_io_internal.hpp"
 #include "runtime_task_pool_internal.hpp"
 #include "runtime_task_group_internal.hpp"
 
@@ -11,6 +12,7 @@ WindowRuntime::WindowRuntime(
     : application_(application),
       view_(view),
       renderer_factory_(std::move(renderer_factory)),
+      async_io_registry_(std::make_unique<RuntimeAsyncIoRegistry>()),
       task_pool_(std::make_unique<RuntimeTaskPool>()),
       task_group_store_(std::make_unique<RuntimeTaskGroupStore>()) {
   view_registry_.insert_or_assign(

@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 639 async I/O hook "
+          "\"phase_f_current_handoff\": \"Step 640 async timer integration "
           "production behavior\"")) {
     return 15;
   }

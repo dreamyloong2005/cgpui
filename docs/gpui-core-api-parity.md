@@ -123,8 +123,9 @@ desktop integration surfaces remain separate future work.
 - Threaded async now has a bounded reusable pool, low/normal/high scheduling,
   main-runtime completion dispatch, and move-only structured task groups with
   recursive parent/child observability plus descendant bulk/destructor
-  cancellation. Async I/O integration and cross-thread entity access remain
-  incomplete.
+  cancellation. One-shot async I/O hooks now deliver payloads or failures back
+  to the runtime thread with priority, cancellation, and teardown safety;
+  timer integration and cross-thread entity access remain incomplete.
 
 ## Missing
 
@@ -143,7 +144,7 @@ desktop integration surfaces remain separate future work.
   batching.
 - Full layout virtualization and large-list recycling beyond the current
   `scrollable_list` container.
-- Cross-thread entity access guarantees and async I/O integration.
+- Cross-thread entity access guarantees and complete async timer integration.
 
 ## Mac/Metal Deferred
 

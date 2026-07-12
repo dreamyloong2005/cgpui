@@ -14,6 +14,7 @@
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/async_context.hpp"
+#include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/render.hpp"
 #include "cgpui/ui/element_context.hpp"
@@ -280,6 +281,16 @@ class TestView final : public cgpui::View {
     (void)task_group.complete();
     (void)task_group.cancelled();
     (void)task_group.cancel();
+    cgpui::AsyncIoHook async_io_hook =
+        async_context.create_async_io_hook(
+            cgpui::TaskPriority::normal,
+            [](const cgpui::WindowRuntimeContext&,
+               const cgpui::AsyncIoResult&) {});
+    (void)async_io_hook.id();
+    (void)async_io_hook.active();
+    (void)async_io_hook.complete();
+    (void)async_io_hook.cancelled();
+    (void)async_io_hook.cancel();
     context.batch_updates([](const cgpui::ViewContext& batch_context) {
       batch_context.request_render();
     });
