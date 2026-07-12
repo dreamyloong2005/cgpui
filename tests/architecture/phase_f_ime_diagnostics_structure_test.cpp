@@ -66,6 +66,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 612 WSL full-debug verification\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 613 cross-platform test execution audit\"")) return 9;
   return 0;
 }

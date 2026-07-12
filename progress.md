@@ -22614,3 +22614,27 @@
 - JSON parsing, six-document completion phrase, 61 Step 612 handoffs, zero
   stale Step 611 handoffs, 69-line audit guard, source caps, and
   `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 612 WSL Full-Debug Verification
+
+- Step 611 is committed as `e4419041 test: verify phase f on windows` and the
+  worktree otherwise contains only unrelated untracked `.vscode/`.
+- Rechecked the existing environment after the user confirmed it is available:
+  `archlinux`, Xmake, WSLg `wayland-0`, and the live Wayland socket are usable;
+  no recovery or installation is required.
+- Debug configuration succeeded using `.build-wsl/master` on D: and
+  `/dev/shm/cgpui` transient temp.
+- The first full suite built successfully and passed 311/321. The ten failures
+  are historical repository-inspection targets that pass directly from the
+  project root but lack an explicit Linux Xmake test `rundir`.
+- Updated only their Xmake test registrations to use `os.projectdir()` and the
+  established `CGPUI_SOURCE_ROOT` environment convention. Focused and complete
+  reruns remain required before Step 612 closes.
+- The exact ten-target regression group passes 10/10, and the final complete
+  WSL Arch Linux debug suite passes 321/321, including real WSLg Wayland frame
+  capture.
+- Added the Step 612 structure guard to freeze project-root test execution and
+  the Step 613 handoff.
+- Final Windows and WSL structure verification passes 2/2. Ledger JSON parsing,
+  five-document completion phrase, zero stale Step 612 handoffs, 62 Step 613
+  handoffs, and `git diff --check` pass.

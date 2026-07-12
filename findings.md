@@ -10749,3 +10749,17 @@
   parent is active, and pointer-exit position dispatch remains owned by the
   shared pointer helper plus the record-input leaf.
 - Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.
+
+## 2026-07-12 Phase F Step 612 WSL Full-Debug Verification
+
+- The existing `archlinux` distro is usable and exposes WSLg
+  `WAYLAND_DISPLAY=wayland-0`; no distro recovery or installation is needed.
+- The first complete Linux suite built successfully and passed 311/321. All
+  real Wayland, Vulkan, window, input, clipboard, renderer, and Phase F runtime
+  targets passed.
+- The ten failures are historical repository-inspection binaries registered
+  without an explicit Xmake test working directory. Each binary passes when
+  run from the project root, so the shared fix is test registration ownership:
+  use `os.projectdir()` plus `CGPUI_SOURCE_ROOT`, matching current structure
+  targets.
+- Phase F Step 612 completes WSL full-debug verification at 321/321 after binding historical repository-inspection targets to the project root, including real WSLg Wayland frame capture. Step 613 cross-platform test execution audit is next.

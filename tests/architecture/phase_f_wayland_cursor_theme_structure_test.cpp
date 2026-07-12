@@ -104,7 +104,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 612 WSL full-debug verification")) {
+                "\"phase_f_current_handoff\": \"Step 613 cross-platform test execution audit")) {
     return 10;
   }
   return 0;

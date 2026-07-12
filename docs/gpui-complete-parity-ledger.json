@@ -2764,7 +2764,13 @@
       "xmake.lua"
     ],
     "phase_f_step_611_remaining_gap": "Step 612 WSL full-debug verification",
-    "phase_f_current_handoff": "Step 612 WSL full-debug verification"
+    "phase_f_step_612_surface": "Phase F Step 612 completes WSL full-debug verification at 321/321 after binding historical repository-inspection targets to the project root, including real WSLg Wayland frame capture. Step 613 cross-platform test execution audit is next.",
+    "phase_f_step_612_sources": [
+      "xmake.lua",
+      "tests/architecture/phase_f_wsl_full_debug_verification_structure_test.cpp"
+    ],
+    "phase_f_step_612_remaining_gap": "Step 613 cross-platform test execution audit",
+    "phase_f_current_handoff": "Step 613 cross-platform test execution audit"
   },
   "categories": [
     "application_and_app_context",

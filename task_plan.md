@@ -1161,7 +1161,10 @@ Windows/Linux core API is stable enough for parity work.
 - Step 611 evidence: the exact ten-failure regression group passes 10/10,
   the real Unicode clipboard retry passes 1/1, and the final complete Windows
   debug suite passes 338/338.
-- In progress: Step 612 WSL full-debug verification.
+- Completed: Phase F Step 612 completes WSL full-debug verification at 321/321 after binding historical repository-inspection targets to the project root, including real WSLg Wayland frame capture. Step 613 cross-platform test execution audit is next.
+- Step 612 evidence: the repository-inspection regression group passes 10/10,
+  and the final complete WSL Arch Linux debug suite passes 321/321.
+- In progress: Step 613 cross-platform test execution audit.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1196,6 +1199,9 @@ Windows/Linux core API is stable enough for parity work.
 | Serial Step 611 rerun reproduced all ten failures; eight structure targets fail their existing line caps, `app_window_context_test` exits 2, and `renderer_result_conventions_test` exits 9 | Step 611 Windows full-debug verification | Measure each cap overage and trace the two behavior paths; restore modular ownership and result semantics without relaxing structure limits |
 | Post-repair Step 611 full suite passed 337/338 with only `win32_clipboard_unicode_test/default` failing | Step 611 Windows full-debug verification | Re-run the real system clipboard target alone, then require another complete 338/338 pass before closing the step |
 | First Step 611 bulk handoff rewrite used an over-escaped Node one-liner and failed before editing | Step 611 documentation closeout | Use PowerShell/.NET exact literal replacement over only files returned by `rg -l` for the `phase_f_current_handoff` key |
+| Step 612 initially appeared unavailable because `wsl.exe -d archlinux` returned `WSL_E_DISTRO_NOT_FOUND` during the first probe | Step 612 WSL full-debug verification | Rechecked after the user confirmed the environment; the existing `archlinux` distro, WSLg Wayland socket, and Xmake toolchain are usable, so no recovery or installation is required |
+| The first Step 612 WSL full suite passed 311/321; ten historical repository-inspection targets failed only under Xmake's Linux test working directory | Step 612 WSL full-debug verification | Bind those tests to `os.projectdir()` with the existing `CGPUI_SOURCE_ROOT` convention, then rerun the exact group and complete suite |
+| The first Step 612 serial diagnostic loop let the outer PowerShell expand Bash `$t`, so every iteration reported `nothing to test` | Step 612 WSL full-debug verification | Use an explicit target list for the focused Xmake rerun and direct binary execution for working-directory diagnosis |
 | Step 593 looked for a nonexistent `include/cgpui/core/result.hpp` | Step 593 error-policy audit | Use the actual owner `include/cgpui/core/error.hpp`, where `Result<T>` and `ErrorCode` are defined |
 | A Step 593 `rg` target lookup used an over-escaped regex and failed with an unclosed group | Step 593 registered-test lookup | Use fixed-string lookup or search the target name without regex punctuation |
 | Step 593 guessed `tests/ui/platform_service_result_conventions_test.cpp`, which does not exist | Step 593 reference test read | Resolve the registered target source through `rg`/`xmake.lua` before reading it |
