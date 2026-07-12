@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 614 platform production-path audit")) {
+                "\"phase_f_current_handoff\": \"Step 615 final closeout guard")) {
     return 11;
   }
   return 0;

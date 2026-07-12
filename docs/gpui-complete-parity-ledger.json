@@ -2776,7 +2776,13 @@
       "tests/architecture/phase_f_cross_platform_test_execution_structure_test.cpp"
     ],
     "phase_f_step_613_remaining_gap": "Step 614 platform production-path audit",
-    "phase_f_current_handoff": "Step 614 platform production-path audit"
+    "phase_f_step_614_surface": "Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.",
+    "phase_f_step_614_sources": [
+      "tests/architecture/phase_f_platform_production_path_audit_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_614_remaining_gap": "Step 615 final closeout guard",
+    "phase_f_current_handoff": "Step 615 final closeout guard"
   },
   "categories": [
     "application_and_app_context",

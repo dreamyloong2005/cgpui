@@ -1165,7 +1165,8 @@ Windows/Linux core API is stable enough for parity work.
 - Step 612 evidence: the repository-inspection regression group passes 10/10,
   and the final complete WSL Arch Linux debug suite passes 321/321.
 - Completed: Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.
-- In progress: Step 614 platform production-path audit.
+- Completed: Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
+- In progress: Step 615 final closeout guard.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1204,6 +1205,7 @@ Windows/Linux core API is stable enough for parity work.
 | The first Step 612 WSL full suite passed 311/321; ten historical repository-inspection targets failed only under Xmake's Linux test working directory | Step 612 WSL full-debug verification | Bind those tests to `os.projectdir()` with the existing `CGPUI_SOURCE_ROOT` convention, then rerun the exact group and complete suite |
 | The first Step 612 serial diagnostic loop let the outer PowerShell expand Bash `$t`, so every iteration reported `nothing to test` | Step 612 WSL full-debug verification | Use an explicit target list for the focused Xmake rerun and direct binary execution for working-directory diagnosis |
 | The first Step 613 three-guard run left the Step 612 guard's nested Windows-guard handoff assertion on Step 613 | Step 613 cross-platform test execution audit | Advance the nested assertion to Step 614 while preserving the immutable Step 612 completion sentence |
+| The first Step 614 audit named nonexistent qualified `run()` spellings in the broad platform files | Step 614 platform production-path audit | Freeze the actual owners: Win32's local `int run() override` and the focused Wayland application constructor, while event-loop `run()` stays in its dedicated leaf |
 | Step 593 looked for a nonexistent `include/cgpui/core/result.hpp` | Step 593 error-policy audit | Use the actual owner `include/cgpui/core/error.hpp`, where `Result<T>` and `ErrorCode` are defined |
 | A Step 593 `rg` target lookup used an over-escaped regex and failed with an unclosed group | Step 593 registered-test lookup | Use fixed-string lookup or search the target name without regex punctuation |
 | Step 593 guessed `tests/ui/platform_service_result_conventions_test.cpp`, which does not exist | Step 593 reference test read | Resolve the registered target source through `rg`/`xmake.lua` before reading it |

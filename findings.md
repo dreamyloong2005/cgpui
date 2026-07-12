@@ -10767,3 +10767,7 @@
 ## 2026-07-12 Phase F Step 613 Cross-Platform Test Execution Audit
 
 - Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.
+
+## 2026-07-12 Phase F Step 614 Platform Production-Path Audit
+
+- Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.

@@ -22650,3 +22650,16 @@
   historical completion phrase.
 - Final Windows and WSL verification passes all three final-band structure
   guards 3/3; JSON parsing, Step 614 handoff propagation, and diff hygiene pass.
+
+## 2026-07-12 Phase F Step 614 Platform Production-Path Audit
+
+- Started from committed Step 613 at `9e0c6796`.
+- Added an audit-only guard aggregating the nine Phase F behavior-band closeouts,
+  both host verification guards, the cross-platform execution audit, and the
+  focused Win32/Wayland entry-file caps.
+- Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
+- The first audit run used qualified `run()` spellings not present in the
+  actual ownership layout; corrected it to the local Win32 override and the
+  Wayland constructor while leaving the event loop in its focused source.
+- Final Windows and WSL final-band verification passes 4/4 with the production
+  path audit included; Step 615 handoffs and diff hygiene pass.
