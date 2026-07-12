@@ -119,7 +119,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 623 Win32 UIA focus, "
-                "value, and text change integration\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "production behavior\"")) return 9;
   return 0;
 }

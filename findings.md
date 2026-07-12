@@ -10909,3 +10909,23 @@
   event. Listener, missing-provider, and HRESULT outcomes remain observable
   through a compact publication record.
 - Phase G Step 622 publishes production Win32 UIA value-property, text-change, and focus notifications from runtime accessibility live updates with listener, missing-provider, and HRESULT diagnostics. Step 623 Win32 UIA focus, value, and text change integration is next.
+
+## 2026-07-12 Phase G Step 623 Focus/Value/Text Integration Design
+
+- The shared runtime already produces the correct focus, value, and text live
+  update records, while Step 622 proves the adapter publishes a supplied
+  record. The missing proof is the end-to-end path between those two layers.
+- `tests/ui/window_runtime_test_support.hpp` owns the reusable fake platform
+  window used by runtime tests. An optional update observer there can forward
+  the exact runtime-produced tree update into a Win32 adapter without changing
+  production API or duplicating the large runtime fixture.
+- Step 622 and Step 623 event tests should share a focused test-only UIA event
+  recorder header so HRESULT hooks and VARIANT inspection are not duplicated.
+- The shared fake platform window now has an optional test-only accessibility
+  observer. Normal tests retain their existing last-update behavior, while the
+  Win32 integration test forwards the same runtime-owned update to the adapter.
+- The end-to-end run produces three platform tree updates: initial state,
+  keyboard focus, then edited text. The recorder observes the focus property
+  and focus event followed by the value property and text event with correct
+  old/new BSTR values.
+- Phase G Step 623 integrates runtime-generated Win32 UIA focus, value, and text changes end to end through the platform window and adapter event publisher. Step 624 Win32 UIA provider lifetime production behavior is next.

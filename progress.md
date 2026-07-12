@@ -22875,3 +22875,24 @@
   guard, and Win32 inventory are 38/141/52/61/87/199/105/953 lines and stay
   within their frozen caps;
   and `git diff --check` succeeds.
+
+## 2026-07-12 Phase G Step 623 Focus/Value/Text Integration
+
+- Started the end-to-end integration slice: runtime-generated focus, value,
+  and text changes will be forwarded through the shared fake platform window
+  to the Win32 UIA adapter under injected UIA Core operations.
+- The focused integration target reaches the expected RED compile because the
+  planned shared UIA event recorder header does not yet exist.
+- Added the shared UIA event recorder and the optional fake-window update
+  observer, keeping `window_runtime_test_support.hpp` at its existing 1800-line
+  cap. The Step 622 behavior test now reuses the recorder.
+- The end-to-end integration test passes: runtime keyboard focus and text
+  editing produce three platform accessibility snapshots and the Win32 adapter
+  publishes focus/property then text/value notifications with correct old/new
+  values.
+- Expanded Windows verification passes 24/24, and all 70 dynamic-handoff guards
+  pass together with the Step 624 provider-lifetime handoff.
+- The WSL 18-target shared/structure attempt stopped before Bash execution with
+  transient `WSL_E_DISTRO_NOT_FOUND`; no recovery or installation was attempted.
+- Resume audit reran the focused Win32 UIA behavior, runtime-action, and
+  structure group at 12/12; `git diff --check` remains green before staging.

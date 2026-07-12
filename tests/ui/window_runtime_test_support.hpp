@@ -1564,9 +1564,9 @@ class FakeWindow final : public cgpui::PlatformWindow {
     ime_placement_history.push_back(placement);
   }
 
-  void update_accessibility_tree(
-      cgpui::PlatformAccessibilityTreeUpdate update) override {
+  void update_accessibility_tree(cgpui::PlatformAccessibilityTreeUpdate update) override {
     accessibility_update_count += 1;
+    if (accessibility_update_callback) accessibility_update_callback(update);
     last_accessibility_update = std::move(update);
   }
 
@@ -1584,6 +1584,7 @@ class FakeWindow final : public cgpui::PlatformWindow {
   int set_cursor_count = 0;
   int ime_placement_count = 0;
   int accessibility_update_count = 0;
+  std::function<void(const cgpui::PlatformAccessibilityTreeUpdate&)> accessibility_update_callback;
   cgpui::CursorShape last_cursor_shape = cgpui::CursorShape::default_arrow;
   std::optional<cgpui::ImeTextInputPlacement> last_ime_placement;
   std::optional<cgpui::PlatformAccessibilityTreeUpdate>

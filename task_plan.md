@@ -1212,7 +1212,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 622 evidence: focused event and update leaves map runtime live updates to
   UIA property/text/focus notifications, preserve old/new property values,
   skip when no clients listen, and record missing-provider and HRESULT results.
-- In progress: Step 623 Win32 UIA focus, value, and text change integration.
+- Completed: Phase G Step 623 integrates runtime-generated Win32 UIA focus, value, and text changes end to end through the platform window and adapter event publisher. Step 624 Win32 UIA provider lifetime production behavior is next.
+- Step 623 evidence: a Windows-only runtime integration test forwards the exact
+  platform accessibility updates through the Win32 adapter and observes focus,
+  value, and text UIA calls using a shared test-only event recorder.
+- In progress: Step 624 Win32 UIA provider lifetime production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1228,6 +1232,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 623 target inventory query used PowerShell double quotes around a regex containing C++ quotes | Step 623 resume audit | Re-run `rg` with a single-quoted literal regex; the target inventory was returned correctly |
+| Step 623 new structure-target build again hit the sandboxed user-level Ninja package lock | Step 623 structure RED | Use the approved `xmake build` permission for the new Step 623 guard and affected historical structure targets |
+| The first Step 623 GREEN compile could not see UIA property/event ids through the shared recorder | Step 623 integration compile | Make the recorder self-contained by including the Windows SDK id owner `UIAutomationClient.h` |
+| Step 623 runtime-change integration RED failed because the shared `win32_uia_event_test_support.hpp` recorder did not exist | Step 623 behavior RED | Add the focused test-only UIA recorder, FakeWindow accessibility observer, and refactor the Step 622 test to consume the shared helper |
 | The first complete Step 622 handoff group passed 68/69 because the Windows/WSL/cross-platform nested aggregate assertions still named Step 622 outside the current-handoff field | Step 622 complete handoff-guard gate | Advance all three nested assertions to Step 623 while preserving their historical Phase F completion sentences, then rebuild and rerun the 69-guard group |
 | The Step 622 expanded-test target probe used backslash-escaped C++ quotes in PowerShell, causing `rg` to interpret the suffix as a path | Step 622 focused regression inventory | Use literal `Select-String -SimpleMatch` target lookups or run the already known registered target names directly |
 | Step 622 structure-guard build could not create the user-level Ninja package lock inside the workspace sandbox | Step 622 structure RED | Re-run the same `xmake build` through the approved build permission so Xmake can update its package lock |

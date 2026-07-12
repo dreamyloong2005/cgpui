@@ -37,6 +37,8 @@ int main() {
       "src/platform/win32/win32_accessibility.cpp");
   const std::string behavior = read_source(
       "tests/platform/win32_uia_live_event_test.cpp");
+  const std::string test_support = read_source(
+      "tests/platform/win32_uia_event_test_support.hpp");
   const std::string source_guard = read_source(
       "tests/architecture/win32_window_source_test.cpp");
   const std::string xmake = read_source("xmake.lua");
@@ -48,8 +50,8 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event_header, &events, &updates, &adapter_header, &adapter, &behavior,
-      &source_guard, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &test_support, &source_guard, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(event_header, "struct Win32UiaEventOperations") ||
@@ -73,8 +75,8 @@ int main() {
       !contains(adapter, "Win32UiaAccessibilityAdapter::set_event_operations(")) {
     return 4;
   }
-  if (!contains(behavior, "test_raise_property_changed(") ||
-      !contains(behavior, "test_raise_automation_event(") ||
+  if (!contains(test_support, "test_uia_raise_property_changed(") ||
+      !contains(test_support, "test_uia_raise_automation_event(") ||
       !contains(behavior, "UIA_Text_TextChangedEventId") ||
       !contains(behavior, "UIA_AutomationFocusChangedEventId") ||
       !contains(behavior, "skipped_client_count") ||
@@ -85,7 +87,8 @@ int main() {
                 "phase_g_win32_uia_live_event_structure_test.cpp")) return 6;
   if (line_count(event_header) > 60 || line_count(events) > 160 ||
       line_count(updates) > 80 || line_count(adapter_header) > 80 ||
-      line_count(adapter) > 120 || line_count(behavior) > 200 ||
+      line_count(adapter) > 120 || line_count(behavior) > 150 ||
+      line_count(test_support) > 100 ||
       line_count(source_guard) > 1150) return 7;
 
   constexpr const char* completion =
@@ -99,7 +102,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 623 Win32 UIA focus, "
-                "value, and text change integration\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "production behavior\"")) return 9;
   return 0;
 }
