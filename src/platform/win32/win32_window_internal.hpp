@@ -40,6 +40,10 @@ class Win32Window final
       WindowChromeOptions options) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
+  bool accessibility_object(
+      WPARAM wparam,
+      LPARAM lparam,
+      LRESULT& result) override;
 
   void update_size() override;
   void position_changed() override;

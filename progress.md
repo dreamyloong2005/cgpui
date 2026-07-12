@@ -22750,3 +22750,33 @@
   Step 620 with zero stale Step 619 handoffs; provider header/source, adapter
   header/source, window, behavior test, and structure guard line counts are
   38/175/49/101/76/166/102; and `git diff --check` passes.
+
+## 2026-07-12 Phase G Step 620 Win32 UIA Tree Navigation
+
+- Started from committed Step 619 at `79181690`; unrelated `.vscode/` remains
+  untracked and outside the work scope.
+- Added and registered the focused navigation behavior test. It compiles and
+  reaches the intended RED at exit 2 because current providers do not expose
+  `IRawElementProviderFragment`.
+- Added shared provider-tree state, fragment/root COM interfaces, deterministic
+  parent/child/sibling navigation, runtime ids, screen bounds, focused/point
+  lookup, and a focused `WM_GETOBJECT` message leaf. Provider-object,
+  navigation, and get-object behavior pass 3/3.
+- The historical Win32/provider structure checks now reach expected ownership
+  RED exits 97 and 2 because the provider class declaration moved into its
+  focused object header; the broader platform source guard remains green.
+- Updated the historical provider/window inventories for the focused object,
+  navigation, fragment, window-accessibility, and message-accessibility leaves;
+  the three structure regressions pass 3/3.
+- Added the Step 620 structure guard. Production ownership, behavior evidence,
+  Xmake registration, message routing, and line budgets pass before the
+  intended five-document RED at exit 8.
+- Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.
+- Final Step 620 verification passes Windows 12/12 and WSL Arch Linux 8/8
+  using the established D-drive build/package caches plus `/dev/shm/cgpui`.
+  Ledger JSON parsing succeeds; the completion sentence appears exactly once
+  in each authority document; all 68 dynamic handoff files point to Step 621
+  with zero stale Step 620 handoffs; provider/navigation/fragment/adapter/window
+  and message leaves remain within 40/60/43/184/77/195/52/119/19/24/15/47
+  lines, behavior tests are 168/68 lines, the structure guard is 121 lines,
+  and `git diff --check` passes.

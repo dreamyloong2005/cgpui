@@ -746,6 +746,7 @@ consume C: drive space again.
 - Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
 - Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.
 - Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.
+- Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.
 
 ## Categories
 

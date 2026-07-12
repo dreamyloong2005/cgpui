@@ -2826,7 +2826,22 @@
       "xmake.lua"
     ],
     "phase_g_step_619_remaining_gap": "Step 620 Win32 UIA tree navigation production behavior",
-    "phase_f_current_handoff": "Step 620 Win32 UIA tree navigation production behavior"
+    "phase_g_step_620_surface": "Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.",
+    "phase_g_step_620_sources": [
+      "src/platform/win32/win32_uia_provider_object_internal.hpp",
+      "src/platform/win32/win32_uia_navigation_internal.hpp",
+      "src/platform/win32/win32_uia_navigation.cpp",
+      "src/platform/win32/win32_uia_fragment.cpp",
+      "src/platform/win32/win32_window_accessibility.cpp",
+      "src/platform/win32/win32_window_proc_accessibility_internal.hpp",
+      "src/platform/win32/win32_window_proc_accessibility.cpp",
+      "tests/platform/win32_uia_tree_navigation_test.cpp",
+      "tests/platform/win32_uia_get_object_message_test.cpp",
+      "tests/architecture/phase_g_win32_uia_tree_navigation_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_620_remaining_gap": "Step 621 Win32 UIA pattern provider production behavior",
+    "phase_f_current_handoff": "Step 621 Win32 UIA pattern provider production behavior"
   },
   "categories": [
     "application_and_app_context",

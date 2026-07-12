@@ -60,11 +60,6 @@ void Win32Window::set_ime_text_input_placement(
   apply_ime_text_input_placement();
 }
 
-void Win32Window::update_accessibility_tree(
-    PlatformAccessibilityTreeUpdate update) {
-  uia_accessibility_.update(std::move(update));
-}
-
 void Win32Window::redraw_requested() {
   callback_(WindowRedrawRequested{});
 }

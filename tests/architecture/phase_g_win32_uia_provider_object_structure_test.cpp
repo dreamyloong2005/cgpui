@@ -27,6 +27,8 @@ std::size_t line_count(const std::string& text) {
 int main() {
   const std::string provider_header = read_source(
       "src/platform/win32/win32_uia_provider_internal.hpp");
+  const std::string provider_object_header = read_source(
+      "src/platform/win32/win32_uia_provider_object_internal.hpp");
   const std::string provider = read_source(
       "src/platform/win32/win32_uia_provider.cpp");
   const std::string adapter_header = read_source(
@@ -46,15 +48,16 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &provider_header, &provider, &adapter_header, &adapter, &window,
+      &provider_header, &provider_object_header, &provider, &adapter_header,
+      &adapter, &window,
       &application, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(provider_header, "struct Win32UiaProviderNode") ||
       !contains(provider_header, "create_win32_uia_provider(") ||
-      !contains(provider,
-                "class Win32UiaProvider final : public IRawElementProviderSimple") ||
+      !contains(provider_object_header, "class Win32UiaProvider final") ||
+      !contains(provider_object_header, "public IRawElementProviderSimple") ||
       !contains(provider, "QueryInterface(") || !contains(provider, "AddRef()") ||
       !contains(provider, "Release()") ||
       !contains(provider, "ProviderOptions_ServerSideProvider") ||
@@ -81,7 +84,9 @@ int main() {
       !contains(xmake, "\"oleaut32\"") ||
       !contains(xmake,
                 "tests/architecture/phase_g_win32_uia_provider_object_structure_test.cpp")) return 6;
-  if (line_count(provider_header) > 60 || line_count(provider) > 190 ||
+  if (line_count(provider_header) > 60 ||
+      line_count(provider_object_header) > 90 ||
+      line_count(provider) > 190 ||
       line_count(adapter_header) > 80 || line_count(adapter) > 120 ||
       line_count(window) > 130 || line_count(application) > 220 ||
       line_count(behavior) > 180) return 7;
@@ -96,7 +101,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 620 Win32 UIA tree "
-                "navigation production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 621 Win32 UIA pattern "
+                "provider production behavior\"")) return 9;
   return 0;
 }

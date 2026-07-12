@@ -1,9 +1,9 @@
 #include "win32_internal.hpp"
+#include "win32_uia_provider_object_internal.hpp"
 
 #include <UIAutomationClient.h>
 #include <UIAutomationCoreApi.h>
 
-#include <atomic>
 #include <new>
 #include <string>
 #include <utility>
@@ -73,103 +73,112 @@ HRESULT set_bounding_rect(
   return S_OK;
 }
 
-class Win32UiaProvider final : public IRawElementProviderSimple {
- public:
-  Win32UiaProvider(HWND hwnd, Win32UiaProviderNode node)
-      : hwnd_(hwnd), node_(std::move(node)) {}
-
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** object) override {
-    if (object == nullptr) return E_POINTER;
-    *object = nullptr;
-    if (IsEqualIID(iid, IID_IUnknown) ||
-        IsEqualIID(iid, IID_IRawElementProviderSimple)) {
-      *object = static_cast<IRawElementProviderSimple*>(this);
-      AddRef();
-      return S_OK;
-    }
-    return E_NOINTERFACE;
-  }
-
-  ULONG STDMETHODCALLTYPE AddRef() override { return ++reference_count_; }
-  ULONG STDMETHODCALLTYPE Release() override {
-    const ULONG count = --reference_count_;
-    if (count == 0) delete this;
-    return count;
-  }
-
-  HRESULT STDMETHODCALLTYPE get_ProviderOptions(ProviderOptions* options) override {
-    if (options == nullptr) return E_POINTER;
-    *options = ProviderOptions_ServerSideProvider;
-    return S_OK;
-  }
-
-  HRESULT STDMETHODCALLTYPE GetPatternProvider(
-      PATTERNID,
-      IUnknown** provider) override {
-    if (provider == nullptr) return E_POINTER;
-    *provider = nullptr;
-    return S_OK;
-  }
-
-  HRESULT STDMETHODCALLTYPE GetPropertyValue(
-      PROPERTYID property,
-      VARIANT* value) override {
-    if (value == nullptr) return E_POINTER;
-    VariantInit(value);
-    if (property == UIA_AutomationIdPropertyId) {
-      return set_bstr(value, L"cgpui-" + std::to_wstring(node_.element_id));
-    }
-    if (property == UIA_ControlTypePropertyId) {
-      value->vt = VT_I4;
-      value->lVal = control_type_for(node_.role);
-    } else if (property == UIA_NamePropertyId) {
-      return set_bstr(value, widen(node_.name));
-    } else if (property == UIA_ValueValuePropertyId) {
-      return set_bstr(value, widen(node_.value));
-    } else if (property == UIA_IsEnabledPropertyId) {
-      value->vt = VT_BOOL;
-      value->boolVal = node_.enabled ? VARIANT_TRUE : VARIANT_FALSE;
-    } else if (property == UIA_IsKeyboardFocusablePropertyId) {
-      value->vt = VT_BOOL;
-      value->boolVal = node_.focusable ? VARIANT_TRUE : VARIANT_FALSE;
-    } else if (property == UIA_HasKeyboardFocusPropertyId) {
-      value->vt = VT_BOOL;
-      value->boolVal = node_.focused ? VARIANT_TRUE : VARIANT_FALSE;
-    } else if (property == UIA_BoundingRectanglePropertyId) {
-      return set_bounding_rect(value, hwnd_, node_.bounds);
-    }
-    return S_OK;
-  }
-
-  HRESULT STDMETHODCALLTYPE get_HostRawElementProvider(
-      IRawElementProviderSimple** provider) override {
-    if (provider == nullptr) return E_POINTER;
-    *provider = nullptr;
-    return hwnd_ == nullptr ? S_OK : UiaHostProviderFromHwnd(hwnd_, provider);
-  }
-
-  void set_hwnd(HWND hwnd) { hwnd_ = hwnd; }
-
- private:
-  std::atomic<ULONG> reference_count_{1};
-  HWND hwnd_ = nullptr;
-  Win32UiaProviderNode node_;
-};
-
 } // namespace
 
-IRawElementProviderSimple* create_win32_uia_provider(
-    HWND hwnd,
-    Win32UiaProviderNode node) {
-  return new (std::nothrow) Win32UiaProvider(hwnd, std::move(node));
+Win32UiaProvider::Win32UiaProvider(
+    Win32UiaProviderTreeHandle tree,
+    Win32UiaProviderNode node,
+    bool is_root)
+    : tree_(std::move(tree)), node_(std::move(node)), is_root_(is_root) {
+  register_win32_uia_fragment(
+      tree_, node_.element_id, static_cast<IRawElementProviderFragment*>(this));
 }
 
-void set_win32_uia_provider_hwnd(
-    IRawElementProviderSimple* provider,
-    HWND hwnd) {
-  if (provider != nullptr) {
-    static_cast<Win32UiaProvider*>(provider)->set_hwnd(hwnd);
+Win32UiaProvider::~Win32UiaProvider() {
+  unregister_win32_uia_fragment(
+      tree_, node_.element_id, static_cast<IRawElementProviderFragment*>(this));
+}
+
+HRESULT STDMETHODCALLTYPE Win32UiaProvider::QueryInterface(
+    REFIID iid,
+    void** object) {
+  if (object == nullptr) return E_POINTER;
+  *object = nullptr;
+  if (IsEqualIID(iid, IID_IUnknown) ||
+      IsEqualIID(iid, IID_IRawElementProviderSimple)) {
+    *object = static_cast<IRawElementProviderSimple*>(this);
+  } else if (IsEqualIID(iid, IID_IRawElementProviderFragment)) {
+    *object = static_cast<IRawElementProviderFragment*>(this);
+  } else if (is_root_ &&
+             IsEqualIID(iid, IID_IRawElementProviderFragmentRoot)) {
+    *object = static_cast<IRawElementProviderFragmentRoot*>(this);
+  } else {
+    return E_NOINTERFACE;
   }
+  AddRef();
+  return S_OK;
+}
+
+ULONG STDMETHODCALLTYPE Win32UiaProvider::AddRef() {
+  return ++reference_count_;
+}
+
+ULONG STDMETHODCALLTYPE Win32UiaProvider::Release() {
+  const ULONG count = --reference_count_;
+  if (count == 0) delete this;
+  return count;
+}
+
+HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_ProviderOptions(
+    ProviderOptions* options) {
+  if (options == nullptr) return E_POINTER;
+  *options = ProviderOptions_ServerSideProvider;
+  return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPatternProvider(
+    PATTERNID,
+    IUnknown** provider) {
+  if (provider == nullptr) return E_POINTER;
+  *provider = nullptr;
+  return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPropertyValue(
+    PROPERTYID property,
+    VARIANT* value) {
+  if (value == nullptr) return E_POINTER;
+  VariantInit(value);
+  if (property == UIA_AutomationIdPropertyId) {
+    return set_bstr(value, L"cgpui-" + std::to_wstring(node_.element_id));
+  }
+  if (property == UIA_ControlTypePropertyId) {
+    value->vt = VT_I4;
+    value->lVal = control_type_for(node_.role);
+  } else if (property == UIA_NamePropertyId) {
+    return set_bstr(value, widen(node_.name));
+  } else if (property == UIA_ValueValuePropertyId) {
+    return set_bstr(value, widen(node_.value));
+  } else if (property == UIA_IsEnabledPropertyId) {
+    value->vt = VT_BOOL;
+    value->boolVal = node_.enabled ? VARIANT_TRUE : VARIANT_FALSE;
+  } else if (property == UIA_IsKeyboardFocusablePropertyId) {
+    value->vt = VT_BOOL;
+    value->boolVal = node_.focusable ? VARIANT_TRUE : VARIANT_FALSE;
+  } else if (property == UIA_HasKeyboardFocusPropertyId) {
+    value->vt = VT_BOOL;
+    value->boolVal = node_.focused ? VARIANT_TRUE : VARIANT_FALSE;
+  } else if (property == UIA_BoundingRectanglePropertyId) {
+    return set_bounding_rect(
+        value, win32_uia_provider_tree_hwnd(tree_), node_.bounds);
+  }
+  return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_HostRawElementProvider(
+    IRawElementProviderSimple** provider) {
+  if (provider == nullptr) return E_POINTER;
+  *provider = nullptr;
+  const HWND hwnd = win32_uia_provider_tree_hwnd(tree_);
+  return hwnd == nullptr ? S_OK : UiaHostProviderFromHwnd(hwnd, provider);
+}
+
+IRawElementProviderSimple* create_win32_uia_provider(
+    Win32UiaProviderTreeHandle tree,
+    Win32UiaProviderNode node,
+    bool is_root) {
+  return new (std::nothrow) Win32UiaProvider(
+      std::move(tree), std::move(node), is_root);
 }
 
 } // namespace cgpui

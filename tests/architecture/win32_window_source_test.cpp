@@ -42,7 +42,9 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_message_internal.hpp",
       "src/platform/win32/win32_window_internal.hpp",
       "src/platform/win32/win32_window_display_internal.hpp",
+      "src/platform/win32/win32_uia_navigation_internal.hpp",
       "src/platform/win32/win32_uia_provider_internal.hpp",
+      "src/platform/win32/win32_uia_provider_object_internal.hpp",
       "src/platform/win32/win32_accessibility.cpp",
       "src/platform/win32/win32_helpers.cpp",
       "src/platform/win32/win32_string.cpp",
@@ -82,8 +84,11 @@ std::string read_win32_source() {
       "src/platform/win32/win32_pointer_scroll.cpp",
       "src/platform/win32/win32_text_input_internal.hpp",
       "src/platform/win32/win32_text_input.cpp",
+      "src/platform/win32/win32_uia_fragment.cpp",
+      "src/platform/win32/win32_uia_navigation.cpp",
       "src/platform/win32/win32_uia_provider.cpp",
       "src/platform/win32/win32_window.cpp",
+      "src/platform/win32/win32_window_accessibility.cpp",
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/win32/win32_window_close.cpp",
       "src/platform/win32/win32_window_display.cpp",
@@ -101,6 +106,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_ime.cpp",
       "src/platform/win32/win32_window_ime_placement.cpp",
       "src/platform/win32/win32_window_proc.cpp",
+      "src/platform/win32/win32_window_proc_accessibility_internal.hpp",
+      "src/platform/win32/win32_window_proc_accessibility.cpp",
       "src/platform/win32/win32_window_proc_command_internal.hpp",
       "src/platform/win32/win32_window_proc_command.cpp",
       "src/platform/win32/win32_window_proc_drag.cpp",
@@ -350,6 +357,10 @@ int main() {
       read_source("src/platform/win32/win32_accessibility_internal.hpp");
   const std::string win32_uia_provider_internal =
       read_source("src/platform/win32/win32_uia_provider_internal.hpp");
+  const std::string win32_uia_provider_object_internal = read_source(
+      "src/platform/win32/win32_uia_provider_object_internal.hpp");
+  const std::string win32_uia_navigation_internal = read_source(
+      "src/platform/win32/win32_uia_navigation_internal.hpp");
   const std::string win32_drag_drop_internal =
       read_source("src/platform/win32/win32_drag_drop_internal.hpp");
   const std::string win32_native_internal =
@@ -362,6 +373,10 @@ int main() {
       read_source("src/platform/win32/win32_accessibility.cpp");
   const std::string win32_uia_provider =
       read_source("src/platform/win32/win32_uia_provider.cpp");
+  const std::string win32_uia_fragment =
+      read_source("src/platform/win32/win32_uia_fragment.cpp");
+  const std::string win32_uia_navigation =
+      read_source("src/platform/win32/win32_uia_navigation.cpp");
   const std::string win32_helpers =
       read_source("src/platform/win32/win32_helpers.cpp");
   const std::string win32_string =
@@ -386,6 +401,8 @@ int main() {
       read_source("src/platform/win32/win32_ole_drop_source.cpp");
   const std::string win32_window =
       read_source("src/platform/win32/win32_window.cpp");
+  const std::string win32_window_accessibility =
+      read_source("src/platform/win32/win32_window_accessibility.cpp");
   const std::string win32_window_chrome =
       read_source("src/platform/win32/win32_window_chrome.cpp");
   const std::string win32_window_size =
@@ -406,6 +423,10 @@ int main() {
       read_source("src/platform/win32/win32_window_ime_placement.cpp");
   const std::string win32_window_proc =
       read_source("src/platform/win32/win32_window_proc.cpp");
+  const std::string win32_window_proc_accessibility_internal = read_source(
+      "src/platform/win32/win32_window_proc_accessibility_internal.hpp");
+  const std::string win32_window_proc_accessibility = read_source(
+      "src/platform/win32/win32_window_proc_accessibility.cpp");
   const std::string win32_window_proc_drag =
       read_source("src/platform/win32/win32_window_proc_drag.cpp");
   const std::string win32_window_proc_lifecycle =
@@ -430,7 +451,10 @@ int main() {
       read_source("src/platform/win32/win32_window_proc_text.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
       win32_accessibility_internal.empty() ||
-      win32_uia_provider_internal.empty() || win32_uia_provider.empty() ||
+      win32_uia_provider_internal.empty() ||
+      win32_uia_provider_object_internal.empty() ||
+      win32_uia_navigation_internal.empty() || win32_uia_provider.empty() ||
+      win32_uia_fragment.empty() || win32_uia_navigation.empty() ||
       win32_drag_drop_internal.empty() || win32_native_internal.empty() ||
       win32_window_message_internal.empty() ||
       win32_window_internal.empty() ||
@@ -442,13 +466,15 @@ int main() {
       win32_font_discovery.empty() ||
       win32_native.empty() ||
       win32_ole_drop_target.empty() || win32_ole_drop_source.empty() ||
-      win32_window.empty() ||
+      win32_window.empty() || win32_window_accessibility.empty() ||
       win32_window_chrome.empty() || win32_window_size.empty() ||
       win32_window_cursor.empty() ||
       win32_window_drag_drop.empty() || win32_window_pointer_events.empty() ||
       win32_window_events.empty() || win32_window_text.empty() ||
       win32_window_ime.empty() || win32_window_ime_placement.empty() ||
       win32_window_proc.empty() ||
+      win32_window_proc_accessibility_internal.empty() ||
+      win32_window_proc_accessibility.empty() ||
       win32_window_proc_drag.empty() ||
       win32_window_proc_lifecycle.empty() ||
       win32_window_proc_pointer.empty() || win32_window_proc_cursor.empty() ||
@@ -484,6 +510,16 @@ int main() {
       !contains(win32_uia_provider_internal, "create_win32_uia_provider(") ||
       contains(win32_uia_provider_internal,
                "class Win32UiaAccessibilityAdapter")) return 96;
+  if (line_count(win32_uia_provider_object_internal) > 90 ||
+      !contains(win32_uia_provider_object_internal,
+                "class Win32UiaProvider final") ||
+      !contains(win32_uia_provider_object_internal,
+                "public IRawElementProviderFragment") ||
+      !contains(win32_uia_provider_object_internal,
+                "public IRawElementProviderFragmentRoot") ||
+      line_count(win32_uia_navigation_internal) > 70 ||
+      !contains(win32_uia_navigation_internal,
+                "navigate_win32_uia_fragment(")) return 98;
   if (line_count(win32_drag_drop_internal) > 120 ||
       !contains(win32_drag_drop_internal, "Win32TestDragDropPayload") ||
       !contains(win32_drag_drop_internal,
@@ -596,6 +632,13 @@ int main() {
       contains(win32_window, "Win32Window::update_size(")) {
     return 76;
   }
+  if (!contains(win32_window_accessibility,
+                "Win32Window::update_accessibility_tree(") ||
+      !contains(win32_window_accessibility,
+                "Win32Window::accessibility_object(") ||
+      contains(win32_window, "Win32Window::update_accessibility_tree(")) {
+    return 99;
+  }
   if (!contains(win32_window_chrome,
                 "Win32Window::apply_window_chrome(") ||
       !contains(win32_window_chrome, "win32_window_style_for(") ||
@@ -668,12 +711,21 @@ int main() {
     return 71;
   }
   if (line_count(win32_uia_provider) > 190 ||
-      !contains(win32_uia_provider,
-                "class Win32UiaProvider final : public IRawElementProviderSimple") ||
+      !contains(win32_uia_provider, "Win32UiaProvider::QueryInterface(") ||
       !contains(win32_uia_provider, "UiaHostProviderFromHwnd(") ||
       !contains(win32_uia_provider, "UIA_AutomationIdPropertyId") ||
       !contains(win32_uia_provider, "UIA_ControlTypePropertyId") ||
       !contains(win32_uia_provider, "UIA_BoundingRectanglePropertyId")) return 97;
+  if (line_count(win32_uia_fragment) > 100 ||
+      !contains(win32_uia_fragment, "Win32UiaProvider::Navigate(") ||
+      !contains(win32_uia_fragment, "Win32UiaProvider::GetRuntimeId(") ||
+      !contains(win32_uia_fragment, "Win32UiaProvider::GetFocus(") ||
+      line_count(win32_uia_navigation) > 230 ||
+      !contains(win32_uia_navigation, "class Win32UiaProviderTree") ||
+      !contains(win32_uia_navigation, "NavigateDirection_FirstChild") ||
+      !contains(win32_uia_navigation, "get_win32_uia_provider_from_point(")) {
+    return 100;
+  }
   if (!contains(win32_native, "Win32NativeMenuState::install_native_menu(") ||
       !contains(win32_native, "Win32NativeFileDialogState::show_native_file_dialog(") ||
       !contains(win32_native, "backend = \"win32\"")) {
@@ -687,6 +739,8 @@ int main() {
   if (!contains(win32_window_proc, "LRESULT CALLBACK win32_window_proc(") ||
       !contains(win32_window_proc, "Win32WindowMessageTarget") ||
       !contains(win32_window_proc, "win32_window_proc_handle_test_drag(") ||
+      !contains(win32_window_proc,
+                "win32_window_proc_handle_accessibility(") ||
       !contains(win32_window_proc, "win32_window_proc_handle_lifecycle(") ||
       !contains(win32_window_proc, "win32_window_proc_handle_pointer(") ||
       !contains(win32_window_proc, "win32_window_proc_handle_keyboard(") ||
@@ -701,6 +755,14 @@ int main() {
       contains(win32_window_proc, "WM_KEYDOWN") ||
       contains(win32_window_proc, "WM_CHAR")) {
     return 92;
+  }
+  if (line_count(win32_window_proc_accessibility_internal) > 45 ||
+      !contains(win32_window_proc_accessibility_internal,
+                "class Win32AccessibilityMessageTarget") ||
+      line_count(win32_window_proc_accessibility) > 35 ||
+      !contains(win32_window_proc_accessibility, "WM_GETOBJECT") ||
+      !contains(win32_window_proc_accessibility, "accessibility_object(")) {
+    return 101;
   }
   if (!contains(win32_window_proc_drag, "test_drag_enter_message()") ||
       !contains(win32_window_proc_drag, "drag_entered(") ||

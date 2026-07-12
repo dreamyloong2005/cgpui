@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "win32_uia_navigation_internal.hpp"
 #include "win32_uia_provider_internal.hpp"
 
 #include <cstddef>
@@ -20,6 +21,7 @@ class Win32UiaAccessibilityAdapter {
   void attach(HWND hwnd);
   void detach();
   void update(PlatformAccessibilityTreeUpdate update);
+  bool handle_get_object(WPARAM wparam, LPARAM lparam, LRESULT& result) const;
 
   [[nodiscard]] std::uint64_t root_element_id() const;
   [[nodiscard]] std::size_t node_count() const;
@@ -38,6 +40,7 @@ class Win32UiaAccessibilityAdapter {
   PlatformAccessibilityTreeUpdate last_update_;
   std::vector<Win32UiaProviderNode> provider_nodes_;
   std::vector<IRawElementProviderSimple*> providers_;
+  Win32UiaProviderTreeHandle provider_tree_;
   std::vector<PlatformAccessibilityLiveUpdate> live_updates_;
   HWND hwnd_ = nullptr;
   std::uint64_t root_element_id_ = 0;

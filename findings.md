@@ -10830,3 +10830,18 @@
   UI Automation Core linkage, line caps, five-document completion phrase, and
   the Step 620 handoff.
 - Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.
+
+## 2026-07-12 Phase G Step 620 Win32 UIA Navigation Design
+
+- The accessibility snapshot is preorder and carries each node's parent id, so
+  a focused tree-state module can derive first/last child and previous/next
+  sibling order without changing the public platform accessibility payload.
+- Providers need `IRawElementProviderFragment`; the root provider additionally
+  needs `IRawElementProviderFragmentRoot`. A shared tree state owns immutable
+  node relationships and a non-owning provider registry, while the adapter
+  continues to own the initial COM references. This avoids relationship logic
+  in `Win32Window` and leaves provider reconciliation/lifetime for Step 624.
+- `WM_GETOBJECT` belongs in a dedicated window-proc accessibility leaf. The
+  message target delegates the actual `UiaReturnRawElementProvider` call to the
+  accessibility adapter, preserving the thin main window procedure.
+- Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.

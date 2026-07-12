@@ -1,5 +1,7 @@
 #include "win32_internal.hpp"
 
+#include <UIAutomationCoreApi.h>
+
 #include <utility>
 
 namespace cgpui {
@@ -10,9 +12,7 @@ Win32UiaAccessibilityAdapter::~Win32UiaAccessibilityAdapter() {
 
 void Win32UiaAccessibilityAdapter::attach(HWND hwnd) {
   hwnd_ = hwnd;
-  for (IRawElementProviderSimple* provider : providers_) {
-    set_win32_uia_provider_hwnd(provider, hwnd);
-  }
+  set_win32_uia_provider_tree_hwnd(provider_tree_, hwnd);
 }
 
 void Win32UiaAccessibilityAdapter::detach() {
@@ -35,9 +35,9 @@ void Win32UiaAccessibilityAdapter::update(
   focused_node_count_ = last_update_.focused_node_count;
   text_input_node_count_ = 0;
   release_providers();
+  provider_tree_.reset();
   provider_nodes_.clear();
   provider_nodes_.reserve(last_update_.nodes.size());
-  providers_.reserve(last_update_.nodes.size());
   for (const PlatformAccessibilityNodeUpdate& node : last_update_.nodes) {
     if (node.role == PlatformAccessibilityRole::text_input) {
       text_input_node_count_ += 1;
@@ -55,9 +55,27 @@ void Win32UiaAccessibilityAdapter::update(
         .bounds = node.bounds,
         .child_count = node.child_count,
     };
-    providers_.push_back(create_win32_uia_provider(hwnd_, provider_node));
     provider_nodes_.push_back(std::move(provider_node));
   }
+  provider_tree_ = create_win32_uia_provider_tree(
+      hwnd_, root_element_id_, provider_nodes_);
+  providers_.reserve(provider_nodes_.size());
+  for (const Win32UiaProviderNode& node : provider_nodes_) {
+    providers_.push_back(create_win32_uia_provider(
+        provider_tree_, node, node.element_id == root_element_id_));
+  }
+}
+
+bool Win32UiaAccessibilityAdapter::handle_get_object(
+    WPARAM wparam,
+    LPARAM lparam,
+    LRESULT& result) const {
+  IRawElementProviderSimple* root = root_provider();
+  if (hwnd_ == nullptr || lparam != UiaRootObjectId || root == nullptr) {
+    return false;
+  }
+  result = UiaReturnRawElementProvider(hwnd_, wparam, lparam, root);
+  return true;
 }
 
 std::uint64_t Win32UiaAccessibilityAdapter::root_element_id() const {

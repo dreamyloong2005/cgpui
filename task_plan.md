@@ -1200,7 +1200,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 619 evidence: the focused provider behavior target passes real COM
   identity/refcount, host-provider, property, bounds, and lookup coverage; the
   dedicated structure guard freezes provider/adapter/window ownership.
-- In progress: Step 620 Win32 UIA tree navigation production behavior.
+- Completed: Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.
+- Step 620 evidence: focused behavior covers fragment/root COM interfaces,
+  deterministic navigation, runtime ids, bounds, focus/point lookup, and
+  get-object routing; dedicated structure coverage freezes the new leaves.
+- In progress: Step 621 Win32 UIA pattern provider production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1216,6 +1220,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 620 WSL gate pointed `XMAKE_GLOBALDIR` at `.xmake-wsl/global` and omitted package cache/install variables, so Xmake requested dependency installation | Step 620 WSL focused gate | Reuse the established `.build-wsl/master/{global,pkg-cache,pkg-install,build-root}` environment and `/dev/shm/cgpui`; do not install or restore anything |
+| `clang-format` is not available on PATH and no Visual Studio/LLVM candidate was installed | Step 620 formatting check | Keep repository style manually, enforce focused line caps, compile all changed targets, and use `git diff --check` |
+| Step 620 GREEN made the Step 619/provider inventory guards exit 2 and 97 because the COM class declaration moved to a focused object header | Step 620 structure regression | Advance the inventories to require the object, navigation, fragment, and message-accessibility leaves while preserving Step 619 behavior assertions |
+| The first Step 620 adapter/window patch used an end-of-file context that did not match `win32_window.cpp` | Step 620 GREEN implementation | Split the atomic patch and remove the accessibility method using its exact in-file location |
+| Step 620 navigation RED exits 2 because Step 619 providers expose only `IRawElementProviderSimple` | Step 620 focused behavior RED | Add focused provider-tree state plus fragment/root COM interfaces before advancing documentation |
 | WSL Xmake refused the root `archlinux` session without explicit opt-in | Step 619 resume WSL focused gate | Set `XMAKE_ROOT=y` for the established root WSL verification environment |
 | `xmake test -l` is not supported by the installed Xmake test command | Step 619 resume test inventory | Use the already registered target test names directly with `xmake test target/default ...` |
 | The first Step 619 behavior RED included `OleAuto.h` before Windows types, then `WIN32_LEAN_AND_MEAN` omitted COM definitions required by `UIAutomationCore.h` | Step 619 provider-object RED compile | Include `windows.h`, then `ole2.h`, `UIAutomationCore.h`, and `OleAuto.h` before the focused internal adapter header |

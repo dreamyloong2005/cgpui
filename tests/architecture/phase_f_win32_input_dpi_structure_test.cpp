@@ -109,7 +109,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 620 Win32 UIA tree navigation production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 621 Win32 UIA pattern provider production behavior")) {
     return 8;
   }
   return 0;

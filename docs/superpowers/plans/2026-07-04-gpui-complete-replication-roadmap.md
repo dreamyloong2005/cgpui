@@ -1869,6 +1869,7 @@ apps rather than only demo windows.
 - `tests/assets/*`
 
 - [x] Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.
+- [x] Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.
 - [ ] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [ ] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

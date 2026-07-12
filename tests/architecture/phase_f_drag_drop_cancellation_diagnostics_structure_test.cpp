@@ -64,6 +64,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 7;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 620 Win32 UIA tree navigation production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 621 Win32 UIA pattern provider production behavior\"")) return 8;
   return 0;
 }

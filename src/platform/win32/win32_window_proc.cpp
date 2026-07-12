@@ -2,6 +2,7 @@
 #include "win32_window_proc_command_internal.hpp"
 #include "win32_window_proc_cursor_internal.hpp"
 #include "win32_window_proc_pointer_capture_internal.hpp"
+#include "win32_window_proc_accessibility_internal.hpp"
 
 namespace cgpui {
 
@@ -14,6 +15,8 @@ LRESULT CALLBACK win32_window_proc(
       GetWindowLongPtrW(hwnd, GWLP_USERDATA));
   LRESULT result = 0;
   if (win32_window_proc_handle_test_drag(window, message, lparam, result) ||
+      win32_window_proc_handle_accessibility(
+          message, wparam, lparam, window, result) ||
       win32_window_proc_handle_command(
           message, wparam, lparam, window, result) ||
       win32_window_proc_handle_lifecycle(

@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -28,11 +29,12 @@ struct Win32UiaProviderNode {
   std::size_t child_count = 0;
 };
 
+class Win32UiaProviderTree;
+using Win32UiaProviderTreeHandle = std::shared_ptr<Win32UiaProviderTree>;
+
 IRawElementProviderSimple* create_win32_uia_provider(
-    HWND hwnd,
-    Win32UiaProviderNode node);
-void set_win32_uia_provider_hwnd(
-    IRawElementProviderSimple* provider,
-    HWND hwnd);
+    Win32UiaProviderTreeHandle tree,
+    Win32UiaProviderNode node,
+    bool is_root);
 
 } // namespace cgpui

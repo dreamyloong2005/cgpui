@@ -3,6 +3,7 @@
 #include "cgpui/platform/platform.hpp"
 #include "win32_drag_drop_internal.hpp"
 #include "win32_text_input_internal.hpp"
+#include "win32_window_proc_accessibility_internal.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -17,7 +18,7 @@ struct Win32WindowChromeState {
   DWORD extended_style = 0;
 };
 
-class Win32WindowMessageTarget {
+class Win32WindowMessageTarget : public Win32AccessibilityMessageTarget {
  public:
   virtual ~Win32WindowMessageTarget() = default;
   virtual void attach(HWND hwnd) = 0;
