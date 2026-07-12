@@ -11134,3 +11134,34 @@
   leaves. The public window header remains 253/260 lines, the private runtime
   header remains 260/260, and the priority-aware pool source remains 114/120.
 - Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.
+
+## 2026-07-12 Phase G Step 637 Structured Task Group Design
+
+- A structured group should be a focused move-only `TaskGroup` public leaf,
+  following `Subscription` ownership semantics: move transfers ownership and
+  destruction cancels unfinished member tasks.
+- `WindowRuntime`, `WindowRuntimeContext`, and `AsyncContextCapability` create
+  groups. The group itself owns normal/explicit-priority foreground and
+  background spawn methods plus task-count, active-count, complete, cancelled,
+  and cancel state.
+- Runtime group records own stable member `TaskId`s. Group cancellation marks
+  every unfinished member cancelled and signals existing background tokens;
+  completion callbacks for cancelled members remain suppressed by the current
+  task completion path.
+- Step 637 does not introduce parent/child groups or nested cancellation
+  propagation. Those semantics remain the explicit Step 638 boundary.
+- The first GREEN behavior test proves explicit/destructor cancellation,
+  background token signalling, completion suppression, counts while active,
+  and move transfer. Before closeout it must also prove normal completion state
+  and default-priority compatibility rather than inferring those from the
+  existing ungrouped task tests.
+- The initial helper declarations pushed `window_runtime_internal.hpp` from its
+  frozen 260-line cap to 263. Keep the private runtime factories on the existing
+  dense task-state line so the group boundary adds no broad-header growth.
+- The Step 637 structure guard should follow the Step 636 five-document pattern
+  while additionally requiring the public leaf in header cleanliness, all five
+  focused implementation leaves in the global UI source inventory, the nested
+  runtime store/member ids, explicit and destructor cancellation, cancellation
+  token signalling, completion suppression, all three creation surfaces, and
+  the Step 638 handoff.
+- Phase G Step 637 adds move-only structured task groups with runtime-owned membership, normal and explicit-priority spawning, active and total task observability, explicit bulk cancellation, and destructor cancellation that signals background tokens and suppresses cancelled completions. Step 638 task cancellation propagation production behavior is next.

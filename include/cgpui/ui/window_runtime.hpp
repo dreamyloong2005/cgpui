@@ -3,6 +3,7 @@
 #include "cgpui/ui/action.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 #include "cgpui/ui/task_priority.hpp"
+#include "cgpui/ui/task_group.hpp"
 
 #include <any>
 #include <atomic>
@@ -149,6 +150,7 @@ class WindowRuntime {
   [[nodiscard]] std::optional<AnimationSnapshot> animation_snapshot(
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id);
+  [[nodiscard]] TaskGroup create_task_group();
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
   [[nodiscard]] TaskHandle spawn_task(TaskPriority priority, TaskCompletionCallback callback);
   [[nodiscard]] Result<TaskHandle> try_spawn_task(TaskCompletionCallback callback);

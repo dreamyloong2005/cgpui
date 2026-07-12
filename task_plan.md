@@ -1278,7 +1278,11 @@ Windows/Linux core API is stable enough for parity work.
   priority FIFO for background work and runtime-thread completions; public
   header cleanliness and dedicated structure coverage freeze all three API
   surfaces, normal compatibility, source ownership, and line budgets.
-- In progress: Step 637 structured task group production behavior.
+- Completed: Phase G Step 637 adds move-only structured task groups with runtime-owned membership, normal and explicit-priority spawning, active and total task observability, explicit bulk cancellation, and destructor cancellation that signals background tokens and suppresses cancelled completions. Step 638 task cancellation propagation production behavior is next.
+- Step 637 evidence: focused behavior covers normal completion, explicit and
+  destructor cancellation, background token signalling, callback suppression,
+  state/count queries, move transfer, and all three creation surfaces; dedicated
+  structure coverage freezes public/private ownership and line budgets.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1294,6 +1298,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 637 84-target handoff run passed 82/84 because the Step 635/636 guards split the old current-handoff phrase across two source lines | Step 637 dynamic handoff chain | Advance the two split-string assertions explicitly, then rerun the complete chain rather than weakening the historical guards |
+| The first Step 637 handoff rewrite covered `tests/architecture` but left three API-parity closeout guards on Step 637 | Step 637 dynamic handoff update | Scan all `tests/**/*.cpp`, update the three API-parity guards, and derive the complete 84-target list from every current-handoff consumer |
+| A Step 637 handoff count used an over-escaped fixed string and reported zero new matches despite green structure tests | Step 637 handoff audit | Use `Select-String` over resolved test files and match the current-handoff field plus step text directly |
+| Step 637 fourth GREEN compile reached `task_group.cpp` before the outer `WindowRuntime` definition required by the nested store header | Step 637 focused behavior GREEN attempt 4 | Include `ui_internal.hpp` before `runtime_task_group_internal.hpp` in the handle implementation leaf |
+| Step 637 third GREEN compile found namespace-level method qualifiers and a shadow namespace friend after the store header became a nested runtime type | Step 637 focused behavior GREEN attempt 3 | Fully qualify all store definitions as `WindowRuntime::RuntimeTaskGroupStore`, remove the shadow friend, and keep cancellation-token construction behind a private runtime member |
+| Step 637 second GREEN compile reached `WindowRuntime` destruction with an incomplete nested task-group store type | Step 637 focused behavior GREEN attempt 2 | Include the focused private task-group header in `runtime_shutdown.cpp`, matching the existing task-pool destruction dependency |
+| Step 637 first GREEN compile treated `RuntimeTaskGroupStore` as an incomplete namespace type because its declaration lives inside the `WindowRuntime` class-body include | Step 637 focused behavior GREEN attempt | Define the store as `WindowRuntime::RuntimeTaskGroupStore` like the existing task pool and construct private task handles through a focused `WindowRuntime` member |
+| The first Step 637 behavior build failed because `cgpui/ui/task_group.hpp` does not exist | Step 637 behavior RED | Add the move-only public group leaf, focused runtime group store and handle implementation, creation forwarders, runtime membership, and bulk/destructor cancellation behavior |
 | The first Step 636 authority sync patch failed atomically because its expected public-vocabulary line wrapping did not match the file | Step 636 authority synchronization | Re-read the exact document slice and apply the roadmap/ledger/plan and vocabulary/core-parity changes as separate precise patches |
 | The corrected Step 636 structure guard exited 13 after all API, implementation, ordering, compatibility, behavior, inventory, historical guard, Xmake, and line-cap checks passed | Step 636 authority-document RED | Synchronize the exact Step 636 completion sentence, public vocabulary/core parity status, and Step 637 handoff |
 | The first Step 636 structure guard returned 3 because it assumed every priority overload declaration was formatted on one line, while `async_context.hpp` follows wrapped declarations | Step 636 dedicated structure RED | Guard the priority token and method-name set without treating whitespace formatting as API semantics |

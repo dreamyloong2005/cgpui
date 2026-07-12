@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_task_group_internal.hpp"
 #include "runtime_task_pool_internal.hpp"
 
 namespace cgpui {

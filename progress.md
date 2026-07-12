@@ -23196,3 +23196,52 @@
   13/25/98/35/37/52/118/99/20/260/189/172 lines; and `git diff --check`
   succeeds.
 - Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.
+
+## 2026-07-12 Phase G Step 637 Structured Task Groups
+
+- Started from committed Step 636 at `57a02296` with only unrelated untracked
+  `.vscode/` present.
+- Chosen boundary is a move-only `TaskGroup` public leaf with runtime-owned
+  membership, explicit/default priority spawn methods, state/count queries,
+  explicit bulk cancellation, and destructor cancellation. Parent-child
+  propagation remains Step 638.
+- Added the focused structured-group behavior target. Its first build reaches
+  the expected RED because the planned public `task_group.hpp` leaf does not
+  yet exist.
+- The first implementation compile exposed that the class-body internal header
+  declares nested runtime implementation types. Updated the group store to the
+  same `WindowRuntime::RuntimeTaskGroupStore` ownership used by the task pool
+  and kept `TaskHandle` construction behind a private runtime member.
+- The next compile reached runtime destruction and required the nested store's
+  complete type there. Added the private group header beside the existing pool
+  header in the focused shutdown leaf.
+- The third compile exposed stale namespace-level method qualifiers plus a
+  shadow friend declaration. Fully qualified the nested store definitions and
+  retained private cancellation-token construction through the runtime.
+- The fourth compile completed the store implementation and stopped only at
+  the handle leaf's include order. Moved the complete runtime definition before
+  the nested store header.
+- The focused Step 637 behavior target now passes 1/1 on Windows. Follow-up
+  audit identified missing normal-completion coverage and restored the private
+  runtime header to its existing 260-line structural budget.
+- Expanded the behavior test with default-priority foreground/background normal
+  completion and exact group/handle state checks; it passes. The initial
+  Windows task/group/pool/priority/scheduling/header/source regression passes
+  10/10.
+- Added the dedicated Step 637 structure guard, registered every new public and
+  implementation leaf globally, synchronized the five authority documents,
+  and advanced the ledger plus historical handoff consumers to Step 638. The
+  dedicated structure/header/source group passes 3/3 and JSON parses.
+- The first complete 84-target handoff run passes 82/84. Only the historical
+  Step 635/636 guards retained a two-line Step 637 string; both assertions were
+  advanced explicitly to Step 638.
+- Final Step 637 verification passes Windows 11/11, Arch Linux WSL 11/11, and
+  the complete Windows dynamic-handoff chain 84/84.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 84 current-handoff consumers plus the JSON
+  ledger point to Step 638 with zero stale Step 637 current handoffs; JSON
+  parses with 17 Step 637 source entries; public group header, private store
+  header/source, handle source, runtime-context/async-context sources, private
+  runtime header, behavior test, and structure guard are
+  61/49/180/126/9/11/260/172/173 lines; and `git diff --check` succeeds.
+- Phase G Step 637 adds move-only structured task groups with runtime-owned membership, normal and explicit-priority spawning, active and total task observability, explicit bulk cancellation, and destructor cancellation that signals background tokens and suppresses cancelled completions. Step 638 task cancellation propagation production behavior is next.

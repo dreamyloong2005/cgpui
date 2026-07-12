@@ -30,6 +30,12 @@ struct TaskId {
   friend bool operator==(const TaskId&, const TaskId&) = default;
 };
 
+struct TaskGroupId {
+  std::uint64_t value = 0;
+
+  friend bool operator==(const TaskGroupId&, const TaskGroupId&) = default;
+};
+
 struct WindowRuntimeId {
   std::uint64_t value = 0;
 

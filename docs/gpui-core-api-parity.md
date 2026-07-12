@@ -120,10 +120,10 @@ desktop integration surfaces remain separate future work.
   incomplete.
 - Font discovery has deterministic abstractions and platform override slots,
   but real DirectWrite/fontconfig discovery is not complete.
-- Threaded async now has cancellable background work and main-runtime
-  completion dispatch, but it is still a small executor skeleton rather than a
-  full GPUI async runtime with priorities, structured task groups, pooled
-  scheduling policy, async I/O integration, or cross-thread entity access.
+- Threaded async now has a bounded reusable pool, low/normal/high scheduling,
+  main-runtime completion dispatch, and move-only structured task groups with
+  bulk/destructor cancellation. Cancellation propagation depth, async I/O
+  integration, and cross-thread entity access remain incomplete.
 
 ## Missing
 

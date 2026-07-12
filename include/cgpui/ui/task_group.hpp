@@ -1,39 +1,29 @@
 #pragma once
 
-#include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/task_priority.hpp"
-#include "cgpui/ui/task_group.hpp"
 
-#include <cstdint>
-#include <optional>
+#include <cstddef>
 
 namespace cgpui {
 
-struct WindowRuntimeContext;
+class WindowRuntime;
 
-class AsyncContextCapability {
+class TaskGroup {
  public:
-  constexpr AsyncContextCapability() = default;
-  constexpr explicit AsyncContextCapability(
-      const WindowRuntimeContext& context)
-      : context_(&context) {}
+  TaskGroup() = default;
+  ~TaskGroup();
+  TaskGroup(const TaskGroup&) = delete;
+  TaskGroup& operator=(const TaskGroup&) = delete;
+  TaskGroup(TaskGroup&& other) noexcept;
+  TaskGroup& operator=(TaskGroup&& other) noexcept;
 
-  void defer(DeferredCallback callback) const;
-  [[nodiscard]] TimerId schedule_timer(
-      std::uint64_t delay_ms,
-      TimerCallback callback) const;
-  [[nodiscard]] TimerId schedule_repeating_timer(
-      std::uint64_t interval_ms,
-      TimerCallback callback) const;
-
-  [[nodiscard]] AnimationHandle start_animation(
-      AnimationOptions options,
-      AnimationCallback callback) const;
-  [[nodiscard]] std::optional<AnimationSnapshot> animation_snapshot(
-      AnimationId id) const;
-  [[nodiscard]] bool cancel_animation(AnimationId id) const;
-  [[nodiscard]] TaskGroup create_task_group() const;
+  [[nodiscard]] TaskGroupId id() const { return id_; }
+  [[nodiscard]] std::size_t task_count() const;
+  [[nodiscard]] std::size_t active_task_count() const;
+  [[nodiscard]] bool complete() const;
+  [[nodiscard]] bool cancelled() const;
+  [[nodiscard]] bool cancel();
 
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_task(
@@ -58,10 +48,14 @@ class AsyncContextCapability {
       TaskPriority priority,
       BackgroundTaskCallback work,
       TaskCompletionCallback completion) const;
-  void batch_updates(UpdateBatchCallback callback) const;
 
  private:
-  const WindowRuntimeContext* context_ = nullptr;
+  friend class WindowRuntime;
+  TaskGroup(WindowRuntime& runtime, TaskGroupId id)
+      : runtime_(&runtime), id_(id) {}
+
+  WindowRuntime* runtime_ = nullptr;
+  TaskGroupId id_{};
 };
 
 } // namespace cgpui

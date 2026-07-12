@@ -3067,7 +3067,28 @@
       "xmake.lua"
     ],
     "phase_g_step_636_remaining_gap": "Step 637 structured task group production behavior",
-    "phase_f_current_handoff": "Step 637 structured task group production behavior"
+    "phase_g_step_637_surface": "Phase G Step 637 adds move-only structured task groups with runtime-owned membership, normal and explicit-priority spawning, active and total task observability, explicit bulk cancellation, and destructor cancellation that signals background tokens and suppresses cancelled completions. Step 638 task cancellation propagation production behavior is next.",
+    "phase_g_step_637_sources": [
+      "include/cgpui/ui/task_group.hpp",
+      "include/cgpui/ui/runtime_ids.hpp",
+      "include/cgpui/ui/window_runtime.hpp",
+      "include/cgpui/ui/runtime_context.hpp",
+      "include/cgpui/ui/async_context.hpp",
+      "src/ui/runtime_task_group_internal.hpp",
+      "src/ui/runtime_task_group.cpp",
+      "src/ui/task_group.cpp",
+      "src/ui/runtime_context_task_group.cpp",
+      "src/ui/async_context_task_group.cpp",
+      "src/ui/runtime_tasks.cpp",
+      "src/ui/window_runtime_internal.hpp",
+      "tests/async/runtime_task_group_test.cpp",
+      "tests/architecture/phase_g_runtime_task_group_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_637_remaining_gap": "Step 638 task cancellation propagation production behavior",
+    "phase_f_current_handoff": "Step 638 task cancellation propagation production behavior"
   },
   "categories": [
     "application_and_app_context",

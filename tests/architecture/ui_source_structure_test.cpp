@@ -1973,6 +1973,9 @@ int main() {
       "src/ui/runtime_task_pool.cpp",
       "src/ui/runtime_task_priority_internal.hpp",
       "src/ui/runtime_task_priority.cpp",
+      "src/ui/runtime_task_group_internal.hpp",
+      "src/ui/runtime_task_group.cpp",
+      "src/ui/task_group.cpp",
       "src/ui/runtime_task_results.cpp",
       "src/ui/runtime_task_state.cpp",
       "src/ui/runtime_diagnostic_snapshot.cpp",
@@ -1983,6 +1986,7 @@ int main() {
       "src/ui/runtime_context_platform.cpp",
       "src/ui/runtime_context_scheduling.cpp",
       "src/ui/runtime_context_task_priority.cpp",
+      "src/ui/runtime_context_task_group.cpp",
       "src/ui/runtime_context_text.cpp",
       "src/ui/runtime_context_window_close.cpp",
       "src/ui/subscription.cpp",
@@ -1994,6 +1998,7 @@ int main() {
       "src/ui/app_runner.cpp",
       "src/ui/app_context.cpp",
       "src/ui/async_context_task_priority.cpp",
+      "src/ui/async_context_task_group.cpp",
   };
   for (const char* source : source_files) {
     if (read_source(source).empty()) {

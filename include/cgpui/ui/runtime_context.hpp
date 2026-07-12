@@ -194,6 +194,7 @@ struct WindowRuntimeContext {
   [[nodiscard]] std::optional<AnimationSnapshot> animation_snapshot(
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id) const;
+  [[nodiscard]] TaskGroup create_task_group() const;
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_task(TaskPriority priority, TaskCompletionCallback callback) const;
   [[nodiscard]] Result<TaskHandle> try_spawn_task(

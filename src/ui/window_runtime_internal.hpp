@@ -1,5 +1,5 @@
-friend class AnimationHandle; friend class TestContextCapability; friend class TaskHandle; friend struct WindowRuntimeContext;
-class RuntimeTaskPool; struct RuntimeTaskDiagnostics;
+friend class AnimationHandle; friend class TaskGroup; friend class TestContextCapability; friend class TaskHandle; friend struct WindowRuntimeContext;
+class RuntimeTaskPool; class RuntimeTaskGroupStore; struct RuntimeTaskDiagnostics;
 void handle_event(const PlatformEvent& event); [[nodiscard]] bool handle_native_menu_command_event(const PlatformEvent& event, ViewId target_view_id);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);
 #include "runtime_window_input_state_internal.hpp"
@@ -136,7 +136,7 @@ struct RuntimeAnimation {
   bool complete = false;
 };
 struct RuntimeTask {
-  TaskId id;
+  TaskId id; TaskGroupId group_id{};
   TaskPriority priority = TaskPriority::normal;
   TaskCompletionCallback callback;
   bool queued = false, completed = false;
@@ -234,10 +234,10 @@ bool firing_timers_ = false;
 std::vector<RuntimeAnimation> animations_;
 std::uint64_t next_animation_id_ = 1;
 mutable std::mutex tasks_mutex_;
-std::unique_ptr<RuntimeTaskPool> task_pool_;
+std::unique_ptr<RuntimeTaskPool> task_pool_; std::unique_ptr<RuntimeTaskGroupStore> task_group_store_;
 std::vector<RuntimeTask> tasks_;
 std::vector<RuntimeTaskCompletion> task_completion_queue_;
-std::uint64_t next_task_id_ = 1;
+std::uint64_t next_task_id_ = 1; [[nodiscard]] TaskHandle make_task_handle(TaskId id); [[nodiscard]] TaskCancellationToken make_task_cancellation_token(std::shared_ptr<std::atomic_bool> state);
 bool draining_task_completions_ = false;
 bool handling_wakeup_ = false;
 int update_batch_depth_ = 0;

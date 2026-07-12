@@ -30,6 +30,7 @@
 #include "cgpui/ui/runtime_ids.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
 #include "cgpui/ui/task_priority.hpp"
+#include "cgpui/ui/task_group.hpp"
 #include "cgpui/ui/runtime_rendering.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
@@ -270,6 +271,13 @@ class TestView final : public cgpui::View {
         });
     (void)background_task.cancel();
     (void)background_task.cancelled();
+    cgpui::TaskGroup task_group = context.runtime.create_task_group();
+    (void)task_group.id();
+    (void)task_group.task_count();
+    (void)task_group.active_task_count();
+    (void)task_group.complete();
+    (void)task_group.cancelled();
+    (void)task_group.cancel();
     context.batch_updates([](const cgpui::ViewContext& batch_context) {
       batch_context.request_render();
     });

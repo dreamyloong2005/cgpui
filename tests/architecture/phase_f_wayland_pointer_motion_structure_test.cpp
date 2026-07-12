@@ -135,7 +135,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 637 structured task group production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 638 task cancellation propagation production behavior")) {
     return 10;
   }
   return 0;
