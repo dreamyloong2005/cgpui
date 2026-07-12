@@ -2782,7 +2782,13 @@
       "xmake.lua"
     ],
     "phase_f_step_614_remaining_gap": "Step 615 final closeout guard",
-    "phase_f_current_handoff": "Step 615 final closeout guard"
+    "phase_f_step_615_surface": "Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.",
+    "phase_f_step_615_sources": [
+      "tests/api_parity/phase_f_final_closeout_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_615_remaining_gap": "Step 616 ledger closeout",
+    "phase_f_current_handoff": "Step 616 ledger closeout"
   },
   "categories": [
     "application_and_app_context",

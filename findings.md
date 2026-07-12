@@ -10771,3 +10771,7 @@
 ## 2026-07-12 Phase F Step 614 Platform Production-Path Audit
 
 - Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
+
+## 2026-07-12 Phase F Step 615 Final Closeout Guard
+
+- Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.

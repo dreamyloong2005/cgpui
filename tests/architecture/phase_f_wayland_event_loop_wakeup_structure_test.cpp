@@ -82,7 +82,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 615 final closeout guard")) {
+                "\"phase_f_current_handoff\": \"Step 616 ledger closeout")) {
     return 9;
   }
   return 0;

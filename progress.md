@@ -22663,3 +22663,12 @@
   Wayland constructor while leaving the event loop in its focused source.
 - Final Windows and WSL final-band verification passes 4/4 with the production
   path audit included; Step 615 handoffs and diff hygiene pass.
+
+## 2026-07-12 Phase F Step 615 Final Closeout Guard
+
+- Started from committed Step 614 at `c8f01a13`.
+- Added `phase_f_final_closeout_test` as the single audit-only aggregation point
+  for every Phase F production band and final verification guard.
+- Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
+- Final Windows and WSL final-band verification passes 5/5 with the closeout
+  guard included; Step 616 handoffs and diff hygiene pass.
