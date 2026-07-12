@@ -22715,3 +22715,38 @@
   parsing, five-document final phrase uniqueness, completed roadmap/status,
   65 Phase G Step 619 dynamic handoffs, zero stale Step 618 handoffs,
   83/169/114 line caps, and `git diff --check` pass.
+
+## 2026-07-12 Phase G Entry And Step 619 Start
+
+- Started from committed Phase F closeout at `88b36bdc`; tracked worktree is
+  clean and unrelated untracked `.vscode/` remains untouched.
+- Read the authoritative Phase G Steps 619-678 roadmap and created the active
+  execution goal across Win32 UIA, Linux AT-SPI, async, animation, assets,
+  test support, packaging/CI, and final verification.
+- Existing accessibility/runtime/animation/asset leaves will be audited as
+  starting boundaries before Step 619 production changes; no existing facade
+  is treated as sufficient evidence for the production roadmap requirement.
+- Step 619 audit confirms the Win32 adapter currently exposes record facades
+  only. The implementation boundary is set to a new focused COM provider leaf,
+  adapter-owned provider references, and thin Win32Window attach/detach/update
+  forwarding, with later UIA navigation/pattern/event work kept out of scope.
+- Added `win32_uia_provider_internal.hpp/.cpp`, adapter-owned COM provider
+  references, HWND attach/detach forwarding, and UI Automation Core linkage.
+- The behavior RED first exposed the missing adapter provider API after fixing
+  Windows SDK include ordering; the GREEN target passes COM identity/refcount,
+  host provider, automation id, control type, name/value/focus/enabled/bounds,
+  and missing-pattern behavior.
+- Updated the historical Win32 structure inventory for the extracted provider
+  leaf; provider behavior plus Win32/header regressions pass 4/4.
+- Added the Step 619 structure guard; all module, behavior, link, and line-cap
+  checks pass before the intended five-document RED at exit 8.
+- Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.
+- Resumed the persistent Phase G goal from the current worktree, confirmed the
+  Step 619 tracked/new-file scope still matches the provider-object slice, and
+  kept unrelated `.vscode/compile_commands.json` outside the work scope.
+- Final Step 619 verification passes Windows 7/7 and WSL Arch Linux 6/6.
+  Ledger JSON parsing succeeds; the completion sentence appears exactly once
+  in each of the five authority documents; 66 dynamic handoff files point to
+  Step 620 with zero stale Step 619 handoffs; provider header/source, adapter
+  header/source, window, behavior test, and structure guard line counts are
+  38/175/49/101/76/166/102; and `git diff --check` passes.

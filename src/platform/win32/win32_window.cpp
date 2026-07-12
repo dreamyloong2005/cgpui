@@ -25,6 +25,7 @@ Win32Window::~Win32Window() {
 
 void Win32Window::attach(HWND hwnd) {
   hwnd_ = hwnd;
+  uia_accessibility_.attach(hwnd);
   refresh_cursor(true);
   register_drop_target(hwnd);
 }
@@ -32,6 +33,7 @@ void Win32Window::attach(HWND hwnd) {
 void Win32Window::detach() {
   set_pointer_capture(false);
   revoke_drop_target();
+  uia_accessibility_.detach();
   hwnd_ = nullptr;
 }
 

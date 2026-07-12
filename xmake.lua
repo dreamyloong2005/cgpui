@@ -581,13 +581,20 @@ target("phase_f_final_closeout_test")
     add_files("tests/api_parity/phase_f_final_closeout_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_win32_uia_provider_object_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_g_win32_uia_provider_object_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
         add_files("src/platform/win32/*.cpp")
         add_deps("cgpui_core", "cgpui_platform")
         add_includedirs(public_includedirs, {public = true})
-        add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32", "dwrite", "uuid")
+        add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32", "oleaut32", "dwrite", "uiautomationcore", "uuid")
 
     target("win32_input_event_test")
         set_kind("binary")
@@ -627,6 +634,14 @@ if is_plat("windows") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs)
         add_syslinks("user32", "dwrite")
+        add_tests("default")
+
+    target("win32_uia_provider_object_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_uia_provider_object_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs, "src/platform/win32")
+        add_syslinks("user32", "uiautomationcore", "oleaut32")
         add_tests("default")
 
     target("win32_window_lifecycle_state_test")

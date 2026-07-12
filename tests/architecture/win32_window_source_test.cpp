@@ -42,6 +42,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_message_internal.hpp",
       "src/platform/win32/win32_window_internal.hpp",
       "src/platform/win32/win32_window_display_internal.hpp",
+      "src/platform/win32/win32_uia_provider_internal.hpp",
       "src/platform/win32/win32_accessibility.cpp",
       "src/platform/win32/win32_helpers.cpp",
       "src/platform/win32/win32_string.cpp",
@@ -81,6 +82,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_pointer_scroll.cpp",
       "src/platform/win32/win32_text_input_internal.hpp",
       "src/platform/win32/win32_text_input.cpp",
+      "src/platform/win32/win32_uia_provider.cpp",
       "src/platform/win32/win32_window.cpp",
       "src/platform/win32/win32_window_chrome.cpp",
       "src/platform/win32/win32_window_close.cpp",
@@ -346,6 +348,8 @@ int main() {
       read_source("src/platform/win32/win32_internal.hpp");
   const std::string win32_accessibility_internal =
       read_source("src/platform/win32/win32_accessibility_internal.hpp");
+  const std::string win32_uia_provider_internal =
+      read_source("src/platform/win32/win32_uia_provider_internal.hpp");
   const std::string win32_drag_drop_internal =
       read_source("src/platform/win32/win32_drag_drop_internal.hpp");
   const std::string win32_native_internal =
@@ -356,6 +360,8 @@ int main() {
       read_source("src/platform/win32/win32_window_internal.hpp");
   const std::string win32_accessibility =
       read_source("src/platform/win32/win32_accessibility.cpp");
+  const std::string win32_uia_provider =
+      read_source("src/platform/win32/win32_uia_provider.cpp");
   const std::string win32_helpers =
       read_source("src/platform/win32/win32_helpers.cpp");
   const std::string win32_string =
@@ -424,6 +430,7 @@ int main() {
       read_source("src/platform/win32/win32_window_proc_text.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
       win32_accessibility_internal.empty() ||
+      win32_uia_provider_internal.empty() || win32_uia_provider.empty() ||
       win32_drag_drop_internal.empty() || win32_native_internal.empty() ||
       win32_window_message_internal.empty() ||
       win32_window_internal.empty() ||
@@ -463,13 +470,20 @@ int main() {
     return 85;
   }
   if (line_count(win32_accessibility_internal) > 80 ||
-      !contains(win32_accessibility_internal, "struct Win32UiaProviderNode") ||
+      !contains(win32_accessibility_internal,
+                "#include \"win32_uia_provider_internal.hpp\"") ||
       !contains(
           win32_accessibility_internal,
           "class Win32UiaAccessibilityAdapter") ||
+      contains(win32_accessibility_internal, "IRawElementProviderSimple :") ||
       contains(win32_accessibility_internal, "class Win32OleDropTarget")) {
     return 86;
   }
+  if (line_count(win32_uia_provider_internal) > 60 ||
+      !contains(win32_uia_provider_internal, "struct Win32UiaProviderNode") ||
+      !contains(win32_uia_provider_internal, "create_win32_uia_provider(") ||
+      contains(win32_uia_provider_internal,
+               "class Win32UiaAccessibilityAdapter")) return 96;
   if (line_count(win32_drag_drop_internal) > 120 ||
       !contains(win32_drag_drop_internal, "Win32TestDragDropPayload") ||
       !contains(win32_drag_drop_internal,
@@ -647,10 +661,19 @@ int main() {
     return 80;
   }
   if (!contains(win32_accessibility, "Win32UiaAccessibilityAdapter::update(") ||
-      !contains(win32_accessibility, "Win32UiaProviderNode{") ||
-      !contains(win32_accessibility, "text_input_node_count_")) {
+      !contains(win32_accessibility, "create_win32_uia_provider(") ||
+      !contains(win32_accessibility, "provider_for_element(") ||
+      !contains(win32_accessibility, "text_input_node_count_") ||
+      line_count(win32_accessibility) > 120) {
     return 71;
   }
+  if (line_count(win32_uia_provider) > 190 ||
+      !contains(win32_uia_provider,
+                "class Win32UiaProvider final : public IRawElementProviderSimple") ||
+      !contains(win32_uia_provider, "UiaHostProviderFromHwnd(") ||
+      !contains(win32_uia_provider, "UIA_AutomationIdPropertyId") ||
+      !contains(win32_uia_provider, "UIA_ControlTypePropertyId") ||
+      !contains(win32_uia_provider, "UIA_BoundingRectanglePropertyId")) return 97;
   if (!contains(win32_native, "Win32NativeMenuState::install_native_menu(") ||
       !contains(win32_native, "Win32NativeFileDialogState::show_native_file_dialog(") ||
       !contains(win32_native, "backend = \"win32\"")) {

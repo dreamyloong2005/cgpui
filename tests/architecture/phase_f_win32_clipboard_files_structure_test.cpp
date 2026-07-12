@@ -105,7 +105,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase G Step 619 Win32 UIA provider object production depth")) {
+                "\"phase_f_current_handoff\": \"Step 620 Win32 UIA tree navigation production behavior")) {
     return 11;
   }
   return 0;

@@ -10795,3 +10795,38 @@
   343/343 and 325/325 suites remain the final full host gates, while Step 618
   requires focused execution of every changed final-band guard on both hosts.
 - Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.
+
+## 2026-07-12 Phase G Entry Baseline
+
+- Phase G spans Steps 619-678 and owns production Win32 UIA, Linux AT-SPI,
+  async runtime, animation, assets, GPUI-style test support, packaging/CI, and
+  final Windows/Linux parity-candidate verification.
+- The repository already contains accessibility facade/runtime/platform files,
+  async context forwarding, animation runtime leaves, and an image asset
+  registry. These are the starting boundaries, not proof that the Phase G
+  production requirements are complete.
+- Phase G starts from clean tracked commit `88b36bdc`; unrelated untracked
+  `.vscode/` remains outside the work scope.
+- Step 619 begins with Win32 UIA provider object production depth and must add
+  behavior plus structure evidence without widening the Win32 application or
+  broad runtime entry files.
+
+## 2026-07-12 Phase G Step 619 Win32 UIA Provider Object Design
+
+- The current `Win32UiaAccessibilityAdapter` is a facade only: it copies
+  `PlatformAccessibilityTreeUpdate` into plain records and exposes no COM UIA
+  provider, `WM_GETOBJECT` route, UIA properties, patterns, or event delivery.
+- Step 619 ownership is a focused private `win32_uia_provider` leaf implementing
+  `IRawElementProviderSimple`. The existing accessibility adapter owns provider
+  references and maps element ids to borrowed COM interfaces; `Win32Window`
+  only supplies HWND attach/detach and tree updates.
+- Step 619 covers provider objects, COM identity/reference counting, host
+  provider access, stable element automation ids, control-type mapping, and
+  basic name/enabled/focus/value properties. Fragment navigation, patterns,
+  UIA event raising, focus/value/text change publication, and long-lived
+  provider reconciliation remain Steps 620-624.
+- The new behavior test belongs under `tests/platform`, while a dedicated
+  Phase G structure guard must require the focused source/header, Xmake target,
+  UI Automation Core linkage, line caps, five-document completion phrase, and
+  the Step 620 handoff.
+- Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.

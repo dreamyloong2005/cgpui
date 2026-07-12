@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase G Step 619 Win32 UIA provider object production depth")) return 9;
+                "\"phase_f_current_handoff\": \"Step 620 Win32 UIA tree navigation production behavior")) return 9;
   return 0;
 }

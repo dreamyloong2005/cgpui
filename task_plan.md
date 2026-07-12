@@ -1186,6 +1186,40 @@ Windows/Linux core API is stable enough for parity work.
   platform/build/header changes; WSL full debug is batched at platform
   milestones and mandatory at Phase F closeout.
 
+## Active Phase G Execution Goal (2026-07-12)
+
+- Status: in_progress
+- Authoritative scope: Phase G Steps 619-678 in
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+- Goal: finish the cross-cutting systems required by complex GPUI-style apps:
+  production accessibility, async runtime, animation, assets, test support,
+  Windows/Linux packaging and CI, and final parity-candidate verification.
+- Entry baseline: Phase F is committed on `master` at `88b36bdc`; Windows full
+  debug passes 343/343 and WSL Arch Linux full debug passes 325/325.
+- Completed: Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.
+- Step 619 evidence: the focused provider behavior target passes real COM
+  identity/refcount, host-provider, property, bounds, and lookup coverage; the
+  dedicated structure guard freezes provider/adapter/window ownership.
+- In progress: Step 620 Win32 UIA tree navigation production behavior.
+- Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
+  runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
+  667-672 packaging/CI; and 673-678 final verification and closeout.
+- Modular boundary rule: accessibility, async, animation, asset, and test
+  behavior must start in focused public/private leaves with structure coverage;
+  broad runtime, platform entry, and aggregate headers remain orchestration-only.
+- Verification cadence: focused Windows tests for each slice, focused WSL for
+  shared/Linux surfaces, JSON/ledger/structure checks and `git diff --check`
+  per slice, with WSL full debug batched at Phase G milestones and mandatory at
+  closeout.
+
+## Errors Encountered During Phase G
+
+| Error | Attempt | Resolution |
+|-------|---------|------------|
+| WSL Xmake refused the root `archlinux` session without explicit opt-in | Step 619 resume WSL focused gate | Set `XMAKE_ROOT=y` for the established root WSL verification environment |
+| `xmake test -l` is not supported by the installed Xmake test command | Step 619 resume test inventory | Use the already registered target test names directly with `xmake test target/default ...` |
+| The first Step 619 behavior RED included `OleAuto.h` before Windows types, then `WIN32_LEAN_AND_MEAN` omitted COM definitions required by `UIAutomationCore.h` | Step 619 provider-object RED compile | Include `windows.h`, then `ole2.h`, `UIAutomationCore.h`, and `OleAuto.h` before the focused internal adapter header |
+
 ## Errors Encountered During Phase F
 
 | Error | Attempt | Resolution |

@@ -1,31 +1,24 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "win32_uia_provider_internal.hpp"
 
 #include <cstddef>
 #include <cstdint>
-#include <optional>
-#include <string>
 #include <vector>
 
 namespace cgpui {
 
-struct Win32UiaProviderNode {
-  std::uint64_t element_id = 0;
-  std::optional<std::uint64_t> parent_element_id;
-  PlatformAccessibilityRole role = PlatformAccessibilityRole::generic;
-  std::string name;
-  std::string text;
-  std::string value;
-  bool enabled = true;
-  bool focusable = false;
-  bool focused = false;
-  std::optional<Rect> bounds;
-  std::size_t child_count = 0;
-};
-
 class Win32UiaAccessibilityAdapter {
  public:
+  Win32UiaAccessibilityAdapter() = default;
+  ~Win32UiaAccessibilityAdapter();
+  Win32UiaAccessibilityAdapter(const Win32UiaAccessibilityAdapter&) = delete;
+  Win32UiaAccessibilityAdapter& operator=(
+      const Win32UiaAccessibilityAdapter&) = delete;
+
+  void attach(HWND hwnd);
+  void detach();
   void update(PlatformAccessibilityTreeUpdate update);
 
   [[nodiscard]] std::uint64_t root_element_id() const;
@@ -36,11 +29,17 @@ class Win32UiaAccessibilityAdapter {
       const;
   [[nodiscard]] const std::vector<PlatformAccessibilityLiveUpdate>&
   last_live_updates() const;
+  [[nodiscard]] IRawElementProviderSimple* root_provider() const;
+  [[nodiscard]] IRawElementProviderSimple* provider_for_element(
+      std::uint64_t element_id) const;
 
  private:
+  void release_providers();
   PlatformAccessibilityTreeUpdate last_update_;
   std::vector<Win32UiaProviderNode> provider_nodes_;
+  std::vector<IRawElementProviderSimple*> providers_;
   std::vector<PlatformAccessibilityLiveUpdate> live_updates_;
+  HWND hwnd_ = nullptr;
   std::uint64_t root_element_id_ = 0;
   std::size_t node_count_ = 0;
   std::size_t focused_node_count_ = 0;

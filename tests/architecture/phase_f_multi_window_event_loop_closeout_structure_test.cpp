@@ -69,6 +69,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 5;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase G Step 619 Win32 UIA provider object production depth\"")) return 6;
+                "\"phase_f_current_handoff\": \"Step 620 Win32 UIA tree navigation production behavior\"")) return 6;
   return 0;
 }

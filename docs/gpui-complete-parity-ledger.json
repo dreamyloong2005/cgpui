@@ -2814,7 +2814,19 @@
       "xmake.lua"
     ],
     "phase_f_step_618_remaining_gap": "Phase G Step 619 Win32 UIA provider object production depth",
-    "phase_f_current_handoff": "Phase G Step 619 Win32 UIA provider object production depth"
+    "phase_g_step_619_surface": "Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.",
+    "phase_g_step_619_sources": [
+      "src/platform/win32/win32_uia_provider_internal.hpp",
+      "src/platform/win32/win32_uia_provider.cpp",
+      "src/platform/win32/win32_accessibility_internal.hpp",
+      "src/platform/win32/win32_accessibility.cpp",
+      "src/platform/win32/win32_window.cpp",
+      "tests/platform/win32_uia_provider_object_test.cpp",
+      "tests/architecture/phase_g_win32_uia_provider_object_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_619_remaining_gap": "Step 620 Win32 UIA tree navigation production behavior",
+    "phase_f_current_handoff": "Step 620 Win32 UIA tree navigation production behavior"
   },
   "categories": [
     "application_and_app_context",
