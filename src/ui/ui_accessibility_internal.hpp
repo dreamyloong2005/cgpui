@@ -63,6 +63,21 @@ inline PlatformAccessibilityTreeUpdate platform_accessibility_update_from(
         .name = node.name,
         .text = node.text,
         .value = node.value,
+        .patterns = PlatformAccessibilityPatternState{
+            .invokable = node.patterns.invokable,
+            .value_settable = node.patterns.value_settable,
+            .toggled = node.patterns.toggled,
+            .range = node.patterns.range.has_value()
+                ? std::optional<PlatformAccessibilityRangeValue>{
+                      PlatformAccessibilityRangeValue{
+                          .value = node.patterns.range->value,
+                          .minimum = node.patterns.range->minimum,
+                          .maximum = node.patterns.range->maximum,
+                          .small_change = node.patterns.range->small_change,
+                          .large_change = node.patterns.range->large_change,
+                      }}
+                : std::nullopt,
+        },
         .enabled = node.enabled,
         .focusable = node.focusable,
         .focused = node.focused,

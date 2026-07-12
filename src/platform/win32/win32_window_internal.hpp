@@ -13,10 +13,7 @@ class Win32Window final
       public Win32OleDropTargetOwner,
       public Win32WindowMessageTarget {
  public:
-  Win32Window(
-      HINSTANCE instance,
-      PlatformEventCallback callback,
-      WindowState state);
+  Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state);
   ~Win32Window() override;
   void attach(HWND hwnd) override;
   void detach() override;
@@ -40,10 +37,7 @@ class Win32Window final
       WindowChromeOptions options) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
-  bool accessibility_object(
-      WPARAM wparam,
-      LPARAM lparam,
-      LRESULT& result) override;
+  bool accessibility_object(WPARAM wparam, LPARAM lparam, LRESULT& result) override;
 
   void update_size() override;
   void position_changed() override;
@@ -96,6 +90,7 @@ class Win32Window final
       DWORD* effect) override;
 
  private:
+  void configure_accessibility_actions();
   void register_drop_target(HWND hwnd);
   void revoke_drop_target();
   Point client_position_from_screen(POINTL point) const;

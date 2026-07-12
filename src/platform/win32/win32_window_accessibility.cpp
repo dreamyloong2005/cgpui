@@ -4,6 +4,13 @@
 
 namespace cgpui {
 
+void Win32Window::configure_accessibility_actions() {
+  uia_accessibility_.set_action_callback(
+      [this](AccessibilityActionRequested action) {
+        callback_(PlatformEvent{std::move(action)});
+      });
+}
+
 void Win32Window::update_accessibility_tree(
     PlatformAccessibilityTreeUpdate update) {
   uia_accessibility_.update(std::move(update));

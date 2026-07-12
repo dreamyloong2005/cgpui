@@ -1204,7 +1204,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 620 evidence: focused behavior covers fragment/root COM interfaces,
   deterministic navigation, runtime ids, bounds, focus/point lookup, and
   get-object routing; dedicated structure coverage freezes the new leaves.
-- In progress: Step 621 Win32 UIA pattern provider production behavior.
+- Completed: Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and RangeValue pattern providers routed through runtime accessibility actions to real elements. Step 622 Win32 UIA live event production behavior is next.
+- Step 621 evidence: direct element actions, runtime event routing, all four COM
+  pattern-id providers, availability properties, disabled-element errors,
+  public header cleanliness, and dedicated modular structure coverage.
+- In progress: Step 622 Win32 UIA live event production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1220,6 +1224,22 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 621 staging could not create `.git/index.lock` because the workspace sandbox exposes `.git` read-only | Step 621 commit preparation | Re-run the scoped `git add` through the approved Git staging permission, still excluding unrelated `.vscode/` |
+| After repairing the WSL aggregate guard, the Step 621 handoff group still passed 66/67 because `phase_f_cross_platform_test_execution_structure_test` required that WSL guard to retain the obsolete Step 620 handoff | Step 621 complete handoff-guard gate retry | Advance the final nested aggregate assertion to Step 622 and confirm no old dynamic Step 620 handoff remains under the test sources |
+| The complete Step 621 Windows handoff group passed 66/67 because `phase_f_wsl_full_debug_verification_structure_test` still required the Windows aggregate guard to contain the obsolete Step 620 handoff | Step 621 complete handoff-guard gate | Advance the nested Windows-guard assertion to Step 622, preserve the historical Step 612 completion sentence, then rebuild and rerun all 67 guards |
+| The Step 621 historical-handoff rebuild derived `phase_f_win32_native_menu_update_structure_test` from its source filename, but Xmake registers that file as `phase_f_win32_native_menu_replacement_structure_test` | Step 621 complete handoff-guard rebuild | Preserve the historical target name and substitute the registered replacement target when generating the 67-target gate |
+| The Step 621 aggregate dynamic-handoff run left `phase_f_windows_full_debug_verification_structure_test` at exit 4 because its nested child-window assertion still required the obsolete Step 620 handoff | Step 621 final handoff guard gate | Advance the nested assertion to the authoritative Step 622 live-event handoff while preserving the historical Step 611 completion sentence |
+| Step 621 WSL Bash-array build loop reached Xmake with an empty target because the Windows-to-WSL quoting path consumed the array expansion | Step 621 WSL focused target build | Avoid cross-shell arrays; use either one persistent literal Bash loop or individual single-target WSL invocations |
+| Step 621 WSL target-build invocations repeatedly returned transient `WSL_E_DISTRO_NOT_FOUND` after the same Arch distro had configured and built `cgpui_ui` successfully | Step 621 WSL focused target build | Do not install or restore WSL; retry only through the existing distro and continue local audits while the service state settles |
+| Step 621 focused Windows regression passed behavior/header tests but failed five structure targets: provider/adapter and widget line caps plus one UI private-header boundary assertion | Step 621 expanded structure gate | Extract pattern/property and adapter callback behavior into focused leaves, split widget accessibility actions where required, and identify the exact private-header leak without relaxing caps |
+| Step 621 file-inventory diagnostic piped directly from a `foreach` statement and PowerShell rejected the empty pipeline element | Step 621 structure guard diagnosis | Assign the loop results to `$rows` before piping them to `Format-Table` |
+| Step 621 structure guard exited 1 even though every required path exists and is non-empty | Step 621 structure RED | Temporarily return the required-source index to identify the failing runtime read, then restore the compact guard |
+| Step 621 element action test exited 2 because toggle state changed but the legacy click path returned `unhandled` without a callback/dispatcher | Step 621 behavior GREEN | Treat a completed accessibility Invoke/Toggle as consumed when the delegated click path neither consumes nor cancels |
+| Step 621 pattern test used Windows-macro name `small`, omitted `UIAutomationClient.h`, and placed `.enabled` before the earlier `.patterns` field | Step 621 behavior compile | Rename the local, include the SDK pattern-id owner, and follow declaration order for designated initialization |
+| Step 621 Win32 platform build could not see the UIA HRESULT constants, and `UIAutomationClient.h` did not define them | Step 621 compile gate | Include their actual Windows SDK owner `UIAutomationCoreApi.h` in the focused navigation implementation |
+| `xmake build <target> -j 1` treats `-j` as a target argument in this Xmake version | Step 621 compile gate | Put build options before the single target: `xmake build -j 1 <target>` |
+| `xmake build cgpui_platform_win32 cgpui_ui` is invalid because the build task accepts one target | Step 621 compile gate | Build the platform and UI targets in separate commands |
+| The first Step 621 provider-pattern patch matched the inheritance list without the class-line colon layout | Step 621 GREEN implementation | Read the exact object header and split interface declaration, provider dispatch, and pattern implementation patches |
 | The first Step 620 WSL gate pointed `XMAKE_GLOBALDIR` at `.xmake-wsl/global` and omitted package cache/install variables, so Xmake requested dependency installation | Step 620 WSL focused gate | Reuse the established `.build-wsl/master/{global,pkg-cache,pkg-install,build-root}` environment and `/dev/shm/cgpui`; do not install or restore anything |
 | `clang-format` is not available on PATH and no Visual Studio/LLVM candidate was installed | Step 620 formatting check | Keep repository style manually, enforce focused line caps, compile all changed targets, and use `git diff --check` |
 | Step 620 GREEN made the Step 619/provider inventory guards exit 2 and 97 because the COM class declaration moved to a focused object header | Step 620 structure regression | Advance the inventories to require the object, navigation, fragment, and message-accessibility leaves while preserving Step 619 behavior assertions |

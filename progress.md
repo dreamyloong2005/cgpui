@@ -22780,3 +22780,65 @@
   and message leaves remain within 40/60/43/184/77/195/52/119/19/24/15/47
   lines, behavior tests are 168/68 lines, the structure guard is 121 lines,
   and `git diff --check` passes.
+
+## 2026-07-12 Phase G Step 621 Win32 UIA Pattern Providers Resume
+
+- Resumed from committed Step 620 at `fd29f7fe`; unrelated untracked
+  `.vscode/` remains outside the work scope.
+- Confirmed the existing uncommitted slice implements public accessibility
+  pattern state/actions, element handlers, runtime event plumbing, and focused
+  Win32 Invoke/Value/Toggle/RangeValue COM providers.
+- The two existing focused tests pass according to the prior run, but the
+  current proof is incomplete until runtime-level routing, event/header
+  regressions, a Step 621 structure guard, authority-document synchronization,
+  and Windows/WSL gates are added and rerun.
+- Added runtime routing records for accessibility actions, including root-view
+  element targeting and an additional-window isolation check that prevents a
+  repeated element id from mutating the root tree.
+- Added `accessibility_pattern_runtime_test`; direct element, runtime route,
+  and Win32 COM provider behavior pass 3/3 on Windows.
+- Added the Step 621 structure guard and direct public-leaf header cleanliness
+  coverage. The guard currently exits during its required-source inventory,
+  so its exact failing read is being diagnosed before document closeout.
+- The structure diagnosis showed a missing `GetPatternProvider` assertion for
+  RangeValue rather than a missing file. All four pattern ids now drive the
+  behavior test, and the structure guard reaches the intended document RED at
+  exit 8.
+- Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and RangeValue pattern providers routed through runtime accessibility actions to real elements. Step 622 Win32 UIA live event production behavior is next.
+- The first expanded Windows regression passes 16/21; all behavior and header
+  tests are green. Five structure failures identify provider/adapter/widget
+  line-cap pressure and one UI private-header boundary assertion. Modular
+  extraction is required before Step 621 can be committed.
+- Extracted UIA actions, pattern availability properties, slider actions, and
+  text-input actions into focused leaves; restored the provider, adapter,
+  widget, runtime-private-header, and event-kind source caps without relaxing
+  any threshold.
+- Final Step 621 Windows focused verification passes 21/21 across direct
+  element actions, runtime routing, UIA provider/navigation/get-object/pattern
+  behavior, public header cleanliness, widget/UI/platform/Win32 structure,
+  multi-window accessibility isolation, and Steps 619-621 guards.
+- WSL Arch Linux reconfiguration succeeds with the established D-drive caches
+  and `/dev/shm/cgpui`; a complete shared `cgpui_ui` rebuild succeeds with the
+  new accessibility leaves in the Linux build graph.
+- Subsequent WSL process starts intermittently report
+  `WSL_E_DISTRO_NOT_FOUND`; no recovery or installation action is being taken.
+  Focused Linux test binaries still need their successful build/run gate.
+- After the transient service state cleared, one WSL Xmake process built and
+  ran the complete Step 621 shared/structure group. WSL Arch Linux passes
+  17/17, including direct actions, runtime routing, headers, widgets,
+  multi-window accessibility, UI/platform/Win32 source structure, and Steps
+  619-621 guards.
+- Repaired the final three nested historical handoff assertions without
+  changing their frozen Phase F completion evidence. The complete Windows
+  dynamic-handoff group now rebuilds and passes 67/67.
+- Final Step 621 audits pass: ledger JSON parses; the completion sentence
+  appears exactly once in each of the five authority documents; 68 test
+  guards plus the ledger point to Step 622 with zero stale current-handoff
+  guards; focused production, private-header, test, and structure leaves stay
+  within their existing caps; the deleted temporary accessibility-action
+  header has zero references; and `git diff --check` succeeds.
+- Two additional attempts to rebuild and run the same 67 historical guards in
+  one WSL process stopped before execution with transient
+  `WSL_E_DISTRO_NOT_FOUND`. No distro recovery or installation was attempted;
+  the successful Step 621 WSL 17/17 behavior/structure gate remains the Linux
+  implementation proof for this slice.

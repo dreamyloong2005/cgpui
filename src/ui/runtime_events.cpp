@@ -3,6 +3,9 @@
 namespace cgpui {
 
 void WindowRuntime::handle_event(const PlatformEvent& event) {
+  if (handle_accessibility_action_event(event, root_view_id_)) {
+    return;
+  }
   if (handle_native_menu_command_event(event, root_view_id_)) {
     return;
   }

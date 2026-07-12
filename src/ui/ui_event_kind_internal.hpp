@@ -8,8 +8,8 @@
 
 namespace cgpui {
 namespace {
-
 inline EventKind event_kind_for(const PlatformEvent& event) {
+  if (std::holds_alternative<AccessibilityActionRequested>(event)) return EventKind::accessibility_action;
   if (std::holds_alternative<WindowActivated>(event)) {
     return EventKind::window_activated;
   }

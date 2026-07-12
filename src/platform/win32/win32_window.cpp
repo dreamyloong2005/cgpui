@@ -11,7 +11,9 @@ Win32Window::Win32Window(
     : instance_(instance),
       callback_(std::move(callback)),
       state_(state),
-      ole_drop_target_(std::make_unique<Win32OleDropTarget>(*this)) {}
+      ole_drop_target_(std::make_unique<Win32OleDropTarget>(*this)) {
+  configure_accessibility_actions();
+}
 
 Win32Window::~Win32Window() {
   if (hwnd_ != nullptr) {

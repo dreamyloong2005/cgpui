@@ -55,6 +55,23 @@ std::string ButtonElement::accessibility_name() const {
   return action_name_;
 }
 
+AccessibilityPatternState ButtonElement::accessibility_patterns() const {
+  return {.invokable = true};
+}
+
+EventResult ButtonElement::handle_accessibility_action(
+    const AccessibilityActionRequested& action,
+    const ElementEventContext& context) {
+  if (action.kind != AccessibilityActionKind::invoke) {
+    return EventResult::unhandled();
+  }
+  ElementEventContext activation = context;
+  activation.gesture = ElementGestureKind::click;
+  const EventResult result = handle_event(PlatformEvent{action}, activation);
+  return result.consumed || result.cancelled ? result
+                                             : EventResult::consumed_event();
+}
+
 LayoutOutput ButtonElement::layout(LayoutInput input) const {
   Size content_size = style_state_.base.preferred_size;
   if (child_) {

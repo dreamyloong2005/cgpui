@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/core/events.hpp"
+#include "cgpui/ui/accessibility.hpp"
 #include "cgpui/ui/element_ids.hpp"
 #include "cgpui/ui/focus_metadata.hpp"
 #include "cgpui/ui/layout.hpp"
@@ -48,6 +49,7 @@ struct AccessibilityNode {
   std::string name;
   std::string text;
   std::string value;
+  AccessibilityPatternState patterns;
   bool enabled = true;
   bool focusable = false;
   bool focused = false;
@@ -241,6 +243,19 @@ class Element {
 
   [[nodiscard]] virtual std::string accessibility_value() const {
     return {};
+  }
+
+  [[nodiscard]] virtual AccessibilityPatternState accessibility_patterns()
+      const {
+    return {};
+  }
+
+  [[nodiscard]] virtual EventResult handle_accessibility_action(
+      const AccessibilityActionRequested& action,
+      const ElementEventContext& context) {
+    (void)action;
+    (void)context;
+    return EventResult::unhandled();
   }
 
   virtual void focus(const ElementFocusContext& context) {

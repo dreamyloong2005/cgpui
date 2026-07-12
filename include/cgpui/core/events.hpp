@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/core/event_accessibility.hpp"
 #include "cgpui/core/event_window.hpp"
 #include "cgpui/core/event_pointer.hpp"
 #include "cgpui/core/event_drag_drop.hpp"

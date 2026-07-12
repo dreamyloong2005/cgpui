@@ -23,6 +23,11 @@ class ButtonElement : public Element {
   [[nodiscard]] bool focusable() const override;
   [[nodiscard]] AccessibilityRole accessibility_role() const override;
   [[nodiscard]] std::string accessibility_name() const override;
+  [[nodiscard]] AccessibilityPatternState accessibility_patterns()
+      const override;
+  [[nodiscard]] EventResult handle_accessibility_action(
+      const AccessibilityActionRequested& action,
+      const ElementEventContext& context) override;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;

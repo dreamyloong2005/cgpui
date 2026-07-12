@@ -9,7 +9,11 @@ namespace cgpui {
 class Win32UiaProvider final
     : public IRawElementProviderSimple,
       public IRawElementProviderFragment,
-      public IRawElementProviderFragmentRoot {
+      public IRawElementProviderFragmentRoot,
+      public IInvokeProvider,
+      public IValueProvider,
+      public IToggleProvider,
+      public IRangeValueProvider {
  public:
   Win32UiaProvider(
       Win32UiaProviderTreeHandle tree,
@@ -49,6 +53,19 @@ class Win32UiaProvider final
       IRawElementProviderFragment** result) override;
   HRESULT STDMETHODCALLTYPE GetFocus(
       IRawElementProviderFragment** result) override;
+
+  HRESULT STDMETHODCALLTYPE Invoke() override;
+  HRESULT STDMETHODCALLTYPE SetValue(LPCWSTR value) override;
+  HRESULT STDMETHODCALLTYPE get_Value(BSTR* result) override;
+  HRESULT STDMETHODCALLTYPE get_IsReadOnly(BOOL* result) override;
+  HRESULT STDMETHODCALLTYPE Toggle() override;
+  HRESULT STDMETHODCALLTYPE get_ToggleState(ToggleState* result) override;
+  HRESULT STDMETHODCALLTYPE SetValue(double value) override;
+  HRESULT STDMETHODCALLTYPE get_Value(double* result) override;
+  HRESULT STDMETHODCALLTYPE get_Maximum(double* result) override;
+  HRESULT STDMETHODCALLTYPE get_Minimum(double* result) override;
+  HRESULT STDMETHODCALLTYPE get_LargeChange(double* result) override;
+  HRESULT STDMETHODCALLTYPE get_SmallChange(double* result) override;
 
  private:
   std::atomic<ULONG> reference_count_{1};

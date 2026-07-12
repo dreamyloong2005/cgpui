@@ -93,6 +93,23 @@ std::string ToggleControlElement::accessibility_value() const {
   return checked_ ? "checked" : "unchecked";
 }
 
+AccessibilityPatternState ToggleControlElement::accessibility_patterns() const {
+  return {.toggled = checked_};
+}
+
+EventResult ToggleControlElement::handle_accessibility_action(
+    const AccessibilityActionRequested& action,
+    const ElementEventContext& context) {
+  if (action.kind != AccessibilityActionKind::toggle) {
+    return EventResult::unhandled();
+  }
+  ElementEventContext activation = context;
+  activation.gesture = ElementGestureKind::click;
+  const EventResult result = handle_event(PlatformEvent{action}, activation);
+  return result.consumed || result.cancelled ? result
+                                             : EventResult::consumed_event();
+}
+
 void ToggleControlElement::inherit_text_style(const Style& style) {
   inherited_text_style_ = inherited_text_style(style);
 }

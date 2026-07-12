@@ -110,6 +110,13 @@ class TextInputElement : public TextElement {
     return std::string(text());
   }
 
+  [[nodiscard]] AccessibilityPatternState accessibility_patterns()
+      const override;
+
+  [[nodiscard]] EventResult handle_accessibility_action(
+      const AccessibilityActionRequested& action,
+      const ElementEventContext& context) override;
+
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
       const ElementEventContext& context) override {

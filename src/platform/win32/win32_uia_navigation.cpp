@@ -1,5 +1,7 @@
 #include "win32_uia_navigation_internal.hpp"
 
+#include <UIAutomationCoreApi.h>
+
 #include <algorithm>
 #include <mutex>
 #include <unordered_map>
@@ -12,8 +14,12 @@ class Win32UiaProviderTree {
   Win32UiaProviderTree(
       HWND hwnd,
       std::uint64_t root_element_id,
-      std::vector<Win32UiaProviderNode> nodes)
-      : hwnd(hwnd), root_element_id(root_element_id), nodes(std::move(nodes)) {
+      std::vector<Win32UiaProviderNode> nodes,
+      std::function<void(AccessibilityActionRequested)> action_callback)
+      : hwnd(hwnd),
+        root_element_id(root_element_id),
+        nodes(std::move(nodes)),
+        action_callback(std::move(action_callback)) {
     for (std::size_t index = 0; index < this->nodes.size(); ++index) {
       const auto& node = this->nodes[index];
       node_indices.emplace(node.element_id, index);
@@ -30,6 +36,7 @@ class Win32UiaProviderTree {
   std::unordered_map<std::uint64_t, std::size_t> node_indices;
   std::unordered_map<std::uint64_t, std::vector<std::uint64_t>> children;
   std::unordered_map<std::uint64_t, IRawElementProviderFragment*> providers;
+  std::function<void(AccessibilityActionRequested)> action_callback;
 };
 
 namespace {
@@ -50,9 +57,10 @@ HRESULT return_provider(
 Win32UiaProviderTreeHandle create_win32_uia_provider_tree(
     HWND hwnd,
     std::uint64_t root_element_id,
-    std::vector<Win32UiaProviderNode> nodes) {
+    std::vector<Win32UiaProviderNode> nodes,
+    std::function<void(AccessibilityActionRequested)> action_callback) {
   return std::make_shared<Win32UiaProviderTree>(
-      hwnd, root_element_id, std::move(nodes));
+      hwnd, root_element_id, std::move(nodes), std::move(action_callback));
 }
 
 void set_win32_uia_provider_tree_hwnd(
@@ -190,6 +198,23 @@ HRESULT get_win32_uia_provider_from_point(
   return hit == tree->nodes.rend()
       ? S_OK
       : return_provider(*tree, hit->element_id, result);
+}
+
+HRESULT request_win32_uia_action(
+    const Win32UiaProviderTreeHandle& tree,
+    AccessibilityActionRequested action) {
+  if (!tree) return UIA_E_ELEMENTNOTAVAILABLE;
+  std::function<void(AccessibilityActionRequested)> callback;
+  {
+    const std::lock_guard lock(tree->mutex);
+    const auto node = tree->node_indices.find(action.element_id);
+    if (node == tree->node_indices.end()) return UIA_E_ELEMENTNOTAVAILABLE;
+    if (!tree->nodes[node->second].enabled) return UIA_E_ELEMENTNOTENABLED;
+    callback = tree->action_callback;
+  }
+  if (!callback) return UIA_E_NOTSUPPORTED;
+  callback(std::move(action));
+  return S_OK;
 }
 
 } // namespace cgpui

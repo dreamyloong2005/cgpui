@@ -283,6 +283,8 @@ int main() {
       read_source("src/ui/element_choice_paint.cpp");
   const std::string element_slider =
       read_source("src/ui/element_slider_nodes.cpp");
+  const std::string element_slider_accessibility =
+      read_source("src/ui/element_slider_accessibility.cpp");
   const std::string element_slider_layout =
       read_source("src/ui/element_slider_layout.cpp");
   const std::string element_slider_paint =
@@ -303,7 +305,8 @@ int main() {
       widget_text_input.empty() || widget_toggle.empty() ||
       element_choice.empty() || element_choice_layout.empty() ||
       element_choice_paint.empty() || widget_slider.empty() ||
-      element_slider.empty() || element_slider_layout.empty() ||
+      element_slider.empty() || element_slider_accessibility.empty() ||
+      element_slider_layout.empty() ||
       element_slider_paint.empty() || widget_item.empty() ||
       element_item.empty() || element_item_layout.empty() ||
       element_item_paint.empty() || widget_image.empty() ||
@@ -341,7 +344,10 @@ int main() {
       !contains(element_choice, "ToggleControlElement::accessibility_value()") ||
       !contains(element_choice_layout, "ToggleControlElement::layout(") ||
       !contains(element_choice_paint, "ToggleControlElement::paint(") ||
-      !contains(element_slider, "SliderElement::accessibility_value()") ||
+      !contains(element_slider_accessibility,
+                "SliderElement::accessibility_value()") ||
+      !contains(element_slider_accessibility,
+                "SliderElement::handle_accessibility_action(") ||
       !contains(element_slider_layout, "SliderElement::layout(") ||
       !contains(element_slider_paint, "SliderElement::paint(") ||
       !contains(element_item, "ItemElement::accessibility_value()") ||
@@ -385,6 +391,7 @@ int main() {
       line_count(element_choice_layout) > 80 ||
       line_count(element_choice_paint) > 80 ||
       line_count(element_slider) > 180 ||
+      line_count(element_slider_accessibility) > 80 ||
       line_count(element_slider_layout) > 80 ||
       line_count(element_slider_paint) > 100 ||
       line_count(widget_item) > 180 ||

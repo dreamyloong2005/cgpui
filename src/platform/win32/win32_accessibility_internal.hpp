@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 namespace cgpui {
@@ -20,6 +21,8 @@ class Win32UiaAccessibilityAdapter {
 
   void attach(HWND hwnd);
   void detach();
+  void set_action_callback(
+      std::function<void(AccessibilityActionRequested)> callback);
   void update(PlatformAccessibilityTreeUpdate update);
   bool handle_get_object(WPARAM wparam, LPARAM lparam, LRESULT& result) const;
 
@@ -41,6 +44,7 @@ class Win32UiaAccessibilityAdapter {
   std::vector<Win32UiaProviderNode> provider_nodes_;
   std::vector<IRawElementProviderSimple*> providers_;
   Win32UiaProviderTreeHandle provider_tree_;
+  std::function<void(AccessibilityActionRequested)> action_callback_;
   std::vector<PlatformAccessibilityLiveUpdate> live_updates_;
   HWND hwnd_ = nullptr;
   std::uint64_t root_element_id_ = 0;

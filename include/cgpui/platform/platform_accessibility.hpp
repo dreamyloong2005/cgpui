@@ -10,6 +10,21 @@
 
 namespace cgpui {
 
+struct PlatformAccessibilityRangeValue {
+  double value = 0.0;
+  double minimum = 0.0;
+  double maximum = 0.0;
+  double small_change = 0.0;
+  double large_change = 0.0;
+};
+
+struct PlatformAccessibilityPatternState {
+  bool invokable = false;
+  bool value_settable = false;
+  std::optional<bool> toggled;
+  std::optional<PlatformAccessibilityRangeValue> range;
+};
+
 enum class PlatformAccessibilityRole {
   generic,
   label,
@@ -32,6 +47,7 @@ struct PlatformAccessibilityNodeUpdate {
   std::string name;
   std::string text;
   std::string value;
+  PlatformAccessibilityPatternState patterns;
   bool enabled = true;
   bool focusable = false;
   bool focused = false;

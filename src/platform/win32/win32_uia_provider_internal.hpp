@@ -22,6 +22,7 @@ struct Win32UiaProviderNode {
   std::string name;
   std::string text;
   std::string value;
+  PlatformAccessibilityPatternState patterns;
   bool enabled = true;
   bool focusable = false;
   bool focused = false;

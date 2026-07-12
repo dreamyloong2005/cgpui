@@ -1,4 +1,5 @@
 #include "win32_internal.hpp"
+#include "win32_uia_pattern_properties_internal.hpp"
 #include "win32_uia_provider_object_internal.hpp"
 
 #include <UIAutomationClient.h>
@@ -7,7 +8,6 @@
 #include <new>
 #include <string>
 #include <utility>
-
 namespace cgpui {
 namespace {
 
@@ -102,6 +102,17 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::QueryInterface(
   } else if (is_root_ &&
              IsEqualIID(iid, IID_IRawElementProviderFragmentRoot)) {
     *object = static_cast<IRawElementProviderFragmentRoot*>(this);
+  } else if (node_.patterns.invokable && IsEqualIID(iid, IID_IInvokeProvider)) {
+    *object = static_cast<IInvokeProvider*>(this);
+  } else if (node_.patterns.value_settable &&
+             IsEqualIID(iid, IID_IValueProvider)) {
+    *object = static_cast<IValueProvider*>(this);
+  } else if (node_.patterns.toggled.has_value() &&
+             IsEqualIID(iid, IID_IToggleProvider)) {
+    *object = static_cast<IToggleProvider*>(this);
+  } else if (node_.patterns.range.has_value() &&
+             IsEqualIID(iid, IID_IRangeValueProvider)) {
+    *object = static_cast<IRangeValueProvider*>(this);
   } else {
     return E_NOINTERFACE;
   }
@@ -126,19 +137,14 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_ProviderOptions(
   return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPatternProvider(
-    PATTERNID,
-    IUnknown** provider) {
-  if (provider == nullptr) return E_POINTER;
-  *provider = nullptr;
-  return S_OK;
-}
-
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPropertyValue(
     PROPERTYID property,
     VARIANT* value) {
   if (value == nullptr) return E_POINTER;
   VariantInit(value);
+  if (set_win32_uia_pattern_availability_property(node_, property, value)) {
+    return S_OK;
+  }
   if (property == UIA_AutomationIdPropertyId) {
     return set_bstr(value, L"cgpui-" + std::to_wstring(node_.element_id));
   }

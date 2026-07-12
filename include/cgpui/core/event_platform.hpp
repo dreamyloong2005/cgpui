@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/core/event_accessibility.hpp"
 #include "cgpui/core/event_drag_drop.hpp"
 #include "cgpui/core/event_keyboard.hpp"
 #include "cgpui/core/event_native_menu.hpp"
@@ -12,6 +13,7 @@
 namespace cgpui {
 
 using PlatformEvent = std::variant<
+    AccessibilityActionRequested,
     WindowCloseRequested,
     WindowRedrawRequested,
     WindowWakeupRequested,
@@ -38,6 +40,7 @@ using PlatformEvent = std::variant<
 
 enum class EventKind {
   unknown,
+  accessibility_action,
   window_activated,
   window_focused,
   window_minimized,

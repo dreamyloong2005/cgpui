@@ -1,7 +1,9 @@
 #pragma once
 
+#include "cgpui/core/event_accessibility.hpp"
 #include "win32_uia_provider_internal.hpp"
 
+#include <functional>
 #include <vector>
 
 namespace cgpui {
@@ -9,7 +11,8 @@ namespace cgpui {
 Win32UiaProviderTreeHandle create_win32_uia_provider_tree(
     HWND hwnd,
     std::uint64_t root_element_id,
-    std::vector<Win32UiaProviderNode> nodes);
+    std::vector<Win32UiaProviderNode> nodes,
+    std::function<void(AccessibilityActionRequested)> action_callback);
 void set_win32_uia_provider_tree_hwnd(
     const Win32UiaProviderTreeHandle& tree,
     HWND hwnd);
@@ -39,5 +42,8 @@ HRESULT get_win32_uia_provider_from_point(
     double x,
     double y,
     IRawElementProviderFragment** result);
+HRESULT request_win32_uia_action(
+    const Win32UiaProviderTreeHandle& tree,
+    AccessibilityActionRequested action);
 
 } // namespace cgpui

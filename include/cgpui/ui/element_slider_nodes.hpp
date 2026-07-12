@@ -36,6 +36,11 @@ class SliderElement : public Element {
   [[nodiscard]] AccessibilityRole accessibility_role() const override;
   [[nodiscard]] std::string accessibility_name() const override;
   [[nodiscard]] std::string accessibility_value() const override;
+  [[nodiscard]] AccessibilityPatternState accessibility_patterns()
+      const override;
+  [[nodiscard]] EventResult handle_accessibility_action(
+      const AccessibilityActionRequested& action,
+      const ElementEventContext& context) override;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
   void paint(PaintList& paint_list) const override;

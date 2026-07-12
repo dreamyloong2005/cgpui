@@ -1,4 +1,5 @@
 #include "cgpui/core/error.hpp"
+#include "cgpui/core/event_accessibility.hpp"
 #include "cgpui/core/event_drag_drop.hpp"
 #include "cgpui/core/event_keyboard.hpp"
 #include "cgpui/core/event_platform.hpp"
@@ -46,6 +47,13 @@ int main() {
   (void)event;
   cgpui::PlatformEvent wakeup_event = cgpui::WindowWakeupRequested{};
   (void)wakeup_event;
+  cgpui::PlatformEvent accessibility_event =
+      cgpui::AccessibilityActionRequested{
+          .kind = cgpui::AccessibilityActionKind::set_value,
+          .element_id = 7,
+          .value = "updated",
+      };
+  (void)accessibility_event;
   cgpui::PlatformEvent ime_event = cgpui::ImeComposition{
       .phase = cgpui::ImeCompositionPhase::update,
       .text = "x"};

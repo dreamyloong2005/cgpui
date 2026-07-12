@@ -10845,3 +10845,43 @@
   message target delegates the actual `UiaReturnRawElementProvider` call to the
   accessibility adapter, preserving the thin main window procedure.
 - Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.
+
+## 2026-07-12 Phase G Step 621 Resume Audit
+
+- The uncommitted Step 621 implementation already owns UIA Invoke, Value,
+  Toggle, and RangeValue providers in a focused Win32 pattern leaf and exposes
+  matching public accessibility state/action records.
+- Existing focused tests prove direct element actions and direct COM provider
+  behavior, but they do not yet prove that an
+  `AccessibilityActionRequested` platform event reaches the target element
+  through `WindowRuntime` for root and additional windows.
+- Step 621 still requires a dedicated structure guard that freezes the public
+  leaves, runtime action leaf, Win32 pattern leaf, registrations, behavior
+  evidence, line budgets, authority-document sentence, and Step 622 handoff.
+- Event-kind and aggregate-header regressions must be checked because Step 621
+  adds a new `PlatformEvent` alternative and a new public event leaf.
+- The first structure run exposed that the Win32 behavior test reached only
+  `UIA_InvokePatternId`; Value, Toggle, and RangeValue were exercised through
+  direct `QueryInterface`. Step 621 requires all four pattern ids to be proven
+  through `GetPatternProvider`, which still covers COM interface dispatch.
+- Expanded Step 621 regressions show the behavior is correct but the first
+  implementation violates existing modular caps: `win32_uia_provider.cpp` is
+  222 lines against 190, `win32_accessibility.cpp` is 125 against 120, and
+  changed widget implementation leaves also exceed their frozen family caps.
+  The fix is extraction into focused pattern/action leaves, not cap increases.
+- The modular repair keeps `win32_uia_provider.cpp` on COM identity/basic
+  properties, moves pattern-id dispatch into `win32_uia_patterns.cpp`, moves
+  availability properties into `win32_uia_pattern_properties.cpp`, and moves
+  adapter callback ownership into `win32_uia_actions.cpp`. Slider and text
+  input accessibility actions likewise live in focused UI implementation
+  leaves, while the existing runtime accessibility internal header owns the
+  private action declaration.
+- Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and RangeValue pattern providers routed through runtime accessibility actions to real elements. Step 622 Win32 UIA live event production behavior is next.
+- Step 621 final handoff verification exposed a three-level historical guard
+  chain: the Windows full-debug guard read the child-window guard, the WSL
+  full-debug guard read the Windows guard, and the cross-platform guard read
+  the WSL guard. All nested assertions must advance with the authoritative
+  dynamic handoff while their historical completion sentences remain frozen.
+- The 67 mechanically advanced historical guards pass together on Windows;
+  with the new Step 621 guard and the ledger current-handoff field, 69 files
+  now point to Step 622 and no test guard retains an older current handoff.

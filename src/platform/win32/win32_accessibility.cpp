@@ -2,8 +2,6 @@
 
 #include <UIAutomationCoreApi.h>
 
-#include <utility>
-
 namespace cgpui {
 
 Win32UiaAccessibilityAdapter::~Win32UiaAccessibilityAdapter() {
@@ -49,6 +47,7 @@ void Win32UiaAccessibilityAdapter::update(
         .name = node.name,
         .text = node.text,
         .value = node.value,
+        .patterns = node.patterns,
         .enabled = node.enabled,
         .focusable = node.focusable,
         .focused = node.focused,
@@ -58,7 +57,7 @@ void Win32UiaAccessibilityAdapter::update(
     provider_nodes_.push_back(std::move(provider_node));
   }
   provider_tree_ = create_win32_uia_provider_tree(
-      hwnd_, root_element_id_, provider_nodes_);
+      hwnd_, root_element_id_, provider_nodes_, action_callback_);
   providers_.reserve(provider_nodes_.size());
   for (const Win32UiaProviderNode& node : provider_nodes_) {
     providers_.push_back(create_win32_uia_provider(

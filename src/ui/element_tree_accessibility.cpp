@@ -29,6 +29,7 @@ void ElementTree::append_accessibility_nodes(
       .name = element.accessibility_name(),
       .text = element.accessibility_text(),
       .value = element.accessibility_value(),
+      .patterns = element.accessibility_patterns(),
       .enabled = element.enabled(),
       .focusable = element.focusable(),
       .focused = options.focused_element_id == id,

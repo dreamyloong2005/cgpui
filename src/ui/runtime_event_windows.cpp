@@ -27,6 +27,9 @@ void WindowRuntime::handle_native_additional_window_event(
   if (record == nullptr || !record->active) {
     return;
   }
+  if (handle_accessibility_action_event(event, record->root_view_id, record)) {
+    return;
+  }
   if (handle_native_menu_command_event(event, record->root_view_id)) {
     return;
   }

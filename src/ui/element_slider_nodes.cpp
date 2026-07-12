@@ -2,21 +2,10 @@
 
 #include <algorithm>
 #include <cmath>
-#include <sstream>
 #include <utility>
 #include <variant>
 
 namespace cgpui {
-
-namespace {
-
-std::string format_slider_value(float value) {
-  std::ostringstream output;
-  output << value;
-  return output.str();
-}
-
-} // namespace
 
 SliderElement::SliderElement(
     std::string action_name,
@@ -81,10 +70,6 @@ AccessibilityRole SliderElement::accessibility_role() const {
 
 std::string SliderElement::accessibility_name() const {
   return action_name_;
-}
-
-std::string SliderElement::accessibility_value() const {
-  return format_slider_value(value_);
 }
 
 ElementId SliderElement::hit_test(Point point) const {

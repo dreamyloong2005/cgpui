@@ -2841,7 +2841,24 @@
       "xmake.lua"
     ],
     "phase_g_step_620_remaining_gap": "Step 621 Win32 UIA pattern provider production behavior",
-    "phase_f_current_handoff": "Step 621 Win32 UIA pattern provider production behavior"
+    "phase_g_step_621_surface": "Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and RangeValue pattern providers routed through runtime accessibility actions to real elements. Step 622 Win32 UIA live event production behavior is next.",
+    "phase_g_step_621_sources": [
+      "include/cgpui/core/event_accessibility.hpp",
+      "include/cgpui/ui/accessibility.hpp",
+      "src/ui/runtime_accessibility_actions.cpp",
+      "src/ui/element_slider_accessibility.cpp",
+      "src/ui/element_text_accessibility.cpp",
+      "src/platform/win32/win32_uia_actions.cpp",
+      "src/platform/win32/win32_uia_pattern_properties.cpp",
+      "src/platform/win32/win32_uia_patterns.cpp",
+      "tests/ui/accessibility_pattern_action_test.cpp",
+      "tests/ui/accessibility_pattern_runtime_test.cpp",
+      "tests/platform/win32_uia_pattern_provider_test.cpp",
+      "tests/architecture/phase_g_win32_uia_pattern_provider_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_621_remaining_gap": "Step 622 Win32 UIA live event production behavior",
+    "phase_f_current_handoff": "Step 622 Win32 UIA live event production behavior"
   },
   "categories": [
     "application_and_app_context",

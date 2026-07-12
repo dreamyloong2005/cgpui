@@ -1,4 +1,5 @@
 #include "cgpui/ui/ui.hpp"
+#include "cgpui/ui/accessibility.hpp"
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/element_builder_core.hpp"
 #include "cgpui/ui/element_button_nodes.hpp"
@@ -56,6 +57,8 @@
 struct TestModel {
   int value = 0;
 };
+
+static_assert(cgpui::AccessibilityPatternState{.invokable = true}.invokable);
 
 class TestView final : public cgpui::View {
  public:

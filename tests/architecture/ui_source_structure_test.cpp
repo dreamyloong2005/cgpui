@@ -59,6 +59,7 @@ std::size_t line_count(const std::string& text) {
 int main() {
   const std::vector<const char*> public_headers{
       "include/cgpui/ui/action.hpp",
+      "include/cgpui/ui/accessibility.hpp",
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/async_context.hpp",
       "include/cgpui/ui/test_context.hpp",
