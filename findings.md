@@ -10885,3 +10885,27 @@
 - The 67 mechanically advanced historical guards pass together on Windows;
   with the new Step 621 guard and the ledger current-handoff field, 69 files
   now point to Step 622 and no test guard retains an older current handoff.
+
+## 2026-07-12 Phase G Step 622 Win32 UIA Live Event Design
+
+- `PlatformAccessibilityTreeUpdate::live_updates` already carries value,
+  text, and focus changes produced above the platform layer. The Win32 adapter
+  currently copies those records into `last_live_updates()` but raises no UIA
+  Core notification.
+- Live-event production belongs in a focused `win32_uia_events` leaf called by
+  the adapter after the new provider tree is installed. Value and text changes
+  map to UIA property-changed notifications; focus changes map to the UIA focus
+  event plus the keyboard-focus property when applicable.
+- Step 622 should raise events against the newly installed provider objects and
+  keep provider reconciliation and long-lived identity out of scope for the
+  later provider-lifetime step in the same Steps 619-626 band.
+- The adapter update body now lives in `win32_uia_updates.cpp`, which preserves
+  the previous node snapshot long enough to publish correct old/new property
+  values after the replacement provider tree is installed.
+- `win32_uia_events.cpp` maps value updates to
+  `UIA_ValueValuePropertyId`, text updates to
+  `UIA_Text_TextChangedEventId`, and focus updates to both
+  `UIA_HasKeyboardFocusPropertyId` and, when focused, the automation focus
+  event. Listener, missing-provider, and HRESULT outcomes remain observable
+  through a compact publication record.
+- Phase G Step 622 publishes production Win32 UIA value-property, text-change, and focus notifications from runtime accessibility live updates with listener, missing-provider, and HRESULT diagnostics. Step 623 Win32 UIA focus, value, and text change integration is next.

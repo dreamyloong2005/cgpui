@@ -1208,7 +1208,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 621 evidence: direct element actions, runtime event routing, all four COM
   pattern-id providers, availability properties, disabled-element errors,
   public header cleanliness, and dedicated modular structure coverage.
-- In progress: Step 622 Win32 UIA live event production behavior.
+- Completed: Phase G Step 622 publishes production Win32 UIA value-property, text-change, and focus notifications from runtime accessibility live updates with listener, missing-provider, and HRESULT diagnostics. Step 623 Win32 UIA focus, value, and text change integration is next.
+- Step 622 evidence: focused event and update leaves map runtime live updates to
+  UIA property/text/focus notifications, preserve old/new property values,
+  skip when no clients listen, and record missing-provider and HRESULT results.
+- In progress: Step 623 Win32 UIA focus, value, and text change integration.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1224,6 +1228,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first complete Step 622 handoff group passed 68/69 because the Windows/WSL/cross-platform nested aggregate assertions still named Step 622 outside the current-handoff field | Step 622 complete handoff-guard gate | Advance all three nested assertions to Step 623 while preserving their historical Phase F completion sentences, then rebuild and rerun the 69-guard group |
+| The Step 622 expanded-test target probe used backslash-escaped C++ quotes in PowerShell, causing `rg` to interpret the suffix as a path | Step 622 focused regression inventory | Use literal `Select-String -SimpleMatch` target lookups or run the already known registered target names directly |
+| Step 622 structure-guard build could not create the user-level Ninja package lock inside the workspace sandbox | Step 622 structure RED | Re-run the same `xmake build` through the approved build permission so Xmake can update its package lock |
+| The first Step 622 implementation patch assumed `win32_accessibility.cpp` included `<utility>` and was rejected atomically | Step 622 GREEN implementation | Read the exact adapter source and split new event/update leaves, adapter declaration changes, and old update-body removal into separate patches |
+| Step 622 live-event behavior RED failed to compile because `win32_uia_events_internal.hpp` did not exist | Step 622 behavior RED | Add the focused Win32 UIA event operation/publication boundary, event implementation leaf, and adapter update leaf before rerunning the target |
+| The first Step 622 repository search passed Windows wildcard path arguments directly to `rg`, which rejected them with OS error 123 | Step 622 design audit | Search directory roots with `--glob` filters or explicit files instead of shell-style wildcard path operands on Windows |
 | Step 621 staging could not create `.git/index.lock` because the workspace sandbox exposes `.git` read-only | Step 621 commit preparation | Re-run the scoped `git add` through the approved Git staging permission, still excluding unrelated `.vscode/` |
 | After repairing the WSL aggregate guard, the Step 621 handoff group still passed 66/67 because `phase_f_cross_platform_test_execution_structure_test` required that WSL guard to retain the obsolete Step 620 handoff | Step 621 complete handoff-guard gate retry | Advance the final nested aggregate assertion to Step 622 and confirm no old dynamic Step 620 handoff remains under the test sources |
 | The complete Step 621 Windows handoff group passed 66/67 because `phase_f_wsl_full_debug_verification_structure_test` still required the Windows aggregate guard to contain the obsolete Step 620 handoff | Step 621 complete handoff-guard gate | Advance the nested Windows-guard assertion to Step 622, preserve the historical Step 612 completion sentence, then rebuild and rerun all 67 guards |

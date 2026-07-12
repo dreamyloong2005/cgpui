@@ -24,47 +24,6 @@ void Win32UiaAccessibilityAdapter::release_providers() {
   providers_.clear();
 }
 
-void Win32UiaAccessibilityAdapter::update(
-    PlatformAccessibilityTreeUpdate update) {
-  last_update_ = std::move(update);
-  live_updates_ = last_update_.live_updates;
-  root_element_id_ = last_update_.root_element_id;
-  node_count_ = last_update_.node_count;
-  focused_node_count_ = last_update_.focused_node_count;
-  text_input_node_count_ = 0;
-  release_providers();
-  provider_tree_.reset();
-  provider_nodes_.clear();
-  provider_nodes_.reserve(last_update_.nodes.size());
-  for (const PlatformAccessibilityNodeUpdate& node : last_update_.nodes) {
-    if (node.role == PlatformAccessibilityRole::text_input) {
-      text_input_node_count_ += 1;
-    }
-    Win32UiaProviderNode provider_node{
-        .element_id = node.element_id,
-        .parent_element_id = node.parent_element_id,
-        .role = node.role,
-        .name = node.name,
-        .text = node.text,
-        .value = node.value,
-        .patterns = node.patterns,
-        .enabled = node.enabled,
-        .focusable = node.focusable,
-        .focused = node.focused,
-        .bounds = node.bounds,
-        .child_count = node.child_count,
-    };
-    provider_nodes_.push_back(std::move(provider_node));
-  }
-  provider_tree_ = create_win32_uia_provider_tree(
-      hwnd_, root_element_id_, provider_nodes_, action_callback_);
-  providers_.reserve(provider_nodes_.size());
-  for (const Win32UiaProviderNode& node : provider_nodes_) {
-    providers_.push_back(create_win32_uia_provider(
-        provider_tree_, node, node.element_id == root_element_id_));
-  }
-}
-
 bool Win32UiaAccessibilityAdapter::handle_get_object(
     WPARAM wparam,
     LPARAM lparam,
@@ -101,6 +60,16 @@ Win32UiaAccessibilityAdapter::uia_provider_nodes() const {
 const std::vector<PlatformAccessibilityLiveUpdate>&
 Win32UiaAccessibilityAdapter::last_live_updates() const {
   return live_updates_;
+}
+
+void Win32UiaAccessibilityAdapter::set_event_operations(
+    Win32UiaEventOperations operations) {
+  event_operations_ = operations;
+}
+
+Win32UiaEventPublication
+Win32UiaAccessibilityAdapter::last_event_publication() const {
+  return last_event_publication_;
 }
 
 IRawElementProviderSimple* Win32UiaAccessibilityAdapter::root_provider() const {

@@ -33,6 +33,7 @@ std::string read_win32_source() {
   const std::vector<const char*> win32_files{
       "src/platform/win32/win32_internal.hpp",
       "src/platform/win32/win32_accessibility_internal.hpp",
+      "src/platform/win32/win32_uia_events_internal.hpp",
       "src/platform/win32/win32_drag_drop_internal.hpp",
       "src/platform/win32/win32_native_menu_accelerator_internal.hpp",
       "src/platform/win32/win32_native_menu_accelerator_table_internal.hpp",
@@ -48,6 +49,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_uia_provider_object_internal.hpp",
       "src/platform/win32/win32_accessibility.cpp",
       "src/platform/win32/win32_uia_actions.cpp",
+      "src/platform/win32/win32_uia_events.cpp",
+      "src/platform/win32/win32_uia_updates.cpp",
       "src/platform/win32/win32_helpers.cpp",
       "src/platform/win32/win32_string.cpp",
       "src/platform/win32/win32_drag_drop_helpers.cpp",
@@ -359,6 +362,8 @@ int main() {
       read_source("src/platform/win32/win32_internal.hpp");
   const std::string win32_accessibility_internal =
       read_source("src/platform/win32/win32_accessibility_internal.hpp");
+  const std::string win32_uia_events_internal =
+      read_source("src/platform/win32/win32_uia_events_internal.hpp");
   const std::string win32_uia_provider_internal =
       read_source("src/platform/win32/win32_uia_provider_internal.hpp");
   const std::string win32_uia_provider_object_internal = read_source(
@@ -375,6 +380,10 @@ int main() {
       read_source("src/platform/win32/win32_window_internal.hpp");
   const std::string win32_accessibility =
       read_source("src/platform/win32/win32_accessibility.cpp");
+  const std::string win32_uia_events =
+      read_source("src/platform/win32/win32_uia_events.cpp");
+  const std::string win32_uia_updates =
+      read_source("src/platform/win32/win32_uia_updates.cpp");
   const std::string win32_uia_provider =
       read_source("src/platform/win32/win32_uia_provider.cpp");
   const std::string win32_uia_fragment =
@@ -455,6 +464,7 @@ int main() {
       read_source("src/platform/win32/win32_window_proc_text.cpp");
   if (win32_application.empty() || win32_internal.empty() ||
       win32_accessibility_internal.empty() ||
+      win32_uia_events_internal.empty() ||
       win32_uia_provider_internal.empty() ||
       win32_uia_provider_object_internal.empty() ||
       win32_uia_navigation_internal.empty() || win32_uia_provider.empty() ||
@@ -462,7 +472,8 @@ int main() {
       win32_drag_drop_internal.empty() || win32_native_internal.empty() ||
       win32_window_message_internal.empty() ||
       win32_window_internal.empty() ||
-      win32_accessibility.empty() || win32_helpers.empty() ||
+      win32_accessibility.empty() || win32_uia_events.empty() ||
+      win32_uia_updates.empty() || win32_helpers.empty() ||
       win32_string.empty() || win32_drag_drop_helpers.empty() ||
       win32_drag_drop_payload.empty() ||
       win32_drag_drop_ole_payload.empty() ||
@@ -707,11 +718,14 @@ int main() {
       line_count(win32_window_drag_drop) > 170) {
     return 80;
   }
-  if (!contains(win32_accessibility, "Win32UiaAccessibilityAdapter::update(") ||
-      !contains(win32_accessibility, "create_win32_uia_provider(") ||
+  if (!contains(win32_uia_updates, "Win32UiaAccessibilityAdapter::update(") ||
+      !contains(win32_uia_updates, "create_win32_uia_provider(") ||
       !contains(win32_accessibility, "provider_for_element(") ||
-      !contains(win32_accessibility, "text_input_node_count_") ||
-      line_count(win32_accessibility) > 120) {
+      !contains(win32_uia_updates, "text_input_node_count_") ||
+      line_count(win32_accessibility) > 120 ||
+      line_count(win32_uia_events_internal) > 60 ||
+      line_count(win32_uia_events) > 160 ||
+      line_count(win32_uia_updates) > 80) {
     return 71;
   }
   if (line_count(win32_uia_provider) > 190 ||

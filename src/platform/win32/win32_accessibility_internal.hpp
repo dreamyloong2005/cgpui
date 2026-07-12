@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "win32_uia_events_internal.hpp"
 #include "win32_uia_navigation_internal.hpp"
 #include "win32_uia_provider_internal.hpp"
 
@@ -23,6 +24,7 @@ class Win32UiaAccessibilityAdapter {
   void detach();
   void set_action_callback(
       std::function<void(AccessibilityActionRequested)> callback);
+  void set_event_operations(Win32UiaEventOperations operations);
   void update(PlatformAccessibilityTreeUpdate update);
   bool handle_get_object(WPARAM wparam, LPARAM lparam, LRESULT& result) const;
 
@@ -33,7 +35,8 @@ class Win32UiaAccessibilityAdapter {
   [[nodiscard]] const std::vector<Win32UiaProviderNode>& uia_provider_nodes()
       const;
   [[nodiscard]] const std::vector<PlatformAccessibilityLiveUpdate>&
-  last_live_updates() const;
+      last_live_updates() const;
+  [[nodiscard]] Win32UiaEventPublication last_event_publication() const;
   [[nodiscard]] IRawElementProviderSimple* root_provider() const;
   [[nodiscard]] IRawElementProviderSimple* provider_for_element(
       std::uint64_t element_id) const;
@@ -45,6 +48,8 @@ class Win32UiaAccessibilityAdapter {
   std::vector<IRawElementProviderSimple*> providers_;
   Win32UiaProviderTreeHandle provider_tree_;
   std::function<void(AccessibilityActionRequested)> action_callback_;
+  Win32UiaEventOperations event_operations_;
+  Win32UiaEventPublication last_event_publication_;
   std::vector<PlatformAccessibilityLiveUpdate> live_updates_;
   HWND hwnd_ = nullptr;
   std::uint64_t root_element_id_ = 0;

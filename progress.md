@@ -22842,3 +22842,36 @@
   `WSL_E_DISTRO_NOT_FOUND`. No distro recovery or installation was attempted;
   the successful Step 621 WSL 17/17 behavior/structure gate remains the Linux
   implementation proof for this slice.
+
+## 2026-07-12 Phase G Step 622 Win32 UIA Live Events
+
+- Added the focused Win32 live-event behavior target first. Its expected RED
+  compile fails because the planned `win32_uia_events_internal.hpp` ownership
+  boundary does not yet exist.
+- Added focused `win32_uia_events` and `win32_uia_updates` ownership. The
+  adapter installs the replacement provider tree before publishing value,
+  text, and focus notifications, preserving previous node state for old/new
+  property values.
+- The focused behavior test passes listener, value, text, focus,
+  missing-provider, skipped-client, and failed-HRESULT coverage. Historical
+  provider/navigation ownership guards now follow the extracted update leaf
+  without raising their existing adapter caps.
+- Expanded Windows verification passes 22/22 across runtime live-update
+  generation, multi-window isolation, all Win32 UIA behaviors, header
+  cleanliness, UI/widget/platform/Win32 source structure, and Steps 619-622
+  guards.
+- The complete Windows dynamic-handoff group rebuilds and passes 69/69 after
+  advancing the three nested Windows/WSL/cross-platform aggregate assertions
+  to Step 623.
+- Two WSL focused-gate attempts stopped before Bash execution with the same
+  transient `WSL_E_DISTRO_NOT_FOUND`; no distro recovery or installation was
+  attempted. The Step 622 production files are Win32-only, while the shared
+  runtime live-update behavior remains covered by the successful Windows group
+  and the prior Step 621 WSL shared gate.
+- Final Step 622 audits pass: ledger JSON parses; the completion sentence is
+  present exactly once in all five authority documents; 69 test guards plus
+  the ledger point to Step 623 with no stale current handoff; event header,
+  event source, update source, adapter header/source, behavior test, structure
+  guard, and Win32 inventory are 38/141/52/61/87/199/105/953 lines and stay
+  within their frozen caps;
+  and `git diff --check` succeeds.

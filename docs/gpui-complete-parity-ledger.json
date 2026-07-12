@@ -2858,7 +2858,19 @@
       "xmake.lua"
     ],
     "phase_g_step_621_remaining_gap": "Step 622 Win32 UIA live event production behavior",
-    "phase_f_current_handoff": "Step 622 Win32 UIA live event production behavior"
+    "phase_g_step_622_surface": "Phase G Step 622 publishes production Win32 UIA value-property, text-change, and focus notifications from runtime accessibility live updates with listener, missing-provider, and HRESULT diagnostics. Step 623 Win32 UIA focus, value, and text change integration is next.",
+    "phase_g_step_622_sources": [
+      "src/platform/win32/win32_uia_events_internal.hpp",
+      "src/platform/win32/win32_uia_events.cpp",
+      "src/platform/win32/win32_uia_updates.cpp",
+      "src/platform/win32/win32_accessibility_internal.hpp",
+      "src/platform/win32/win32_accessibility.cpp",
+      "tests/platform/win32_uia_live_event_test.cpp",
+      "tests/architecture/phase_g_win32_uia_live_event_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_622_remaining_gap": "Step 623 Win32 UIA focus, value, and text change integration",
+    "phase_f_current_handoff": "Step 623 Win32 UIA focus, value, and text change integration"
   },
   "categories": [
     "application_and_app_context",

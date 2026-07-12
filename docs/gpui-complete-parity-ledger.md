@@ -748,6 +748,7 @@ consume C: drive space again.
 - Phase G Step 619 adds production Win32 `IRawElementProviderSimple` objects with COM identity and reference counting, HWND host providers, stable automation ids, role control types, basic properties, and adapter element lookup. Step 620 Win32 UIA tree navigation production behavior is next.
 - Phase G Step 620 adds production Win32 UIA fragment/root tree navigation with parent, child, and sibling traversal, runtime ids, bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. Step 621 Win32 UIA pattern provider production behavior is next.
 - Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and RangeValue pattern providers routed through runtime accessibility actions to real elements. Step 622 Win32 UIA live event production behavior is next.
+- Phase G Step 622 publishes production Win32 UIA value-property, text-change, and focus notifications from runtime accessibility live updates with listener, missing-provider, and HRESULT diagnostics. Step 623 Win32 UIA focus, value, and text change integration is next.
 
 ## Categories
 

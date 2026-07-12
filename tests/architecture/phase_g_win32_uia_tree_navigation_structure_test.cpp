@@ -37,6 +37,8 @@ int main() {
       "src/platform/win32/win32_accessibility_internal.hpp");
   const std::string adapter = read_source(
       "src/platform/win32/win32_accessibility.cpp");
+  const std::string updates = read_source(
+      "src/platform/win32/win32_uia_updates.cpp");
   const std::string window = read_source(
       "src/platform/win32/win32_window_accessibility.cpp");
   const std::string proc_header = read_source(
@@ -58,7 +60,8 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &object_header, &navigation_header, &navigation, &fragment,
-      &adapter_header, &adapter, &window, &proc_header, &proc, &main_proc,
+      &adapter_header, &adapter, &updates, &window, &proc_header, &proc,
+      &main_proc,
       &navigation_behavior, &message_behavior, &xmake, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
@@ -78,7 +81,7 @@ int main() {
       !contains(navigation, "get_win32_uia_provider_from_point(") ||
       !contains(navigation, "get_win32_uia_focus(")) return 3;
   if (!contains(adapter_header, "handle_get_object(") ||
-      !contains(adapter, "create_win32_uia_provider_tree(") ||
+      !contains(updates, "create_win32_uia_provider_tree(") ||
       !contains(adapter, "UiaReturnRawElementProvider(") ||
       !contains(window, "Win32Window::accessibility_object(") ||
       !contains(proc_header, "class Win32AccessibilityMessageTarget") ||
@@ -99,6 +102,7 @@ int main() {
   if (line_count(object_header) > 90 || line_count(navigation_header) > 70 ||
       line_count(navigation) > 230 || line_count(fragment) > 100 ||
       line_count(adapter_header) > 80 || line_count(adapter) > 140 ||
+      line_count(updates) > 80 ||
       line_count(window) > 50 || line_count(proc_header) > 45 ||
       line_count(proc) > 35 || line_count(main_proc) > 80 ||
       line_count(navigation_behavior) > 190 ||
@@ -115,7 +119,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 622 Win32 UIA live event "
-                "production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 623 Win32 UIA focus, "
+                "value, and text change integration\"")) return 9;
   return 0;
 }

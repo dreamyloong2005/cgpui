@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 622 Win32 UIA live event production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 623 Win32 UIA focus, value, and text change integration")) {
     return 11;
   }
   return 0;
