@@ -22565,3 +22565,21 @@
 - JSON parsing, five-document completion phrase, 58 Step 610 handoffs, zero
   stale Step 609 handoffs, 150/59/73/260 line budgets, and
   `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 610 Platform Diagnostics And Stress Closeout
+
+- Started from committed Step 609 at `b37a6a8f`; unrelated `.vscode/` remains
+  untracked.
+- Added an audit-only closeout guard covering all seven Step 603-609 structure
+  guards and their window/clipboard/drag/IME/scale/timer/task behavior targets.
+- The guard reached the intended five-document RED at exit 5 after every source
+  and target inventory check passed.
+- Marked the roadmap Steps 603-610 diagnostics/stress band complete.
+- Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.
+- Final Windows closeout verification passes 16/16 across all eight structure
+  guards, six available runtime stress targets, UI structure, and the ledger.
+- Final WSL closeout verification passes 17/17, adding the real Wayland
+  clipboard ownership stress to the shared runtime and structure group.
+- JSON parsing, five-document completion phrase, 59 Step 611 handoffs, zero
+  stale Step 610 handoffs, 76-line closeout guard, and `git diff --check` pass.
+  WSL full debug remains scheduled for the final verification band.

@@ -2738,7 +2738,20 @@
       "xmake.lua"
     ],
     "phase_f_step_609_remaining_gap": "Step 610 platform diagnostics and stress closeout audit",
-    "phase_f_current_handoff": "Step 610 platform diagnostics and stress closeout audit"
+    "phase_f_step_610_surface": "Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.",
+    "phase_f_step_610_sources": [
+      "tests/architecture/phase_f_window_churn_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_clipboard_ownership_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_drag_drop_cancellation_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_ime_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_scale_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_timer_wakeup_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_task_wakeup_diagnostics_structure_test.cpp",
+      "tests/architecture/phase_f_platform_diagnostics_stress_closeout_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_610_remaining_gap": "Step 611 Windows full-debug verification",
+    "phase_f_current_handoff": "Step 611 Windows full-debug verification"
   },
   "categories": [
     "application_and_app_context",

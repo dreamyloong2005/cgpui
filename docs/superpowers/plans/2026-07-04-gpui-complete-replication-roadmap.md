@@ -1813,6 +1813,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.
 - [x] Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.
 - [x] Phase F Step 609 records completed task diagnostics with stable TaskIds, and verifies 64 completions request platform wakeups and drain into a bounded 32-event tail. Step 610 platform diagnostics and stress closeout audit is next.
+- [x] Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
@@ -1837,7 +1838,7 @@ not protocol/test skeletons.
 - [x] Steps 595-602: Complete multi-window event loops: independent renderers,
   routing, activation/focus transfer, lifecycle cleanup, per-window themes,
   per-window accessibility, and child-window tests.
-- [ ] Steps 603-610: Add production platform diagnostics and stress tests for
+- [x] Steps 603-610: Add production platform diagnostics and stress tests for
   window churn, clipboard ownership, DnD cancellation, IME, scale changes, and
   timer/task wakeups.
 - [ ] Steps 611-618: Run full Windows/WSL verification and mark active

@@ -83,7 +83,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 610 platform diagnostics and stress closeout audit")) {
+                "\"phase_f_current_handoff\": \"Step 611 Windows full-debug verification")) {
     return 9;
   }
   return 0;

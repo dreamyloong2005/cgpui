@@ -10729,3 +10729,12 @@
   wakeup runs all callbacks, leaves zero queued tasks, reports 64 completed
   tasks, and retains TaskIds 33-64 in the bounded tail.
 - Phase F Step 609 records completed task diagnostics with stable TaskIds, and verifies 64 completions request platform wakeups and drain into a bounded 32-event tail. Step 610 platform diagnostics and stress closeout audit is next.
+
+## 2026-07-12 Phase F Step 610 Platform Diagnostics And Stress Closeout
+
+- Steps 603-609 already provide dedicated structure guards and focused behavior
+  for window churn, clipboard ownership, drag cancellation, IME, scale, timer,
+  and task diagnostics.
+- The closeout remains audit-only: aggregate the seven guards and all behavior
+  targets without introducing another diagnostic state or runtime pathway.
+- Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.

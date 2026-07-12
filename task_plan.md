@@ -1154,7 +1154,10 @@ Windows/Linux core API is stable enough for parity work.
 - Step 609 evidence: sixty-four completed tasks request sixty-four platform
   wakeups, one wakeup drains all completion callbacks, and both task snapshot
   counts and TaskIds 33-64 remain coherent.
-- In progress: Step 610 platform diagnostics and stress closeout audit.
+- Completed: Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.
+- Step 610 evidence: the audit-only guard aggregates all seven behavior slices,
+  their dedicated structure guards, and the complete Xmake target inventory.
+- In progress: Step 611 Windows full-debug verification.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

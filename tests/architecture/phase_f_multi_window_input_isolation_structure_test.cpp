@@ -77,6 +77,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 9;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 610 platform diagnostics and stress closeout audit")) return 10;
+                "\"phase_f_current_handoff\": \"Step 611 Windows full-debug verification")) return 10;
   return 0;
 }
