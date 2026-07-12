@@ -115,6 +115,8 @@ int main(int argc, char** argv) {
 
   const std::vector<const char*> vulkan_files{
       "include/cgpui/renderer/renderer_types.hpp",
+      "include/cgpui/renderer/image_decode.hpp",
+      "src/renderer/image_decode_stb.cpp",
       "include/cgpui/renderer/renderer_commands.hpp",
       "include/cgpui/renderer/renderer_reports.hpp",
       "include/cgpui/renderer/renderer_text_reports.hpp",

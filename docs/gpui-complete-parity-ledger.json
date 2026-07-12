@@ -3356,7 +3356,21 @@
       "xmake.lua"
     ],
     "phase_g_step_651_remaining_gap": "Step 652 PNG and JPEG decode boundary production behavior",
-    "phase_f_current_handoff": "Step 652 PNG and JPEG decode boundary production behavior"
+    "phase_g_step_652_surface": "Phase G Step 652 adds signature-detected PNG and JPEG decoding to RGBA8 bitmaps through a fixed stb_image backend, with explicit empty, unsupported, corrupt, decode-failure, dimension, pixel, stride, and decoded-byte statuses enforced before output allocation. Step 653 GIF decode boundary production behavior is next.",
+    "phase_g_step_652_sources": [
+      "include/cgpui/renderer/image_decode.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/renderer/image_decode_stb.cpp",
+      "tests/assets/image_decode_test.cpp",
+      "tests/architecture/phase_g_png_jpeg_decode_structure_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "tests/header_cleanliness/prelude_header_cleanliness.cpp",
+      "third_party/stb/README.md",
+      "third_party/stb/stb_image.h",
+      "xmake.lua"
+    ],
+    "phase_g_step_652_remaining_gap": "Step 653 GIF decode boundary production behavior",
+    "phase_f_current_handoff": "Step 653 GIF decode boundary production behavior"
   },
   "categories": [
     "application_and_app_context",

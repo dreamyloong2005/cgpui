@@ -11500,3 +11500,27 @@
   and example behavior. Decoding, cache keys, reload invalidation, and async
   work remain Steps 652-658.
 - Phase G Step 651 adds root-confined file-backed AssetSource loading with binary and empty-file support, optional missing-file results, stable directory listing, canonical symlink escape protection, byte limits before allocation, and explicit invalid-path and I/O diagnostics. Step 652 PNG and JPEG decode boundary production behavior is next.
+
+## 2026-07-13 Phase G Step 652 PNG/JPEG Decode Boundary
+
+- Step 651 was committed as `09243583 feat: add file asset source`; the only
+  remaining worktree item afterward is unrelated untracked `.vscode/`.
+- `DecodedImageBitmap` and `ImageFormat::rgba8_unorm` already define the
+  renderer-facing decoded result. Step 652 should reuse them instead of
+  introducing a second bitmap vocabulary.
+- PNG/JPEG byte parsing belongs in a focused renderer decode leaf and private
+  backend source. It must not be added to `src/ui/image_source.cpp`, Vulkan
+  renderer entry files, or the broad renderer type aggregate.
+- The current dependency graph has LunaSVG but no general PNG/JPEG decoder.
+  A mature cross-platform decoder must be integrated at the `cgpui_renderer`
+  boundary and verified from encoded in-memory bytes on Windows and Linux.
+- Xmake package resolution for stb hung across many Git mirror processes and
+  never produced an install. The reproducible boundary vendors only official
+  `stb_image.h` from commit `28d546d5eb77d4585506a20480f4de2e706dff4c`;
+  its SHA-256 is
+  `594C2FE35D49488B4382DBFAEC8F98366DEFCA819D916AC95BECF3E75F4200B3`.
+- The decoder identifies PNG/JPEG from signatures, probes dimensions before
+  decode allocation, checks width, height, pixel count, stride, and decoded
+  byte count, then requests a normalized four-channel RGBA8 output. Public
+  headers contain no stb types or macros.
+- Phase G Step 652 adds signature-detected PNG and JPEG decoding to RGBA8 bitmaps through a fixed stb_image backend, with explicit empty, unsupported, corrupt, decode-failure, dimension, pixel, stride, and decoded-byte statuses enforced before output allocation. Step 653 GIF decode boundary production behavior is next.

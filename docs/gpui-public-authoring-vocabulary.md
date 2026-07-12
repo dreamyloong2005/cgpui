@@ -122,6 +122,11 @@ remain outside this freeze.
 - `FileAssetSource`
 - `AssetSource::load(...)`
 - `AssetSource::list(...)`
+- `EncodedImageFormat`
+- `ImageDecodeStatus`
+- `ImageDecodeLimits`
+- `ImageDecodeResult`
+- `decode_image(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and

@@ -146,6 +146,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationFramePacingSnapshot`") ||
       !contains(core, "deadline-driven frame timer") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 652 PNG and JPEG decode boundary production behavior\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 653 GIF decode boundary production behavior\"")) return 10;
   return 0;
 }

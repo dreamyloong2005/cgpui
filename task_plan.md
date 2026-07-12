@@ -1404,6 +1404,14 @@ Windows/Linux core API is stable enough for parity work.
   traversal, directory, oversized, empty-root, and stable-list cases; core
   header cleanliness and dedicated structure coverage freeze the public/private
   boundary, symlink escape policy, pre-allocation limit, and line caps.
+- Completed: Phase G Step 652 adds signature-detected PNG and JPEG decoding to RGBA8 bitmaps through a fixed stb_image backend, with explicit empty, unsupported, corrupt, decode-failure, dimension, pixel, stride, and decoded-byte statuses enforced before output allocation. Step 653 GIF decode boundary production behavior is next.
+- Step 652 boundary: public format/status/limit/result vocabulary lives in a
+  focused renderer leaf; the fixed stb implementation and vendored header stay
+  private to `cgpui_renderer`, with no UI or Vulkan entry-point parsing.
+- Step 652 evidence: in-memory PNG and JPEG fixtures prove RGBA8 output and
+  alpha normalization; negative cases cover empty, unsupported, corrupt,
+  width, and decoded-byte rejection. Prelude and renderer inventory guards
+  freeze public reachability, fixed upstream provenance, ownership, and caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1419,6 +1427,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The synchronized Step 652 structure guard exited 9 because it searched for lowercase `signature-detected` while the core-parity sentence correctly begins with uppercase `Signature-detected` | Step 652 authority verification | Match the exact sentence casing; vocabulary and JSON evidence were already present |
+| Non-interactive Step 652 Xmake configuration prompted for stb installation with closed stdin; the `-y` retry then spawned many Git mirror processes without producing an installed package | Step 652 decoder dependency setup | Stop only the two Xmake processes started by the configuration, vendor `stb_image.h` from fixed upstream commit `28d546d5` with SHA-256 verification, and expose it only to `cgpui_renderer` |
+| A Windows wildcard was passed directly to `rg` during Step 652 image-boundary discovery, and a guessed renderer header-cleanliness filename did not exist | Step 652 ownership discovery | Enumerate concrete files with `Get-ChildItem` and use the existing UI/prelude cleanliness targets instead of guessing wildcard paths |
 | Sandboxed Step 651 staging could not create `.git/index.lock` because `.git` is read-only in the workspace sandbox | Step 651 explicit staging | Keep `.vscode/` excluded and rerun the same `git add -u` plus explicit new-file staging under the approved Git write permission |
 | The first Step 651 structure run exited 7 even though the Step 650 handoff and both Xmake targets were present | Step 651 focused structure verification | The prior guard splits the completion sentence across adjacent C++ string literals; match the two source fragments independently while retaining the complete handoff requirement |
 | Sandboxed Step 650 Xmake reconfiguration repeatedly reported `cannot create filelock for package(ninja)` | Step 650 example target registration | `xmake show -l packages` exposed the underlying denied write to the user-local Xmake `references.txt`; rerun only `xmake f -c -m debug -P .` with approved package-cache access, then keep builds sandboxed |

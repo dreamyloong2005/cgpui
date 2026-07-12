@@ -62,6 +62,8 @@ desktop integration surfaces remain separate future work.
 - Assets now have root-confined file-backed asset loading through
   `AssetSource` and `FileAssetSource`, with optional missing results, stable
   directory listing, canonical escape protection, and pre-allocation limits.
+  Signature-detected PNG and JPEG decoding produces bounded RGBA8 bitmaps
+  through a fixed, private stb_image backend with explicit status reporting.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -150,7 +152,7 @@ desktop integration surfaces remain separate future work.
 
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
-- PNG/JPEG/GIF decoding, asset cache/reload invalidation, async asset loading,
+- GIF decoding, asset cache/reload invalidation, async asset loading,
   and final image/GIF public examples.
 - Rich text editing, selection handles, undo/redo stacks, complex shaping,
   bidi text, emoji/color glyphs, and platform input-method depth beyond the

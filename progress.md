@@ -23807,3 +23807,29 @@
 - The first staging attempt was rejected because the workspace sandbox exposes
   `.git` read-only and could not create `index.lock`; no files were staged or
   changed by that attempt. Staging requires the approved Git write permission.
+- Committed the fully verified Step 651 slice as
+  `09243583 feat: add file asset source`; `.vscode/` remains untracked.
+
+## 2026-07-13 Phase G Step 652 PNG/JPEG Decode Boundary
+
+- Re-read the Phase G asset band and existing image ownership. The decoded
+  bitmap result already lives in the renderer public surface; encoded-byte
+  parsing needs a new focused renderer leaf and mature cross-platform backend.
+- Added the focused encoded-byte behavior target first; its build reached the
+  intended RED because `cgpui/renderer/image_decode.hpp` did not exist.
+- Xmake package installation for stb first prompted on closed stdin, then the
+  non-interactive retry stalled in Git mirror processes without installing a
+  package. The two Xmake processes were stopped and official `stb_image.h`
+  commit `28d546d5` was vendored with SHA-256 verification instead.
+- Implemented signature-detected PNG/JPEG decode to normalized RGBA8 through a
+  focused public renderer leaf and private stb backend. Dimension, pixel,
+  stride, and decoded-byte limits are checked after metadata probing and before
+  output decode allocation; the stb buffer is RAII-owned during vector copy.
+- Final Windows focused behavior/structure/prelude/renderer verification passes
+  4/4. The complete dynamic current-handoff chain builds and runs 99/99, and
+  independent ledger, vocabulary, prelude, and renderer regressions pass 4/4.
+- Final audits pass: the exact Step 652 completion sentence appears once in
+  each authority file, JSON parses with 10 present evidence sources, the
+  vendored SHA-256 matches, key files are 45/116/113/120 lines, no public stb
+  reference or `[DEBUG-*]` marker remains, and `git diff --check` is clean.
+  WSL remains unavailable, so no Linux result is claimed for this slice.

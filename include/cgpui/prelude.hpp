@@ -11,6 +11,7 @@
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/platform/target.hpp"
+#include "cgpui/renderer/image_decode.hpp"
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/layout.hpp"

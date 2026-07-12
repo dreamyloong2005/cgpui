@@ -121,9 +121,11 @@ int main() {
   PreludeView view;
   cgpui::AppRunnerOptions options;
   options.setup_context = app_setup;
+  const cgpui::ImageDecodeResult empty_image = cgpui::decode_image({});
   (void)view;
   (void)options;
   return root_id.value != 0 && tree.root_id() == root_id &&
+                 empty_image.status == cgpui::ImageDecodeStatus::empty_input &&
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
                  scroll != nullptr && scroll->state() == &scroll_state &&
