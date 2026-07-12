@@ -3174,7 +3174,27 @@
       "xmake.lua"
     ],
     "phase_g_step_641_remaining_gap": "Step 642 async runtime production closeout audit",
-    "phase_f_current_handoff": "Step 642 async runtime production closeout audit"
+    "phase_g_step_642_surface": "Phase G Step 642 audits and closes the async runtime production band, freezing bounded priority scheduling, structured cancellation, async I/O, platform timers, cross-thread entity access, diagnostics, shutdown behavior, and modular source evidence. Step 643 animation transition production behavior is next.",
+    "phase_g_step_642_sources": [
+      "tests/async/runtime_task_pool_test.cpp",
+      "tests/async/runtime_task_priority_test.cpp",
+      "tests/async/runtime_task_group_test.cpp",
+      "tests/async/runtime_task_cancellation_propagation_test.cpp",
+      "tests/async/runtime_async_io_hook_test.cpp",
+      "tests/async/runtime_async_timer_integration_test.cpp",
+      "tests/async/runtime_cross_thread_entity_access_test.cpp",
+      "tests/architecture/phase_g_runtime_task_pool_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_task_priority_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_task_group_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_task_cancellation_propagation_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_async_io_hook_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_async_timer_integration_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_cross_thread_entity_access_structure_test.cpp",
+      "tests/api_parity/phase_g_async_runtime_closeout_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_642_remaining_gap": "Step 643 animation transition production behavior",
+    "phase_f_current_handoff": "Step 643 animation transition production behavior"
   },
   "categories": [
     "application_and_app_context",

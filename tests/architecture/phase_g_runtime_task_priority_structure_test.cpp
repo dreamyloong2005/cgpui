@@ -164,8 +164,8 @@ int main() {
       contains(core_parity, "task priority scheduling") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 642 async runtime production "
-          "closeout audit\"")) {
+          "\"phase_f_current_handoff\": \"Step 643 animation transition "
+          "production behavior\"")) {
     return 14;
   }
   return 0;

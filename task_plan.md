@@ -1306,6 +1306,11 @@ Windows/Linux core API is stable enough for parity work.
   callback-scoped reads, foreign-context rejection, missing status after entity
   deletion, and post-shutdown enqueue rejection; dedicated structure coverage
   freezes public/template/private ownership and broad-file caps.
+- Completed: Phase G Step 642 audits and closes the async runtime production band, freezing bounded priority scheduling, structured cancellation, async I/O, platform timers, cross-thread entity access, diagnostics, shutdown behavior, and modular source evidence. Step 643 animation transition production behavior is next.
+- Step 642 evidence: the audit-only closeout guard aggregates all seven async
+  behavior targets, seven dedicated structure guards, both platform timer
+  targets, global UI/platform inventories, header cleanliness, Xmake
+  registrations, and the closed Steps 635-642 roadmap band.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1321,6 +1326,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A final Step 642 JSON audit queried the nonexistent top-level `summary` object and raised a Node `TypeError` | Step 642 final evidence query | Inspect the JSON top-level keys and query the established `phase_d_text_evidence` evidence container; handoff, 16 sources, and remaining gap then validated |
+| The first runnable Step 642 closeout guard returned 2 because it guessed `cancel_group_subtree` instead of the established recursive `cancel_locked(runtime, *child, ...)` marker | Step 642 aggregated structure assertion | Match the exact recursive cancellation marker already frozen by the Step 638 guard |
+| The first Step 642 closeout build could not create Xmake's cached Ninja package lock, so no test binary was produced | Step 642 closeout RED attempt | Confirm no live Xmake/Ninja process owns the cache, avoid deleting persistent lock metadata, and retry the focused target after the prior build sessions have fully exited |
 | The first Step 641 structure guard returned 8 because the prior guard splits the Step 641 handoff across adjacent C++ literals | Step 641 historical handoff assertion | Match the stable first source literal while retaining the exact full completion sentence across the five authority documents |
 | The first Step 641 seven-target regression passed 6/7; `ui_source_structure_test` returned 100 because the private runtime header reached 261 lines | Step 641 global structure regression | Keep wakeup and cross-thread drain declarations on the existing orchestration line, restoring the frozen 260-line cap without moving implementation into the header |
 | The first Step 641 queue forward-declaration patch had an empty hunk before a second file marker and was rejected | Step 641 private queue declaration | Reissue the two exact line replacements as a valid multi-file patch |

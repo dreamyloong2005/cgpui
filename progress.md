@@ -23434,3 +23434,36 @@
   behavior, and structure guard are 75/76/259/1005/25/37/17/260/184/153 lines;
   and `git diff --check` succeeds.
 - Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.
+
+## 2026-07-12 Phase G Step 642 Async Runtime Closeout
+
+- Started from clean committed Step 641 at `e76baa22` with only unrelated
+  untracked `.vscode/` present. Step 642 is an audit-only closeout with no
+  production-source changes planned.
+- Added the closeout audit target aggregating all seven async behavior and
+  structure slices, both platform timer targets, global inventories, header
+  cleanliness, and authority documents. Its first build was interrupted by a
+  transient Xmake cached-Ninja file-lock error before compilation.
+- After the transient lock cleared, the first runnable closeout guard exposed
+  one guessed recursive-cancellation marker; matching the exact Step 638
+  `cancel_locked(runtime, *child, ...)` evidence advances the guard to the
+  expected roadmap-band RED at exit 5.
+- Resumed on 2026-07-13 through the planning-with-files catchup report and
+  confirmed the interrupted authority-document patch had landed completely:
+  the Steps 635-642 roadmap band is checked, all five documents carry the
+  completion sentence, and the JSON ledger points to Step 643.
+- Advanced all 88 historical current-handoff guard files plus the new Step 642
+  closeout guard to Step 643, including the three nested Windows, WSL, and
+  cross-platform aggregate assertions. The Step 641 historical completion
+  sentence and JSON Step 641 evidence remain unchanged.
+- Final Step 642 focused verification passes Windows 19/19 and Arch Linux WSL
+  19/19 across all seven async behavior targets, all seven dedicated structure
+  guards, the platform-specific timer target, global UI/platform inventories,
+  header cleanliness, and the closeout audit. The complete Windows dynamic
+  handoff chain passes 89/89.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 89 current-handoff guard files plus the JSON
+  ledger point to Step 643 with zero stale dynamic handoffs; JSON parses with
+  16 Step 642 source entries; the closeout guard is 123 lines; no `include/`,
+  `src/`, or `examples/` production file changed; and `git diff --check`
+  succeeds.

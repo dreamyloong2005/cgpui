@@ -132,7 +132,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 642 async runtime production closeout audit\"")) {
+          "\"phase_f_current_handoff\": \"Step 643 animation transition production behavior\"")) {
     return 10;
   }
   return 0;

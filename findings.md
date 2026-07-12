@@ -11264,3 +11264,11 @@
   queue synchronization, wakeup and shutdown integration, behavior evidence,
   global inventory, and broad-file budgets before the Step 642 closeout.
 - Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.
+
+## 2026-07-12 Phase G Step 642 Async Runtime Closeout
+
+- The closeout is audit-only: one focused guard aggregates the Steps 635-641
+  task pool, priority, structured group, cancellation, async I/O, platform
+  timer, and cross-thread entity behavior/structure targets plus global source,
+  header, build registration, shutdown, and authority-document evidence.
+- Phase G Step 642 audits and closes the async runtime production band, freezing bounded priority scheduling, structured cancellation, async I/O, platform timers, cross-thread entity access, diagnostics, shutdown behavior, and modular source evidence. Step 643 animation transition production behavior is next.
