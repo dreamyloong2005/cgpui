@@ -127,7 +127,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 656 asset reload invalidation production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 657 async asset loading production behavior\"")) {
     return 9;
   }
   return 0;

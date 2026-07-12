@@ -70,6 +70,8 @@ desktop integration surfaces remain separate future work.
   and bridges safely into the existing viewport-aware recolorable raster path.
   Stable decoded-asset cache keys isolate source, normalized cross-platform
   path, kind, and revision with deterministic FNV-1a hashing.
+  Thread-safe asset reload invalidation advances shared source/path revisions
+  atomically across decoded variants with saturation and diagnostics.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -158,7 +160,7 @@ desktop integration surfaces remain separate future work.
 
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
-- Asset reload invalidation, async loading,
+- Async asset loading,
   and final image/GIF public examples.
 - Rich text editing, selection handles, undo/redo stacks, complex shaping,
   bidi text, emoji/color glyphs, and platform input-method depth beyond the

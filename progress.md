@@ -23897,3 +23897,28 @@
   are 46/91/83/113 lines, no line exceeds 100 columns, no public implementation
   detail or `[DEBUG-*]` marker remains, and `git diff --check` is clean. WSL
   remains unavailable, so no Linux result is claimed for this slice.
+
+## 2026-07-13 Phase G Step 656 Asset Reload Invalidation
+
+- Committed Step 655 as `fef52e52 feat: add stable asset cache keys`; only
+  unrelated `.vscode/` remained untracked.
+- Added the reload state behavior target first. Its build reached the intended
+  RED because `cgpui/core/asset_reload.hpp` did not exist.
+- Implemented a PIMPL-owned, mutex-protected reload state with shared
+  source/path revisions across all decoded variants, atomic single-asset and
+  source-wide invalidation, fail-closed revision saturation, and snapshots for
+  tracked assets plus exact invalidation counts.
+- Final Windows focused reload/cache-key/header verification passes 6/6.
+  Independent ledger, vocabulary, core-header, and prelude regressions pass
+  4/4. The complete dynamic Step 657 handoff chain builds serially and passes
+  103/103 through direct executable runs with `CGPUI_SOURCE_ROOT` set.
+- `xmake run` alone could not launch the animation-cancellation structure
+  target even though the direct executable returned 0 and its registered test
+  passed. The deterministic red/green comparison isolated this to the Xmake
+  Windows run wrapper; direct target execution completed the chain without
+  weakening any assertion.
+- Final audits pass: the exact completion sentence occurs once in each of the
+  five authority documents, JSON parses with 10 present evidence sources and
+  the Step 657 handoff, key files are 55/112/113/116 lines within their caps,
+  no source `[DEBUG-` marker remains, and `git diff --check` is clean. WSL
+  remains unavailable, so no Linux result is claimed for this slice.

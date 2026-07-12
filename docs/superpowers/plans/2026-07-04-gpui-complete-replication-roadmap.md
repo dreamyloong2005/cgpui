@@ -1905,6 +1905,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 653 adds bounded animated GIF decoding with complete composited RGBA8 frames, per-frame delays, finite and infinite loop metadata, structured pre-decode block scanning, and frame plus total-byte limits. Step 654 SVG asset decode boundary production behavior is next.
 - [x] Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with LunaSVG intrinsic-size validation and a lifetime-safe bridge into the existing viewport-aware, recolorable RGBA8 rasterization path. Step 655 asset cache key production behavior is next.
 - [x] Phase G Step 655 adds stable decoded-asset cache keys with explicit source, normalized cross-platform relative path, asset kind, and revision identity plus deterministic FNV-1a hashing and invalid-path diagnostics. Step 656 asset reload invalidation production behavior is next.
+- [x] Phase G Step 656 adds thread-safe asset reload invalidation with shared source/path revisions across decoded variants, atomic single-asset and source-wide updates, saturation-safe fail-closed behavior, and observable tracking and invalidation diagnostics. Step 657 async asset loading production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

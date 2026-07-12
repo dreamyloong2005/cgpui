@@ -107,7 +107,7 @@ int main() {
       !contains(core, "Stable decoded-asset cache keys") ||
       !contains(ledger_json, "\"phase_g_step_655_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 656 asset reload "
-                "invalidation production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 657 async asset "
+                "loading production behavior\"")) return 8;
   return 0;
 }

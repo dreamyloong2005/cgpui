@@ -1,4 +1,5 @@
 #include "cgpui/core/asset_cache_key.hpp"
+#include "cgpui/core/asset_reload.hpp"
 #include "cgpui/core/asset_source.hpp"
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/event_accessibility.hpp"
@@ -114,6 +115,9 @@ int main() {
   const cgpui::AssetSource& asset_source = header_asset_source;
   (void)asset_source;
   const auto header_asset_key = cgpui::make_asset_cache_key(
+      cgpui::AssetSourceId{1}, "header.bin", cgpui::AssetCacheKind::bytes);
+  cgpui::AssetReloadState header_reloads;
+  const auto header_reload_key = header_reloads.key(
       cgpui::AssetSourceId{1}, "header.bin", cgpui::AssetCacheKind::bytes);
 
   const cgpui::AffineTransform transform = cgpui::compose(
@@ -448,7 +452,9 @@ int main() {
                  platform_window_chrome.requested.transparent_background &&
                  !platform_window_chrome.applied.transparent_background &&
                  header_asset_source.options().max_asset_bytes > 0 &&
-                 header_asset_key && header_asset_key->stable_hash() != 0
+                 header_asset_key && header_asset_key->stable_hash() != 0 &&
+                 header_reload_key &&
+                 header_reloads.snapshot().tracked_assets == 1
              ? 0
              : 1;
 }

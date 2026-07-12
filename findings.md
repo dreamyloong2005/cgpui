@@ -11567,3 +11567,16 @@
   bytes under FNV-1a; it does not depend on implementation-defined
   `std::hash<std::string>` behavior.
 - Phase G Step 655 adds stable decoded-asset cache keys with explicit source, normalized cross-platform relative path, asset kind, and revision identity plus deterministic FNV-1a hashing and invalid-path diagnostics. Step 656 asset reload invalidation production behavior is next.
+
+## 2026-07-13 Phase G Step 656 Asset Reload Invalidation
+
+- Step 655 was committed as `fef52e52 feat: add stable asset cache keys`;
+  unrelated `.vscode/` remains untracked.
+- One revision slot belongs to source/path identity, not decode kind, so bytes,
+  raster image, GIF, and SVG keys all change after one asset invalidation.
+- Source-wide invalidation pre-scans every matching revision for saturation
+  before updating any entry, preventing partial invalidation on failure.
+- The state is PIMPL-owned and mutex-serialized; 800 concurrent invalidations
+  produce revision 800 with exact diagnostics and no public synchronization or
+  map details.
+- Phase G Step 656 adds thread-safe asset reload invalidation with shared source/path revisions across decoded variants, atomic single-asset and source-wide updates, saturation-safe fail-closed behavior, and observable tracking and invalidation diagnostics. Step 657 async asset loading production behavior is next.

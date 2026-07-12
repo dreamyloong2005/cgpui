@@ -146,6 +146,12 @@ remain outside this freeze.
 - `AssetCacheKey`
 - `AssetCacheKeyHash`
 - `make_asset_cache_key(...)`
+- `AssetReloadInvalidation`
+- `AssetSourceInvalidation`
+- `AssetReloadSnapshot`
+- `AssetReloadState`
+- `AssetReloadState::invalidate(...)`
+- `AssetReloadState::invalidate_source(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and

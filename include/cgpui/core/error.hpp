@@ -14,6 +14,7 @@ enum class ErrorCode {
   invalid_argument,
   asset_io_failed,
   asset_too_large,
+  asset_revision_exhausted,
 };
 
 struct Error {

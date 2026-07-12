@@ -2,6 +2,7 @@
 
 #include "cgpui/app/app.hpp"
 #include "cgpui/core/asset_cache_key.hpp"
+#include "cgpui/core/asset_reload.hpp"
 #include "cgpui/core/asset_source.hpp"
 #include "cgpui/core/entity.hpp"
 #include "cgpui/core/error.hpp"

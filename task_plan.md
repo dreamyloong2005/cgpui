@@ -1434,6 +1434,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 655 evidence: behavior proves slash/dot normalization, equality and map
   lookup, deterministic hashes, source/kind/revision isolation, and rejection
   of zero source, empty, absolute, drive-root, and traversal paths.
+- Completed: Phase G Step 656 adds thread-safe asset reload invalidation with shared source/path revisions across decoded variants, atomic single-asset and source-wide updates, saturation-safe fail-closed behavior, and observable tracking and invalidation diagnostics. Step 657 async asset loading production behavior is next.
+- Step 656 boundary: the public invalidation/result/snapshot/state API uses a
+  PIMPL leaf; mutex and revision map ownership stay in one focused core source.
+- Step 656 evidence: behavior proves all variants advance together, unrelated
+  assets/sources remain stable, source-wide invalidation is atomic, 800
+  concurrent increments are lossless, invalid identities fail, and snapshots
+  expose exact tracked/invalidation counts.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1449,6 +1456,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The resumed Step 656 phrase audit incorrectly included the core API summary among the five full completion-sentence documents | Step 656 final authority audit | Follow the structure guard contract: full sentence once in roadmap, Markdown ledger, JSON ledger, task plan, and findings; core API keeps its focused `Thread-safe asset reload invalidation` summary |
+| The resumed Step 656 debug-marker audit matched historical prose containing the literal `` `[DEBUG-*]` `` in `progress.md` | Step 656 final hygiene audit | Search production, test, example, and build sources for actual `[DEBUG-` instrumentation; the corrected source audit reports zero markers |
+| `xmake run` deterministically failed to launch `phase_g_animation_cancellation_structure_test` with `execv(...exe) failed(1)` while the same executable returned 0 directly and its registered `/default` test passed | Step 656 103-target handoff chain | Treat this as an Xmake Windows run-wrapper failure, keep serial builds, and execute each built target file directly with `CGPUI_SOURCE_ROOT` set |
+| The resumed Step 656 handoff inventory used backslash escaping inside a PowerShell `Select-String -SimpleMatch` argument and emitted positional-parameter errors | Step 656 target registration audit | Keep the valid 97-source inventory, derive targets from source stems, handle the native-menu replacement name explicitly, and avoid the broken auxiliary registration probe |
+| The resumed Step 656 focused run passed bare build-target names to `xmake test` and reported `nothing to test` for all six targets | Step 656 focused verification | Re-run the registered `target/default` test instances; treat the bare-target command as a no-op, not a passing gate |
+| The synchronized Step 656 structure guard exited 9 because the core-parity sentence starts with uppercase `Thread-safe` | Step 656 authority verification | Match the exact core sentence casing; vocabulary and JSON evidence were already present |
 | The synchronized Step 655 structure guard exited 8 because the core-parity sentence starts with uppercase `Stable` | Step 655 authority verification | Match the exact core sentence casing; vocabulary and JSON evidence were already present |
 | The first Step 655 structure guard exited 5 because the Step 654 completion source splits `Step` and `655 asset cache key...` across adjacent literals | Step 655 structure RED | Match both stable source fragments while retaining exact authority-document completion matching |
 | The synchronized Step 654 structure guard exited 9 because the core-parity sentence starts with uppercase `Bounded` | Step 654 authority verification | Match the exact core sentence casing; both vocabulary entries and JSON evidence were already present |

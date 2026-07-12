@@ -3417,7 +3417,21 @@
       "xmake.lua"
     ],
     "phase_g_step_655_remaining_gap": "Step 656 asset reload invalidation production behavior",
-    "phase_f_current_handoff": "Step 656 asset reload invalidation production behavior"
+    "phase_g_step_656_surface": "Phase G Step 656 adds thread-safe asset reload invalidation with shared source/path revisions across decoded variants, atomic single-asset and source-wide updates, saturation-safe fail-closed behavior, and observable tracking and invalidation diagnostics. Step 657 async asset loading production behavior is next.",
+    "phase_g_step_656_sources": [
+      "include/cgpui/core/asset_reload.hpp",
+      "include/cgpui/core/asset_cache_key.hpp",
+      "include/cgpui/core/error.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/core/asset_reload.cpp",
+      "tests/assets/asset_reload_test.cpp",
+      "tests/architecture/phase_g_asset_reload_structure_test.cpp",
+      "tests/header_cleanliness/core_header_cleanliness.cpp",
+      "tests/header_cleanliness/prelude_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_656_remaining_gap": "Step 657 async asset loading production behavior",
+    "phase_f_current_handoff": "Step 657 async asset loading production behavior"
   },
   "categories": [
     "application_and_app_context",
