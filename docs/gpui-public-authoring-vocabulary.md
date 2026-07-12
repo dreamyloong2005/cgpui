@@ -64,6 +64,7 @@ outside this freeze.
 - `ErrorCode`
 - `AsyncContextCapability`
 - `TestContextCapability`
+- `TaskPriority::{low, normal, high}`
 - `try_spawn_task(...) -> Result<TaskHandle>`
 - `try_spawn_background_task(...) -> Result<TaskHandle>`
 - `run_until_parked()`
@@ -71,8 +72,7 @@ outside this freeze.
 - `try_draw_frame() -> Result<void>`
 
 Phase B public examples may use Result-returning async and test helpers. This
-freeze does not add task priorities, structured task groups, or upstream test
-macro equivalents.
+freeze does not add structured task groups or upstream test macro equivalents.
 
 ## Platform service vocabulary
 

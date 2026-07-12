@@ -64,6 +64,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 31;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 636 async task priority production behavior\"")) return 32;
+                "\"phase_f_current_handoff\": \"Step 637 structured task group production behavior\"")) return 32;
   return 0;
 }

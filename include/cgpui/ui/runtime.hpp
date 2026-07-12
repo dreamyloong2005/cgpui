@@ -5,6 +5,7 @@
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
+#include "cgpui/ui/task_priority.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
 #include "cgpui/ui/runtime_app_context.hpp"
 #include "cgpui/ui/runtime_actions.hpp"

@@ -1273,7 +1273,12 @@ Windows/Linux core API is stable enough for parity work.
   activity diagnostics, runtime-thread completion dispatch, and full drain;
   dedicated structure coverage freezes ownership, shutdown ordering, source
   inventory, Xmake registration, and removal of per-task worker threads.
-- In progress: Step 636 async task priority production behavior.
+- Completed: Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.
+- Step 636 evidence: focused behavior proves strict priority ordering and same-
+  priority FIFO for background work and runtime-thread completions; public
+  header cleanliness and dedicated structure coverage freeze all three API
+  surfaces, normal compatibility, source ownership, and line budgets.
+- In progress: Step 637 structured task group production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1289,6 +1294,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 636 authority sync patch failed atomically because its expected public-vocabulary line wrapping did not match the file | Step 636 authority synchronization | Re-read the exact document slice and apply the roadmap/ledger/plan and vocabulary/core-parity changes as separate precise patches |
+| The corrected Step 636 structure guard exited 13 after all API, implementation, ordering, compatibility, behavior, inventory, historical guard, Xmake, and line-cap checks passed | Step 636 authority-document RED | Synchronize the exact Step 636 completion sentence, public vocabulary/core parity status, and Step 637 handoff |
+| The first Step 636 structure guard returned 3 because it assumed every priority overload declaration was formatted on one line, while `async_context.hpp` follows wrapped declarations | Step 636 dedicated structure RED | Guard the priority token and method-name set without treating whitespace formatting as API semantics |
+| The first Step 636 ten-target regression passed all behavior/header tests but Step 635 structure returned 2 for its old single queue and UI structure returned 139 because validation moved to the priority source | Step 636 structure regression | Advance the historical pool guard to the three priority queues and make the UI guard freeze normal wrappers separately from priority implementation/validation ownership |
+| The first Step 636 behavior build failed because `cgpui/ui/task_priority.hpp` does not exist | Step 636 behavior RED | Add the focused public priority leaf, explicit overloads on all three async surfaces, priority-aware pool queues, and stable priority completion dispatch |
+| Step 636 header reconnaissance repeated the earlier invalid guess that `include/cgpui/ui/prelude.hpp` exists | Step 636 public priority boundary | Stop guessing optional aggregate names; enumerate `include/cgpui` with `rg --files` before selecting the actual aggregate headers |
 | The first 82-target dynamic handoff run passed 81/82; the Windows full-debug guard returned 4 because the three nested Windows/WSL/cross-platform aggregate assertions still inspected old Step 635 text in their downstream guards | Step 635 dynamic handoff chain | Advance the three nested aggregate assertions to Step 636 while preserving historical completion sentences |
 | The first Step 635 dedicated structure run exited 10 after all implementation, behavior, ownership, shutdown-order, diagnostics, inventory, Xmake, and line-cap assertions passed | Step 635 structure RED | Synchronize the exact Step 635 completion sentence across the five authority documents and advance the current handoff to Step 636 |
 | A Step 635 structure-template read guessed `phase_g_wayland_atspi_bus_discovery_structure_test.cpp`, but Step 632 uses `phase_g_wayland_atspi_bus_connection_structure_test.cpp` | Step 635 structure guard reconnaissance | Reuse the exact historical filename already referenced by the Step 633 guard instead of deriving a new name from the feature wording |

@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_task_pool_internal.hpp"
+#include "runtime_task_priority_internal.hpp"
 
 #include <algorithm>
 
@@ -26,12 +27,14 @@ WindowRuntime::RuntimeTaskPool::~RuntimeTaskPool() {
   shutdown();
 }
 
-bool WindowRuntime::RuntimeTaskPool::submit(Work work) {
+bool WindowRuntime::RuntimeTaskPool::submit(
+    TaskPriority priority,
+    Work work) {
   if (!work) return false;
   {
     std::lock_guard lock(mutex_);
     if (!accepting_) return false;
-    queue_.push_back(std::move(work));
+    queues_[runtime_task_priority_index(priority)].push_back(std::move(work));
   }
   condition_.notify_one();
   return true;
@@ -40,9 +43,11 @@ bool WindowRuntime::RuntimeTaskPool::submit(Work work) {
 WindowRuntime::RuntimeTaskPool::Snapshot
 WindowRuntime::RuntimeTaskPool::snapshot() const {
   std::lock_guard lock(mutex_);
+  std::size_t queued_work_count = 0;
+  for (const auto& queue : queues_) queued_work_count += queue.size();
   return Snapshot{
       .worker_count = workers_.size(),
-      .queued_work_count = queue_.size(),
+      .queued_work_count = queued_work_count,
       .active_work_count = active_work_count_,
       .peak_active_work_count = peak_active_work_count_,
       .completed_work_count = completed_work_count_,
@@ -68,14 +73,27 @@ void WindowRuntime::RuntimeTaskPool::run_worker(std::stop_token stop_token) {
     {
       std::unique_lock lock(mutex_);
       condition_.wait(lock, stop_token, [this] {
-        return stopping_ || !queue_.empty();
+        if (stopping_) return true;
+        for (const auto& queue : queues_) {
+          if (!queue.empty()) return true;
+        }
+        return false;
       });
-      if (queue_.empty()) {
+      bool queue_empty = true;
+      for (const auto& queue : queues_) {
+        queue_empty = queue_empty && queue.empty();
+      }
+      if (queue_empty) {
         if (stopping_ || stop_token.stop_requested()) return;
         continue;
       }
-      work = std::move(queue_.front());
-      queue_.pop_front();
+      for (const TaskPriority priority : runtime_task_priorities_descending) {
+        auto& queue = queues_[runtime_task_priority_index(priority)];
+        if (queue.empty()) continue;
+        work = std::move(queue.front());
+        queue.pop_front();
+        break;
+      }
       active_work_count_ += 1;
       peak_active_work_count_ =
           std::max(peak_active_work_count_, active_work_count_);
@@ -90,7 +108,7 @@ void WindowRuntime::RuntimeTaskPool::run_worker(std::stop_token stop_token) {
       std::lock_guard lock(mutex_);
       active_work_count_ -= 1;
       completed_work_count_ += 1;
-      if (stopping_ && queue_.empty() && active_work_count_ == 0) {
+      if (stopping_ && active_work_count_ == 0) {
         condition_.notify_all();
       }
     }

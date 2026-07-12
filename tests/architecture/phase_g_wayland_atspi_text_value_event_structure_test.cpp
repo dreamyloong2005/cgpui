@@ -129,7 +129,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 636 async task priority production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 637 structured task group production behavior\"")) {
     return 11;
   }
   return 0;

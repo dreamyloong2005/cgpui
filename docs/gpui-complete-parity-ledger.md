@@ -762,6 +762,7 @@ consume C: drive space again.
 - Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.
 - Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.
 - Phase G Step 635 replaces per-task background threads with a bounded reusable runtime task pool, preserves runtime-thread completion dispatch and cancellation tokens, and reports worker, queue, activity, peak, and completion diagnostics. Step 636 async task priority production behavior is next.
+- Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.
 
 ## Categories
 

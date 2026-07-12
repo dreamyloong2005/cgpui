@@ -29,6 +29,7 @@
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
+#include "cgpui/ui/task_priority.hpp"
 #include "cgpui/ui/runtime_rendering.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
@@ -250,6 +251,7 @@ class TestView final : public cgpui::View {
     (void)context.runtime.cancel_timer(timer_id);
     (void)context.runtime.cancel_timer(repeating_timer_id);
     cgpui::TaskHandle task = context.spawn_task(
+        cgpui::TaskPriority::high,
         [](const cgpui::ViewContext& completion_context) {
           completion_context.request_render();
         });
@@ -259,6 +261,7 @@ class TestView final : public cgpui::View {
     (void)context.runtime.complete_task(task_id);
     context.runtime.drain_task_completions();
     cgpui::TaskHandle background_task = context.spawn_background_task(
+        cgpui::TaskPriority::low,
         [](cgpui::TaskCancellationToken token) {
           (void)token.cancellation_requested();
         },

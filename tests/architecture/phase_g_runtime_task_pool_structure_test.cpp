@@ -29,6 +29,8 @@ int main() {
   const std::string pool_header =
       read_source("src/ui/runtime_task_pool_internal.hpp");
   const std::string pool_source = read_source("src/ui/runtime_task_pool.cpp");
+  const std::string priority_source =
+      read_source("src/ui/runtime_task_priority.cpp");
   const std::string tasks_source = read_source("src/ui/runtime_tasks.cpp");
   const std::string shutdown_source = read_source("src/ui/runtime_shutdown.cpp");
   const std::string runtime_internal =
@@ -51,14 +53,14 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &pool_header, &pool_source, &tasks_source, &shutdown_source,
+      &pool_header, &pool_source, &priority_source, &tasks_source, &shutdown_source,
       &runtime_internal, &diagnostics_header, &diagnostics_source, &behavior,
       &ui_structure, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(pool_header, "class WindowRuntime::RuntimeTaskPool") ||
-      !contains(pool_header, "std::deque<Work> queue_") ||
+      !contains(pool_header, "std::array<std::deque<Work>, 3> queues_") ||
       !contains(pool_header, "std::vector<std::jthread> workers_") ||
       !contains(pool_header, "std::size_t active_work_count_") ||
       !contains(pool_header, "std::size_t peak_active_work_count_") ||
@@ -66,18 +68,19 @@ int main() {
     return 2;
   }
   if (!contains(pool_source, "std::clamp<std::size_t>") ||
-      !contains(pool_source, "RuntimeTaskPool::submit(Work work)") ||
+      !contains(pool_source, "RuntimeTaskPool::submit(") ||
+      !contains(pool_source, "TaskPriority priority") ||
       !contains(pool_source, "RuntimeTaskPool::run_worker(") ||
       !contains(pool_source, "RuntimeTaskPool::shutdown()") ||
-      !contains(pool_source, "queue_.push_back(std::move(work))") ||
+      !contains(pool_source, "queues_[runtime_task_priority_index(priority)]") ||
       !contains(pool_source, "workers.swap(workers_)")) {
     return 3;
   }
   if (!contains(runtime_internal, "std::unique_ptr<RuntimeTaskPool> task_pool_") ||
       contains(runtime_internal, "std::jthread worker;") ||
-      !contains(tasks_source, "task_pool_->submit(") ||
+      !contains(priority_source, "task_pool_->submit(") ||
       contains(tasks_source, "std::jthread worker") ||
-      !contains(tasks_source, "(void)complete_task(id);")) {
+      !contains(priority_source, "(void)complete_task(id);")) {
     return 4;
   }
   const auto cancel = shutdown_source.find("task.cancellation_requested->store(true)");
@@ -108,6 +111,7 @@ int main() {
     return 8;
   }
   if (line_count(pool_header) > 60 || line_count(pool_source) > 120 ||
+      line_count(priority_source) > 120 ||
       line_count(tasks_source) > 160 || line_count(shutdown_source) > 70 ||
       line_count(runtime_internal) > 260 || line_count(diagnostics_header) > 140 ||
       line_count(diagnostics_source) > 150 || line_count(behavior) > 150) {
@@ -127,7 +131,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 636 async task priority "
+          "\"phase_f_current_handoff\": \"Step 637 structured task group "
           "production behavior\"")) {
     return 11;
   }

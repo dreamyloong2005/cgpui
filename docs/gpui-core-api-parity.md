@@ -142,9 +142,7 @@ desktop integration surfaces remain separate future work.
   batching.
 - Full layout virtualization and large-list recycling beyond the current
   `scrollable_list` container.
-- Cross-thread entity access guarantees, async I/O integration, task priority
-  scheduling, and a production task-pool runtime beyond the current small
-  threaded executor.
+- Cross-thread entity access guarantees and async I/O integration.
 
 ## Mac/Metal Deferred
 

@@ -3049,7 +3049,25 @@
       "xmake.lua"
     ],
     "phase_g_step_635_remaining_gap": "Step 636 async task priority production behavior",
-    "phase_f_current_handoff": "Step 636 async task priority production behavior"
+    "phase_g_step_636_surface": "Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.",
+    "phase_g_step_636_sources": [
+      "include/cgpui/ui/task_priority.hpp",
+      "include/cgpui/ui/window_runtime.hpp",
+      "include/cgpui/ui/runtime_context.hpp",
+      "include/cgpui/ui/async_context.hpp",
+      "src/ui/runtime_task_priority_internal.hpp",
+      "src/ui/runtime_task_priority.cpp",
+      "src/ui/runtime_context_task_priority.cpp",
+      "src/ui/async_context_task_priority.cpp",
+      "src/ui/runtime_task_pool.cpp",
+      "src/ui/runtime_tasks.cpp",
+      "tests/async/runtime_task_priority_test.cpp",
+      "tests/architecture/phase_g_runtime_task_priority_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_636_remaining_gap": "Step 637 structured task group production behavior",
+    "phase_f_current_handoff": "Step 637 structured task group production behavior"
   },
   "categories": [
     "application_and_app_context",

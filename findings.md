@@ -11113,3 +11113,24 @@
 - Final review tightened the behavior oracle from “at least one completion
   callback” to “exactly one completion callback per submitted task,” so full
   runtime completion-queue drain is directly proven rather than inferred.
+
+## 2026-07-12 Phase G Step 636 Async Task Priority Design
+
+- Priority needs one focused public vocabulary leaf with `low`, `normal`, and
+  `high`; existing spawn and try-spawn signatures remain source-compatible and
+  delegate to `normal` priority.
+- Explicit priority overloads must be present on `WindowRuntime`,
+  `WindowRuntimeContext`, and `AsyncContextCapability`, with non-template
+  forwarding bodies in focused implementation leaves rather than broad headers.
+- Production behavior means high-priority queued work overtakes earlier normal
+  and low work while preserving FIFO within a priority. Foreground/runtime
+  completion dispatch should apply the same ordering rather than exposing a
+  priority parameter that only affects background workers.
+- The bounded worker count, cancellation tokens, task handles, and diagnostics
+  from Step 635 remain intact. Task groups, propagation, async I/O, timers, and
+  cross-thread entity rules remain Steps 637-642.
+- The first implementation keeps every existing cap green by splitting the
+  runtime, runtime-context, and async-context priority bodies into 98/35/37-line
+  leaves. The public window header remains 253/260 lines, the private runtime
+  header remains 260/260, and the priority-aware pool source remains 114/120.
+- Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.

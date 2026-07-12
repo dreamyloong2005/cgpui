@@ -3581,6 +3581,18 @@ target("phase_g_runtime_task_pool_structure_test")
     add_files("tests/architecture/phase_g_runtime_task_pool_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_runtime_task_priority_test")
+    set_kind("binary")
+    add_files("tests/async/runtime_task_priority_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs, "tests/ui")
+    add_tests("default")
+
+target("phase_g_runtime_task_priority_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_runtime_task_priority_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/action.hpp"
 #include "cgpui/ui/runtime_types.hpp"
+#include "cgpui/ui/task_priority.hpp"
 
 #include <any>
 #include <atomic>
@@ -149,9 +150,13 @@ class WindowRuntime {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id);
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback);
+  [[nodiscard]] TaskHandle spawn_task(TaskPriority priority, TaskCompletionCallback callback);
   [[nodiscard]] Result<TaskHandle> try_spawn_task(TaskCompletionCallback callback);
+  [[nodiscard]] Result<TaskHandle> try_spawn_task(TaskPriority priority, TaskCompletionCallback callback);
   [[nodiscard]] TaskHandle spawn_background_task(BackgroundTaskCallback work, TaskCompletionCallback completion);
+  [[nodiscard]] TaskHandle spawn_background_task(TaskPriority priority, BackgroundTaskCallback work, TaskCompletionCallback completion);
   [[nodiscard]] Result<TaskHandle> try_spawn_background_task(BackgroundTaskCallback work, TaskCompletionCallback completion);
+  [[nodiscard]] Result<TaskHandle> try_spawn_background_task(TaskPriority priority, BackgroundTaskCallback work, TaskCompletionCallback completion);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
   void batch_updates(UpdateBatchCallback callback);

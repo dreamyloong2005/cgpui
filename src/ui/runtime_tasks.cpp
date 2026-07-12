@@ -1,66 +1,17 @@
 #include "ui_internal.hpp"
-#include "runtime_task_pool_internal.hpp"
+#include "runtime_task_priority_internal.hpp"
 
 namespace cgpui {
 
 TaskHandle WindowRuntime::spawn_task(TaskCompletionCallback callback) {
-  if (!callback) {
-    return {};
-  }
-
-  TaskId id;
-  {
-    std::lock_guard lock(tasks_mutex_);
-    id = TaskId{next_task_id_++};
-    tasks_.push_back(RuntimeTask{
-        .id = id,
-        .callback = std::move(callback),
-        .queued = false,
-        .completed = false,
-    });
-  }
-  return TaskHandle(*this, id);
+  return spawn_task(TaskPriority::normal, std::move(callback));
 }
 
 TaskHandle WindowRuntime::spawn_background_task(
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) {
-  if (!work || !completion) {
-    return {};
-  }
-
-  auto cancellation_requested = std::make_shared<std::atomic_bool>(false);
-  TaskId id;
-  {
-    std::lock_guard lock(tasks_mutex_);
-    id = TaskId{next_task_id_++};
-    tasks_.push_back(RuntimeTask{
-        .id = id,
-        .callback = std::move(completion),
-        .queued = false,
-        .completed = false,
-        .cancelled = false,
-        .background = true,
-        .cancellation_requested = cancellation_requested,
-    });
-  }
-
-  const bool submitted = task_pool_->submit(
-      [this, id, cancellation_requested, work = std::move(work)]() mutable {
-        try {
-          if (!cancellation_requested->load()) {
-            work(TaskCancellationToken(cancellation_requested));
-          }
-        } catch (...) {
-        }
-        (void)complete_task(id);
-      });
-  if (!submitted) {
-    (void)cancel_task(id);
-    return {};
-  }
-
-  return TaskHandle(*this, id);
+  return spawn_background_task(
+      TaskPriority::normal, std::move(work), std::move(completion));
 }
 
 bool WindowRuntime::complete_task(TaskId id) {
@@ -82,7 +33,10 @@ bool WindowRuntime::complete_task(TaskId id) {
     }
 
     task->queued = true;
-    task_completion_queue_.push_back(id);
+    task_completion_queue_.push_back(RuntimeTaskCompletion{
+        .id = id,
+        .priority = task->priority,
+    });
   }
 
   request_platform_wakeup();
@@ -96,7 +50,7 @@ void WindowRuntime::drain_task_completions() {
 
   draining_task_completions_ = true;
   while (!should_quit_) {
-    std::vector<TaskId> queued;
+    std::vector<RuntimeTaskCompletion> queued;
     {
       std::lock_guard lock(tasks_mutex_);
       if (task_completion_queue_.empty()) {
@@ -104,33 +58,37 @@ void WindowRuntime::drain_task_completions() {
       }
       queued.swap(task_completion_queue_);
     }
-    for (const TaskId id : queued) {
-      TaskCompletionCallback callback;
-      {
-        std::lock_guard lock(tasks_mutex_);
-        const auto task = std::find_if(
-            tasks_.begin(),
-            tasks_.end(),
-            [id](const RuntimeTask& task) {
-              return task.id == id;
-            });
-        if (task == tasks_.end() || task->completed || task->cancelled) {
-          continue;
-        }
+    for (const TaskPriority priority : runtime_task_priorities_descending) {
+      for (const RuntimeTaskCompletion& completion : queued) {
+        if (completion.priority != priority) continue;
+        const TaskId id = completion.id;
+        TaskCompletionCallback callback;
+        {
+          std::lock_guard lock(tasks_mutex_);
+          const auto task = std::find_if(
+              tasks_.begin(),
+              tasks_.end(),
+              [id](const RuntimeTask& task) {
+                return task.id == id;
+              });
+          if (task == tasks_.end() || task->completed || task->cancelled) {
+            continue;
+          }
 
-        callback = task->callback;
-        task->queued = false;
-        task->completed = true;
-      }
-      record_platform_diagnostic(PlatformDiagnosticEvent{
-          .kind = PlatformDiagnosticKind::scheduling,
-          .backend = "runtime",
-          .operation = "task-completed",
-          .supported = true, .succeeded = true,
-          .value_count = static_cast<std::size_t>(id.value),
-      });
-      if (callback) {
-        callback(context());
+          callback = task->callback;
+          task->queued = false;
+          task->completed = true;
+        }
+        record_platform_diagnostic(PlatformDiagnosticEvent{
+            .kind = PlatformDiagnosticKind::scheduling,
+            .backend = "runtime",
+            .operation = "task-completed",
+            .supported = true, .succeeded = true,
+            .value_count = static_cast<std::size_t>(id.value),
+        });
+        if (callback) {
+          callback(context());
+        }
       }
     }
   }

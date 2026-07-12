@@ -6,6 +6,7 @@
 #include "cgpui/ui/element_context.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
+#include "cgpui/ui/task_priority.hpp"
 #include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/view_context.hpp"
 #include "cgpui/ui/window_context.hpp"
@@ -194,14 +195,18 @@ struct WindowRuntimeContext {
       AnimationId id) const;
   [[nodiscard]] bool cancel_animation(AnimationId id) const;
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
+  [[nodiscard]] TaskHandle spawn_task(TaskPriority priority, TaskCompletionCallback callback) const;
   [[nodiscard]] Result<TaskHandle> try_spawn_task(
       TaskCompletionCallback callback) const;
+  [[nodiscard]] Result<TaskHandle> try_spawn_task(TaskPriority priority, TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_background_task(
       BackgroundTaskCallback work,
       TaskCompletionCallback completion) const;
+  [[nodiscard]] TaskHandle spawn_background_task(TaskPriority priority, BackgroundTaskCallback work, TaskCompletionCallback completion) const;
   [[nodiscard]] Result<TaskHandle> try_spawn_background_task(
       BackgroundTaskCallback work,
       TaskCompletionCallback completion) const;
+  [[nodiscard]] Result<TaskHandle> try_spawn_background_task(TaskPriority priority, BackgroundTaskCallback work, TaskCompletionCallback completion) const;
   void batch_updates(UpdateBatchCallback callback) const;
   void clear_invalidation() const;
   [[nodiscard]] InvalidationState invalidation_state() const;

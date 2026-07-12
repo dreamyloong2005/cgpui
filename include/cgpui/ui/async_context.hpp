@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
+#include "cgpui/ui/task_priority.hpp"
 
 #include <cstdint>
 #include <optional>
@@ -33,12 +34,26 @@ class AsyncContextCapability {
   [[nodiscard]] bool cancel_animation(AnimationId id) const;
 
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
+  [[nodiscard]] TaskHandle spawn_task(
+      TaskPriority priority,
+      TaskCompletionCallback callback) const;
   [[nodiscard]] Result<TaskHandle> try_spawn_task(
+      TaskCompletionCallback callback) const;
+  [[nodiscard]] Result<TaskHandle> try_spawn_task(
+      TaskPriority priority,
       TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_background_task(
       BackgroundTaskCallback work,
       TaskCompletionCallback completion) const;
+  [[nodiscard]] TaskHandle spawn_background_task(
+      TaskPriority priority,
+      BackgroundTaskCallback work,
+      TaskCompletionCallback completion) const;
   [[nodiscard]] Result<TaskHandle> try_spawn_background_task(
+      BackgroundTaskCallback work,
+      TaskCompletionCallback completion) const;
+  [[nodiscard]] Result<TaskHandle> try_spawn_background_task(
+      TaskPriority priority,
       BackgroundTaskCallback work,
       TaskCompletionCallback completion) const;
   void batch_updates(UpdateBatchCallback callback) const;

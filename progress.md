@@ -23159,3 +23159,40 @@
   structure guard are 49/100/141/22/260/124/94/122/135 lines; and
   `git diff --check` succeeds.
 - Phase G Step 635 replaces per-task background threads with a bounded reusable runtime task pool, preserves runtime-thread completion dispatch and cancellation tokens, and reports worker, queue, activity, peak, and completion diagnostics. Step 636 async task priority production behavior is next.
+
+## 2026-07-12 Phase G Step 636 Async Task Priority
+
+- Started from committed Step 635 at `7284c5db` with only unrelated untracked
+  `.vscode/` present.
+- Chosen boundary adds a focused public priority leaf and focused runtime,
+  runtime-context, and async-context implementations; existing APIs default to
+  normal priority, while production queueing orders high before normal before
+  low and preserves FIFO within each priority.
+- Added the focused priority behavior target. Its first build reaches the
+  expected RED because the planned public `task_priority.hpp` leaf does not yet
+  exist.
+- Added the public priority enum, explicit overloads on all three scheduling
+  surfaces, priority-aware bounded pool queues, stable priority completion
+  dispatch, and normal-priority compatibility wrappers. The focused Windows
+  behavior target passes 1/1.
+- Advanced the historical Step 635 pool structure guard to accept priority
+  queues and updated the global UI structure guard to freeze priority source
+  ownership separately from normal compatibility wrappers; both pass 2/2.
+- Added the dedicated Step 636 structure guard. After correcting a whitespace-
+  sensitive declaration assertion, it exits 13 at the expected authority-
+  document RED with every code, API, behavior, inventory, Xmake, and line-cap
+  assertion passing.
+- Final cross-platform focused verification passes Windows 11/11 and Arch
+  Linux WSL 11/11; the complete Windows dynamic handoff chain passes 83/83.
+- Final review made priority-index conversion safe for invalid enum values and
+  clarified completion-loop/private-record formatting. Post-review Windows and
+  WSL priority/pool/structure groups both pass 5/5.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 83 handoff guards plus the JSON ledger point
+  to Step 637 with zero stale Step 636 dynamic handoffs; JSON parses with 14
+  Step 636 source entries; public priority header, priority helper/runtime/
+  runtime-context/async-context sources, pool header/source, task/results
+  sources, runtime internal header, behavior test, and structure guard are
+  13/25/98/35/37/52/118/99/20/260/189/172 lines; and `git diff --check`
+  succeeds.
+- Phase G Step 636 adds low, normal, and high task priorities across WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, schedules queued background work and runtime-thread completions by priority with FIFO ordering within each priority, and preserves normal-priority compatibility for existing APIs. Step 637 structured task group production behavior is next.

@@ -137,13 +137,13 @@ struct RuntimeAnimation {
 };
 struct RuntimeTask {
   TaskId id;
+  TaskPriority priority = TaskPriority::normal;
   TaskCompletionCallback callback;
-  bool queued = false;
-  bool completed = false;
-  bool cancelled = false;
-  bool background = false;
+  bool queued = false, completed = false;
+  bool cancelled = false, background = false;
   std::shared_ptr<std::atomic_bool> cancellation_requested;
 };
+struct RuntimeTaskCompletion { TaskId id; TaskPriority priority; };
 struct RuntimeTaskDiagnostics {
   std::size_t task_count = 0;
   std::size_t active_task_count = 0;
@@ -236,7 +236,7 @@ std::uint64_t next_animation_id_ = 1;
 mutable std::mutex tasks_mutex_;
 std::unique_ptr<RuntimeTaskPool> task_pool_;
 std::vector<RuntimeTask> tasks_;
-std::vector<TaskId> task_completion_queue_;
+std::vector<RuntimeTaskCompletion> task_completion_queue_;
 std::uint64_t next_task_id_ = 1;
 bool draining_task_completions_ = false;
 bool handling_wakeup_ = false;

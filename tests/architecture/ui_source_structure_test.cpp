@@ -1971,6 +1971,8 @@ int main() {
       "src/ui/runtime_tasks.cpp",
       "src/ui/runtime_task_pool_internal.hpp",
       "src/ui/runtime_task_pool.cpp",
+      "src/ui/runtime_task_priority_internal.hpp",
+      "src/ui/runtime_task_priority.cpp",
       "src/ui/runtime_task_results.cpp",
       "src/ui/runtime_task_state.cpp",
       "src/ui/runtime_diagnostic_snapshot.cpp",
@@ -1980,6 +1982,7 @@ int main() {
       "src/ui/runtime_context_input.cpp",
       "src/ui/runtime_context_platform.cpp",
       "src/ui/runtime_context_scheduling.cpp",
+      "src/ui/runtime_context_task_priority.cpp",
       "src/ui/runtime_context_text.cpp",
       "src/ui/runtime_context_window_close.cpp",
       "src/ui/subscription.cpp",
@@ -1990,6 +1993,7 @@ int main() {
       "src/ui/app_context_theme.cpp",
       "src/ui/app_runner.cpp",
       "src/ui/app_context.cpp",
+      "src/ui/async_context_task_priority.cpp",
   };
   for (const char* source : source_files) {
     if (read_source(source).empty()) {
@@ -3484,6 +3488,8 @@ int main() {
       read_source("src/ui/runtime_tasks.cpp");
   const std::string runtime_task_results_source =
       read_source("src/ui/runtime_task_results.cpp");
+  const std::string runtime_task_priority_source =
+      read_source("src/ui/runtime_task_priority.cpp");
   if (line_count(runtime_tasks_source) > 150 ||
       !contains(runtime_tasks_source,
                 "TaskHandle WindowRuntime::spawn_task(") ||
@@ -3506,13 +3512,26 @@ int main() {
                 "Result<TaskHandle> WindowRuntime::try_spawn_task(") ||
       !contains(runtime_task_results_source,
                 "WindowRuntime::try_spawn_background_task(") ||
-      !contains(runtime_task_results_source,
-                "ErrorCode::invalid_argument") ||
+      !contains(runtime_task_results_source, "TaskPriority::normal") ||
+      contains(runtime_task_results_source, "ErrorCode::invalid_argument") ||
       contains(runtime_task_results_source,
                "bool WindowRuntime::complete_task(") ||
       contains(runtime_task_results_source,
                "bool WindowRuntime::cancel_task(")) {
     return 139;
+  }
+  if (line_count(runtime_task_priority_source) > 120 ||
+      !contains(runtime_task_priority_source,
+                "TaskHandle WindowRuntime::spawn_task(") ||
+      !contains(runtime_task_priority_source,
+                "WindowRuntime::spawn_background_task(") ||
+      !contains(runtime_task_priority_source,
+                "Result<TaskHandle> WindowRuntime::try_spawn_task(") ||
+      !contains(runtime_task_priority_source,
+                "WindowRuntime::try_spawn_background_task(") ||
+      !contains(runtime_task_priority_source, "ErrorCode::invalid_argument") ||
+      !contains(runtime_task_priority_source, "task_pool_->submit(")) {
+    return 140;
   }
 
   const std::string runtime_task_state_source =

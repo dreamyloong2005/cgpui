@@ -70,10 +70,12 @@ bool WindowRuntime::cancel_task(TaskId id) {
   task->cancelled = true;
   task->queued = false;
   task_completion_queue_.erase(
-      std::remove(
+      std::remove_if(
           task_completion_queue_.begin(),
           task_completion_queue_.end(),
-          id),
+          [id](const RuntimeTaskCompletion& completion) {
+            return completion.id == id;
+          }),
       task_completion_queue_.end());
   return true;
 }

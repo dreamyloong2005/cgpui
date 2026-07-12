@@ -1,5 +1,8 @@
 #pragma once
 
+#include "cgpui/ui/task_priority.hpp"
+
+#include <array>
 #include <condition_variable>
 #include <cstddef>
 #include <deque>
@@ -28,7 +31,7 @@ class WindowRuntime::RuntimeTaskPool {
   RuntimeTaskPool(const RuntimeTaskPool&) = delete;
   RuntimeTaskPool& operator=(const RuntimeTaskPool&) = delete;
 
-  [[nodiscard]] bool submit(Work work);
+  [[nodiscard]] bool submit(TaskPriority priority, Work work);
   [[nodiscard]] Snapshot snapshot() const;
   void shutdown();
 
@@ -37,7 +40,7 @@ class WindowRuntime::RuntimeTaskPool {
 
   mutable std::mutex mutex_;
   std::condition_variable_any condition_;
-  std::deque<Work> queue_;
+  std::array<std::deque<Work>, 3> queues_;
   std::vector<std::jthread> workers_;
   std::size_t active_work_count_ = 0;
   std::size_t peak_active_work_count_ = 0;
