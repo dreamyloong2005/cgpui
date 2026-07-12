@@ -23878,3 +23878,22 @@
   are 53/55/18/78/128 lines, no public LunaSVG reference or `[DEBUG-*]` marker
   remains, and `git diff --check` is clean. WSL remains unavailable, so no
   Linux result is claimed for this slice.
+
+## 2026-07-13 Phase G Step 655 Asset Cache Keys
+
+- Committed Step 654 as `cee37b63 feat: add svg asset decoding`; only unrelated
+  `.vscode/` remained untracked.
+- Added the stable cache-key behavior target first. Its build reached the
+  intended RED because `cgpui/core/asset_cache_key.hpp` did not exist.
+- Implemented source/path/kind/revision cache identity, portable slash and dot
+  normalization, traversal/root/drive/alternate-stream/NUL rejection, and
+  deterministic fixed-byte-order FNV-1a hashing with a map-ready hasher.
+- Final Windows focused key/structure/header verification passes 5/5. The
+  complete dynamic current-handoff chain builds and runs 102/102, and
+  independent ledger, vocabulary, core-header, and prelude regressions pass
+  4/4.
+- Final audits pass: the exact Step 655 completion sentence appears once in
+  each authority file, JSON parses with 8 present evidence sources, key files
+  are 46/91/83/113 lines, no line exceeds 100 columns, no public implementation
+  detail or `[DEBUG-*]` marker remains, and `git diff --check` is clean. WSL
+  remains unavailable, so no Linux result is claimed for this slice.

@@ -125,6 +125,6 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStage`") ||
       !contains(core_parity, "indexed one-shot animation chains") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 655 asset cache key production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 656 asset reload invalidation production behavior\"")) return 9;
   return 0;
 }

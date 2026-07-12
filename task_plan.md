@@ -1427,6 +1427,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 654 evidence: AssetBytes behavior proves intrinsic 2x1 parsing and exact
   4x2 red RGBA8 output at 2x scale; empty, malformed, encoded-byte, intrinsic-
   dimension, and absent-asset cases freeze bounded failure behavior.
+- Completed: Phase G Step 655 adds stable decoded-asset cache keys with explicit source, normalized cross-platform relative path, asset kind, and revision identity plus deterministic FNV-1a hashing and invalid-path diagnostics. Step 656 asset reload invalidation production behavior is next.
+- Step 655 boundary: public source/kind/key/hasher vocabulary lives in one thin
+  core leaf; portable path normalization and fixed-byte-order FNV-1a hashing
+  live in a focused core implementation source.
+- Step 655 evidence: behavior proves slash/dot normalization, equality and map
+  lookup, deterministic hashes, source/kind/revision isolation, and rejection
+  of zero source, empty, absolute, drive-root, and traversal paths.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1442,6 +1449,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The synchronized Step 655 structure guard exited 8 because the core-parity sentence starts with uppercase `Stable` | Step 655 authority verification | Match the exact core sentence casing; vocabulary and JSON evidence were already present |
+| The first Step 655 structure guard exited 5 because the Step 654 completion source splits `Step` and `655 asset cache key...` across adjacent literals | Step 655 structure RED | Match both stable source fragments while retaining exact authority-document completion matching |
 | The synchronized Step 654 structure guard exited 9 because the core-parity sentence starts with uppercase `Bounded` | Step 654 authority verification | Match the exact core sentence casing; both vocabulary entries and JSON evidence were already present |
 | The synchronized Step 653 structure guard exited 10 because its compressed core-document phrase did not match the natural `Animated GIF decoding preserves bounded` wording | Step 653 authority verification | Match the exact core-parity wording; vocabulary and JSON sources/handoff were already present |
 | The synchronized Step 652 structure guard exited 9 because it searched for lowercase `signature-detected` while the core-parity sentence correctly begins with uppercase `Signature-detected` | Step 652 authority verification | Match the exact sentence casing; vocabulary and JSON evidence were already present |

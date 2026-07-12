@@ -124,12 +124,15 @@ int main() {
   const cgpui::ImageDecodeResult empty_image = cgpui::decode_image({});
   const cgpui::GifDecodeResult empty_gif = cgpui::decode_gif({});
   const cgpui::SvgAssetDecodeResult empty_svg = cgpui::decode_svg_asset({});
+  const auto prelude_asset_key = cgpui::make_asset_cache_key(
+      cgpui::AssetSourceId{1}, "prelude.bin", cgpui::AssetCacheKind::bytes);
   (void)view;
   (void)options;
   return root_id.value != 0 && tree.root_id() == root_id &&
                  empty_image.status == cgpui::ImageDecodeStatus::empty_input &&
                  empty_gif.status == cgpui::GifDecodeStatus::empty_input &&
                  empty_svg.status == cgpui::SvgAssetDecodeStatus::empty_input &&
+                 prelude_asset_key && prelude_asset_key->revision == 0 &&
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
                  scroll != nullptr && scroll->state() == &scroll_state &&

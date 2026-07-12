@@ -3850,6 +3850,18 @@ target("phase_g_svg_asset_decode_structure_test")
     add_files("tests/architecture/phase_g_svg_asset_decode_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_asset_cache_key_test")
+    set_kind("binary")
+    add_files("tests/assets/asset_cache_key_test.cpp")
+    add_deps("cgpui_core")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("phase_g_asset_cache_key_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_asset_cache_key_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

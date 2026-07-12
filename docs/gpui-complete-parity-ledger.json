@@ -3405,7 +3405,19 @@
       "xmake.lua"
     ],
     "phase_g_step_654_remaining_gap": "Step 655 asset cache key production behavior",
-    "phase_f_current_handoff": "Step 655 asset cache key production behavior"
+    "phase_g_step_655_surface": "Phase G Step 655 adds stable decoded-asset cache keys with explicit source, normalized cross-platform relative path, asset kind, and revision identity plus deterministic FNV-1a hashing and invalid-path diagnostics. Step 656 asset reload invalidation production behavior is next.",
+    "phase_g_step_655_sources": [
+      "include/cgpui/core/asset_cache_key.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/core/asset_cache_key.cpp",
+      "tests/assets/asset_cache_key_test.cpp",
+      "tests/architecture/phase_g_asset_cache_key_structure_test.cpp",
+      "tests/header_cleanliness/core_header_cleanliness.cpp",
+      "tests/header_cleanliness/prelude_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_655_remaining_gap": "Step 656 asset reload invalidation production behavior",
+    "phase_f_current_handoff": "Step 656 asset reload invalidation production behavior"
   },
   "categories": [
     "application_and_app_context",

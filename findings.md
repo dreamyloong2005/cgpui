@@ -11555,3 +11555,15 @@
   LunaSVG intrinsic width/height must be finite, positive, and within explicit
   dimension/pixel limits before the asset becomes ready.
 - Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with LunaSVG intrinsic-size validation and a lifetime-safe bridge into the existing viewport-aware, recolorable RGBA8 rasterization path. Step 655 asset cache key production behavior is next.
+
+## 2026-07-13 Phase G Step 655 Asset Cache Keys
+
+- Step 654 was committed as `cee37b63 feat: add svg asset decoding`; unrelated
+  `.vscode/` remains untracked.
+- Decoded-asset cache identity is source id, normalized portable relative path,
+  decode kind, and revision. SVG viewport/color raster identity stays in the
+  existing specialized `SvgRasterCacheKey` rather than bloating the base key.
+- Stable hashing uses fixed little-endian scalar encoding plus path length and
+  bytes under FNV-1a; it does not depend on implementation-defined
+  `std::hash<std::string>` behavior.
+- Phase G Step 655 adds stable decoded-asset cache keys with explicit source, normalized cross-platform relative path, asset kind, and revision identity plus deterministic FNV-1a hashing and invalid-path diagnostics. Step 656 asset reload invalidation production behavior is next.

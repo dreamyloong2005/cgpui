@@ -68,6 +68,8 @@ desktop integration surfaces remain separate future work.
   finite/infinite loop metadata after structured pre-decode block scanning.
   Bounded SVG asset decoding validates intrinsic dimensions through LunaSVG
   and bridges safely into the existing viewport-aware recolorable raster path.
+  Stable decoded-asset cache keys isolate source, normalized cross-platform
+  path, kind, and revision with deterministic FNV-1a hashing.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -156,7 +158,7 @@ desktop integration surfaces remain separate future work.
 
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
-- Asset cache keys, reload invalidation, async loading,
+- Asset reload invalidation, async loading,
   and final image/GIF public examples.
 - Rich text editing, selection handles, undo/redo stacks, complex shaping,
   bidi text, emoji/color glyphs, and platform input-method depth beyond the

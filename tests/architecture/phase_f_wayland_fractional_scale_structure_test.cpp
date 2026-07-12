@@ -102,7 +102,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 655 asset cache key production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 656 asset reload invalidation production behavior")) {
     return 9;
   }
   return 0;

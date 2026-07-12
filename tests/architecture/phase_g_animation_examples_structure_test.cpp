@@ -106,6 +106,6 @@ int main() {
       !contains(core, "official animation and opacity examples") ||
       !contains(ledger_json, "\"phase_g_step_650_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 655 asset cache key production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 656 asset reload invalidation production behavior\"")) return 8;
   return 0;
 }
