@@ -1,34 +1,21 @@
 #include "cgpui/renderer/image_decode.hpp"
 
+#include "image_format_detection_internal.hpp"
+
 #define STBI_ONLY_PNG
 #define STBI_ONLY_JPEG
+#define STBI_ONLY_GIF
 #define STBI_NO_STDIO
 #define STBI_NO_HDR
 #define STBI_NO_LINEAR
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include <algorithm>
-#include <array>
 #include <limits>
 #include <memory>
 
 namespace cgpui {
 namespace {
-
-EncodedImageFormat encoded_image_format(std::span<const std::uint8_t> bytes) {
-  constexpr std::array<std::uint8_t, 8> png_signature{
-      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
-  if (bytes.size() >= png_signature.size() &&
-      std::equal(png_signature.begin(), png_signature.end(), bytes.begin())) {
-    return EncodedImageFormat::png;
-  }
-  if (bytes.size() >= 3 && bytes[0] == 0xff && bytes[1] == 0xd8 &&
-      bytes[2] == 0xff) {
-    return EncodedImageFormat::jpeg;
-  }
-  return EncodedImageFormat::unknown;
-}
 
 bool exceeds_decode_limits(
     int width,
@@ -64,8 +51,12 @@ ImageDecodeResult decode_image(
     ImageDecodeLimits limits) {
   ImageDecodeResult result;
   if (encoded.empty()) return result;
-  result.source_format = encoded_image_format(encoded);
+  result.source_format = detail::detect_encoded_image_format(encoded);
   if (result.source_format == EncodedImageFormat::unknown) {
+    result.status = ImageDecodeStatus::unsupported_format;
+    return result;
+  }
+  if (result.source_format == EncodedImageFormat::gif) {
     result.status = ImageDecodeStatus::unsupported_format;
     return result;
   }

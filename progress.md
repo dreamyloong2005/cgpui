@@ -23833,3 +23833,27 @@
   vendored SHA-256 matches, key files are 45/116/113/120 lines, no public stb
   reference or `[DEBUG-*]` marker remains, and `git diff --check` is clean.
   WSL remains unavailable, so no Linux result is claimed for this slice.
+
+## 2026-07-13 Phase G Step 653 GIF Decode Boundary
+
+- Committed Step 652 as `450f077a feat: add png and jpeg decoding`; only
+  unrelated `.vscode/` remained untracked.
+- Added a two-frame GIF89a behavior test first with 50/100ms delays and
+  Netscape finite/infinite loop cases. Its build reached the intended RED
+  because `cgpui/renderer/gif_decode.hpp` did not exist.
+- Implemented complete composited RGBA8 frame decode with delay and loop
+  metadata. A focused block scanner validates the logical screen, frame
+  rectangles, tables, extensions, and LZW sub-block boundaries while enforcing
+  screen, frame-count, and total-byte limits before stb allocation.
+- Extracted shared PNG/JPEG/GIF signature detection into a focused private leaf
+  instead of weakening the existing 125-line Step 652 backend budget; the old
+  PNG/JPEG behavior and structure guards remain green.
+- Final Windows focused GIF/PNG-JPEG/prelude/renderer verification passes 6/6.
+  The complete dynamic current-handoff chain builds and runs 100/100, and
+  independent ledger, vocabulary, prelude, and renderer regressions pass 4/4.
+- Final audits pass: the exact Step 653 completion sentence appears once in
+  each authority file, JSON parses with 15 present evidence sources, key files
+  are 55/24/211/83/107/10/28/100/145 lines, the vendored SHA-256 still
+  matches, no public stb reference or `[DEBUG-*]` marker remains, all new C++
+  lines are at most 100 columns, and `git diff --check` is clean. WSL remains
+  unavailable, so no Linux result is claimed for this slice.

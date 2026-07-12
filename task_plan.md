@@ -1412,6 +1412,14 @@ Windows/Linux core API is stable enough for parity work.
   alpha normalization; negative cases cover empty, unsupported, corrupt,
   width, and decoded-byte rejection. Prelude and renderer inventory guards
   freeze public reachability, fixed upstream provenance, ownership, and caps.
+- Completed: Phase G Step 653 adds bounded animated GIF decoding with complete composited RGBA8 frames, per-frame delays, finite and infinite loop metadata, structured pre-decode block scanning, and frame plus total-byte limits. Step 654 SVG asset decode boundary production behavior is next.
+- Step 653 boundary: public frame, loop, limit, and result vocabulary stays in
+  a focused renderer leaf. GIF block scanning, stb decode, and shared encoded-
+  format detection live in separate focused private sources.
+- Step 653 evidence: a deterministic two-frame GIF89a fixture proves complete
+  RGBA8 frame output, 50/100ms delays, finite/infinite Netscape loop metadata,
+  generic GIF format routing, invalid input, screen, frame, and total-byte
+  limits before backend allocation; structure coverage freezes source order.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1427,6 +1435,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The synchronized Step 653 structure guard exited 10 because its compressed core-document phrase did not match the natural `Animated GIF decoding preserves bounded` wording | Step 653 authority verification | Match the exact core-parity wording; vocabulary and JSON sources/handoff were already present |
 | The synchronized Step 652 structure guard exited 9 because it searched for lowercase `signature-detected` while the core-parity sentence correctly begins with uppercase `Signature-detected` | Step 652 authority verification | Match the exact sentence casing; vocabulary and JSON evidence were already present |
 | Non-interactive Step 652 Xmake configuration prompted for stb installation with closed stdin; the `-y` retry then spawned many Git mirror processes without producing an installed package | Step 652 decoder dependency setup | Stop only the two Xmake processes started by the configuration, vendor `stb_image.h` from fixed upstream commit `28d546d5` with SHA-256 verification, and expose it only to `cgpui_renderer` |
 | A Windows wildcard was passed directly to `rg` during Step 652 image-boundary discovery, and a guessed renderer header-cleanliness filename did not exist | Step 652 ownership discovery | Enumerate concrete files with `Get-ChildItem` and use the existing UI/prelude cleanliness targets instead of guessing wildcard paths |

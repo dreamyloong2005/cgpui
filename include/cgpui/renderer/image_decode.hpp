@@ -12,6 +12,7 @@ enum class EncodedImageFormat {
   unknown,
   png,
   jpeg,
+  gif,
 };
 
 enum class ImageDecodeStatus {

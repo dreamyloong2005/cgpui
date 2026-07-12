@@ -64,6 +64,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 31;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 653 GIF decode boundary production behavior\"")) return 32;
+                "\"phase_f_current_handoff\": \"Step 654 SVG asset decode boundary production behavior\"")) return 32;
   return 0;
 }

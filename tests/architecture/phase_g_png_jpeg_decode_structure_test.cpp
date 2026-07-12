@@ -114,7 +114,7 @@ int main() {
       !contains(core, "Signature-detected PNG and JPEG decoding") ||
       !contains(ledger_json, "\"phase_g_step_652_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 653 GIF decode "
+                "\"phase_f_current_handoff\": \"Step 654 SVG asset decode "
                 "boundary production behavior\"")) return 9;
   return 0;
 }

@@ -11524,3 +11524,19 @@
   byte count, then requests a normalized four-channel RGBA8 output. Public
   headers contain no stb types or macros.
 - Phase G Step 652 adds signature-detected PNG and JPEG decoding to RGBA8 bitmaps through a fixed stb_image backend, with explicit empty, unsupported, corrupt, decode-failure, dimension, pixel, stride, and decoded-byte statuses enforced before output allocation. Step 653 GIF decode boundary production behavior is next.
+
+## 2026-07-13 Phase G Step 653 GIF Decode Boundary
+
+- Step 652 was committed as `450f077a feat: add png and jpeg decoding`;
+  unrelated `.vscode/` remains untracked.
+- GIF production behavior must retain every composited frame, per-frame delay,
+  and Netscape finite/infinite loop behavior; a first-frame-only decode would
+  not support the Step 658 GIF example.
+- `stbi_load_gif_from_memory` returns all frames but allocates before exposing
+  the frame count. A focused GIF block scanner must therefore validate the
+  logical screen, count image descriptors, collect graphic-control delays and
+  loop extensions, and enforce frame/total-byte limits before backend decode.
+- Shared PNG/JPEG/GIF signature detection moved into its own private leaf when
+  adding GIF recognition would otherwise have exceeded the established Step
+  652 backend line cap. The old cap remains unchanged and green.
+- Phase G Step 653 adds bounded animated GIF decoding with complete composited RGBA8 frames, per-frame delays, finite and infinite loop metadata, structured pre-decode block scanning, and frame plus total-byte limits. Step 654 SVG asset decode boundary production behavior is next.

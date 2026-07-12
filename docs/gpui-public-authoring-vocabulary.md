@@ -127,6 +127,13 @@ remain outside this freeze.
 - `ImageDecodeLimits`
 - `ImageDecodeResult`
 - `decode_image(...)`
+- `GifDecodeStatus`
+- `GifLoopBehavior`
+- `DecodedGifFrame`
+- `DecodedGif`
+- `GifDecodeLimits`
+- `GifDecodeResult`
+- `decode_gif(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and

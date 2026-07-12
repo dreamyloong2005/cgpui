@@ -3370,7 +3370,26 @@
       "xmake.lua"
     ],
     "phase_g_step_652_remaining_gap": "Step 653 GIF decode boundary production behavior",
-    "phase_f_current_handoff": "Step 653 GIF decode boundary production behavior"
+    "phase_g_step_653_surface": "Phase G Step 653 adds bounded animated GIF decoding with complete composited RGBA8 frames, per-frame delays, finite and infinite loop metadata, structured pre-decode block scanning, and frame plus total-byte limits. Step 654 SVG asset decode boundary production behavior is next.",
+    "phase_g_step_653_sources": [
+      "include/cgpui/renderer/gif_decode.hpp",
+      "include/cgpui/renderer/image_decode.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/renderer/gif_metadata_internal.hpp",
+      "src/renderer/gif_metadata.cpp",
+      "src/renderer/gif_decode_stb.cpp",
+      "src/renderer/image_decode_stb.cpp",
+      "src/renderer/image_format_detection_internal.hpp",
+      "src/renderer/image_format_detection.cpp",
+      "tests/assets/gif_decode_test.cpp",
+      "tests/architecture/phase_g_gif_decode_structure_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "tests/header_cleanliness/prelude_header_cleanliness.cpp",
+      "third_party/stb/stb_image.h",
+      "xmake.lua"
+    ],
+    "phase_g_step_653_remaining_gap": "Step 654 SVG asset decode boundary production behavior",
+    "phase_f_current_handoff": "Step 654 SVG asset decode boundary production behavior"
   },
   "categories": [
     "application_and_app_context",
