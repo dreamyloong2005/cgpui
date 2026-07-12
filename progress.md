@@ -22480,3 +22480,33 @@
 - JSON parsing, five-document completion phrase, 55 Step 607 handoffs, zero
   stale Step 606 handoffs, 73/122/71/260 line budgets, and
   `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 607 Scale-Change Diagnostics And Stress
+
+- Started from committed Step 606 at `4333308c`; unrelated `.vscode/` remains
+  untracked.
+- Added a compile RED for missing resize event/diagnostic kinds and missing
+  framebuffer/DPI snapshot fields.
+- Added the focused `runtime_window_scale_diagnostics` private leaf and routed
+  root plus child renderer resize outcomes through it.
+- Added a 64-change root scale stress. The newest 32 records preserve source
+  changes 33-64, exact framebuffer sizes, four rotating scale values, event
+  kind, operation, success, and sequence.
+- Root stress, multi-window geometry isolation, and rendering regression pass
+  3/3.
+- Added the Step 607 structure guard; it reached the intended five-document RED
+  at exit 8 after contract, module, root/child call, behavior, prior-step,
+  Xmake, and line-budget checks passed.
+- Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.
+- The first expanded Windows structure run failed only because adding the
+  resize event mapping raised `ui_event_kind_internal.hpp` from 119 to 122
+  lines over its 120-line cap. Compressing that simple mapping to one line
+  restored the existing budget without relaxing the guard.
+- Final Windows scale/render/multi-window/structure/header/ledger verification
+  passes 11/11.
+- Final WSL shared runtime, real fractional-scale and resize/scale state,
+  structure, header, and ledger verification passes 13/13 using the established
+  D-drive caches. WSL full debug remains batched.
+- JSON parsing, five-document completion phrase, 56 Step 608 handoffs, zero
+  stale Step 607 handoffs, 64/40/11/20/26/93/53/85/260 line budgets, and
+  `git diff --check` pass.

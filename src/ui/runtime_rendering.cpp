@@ -1,9 +1,11 @@
 #include "ui_internal.hpp"
+#include "runtime_window_scale_diagnostics_internal.hpp"
 
 namespace cgpui {
 
 void WindowRuntime::handle_resize(const WindowResized& event) {
-  (void)resize_surface(event.size, event.scale);
+  const Result<void> result = resize_surface(event.size, event.scale);
+  record_platform_diagnostic(window_scale_diagnostic(event, result.has_value()));
 }
 
 void WindowRuntime::handle_redraw() {

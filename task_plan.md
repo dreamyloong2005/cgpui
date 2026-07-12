@@ -1142,7 +1142,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 606 evidence: focused runtime coverage verifies update/commit/delete
   operations directly, then retains sequences 97-128 across sixty-four
   update/cancel cycles with explicit cancellation status.
-- In progress: Step 607 scale-change diagnostics and stress production behavior.
+- Completed: Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.
+- Step 607 evidence: the shared diagnostic leaf records framebuffer size,
+  DPI scale, event kind, and renderer resize success for root and child paths;
+  the focused root stress retains changes 33-64.
+- In progress: Step 608 timer wakeup diagnostics and stress production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

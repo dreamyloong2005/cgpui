@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_window_scale_diagnostics_internal.hpp"
 
 namespace cgpui {
 
@@ -55,9 +56,10 @@ void WindowRuntime::handle_native_additional_window_event(
     record->viewport_size = to_logical_pixels(resized->size, resized->scale);
     record->scale = resized->scale;
     record->descriptor.size = to_logical_pixels(resized->size, resized->scale);
-    if (record->renderer != nullptr) {
-      (void)record->renderer->resize(resized->size, resized->scale);
-    }
+    const Result<void> resize_result =
+        record->renderer->resize(resized->size, resized->scale);
+    record_platform_diagnostic(
+        window_scale_diagnostic(*resized, resize_result.has_value()));
     return;
   }
   if (std::holds_alternative<WindowRedrawRequested>(event)) {

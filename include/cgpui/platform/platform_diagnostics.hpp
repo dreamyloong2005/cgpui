@@ -20,6 +20,7 @@ enum class PlatformDiagnosticKind {
   open_url,
   reopen,
   window_chrome,
+  window_scale,
 };
 
 struct PlatformDiagnosticEvent {
@@ -31,6 +32,8 @@ struct PlatformDiagnosticEvent {
   bool succeeded = true;
   bool cancelled = false;
   std::size_t value_count = 0;
+  Size framebuffer_size;
+  DpiScale scale;
   int sequence = 0;
 };
 

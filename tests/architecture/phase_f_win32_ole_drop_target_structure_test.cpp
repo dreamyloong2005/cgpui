@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 607 scale-change diagnostics and stress production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 608 timer wakeup diagnostics and stress production behavior")) return 9;
   return 0;
 }

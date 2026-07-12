@@ -42,6 +42,7 @@ enum class EventKind {
   window_focused,
   window_minimized,
   window_restored,
+  window_resized,
   window_moved,
   window_close_requested,
   pointer_moved,

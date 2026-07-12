@@ -10692,3 +10692,15 @@
   sixty-four update/cancel cycles retain sequences 97-128 with sixteen
   successful updates and sixteen unsuccessful cancellations.
 - Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 607 Scale-Change Diagnostics And Stress
+
+- `WindowResized` carries both framebuffer size and DPI scale, but the public
+  event kind and platform diagnostics had no resize-scale identity or geometry
+  snapshot.
+- Root resize and child resize take separate runtime paths, so a focused private
+  diagnostic constructor is required to keep operation and payload mapping
+  identical without widening broad event files.
+- Both paths now record renderer resize success plus framebuffer/DPI state;
+  sixty-four root changes retain events 33-64 in the bounded diagnostic tail.
+- Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.
