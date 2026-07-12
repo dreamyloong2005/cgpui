@@ -1146,7 +1146,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 607 evidence: the shared diagnostic leaf records framebuffer size,
   DPI scale, event kind, and renderer resize success for root and child paths;
   the focused root stress retains changes 33-64.
-- In progress: Step 608 timer wakeup diagnostics and stress production behavior.
+- Completed: Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.
+- Step 608 evidence: sixty-four zero-delay timers request sixty-four platform
+  wakeups, one coalesced wakeup drains all callbacks, and the diagnostic tail
+  retains TimerIds 33-64 in firing order.
+- In progress: Step 609 task wakeup diagnostics and stress production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

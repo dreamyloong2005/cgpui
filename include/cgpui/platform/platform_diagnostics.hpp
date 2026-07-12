@@ -21,6 +21,7 @@ enum class PlatformDiagnosticKind {
   reopen,
   window_chrome,
   window_scale,
+  scheduling,
 };
 
 struct PlatformDiagnosticEvent {

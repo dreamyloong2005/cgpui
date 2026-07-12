@@ -1811,6 +1811,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.
 - [x] Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.
 - [x] Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.
+- [x] Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

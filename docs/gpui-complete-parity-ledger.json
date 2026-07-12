@@ -2718,7 +2718,17 @@
       "xmake.lua"
     ],
     "phase_f_step_607_remaining_gap": "Step 608 timer wakeup diagnostics and stress production behavior",
-    "phase_f_current_handoff": "Step 608 timer wakeup diagnostics and stress production behavior"
+    "phase_f_step_608_surface": "Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.",
+    "phase_f_step_608_sources": [
+      "include/cgpui/platform/platform_diagnostics.hpp",
+      "src/ui/runtime_timers.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "tests/ui/window_runtime_timer_wakeup_diagnostics_test.cpp",
+      "tests/architecture/phase_f_timer_wakeup_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_608_remaining_gap": "Step 609 task wakeup diagnostics and stress production behavior",
+    "phase_f_current_handoff": "Step 609 task wakeup diagnostics and stress production behavior"
   },
   "categories": [
     "application_and_app_context",

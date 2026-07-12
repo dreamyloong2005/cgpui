@@ -10704,3 +10704,15 @@
 - Both paths now record renderer resize success plus framebuffer/DPI state;
   sixty-four root changes retain events 33-64 in the bounded diagnostic tail.
 - Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 608 Timer Wakeup Diagnostics And Stress
+
+- Timers already request platform wakeups and fire from the focused timer leaf,
+  but completed timer identity was not represented in platform diagnostics.
+- A shared scheduling diagnostic kind can cover timer and later task wakeups;
+  the timer leaf records the stable id after queue mutation and before callback
+  execution so reentrant scheduling cannot reorder the fired record.
+- Sixty-four zero-delay timers issue sixty-four requests; the fake platform
+  coalesces them into one dispatched wakeup that fires every callback and leaves
+  TimerIds 33-64 in the bounded tail.
+- Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.

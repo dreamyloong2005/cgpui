@@ -22510,3 +22510,29 @@
 - JSON parsing, five-document completion phrase, 56 Step 608 handoffs, zero
   stale Step 607 handoffs, 64/40/11/20/26/93/53/85/260 line budgets, and
   `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 608 Timer Wakeup Diagnostics And Stress
+
+- Started from committed Step 607 at `e954bbe5`; unrelated `.vscode/` remains
+  untracked.
+- Added a compile RED for the missing shared scheduling diagnostic kind. The
+  compiler also emitted a secondary PDB service error after the primary enum
+  failure; no persistent build process remained.
+- Added `PlatformDiagnosticKind::scheduling` and recorded fired TimerIds in the
+  focused timer leaf after queue mutation and before callback execution.
+- Added a 64-timer wakeup stress: all timer registrations request wakeup, one
+  dispatched platform wakeup fires all callbacks, and the bounded tail retains
+  TimerIds and sequences 33-64.
+- Focused timer wakeup and existing scheduling behavior pass 2/2.
+- Added the Step 608 structure guard; it reached the intended five-document RED
+  at exit 7 after kind, timer ownership, wakeup drain, stress, prior-step,
+  Xmake, and line-budget checks passed.
+- Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.
+- Final Windows timer/scheduling/TestContext/structure/header/ledger verification
+  passes 9/9.
+- Final WSL shared timer runtime, real Wayland event-loop wakeup, TestContext,
+  structure, header, and ledger verification passes 10/10. WSL full debug
+  remains batched.
+- JSON parsing, five-document completion phrase, 57 Step 609 handoffs, zero
+  stale Step 608 handoffs, 41/103/127/56/72/260 line budgets, and
+  `git diff --check` pass.

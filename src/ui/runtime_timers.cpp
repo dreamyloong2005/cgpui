@@ -78,12 +78,21 @@ void WindowRuntime::fire_due_timers() {
       break;
     }
 
+    const TimerId fired_id = timer->id;
     TimerCallback callback = timer->callback;
     if (timer->repeating) {
       timer->due_ms += timer->interval_ms;
     } else {
       timer = timers_.erase(timer);
     }
+    record_platform_diagnostic(PlatformDiagnosticEvent{
+        .kind = PlatformDiagnosticKind::scheduling,
+        .backend = "runtime",
+        .operation = "timer-fired",
+        .supported = true,
+        .succeeded = true,
+        .value_count = static_cast<std::size_t>(fired_id.value),
+    });
     if (callback) {
       callback(context());
     }
