@@ -3801,6 +3801,18 @@ target("phase_g_animation_examples_structure_test")
     add_files("tests/architecture/phase_g_animation_examples_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_file_asset_source_test")
+    set_kind("binary")
+    add_files("tests/assets/file_asset_source_test.cpp")
+    add_deps("cgpui_core")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("phase_g_file_asset_source_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_file_asset_source_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

@@ -59,6 +59,9 @@ desktop integration surfaces remain separate future work.
   broad production style interpolation across layout, paint, and typography
   fields. The pinned official animation and opacity examples compile and run
   through the same public authoring surface without direct runtime internals.
+- Assets now have root-confined file-backed asset loading through
+  `AssetSource` and `FileAssetSource`, with optional missing results, stable
+  directory listing, canonical escape protection, and pre-allocation limits.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -147,7 +150,8 @@ desktop integration surfaces remain separate future work.
 
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
-- Asset, image, SVG, and texture upload pipelines.
+- PNG/JPEG/GIF decoding, asset cache/reload invalidation, async asset loading,
+  and final image/GIF public examples.
 - Rich text editing, selection handles, undo/redo stacks, complex shaping,
   bidi text, emoji/color glyphs, and platform input-method depth beyond the
   current skeletons.

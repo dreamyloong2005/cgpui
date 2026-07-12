@@ -1396,6 +1396,14 @@ Windows/Linux core API is stable enough for parity work.
   tests; the source audit freezes pinned repeat/bounce and click-restart
   semantics, while the structure guard freezes public-only dependencies,
   registration, authority evidence, and line caps.
+- Completed: Phase G Step 651 adds root-confined file-backed AssetSource loading with binary and empty-file support, optional missing-file results, stable directory listing, canonical symlink escape protection, byte limits before allocation, and explicit invalid-path and I/O diagnostics. Step 652 PNG and JPEG decode boundary production behavior is next.
+- Step 651 boundary: public byte-source vocabulary lives in the core leaf;
+  lexical/canonical path policy and file I/O/listing live in separate focused
+  core sources. Renderer/UI decode and caching remain later asset steps.
+- Step 651 evidence: behavior covers binary, nested, empty, missing, absolute,
+  traversal, directory, oversized, empty-root, and stable-list cases; core
+  header cleanliness and dedicated structure coverage freeze the public/private
+  boundary, symlink escape policy, pre-allocation limit, and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1411,6 +1419,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Sandboxed Step 651 staging could not create `.git/index.lock` because `.git` is read-only in the workspace sandbox | Step 651 explicit staging | Keep `.vscode/` excluded and rerun the same `git add -u` plus explicit new-file staging under the approved Git write permission |
+| The first Step 651 structure run exited 7 even though the Step 650 handoff and both Xmake targets were present | Step 651 focused structure verification | The prior guard splits the completion sentence across adjacent C++ string literals; match the two source fragments independently while retaining the complete handoff requirement |
 | Sandboxed Step 650 Xmake reconfiguration repeatedly reported `cannot create filelock for package(ninja)` | Step 650 example target registration | `xmake show -l packages` exposed the underlying denied write to the user-local Xmake `references.txt`; rerun only `xmake f -c -m debug -P .` with approved package-cache access, then keep builds sandboxed |
 | The initial Step 650 source audit did not compile because a `std::string[]` was iterated as `const char*` | Step 650 RED test | Iterate by `const std::string&` and pass `c_str()` to the source matcher; the corrected audit then reached the intended missing-example RED |
 | The first Step 650 structure guard exited 5 because the Step 649 guard splits the next-step phrase across adjacent literals | Step 650 structure RED | Match both stable source fragments while retaining the exact completion sentence requirement across authority documents |

@@ -116,6 +116,12 @@ remain outside this freeze.
 - `examples/api_parity/public_opacity_example/main.cpp`
 - `api_parity_public_animation_example`
 - `api_parity_public_opacity_example`
+- `AssetBytes`
+- `AssetSource`
+- `FileAssetSourceOptions`
+- `FileAssetSource`
+- `AssetSource::load(...)`
+- `AssetSource::list(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and

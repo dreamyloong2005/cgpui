@@ -115,7 +115,7 @@ int main() {
     if (!contains(*document, completion)) return 6;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 651 file-backed asset loading production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 652 PNG and JPEG decode boundary production behavior\"")) {
     return 7;
   }
   return 0;

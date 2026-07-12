@@ -3342,7 +3342,21 @@
       "xmake.lua"
     ],
     "phase_g_step_650_remaining_gap": "Step 651 file-backed asset loading production behavior",
-    "phase_f_current_handoff": "Step 651 file-backed asset loading production behavior"
+    "phase_g_step_651_surface": "Phase G Step 651 adds root-confined file-backed AssetSource loading with binary and empty-file support, optional missing-file results, stable directory listing, canonical symlink escape protection, byte limits before allocation, and explicit invalid-path and I/O diagnostics. Step 652 PNG and JPEG decode boundary production behavior is next.",
+    "phase_g_step_651_sources": [
+      "include/cgpui/core/asset_source.hpp",
+      "include/cgpui/core/error.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/core/file_asset_source_internal.hpp",
+      "src/core/file_asset_path.cpp",
+      "src/core/file_asset_source.cpp",
+      "tests/assets/file_asset_source_test.cpp",
+      "tests/architecture/phase_g_file_asset_source_structure_test.cpp",
+      "tests/header_cleanliness/core_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_651_remaining_gap": "Step 652 PNG and JPEG decode boundary production behavior",
+    "phase_f_current_handoff": "Step 652 PNG and JPEG decode boundary production behavior"
   },
   "categories": [
     "application_and_app_context",

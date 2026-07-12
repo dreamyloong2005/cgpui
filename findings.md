@@ -11480,3 +11480,23 @@
   binaries, and default to no-launch smoke execution unless their explicit
   environment variable is set.
 - Phase G Step 650 ports the pinned official animation and opacity examples to public C++ authoring, demonstrating two-second repeated bounce rotation, click-restarted opacity transitions, cancellation-safe restarts, shared frame pacing, and compile/run smoke coverage without direct runtime internals. Step 651 file-backed asset loading production behavior is next.
+
+## 2026-07-13 Phase G Step 651 File Asset Source
+
+- Generic file bytes belong in core rather than UI, renderer, or app: image,
+  SVG, GIF, and later async loaders all need the same source without creating
+  reverse dependencies between those modules.
+- File paths are relative to an explicit root. Lexical containment handles
+  missing paths without allocation or false errors; existing paths are then
+  canonicalized and checked again so symlinks cannot escape the root.
+- On this Windows host, `weakly_canonical` reports an error for a nonexistent
+  leaf, so canonicalizing before checking existence incorrectly turned the
+  required optional-missing result into an I/O failure. The two-stage path
+  policy preserves missing semantics and existing-path security.
+- File size and `streamsize` limits are checked before resizing the byte
+  vector. Empty files remain valid loaded assets; directory requests and
+  partial reads remain explicit I/O failures.
+- Directory listing returns sorted filename entries for deterministic cache
+  and example behavior. Decoding, cache keys, reload invalidation, and async
+  work remain Steps 652-658.
+- Phase G Step 651 adds root-confined file-backed AssetSource loading with binary and empty-file support, optional missing-file results, stable directory listing, canonical symlink escape protection, byte limits before allocation, and explicit invalid-path and I/O diagnostics. Step 652 PNG and JPEG decode boundary production behavior is next.

@@ -12,6 +12,8 @@ enum class ErrorCode {
   frame_acquisition_failed,
   unsupported_platform,
   invalid_argument,
+  asset_io_failed,
+  asset_too_large,
 };
 
 struct Error {

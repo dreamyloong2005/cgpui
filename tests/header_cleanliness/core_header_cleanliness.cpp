@@ -1,3 +1,4 @@
+#include "cgpui/core/asset_source.hpp"
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/event_accessibility.hpp"
 #include "cgpui/core/event_drag_drop.hpp"
@@ -107,6 +108,10 @@ int main() {
 
   cgpui::MemoryClipboard clipboard;
   (void)clipboard.write_text("x");
+
+  const cgpui::FileAssetSource header_asset_source(".");
+  const cgpui::AssetSource& asset_source = header_asset_source;
+  (void)asset_source;
 
   const cgpui::AffineTransform transform = cgpui::compose(
       cgpui::AffineTransform::translation(1.0F, 2.0F),
@@ -438,7 +443,8 @@ int main() {
                      cgpui::NativeFileDialogKind::save_file &&
                  native_file_dialog_result.filter_count == 1 &&
                  platform_window_chrome.requested.transparent_background &&
-                 !platform_window_chrome.applied.transparent_background
+                 !platform_window_chrome.applied.transparent_background &&
+                 header_asset_source.options().max_asset_bytes > 0
              ? 0
              : 1;
 }

@@ -23786,3 +23786,24 @@
   each authority file, all 7 JSON sources exist, key files are
   116/124/69/112 lines, and `git diff --check` reports no whitespace errors.
   WSL still reports no installed distribution, so no Linux result is claimed.
+
+## 2026-07-13 Phase G Step 651 File Asset Source Resume
+
+- The focused behavior test passed, while the first structure run failed at
+  direct exit 7. A direct executable loop confirmed the failure deterministically.
+- The Xmake target registrations were present. The failure came from requiring
+  one continuous source substring across two adjacent C++ string literals in
+  the Step 650 guard; the Step 651 guard now checks both semantic fragments.
+- Final Windows focused verification passes 4/4 for file asset behavior,
+  structure, core header cleanliness, and prelude header cleanliness. The
+  complete dynamic current-handoff chain builds and runs 98/98, including the
+  native-menu replacement target-name exception; independent ledger,
+  vocabulary, and header regressions pass 4/4.
+- Final audits pass: the exact Step 651 completion sentence appears once in
+  each authority file, JSON parses with 10 present evidence sources, key files
+  are 52/13/84/119/114 lines, no `[DEBUG-*]` markers remain, and
+  `git diff --check` reports no whitespace errors. WSL remains unavailable, so
+  no Linux result is claimed for this slice.
+- The first staging attempt was rejected because the workspace sandbox exposes
+  `.git` read-only and could not create `index.lock`; no files were staged or
+  changed by that attempt. Staging requires the approved Git write permission.
